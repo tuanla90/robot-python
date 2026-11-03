@@ -213,7 +213,7 @@
     manBanXoay({
       so: 18, ten: 'Quét radar lấp hố cản đường', hang: 'bien-the', hamCuaEmCan: ['move', 'lob'],
       deBai: 'Sola nhờ bạn: trên đường hầm dài 4 bước lên cờ có một cặp đá chắn và hố sâu nhưng vị trí thay đổi theo từng sân. Trong vòng lặp 4 bước, hãy dùng radar() kiểm tra ô trước mặt g[0][1]: nếu thấy đá ("V") thì gọi lob() để vừa dọn đá vừa lấp hố phía sau nó, rồi gọi move() tiến lên.',
-      veMaMau: 'Chương trình có sẵn mới lặp 4 lần đọc g = radar() và move(). Hãy thêm if g[0][1] == "V": lob() trước move().',
+      veMaMau: 'Chương trình có sẵn mới lặp 4 lần đọc g = radar() và move(). Hãy thêm t = g[0][1], rồi if t == "V": lob() trước move().',
       san: [
         ['###', '#F#', '#u#', '#o#', '#.#', '#.#', '###'],
         ['###', '#F#', '#.#', '#u#', '#o#', '#.#', '###']
@@ -223,14 +223,14 @@
       loiGiai: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob()', '    move()']),
       sao: { o: 12, nhip: 6 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra trực tiếp radar()[0][1] == "V"',
+        moTa: 'Đặt tên biến khác: t là lưới radar, k là ô trước mặt',
         baiLam: bai(['g = 0', 'for i in range(4):', '    t = radar()', '    k = t[0][1]', '    if k == "V":', '        lob()', '    move()'])
       },
       loiSai: [
         { moTa: 'Chưa gọi lob() khi gặp đá: xe đâm vào tảng đá chắn đường', baiLam: bai(['for i in range(4):', '    g = radar()', '    move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Thụt lề nhầm move() vào trong if: gặp ô trống xe đứng yên không đi', baiLam: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob()', '        move()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Tảng đá nằm ngay trước hố sâu, nên khi thấy g[0][1] == "V" thì gọi lob() sẽ lấp luôn hố.', 'Luna: Sau khối if, gọi move() để tiến lên từng bước tới cờ.']
+      goiY: ['Luna: Tảng đá nằm ngay trước hố sâu, nên khi thấy ô trước mặt g[0][1] là "V" thì gọi lob() sẽ lấp luôn hố.', 'Luna: Sau khối if, gọi move() để tiến lên từng bước tới cờ.']
     }),
 
     manBanXoay({
@@ -258,7 +258,7 @@
       so: 20, ten: 'Trùm lấp hố trượt dốc', hang: 'trum', hamCuaEmCan: ['move', 'lob'],
       huyHieu: { ma: 'ban-xoay', ten: 'Huy hiệu Lấp hố, trượt dốc' },
       deBai: 'Sola nhờ bạn: trùm chương Lấp hố, trượt dốc gồm 8 bước di chuyển qua hai tầng dốc và một bàn xoay "@". Ở mỗi bước trong vòng lặp 8 lần: dùng radar() kiểm tra nếu ô phía trên g[0][1] có tảng đá ("V") thì gọi lob() để lấp hố sâu phía trước, sau đó gọi move(). Các ô dốc ">" và bàn xoay "@" sẽ tự động chuyển làn đưa xe về đích cờ!',
-      veMaMau: 'Chương trình có sẵn đã lặp 8 lần và đọc g = radar(). Hãy thêm if g[0][1] == "V": lob() rồi gọi move().',
+      veMaMau: 'Chương trình có sẵn đã lặp 8 lần và đọc g = radar(). Hãy thêm t = g[0][1], rồi if t == "V": lob() và gọi move().',
       san: [
         ['######', '##@.F#', '##u###', '##o###', '#..###', '#.####', '#u####', '#o####', '#.####', '######'],
         ['######', '##@.F#', '##u###', '##o###', '#..###', '#u####', '#o####', '#.####', '#.####', '######']
@@ -272,14 +272,14 @@
       loiGiai: bai(['for i in range(8):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob()', '    move()']),
       sao: { o: 12, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra trực tiếp radar()[0][1] == "V" trong vòng lặp 8 bước',
+        moTa: 'Đặt tên biến khác trong vòng lặp 8 bước: t là lưới radar, k là ô trước mặt',
         baiLam: bai(['g = 0', 'for i in range(8):', '    t = radar()', '    k = t[0][1]', '    if k == "V":', '        lob()', '    move()'])
       },
       loiSai: [
         { moTa: 'Chưa viết lệnh lấp hố và di chuyển trong vòng lặp', baiLam: bai(['for i in range(8):', '    g = radar()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đi thẳng 8 bước không gọi lob() khi gặp đá: xe đâm vào tảng đá', baiLam: bai(['for i in range(8):', '    g = radar()', '    move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Luna: Cả hai tầng đều đi hướng lên cho tới khi gặp bàn xoay "@" ở bước thứ 7.', 'Luna: Trong vòng lặp 8 lần, viết if g[0][1] == "V": lob() rồi gọi move() ở ngoài if.']
+      goiY: ['Luna: Cả hai tầng đều đi hướng lên cho tới khi gặp bàn xoay "@" ở bước thứ 7.', 'Luna: Trong vòng lặp 8 lần, viết t = g[0][1], if t == "V": lob(), rồi gọi move() ở ngoài if.']
     }),
 
     /* ================================================= chương che-ban-xoay: Chế lệnh: vượt mỏ đá (10 màn: 11..20) ================================================= */
@@ -327,7 +327,7 @@
         { moTa: 'Trong auto_fill() thụt lề nhầm move() vào trong if: gặp ô trống xe đứng yên', baiLam: bai(['for i in range(4):', '    auto_fill()']), hamCuaEmMoi: [H('auto_fill', [], ['g = radar()', 't = g[0][1]', 'if t == "V":', '    lob()', '    move()'])], phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Trong auto_fill() chỉ gọi move() không kiểm tra đá: xe đâm vào tảng đá', baiLam: bai(['for i in range(4):', '    auto_fill()']), hamCuaEmMoi: [H('auto_fill', [], ['move()'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Luna: Thân hàm auto_fill() gồm: g = radar(), if g[0][1] == "V": lob(), và move() ở ngoài if.', 'Luna: Dòng move() đặt ngoài if để bước nào xe cũng tiến lên 1 ô.']
+      goiY: ['Luna: Thân hàm auto_fill() gồm: g = radar(), t = g[0][1], if t == "V": lob(), và move() ở ngoài if.', 'Luna: Dòng move() đặt ngoài if để bước nào xe cũng tiến lên 1 ô.']
     }),
 
     manCheBanXoay({
