@@ -86,7 +86,7 @@
     manRadar({
       so: 2, ten: 'Nhìn hai bên tìm cờ', hang: 'lam-quen', hamCuaEmCan: ['slide_l', 'slide_r'],
       deBai: 'Sola nhờ bạn: màn này có hai sân thử, lá cờ có thể nằm ngay bên trái xe tại g[1][0] hoặc ngay bên phải xe tại g[1][2]. Hãy dùng radar() kiểm tra cả hai bên để trượt đúng về phía lá cờ.',
-      veMaMau: 'Chương trình có sẵn mới kiểm tra bên trái g[1][0] == "F". Hãy thêm câu lệnh if kiểm tra bên phải g[1][2] == "F" để trượt phải 1 ô.',
+      veMaMau: 'Chương trình có sẵn mới kiểm tra bên trái g[1][0]. Hãy đọc thêm t = g[1][2] rồi if t == "F": để trượt phải 1 ô.',
       san: [
         ['#####', '#...#', '#F..#', '#####'],
         ['#####', '#...#', '#..F#', '#####']
@@ -103,7 +103,7 @@
         { moTa: 'Chưa kiểm tra bên phải g[1][2]: đứng yên ở sân thứ hai', baiLam: bai(['g = radar()', 't = g[1][0]', 'if t == "F":', '    slide_l(1)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đoán mò trượt phải luôn không dùng radar(): thua ở sân thứ nhất', baiLam: bai(['slide_r(1)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Trong lưới 3x3 của radar(), g[1][0] là ô bên trái và g[1][2] là ô bên phải.', 'Luna: Thêm if g[1][2] == "F": rồi thụt lề slide_r(1).']
+      goiY: ['Luna: Trong lưới 3x3 của radar(), g[1][0] là ô bên trái và g[1][2] là ô bên phải.', 'Luna: Thêm t = g[1][2], rồi if t == "F": và thụt lề slide_r(1).']
     }),
 
     manRadar({
@@ -132,7 +132,7 @@
     manRadar({
       so: 4, ten: 'Dò tảng đá ở góc chéo', hang: 'luyen', mucTieu: 'dua-vat', hamCuaEmCan: ['slide_l', 'slide_r', 'lob'],
       deBai: 'Sola nhờ bạn: tảng đá ("V" trên radar) nằm ở hàng phía trước nhưng lệch sang cột bên trái (g[0][0]) hoặc cột bên phải (g[0][2]). Hãy dùng radar() xem đá ở bên nào để trượt sang cột đó rồi gọi lob() hất đá vào đích.',
-      veMaMau: 'Chương trình có sẵn đã kiểm tra g[0][0] == "V" để trượt trái. Hãy thêm nhánh else trượt phải rồi gọi lob() ở cuối.',
+      veMaMau: 'Chương trình có sẵn đã kiểm tra ô g[0][0] có đá "V" để trượt trái. Hãy thêm nhánh else trượt phải rồi gọi lob() ở cuối.',
       san: [
         ['#####', '#D###', '#o###', '#...#'],
         ['#####', '###D#', '###o#', '#...#']
@@ -155,7 +155,7 @@
     manRadar({
       so: 5, ten: 'Quét dọc hàng đá', hang: 'luyen', mucTieu: 'dua-vat', hamCuaEmCan: ['slide_r', 'lob'],
       deBai: 'Sola nhờ bạn: trượt qua 3 cột liên tiếp. Ở mỗi cột, dùng radar() kiểm tra ô ngay trước mũi xe g[0][1]: nếu thấy tảng đá ("V") thì gọi lob() để hất vào đích, sau đó trượt phải 1 ô sang cột kế tiếp.',
-      veMaMau: 'Chương trình có sẵn đã lặp 3 lần và đọc g = radar(). Hãy kiểm tra nếu g[0][1] == "V" thì gọi lob(), rồi trượt phải 1 ô.',
+      veMaMau: 'Chương trình có sẵn đã lặp 3 lần và đọc g = radar(). Hãy đọc t = g[0][1], nếu t == "V" thì gọi lob(), rồi trượt phải 1 ô.',
       san: [
         ['######', '#D#D.#', '#o#o.#', '#....#'],
         ['######', '#.DD.#', '#.oo.#', '#....#']
@@ -165,20 +165,20 @@
       loiGiai: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob()', '    slide_r(1)']),
       sao: { o: 12, nhip: 6 },
       loiGiaiKhac: {
-        moTa: 'Dùng radar()[0][1] trực tiếp trong câu if',
+        moTa: 'Đặt tên biến khác: t là lưới radar, k là ô trước mặt',
         baiLam: bai(['g = 0', 'for i in range(3):', '    t = radar()', '    k = t[0][1]', '    if k == "V":', '        lob()', '    slide_r(1)'])
       },
       loiSai: [
         { moTa: 'Chỉ trượt qua 3 cột mà chưa hất đá', baiLam: bai(['for i in range(3):', '    g = radar()', '    slide_r(1)']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Gọi lob() ở mọi cột không kiểm tra radar: xúc hụt ở cột trống', baiLam: bai(['for i in range(3):', '    lob()', '    slide_r(1)']), phaiCoMa: ['nap-hut', 'nem-hut'] }
       ],
-      goiY: ['Luna: Ô ngay trước mũi xe (khi mặt hướng lên) là g[0][1].', 'Luna: Chỉ gọi lob() bên trong khối if g[0][1] == "V":, còn slide_r(1) nằm ngoài if.']
+      goiY: ['Luna: Ô ngay trước mũi xe (khi mặt hướng lên) là g[0][1].', 'Luna: Chỉ gọi lob() bên trong khối if t == "V":, còn slide_r(1) nằm ngoài if.']
     }),
 
     manRadar({
       so: 6, ten: 'Thấy đá chắn thì hất sang phải', hang: 'luyen', mucTieu: 'dua-vat', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'lob_right'],
       deBai: 'Sola nhờ bạn: đi dọc hành lang 3 bước. Ở mỗi bước, quét radar(): nếu ô trước mặt g[0][1] có tảng đá ("V") chắn lối thì gọi lob_right() để xúc đá hất qua rào sang ô đích bên phải, rồi mới move() tiến lên.',
-      veMaMau: 'Chương trình có sẵn mới tiến thẳng nên đâm vào đá. Hãy thêm kiểm tra g[0][1] == "V" để gọi lob_right() trước move().',
+      veMaMau: 'Chương trình có sẵn mới tiến thẳng nên đâm vào đá. Hãy đọc t = g[0][1], nếu t == "V" thì gọi lob_right() trước move().',
       san: [
         ['#####', '#.###', '#o###', '#.=D#', '#o###', '#.=D#'],
         ['#####', '#.###', '#o###', '#o=D#', '#.=D#', '#...#']
@@ -195,13 +195,13 @@
         { moTa: 'Chưa gọi lob_right() khi gặp đá: xe đâm vào tảng đá', baiLam: bai(['for i in range(3):', '    g = radar()', '    move()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
         { moTa: 'Gọi lob_right() ở mọi bước không kiểm tra: xúc hụt ở ô trống', baiLam: bai(['for i in range(3):', '    lob_right()', '    move()']), phaiCoMa: ['nap-hut', 'nem-hut'] }
       ],
-      goiY: ['Luna: Khi g[0][1] == "V", gọi lob_right() sẽ xúc tảng đá trước mặt và hất sang đích bên phải.', 'Luna: Sau khi hất xong, ô trước mặt đã trống nên gọi move() tiến lên được ngay.']
+      goiY: ['Luna: Khi ô trước mặt g[0][1] là "V", gọi lob_right() sẽ xúc tảng đá trước mặt và hất sang đích bên phải.', 'Luna: Sau khi hất xong, ô trước mặt đã trống nên gọi move() tiến lên được ngay.']
     }),
 
     manRadar({
       so: 7, ten: 'Đo bước trượt bằng góc radar', hang: 'bien-the', mucTieu: 'dua-vat', hamCuaEmCan: ['slide_r', 'lob'],
-      deBai: 'Sola nhờ bạn: có hai tảng đá đặt cách nhau 1 hoặc 2 cột. Nhờ lưới 3x3 của radar(), ngay từ chỗ đang đứng bạn đã thấy ô chéo trước-phải g[0][2]: nếu g[0][2] == "V" thì tảng đá kế tiếp chỉ cách 1 cột (slide_r(1)), ngược lại nó cách 2 cột (slide_r(2)). Lặp 2 lần để hất cả hai tảng đá.',
-      veMaMau: 'Chương trình có sẵn đã kiểm tra g[0][2] == "V" để trượt 1 ô. Hãy thêm nhánh else trượt 2 ô rồi gọi lob().',
+      deBai: 'Sola nhờ bạn: có hai tảng đá đặt cách nhau 1 hoặc 2 cột. Nhờ lưới 3x3 của radar(), ngay từ chỗ đang đứng bạn đã thấy ô chéo trước-phải g[0][2]: nếu ô đó là đá "V" thì tảng đá kế tiếp chỉ cách 1 cột (slide_r(1)), ngược lại nó cách 2 cột (slide_r(2)). Lặp 2 lần để hất cả hai tảng đá.',
+      veMaMau: 'Chương trình có sẵn đã đọc t = g[0][2] và kiểm tra t == "V" để trượt 1 ô. Hãy thêm nhánh else trượt 2 ô rồi gọi lob().',
       san: [
         ['######', '#D#D##', '#o#o##', '......'],
         ['######', '##DD##', '##oo##', '......']
@@ -224,7 +224,7 @@
     manRadar({
       so: 8, ten: 'Lách tường lên cờ', hang: 'bien-the', mucTieu: 'toi-co', hamCuaEmCan: ['move', 'slide_r'],
       deBai: 'Sola nhờ bạn: đường lên cờ dài 3 hàng nhưng có một bức tường ("#") chắn ngang ở một trong các hàng. Trong vòng lặp 3 bước, hãy dùng radar() kiểm tra ô trước mặt g[0][1]: nếu gặp "#" thì trượt phải 1 ô để sang làn trống rồi mới move() tiến lên.',
-      veMaMau: 'Chương trình có sẵn đã lặp 3 lần và đọc g = radar(). Hãy thêm if g[0][1] == "#": slide_r(1) trước lệnh move().',
+      veMaMau: 'Chương trình có sẵn đã lặp 3 lần và đọc g = radar(). Hãy thêm t = g[0][1], rồi if t == "#": slide_r(1) trước lệnh move().',
       san: [
         ['#####', '##F##', '##.##', '#...#', '#...#'],
         ['#####', '##F##', '##.##', '##.##', '#...#']
@@ -234,20 +234,20 @@
       loiGiai: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "#":', '        slide_r(1)', '    move()']),
       sao: { o: 11, nhip: 4 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra trực tiếp radar()[0][1] == "#"',
+        moTa: 'Đặt tên biến khác: t là lưới radar, k là ô trước mặt',
         baiLam: bai(['g = 0', 'for i in range(3):', '    t = radar()', '    k = t[0][1]', '    if k == "#":', '        slide_r(1)', '    move()'])
       },
       loiSai: [
         { moTa: 'Chưa tránh tường trước khi tiến: xe đâm vào tường', baiLam: bai(['for i in range(3):', '    g = radar()', '    move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Trượt phải ở mọi bước kể cả khi không có tường: đâm tường bên phải', baiLam: bai(['for i in range(3):', '    slide_r(1)', '    move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Luna: Trên radar(), tường và hàng rào đều có ký hiệu "#".', 'Luna: Nếu g[0][1] == "#" thì gọi slide_r(1), sau đó gọi move().']
+      goiY: ['Luna: Trên radar(), tường và hàng rào đều có ký hiệu "#".', 'Luna: Đọc t = g[0][1]; nếu t == "#" thì gọi slide_r(1), sau đó gọi move().']
     }),
 
     manRadar({
       so: 9, ten: 'Phân biệt đá chắn và hố sâu', hang: 'bien-the', mucTieu: 'toi-co', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'slide_r', 'lob_right'],
       deBai: 'Sola nhờ bạn: trên đường tiến 3 bước lên cờ, xe sẽ gặp cả tảng đá ("V") lẫn hố sâu ("u") ở ô trước mặt g[0][1]. Nếu gặp đá ("V") thì gọi lob_right() để hất đá sang phải dọn đường; nếu gặp hố ("u") thì gọi slide_r(1) để né sang làn phải; sau đó gọi move() tiến lên.',
-      veMaMau: 'Chương trình có sẵn đã xử lý trường hợp gặp đá g[0][1] == "V". Hãy thêm câu if cho trường hợp gặp hố g[0][1] == "u" rồi gọi move().',
+      veMaMau: 'Chương trình có sẵn đã xử lý trường hợp gặp đá "V". Hãy đọc lại t = g[0][1], thêm if t == "u": cho trường hợp gặp hố, rồi gọi move().',
       san: [
         ['######', '##F###', '#u..##', '#o..##', '#.=.##'],
         ['######', '##F###', '##o###', '#u.=.#', '#...##']
@@ -262,7 +262,7 @@
       },
       loiSai: [
         { moTa: 'Chưa né hố và chưa gọi move(): xe đứng yên', baiLam: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob_right()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Chỉ dọn đá mà quên né khi g[0][1] == "u": xe lao xuống hố', baiLam: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob_right()', '    move()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Chỉ dọn đá mà quên né khi gặp hố "u": xe lao xuống hố', baiLam: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob_right()', '    move()']), phaiCoMa: ['roi-ho'] }
       ],
       goiY: ['Luna: Gặp "V" thì dọn đá bằng lob_right(), gặp "u" thì né sang phải bằng slide_r(1).', 'Luna: Cuối mỗi vòng lặp gọi move() để tiến lên một hàng.']
     }),
@@ -271,7 +271,7 @@
       so: 10, ten: 'Trùm quét mỏ ba tầng', hang: 'trum', mucTieu: 'dua-vat', hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'slide_r', 'lob_right'],
       huyHieu: { ma: 'radar-tron', ten: 'Huy hiệu Radar tròn' },
       deBai: 'Sola nhờ bạn: trùm chương Quét quanh một vòng có 3 tầng đá. Ở mỗi tầng trong 3 bước lặp: tiến lên 1 ô (move()), dùng radar() kiểm tra ô trước mặt g[0][1] xem đã đứng ngay dưới tảng đá ("V") chưa; nếu chưa ("V" nằm lệch bên phải) thì trượt phải 1 ô (slide_r(1)), rồi gọi lob_right() hất đá vào đích bên phải.',
-      veMaMau: 'Chương trình có sẵn đã lặp 3 lần, tiến 1 ô và đọc g = radar(). Hãy kiểm tra nếu g[0][1] != "V" thì trượt phải 1 ô, rồi gọi lob_right().',
+      veMaMau: 'Chương trình có sẵn đã lặp 3 lần, tiến 1 ô và đọc g = radar(). Hãy đọc t = g[0][1], nếu t != "V" thì trượt phải 1 ô, rồi gọi lob_right().',
       san: [
         ['#######', '###o###', '##o.=D#', '#o.=D##', '#.=D###', '#.#####'],
         ['#######', '###o###', '##o.=D#', '##o=D##', '#..=D##', '#.#####']
@@ -281,14 +281,14 @@
       loiGiai: bai(['for i in range(3):', '    move()', '    g = radar()', '    t = g[0][1]', '    if t != "V":', '        slide_r(1)', '    lob_right()']),
       sao: { o: 22, nhip: 16 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra g[0][2] == "V" để biết đá lệch sang phải',
+        moTa: 'Đọc ô chéo t = g[0][2]: là "V" thì đá lệch sang phải',
         baiLam: bai(['for i in range(3):', '    move()', '    g = radar()', '    t = g[0][2]', '    if t == "V":', '        slide_r(1)', '    lob_right()'])
       },
       loiSai: [
         { moTa: 'Chưa trượt sang cột có đá và chưa gọi lob_right()', baiLam: bai(['for i in range(3):', '    move()', '    g = radar()']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên trượt phải khi g[0][1] != "V": xúc hụt ở tầng đá lệch phải', baiLam: bai(['for i in range(3):', '    move()', '    lob_right()']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
+        { moTa: 'Quên trượt phải khi trước mặt không có đá: xúc hụt ở tầng đá lệch phải', baiLam: bai(['for i in range(3):', '    move()', '    lob_right()']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau khi move() lên tầng mới, tảng đá nằm ở g[0][1] hoặc lệch phải ở g[0][2].', 'Luna: Nếu g[0][1] != "V", gọi slide_r(1) rồi gọi lob_right().']
+      goiY: ['Luna: Sau khi move() lên tầng mới, tảng đá nằm ở g[0][1] hoặc lệch phải ở g[0][2].', 'Luna: Đọc t = g[0][1]; nếu t != "V", gọi slide_r(1) rồi gọi lob_right().']
     }),
 
     /* ================================================= chương che-radar-tron: Chế lệnh: quét mỏ (10 màn: 1..10) ================================================= */
@@ -312,9 +312,9 @@
       loiSai: [
         { moTa: 'Chưa tạo hàm lob_if mà đã bấm Chạy', baiLam: bai(['for i in range(3):', '    lob_if()', '    slide_r(1)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Trong lob_if() gọi thẳng lob() không kiểm tra radar: xúc hụt ở cột trống', baiLam: bai(['for i in range(3):', '    lob_if()', '    slide_r(1)']), hamCuaEmMoi: [H('lob_if', [], ['lob()'])], phaiCoMa: ['nap-hut', 'nem-hut'] },
-        { moTa: 'Kiểm tra nhầm g[1][1] == "V" thay vì g[0][1] == "V": không hất tảng đá nào', baiLam: bai(['for i in range(3):', '    lob_if()', '    slide_r(1)']), hamCuaEmMoi: [H('lob_if', [], ['g = radar()', 't = g[1][1]', 'if t == "V":', '    lob()'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đọc nhầm t = g[1][1] thay vì t = g[0][1]: không hất tảng đá nào', baiLam: bai(['for i in range(3):', '    lob_if()', '    slide_r(1)']), hamCuaEmMoi: [H('lob_if', [], ['g = radar()', 't = g[1][1]', 'if t == "V":', '    lob()'])], phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Thân hàm lob_if() gồm: g = radar(), if g[0][1] == "V":, thụt lề lob().', 'Luna: Nhớ kiểm tra ô phía trước g[0][1] chứ không phải ô giữa g[1][1].']
+      goiY: ['Luna: Thân hàm lob_if() gồm: g = radar(), t = g[0][1], if t == "V":, thụt lề lob().', 'Luna: Nhớ kiểm tra ô phía trước g[0][1] chứ không phải ô giữa g[1][1].']
     }),
 
     manCheRadar({
@@ -339,12 +339,12 @@
         { moTa: 'Thụt lề nhầm move() vào trong khối if: khi không có đá xe đứng im', baiLam: bai(['for i in range(3):', '    clear_step()']), hamCuaEmMoi: [H('clear_step', [], ['g = radar()', 't = g[0][1]', 'if t == "V":', '    lob_right()', '    move()'])], phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Gọi move() trước khi kiểm tra đá: xe đâm vào tảng đá', baiLam: bai(['for i in range(3):', '    clear_step()']), hamCuaEmMoi: [H('clear_step', [], ['move()', 'g = radar()', 't = g[0][1]', 'if t == "V":', '    lob_right()'])], phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Luna: Trong clear_step(), kiểm tra if g[0][1] == "V": để gọi lob_right() trước.', 'Luna: Dòng move() đặt ở ngoài khối if để bước nào xe cũng tiến lên.']
+      goiY: ['Luna: Trong clear_step(), đọc t = g[0][1] rồi if t == "V": để gọi lob_right() trước.', 'Luna: Dòng move() đặt ở ngoài khối if để bước nào xe cũng tiến lên.']
     }),
 
     manCheRadar({
       so: 3, ten: 'Sửa hàm né hố tiến lên', hang: 'luyen', mucTieu: 'toi-co', hamCuaEmCan: ['move', 'slide_r'],
-      deBai: 'Sola viết vội, nhờ bạn sửa: hàm safe_step() của màn dùng để kiểm tra nếu ô trước mặt g[0][1] là hố sâu ("u") thì trượt phải 1 ô né hố rồi tiến lên. Nhưng trong thân hàm đang viết nhầm điều kiện thành g[0][1] == "#" khiến xe lao thẳng xuống hố. Hãy sửa lại hàm safe_step().',
+      deBai: 'Sola viết vội, nhờ bạn sửa: hàm safe_step() của màn dùng để kiểm tra nếu ô trước mặt g[0][1] là hố sâu ("u") thì trượt phải 1 ô né hố rồi tiến lên. Nhưng trong thân hàm đang viết nhầm điều kiện thành t == "#" khiến xe lao thẳng xuống hố. Hãy sửa lại hàm safe_step().',
       veMaMau: 'Mở hàm safe_step() của màn và đổi "#" thành "u" trong điều kiện if.',
       san: [
         ['#####', '##F##', '##.##', '#u..#', '#...#'],
@@ -362,7 +362,7 @@
         { moTa: 'Không sửa hàm safe_step(): xe không nhận ra hố và rơi xuống hố', baiLam: bai(['for i in range(3):', '    safe_step()'], { hamCuaMan: [H('safe_step', [], ['g = radar()', 't = g[0][1]', 'if t == "#":', '    slide_r(1)', 'move()'])] }), phaiCoMa: ['roi-ho'] },
         { moTa: 'Xóa mất lệnh move() ở cuối safe_step(): xe chỉ đứng ở hàng dưới', baiLam: bai(['for i in range(3):', '    safe_step()'], { hamCuaMan: [H('safe_step', [], ['g = radar()', 't = g[0][1]', 'if t == "u":', '    slide_r(1)'])] }), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Hố sâu trên radar có ký hiệu là "u" chứ không phải "#".', 'Luna: Trong hàm safe_step(), đổi điều kiện thành if g[0][1] == "u":.']
+      goiY: ['Luna: Hố sâu trên radar có ký hiệu là "u" chứ không phải "#".', 'Luna: Trong hàm safe_step(), đổi điều kiện thành if t == "u":.']
     }),
 
     manCheRadar({
@@ -386,7 +386,7 @@
         { moTa: 'Chưa tạo hàm seek_lob mà đã bấm Chạy', baiLam: bai(['for i in range(2):', '    seek_lob()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Trong seek_lob() viết ngược 1 và 2 ô: trượt lệch cột đá nên xúc hụt', baiLam: bai(['for i in range(2):', '    seek_lob()']), hamCuaEmMoi: [H('seek_lob', [], ['g = radar()', 't = g[0][2]', 'if t == "V":', '    slide_r(2)', 'else:', '    slide_r(1)', 'lob()'])], phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Khi g[0][2] == "V", tảng đá nằm ngay cột kế bên nên chỉ cần slide_r(1).', 'Luna: Ngược lại (else:) gọi slide_r(2), và cuối hàm gọi lob().']
+      goiY: ['Luna: Đọc t = g[0][2]; khi t == "V", tảng đá nằm ngay cột kế bên nên chỉ cần slide_r(1).', 'Luna: Ngược lại (else:) gọi slide_r(2), và cuối hàm gọi lob().']
     }),
 
     manCheRadar({
@@ -450,7 +450,7 @@
       loiGiai: bai(['smart_lob()'], { hamCuaEmMoi: [H('smart_lob', [], T_SMART_LOB)] }),
       sao: { o: 18, nhip: 4 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra g[0][2] == "." để gọi lob() trước',
+        moTa: 'Đọc t = g[0][2], hỏi t == "." để gọi lob() trước',
         baiLam: bai(['smart_lob()']),
         hamCuaEmMoi: [H('smart_lob', [], ['g = radar()', 't = g[0][2]', 'if t == ".":', '    lob()', 'else:', '    slide_lob(2)'])]
       },
@@ -459,7 +459,7 @@
         { moTa: 'Trong smart_lob() luôn gọi lob(): ở sân thứ nhất đá đập vào tường', baiLam: bai(['smart_lob()']), hamCuaEmMoi: [H('smart_lob', [], ['lob()'])], phaiCoMa: ['nem-vo'] },
         { moTa: 'Trong smart_lob() luôn gọi slide_lob(2): ở sân thứ hai đá đập vào tường', baiLam: bai(['smart_lob()']), hamCuaEmMoi: [H('smart_lob', [], ['slide_lob(2)'])], phaiCoMa: ['nem-vo'] }
       ],
-      goiY: ['Luna: Hàng rào "=" khi quét bằng radar() sẽ trả về "#".', 'Luna: Trong smart_lob(), viết if g[0][2] == "#": slide_lob(2), else: lob().']
+      goiY: ['Luna: Hàng rào "=" khi quét bằng radar() sẽ trả về "#".', 'Luna: Trong smart_lob(), viết t = g[0][2], rồi if t == "#": slide_lob(2), else: lob().']
     }),
 
     manCheRadar({
