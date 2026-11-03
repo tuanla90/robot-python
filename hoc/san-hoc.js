@@ -3258,12 +3258,12 @@
           if (c === null) return hut(o, 'ngoai-san');
           if (nuoc) { if (congDong(x, y)) return hut(o, 'cong'); }
           else { var lyD = lyDoChan(san, 'banh', x, y) || lyCua(x, y); if (lyD) return hut(o, lyD); }
+          var vn = vatNamTai(x, y);
+          if (vn && (xeDatTai(x, y) || xeKhac.some(function (xk) { return xk.keoId === vn.id; }))) return hut(o, 'co-xe');   // vật có xe đứng trên (cầu phao) / đang trong lưới xuồng khác
           if (dongDoiTai(x, y)) return hut(o, 'dong-doi');
           if (thungTai(x, y)) return hut(o, 'thung-nang');
           if (nuoc && !oNuocGan) oNuocGan = o;
-          var vn = vatNamTai(x, y);
           if (!vn) continue;
-          if (xeDatTai(x, y) || xeKhac.some(function (xk) { return xk.keoId === vn.id; })) return hut(o, 'co-xe');
           if (demGiuVat(vn)) return hut(o, 'dem-giu');
           var den;
           if (vn.noi && (!laNguoi(vn) || !vn.nguoi.can)) den = oNuocGan || o;   // vật nổi / người dưới nước: về ô nước gần xe nhất trên dây
