@@ -224,8 +224,8 @@
 
     manBuocDuoi({
       so: 7, ten: 'Đọc dòng chảy chọn nhánh rẽ ở ngã ba', hang: 'bien-the', nhipTheo: 'tong',
-      deBai: 'Sola đưa bài toán 2 sân: xuồng đang ở ngã tư (4, 3) hướng Đông, bè B ở (6, 3). Hãy gọi tow_grab(), set_length(1), wait() để bắt B và thu về ô (5, 3) trước mũi. Tại (4, 3), hãy đọc chong chóng ở ô (5, 3): nếu flow_dir() == "left" thì bến q nằm ở nhánh Bắc (gọi pair_step("L", 3)); ngược lại bến q nằm ở nhánh Nam (gọi pair_step("R", 3))!',
-      veMaMau: 'Bắt bè và thu ngắn lưới về 1 ô, rồi dùng if flow_dir() == "left": pair_step("L", 3) else: pair_step("R", 3).',
+      deBai: 'Sola đưa bài toán 2 sân: xuồng đang ở ngã tư (4, 3) hướng Đông, bè B ở (6, 3). Hãy gọi tow_grab(), set_length(1), wait() để bắt B và thu về ô (5, 3) trước mũi. Tại (4, 3), hãy đọc chong chóng ở ô (5, 3): đọc h = flow_dir(), nếu h == "left" thì bến q nằm ở nhánh Bắc (gọi pair_step("L", 3)); ngược lại bến q nằm ở nhánh Nam (gọi pair_step("R", 3))!',
+      veMaMau: 'Bắt bè và thu ngắn lưới về 1 ô, rồi đọc h = flow_dir(), dùng if h == "left": pair_step("L", 3) else: pair_step("R", 3).',
       san: [
         [
           '####~###',
@@ -255,14 +255,14 @@
       loiGiai: bai(['tow_grab()', 'set_length(1)', 'wait()', 'h = flow_dir()', 'if h == "left":', '    pair_step("L", 3)', 'else:', '    pair_step("R", 3)']),
       sao: { o: 24, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra if flow_dir() == "right": pair_step("R", 3) else: pair_step("L", 3)',
+        moTa: 'Hỏi if h == "right": pair_step("R", 3) else: pair_step("L", 3)',
         baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'h = flow_dir()', 'if h == "right":', '    pair_step("R", 3)', 'else:', '    pair_step("L", 3)'])
       },
       loiSai: [
         { moTa: 'Chỉ rẽ trái cho cả 2 sân nên ở sân 2 bè đi nhầm lên nhánh Bắc', baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'pair_step("L", 3)']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Thiếu nhánh else cho sân 2', baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'h = flow_dir()', 'if h == "left":', '    pair_step("L", 3)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Khi xuồng ở (4, 3) hướng Đông, dòng chảy hướng Bắc ở (5, 3) cho flow_dir() == "left".', 'Luna: Thêm nhánh else: pair_step("R", 3) để kéo B xuống bến Nam (4, 5) ở sân 2.']
+      goiY: ['Luna: Khi xuồng ở (4, 3) hướng Đông, dòng chảy hướng Bắc ở (5, 3) cho h = flow_dir() bằng "left".', 'Luna: Thêm nhánh else: pair_step("R", 3) để kéo B xuống bến Nam (4, 5) ở sân 2.']
     }),
 
     manBuocDuoi({
@@ -532,8 +532,8 @@
     manCheBuocDuoi({
       so: 5, ten: 'Dùng tug_corner() rẽ nhánh theo dòng chảy', hang: 'luyen', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['tether_grab', 'tether_drop', 'tow_to_tail', 'tug_corner']),
-      deBai: 'Sola thử thách trên 2 sân: xuồng đang ở ngã tư (3, 3) hướng Đông, bè B ở (5, 3). Ô ngay trước mũi (4, 3) có dòng chảy báo hướng bến q: ở sân 1 dòng chảy hướng Bắc (flow_dir() == "left") báo bến q ở (3, 1); ở sân 2 dòng chảy hướng Nam (flow_dir() == "right") báo bến q ở (3, 5). Hãy dùng if/else gọi tug_corner("L", 3) hoặc tug_corner("R", 3) để đưa B vào bến!',
-      veMaMau: 'Dùng if flow_dir() == "left": tug_corner("L", 3) else: tug_corner("R", 3).',
+      deBai: 'Sola thử thách trên 2 sân: xuồng đang ở ngã tư (3, 3) hướng Đông, bè B ở (5, 3). Ô ngay trước mũi (4, 3) có dòng chảy báo hướng bến q: ở sân 1 dòng chảy hướng Bắc ("left") báo bến q ở (3, 1); ở sân 2 dòng chảy hướng Nam ("right") báo bến q ở (3, 5). Hãy đọc h = flow_dir() rồi dùng if/else gọi tug_corner("L", 3) hoặc tug_corner("R", 3) để đưa B vào bến!',
+      veMaMau: 'Đã có h = flow_dir() và if h == "left": tug_corner("L", 3). Thêm else: tug_corner("R", 3).',
       san: [
         [
           '###~###',
@@ -563,7 +563,7 @@
       loiGiai: bai(['h = flow_dir()', 'if h == "left":', '    tug_corner("L", 3)', 'else:', '    tug_corner("R", 3)']),
       sao: { o: 27, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra if flow_dir() == "right": tug_corner("R", 3) else: tug_corner("L", 3)',
+        moTa: 'Hỏi if h == "right": tug_corner("R", 3) else: tug_corner("L", 3)',
         baiLam: bai(['h = flow_dir()', 'if h == "right":', '    tug_corner("R", 3)', 'else:', '    tug_corner("L", 3)'])
       },
       loiSai: [
@@ -661,8 +661,8 @@
     manCheBuocDuoi({
       so: 9, ten: 'Đọc dòng chảy chọn nhánh cho kiện hàng thứ hai', hang: 'bien-the', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['tether_grab', 'tether_drop', 'tow_to_tail', 'tug_corner', 'deliver_tail']),
-      deBai: 'Sola giao bài toán 2 sân: từ (3, 1) hướng Đông, hãy gọi deliver_tail("R", 2) để giao bè B vào bến (3, 2) và đưa xuồng tới ngã tư (3, 3) hướng Nam. Tại (3, 3), ô trước mũi (3, 4) có dòng chảy chỉ hướng của lục bình L: ở sân 1 dòng chảy sang Đông (flow_dir() == "left") báo L nằm bên trái (nhánh Đông); ở sân 2 dòng chảy sang Tây (flow_dir() == "right") báo L nằm bên phải (nhánh Tây). Hãy dùng if/else quay đúng hướng rồi gọi tow_pair(0, 1) kéo L vào bến q thứ hai!',
-      veMaMau: 'Gọi deliver_tail("R", 2), rồi if flow_dir() == "left": turn_left() else: turn_right(), và cuối cùng tow_pair(0, 1).',
+      deBai: 'Sola giao bài toán 2 sân: từ (3, 1) hướng Đông, hãy gọi deliver_tail("R", 2) để giao bè B vào bến (3, 2) và đưa xuồng tới ngã tư (3, 3) hướng Nam. Tại (3, 3), ô trước mũi (3, 4) có dòng chảy chỉ hướng của lục bình L: ở sân 1 dòng chảy sang Đông ("left") báo L nằm bên trái (nhánh Đông); ở sân 2 dòng chảy sang Tây ("right") báo L nằm bên phải (nhánh Tây). Hãy đọc h = flow_dir() rồi dùng if/else quay đúng hướng rồi gọi tow_pair(0, 1) kéo L vào bến q thứ hai!',
+      veMaMau: 'Gọi deliver_tail("R", 2), rồi h = flow_dir(), if h == "left": turn_left() else: turn_right(), và cuối cùng tow_pair(0, 1).',
       san: [
         [
           '#######',
@@ -690,7 +690,7 @@
       loiGiai: bai(['deliver_tail("R", 2)', 'h = flow_dir()', 'if h == "left":', '    turn_left()', 'else:', '    turn_right()', 'tow_pair(0, 1)']),
       sao: { o: 41, nhip: 18 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra if flow_dir() == "right": turn_right() else: turn_left()',
+        moTa: 'Hỏi if h == "right": turn_right() else: turn_left()',
         baiLam: bai(['deliver_tail("R", 2)', 'h = flow_dir()', 'if h == "right":', '    turn_right()', 'else:', '    turn_left()', 'tow_pair(0, 1)'])
       },
       loiSai: [
