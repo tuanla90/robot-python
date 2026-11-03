@@ -75,8 +75,8 @@ console.log('\n== 1. Ký hiệu sân và cấu hình ==');
   kiem('batDau.nac 0–7, batDau.tam 1–3, đầu cần lúc đầu phải trong sân; nac / tam không dùng cho xe bánh',
     /nac/.test(loiCfg(cau({ batDau: { x: 4, y: 2, nac: 8 } }))) && /tam/.test(loiCfg(cau({ batDau: { x: 4, y: 2, tam: 4 } }))) && /ngoài sân/.test(loiCfg(cau({ batDau: { x: 4, y: 2, nac: 0, tam: 3 } }))) &&
     loiCfg(cau({ batDau: { x: 4, y: 2, nac: 7, tam: 2 } })) === '' && /cần cẩu/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE, san: SAN1, batDau: { x: 1, y: 1, nac: 2 }, tau: TAU1 })));
-  kiem('cần cẩu không có lệnh bánh / tay kẹp / cảm biến khác; xe bánh không có pick_up / read_code / rail',
-    /không thuộc loại robot cau/.test(loiCfg(cau({ hamGoc: CAU.concat(['left_move']) }))) && /không thuộc loại robot cau/.test(loiCfg(cau({ hamGoc: CAU.concat(['grab']) }))) &&
+  kiem('cần cẩu không có lệnh bánh / cảm biến khác; móc cẩu không đi chung gầu ngoạm grab (M9B2 4/11, lai L8: cẩu + kẹp là gầu ngoạm, không arm_*); xe bánh không có pick_up / read_code / rail',
+    /không thuộc loại robot cau/.test(loiCfg(cau({ hamGoc: CAU.concat(['left_move']) }))) && /một tay: móc cẩu không đi chung với gầu ngoạm/.test(loiCfg(cau({ hamGoc: CAU.concat(['grab']) }))) && /Gầu ngoạm của cần cẩu chỉ có grab/.test(loiCfg(cau({ hamGoc: CAU.concat(['arm_down']) }))) &&
     /không thuộc loại robot cau/.test(loiCfg(cau({ hamGoc: CAU.concat(['front_clear']) }))) && /chỉ dành cho cần cẩu/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE.concat(['pick_up']), san: SAN1, batDau: { x: 1, y: 1 }, tau: TAU1 })) &&
     /chỉ dành cho cần cẩu/.test(loiCfg({ loaiRobot: 'xuong', hamGoc: ['left_move', 'right_move', 'wait', 'rail'], san: SAN1, batDau: { x: 3, y: 4 }, tau: TAU1 })));
   kiem('read_code() cần camBien quet-ma; weight() cần read_code(); pick_up2 cần pick_up; pick_up đi cùng set_down; bệ cẩu phải trên sàn / ray',
