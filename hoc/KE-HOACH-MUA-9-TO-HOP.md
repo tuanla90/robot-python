@@ -49,9 +49,9 @@ Ký hiệu: **●** part gốc của cỗ máy · **✔** ghép được theo ba
 | Omni | ✔ | ✔ | ✔ | ✗ | ★ L3 | ✔ | ● | ✔ |
 | Bánh gai | ✔ | ✔ | ✔ | ✗ | ★ L3 | ✔ | ✔ | ● |
 | Xuồng | ✗ (kẹp không với tới mặt nước) | ✗ giật | ✗ | ✗ | ● | ✗ | ✗ giật | ★ L5 |
-| Nhện | ✔ (không xoay: không mũi) | ✗ không mũi | ● | ✗ | ✗ không mũi | · (L6 dự phòng) | ✗ không mũi | ✗ (lõi: loa chỉ trên thân có bánh) |
-| Drone | ✗ | ✗ giật | ✔ | ✗ nặng | ✗ | ● | ✗ giật | ✗ nặng |
-| Cần cẩu | ✗ | ✗ | ★ L1 | ● | ✗ | ✗ | ✗ | ✗ |
+| Nhện | ✔ (không xoay: không mũi) | ✗ không mũi | ● | ✗ | ✗ không mũi | ★ L6 | ✗ không mũi | ★ L7 |
+| Drone | ✗ | ✗ giật | ✔ | ✗ nặng | ★ L10 (thả phao) | ● | ✗ giật | ✗ nặng |
+| Cần cẩu | ★ L8 (gầu ngoạm) | ✗ | ★ L1 | ● | ★ L9 (giỏ cứu hộ) | ✗ | ✗ | ✗ |
 
 ### 3b. Thân × cảm biến
 
@@ -61,10 +61,10 @@ Ký hiệu: **●** part gốc của cỗ máy · **✔** ghép được theo ba
 | Xích | ✔ | ● | ✔ | ✗ | ✗ | ✔ trước | ✔ | ✔ |
 | Omni | ✔ | ✔ | ✔ | ✗ | ✗ | ✔ trước | ● | ✔ |
 | Bánh gai | ✔ | ✔ | ✔ | ✗ | ✗ | ✔ trước | ✔ | ● |
-| Xuồng | ✔ | ✔ | · | ★ L2 | ● | · | · | ★ L5 |
-| Nhện | ✗ không mũi | ✗ không mũi | ● | · | ✗ | · bốn hướng | · (L6 dự phòng) | ★ L4 |
-| Drone | ✗ | ✗ | ✗ | · (L6 dự phòng) | ✗ | ● bụng / bốn hướng | · | · (L6 dự phòng) |
-| Cần cẩu | ✗ | ✗ | · | ● | ✗ | ✗ | ✗ | ✗ |
+| Xuồng | ✔ | ✔ | · | ★ L2 | ● | ★ L14 trước | ★ L14 | ★ L5 |
+| Nhện | ✗ không mũi | ✗ không mũi | ● | · | ✗ | ★ L12 bốn hướng | ★ L12 | ★ L4 |
+| Drone | ✗ | ✗ | ✗ | · | ✗ | ● bụng / bốn hướng | ★ L11 | · |
+| Cần cẩu | ✗ | ✗ | ★ L13 | ● | ✗ | ★ L13 bụng (ô đầu cần) | ✗ | ✗ |
 
 Tính nhanh: theo bảng, mùa 9 mở **8 thân · 8 tay · 8 cảm biến**, nhưng mỗi màn chương 2 chỉ đưa **2–3 thẻ mỗi khe** (mục 7, đường cong).
 
@@ -76,12 +76,30 @@ Mỗi cái ra mắt ở chương 2 của **một** gói (màn 1 lắp sẵn kho�
 |---|---|---|---|---|---|
 | L1 | **Cần cẩu + Nam châm** | `magnet_*` hút / thả vật sắt **ở ô đầu cần** (thay chỗ móc); hút qua tường như móc; cảm biến từ đọc ô đầu cần | cầu trục nam châm điện ở nhà máy thép, bãi phế liệu | G2 Nhà máy | sắt vụn nằm sau dây chuyền, trong khe máy: không xe nào với tới |
 | L2 | **Xuồng + Đầu đọc mã** (+ tay lưới) | `read_code()` đọc số **vật nổi ở ô trước mũi**; thêm vật nổi mới **container trôi** (`B` có `so`) | tàu cảng dò hàng rơi | G4 Cảng sông | bão đánh rơi nhiều container xuống sông: chỉ kéo đúng số tàu đang chờ |
-| L3 | **Xe có bánh + Tay lưới** ("xe tời bờ") | `cast_net()` từ xe đứng **trên bờ**: kéo vật nổi về **ô nước sát mũi xe**; không kéo khi vật có xe đứng | tời kéo trên bờ | G5 Bến sông | cống kẹt, xuồng không ra: xe trên bờ tự ghép cầu phao |
+| L3 | **Xe có bánh + Tay lưới** ("xe tời bờ") | `cast_net()` từ xe đứng **trên bờ**: kéo vật nổi về **ô nước sát mũi xe**; kéo **thùng gỗ** trên cạn (không thùng nặng) và **người** về ô trước mũi; không kéo khi vật có xe đứng | tời kéo trên bờ, ném phao từ bờ | G1 (kéo thùng), G5 Bến sông | cống kẹt, xuồng không ra: xe trên bờ tự ghép cầu phao; thùng sát tường kẹp không tới |
 | L4 | **Nhện + Mic** | `hear()` / `listen()` như bánh gai (mic không cần mũi) | robot dò tìm trong khe hẹp | G8 Hang động | ngách hẹp, gầm thấp: chỉ nhện chui, phải nghe chuông đá để tìm lối |
 | L5 | **Xuồng + Loa** (+ Mic) | `note()` trên xuồng như trên xe có bánh; đá chuông nằm ở ô nước chắn luồng | (sông ngầm Phong Nha) | G8 Hang động (song ca G4 dùng sớm, mục 7) | sông ngầm có đá chuông chắn luồng; bánh gai không bơi |
 | R | **Rắc cát** (tương tác, không phải tổ hợp) | bộ gieo hạt `dot()` trên ô bùn trơn `I` biến ô đó thành sàn thường | rải cát chống trơn | G1 Kho hàng (chương 1) | bão để lại **bùn trơn** (luật đá vôi ướt mùa 8) ở mọi nơi |
 
-L6 dự phòng (chỉ làm nếu lõi kịp, dùng ở G9 CLB): nhện + bộ gieo hạt, nhện + radar, drone + đầu đọc mã, drone + mic.
+**Mở rộng 3/11** (user: "càng nhiều tổ hợp càng tốt", mỗi màn một câu đố không trùng). Thêm L6–L14 và ba tương tác:
+
+| Mã | Tổ hợp / tương tác | Luật thêm (ngắn) | Ngoài đời | Ra mắt |
+|---|---|---|---|---|
+| L6 | Nhện + Bộ gieo hạt | `dot()` / rắc cát ở ô dưới bụng (như drone) | robot bò gieo hạt | G3 (rắc cát), G6 (gieo) |
+| L7 | Nhện + Loa | phát nốt trong tầm 3 ô (không dùng kiểu tia từ mũi) | | G3 song ca, G8 |
+| L8 | Cần cẩu + Kẹp (gầu ngoạm) | `grab()` / `release()` vật thường ở ô đầu cần, qua tường | cẩu gầu ngoạm | G2 |
+| L9 | Cần cẩu + Tay lưới (giỏ cứu hộ) | `cast_net()` vớt **người** hay vật nổi ở ô đầu cần, `drop_net()` đặt lên ô bờ | giỏ cứu hộ treo cẩu | G4, G7 |
+| L10 | Drone + Tay lưới (**thả phao**) | `cast_net()` thả phao xuống ô nước dưới bụng: người bám phao **thôi trôi**; drone không kéo | drone thả phao cứu đuối | G4, G5 |
+| L11 | Drone + Radar | quét bốn hướng như omni (không mũi) | | G7 |
+| L12 | Nhện + Radar / camera bốn hướng | đọc bốn hướng tuyệt đối | | G3, G6, G7 |
+| L13 | Cần cẩu + Cảm biến từ / camera bụng | đọc ô đầu cần | | G2, G4 |
+| L14 | Xuồng + Camera trước / Radar | đọc ô trước mũi / bốn hướng | | G5 |
+| T2 | Container lấp hố | `set_down()` lên ô hố: container thành sàn (hố mất) | | G3 |
+| T3 | Vòi phun gạt van cống | tia phun trúng van `V` thì van đổi (như trúng van `N`) | | G5 |
+| T4 | Bè sạc | ô sạc đặt trên bè nổi, đi theo bè | trạm sạc nổi | G6 |
+| P | **Người cần cứu** | mục 8b | | G1 |
+
+Vẫn **✗** (bài học "vì sức"): drone gắn loa / móc / vòi phun / máy ném; xuồng gắn đồ giật; móc cẩu trên xe; chong chóng ngoài xuồng. Mỗi lai có máy kiểm riêng chạy một sân nhỏ.
 
 **Bùn trơn sau bão** là yếu tố chung của mùa 9 (luật `I` mùa 8 có sẵn, đổi hình thành bùn nâu ở nơi không phải hang): tạo nhu cầu cho bánh gai (bám) và drone (rắc cát) ở mọi nơi.
 
@@ -196,6 +214,62 @@ Chương 2 (tự lắp):
 
 Trần nhịp: lời giải mẫu của đôi tốt + 15–25 %. Bẫy là ý đồ thiết kế, **không bắt máy kiểm chứng minh** (user 31/10); người viết màn chạy thử tay đôi bẫy một lần khi cân màn.
 
+## 8b. Màn ba robot và ba kiểu cứu hộ (user hỏi 3/11)
+
+**Lõi đã cho 1–4 robot mỗi màn** (`san-hoc.js`: `cfg.doi` 1–4; khung code có tab R1–R4, màu đế R3 / R4). Nhưng **cả 572 màn đội hiện có đều đúng 2 robot**;
+màn 3 robot chưa có, giao diện R3 chưa soát trên trình duyệt.
+
+Đề xuất: tối đa **3 robot**, chỉ **2 robot em lập trình** (của Sola, của Luna), robot thứ ba là **máy khách bị kẹt**: khoá (`coDinh`), chạy chương trình sẵn rất ngắn
+(vd "chờ tới khi phía trước trống thì về trạm"), em đọc được nhưng không sửa. Hợp truyện: chính cỗ máy của nơi đó đang mắc kẹt sau bão.
+
+| Kiểu cứu | Thắng khi | Lõi | Ra mắt |
+|---|---|---|---|
+| **Cứu máy khách** | R3 (khoá) tới cờ của nó | có sẵn (cờ riêng từng robot, robot khoá) | chương 1 màn 7–9 mỗi gói (thay "cỗ máy nhà vắng mặt" ở mục 8) |
+| **Cứu thùng hàng** | mọi vật / container / bè vào đích | có sẵn (mục tiêu đưa vật, giao tàu, đưa vật nổi) | màn thường của mọi gói |
+| **Cứu người** | người tới ô trạm cứu (chữ thập xanh) | **chưa có**, luật P bên dưới | G1 (trên cạn), G4 (dưới nước, lưới) |
+
+**Luật P, người cần cứu** (user 3/11 hỏi lưới kéo người vào bờ: **nên**, vì đúng cách cứu đuối nước ngoài đời: ném phao kéo vào, không nhảy xuống):
+- **Trên cạn**: người đứng chờ; khi ô kế trên đường về trạm trống thì tự bước (như robot khoá, đường cố định vẽ chấm mờ). Biến thể G9: người đi về phía robot đang phát nốt (dẫn bằng tiếng).
+- **Dưới nước**: người mặc áo phao, trôi theo dòng như vật nổi. Cứu bằng **lưới**: xuồng (`cast_net` kéo về mũi), xe trên bờ (L3), cẩu (L9 giỏ cứu hộ); **drone thả phao** (L10) giữ người thôi trôi để chờ.
+  Người được kéo tới ô sát bờ thì tự bước lên bờ, đi về trạm.
+- **Cấm chạm**: kẹp, nam châm, máy ném, vòi phun, móc cẩu nhắm vào ô có người: lệnh không làm, lỗi lời Việt ("Không phun nước vào người!"); robot không đi vào ô người.
+- **Hạn**: người trôi tới cống / thác là **thua nhẹ** ("Người trôi xa quá, chưa kịp cứu. Thử lại!"), không vẽ cảnh chìm. Đây là sức ép thời gian tự nhiên thay cho trần nhịp.
+
+### Màn "mở đường" đang có (đếm 3/11)
+
+Cách đếm: chạy lời giải mẫu của 572 màn đội (`lo-trinh-hoc.js`, cả màn cất); tính là mở đường khi robot A làm việc ở ô X (nhấc, hút, kéo, lấp, mở cửa…) rồi sau đó robot B đứng lên ô X.
+Đếm máy, gần đúng. Kết quả: 217 / 572 màn có ít nhất một kiểu.
+
+| Kiểu | Màn đang chơi | Màn cất | Ở đâu |
+|---|---|---|---|
+| **Tay kẹp nhấc hòm cho bạn đi qua** | 15 | 6 | mùa 2 gói R2 trở lại (2), mùa 9 (13) |
+| Nam châm hút sắt dọn lối | 29 | 7 | Cảng sông đội cẩu và nhện (17), Nông trại (1), mùa 9 (11) |
+| Cẩu nhấc container dọn lối | 1 | | Cảng sông |
+| **Lưới kéo vật ra khỏi chỗ cho xe đi qua** | **0** đúng nghĩa | | tay lưới chỉ kéo vật nổi trên nước; vật nổi không chắn xe cạn |
+| Lưới kéo bè làm cầu phao | 30 | | Bến sông (17), mùa 9 (13) |
+| Mở cửa (nút đè, phun van) | 68 | 18 | mọi mùa |
+| Lấp hố cho bạn | 35 | | Hang động (6), mùa 9 (29) |
+| Phá đá chuông cho bạn | 25 | | Hang động (2), mùa 9 (23) |
+| Đẩy thùng cho bạn | 0 | 10 | |
+
+Thiếu: **kéo trên cạn**. Muốn có kiểu "một xe kéo thùng ra khỏi lối, xe kia đi qua" thì mở rộng L3: tay lưới trên xe có bánh kéo **thùng gỗ** (không kéo thùng nặng)
+từ xa 1–3 ô về ô trước mũi, như kéo bè. Khi đó kiểu nhấc (kẹp, từ trên xuống) và kiểu kéo (lưới, từ xa) là hai cách dọn khác nhau cho cùng một thùng chắn lối.
+
+## 8c. Mỗi màn một câu đố không trùng
+
+Danh sách đủ 200 màn: [MUA-9-200-CAU-DO.md](MUA-9-200-CAU-DO.md). Mỗi màn khai **dấu câu đố** `man.cauDo` và máy kiểm (vd `hoc/kiem-cau-do-mua-9.mjs`) chặn trùng:
+
+```
+cauDo: { doi: ['CH', 'DR'], lap: 'gai+kep+khoang-cach' | null, coChe: ['bun', 'nut-de'], cuu: 'hang' | 'may' | 'nguoi' | null, meo: 'lam-cau' }
+```
+
+- **Mẹo phối hợp** (`meo`, đúng một mẹo chính): dọn lối · giữ cửa · tiếp sức (đưa vật cho bạn) · làm cầu (cầu phao, lấp hố, rắc cát) · nhường đường · chờ tín hiệu (cảm biến) ·
+  song song (trần nhịp buộc làm cùng lúc) · đổi vai · đọc rồi chọn (số, màu, cực, nốt, dòng) · dẫn đường (kéo theo đuôi, dẫn bằng tiếng) · cứu kịp (trôi, tàu rời, pin) · một chương trình nhiều sân.
+- **Không trùng dấu**: hai màn của mùa 9 không được trùng cả bộ (`doi` hoặc `lap`, `coChe`, `cuu`, `meo`).
+- **Không trùng thật**: chạy lời giải mẫu, rút gọn chuỗi sự kiện chính của mỗi robot (vd `rac-cat → nhat-vat → toi-co`); hai màn có chuỗi giống hệt và cùng đội là trùng, kể cả khi dấu khai khác.
+  So luôn với 140 màn đội gói 9 của mùa 2–8 để mùa 9 không chép lại màn cũ.
+- **Khai đúng**: mẹo khai phải thấy trong sự kiện (khai "giữ cửa" thì phải có `nut-de` của robot này trong lúc robot kia qua cửa).
+
 ## 9. Việc lõi và giao diện (thứ tự đề xuất)
 
 1. **Bảng ghép một chỗ**: tệp mới (vd `hoc/bang-ghep.js`) chứa bảng mục 3 + lý do theo ba câu; `lap-rap.js` `kiemGhep` và các câu `throw` ghép part trong `san-hoc.js` đọc chung bảng này. Máy kiểm: mọi ô ✔ / ★ chạy được một sân nhỏ.
@@ -212,3 +286,6 @@ Trần nhịp: lời giải mẫu của đôi tốt + 15–25 %. Bẫy là ý đ
 2. Bảng chọn đội chương 1 **thường có cỗ máy nhà** (màn 7–9 có màn nó vắng mặt)? Hay cỗ máy nhà luôn đang kẹt, chỉ chọn khách?
 3. Song ca: ở Bãi tái chế, Cảng sông, Nông trại cỗ máy nhà không gắn được loa, để **khách hát, nhà làm động tác**? (Cách khác: cho nhện / drone / cẩu gắn loa, phá luật ba câu.)
 4. 200 màn PDM9 hiện có: **làm lại trên sân cũ** theo mục 7 (đề xuất), hay viết mới hoàn toàn?
+5. Màn ba robot: tối đa 3, robot thứ ba là máy khách bị kẹt (khoá, em không sửa), như mục 8b?
+6. Cứu người theo luật P (mục 8b): lưới / phao kéo người dưới nước, người tự đi trên cạn, robot không chạm người; ra mắt từ G1?
+7. Duyệt danh sách 200 câu đố [MUA-9-200-CAU-DO.md](MUA-9-200-CAU-DO.md) và các lai mở rộng L6–L14, T2–T4?
