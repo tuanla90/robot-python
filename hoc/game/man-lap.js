@@ -221,7 +221,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     Array.prototype.forEach.call(E.khes.querySelectorAll('.lr-the'), function (b) {
       var khe = b.getAttribute('data-khe'), ma = b.getAttribute('data-ma') === 'khong' ? null : b.getAttribute('data-ma');
       var hyp = Object.assign({}, S.cach); hyp[khe] = ma;
-      var g = LapRap.kiemGhep(hyp), dang = (S.cach[khe] || null) === ma;
+      var g = LapRap.kiemGhep(hyp, S.m), dang = (S.cach[khe] || null) === ma;
       b.classList.toggle('chon', dang);
       b.classList.toggle('mo', !g.ok);
       b.setAttribute('aria-pressed', dang ? 'true' : 'false');
@@ -248,7 +248,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       ma = null;
     }
     var hyp = Object.assign({}, S.cach); hyp[khe] = ma;
-    var g = LapRap.kiemGhep(hyp);
+    var g = LapRap.kiemGhep(hyp, S.m);
     if (!g.ok) {                                               // ghép sai: thẻ rung, bảng báo lý do và cách gỡ
       rung(nut);
       datLoi((g.lyDo + ' ' + cachGo(khe, g)).trim(), 'bad', 4200);
