@@ -1,9 +1,10 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ============================================================================
-   man-chon.js — "Robot Chấn Hưng": LƯỚI MÀN CỦA MỘT GÓI (window.Chon), kiểu lưới màn trong hộp của Cut the Rope.
+   man-chon.js — "Robot Chấn Hưng": BẢN ĐỒ MÀN CỦA MỘT GÓI (window.Chon).
    Thanh trên: ◀ (về chọn gói) · "GÓI n" · nút Sổ lệnh. Dải bìa: huy hiệu gói · tên gói · sao của gói · thanh tiến độ (mỗi màn một vạch).
-   Mỗi chương của gói một khối: dòng "Chương 4 · Tay gắp   7/10" + lưới 5×2 ô màn (ô 10 = thử thách, vẽ bằng huy hiệu của chương).
-   Ô: số màn + sao / ổ khóa / "CHƠI!" (màn nên chơi). Chạm ô khóa thì rung + báo lý do (luật ở game/mo-goi.js).
+   Dưới bìa (3/11): bản đồ cuộn dọc = ảnh dài 9 nơi chốn của phim CLB (dai-9.webp) lặp vô hạn; các màn là chấm tròn nằm trên con đường,
+   đi từ trên xuống, bắt đầu ở nơi chốn của mùa. Đầu mỗi chương một biển "Chương 4 · Tay gắp  7/10"; chấm 10 = thử thách (huy hiệu chương).
+   Chấm: số màn + sao / ổ khóa / cờ "CHƠI!" (màn nên chơi). Chạm chấm khóa thì rung + báo lý do (luật ở game/mo-goi.js).
    Giữ lâu tiêu đề 2 giây = mở bảng Gỡ lỗi (go-loi.js); địa chỉ có ?debug=1 / #debug thì thêm nút 🐞 trên thanh trên.
    ========================================================================== */
 (function () {
@@ -12,6 +13,49 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var h = TP.h;
   var el = {};
   var GIU_LAU_MS = 2000;
+
+  /* Bản đồ: ảnh 720×10477 vẽ rộng 360 (K = 0.5), lặp dọc (choi.css .c-bd). DUONG = hoành độ giữa đường (px ảnh) mỗi 16px dọc,
+     dò bằng tools/do-duong-ban-do.py. Đường bắt đầu dưới cổng CLB (DAU_DUONG), hết ở vòng xuyến trong hang (CUOI_DUONG): qua đó thì nhảy sang tấm ảnh kế. */
+  var AW = 720, AH = 10477, K = 360 / AW, BUOC_DUONG = 16, DAU_DUONG = 340, CUOI_DUONG = 10150;
+  var VUNG = 1724 * AW / 1080;        // mỗi nơi chốn cao 1724 px ảnh gốc 1080: CLB, kho, nhà máy, bãi tái chế, cảng, bến sông, nông trại, mỏ đá, hang
+  var KHOANG = 172;                   // giữa hai chấm (px ảnh) = 86px màn hình
+  var THEM_DUOI = 280;                // px màn hình dư dưới chấm cuối; cuộn gần đáy thì nối thêm một tấm ảnh
+  var DUONG = [
+    362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,365,370,376,382,385,385,385,385,380,374,367,361,358,
+    358,358,358,361,367,374,380,385,387,387,387,387,383,378,373,367,363,358,357,357,357,357,358,359,360,360,360,361,361,361,361,362,368,374,380,385,389,391,391,391,391,
+    389,385,381,375,375,375,364,362,359,357,355,352,350,350,350,350,351,352,356,360,361,366,371,372,376,376,376,376,376,376,375,374,373,372,371,367,366,365,364,363,362,
+    362,362,362,363,364,365,366,367,372,373,374,379,380,381,382,383,384,385,385,385,385,385,384,383,382,381,380,378,378,378,378,378,378,378,378,378,378,378,378,378,378,
+    376,374,372,370,367,365,363,361,359,357,357,356,356,356,356,356,357,358,360,363,366,369,371,373,374,375,375,375,374,373,372,372,370,368,368,368,368,367,367,367,367,
+    367,369,369,369,371,371,371,371,371,371,371,371,371,370,368,366,366,364,364,364,364,364,367,370,373,376,377,377,377,377,377,375,373,371,369,366,364,362,360,358,358,
+    357,357,357,357,358,359,361,364,367,370,373,376,379,383,386,389,391,394,395,396,396,396,396,396,396,396,394,392,390,388,385,383,381,379,377,375,373,371,369,367,365,
+    365,365,365,365,363,363,363,361,361,361,361,361,362,363,365,367,369,373,377,381,386,391,395,398,401,401,401,401,401,398,394,389,384,379,374,369,366,362,361,360,360,
+    360,360,360,362,366,369,373,375,378,379,379,379,379,377,375,374,372,370,369,367,366,364,363,362,362,362,362,361,361,361,361,361,361,361,361,360,360,359,359,359,359,
+    359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,359,360,360,360,360,360,360,360,360,361,
+    362,362,364,366,368,372,376,381,387,394,401,407,409,409,409,409,408,406,405,404,404,404,403,403,403,403,403,403,403,403,402,402,402,402,402,401,401,399,397,393,389,
+    385,384,382,381,381,381,381,382,383,387,388,388,388,388,388,387,386,382,381,377,373,372,371,369,368,367,366,366,366,367,367,368,369,373,376,380,384,387,391,394,395,
+    396,397,397,397,397,397,397,396,395,394,394,394,393,393,393,393,393,393,393,393,393,393,393,393,393,393,393,393,393,393,393,393,390,387,383,379,374,370,367,363,361,
+    361,361,361,362,363,366,368,372,376,381,385,389,393,393,393,393,393,393,391,388,384,380,377,374,374,374,374,375,378,382,385,388,391,393,393,393,393,393,392,390,387,
+    385,383,380,377,376,374,373,372,372,372,375,379,390,395,397,397,397,397,397,397,397,390,378,365,353,350,350,350,350,350,352,358,369,383,396,396,396,396,396,394,387,
+    374,361,352,345,341,341,341,341,341,347,353,353,353,353,353,353,353,353,353,353,353,339,334,334,334,342,342,342,342,342,342,342,342,342,342,342,342,342,342,342
+  ];
+
+  function duongX(y) {
+    var yy = ((y % AH) + AH) % AH, i = yy / BUOC_DUONG, a = Math.floor(i), b = Math.min(a + 1, DUONG.length - 1);
+    a = Math.min(a, DUONG.length - 1);
+    return DUONG[a] + (DUONG[b] - DUONG[a]) * (i - Math.floor(i));
+  }
+  /** Chỗ y (px ảnh, có thể quá một tấm) nằm ngoài con đường thì dời xuống đầu đường của tấm kế (hoặc cùng tấm). */
+  function trenDuong(y) {
+    var yy = ((y % AH) + AH) % AH;
+    if (yy > CUOI_DUONG) return y - yy + AH + DAU_DUONG;
+    if (yy < DAU_DUONG) return y - yy + DAU_DUONG;
+    return y;
+  }
+  /** Mùa → nơi chốn trên ảnh: mua-1 kho … mua-8 hang; mua-9 (về CLB) và mùa khác ở cổng CLB. */
+  function dauMua(mua) {
+    var n = +(/^mua-(\d)$/.exec(mua || '') || [])[1];
+    return n >= 1 && n <= 8 ? n * VUNG + 110 : DAU_DUONG;
+  }
 
   function dung(host) {
     host.innerHTML = '';
@@ -27,6 +71,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     el.bia = h('div', 'c-bia'); host.appendChild(el.bia);
     el.than = h('div', 'c-than'); host.appendChild(el.than);
+    el.bd = h('div', 'c-bd'); el.than.appendChild(el.bd);
+    el.than.addEventListener('scroll', noiThem, { passive: true });
     el.tb = h('div', 'c-tb'); host.appendChild(el.tb);
     Ve.hydrate(host);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(vuaTieuDe);
@@ -118,26 +164,48 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var cur = null;
     g.man.forEach(function (m) { if (!cur && App.trangThai(m).mo && !Luu.daQua(m.ma)) cur = m; });
 
-    el.than.innerHTML = '';
-    el.than.classList.toggle('mot', g.chuong.length === 1);
-    var dsc = App.dsChuong();
-    g.chuong.forEach(function (c) {
+    // bản đồ: đặt biển chương và chấm màn dọc con đường (px ảnh), rồi đổi sang px màn hình tính từ mép trên bản đồ
+    var y = trenDuong(dauMua(g.mua)), goc = y - 130, dsc = App.dsChuong(), cuoiY = 0, curY = null;
+    function dat(y0) { var yy = trenDuong(y0); return { y: yy, sx: duongX(yy) * K, sy: (yy - goc) * K }; }
+    el.bd.innerHTML = '';
+    el.bd.style.backgroundPosition = '0 ' + (-goc * K) + 'px';
+    g.chuong.forEach(function (c, ci) {
       var cc = dsc.filter(function (x) { return x.ma === c; })[0];
       var ds = App.dsMan(c).slice().sort(function (a, b) { return a.so - b.so; });
       var xong = ds.filter(function (m) { return Luu.daQua(m.ma); }).length;
-      var khoi = h('div', 'c-ch'); khoi.setAttribute('data-chuong', c);
+      if (ci > 0) y += KHOANG * 0.2;
+      var p = dat(y); y = p.y;
+      var bien = h('div', 'c-ch'); bien.setAttribute('data-chuong', c);
+      bien.style.top = p.sy + 'px';
       var hd = h('div', 'c-ch-hd');
       hd.appendChild(document.createTextNode(t('chon.chuoi', { n: '' })));
       hd.appendChild(h('span', 'd', cc ? cc.so : ''));
       hd.appendChild(document.createTextNode(' · '));
       hd.appendChild(h('em', null, App.tenChuong(c)));
       hd.appendChild(h('span', 'c-ch-dem', t('chon.tienDo', { n: xong, tong: ds.length })));
-      khoi.appendChild(hd);
-      var luoi = h('div', 'c-l5');
-      ds.forEach(function (m) { luoi.appendChild(oMan(m, m === cur)); });
-      khoi.appendChild(luoi);
-      el.than.appendChild(khoi);
+      bien.appendChild(hd);
+      el.bd.appendChild(bien);
+      y += KHOANG;
+      ds.forEach(function (m) {
+        var q = dat(y); y = q.y + KHOANG;
+        var b = oMan(m, m === cur);
+        b.style.left = Math.max(34, Math.min(326, q.sx)) + 'px'; b.style.top = q.sy + 'px';
+        el.bd.appendChild(b);
+        cuoiY = q.sy;
+        if (m === cur) curY = q.sy;
+      });
     });
+    el.bd.style.height = Math.max(cuoiY + THEM_DUOI, el.than.clientHeight + 1) + 'px';
+    // cuộn tới màn nên chơi (chưa có thì màn cuối đã qua / đầu bản đồ)
+    var den = curY != null ? curY : 0;
+    el.than.scrollTop = Math.max(0, den - el.than.clientHeight * 0.55);
+    noiThem();
+  }
+
+  /** Cuộn vô hạn: gần đáy bản đồ thì cao thêm một tấm ảnh (ảnh lặp dọc nên nối liền). */
+  function noiThem() {
+    var t0 = el.than, cao = el.bd.offsetHeight;
+    if (t0.scrollTop + t0.clientHeight > cao - 600) el.bd.style.height = (cao + Math.round(AH * K)) + 'px';
   }
 
   function oMan(m, laCur) {
