@@ -62,7 +62,7 @@ console.log('\n== 1. Ký hiệu sân và cấu hình ==');
   kiem('xe cạn xuất phát trên nước: lỗi cấu hình', /không xuất phát trên mặt nước/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE, san: SAN1, batDau: { x: 1, y: 3, huong: 1 } })));
   kiem('xuồng xuất phát trong cống đóng / trên vật nổi: lỗi', /cống/.test(loiCfg(xuong({ san: ['#K~#'], batDau: { x: 1, y: 0, huong: 1 } }))) && /vật nổi/.test(loiCfg(xuong({ san: ['#B~#'], batDau: { x: 1, y: 0, huong: 1 } }))));
   kiem('xuồng không gắn tay kẹp', /tay lưới/.test(loiCfg(xuong({ hamGoc: XUONG.concat(['grab']) }))));
-  kiem('xe bánh không có anchor / cast_net / flow_dir', /không thuộc loại robot banh/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE.concat(['cast_net']), san: SAN1, batDau: { x: 1, y: 4, huong: 1 } })));
+  kiem('xe bánh không có anchor / flow_dir (cast_net nay là tay lưới xe tời bờ, lai L3 M9C1)', /không thuộc loại robot banh/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE.concat(['anchor', 'unanchor']), san: SAN1, batDau: { x: 1, y: 4, huong: 1 } })) && /không thuộc loại robot banh/.test(loiCfg({ loaiRobot: 'banh', hamGoc: XE.concat(['flow_dir']), san: SAN1, batDau: { x: 1, y: 4, huong: 1 } })) && loiCfg({ loaiRobot: 'banh', hamGoc: XE.concat(['cast_net', 'drop_net']), san: SAN1, batDau: { x: 1, y: 4, huong: 1 } }) === '');
   kiem('flow_dir() cần camBien dong-chay', /chong chóng/.test(loiCfg(xuong({ camBien: [] }))) && loiCfg(xuong()) === '');
   kiem('cast_net đi cùng drop_net, anchor đi cùng unanchor', /drop_net/.test(loiCfg(xuong({ hamGoc: ['left_move', 'right_move', 'wait', 'cast_net'] }))) && /unanchor/.test(loiCfg(xuong({ hamGoc: ['left_move', 'right_move', 'wait', 'anchor'] }))));
   kiem('cfg.dong: ô phải là nước, huong 0–3, suc 1 hay 2, không khai hai lần',
