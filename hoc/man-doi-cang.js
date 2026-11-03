@@ -646,8 +646,8 @@
       so: 7, ten: 'Cân tải và dò cực cùng lúc', hang: 'bien-the',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'wait_n', 'slide_load', 'slide_load2', 'clear_pole'],
-      deBai: 'Sola thử thách trên hai sân với taiToiDa = 4: R2 ở (2, 3) nhìn sang phải thấy mẩu nam châm tại (3, 3), hãy gọi clear_pole("R") để dọn thông cột 3 rồi sang (4, 3). R1 ở (1, 3) gọi wait_n(4), trượt rail(2) sang cột 3, rồi kiểm tra if weight() == 1: để gọi carry2_by(4) (nếu cặp 1 tấn) hoặc carry_by(4) (nếu 1 kiện 3 tấn)!',
-      veMaMau: 'R2 gọi clear_pole("R"); R1 chờ 4 nhịp, trượt rail(2) rồi kiểm tra weight() == 1.',
+      deBai: 'Sola thử thách trên hai sân với taiToiDa = 4: R2 ở (2, 3) nhìn sang phải thấy mẩu nam châm tại (3, 3), hãy gọi clear_pole("R") để dọn thông cột 3 rồi sang (4, 3). R1 ở (1, 3) gọi wait_n(4), trượt rail(2) sang cột 3, rồi đọc w = weight() và kiểm tra if w == 1: để gọi carry2_by(4) (nếu cặp 1 tấn) hoặc carry_by(4) (nếu 1 kiện 3 tấn)!',
+      veMaMau: 'R2 gọi clear_pole("R"); R1 chờ 4 nhịp, trượt rail(2), đọc w = weight() rồi kiểm tra w == 1.',
       san: [SAN_DOI_1, SAN_DOI_1],
       bd: [{ x: 1, y: 3, nac: 4, tam: 1 }, { x: 2, y: 3, huong: 1 }],
       chong: [
