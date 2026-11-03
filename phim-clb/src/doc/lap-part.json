@@ -1,0 +1,400 @@
+{
+ "lap": {
+  "m2/xich": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": 0.0032,
+    "y": -0.0,
+    "s": 0.9286,
+    "goc": 0
+   }
+  },
+  "m2/xich-voi": {
+   "truoc": "m2/xich",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m2/xich-hn": {
+   "truoc": "m2/xich-voi",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m2/du": {
+   "truoc": "m2/xich-hn",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m2/du-phun": {
+   "truoc": "m2/du",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m3/nhen": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": -0.0016,
+    "y": -0.0444,
+    "s": 0.7857,
+    "goc": 270
+   }
+  },
+  "m3/nhen-nc": {
+   "truoc": "m3/nhen",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m3/nhen-tu": {
+   "truoc": "m3/nhen-nc",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m3/nhen-co": {
+   "truoc": "m3/nhen-tu",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "doi"
+  },
+  "m3/nhen-tu-s": {
+   "truoc": "m3/nhen-tu",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "cang/cau": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": -0.0519,
+    "y": -0.0003,
+    "s": 0.6857,
+    "goc": 0
+   }
+  },
+  "cang/cau-moc": {
+   "truoc": "cang/cau",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "cang/cau-quet-bat": {
+   "truoc": "cang/cau-moc",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "cang/cau-ray": {
+   "truoc": "cang/cau-quet",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "cang/cau-doi": {
+   "truoc": "cang/cau-ray",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "cang/cau-du": {
+   "truoc": "cang/cau-doi",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m4/xuong": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": -0.0307,
+    "y": -0.0002,
+    "s": 0.7893,
+    "goc": 0
+   }
+  },
+  "m4/xuong-keo": {
+   "truoc": "m4/xuong",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m4/xuong-do-bat": {
+   "truoc": "m4/xuong-keo",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m4/xuong-neo": {
+   "truoc": "m4/xuong-do",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m4/xuong-dat": {
+   "truoc": "m4/xuong-neo",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m4/xuong-du": {
+   "truoc": "m4/xuong-dat",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m5/drone": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": -0.0015,
+    "y": -0.0196,
+    "s": 0.7143,
+    "goc": 270
+   }
+  },
+  "m5/drone-son": {
+   "truoc": "m5/drone",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m5/drone-cam": {
+   "truoc": "m5/drone-son",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m5/drone-cam-red": {
+   "truoc": "m5/drone-cam",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m5/drone-cam-do": {
+   "truoc": "m5/drone-cam-red",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m6/omni": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": 0.0018,
+    "y": -0.0001,
+    "s": 0.8929,
+    "goc": 0
+   }
+  },
+  "m6/omni-nem-cam": {
+   "truoc": "m6/omni",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m6/omni-radar-quet": {
+   "truoc": "m6/omni-nem-cam",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m6/omni-radar-vui": {
+   "truoc": "m6/omni-radar",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m6/omni-du": {
+   "truoc": "m6/omni-radar",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m6/omni-du-vui": {
+   "truoc": "m6/omni-du",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m7/gai": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": 0.0018,
+    "y": -0.0001,
+    "s": 0.8929,
+    "goc": 0
+   }
+  },
+  "m7/gai-loa-phat": {
+   "truoc": "m7/gai",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m7/gai-am-nghe": {
+   "truoc": "m7/gai-loa",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m7/gai-du-thu": {
+   "truoc": "m7/gai-am",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m7/gai-du-vui": {
+   "truoc": "m7/gai-du",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "part"
+  },
+  "m8/lai-nhen-kep": {
+   "truoc": "lab/dau-r1",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "than",
+   "dau": {
+    "x": -0.0016,
+    "y": -0.0447,
+    "s": 0.7857,
+    "goc": 270
+   }
+  },
+  "m8/lai-xich-nem": {
+   "truoc": "m8/lai-nhen-kep",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "doi"
+  },
+  "m8/lai-gai-cam": {
+   "truoc": "m8/lai-xich-nem",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "doi"
+  },
+  "m8/lai-xuong-tu": {
+   "truoc": "m8/lai-gai-cam",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "doi"
+  },
+  "m8/lai-omni-keo": {
+   "truoc": "m8/lai-xuong-tu",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "doi"
+  },
+  "m8/lai-drone-tu": {
+   "truoc": "m8/lai-omni-keo",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "doi"
+  },
+  "m8/lai-omni-loa": {
+   "truoc": "m8/lai-drone-tu",
+   "rong": 576,
+   "rongTruoc": 576,
+   "kieu": "doi"
+  }
+ },
+ "dung": [
+  "cang/nhen",
+  "cang/nhen-ngac",
+  "cang/r2",
+  "cang/r2-hut",
+  "cang/r2-vui",
+  "m3/nhen",
+  "m3/nhen-co",
+  "m3/nhen-nc",
+  "m3/nhen-nc-hut",
+  "m3/nhen-nc-ngac",
+  "m3/nhen-nc-vui",
+  "m3/nhen-ngac",
+  "m3/nhen-tu",
+  "m3/nhen-tu-do",
+  "m3/nhen-tu-n",
+  "m3/nhen-tu-ngac",
+  "m3/nhen-tu-s",
+  "m3/nhen-tu-vui",
+  "m3/nhen-vui",
+  "m4/drone",
+  "m4/drone-cam",
+  "m4/drone-cam-blue",
+  "m4/drone-cam-dau",
+  "m4/drone-cam-do",
+  "m4/drone-cam-green",
+  "m4/drone-cam-ngac",
+  "m4/drone-cam-red",
+  "m4/drone-cam-vui",
+  "m4/drone-cam-yellow",
+  "m4/drone-dau",
+  "m4/drone-ngac",
+  "m4/drone-son",
+  "m4/drone-son-blue",
+  "m4/drone-son-green",
+  "m4/drone-son-ngac",
+  "m4/drone-son-red",
+  "m4/drone-son-vui",
+  "m4/drone-son-yellow",
+  "m4/drone-vui",
+  "m4/nhen",
+  "m4/nhen-ngac",
+  "m4/r2",
+  "m4/r2-hut",
+  "m4/r2-vui",
+  "m5/drone",
+  "m5/drone-cam",
+  "m5/drone-cam-blue",
+  "m5/drone-cam-dau",
+  "m5/drone-cam-do",
+  "m5/drone-cam-green",
+  "m5/drone-cam-ngac",
+  "m5/drone-cam-red",
+  "m5/drone-cam-vui",
+  "m5/drone-cam-yellow",
+  "m5/drone-dau",
+  "m5/drone-ngac",
+  "m5/drone-son",
+  "m5/drone-son-blue",
+  "m5/drone-son-green",
+  "m5/drone-son-ngac",
+  "m5/drone-son-red",
+  "m5/drone-son-vui",
+  "m5/drone-son-yellow",
+  "m5/drone-vui",
+  "m5/nhen",
+  "m5/nhen-ngac",
+  "m5/r2",
+  "m5/r2-vui",
+  "m6/drone",
+  "m6/drone-ngac",
+  "m6/r2",
+  "m6/r2-quet",
+  "m6/r2-vui",
+  "m8/lai-drone-tu",
+  "m8/lai-nhen-kep",
+  "m8/luna-bot"
+ ]
+}

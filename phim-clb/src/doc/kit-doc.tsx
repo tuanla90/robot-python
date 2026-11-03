@@ -4,6 +4,7 @@
 import React from 'react';
 import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Burst, C, CLAMP, FONT, Icon, Mascot, MONO, Say, ease, pop} from '../d10';
+import LAP_PART from './lap-part.json';
 
 /* ------------------------------------------------------------------ lưới sân */
 export const O = 150;                      // cạnh một ô (px)
@@ -14,6 +15,11 @@ export const tamO = (c: number, r: number) => ({x: X0 + (c + 0.5) * O, y: Y0 + (
 /** Ngữ cảnh mùa hiện tại ('m1' .. 'm8'), mặc định 'm1'. */
 export const MuaCtx = React.createContext<string>('m1');
 export const duongRobot = (mua: string, ten: string) => `robot/${ten.includes('/') ? ten : `${mua}/${ten}`}.png`;
+/** Ảnh robot vốn vẽ ĐỨNG THẲNG theo màn hình (nhện: chân chống xuống, mắt phía dưới; drone): không xoay theo góc mũi (tools/tach-lap.py ghi lap-part.json). */
+const DUNG_THANG = new Set<string>(LAP_PART.dung);
+export const dungThang = (mua: string, ten: string) => DUNG_THANG.has(ten.includes('/') ? ten : `${mua}/${ten}`);
+/** Góc xoay ảnh robot đặt "mũi lên" trên sân / sa bàn: -90 (ảnh xuất mũi sang phải), ảnh đứng thẳng thì 0. */
+export const gocAnh = (mua: string, ten: string) => (dungThang(mua, ten) ? 0 : -90);
 
 /** Mốc chuyển động: [khung, cột, hàng, góc độ (0 = mũi sang phải, -90 = lên)]; giữa hai mốc nội suy mượt. */
 export type Moc = [number, number, number, number?];
@@ -184,10 +190,11 @@ export const Xe: React.FC<{anh: string; moc: Moc[]; doi?: [number, string][]; sa
     const ten = [...doi].filter(([t]) => f >= t).pop()?.[1] ?? anh;
     const S = 1.2 * O * (RONG[ten] ?? 576) / 576;
     const isSang = sang ? sang(f) : false;
+    const goc = dungThang(mua ?? m, ten) ? 0 : p.goc;                    // nhện / drone: không quay mặt, hình luôn đứng thẳng
     return (
       <>
         {vet ? <VetDuong moc={moc} mau={mauVet} /> : null}
-        <div style={{position: 'absolute', left: p.x - S / 2, top: p.y - S / 2, width: S, height: S, transform: `rotate(${p.goc}deg)`, opacity: mo ? mo(f) : 1,
+        <div style={{position: 'absolute', left: p.x - S / 2, top: p.y - S / 2, width: S, height: S, transform: `rotate(${goc}deg)`, opacity: mo ? mo(f) : 1,
           filter: isSang ? `drop-shadow(0 0 22px ${C.yellow})` : 'drop-shadow(0 10px 8px rgba(0,0,0,.35))'}}>
           <Img src={staticFile(duongRobot(mua ?? m, ten))} style={{width: S, height: S}} />
         </div>
@@ -556,6 +563,44 @@ const R1_DU: Record<string, string> = {
 
 export type LoaiNangCap = 'banh-lui' | 'tay-xoay' | 'cam-ben' | 'nang-cap';
 
+/** Một cảnh lắp của tools/tach-lap.py: kieu 'than' (bộ não dau-r1 vào thân mới, dau = chỗ / cỡ / góc bộ não trong ảnh thân), 'part' (lớp part = ảnh sau − ảnh trước),
+ *  'doi' (đổi hẳn robot); truoc = ảnh trước ('<mùa>/<tên>' hay 'lab/dau-r1'), rong / rongTruoc = bề ngang ảnh (576, tay xoay 922). */
+type LapMuc = {kieu: 'than' | 'part' | 'doi'; truoc: string; rong: number; rongTruoc: number; dau?: {x: number; y: number; s: number; goc: number}};
+const LAP = LAP_PART.lap as Record<string, LapMuc>;
+
+/** Cảnh lắp theo lớp part (mùa 2 trở đi, 3/11): mọi cỡ thân (cẩu, xuồng, drone…) — part bay vào đúng chỗ của nó trên ảnh sau, không cắt cứng phía mũi.
+ *  'than': thân mới (lớp) thu từ to về đúng cỡ quanh bộ não, bộ não dau-r1 trôi / co / quay tới đúng chỗ của nó trong thân; 'part': ảnh trước đứng yên, lớp part
+ *  thu từ to về khớp; 'doi': robot cũ thu nhỏ mờ đi, robot mới phóng ra. Hết lắp (cach) là ảnh sau, trùng khít khung cuối của lớp. */
+const LapLop: React.FC<{lap: LapMuc; m: string; anh: string; u: number; dangLap: boolean}> = ({lap, m, anh, u, dangLap}) => {
+  const S = 580 * lap.rong / 576, ST = 580 * lap.rongTruoc / 576, X = 540, Y = 890;
+  const goc = gocAnh(m, anh), gocTruoc = gocAnh(m, lap.truoc), bong = 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))';
+  const anhO = (src: string, s: number, g: number, op = 1, dx = 0, dy = 0, z = 11, loc = bong) => (
+    <div style={{position: 'absolute', left: X + dx - s / 2, top: Y + dy - s / 2, width: s, height: s, transform: `rotate(${g}deg)`, opacity: op, zIndex: z, filter: loc}}>
+      <Img src={staticFile(src)} style={{width: s, height: s}} />
+    </div>
+  );
+  const lop = `robot/${m}/lap/${anh}.png`, k = dangLap ? u : 0;
+  if (lap.kieu === 'doi') return <>
+    {anhO(duongRobot(m, lap.truoc), ST * (1 - 0.4 * k), gocTruoc, 1 - k)}
+    {dangLap ? anhO(duongRobot(m, anh), S * (0.6 + 0.4 * k), goc, k, 0, 0, 12) : null}
+  </>;
+  if (lap.kieu === 'part') return <>
+    {anhO(duongRobot(m, lap.truoc), ST, gocTruoc)}
+    {dangLap ? anhO(lop, S * (1 + 0.4 * (1 - k)), goc, k, 0, 0, 12, 'drop-shadow(0 10px 16px rgba(15,23,42,0.35))') : null}
+  </>;
+  /* thân mới: bộ não từ giữa sa bàn (cỡ 580, mũi lên) tới chỗ khớp (tâm lệch R(goc)·(x, y)·S, cỡ 580·s, góc goc − dau.goc); chênh nửa vòng thì không quay */
+  const d = lap.dau ?? {x: 0, y: 0, s: 1, goc: 90};
+  let g1 = goc - d.goc;
+  while (g1 + 90 > 180) g1 -= 360;
+  while (g1 + 90 < -180) g1 += 360;
+  const g0 = Math.abs(g1 + 90) >= 179 ? g1 : -90, a = (goc * Math.PI) / 180;
+  const ox = d.x * S, oy = d.y * S, tx = ox * Math.cos(a) - oy * Math.sin(a), ty = ox * Math.sin(a) + oy * Math.cos(a);
+  return <>
+    {dangLap ? anhO(lop, S * (1 + 0.4 * (1 - k)), goc, k, 0, 0, 10, 'drop-shadow(0 10px 16px rgba(15,23,42,0.35))') : null}
+    {anhO('robot/lab/dau-r1.png', 580 * (1 + (d.s - 1) * k), g0 + (g1 - g0) * k, 1, tx * k, ty * k, 11)}
+  </>;
+};
+
 /**
  * Trong xe trạm:
  * - Chế độ 1 — LẮP PART MỚI (`nangCap` không truyền):
@@ -581,7 +626,6 @@ export const TrongXe: React.FC<{
 }> = ({anh, cach, luna, sola, lunaMat = [[0, 'thinking']], solaMat = [[0, 'thinking']], tenPart, mua, truoc, nangCap}) => {
   const f = useCurrentFrame(), {fps} = useVideoConfig(), m = mua ?? React.useContext(MuaCtx);
   const p = pop(f, cach, fps, 9);
-  const S = 580 * (RONG[anh] ?? 576) / 576;
   const S_DAU = 580;
   const S9 = 580 * 922 / 576;                                   // ảnh 922 px (tay xoay, du): thân cùng cỡ ảnh 576 ở 580
   const uLap = ease(f, [Math.max(15, cach - 70), cach], [0, 1]);
@@ -594,6 +638,8 @@ export const TrongXe: React.FC<{
   const laLapTayKep = !nangCap && anh === 'kep';
   const laLapCamBien = !nangCap && anh === 'kep-cam';
   const laLapR2 = !nangCap && (anh === 'r2' || anh === 'luna-bot');
+  const lap = !nangCap && !laLapHaiBanh && !laLapTayKep && !laLapCamBien && !laLapR2 && !truoc ? LAP[`${m}/${anh}`] : undefined;
+  const S = 580 * (lap?.rong ?? RONG[anh] ?? 576) / 576;                 // cỡ theo bề ngang ảnh thật khi có (RONG theo tên: 'du' mùa 2 là ảnh 576, không phải 922)
 
   // Hiệu ứng biểu diễn sau khi mở khóa tính năng (f >= cach)
   const uSau = f >= cach ? ease(f, [cach + 8, cach + 68], [0, 1]) : 0;
@@ -789,17 +835,20 @@ export const TrongXe: React.FC<{
         <>
           {/* R1 đứng sẵn bên trái sa bàn */}
           <div style={{position: 'absolute', left: 340 - 200, top: 890 - 200, width: 400, height: 400,
-            transform: 'rotate(-90deg)', filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))'}}>
+            transform: `rotate(${gocAnh(m, R1_DU[m] ?? 'du')}deg)`, filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))'}}>
             <Img src={staticFile(duongRobot(m, R1_DU[m] ?? 'du'))} style={{width: 400, height: 400}} />
           </div>
           {/* R2 của Luna trượt từ bên phải vào đứng cạnh R1 */}
           <div style={{position: 'absolute', left: 740 - 200 + (f < cach ? (1 - uLap) * 220 : 0), top: 890 - 200, width: 400, height: 400,
             opacity: f < cach ? (dangLap ? uLap : 0.25) : 1,
-            transform: `scale(${f >= cach ? 0.88 + 0.12 * p : 1}) rotate(-90deg)`,
+            transform: `scale(${f >= cach ? 0.88 + 0.12 * p : 1}) rotate(${gocAnh(m, anh)}deg)`,
             filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))'}}>
             <Img src={staticFile(duongRobot(m, f >= cach ? `${anh}-vui` : anh))} style={{width: 400, height: 400}} />
           </div>
         </>
+      ) : lap && f < cach ? (
+        /* ============================================================ LẮP THEO LỚP PART (mùa 2 trở đi, tools/tach-lap.py) */
+        <LapLop lap={lap} m={m} anh={anh} u={uLap} dangLap={dangLap} />
       ) : f < cach ? (
         /* ============================================================ CHẾ ĐỘ LẮP PART MỚI (GÓI 1, 2, 3...) */
         <>
@@ -846,7 +895,7 @@ export const TrongXe: React.FC<{
       ) : (
         /* Sau khi CẠCH (f >= cach): Robot hoàn chỉnh có bánh/part mới hiện rõ trên sa bàn */
         <div style={{position: 'absolute', left: 540 - S / 2, top: 890 - S / 2, width: S, height: S,
-          transform: `scale(${0.88 + 0.12 * p}) rotate(-90deg)`, filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))'}}>
+          transform: `scale(${0.88 + 0.12 * p}) rotate(${gocAnh(m, anh)}deg)`, filter: 'drop-shadow(0 18px 28px rgba(15,23,42,0.45))'}}>
           <Img src={staticFile(duongRobot(m, anh))} style={{width: S, height: S}} />
         </div>
       )}
@@ -874,7 +923,7 @@ export const CauTreo: React.FC<{anh: string; cau: string; so: number; ten: strin
           background: 'radial-gradient(circle, rgba(250,204,21,0.36) 0%, rgba(56,189,248,0.2) 55%, transparent 72%)',
           border: '5px dashed #FDE047', transform: `rotate(${f * 0.8}deg)`}} />
         <div style={{position: 'absolute', left: 540 - S / 2, top: 820 - S / 2, width: S, height: S,
-          transform: `rotate(${xoay + Math.sin(f / 10) * 5}deg)`, filter: 'drop-shadow(0 18px 28px rgba(0,0,0,0.5))'}}>
+          transform: `rotate(${(dungThang(mua ?? m, anh) ? 0 : xoay) + Math.sin(f / 10) * 5}deg)`, filter: 'drop-shadow(0 18px 28px rgba(0,0,0,0.5))'}}>
           <Img src={staticFile(duongRobot(mua ?? m, anh))} style={{width: S, height: S}} />
         </div>
       </AbsoluteFill>
