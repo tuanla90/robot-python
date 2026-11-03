@@ -666,6 +666,10 @@ body.ve-vector .g-nh-sao{font:600 12px/1 var(--mono);color:var(--g-vecChu)}
 body.ve-vector .g-nh-can{font:600 11px/1 var(--px);color:var(--g-vecChuPhu)}
 body.ve-vector .g-tron .g-phim{left:auto;top:auto;right:-9px;bottom:-7px;width:26px;height:26px}
 @media (hover:hover){body.ve-vector .g-nut:not(.khoa):not(.sap):hover .g-tron{transform:translateY(-2px)}}
+/* ◀ và ★ nổi trên bản đồ: cùng kiểu ghim gói (viền trắng dày + bóng nổi) để đọc rõ trên ảnh */
+body.ve-vector .g-noi .nav{border-radius:50%;box-shadow:0 0 0 3px var(--g-vecThe),var(--elev-2)}
+body.ve-vector .g-noi .nav:active{box-shadow:0 0 0 3px var(--g-vecThe),var(--elev-1)}
+body.ve-vector .g-noi .g-tong{height:40px;padding:0 16px 0 11px;gap:6px;font:700 18px/1 var(--mono);box-shadow:0 0 0 3px var(--g-vecThe),inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}
 
 /* --- lưới màn: tiêu đề "GÓI n · tên" (số gói phông mã tím chàm), bìa gói là thẻ trắng, vạch tiến độ bo tròn */
 body.ve-vector .c-td{font:800 calc(18px*var(--ts,1))/1 var(--px);color:var(--g-vecChu);text-shadow:none;padding-top:0}

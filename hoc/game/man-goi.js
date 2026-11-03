@@ -6,7 +6,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    "MÙA n · tên ★", rồi 10 gói là 10 huy hiệu tròn trên con đường, nhãn "GÓI k · tên · sao" bên cạnh. Mùa ẩn (`an`, chưa bật "Mở hết")
    chỉ có biển "SẮP CÓ". Gói thử thách: viền hổ phách, nhãn "THỬ THÁCH". Gói chưa đủ sao: xám + "Cần 45 ★"; gói chưa có màn: "SẮP CÓ".
    Chạm gói đã mở → lưới màn của gói (App.vaoGoi). Gói và luật mở ở game/mo-goi.js.
-   Có từ hai mùa hiện thì dưới tiêu đề có hàng chip mùa: chạm để cuộn tới mùa đó, cuộn bản đồ thì chip đổi theo.
+   Bản đồ phủ cả màn hình; nổi trên đó chỉ có nút quay về (góc trái) và ô tổng sao (góc phải; giữ lâu 2 giây = bảng Gỡ lỗi).
    Mùa BÁN RIÊNG chưa mua (25/10): biển mùa có nút "Mua <mùa> · giá"; chạm biển, nút hay gói của mùa đó mở bảng
    mua (moMua). Hiện là MUA THỬ: bấm "Mua thử" chỉ ghi cờ đã mua trên máy (App.muaThu), chưa nối thanh toán.
    ========================================================================== */
@@ -63,18 +63,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     host.innerHTML = '';
     host.appendChild(h('div', 'deco'));
 
-    var dau = h('div', 'g-dau');
-    el.ve = h('button', 'bt g-pu nav'); el.ve.setAttribute('aria-label', t('goi.ve')); el.ve.setAttribute('data-nut', 've-dau');
-    var ic = h('span'); ic.setAttribute('data-i', 'back'); ic.setAttribute('data-s', '2'); el.ve.appendChild(ic);
-    el.td = h('div', 'g-td', t('goi.tieuDe')); el.td.setAttribute('data-nut', 'tieu-de');
-    el.sao = h('div', 'g-tong');
-    dau.appendChild(el.ve); dau.appendChild(el.td); dau.appendChild(el.sao);
-    host.appendChild(dau);
-
-    el.mua = h('div', 'g-mua'); host.appendChild(el.mua);
-
     el.khung = h('div', 'g-khung'); el.bd = h('div', 'g-bd'); el.khung.appendChild(el.bd);
     host.appendChild(el.khung);
+
+    var dau = h('div', 'g-dau g-noi');                                // nổi trên bản đồ: ◀ · ★ tổng sao
+    el.ve = h('button', 'bt g-pu nav'); el.ve.setAttribute('aria-label', t('goi.ve')); el.ve.setAttribute('data-nut', 've-dau');
+    var ic = h('span'); ic.setAttribute('data-i', 'back'); ic.setAttribute('data-s', '2'); el.ve.appendChild(ic);
+    el.sao = h('div', 'g-tong'); el.sao.setAttribute('data-nut', 'tieu-de'); el.sao.setAttribute('aria-label', t('goi.tieuDe'));
+    dau.appendChild(el.ve); dau.appendChild(el.sao);
+    host.appendChild(dau);
     el.duoi = h('div', 'g-duoi'); host.appendChild(el.duoi);
     el.tb = h('div', 'c-tb'); host.appendChild(el.tb);
     Ve.hydrate(host);
@@ -83,8 +80,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.khung.addEventListener('scroll', khiCuon, { passive: true });
 
     var hen = null;
-    el.td.addEventListener('pointerdown', function () { clearTimeout(hen); hen = setTimeout(function () { hen = null; if (window.GoLoi) GoLoi.mo(App.chuong); }, GIU_LAU_MS); });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (s) { el.td.addEventListener(s, function () { clearTimeout(hen); hen = null; }); });
+    el.sao.addEventListener('pointerdown', function () { clearTimeout(hen); hen = setTimeout(function () { hen = null; if (window.GoLoi) GoLoi.mo(App.chuong); }, GIU_LAU_MS); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (s) { el.sao.addEventListener(s, function () { clearTimeout(hen); hen = null; }); });
   }
 
   var tbHen = null;
@@ -115,29 +112,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Các mùa hiện trên màn chọn gói: mùa khai `an` (thu-tu-chuong.js) chỉ hiện khi bật "Mở hết" (bảng Gỡ lỗi). */
   function muaHien() { return App.dsMua().filter(function (mu) { return !mu.an || App.moHet; }); }
-  /** Hàng chip mùa (chỉ khi có từ hai mùa hiện): chạm để cuộn bản đồ tới biển của mùa. */
-  function veMua() {
-    var dsM = muaHien();
-    el.mua.innerHTML = '';
-    el.mua.style.display = dsM.length > 1 ? '' : 'none';
-    if (dsM.length < 2) return;
-    dsM.forEach(function (mu) {
-      var mo = App.muaMo(mu), ban = App.chuaMua(mu);
-      var b = h('button', 'bt ' + (mu.ma === App.mua ? 'g-yl on' : 'g-wd') + ' g-mua-nut' + (mo ? '' : ' khoa'));
-      b.setAttribute('data-mua', mu.ma);
-      if (!mo && !ban) { var k = h('span'); k.setAttribute('data-i', 'lock'); k.setAttribute('data-s', '1'); b.appendChild(k); }
-      b.appendChild(h('span', null, mu.ten));
-      b.addEventListener('click', function () {
-        if (!mo && !ban) { lac(b); thongBao(loiMua(mu)); }                  // mùa khoá: vẫn cuộn tới để xem trước
-        App.mua = mu.ma; danhDauMua();
-        var bn = S.bien.filter(function (x) { return x.ma === mu.ma; })[0];
-        if (bn) cuonToi(bn.y - 30, true);
-      });
-      el.mua.appendChild(b);
-    });
-    Ve.hydrate(el.mua);
-  }
-
   /** Vẽ lại; ma (tùy chọn): gói cần cuộn tới (mặc định App.goi, rồi gói nên chơi). */
   function ve(ma) {
     var hien = muaHien();
@@ -180,7 +154,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     });
     el.bd.style.height = Math.max(cuoiY + THEM_DUOI, el.khung.clientHeight + 1) + 'px';
 
-    veMua();
     el.duoi.innerHTML = '';
     if (window.SoLenh && window.SoLenhMan) {
       var bs = h('button', 'bt g-cy d-so'); bs.setAttribute('data-nut', 'so-lenh'); bs.setAttribute('aria-label', t('chon.soLenh'));
@@ -194,7 +167,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     Ve.hydrate(el.bd);
 
     if (dichY != null) cuonToi(dichY - el.khung.clientHeight * 0.45, false);
-    else { var b0 = S.bien.filter(function (x) { return x.ma === App.mua; })[0]; cuonToi(b0 ? b0.y - 30 : 0, false); }
+    else { var b0 = S.bien.filter(function (x) { return x.ma === App.mua; })[0]; cuonToi(b0 ? b0.y - 80 : 0, false); }
     khiCuon();
   }
 
@@ -287,22 +260,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (muot && el.khung.scrollTo) el.khung.scrollTo({ top: y, behavior: 'smooth' });
     else el.khung.scrollTop = y;
   }
-  /** Cuộn: gần đáy thì nối thêm một tấm ảnh (ảnh lặp dọc nên liền mạch); chip mùa theo biển mùa ở phần trên khung. */
+  /** Cuộn: gần đáy thì nối thêm một tấm ảnh (ảnh lặp dọc nên liền mạch); App.mua theo biển mùa ở phần trên khung. */
   function khiCuon() {
     var k = el.khung, cao = el.bd.offsetHeight;
     if (k.scrollTop + k.clientHeight > cao - 600) el.bd.style.height = (cao + Math.round(AH * SC)) + 'px';
     var mocY = k.scrollTop + k.clientHeight * 0.4, ma = null;
     S.bien.forEach(function (x) { if (x.hien && x.y <= mocY) ma = x.ma; });
     if (!ma) { var d = S.bien.filter(function (x) { return x.hien; })[0]; ma = d && d.ma; }
-    if (ma && ma !== App.mua) { App.mua = ma; danhDauMua(); }
+    if (ma) App.mua = ma;
   }
-  function danhDauMua() {
-    var cs = el.mua.children;
-    for (var i = 0; i < cs.length; i++) {
-      var on = cs[i].getAttribute('data-mua') === App.mua;
-      cs[i].classList.toggle('on', on); cs[i].classList.toggle('g-yl', on); cs[i].classList.toggle('g-wd', !on);
-    }
-  }
-
   window.ChonGoi = { dung: dung, ve: ve, thongBao: thongBao, loiMua: loiMua, moMua: moMua };
 })();

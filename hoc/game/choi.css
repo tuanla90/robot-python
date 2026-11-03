@@ -342,7 +342,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .g-tong{height:30px;padding:0 8px;font:var(--wm) calc(17px*var(--km))/1 var(--mono)}
 /* bản đồ chọn gói (man-goi.js, 3/11): khung cuộn dọc tràn hết bề ngang và đáy; .g-bd là ảnh dài phóng ×0.8 lặp dọc, cao do man-goi.js đặt
    (cuộn gần đáy thì nối thêm tấm). Các .g-the / .g-day / .g-nav dưới đây là dải hộp lướt ngang cũ, giữ màu cho bảng màu (bang-mau.js) */
-.g-khung{flex:1 1 auto;min-height:0;position:relative;margin:12px -14px -14px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;touch-action:pan-y}
+.g-khung{position:absolute;left:0;top:0;right:0;bottom:0;z-index:1;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;touch-action:pan-y}
 .g-khung::-webkit-scrollbar{display:none}
 .g-bd{position:relative;width:360px;overflow:hidden;overflow:clip;background:var(--g-xanhLaToi) url(phim-clb/a/ban-do/dai-9.webp) -120px 0/576px auto repeat-y}
 .g-bien{position:absolute;left:0;right:0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;transform:translateY(-18px)}      /* tâm dòng tên ở top; nút mua treo dưới */
@@ -403,6 +403,10 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .g-ch.on{background:var(--g-vang);transform:scale(1.4)}
 .g-duoi{position:absolute;left:0;right:0;bottom:14px;z-index:4;height:40px;display:flex;align-items:center;justify-content:center;gap:10px;pointer-events:none}     /* nổi trên bản đồ */
 .g-duoi>*{pointer-events:auto}
+.g-dau.g-noi{position:absolute;left:12px;right:12px;top:12px;z-index:4;height:46px;justify-content:space-between;pointer-events:none}     /* ◀ và ★ nổi trên bản đồ */
+.g-noi>*{pointer-events:auto}
+.g-noi .nav{width:46px;height:46px;border-radius:50%}
+.g-noi .g-tong{height:40px;padding:0 14px 0 10px;font-size:calc(19px*var(--km))}
 
 /* ---------- lưới màn của gói (man-chon.js) ---------- */
 .c-td{flex:1;min-width:0;overflow:hidden;height:38px;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;position:relative;
