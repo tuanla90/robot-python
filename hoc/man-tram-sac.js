@@ -135,7 +135,7 @@
       so: 6, ten: 'Đáp khi pin yếu', hang: 'luyen', pin: [6, 7], hamCuaEmCan: [],
       deBai: 'Mười ô tới cờ. Đáp ở mọi ô thì phí nhịp và hết pin; chỉ đáp khi pin yếu: mỗi lần bay hai ô, hỏi battery(), dưới 3 thì đáp sạc rồi cất cánh. ' +
         'Hai sân: drone pin 6 có hai trạm sạc, drone pin 7 chỉ một trạm ở chỗ khác. Đáp cứng theo ô thì hỏng một sân.',
-      veMaMau: 'Chương trình có sẵn đã bay từng đôi ô. Thêm câu hỏi pin: battery() < 3.',
+      veMaMau: 'Chương trình có sẵn đã bay từng đôi ô. Thêm câu hỏi pin: b = battery() rồi if b < 3:.',
       san: [['....P...P.F'], ['......P...F']],
       batDau: { x: 0, y: 0 },
       maMau: bai(LAP(5, ['go_right()', 'go_right()'])),
@@ -183,8 +183,8 @@
 
     man({
       so: 9, ten: 'Ngưỡng pin sai', hang: 'bien-the', pin: [6, 7], hamCuaEmCan: [],
-      deBai: 'Chương trình có sẵn chỉ đáp khi battery() < 1: tới lúc hỏi thì pin đã cạn. Sửa ngưỡng để drone đáp đúng trạm sạc ở cả hai sân: pin 6 hai trạm, pin 7 một trạm.',
-      veMaMau: 'Chạy thử: drone hết pin. Đổi số trong battery() < 1.',
+      deBai: 'Chương trình có sẵn chỉ đáp khi b < 1: tới lúc hỏi thì pin đã cạn. Sửa ngưỡng để drone đáp đúng trạm sạc ở cả hai sân: pin 6 hai trạm, pin 7 một trạm.',
+      veMaMau: 'Chạy thử: drone hết pin. Đổi số trong if b < 1:.',
       san: [['....P...P.F'], ['......P...F']],
       batDau: { x: 0, y: 0 },
       maMau: bai(LAP(5, ['go_right()', 'go_right()', 'b = battery()', 'if b < 1:', '    land()', '    take_off()'])),
