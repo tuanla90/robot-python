@@ -404,7 +404,7 @@
       loaiRobot: 'drone', robot: ROBOT_G6, hamGoc: KHAY.slice(), hamCuaEmCan: ['next_row'], taoHam: ['copy_row'],
       deBai: 'Hàng trên đã sơn sẵn bốn màu, drone ở hàng giữa, bay sang phải một bước là ngang ô đầu. Chế copy_row(n): bay dọc hàng giữa, ghi màu ô phía trên từng bước vào danh sách, ' +
         'rồi xuống hàng dưới chép lại đúng các màu đó. Hai sân, hai hàng màu khác nhau: ghi cứng bốn màu thì hỏng một sân.',
-      veMaMau: 'Ô hàng trên nằm ở hướng "up". seen.append(color("up")) ghi màu ô đó vào danh sách seen.',
+      veMaMau: 'Ô hàng trên nằm ở hướng "up". m = color("up") đọc màu ô đó, seen.append(m) ghi vào danh sách seen.',
       batDau: { x: 0, y: 1, huong: 0 },
       maMau: { chinh: C_6.slice() },
       sao: { o: 14, nhip: 14 },
@@ -440,7 +440,7 @@
         { moTa: 'Hỏi "khác màu c": ô đỏ, xanh, vàng cũng bị chấm đè', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    m = color("right")', '    if m != c:', '        go_right()', '        dot()', '    else:', '        go_right()'], ['c', 'n'])], phaiCoMa: ['chua-to-hinh'] },
         { moTa: 'Gọi color() không hướng: camera bốn hướng cần biết nhìn phía nào', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    m = color()', '    if m == "none":', '        go_right()', '        dot()', '    else:', '        go_right()'], ['c', 'n'])], phaiCoMa: ['loi-chay'] }
       ],
-      goiY: ['Hỏi color("right") == "none" để biết ô bên phải còn trống.', 'Chọn màu một lần ở đầu hàm là đủ.']
+      goiY: ['Đọc m = color("right"), hỏi m == "none" để biết ô bên phải còn trống.', 'Chọn màu một lần ở đầu hàm là đủ.']
     },
     'che-may-son.10': {
       loaiRobot: 'drone', robot: ROBOT_G6, hamGoc: KHAY.slice(), hamCuaEmCan: ['copy_row', 'next_row', 'fill_gaps'],
