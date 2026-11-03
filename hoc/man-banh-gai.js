@@ -1,7 +1,9 @@
 /* ============================================================================
-   man-banh-gai.js — Mùa 8 (Hang động đá vôi) · Gói 1: Bánh gai
-   Chương 1: banh-gai (10 màn) — Bám đá vôi ướt (left_move, right_move, left_back, right_back, wait)
-   Chương 2: tu-dien (10 màn) — Từ điển tra cứu (Python dict: {}, d[k], d[k] = v, k in d, for k in d, len(d))
+   man-banh-gai.js — Mùa 8 Hang động · Gói 1: Bánh gai (viết lại 2/11, KE-HOACH-MUA-8.md)
+   Chương 1: banh-gai "Bám đá ướt" (10 màn): thân bánh gai, sàn đá vôi ướt I (bánh gai bám từng ô), hố sụt u; hàm kho cũ; chế rim(n)
+   Chương 2: tu-dien "Sổ tay đường hang" (10 màn): từ điển: tạo, đọc d["k"], sửa giá trị, thêm cặp, gán khoá, for k in d, if "k" in d,
+             hàm nhận từ điển (follow, walk_book, step_book, trip)
+   Lời: "Giúp Sola với!", gợi ý của Luna, gọi người chơi là "bạn".
    ========================================================================== */
 (function () {
   'use strict';
@@ -27,7 +29,7 @@
       hamCuaEmCan: [],
       taoHam: [],
       cauTruc: ['for'],
-      khung: { chinh: 10, moiHam: 10, cauTruc: ['for'] },
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for'] },
       mucTieu: 'toi-co'
     }, ds);
   }
@@ -40,688 +42,578 @@
       hamGoc: GOC_GAI.slice(),
       hamCuaEmCan: [],
       taoHam: [],
-      bienDem: true,
-      cauTruc: ['for', 'if', 'return', 'list'],
-      khung: { chinh: 12, moiHam: 10, cauTruc: ['for', 'if', 'return', 'list'] },
+      cauTruc: ['for', 'if', 'else', 'dict'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'if', 'else', 'dict'] },
       mucTieu: 'toi-co'
     }, ds);
   }
 
+  var RIM = ham('rim', ['forward(n)', 'turn_right()'], ['n']);
+  var FOLLOW = ham('follow', ['forward(book["ngang"])', 'turn_right()', 'forward(book["doc"])', 'turn_left()'], ['book']);
+  var WALK_BOOK = ham('walk_book', ['for k in book:', '    rim(book[k])'], ['book']);
+  var STEP_BOOK = ham('step_book', ['forward(book["ngang"])', 'if "doc" in book:', '    turn_right()', '    forward(book["doc"])', '    turn_left()'], ['book']);
+
   var DS = [
     /* ========================================================================
-       CHƯƠNG 1: banh-gai — Bám đá vôi ướt (10 màn)
+       CHƯƠNG 1: banh-gai — Bám đá ướt
        ====================================================================== */
     manGai(1, 'lam-quen', {
-      ten: 'Bánh gai xuống hang',
+      ten: 'Bánh gai bám đá',
       chiChay: true, chinhCoDinh: true,
-      hamCuaEmCan: ['move'],
-      deBai: 'Sàn đá vôi ướt làm bánh thường trượt dài, nhưng bánh gai luôn bám chắc từng ô một. Các hàm move(), forward(), turn_right(), turn_left() trong kho của em dùng lại được ngay trên bánh gai. Bấm Chạy để xem robot bước qua nền đá vôi ướt tới cờ.',
-      veMaMau: 'Chương trình đã viết sẵn và khóa. Bấm Chạy: bước đầu gọi trực tiếp hai bánh gai, hai bước sau gọi move().',
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Sola làm mẫu. Sàn đá vôi ướt (ô I) trơn lắm: xe bánh thường bước lên là trượt một mạch tới hết dải, ở đây là lao xuống hố sụt. Bánh gai của R1 bám chắc từng ô nên dừng được ngay sát mép hố. Bấm Chạy để xem.',
+      veMaMau: 'Chương trình Sola viết sẵn và đã khoá: tiến 3 ô, rẽ phải, tiến 2 ô.',
       san: [
-        '######',
-        '#.IIF#',
-        '######'
+        '########',
+        '#.IIIuu#',
+        '####I###',
+        '####F###',
+        '########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['left_move()', 'right_move()', 'wait()', 'move()', 'move()']),
-      loiGiai: bai(['left_move()', 'right_move()', 'wait()', 'move()', 'move()']),
-      sao: { o: 8, nhip: 3 },
+      maMau: bai(['forward(3)', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['forward(3)', 'turn_right()', 'forward(2)']),
+      sao: { o: 10, nhip: 6 },
       goiY: [
-        'Bánh gai bám chắc trên ô đá vôi ướt I, mỗi nhịp tiến đúng 1 ô.',
-        'Nhấn nút Chạy để hoàn thành màn làm quen.'
+        'Luna: Bánh gai đi như xe hai bánh: move(), forward(n), turn_right() trong kho của bạn dùng được hết.',
+        'Luna: Ô I không làm bánh gai trượt, mỗi bước vẫn đúng một ô. Hố sụt u thì vẫn rơi.'
       ]
     }),
 
     manGai(2, 'lam-quen', {
-      ten: 'Đếm bước trên đá ướt',
-      hamCuaEmCan: ['move', 'forward'],
-      deBai: 'Dải đá vôi ướt dẫn thẳng tới cờ cách robot 4 bước. Mã mẫu mới đi 3 bước nên dừng trước cờ 1 ô. Hãy sửa đối số của forward() để robot tới đúng lá cờ.',
-      veMaMau: 'Chạy thử: forward(3) dừng ở ô (4, 1). Đổi số bước trong forward(3) thành 4.',
+      ten: 'Dừng giữa dải đá',
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Giúp Sola với! Dải đá ướt dài tới tận miệng hố sụt. Lối xuống cờ nằm ở giữa dải. Đưa R1 dừng đúng chỗ rẽ rồi xuống cờ.',
+      veMaMau: 'Sola đếm nhầm số ô. Chạy thử xem R1 dừng ở đâu.',
       san: [
-        '#######',
-        '#.IIIF#',
-        '#######'
+        '#########',
+        '#.IIIIIu#',
+        '#uuuuI###',
+        '#####F###',
+        '#########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['forward(3)']),
-      loiGiai: bai(['forward(4)']),
+      maMau: bai(['forward(6)', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['forward(4)', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Để nguyên forward(3): dừng trước cờ 1 ô', baiLam: bai(['forward(3)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Để nguyên forward(6): R1 bước vào hố sụt', baiLam: bai(['forward(6)', 'turn_right()', 'forward(2)']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'forward(3): rẽ sớm một ô, R1 rơi xuống hố', baiLam: bai(['forward(3)', 'turn_right()', 'forward(2)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 6, nhip: 4 },
+      sao: { o: 10, nhip: 7 },
       goiY: [
-        'Từ ô (1, 1) tới cờ ở (5, 1) là 4 bước.',
-        'Sửa forward(3) thành forward(4).'
+        'Luna: Đếm từ ô R1 đứng tới ô ngay trên lối xuống.',
+        'Luna: Lối xuống ở cột thứ năm, R1 đứng ở cột thứ nhất: cần 4 bước.'
       ]
     }),
 
     manGai(3, 'lam-quen', {
-      ten: 'Rẽ quanh hố sụt',
-      hamCuaEmCan: ['move', 'forward', 'turn_right'],
-      deBai: 'Giữa hang có hố sụt sâu (u). Bánh gai bám tốt trên đá ướt nhưng bước vào hố sụt vẫn sẽ rơi xuống. Hãy đi ngang 3 bước qua dải đá ướt, rẽ phải rồi đi xuống 2 bước tới cờ.',
-      veMaMau: 'Đoạn ngang và lệnh rẽ phải đã có sẵn. Viết thêm lệnh tiến 2 ô xuống cờ.',
+      ten: 'Lùi khỏi miệng hố',
+      hamCuaEmCan: ['back', 'forward', 'turn_right'],
+      deBai: 'Giúp Sola với! R1 đứng ngay trước một hố sụt. Đi tiếp là rơi. Lùi ra chỗ ngã rẽ rồi xuống cờ.',
+      veMaMau: 'Sola mới cho R1 lùi một ô. Chạy thử xem.',
       san: [
         '######',
-        '#.II.#',
-        '#.uuI#',
-        '####F#',
+        '#.IIu#',
+        '#I####',
+        '#F####',
         '######'
       ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['forward(3)', 'turn_right()']),
-      loiGiai: bai(['forward(3)', 'turn_right()', 'forward(2)']),
+      batDau: { x: 3, y: 1, huong: 1 },
+      maMau: bai(['back()', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['back()', 'back()', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Chưa viết đoạn sau khi rẽ: dừng ở góc (4, 1)', baiLam: bai(['forward(3)', 'turn_right()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Chỉ đi ngang 2 bước đã rẽ phải: rơi xuống hố sụt (3, 2)', baiLam: bai(['forward(2)', 'turn_right()', 'forward(2)']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Lùi một ô rồi rẽ: R1 đâm vào vách', baiLam: bai(['back()', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Tiến thay vì lùi: R1 rơi xuống hố', baiLam: bai(['move()', 'turn_right()', 'forward(2)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 10, nhip: 6 },
+      sao: { o: 14, nhip: 5 },
       goiY: [
-        'Sau khi rẽ phải ở (4, 1), cờ nằm cách 2 ô phía trước mặt robot.',
-        'Thêm dòng forward(2) vào cuối chương trình.'
+        'Luna: back() lùi một ô mà không quay đầu.',
+        'Luna: Ngã rẽ ở cột đầu tiên, R1 phải lùi 2 ô.'
       ]
     }),
 
-    manGai(4, 'lam-quen', {
-      ten: 'Lùi khỏi ngách cụt',
-      hamCuaEmCan: ['move', 'back', 'forward', 'turn_right'],
-      deBai: 'Robot đang đứng sát vách đá cuối ngách hẹp bên phải. Hãy dùng back() lùi 2 ô ra ngã ba, rẽ phải rồi tiến 3 bước xuống cờ.',
-      veMaMau: 'Mã mẫu mới lùi 1 ô nên rẽ phải sẽ đâm vào vách đá.',
+    manGai(4, 'luyen', {
+      ten: 'Rẽ trái men hố',
+      hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left'],
+      deBai: 'Giúp Sola với! Hai bên lối đi toàn hố sụt. R1 phải xuống hai ô rồi rẽ sang phải màn hình để tới cờ.',
+      veMaMau: 'Sola rẽ nhầm phía ở góc dưới. Chạy thử xem R1 đi đâu.',
       san: [
-        '######',
-        '#.III#',
-        '##I###',
-        '##I###',
-        '##F###',
-        '######'
+        '#######',
+        '#.Iuuu#',
+        '#uIuuu#',
+        '#uIIIF#',
+        '#######'
       ],
-      batDau: { x: 4, y: 1, huong: 1 },
-      maMau: bai(['back()', 'turn_right()', 'forward(3)']),
-      loiGiai: bai(['back()', 'back()', 'turn_right()', 'forward(3)']),
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: bai(['move()', 'turn_right()', 'forward(2)', 'turn_right()', 'forward(3)']),
+      loiGiai: bai(['move()', 'turn_right()', 'forward(2)', 'turn_left()', 'forward(3)']),
       loiSai: [
-        { moTa: 'Chỉ lùi 1 ô rồi rẽ: húc vào vách đá', baiLam: bai(['back()', 'turn_right()', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Rẽ phải ở góc dưới: R1 quay sang trái màn hình rồi rơi xuống hố', baiLam: bai(['move()', 'turn_right()', 'forward(2)', 'turn_right()', 'forward(3)']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Quên rẽ ở góc dưới: R1 đâm vào vách đáy', baiLam: bai(['move()', 'turn_right()', 'forward(2)', 'forward(3)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 14, nhip: 6 },
+      sao: { o: 14, nhip: 8 },
       goiY: [
-        'Robot đang nhìn sang phải ở (4, 1), cần lùi 2 lần bằng back() để về ngã ba (2, 1).',
-        'Tại (2, 1), quay phải sẽ hướng xuống dưới để đi thẳng 3 ô tới cờ.'
+        'Luna: Ở góc dưới R1 đang nhìn xuống. Muốn sang phải màn hình thì R1 phải rẽ về tay trái của nó.',
+        'Luna: Đổi turn_right() thứ hai thành turn_left().'
       ]
     }),
 
     manGai(5, 'luyen', {
-      ten: 'Chế lệnh: bước gai rẽ góc',
-      taoHam: ['spike_step'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right'],
-      deBai: 'Trong hang động có rất nhiều góc cua vuông. Hãy tạo hàm spike_step(n) gồm hai việc: tiến n bước bằng forward(n) rồi quay phải bằng turn_right(). Chương trình chính sẽ gọi spike_step(3) hai lần để tới cờ.',
-      veMaMau: 'Mở Xưởng hàm, tạo spike_step(n) gồm 2 dòng: forward(n) và turn_right().',
+      ten: 'Bậc đá ướt',
+      hamCuaEmCan: ['move', 'stair'],
+      deBai: 'Giúp Sola với! Lối đi xuống như ba bậc thang, mỗi bậc một ô sang phải rồi một ô xuống. Kho của bạn có sẵn stair(). Đưa R1 tới cờ.',
+      veMaMau: 'Sola mới lặp hai bậc. Chạy thử xem.',
       san: [
-        '######',
-        '#.II.#',
-        '####I#',
-        '####I#',
-        '####F#',
-        '######'
+        '########',
+        '#.Iuuuu#',
+        '#uIIuuu#',
+        '#uuIIuu#',
+        '#uuuIF##',
+        '########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['spike_step(3)', 'spike_step(3)']),
-      loiGiai: bai(
-        ['spike_step(3)', 'spike_step(3)'],
-        [],
-        [ham('spike_step', ['forward(n)', 'turn_right()'], ['n'])]
-      ),
+      maMau: bai(['for i in range(2):', '    stair()', 'move()']),
+      loiGiai: bai(['for i in range(3):', '    stair()', 'move()']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm spike_step', baiLam: bai(['spike_step(3)', 'spike_step(3)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên gọi turn_right() trong spike_step: đâm tường ở cuối đoạn ngang', baiLam: bai(['spike_step(3)', 'spike_step(3)']), hamCuaEmMoi: [ham('spike_step', ['forward(n)'], ['n'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Lặp hai bậc: R1 dừng giữa đường', baiLam: bai(['for i in range(2):', '    stair()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Viết stair() ba dòng thay vì lặp: tới cờ nhưng tốn ô', baiLam: bai(['stair()', 'stair()', 'stair()', 'move()']) }
       ],
-      sao: { o: 11, nhip: 7 },
+      sao: { o: 14, nhip: 13 },
       goiY: [
-        'Trong thân hàm spike_step(n), dòng 1 là forward(n) và dòng 2 là turn_right().',
-        'Khi gọi spike_step(3) hai lần, robot đi ngang 3 ô, rẽ phải, rồi đi xuống 3 ô vào cờ.'
+        'Luna: stair() đi một ô, rẽ phải, đi một ô, rẽ trái: đúng một bậc.',
+        'Luna: Ba bậc thì lặp ba lần, xong còn một bước tới cờ.'
       ]
     }),
 
     manGai(6, 'luyen', {
-      ten: 'Vòng quanh hố đá vôi',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Hành lang đá ướt bao quanh một hố sụt lớn ở giữa. Hãy dùng vòng lặp for lặp 3 lần lệnh spike_step(3) để đi 3 cạnh quanh hố sụt tới cờ.',
-      veMaMau: 'Mã mẫu mới lặp 2 cạnh nên dừng ở góc dưới phải.',
+      ten: 'Chế lệnh: men vách rẽ phải',
+      taoHam: ['rim'], chinhCoDinh: true,
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Giúp Sola với! Trong hang, R1 hay phải đi một đoạn rồi rẽ phải. Chế hàm rim(n): tiến n ô rồi rẽ phải. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi rim(4), rim(2) rồi forward(4). Mở Xưởng hàm, chế rim(n) rồi bấm Chạy.',
       san: [
-        '######',
-        '#.II.#',
-        '#u.uI#',
-        '#uuu.#',
-        '#FII.#',
-        '######'
+        '#######',
+        '#.IIII#',
+        '#uuuuI#',
+        '#FIIII#',
+        '#######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['for i in range(2):', '    spike_step(3)']),
-      loiGiai: bai(['for i in range(3):', '    spike_step(3)']),
+      maMau: bai(['rim(4)', 'rim(2)', 'forward(4)']),
+      loiGiai: bai(['rim(4)', 'rim(2)', 'forward(4)'], [], [RIM]),
       loiSai: [
-        { moTa: 'Chỉ lặp 2 lần: dừng ở góc dưới phải (4, 4)', baiLam: bai(['for i in range(2):', '    spike_step(3)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Truyền spike_step(2): rẽ sớm rơi xuống hố sụt', baiLam: bai(['for i in range(3):', '    spike_step(2)']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Chưa chế hàm rim', baiLam: bai(['rim(4)', 'rim(2)', 'forward(4)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên rẽ phải trong rim: R1 đâm vào vách cuối dải', baiLam: bai(['rim(4)', 'rim(2)', 'forward(4)']), hamCuaEmMoi: [ham('rim', ['forward(n)'], ['n'])], phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 11, nhip: 11 },
+      sao: { o: 12, nhip: 12 },
       goiY: [
-        'Mỗi cạnh của hành lang dài 3 bước.',
-        'Đổi range(2) thành range(3) để đi trọn 3 cạnh tới cờ ở (1, 4).'
+        'Luna: Thân rim(n) có hai dòng: forward(n) rồi turn_right().',
+        'Luna: n là số ô mỗi lần gọi đưa vào, rim(4) thì n là 4.'
       ]
     }),
 
-    manGai(7, 'luyen', {
-      ten: 'Chế lệnh: bậc thang đá vôi',
-      taoHam: ['cave_zig'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'spike_step'],
-      deBai: 'Tạo hàm cave_zig(a, b) để đi một bậc zích zắc: gọi spike_step(a) (tiến a bước rồi rẽ phải), tiếp tục gọi forward(b) để đi xuống b bước, rồi gọi turn_left() để lấy lại hướng ban đầu.',
-      veMaMau: 'Trong cave_zig(a, b), kết hợp spike_step(a), forward(b) và turn_left().',
+    manGai(7, 'bien-the', {
+      ten: 'Vòng quanh hố lớn',
+      hamCuaEmCan: ['rim'],
+      deBai: 'Giúp Sola với! Một hố sụt lớn chiếm giữa hang. R1 phải đi vòng ba cạnh quanh hố, cạnh nào cũng dài 3 ô.',
+      veMaMau: 'Sola mới lặp hai cạnh. Chạy thử xem.',
       san: [
-        '########',
-        '#.II####',
-        '###I####',
-        '###.IIF#',
-        '########'
+        '######',
+        '#.III#',
+        '#uuuI#',
+        '#uuuI#',
+        '#FIII#',
+        '######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['cave_zig(2, 2)', 'forward(3)']),
-      loiGiai: bai(
-        ['cave_zig(2, 2)', 'forward(3)'],
-        [],
-        [ham('cave_zig', ['spike_step(a)', 'forward(b)', 'turn_left()'], ['a', 'b'])]
-      ),
+      maMau: bai(['for i in range(2):', '    rim(3)']),
+      loiGiai: bai(['for i in range(3):', '    rim(3)']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm cave_zig', baiLam: bai(['cave_zig(2, 2)', 'forward(3)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên gọi turn_left() cuối hàm cave_zig: đoạn sau đi thẳng xuống tường', baiLam: bai(['cave_zig(2, 2)', 'forward(3)']), hamCuaEmMoi: [ham('cave_zig', ['spike_step(a)', 'forward(b)'], ['a', 'b'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Lặp hai lần: R1 dừng ở góc dưới phải', baiLam: bai(['for i in range(2):', '    rim(3)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'rim(2): rẽ sớm, R1 rơi xuống hố', baiLam: bai(['for i in range(3):', '    rim(2)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 16, nhip: 9 },
+      sao: { o: 11, nhip: 11 },
       goiY: [
-        'Thân hàm cave_zig(a, b) gồm 3 dòng: spike_step(a), forward(b), turn_left().',
-        'Sau cave_zig(2, 2), robot ở (3, 3) hướng sang phải và đi tiếp forward(3) tới cờ.'
+        'Luna: Ba cạnh giống nhau, mỗi cạnh là rim(3).',
+        'Luna: Rẽ thêm một lần khi đã đứng trên cờ cũng không sao.'
       ]
     }),
 
     manGai(8, 'bien-the', {
-      ten: 'Hai tầng bậc đá ướt',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'spike_step', 'cave_zig'],
-      deBai: 'Vách hang chia thành 2 bậc zích zắc liên tiếp: mỗi bậc đi ngang 2 bước, xuống 1 bước rồi lại hướng sang phải. Hãy dùng vòng lặp gọi cave_zig(2, 1) hai lần rồi bước vào cờ.',
-      veMaMau: 'Mã mẫu truyền nhầm độ dài trong cave_zig(1, 2) khiến robot lao xuống hố sụt.',
+      ten: 'Xoắn ốc vào lõi hang',
+      hamCuaEmCan: ['rim', 'move'],
+      deBai: 'Giúp Sola với! Lối đi xoắn ốc vào giữa hang, mỗi vòng ngắn hơn. Đưa R1 tới cờ ở lõi.',
+      veMaMau: 'Sola viết đúng ba đoạn đầu. Chạy thử rồi viết tiếp.',
       san: [
-        '########',
-        '#.II####',
-        '#.u.II##',
-        '###.u.F#',
-        '########'
+        '#######',
+        '#.IIII#',
+        '#uuuuI#',
+        '#uIF#I#',
+        '#uIIII#',
+        '#######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['for i in range(2):', '    cave_zig(1, 2)', 'move()']),
-      loiGiai: bai(['for i in range(2):', '    cave_zig(2, 1)', 'move()']),
+      maMau: bai(['rim(4)', 'rim(3)', 'rim(3)']),
+      loiGiai: bai(['rim(4)', 'rim(3)', 'rim(3)', 'rim(1)', 'move()']),
       loiSai: [
-        { moTa: 'Để nguyên cave_zig(1, 2): rẽ sớm rơi xuống hố (2, 2)', baiLam: bai(['for i in range(2):', '    cave_zig(1, 2)', 'move()']), phaiCoMa: ['roi-ho'] },
-        { moTa: 'Quên lệnh move() cuối cùng: dừng sát trước cờ', baiLam: bai(['for i in range(2):', '    cave_zig(2, 1)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Dừng sau ba đoạn đầu: R1 còn ở góc dưới trái', baiLam: bai(['rim(4)', 'rim(3)', 'rim(3)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'rim(2) ở đoạn thứ tư: R1 đi quá chỗ rẽ, rơi xuống hố', baiLam: bai(['rim(4)', 'rim(3)', 'rim(3)', 'rim(2)', 'move()']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 17, nhip: 11 },
+      sao: { o: 14, nhip: 16 },
       goiY: [
-        'Mỗi bậc cần đi ngang 2 ô rồi đi xuống 1 ô: cave_zig(2, 1).',
-        'Sửa cave_zig(1, 2) thành cave_zig(2, 1).'
+        'Luna: Sau ba đoạn đầu, R1 ở góc dưới trái, mặt nhìn lên.',
+        'Luna: Lên một ô rồi rẽ phải là rim(1), xong một bước nữa là tới cờ.'
       ]
     }),
 
     manGai(9, 'bien-the', {
-      ten: 'Chế lệnh: cua chữ U đá vôi',
-      taoHam: ['limestone_bend'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Tạo hàm limestone_bend(a, b, c) để ôm trọn một khúc cua chữ U: gọi spike_step(a), gọi tiếp spike_step(b), rồi đi cạnh thứ ba bằng forward(c).',
-      veMaMau: 'Mở Xưởng hàm, tạo limestone_bend(a, b, c) gồm 3 dòng: spike_step(a), spike_step(b), forward(c).',
+      ten: 'Đường rắn bò',
+      hamCuaEmCan: ['forward', 'bend_right', 'bend_left'],
+      deBai: 'Giúp Sola với! Lối đi uốn qua lại như rắn bò. Kho của bạn còn bend_right() và bend_left() từ hồi ở kho hàng: quay, đi 2 ô, quay cùng phía.',
+      veMaMau: 'Sola dùng bend_right() cho cả hai khúc cua. Chạy thử xem.',
       san: [
-        '#######',
-        '#.III.#',
-        '#.uuuI#',
-        '#FIII.#',
-        '#######'
+        '######',
+        '#.III#',
+        '#uuuI#',
+        '#IIII#',
+        '#Iuuu#',
+        '#IIIF#',
+        '######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['limestone_bend(4, 2, 4)']),
-      loiGiai: bai(
-        ['limestone_bend(4, 2, 4)'],
-        [],
-        [ham('limestone_bend', ['spike_step(a)', 'spike_step(b)', 'forward(c)'], ['a', 'b', 'c'])]
-      ),
+      maMau: bai(['forward(3)', 'bend_right()', 'forward(3)', 'bend_right()', 'forward(3)']),
+      loiGiai: bai(['forward(3)', 'bend_right()', 'forward(3)', 'bend_left()', 'forward(3)']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm limestone_bend', baiLam: bai(['limestone_bend(4, 2, 4)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Thiếu dòng forward(c): dừng ở góc dưới phải (5, 3)', baiLam: bai(['limestone_bend(4, 2, 4)']), hamCuaEmMoi: [ham('limestone_bend', ['spike_step(a)', 'spike_step(b)'], ['a', 'b', 'c'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'bend_right() ở khúc thứ hai: R1 quay lên rồi rơi xuống hố', baiLam: bai(['forward(3)', 'bend_right()', 'forward(3)', 'bend_right()', 'forward(3)']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'forward(2) ở hàng giữa: R1 cua sớm, rơi xuống hố', baiLam: bai(['forward(3)', 'bend_right()', 'forward(2)', 'bend_left()', 'forward(3)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 13, nhip: 12 },
+      sao: { o: 22, nhip: 17 },
       goiY: [
-        'Hai cạnh đầu vừa đi vừa rẽ phải bằng spike_step(a) và spike_step(b).',
-        'Cạnh cuối tiến thẳng tới đích bằng forward(c).'
+        'Luna: Ở hàng giữa R1 nhìn sang trái màn hình. Muốn xuống thì rẽ về tay trái của nó.',
+        'Luna: Khúc cua thứ hai là bend_left().'
       ]
     }),
 
     manGai(10, 'trum', {
-      ten: 'Trùm: Hẻm đá vôi ngập nước',
-      huyHieu: { ma: 'banh-gai', ten: 'Huy hiệu Bám đá vôi ướt' },
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'spike_step', 'cave_zig', 'limestone_bend'],
-      nhipTheo: 'tong',
-      deBai: 'Đưa robot vượt qua hẻm đá vôi ướt và các hố sụt trên cả hai sân. Đầu tiên gọi cave_zig(2, 2) để xuống tầng giữa, sau đó gọi limestone_bend(3, 2, 4) để vòng qua hố sụt về cờ.',
-      veMaMau: 'Kết hợp hai hàm đã chế: cave_zig(2, 2) và limestone_bend(3, 2, 4).',
+      ten: 'Trùm: Hẻm rắn bò dài',
+      hamCuaEmCan: ['forward', 'bend_right', 'bend_left'],
+      deBai: 'Giúp Sola với! Hẻm rắn bò dài gấp đôi, hai bên toàn hố sụt. Chương trình chỉ được 8 ô.',
+      veMaMau: 'Chương trình Sola viết sẵn chỉ đi được khúc đầu.',
       san: [
-        [
-          '########',
-          '#.II####',
-          '#.uI####',
-          '##u.III#',
-          '##.uuuI#',
-          '##FIII.#',
-          '########'
-        ],
-        [
-          '########',
-          '#.I.####',
-          '#uu.####',
-          '###.II.#',
-          '##uuuu.#',
-          '##F.II.#',
-          '########'
-        ]
+        '######',
+        '#.III#',
+        '#uuuI#',
+        '#IIII#',
+        '#Iuuu#',
+        '#IIII#',
+        '#uuuI#',
+        '#IIII#',
+        '#Iuuu#',
+        '#IIIF#',
+        '######'
       ],
-      batDau: [
-        { x: 1, y: 1, huong: 1 },
-        { x: 1, y: 1, huong: 1 }
-      ],
-      maMau: bai([]),
-      loiGiai: bai([
-        'cave_zig(2, 2)',
-        'limestone_bend(3, 2, 4)'
-      ]),
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: bai(['forward(3)', 'bend_right()']),
+      loiGiai: bai(['for i in range(2):', '    forward(3)', '    bend_right()', '    forward(3)', '    bend_left()', 'forward(3)']),
       loiSai: [
-        { moTa: 'Truyền nhầm limestone_bend(3, 2, 3): dừng trước cờ 1 ô', baiLam: bai(['cave_zig(2, 2)', 'limestone_bend(3, 2, 3)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Lặp hai lần mà quên forward(3) cuối: R1 dừng ở góc dưới trái', baiLam: bai(['for i in range(2):', '    forward(3)', '    bend_right()', '    forward(3)', '    bend_left()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Trong vòng lặp dùng bend_right() hai lần: R1 rơi xuống hố', baiLam: bai(['for i in range(2):', '    forward(3)', '    bend_right()', '    forward(3)', '    bend_right()', 'forward(3)']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Viết thẳng hết, không lặp: tới cờ nhưng quá 8 ô', baiLam: bai(['forward(3)', 'bend_right()', 'forward(3)', 'bend_left()', 'forward(3)', 'bend_right()', 'forward(3)', 'bend_left()', 'forward(3)']) }
       ],
-      sao: { o: 19, nhip: 34 },
+      sao: { o: 23, nhip: 31 },
       goiY: [
-        'cave_zig(2, 2) đưa robot từ (1, 1) xuống (3, 3) và giữ hướng sang phải.',
-        'Từ (3, 3), gọi limestone_bend(3, 2, 4) để đi sang (6, 3), xuống (6, 5) rồi về cờ ở (2, 5).'
+        'Luna: Một vòng gồm sang phải, cua xuống, sang trái, cua xuống. Hẻm có hai vòng như thế.',
+        'Luna: Sau hai vòng còn một đoạn sang phải tới cờ.'
       ]
     }),
 
     /* ========================================================================
-       CHƯƠNG 2: tu-dien — Từ điển tra cứu (10 màn)
+       CHƯƠNG 2: tu-dien — Sổ tay đường hang
        ====================================================================== */
     manTuDien(1, 'lam-quen', {
-      ten: 'Sổ tay địa chất',
+      ten: 'Sổ tay của Luna',
       chiChay: true, chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Trong Python, từ điển (dict) lưu các cặp khóa: giá_trị trong ngoặc nhọn, ví dụ d = {"ngang": 3, "doc": 2}. Khi viết d["ngang"], Python tra sổ và trả về số 3. Bấm Chạy để xem robot tra từ điển và đi tới cờ.',
-      veMaMau: 'Chương trình đã viết sẵn và khóa. Bấm Chạy: d["ngang"] trả về 3, d["doc"] trả về 2.',
+      khoaTD: ['ngang', 'doc'],
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Sola làm mẫu. Luna ghi đường hang vào một cuốn sổ tay: từ điển d. Mỗi dòng sổ có một khoá (chữ trong ngoặc kép) và một giá trị (số). d["ngang"] đọc giá trị ghi ở khoá "ngang". Bấm Chạy xem R1 đi theo sổ.',
+      veMaMau: 'Dòng đầu tạo sổ d với hai khoá "ngang" và "doc". Hai dòng forward đọc số bước từ sổ.',
       san: [
-        '######',
-        '#.II.#',
-        '####I#',
-        '####F#',
-        '######'
+        '########',
+        '#.IIIIu#',
+        '#####I##',
+        '#####F##',
+        '########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"ngang": 3, "doc": 2}',
-        'spike_step(d["ngang"])',
-        'forward(d["doc"])'
-      ]),
-      loiGiai: bai([
-        'd = {"ngang": 3, "doc": 2}',
-        'spike_step(d["ngang"])',
-        'forward(d["doc"])'
-      ]),
-      sao: { o: 12, nhip: 6 },
+      maMau: bai(['d = {"ngang": 4, "doc": 2}', 'forward(d["ngang"])', 'turn_right()', 'forward(d["doc"])']),
+      loiGiai: bai(['d = {"ngang": 4, "doc": 2}', 'forward(d["ngang"])', 'turn_right()', 'forward(d["doc"])']),
+      sao: { o: 11, nhip: 7 },
       goiY: [
-        'd["ngang"] lấy giá trị gắn với khóa "ngang" là 3.',
-        'd["doc"] lấy giá trị gắn với khóa "doc" là 2.'
+        'Luna: d["ngang"] là 4 nên forward(d["ngang"]) giống forward(4).',
+        'Luna: Đổi số trong sổ thì mọi chỗ đọc sổ đổi theo.'
       ]
     }),
 
     manTuDien(2, 'lam-quen', {
-      ten: 'Tra đúng khóa bản đồ',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Bản đồ từ điển d = {"dong": 4, "nam": 3} ghi chặng hướng đông dài 4 bước và chặng hướng nam dài 3 bước. Mã mẫu đang tra nhầm d["dong"] cho cả hai chặng khiến robot đâm vào vách đá. Hãy sửa khóa ở dòng cuối.',
-      veMaMau: 'Chạy thử: forward(d["dong"]) đi 4 bước nên đâm tường dưới. Đổi khóa thành "nam".',
+      ten: 'Chế lệnh: đi theo sổ',
+      taoHam: ['follow'], chinhCoDinh: true,
+      khoaTD: ['ngang', 'doc'],
+      hamCuaEmCan: ['forward', 'turn_right', 'turn_left'],
+      deBai: 'Giúp Sola với! Luna ghi hai đoạn đường vào hai cuốn sổ a và b. Chế hàm follow(book): đi ngang book["ngang"] ô, rẽ phải, đi xuống book["doc"] ô, rẽ trái. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính tạo sổ a, b rồi gọi follow(a), follow(b). Mở Xưởng hàm, chế follow(book). Chạm ô số để chọn book["ngang"].',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '####uI#',
-        '#....F#',
-        '#######'
+        '########',
+        '#.II####',
+        '#uuIIII#',
+        '#uuuuuI#',
+        '######F#',
+        '########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"dong": 4, "nam": 3}',
-        'spike_step(d["dong"])',
-        'forward(d["dong"])'
-      ]),
-      loiGiai: bai([
-        'd = {"dong": 4, "nam": 3}',
-        'spike_step(d["dong"])',
-        'forward(d["nam"])'
-      ]),
+      maMau: bai(['a = {"ngang": 2, "doc": 1}', 'b = {"ngang": 3, "doc": 2}', 'follow(a)', 'follow(b)']),
+      loiGiai: bai(['a = {"ngang": 2, "doc": 1}', 'b = {"ngang": 3, "doc": 2}', 'follow(a)', 'follow(b)'], [], [FOLLOW]),
       loiSai: [
-        { moTa: 'Đổi cả hai dòng thành "nam": rẽ sớm rơi xuống hố', baiLam: bai(['d = {"dong": 4, "nam": 3}', 'spike_step(d["nam"])', 'forward(d["nam"])']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Chưa chế hàm follow', baiLam: bai(['a = {"ngang": 2, "doc": 1}', 'b = {"ngang": 3, "doc": 2}', 'follow(a)', 'follow(b)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Viết số cứng forward(2) thay cho book["ngang"]: sổ b dài hơn nên R1 rẽ sớm', baiLam: bai(['a = {"ngang": 2, "doc": 1}', 'b = {"ngang": 3, "doc": 2}', 'follow(a)', 'follow(b)']), hamCuaEmMoi: [ham('follow', ['forward(2)', 'turn_right()', 'forward(book["doc"])', 'turn_left()'], ['book'])], phaiCoMa: ['roi-ho'] },
+        { moTa: 'Quên rẽ trái cuối hàm: lần gọi thứ hai R1 đi xuống rồi đâm vách', baiLam: bai(['a = {"ngang": 2, "doc": 1}', 'b = {"ngang": 3, "doc": 2}', 'follow(a)', 'follow(b)']), hamCuaEmMoi: [ham('follow', ['forward(book["ngang"])', 'turn_right()', 'forward(book["doc"])'], ['book'])], phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 12, nhip: 8 },
+      sao: { o: 17, nhip: 11 },
       goiY: [
-        'Chặng đi xuống từ (5, 1) tới cờ (5, 4) dài 3 bước, ứng với khóa "nam".',
-        'Sửa dòng cuối thành forward(d["nam"]).'
+        'Luna: Trong thân hàm, sổ tên là book. Lần gọi follow(a) thì book là sổ a, lần follow(b) thì book là sổ b.',
+        'Luna: Hai sổ ghi số khác nhau nên phải đọc book["ngang"], book["doc"], không viết số cứng.'
       ]
     }),
 
     manTuDien(3, 'lam-quen', {
-      ten: 'Ghi thêm mục mới vào sổ',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Ta có thể khởi tạo từ điển rỗng d = {} rồi ghi thêm từng cặp bằng cú pháp d["a"] = 3. Hãy sửa giá trị của d["b"] để robot đi xuống đúng 3 bước tới cờ.',
-      veMaMau: 'Mã mẫu đang gán d["b"] = 1 nên mới đi xuống 1 ô.',
+      ten: 'Sửa số trong sổ',
+      khoaTD: ['ngang', 'doc'],
+      hamCuaEmCan: ['follow'],
+      deBai: 'Giúp Sola với! Luna ghi nhầm một số trong sổ b. Sửa sổ để R1 tới cờ.',
+      veMaMau: 'Chạy thử xem R1 rẽ sai ở đâu, rồi chạm vào số trong sổ để sửa.',
       san: [
-        '######',
-        '#.II.#',
-        '####I#',
-        '####I#',
-        '####F#',
-        '######'
+        '#########',
+        '#.III####',
+        '#uuuI####',
+        '#uuuIIIF#',
+        '#########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {}',
-        'd["a"] = 3',
-        'd["b"] = 1',
-        'spike_step(d["a"])',
-        'forward(d["b"])'
-      ]),
-      loiGiai: bai([
-        'd = {}',
-        'd["a"] = 3',
-        'd["b"] = 3',
-        'spike_step(d["a"])',
-        'forward(d["b"])'
-      ]),
+      maMau: bai(['a = {"ngang": 3, "doc": 2}', 'b = {"ngang": 1, "doc": 0}', 'follow(a)', 'forward(b["ngang"])']),
+      loiGiai: bai(['a = {"ngang": 3, "doc": 2}', 'b = {"ngang": 3, "doc": 0}', 'follow(a)', 'forward(b["ngang"])']),
       loiSai: [
-        { moTa: 'Để nguyên d["b"] = 1: dừng ở (4, 2)', baiLam: bai(['d = {}', 'd["a"] = 3', 'd["b"] = 1', 'spike_step(d["a"])', 'forward(d["b"])']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gán d["b"] = 2: vẫn thiếu 1 bước tới cờ', baiLam: bai(['d = {}', 'd["a"] = 3', 'd["b"] = 2', 'spike_step(d["a"])', 'forward(d["b"])']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Để nguyên b["ngang"] là 1: R1 dừng giữa đường', baiLam: bai(['a = {"ngang": 3, "doc": 2}', 'b = {"ngang": 1, "doc": 0}', 'follow(a)', 'forward(b["ngang"])']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Sửa nhầm a["ngang"] thành 4: R1 đâm vách ở hàng trên', baiLam: bai(['a = {"ngang": 4, "doc": 2}', 'b = {"ngang": 1, "doc": 0}', 'follow(a)', 'forward(b["ngang"])']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 14, nhip: 7 },
+      sao: { o: 17, nhip: 10 },
       goiY: [
-        'Từ góc (4, 1) xuống cờ (4, 4) là 3 bước.',
-        'Sửa d["b"] = 1 thành d["b"] = 3.'
+        'Luna: Sau follow(a), R1 đứng ở góc hàng dưới, mặt sang phải. Cờ còn cách 3 ô.',
+        'Luna: forward(b["ngang"]) đọc khoá "ngang" của sổ b: sửa số đó thành 3.'
       ]
     }),
 
-    manTuDien(4, 'lam-quen', {
-      ten: 'Kiểm tra khóa trong từ điển',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Tra một khóa chưa có trong từ điển sẽ gây lỗi. Ta dùng "b" in d để kiểm tra khóa có tồn tại hay không, và "b" not in d để kiểm tra khóa chưa có. Hãy hoàn thành nhánh if để đi nốt chặng thứ hai.',
-      veMaMau: 'Nếu "b" not in d thì gán d["b"] = 2; sau đó kiểm tra nếu "b" in d thì tiến d["b"] bước.',
+    manTuDien(4, 'luyen', {
+      ten: 'Thêm dòng vào sổ',
+      khoaTD: ['ngang', 'doc'],
+      hamCuaEmCan: ['follow'],
+      deBai: 'Giúp Sola với! Sổ d mới ghi khoá "ngang", chưa có khoá "doc", nên follow(d) không đọc được. Thêm cặp "doc" vào sổ.',
+      veMaMau: 'Chạy thử để xem báo lỗi. Chạm dấu + trong dòng tạo sổ để thêm một cặp khoá: giá trị.',
       san: [
-        '######',
-        '#.II.#',
-        '####I#',
-        '####F#',
-        '######'
+        '#######',
+        '#.IIu##',
+        '#uuI###',
+        '#uuI###',
+        '#uuIIF#',
+        '#######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"a": 3}',
-        'if "b" not in d:',
-        '    d["b"] = 2',
-        'spike_step(d["a"])'
-      ]),
-      loiGiai: bai([
-        'd = {"a": 3}',
-        'if "b" not in d:',
-        '    d["b"] = 2',
-        'spike_step(d["a"])',
-        'if "b" in d:',
-        '    forward(d["b"])'
-      ]),
+      maMau: bai(['d = {"ngang": 2}', 'follow(d)', 'forward(2)']),
+      loiGiai: bai(['d = {"ngang": 2, "doc": 3}', 'follow(d)', 'forward(2)']),
       loiSai: [
-        { moTa: 'Chưa viết đoạn đi xuống: dừng ở góc (4, 1)', baiLam: bai(['d = {"a": 3}', 'if "b" not in d:', '    d["b"] = 2', 'spike_step(d["a"])']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gán d["b"] = 1: đi thiếu 1 ô tới cờ', baiLam: bai(['d = {"a": 3}', 'if "b" not in d:', '    d["b"] = 1', 'spike_step(d["a"])', 'if "b" in d:', '    forward(d["b"])']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Sổ chưa có khoá "doc": chương trình dừng vì không tìm thấy khoá', baiLam: bai(['d = {"ngang": 2}', 'follow(d)', 'forward(2)']), phaiCoMa: ['loi-chay'] },
+        { moTa: 'Thêm "doc": 2: R1 rẽ sớm một hàng rồi đâm vách', baiLam: bai(['d = {"ngang": 2, "doc": 2}', 'follow(d)', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 15, nhip: 6 },
+      sao: { o: 16, nhip: 9 },
       goiY: [
-        'Sau spike_step(d["a"]), robot đã ở góc (4, 1) và quay mặt xuống dưới.',
-        'Thêm if "b" in d: rồi thụt lề forward(d["b"]) (hoặc gọi thẳng forward(d["b"])).'
+        'Luna: Muốn đọc d["doc"] thì sổ phải có khoá "doc".',
+        'Luna: Từ hàng trên xuống hàng có cờ là 3 ô.'
       ]
     }),
 
     manTuDien(5, 'luyen', {
-      ten: 'Chế lệnh: bước theo khóa',
-      taoHam: ['dict_step'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Tạo hàm dict_step(d, k) nhận từ điển d và khóa k: tra số bước trong d[k] rồi gọi spike_step(d[k]) để vừa tiến vừa rẽ phải.',
-      veMaMau: 'Mở Xưởng hàm, tạo dict_step(d, k) gồm 1 dòng: spike_step(d[k]).',
+      ten: 'Ghi lại một dòng',
+      khoaTD: ['ngang', 'doc'],
+      hamCuaEmCan: ['follow'],
+      deBai: 'Giúp Sola với! Hai bậc đá: bậc dưới hẹp hơn bậc trên. Giữa hai lần follow(d), ghi lại khoá "ngang" của sổ bằng một dòng gán d["ngang"] = …',
+      veMaMau: 'Sola gọi follow(d) hai lần với cùng một sổ. Chạy thử xem lần hai R1 đi đâu.',
       san: [
-        '######',
-        '#.II.#',
-        '####I#',
-        '####F#',
-        '######'
+        '########',
+        '#.III###',
+        '#uuuIIu#',
+        '#uuuuF##',
+        '########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"ngang": 3, "doc": 2}',
-        'dict_step(d, "ngang")',
-        'dict_step(d, "doc")'
-      ]),
-      loiGiai: bai(
-        [
-          'd = {"ngang": 3, "doc": 2}',
-          'dict_step(d, "ngang")',
-          'dict_step(d, "doc")'
-        ],
-        [],
-        [ham('dict_step', ['spike_step(d[k])'], ['d', 'k'])]
-      ),
+      maMau: bai(['d = {"ngang": 3, "doc": 1}', 'follow(d)', 'follow(d)']),
+      loiGiai: bai(['d = {"ngang": 3, "doc": 1}', 'follow(d)', 'd["ngang"] = 1', 'follow(d)']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm dict_step', baiLam: bai(['d = {"ngang": 3, "doc": 2}', 'dict_step(d, "ngang")', 'dict_step(d, "doc")']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Chỉ gọi forward(d[k]) mà không rẽ phải: đâm tường ở cuối đoạn ngang', baiLam: bai(['d = {"ngang": 3, "doc": 2}', 'dict_step(d, "ngang")', 'dict_step(d, "doc")']), hamCuaEmMoi: [ham('dict_step', ['forward(d[k])'], ['d', 'k'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Không ghi lại: lần hai R1 đi ngang 3 ô, rơi xuống hố', baiLam: bai(['d = {"ngang": 3, "doc": 1}', 'follow(d)', 'follow(d)']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Ghi lại trước lần gọi đầu: R1 rẽ ngay, rơi xuống hố', baiLam: bai(['d = {"ngang": 3, "doc": 1}', 'd["ngang"] = 1', 'follow(d)', 'follow(d)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 13, nhip: 6 },
+      sao: { o: 17, nhip: 9 },
       goiY: [
-        'Thân hàm dict_step(d, k) chỉ cần gọi spike_step(d[k]).',
-        'Hai lần gọi dict_step trong chương trình chính sẽ đưa robot tới thẳng cờ.'
+        'Luna: d["ngang"] = 1 ghi đè số cũ trong sổ. Lần đọc sau sẽ ra 1.',
+        'Luna: Ghi lại sau lần follow(d) đầu, trước lần thứ hai.'
       ]
     }),
 
     manTuDien(6, 'luyen', {
-      ten: 'Cập nhật số bước trong sổ',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step', 'dict_step'],
-      deBai: 'Ta có thể cộng thêm vào giá trị đang lưu trong từ điển bằng d["x"] = d["x"] + 2. Hãy tăng d["x"] thêm 2 bước trước khi gọi dict_step cho chặng thứ hai.',
-      veMaMau: 'Chặng đầu đi 2 bước (d["x"] == 2), chặng sau đi xuống dài hơn 2 bước (tức 4 bước).',
-      san: [
-        '#####',
-        '#.I.#',
-        '###I#',
-        '###I#',
-        '###I#',
-        '###F#',
-        '#####'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"x": 2}',
-        'dict_step(d, "x")',
-        'd["x"] = d["x"] + 1',
-        'forward(d["x"])'
-      ]),
-      loiGiai: bai([
-        'd = {"x": 2}',
-        'dict_step(d, "x")',
-        'd["x"] = d["x"] + 2',
-        'forward(d["x"])'
-      ]),
-      loiSai: [
-        { moTa: 'Chỉ cộng 1: đi xuống 3 bước, dừng trước cờ 1 ô', baiLam: bai(['d = {"x": 2}', 'dict_step(d, "x")', 'd["x"] = d["x"] + 1', 'forward(d["x"])']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 14, nhip: 7 },
-      goiY: [
-        'Ban đầu d["x"] bằng 2. Muốn chặng dọc đi 4 bước thì cần cộng thêm 2.',
-        'Sửa d["x"] = d["x"] + 1 thành d["x"] = d["x"] + 2.'
-      ]
-    }),
-
-    manTuDien(7, 'luyen', {
-      ten: 'Chế lệnh: tra cứu an toàn',
-      taoHam: ['safe_lookup'], batBuocTaoHam: false, chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Tạo hàm safe_lookup(d, k, m): nếu khóa k có trong từ điển (if k in d:) thì trả về return d[k]; ngược lại trả về giá trị mặc định return m.',
-      veMaMau: 'Trong safe_lookup(d, k, m), dùng if k in d: return d[k] rồi return m ở dòng ngoài.',
+      ten: 'Lật từng trang sổ',
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      hamCuaEmCan: ['rim'],
+      deBai: 'Giúp Sola với! for k in d: lặp qua từng khoá của sổ, theo đúng thứ tự đã ghi. Mỗi lượt R1 đi rim(d[k]). Sổ có một số ghi sai.',
+      veMaMau: 'Chạy thử: R1 đi đúng hai đoạn đầu rồi dừng sớm. Sửa số ở khoá "cuoi".',
       san: [
         '#######',
-        '#.III.#',
-        '#####I#',
-        '#####I#',
-        '#####F#',
+        '#.IIII#',
+        '#uuuuI#',
+        '#uFIII#',
         '#######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"a": 4}',
-        'spike_step(safe_lookup(d, "a", 2))',
-        'forward(safe_lookup(d, "b", 3))'
-      ]),
-      loiGiai: bai(
-        [
-          'd = {"a": 4}',
-          'spike_step(safe_lookup(d, "a", 2))',
-          'forward(safe_lookup(d, "b", 3))'
-        ],
-        [],
-        [ham('safe_lookup', ['if k in d:', '    return d[k]', 'return m'], ['d', 'k', 'm'])]
-      ),
+      maMau: bai(['d = {"dau": 4, "giua": 2, "cuoi": 2}', 'for k in d:', '    rim(d[k])']),
+      loiGiai: bai(['d = {"dau": 4, "giua": 2, "cuoi": 3}', 'for k in d:', '    rim(d[k])']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm safe_lookup', baiLam: bai(['d = {"a": 4}', 'spike_step(safe_lookup(d, "a", 2))', 'forward(safe_lookup(d, "b", 3))']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Luôn trả về m mà không kiểm tra k in d: đoạn ngang chỉ đi 2 ô', baiLam: bai(['d = {"a": 4}', 'spike_step(safe_lookup(d, "a", 2))', 'forward(safe_lookup(d, "b", 3))']), hamCuaEmMoi: [ham('safe_lookup', ['return m'], ['d', 'k', 'm'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Để "cuoi": 2: R1 dừng trước cờ một ô', baiLam: bai(['d = {"dau": 4, "giua": 2, "cuoi": 2}', 'for k in d:', '    rim(d[k])']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đổi "giua" thành 3: R1 xuống quá hàng có cờ, đâm vách', baiLam: bai(['d = {"dau": 4, "giua": 3, "cuoi": 3}', 'for k in d:', '    rim(d[k])']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 12, nhip: 8 },
+      sao: { o: 12, nhip: 11 },
       goiY: [
-        'Khóa "a" có trong d nên safe_lookup(d, "a", 2) trả về 4.',
-        'Khóa "b" không có trong d nên safe_lookup(d, "b", 3) trả về giá trị mặc định 3.'
+        'Luna: Lượt 1 k là "dau", lượt 2 là "giua", lượt 3 là "cuoi". d[k] là số ghi ở khoá đó.',
+        'Luna: Đoạn cuối đi từ góc phải hàng dưới sang cờ: 3 ô.'
+      ]
+    }),
+
+    manTuDien(7, 'bien-the', {
+      ten: 'Chế lệnh: đọc hết sổ',
+      taoHam: ['walk_book'], chinhCoDinh: true,
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      hamCuaEmCan: ['rim', 'u_turn'],
+      deBai: 'Giúp Sola với! Hai cuốn sổ, cuốn a có hai dòng, cuốn b có ba dòng. Chế hàm walk_book(book): lặp qua mọi khoá của book, mỗi lượt gọi rim(book[k]). Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi walk_book(a), quay đầu, rồi walk_book(b). Chế walk_book(book) với vòng for k in book.',
+      san: [
+        '########',
+        '#.II####',
+        '#uuI####',
+        '#uuIIII#',
+        '#uuuuuI#',
+        '#uuuFII#',
+        '########'
+      ],
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: bai(['a = {"dau": 2, "giua": 2}', 'b = {"dau": 3, "giua": 2, "cuoi": 2}', 'walk_book(a)', 'u_turn()', 'walk_book(b)']),
+      loiGiai: bai(['a = {"dau": 2, "giua": 2}', 'b = {"dau": 3, "giua": 2, "cuoi": 2}', 'walk_book(a)', 'u_turn()', 'walk_book(b)'], [], [WALK_BOOK]),
+      loiSai: [
+        { moTa: 'Chưa chế hàm walk_book', baiLam: bai(['a = {"dau": 2, "giua": 2}', 'b = {"dau": 3, "giua": 2, "cuoi": 2}', 'walk_book(a)', 'u_turn()', 'walk_book(b)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Viết cứng ba lần rim: sổ a chỉ có hai dòng, không có khoá "cuoi" nên chương trình dừng', baiLam: bai(['a = {"dau": 2, "giua": 2}', 'b = {"dau": 3, "giua": 2, "cuoi": 2}', 'walk_book(a)', 'u_turn()', 'walk_book(b)']), hamCuaEmMoi: [ham('walk_book', ['rim(book["dau"])', 'rim(book["giua"])', 'rim(book["cuoi"])'], ['book'])], phaiCoMa: ['loi-chay'] }
+      ],
+      sao: { o: 19, nhip: 16 },
+      goiY: [
+        'Luna: Thân hàm: dòng for k in book: rồi dòng thụt vào rim(book[k]).',
+        'Luna: Vòng for tự dừng khi hết dòng sổ, nên sổ hai dòng hay ba dòng đều đúng.'
       ]
     }),
 
     manTuDien(8, 'bien-the', {
-      ten: 'Duyệt mọi khóa trong từ điển',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step', 'dict_step'],
-      deBai: 'Vòng lặp for k in d: sẽ duyệt lần lượt từng khóa k trong từ điển d theo thứ tự đã tạo. Hãy dùng vòng lặp for k in d: gọi dict_step(d, k) để đi qua cả 3 cạnh quanh hố sụt.',
-      veMaMau: 'Thay vì gọi dict_step 3 lần rời rạc, hãy viết for k in d: rồi gọi dict_step(d, k).',
+      ten: 'Sổ có dòng xuống không',
+      taoHam: ['step_book'], chinhCoDinh: true,
+      khoaTD: ['ngang', 'doc'],
+      hamCuaEmCan: ['forward', 'turn_right', 'turn_left'],
+      deBai: 'Giúp Sola với! Có sổ ghi cả đoạn ngang và đoạn xuống, có sổ chỉ ghi đoạn ngang. Chế step_book(book): đi ngang book["ngang"] ô; nếu sổ có khoá "doc" thì rẽ phải, đi xuống book["doc"] ô, rẽ trái.',
+      veMaMau: 'Chương trình chính đã khoá: ba sổ a, b, c rồi ba lần step_book. Dùng điều kiện if "doc" in book:.',
       san: [
-        '#######',
-        '#.III.#',
-        '#.uuuI#',
-        '#.uuuI#',
-        '#FIII.#',
-        '#######'
+        '#########',
+        '#.IIu####',
+        '#uuI#####',
+        '#uuIIIIu#',
+        '#uuuuuI##',
+        '######F##',
+        '#########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"a": 4, "b": 3, "c": 4}',
-        'dict_step(d, "a")',
-        'dict_step(d, "b")'
-      ]),
-      loiGiai: bai([
-        'd = {"a": 4, "b": 3, "c": 4}',
-        'for k in d:',
-        '    dict_step(d, k)'
-      ]),
+      maMau: bai(['a = {"ngang": 2, "doc": 2}', 'b = {"ngang": 2}', 'c = {"ngang": 1, "doc": 2}', 'step_book(a)', 'step_book(b)', 'step_book(c)']),
+      loiGiai: bai(['a = {"ngang": 2, "doc": 2}', 'b = {"ngang": 2}', 'c = {"ngang": 1, "doc": 2}', 'step_book(a)', 'step_book(b)', 'step_book(c)'], [], [STEP_BOOK]),
       loiSai: [
-        { moTa: 'Để nguyên mã mẫu: mới đi 2 cạnh, dừng ở (5, 4)', baiLam: bai(['d = {"a": 4, "b": 3, "c": 4}', 'dict_step(d, "a")', 'dict_step(d, "b")']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Sửa giá trị "b" thành 2: rẽ sớm rơi vào hố sụt', baiLam: bai(['d = {"a": 4, "b": 2, "c": 4}', 'for k in d:', '    dict_step(d, k)']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Chưa chế hàm step_book', baiLam: bai(['a = {"ngang": 2, "doc": 2}', 'b = {"ngang": 2}', 'c = {"ngang": 1, "doc": 2}', 'step_book(a)', 'step_book(b)', 'step_book(c)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Không hỏi "doc" in book: sổ b không có khoá "doc" nên chương trình dừng', baiLam: bai(['a = {"ngang": 2, "doc": 2}', 'b = {"ngang": 2}', 'c = {"ngang": 1, "doc": 2}', 'step_book(a)', 'step_book(b)', 'step_book(c)']), hamCuaEmMoi: [FOLLOW && ham('step_book', ['forward(book["ngang"])', 'turn_right()', 'forward(book["doc"])', 'turn_left()'], ['book'])], phaiCoMa: ['loi-chay'] }
       ],
-      sao: { o: 13, nhip: 13 },
+      sao: { o: 20, nhip: 12 },
       goiY: [
-        'Viết for k in d: ở dòng thứ hai.',
-        'Bên trong vòng lặp thụt lề 4 dấu cách gọi dict_step(d, k).'
+        'Luna: "doc" in book đúng khi sổ có khoá "doc". Sổ b không có nên R1 chỉ đi ngang.',
+        'Luna: Ba dòng rẽ phải, xuống, rẽ trái thụt vào dưới if.'
       ]
     }),
 
     manTuDien(9, 'bien-the', {
-      ten: 'Chế lệnh: đi hết sổ và đếm mục',
-      taoHam: ['walk_dict'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step', 'dict_step'],
-      deBai: 'Hàm len(d) cho biết số cặp khóa: giá_trị trong từ điển d. Hãy tạo hàm walk_dict(d): duyệt for k in d: gọi dict_step(d, k), sau đó trả về return len(d) để báo tổng số chặng đã đi.',
-      veMaMau: 'Trong walk_dict(d), viết for k in d: gọi dict_step(d, k), rồi ngoài vòng lặp viết return len(d).',
+      ten: 'Ghép hai cách đọc sổ',
+      khoaTD: ['dau', 'giua', 'cuoi', 'ngang', 'doc'],
+      hamCuaEmCan: ['walk_book', 'step_book'],
+      deBai: 'Giúp Sola với! Lối đi có một khúc bậc thang rồi một khúc vòng quanh hố. Kho của bạn đã có step_book và walk_book. Tự ghi sổ và gọi hàm cho đúng.',
+      veMaMau: 'Sola mới ghi sổ cho khúc bậc thang. Chạy thử rồi viết tiếp.',
       san: [
-        '######',
-        '#.II.#',
-        '#.uuI#',
-        '#F.I.#',
-        '######'
+        '#########',
+        '#.IIuuuu#',
+        '#uuIIIIu#',
+        '#uuuuuIu#',
+        '#uuuuuIu#',
+        '#uuuFIIu#',
+        '#########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"a": 3, "b": 2}',
-        'n = walk_dict(d)',
-        'forward(n + 1)'
-      ]),
-      loiGiai: bai(
-        [
-          'd = {"a": 3, "b": 2}',
-          'n = walk_dict(d)',
-          'forward(n + 1)'
-        ],
-        [],
-        [ham('walk_dict', ['for k in d:', '    dict_step(d, k)', 'return len(d)'], ['d'])]
-      ),
+      maMau: bai(['a = {"ngang": 2, "doc": 1}', 'step_book(a)']),
+      loiGiai: bai(['a = {"ngang": 2, "doc": 1}', 'step_book(a)', 'b = {"dau": 3, "giua": 3, "cuoi": 2}', 'walk_book(b)']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm walk_dict', baiLam: bai(['d = {"a": 3, "b": 2}', 'n = walk_dict(d)', 'forward(n + 1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trả về 1 thay vì len(d): đoạn cuối đi thiếu 1 ô tới cờ', baiLam: bai(['d = {"a": 3, "b": 2}', 'n = walk_dict(d)', 'forward(n + 1)']), hamCuaEmMoi: [ham('walk_dict', ['for k in d:', '    dict_step(d, k)', 'return 1'], ['d'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chỉ có khúc bậc thang: R1 dừng giữa đường', baiLam: bai(['a = {"ngang": 2, "doc": 1}', 'step_book(a)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Sổ b ghi "giua": 2: R1 rẽ sớm rồi rơi xuống hố', baiLam: bai(['a = {"ngang": 2, "doc": 1}', 'step_book(a)', 'b = {"dau": 3, "giua": 2, "cuoi": 2}', 'walk_book(b)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 16, nhip: 10 },
+      sao: { o: 22, nhip: 15 },
       goiY: [
-        'Thân hàm walk_dict(d) gồm vòng lặp for k in d: gọi dict_step(d, k) và dòng cuối return len(d).',
-        'Vì d có 2 khóa nên len(d) trả về 2, và forward(n + 1) đi 3 bước về cờ.'
+        'Luna: Sau step_book(a), R1 ở hàng thứ hai, mặt sang phải. Từ đó đi 3, rẽ phải, đi 3, rẽ phải, đi 2.',
+        'Luna: walk_book gọi rim cho từng khoá theo thứ tự đã ghi.'
       ]
     }),
 
     manTuDien(10, 'trum', {
-      ten: 'Trùm: Bản đồ địa chất hang sâu',
-      huyHieu: { ma: 'tu-dien', ten: 'Huy hiệu Từ điển tra cứu' },
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'spike_step', 'dict_step', 'safe_lookup', 'walk_dict'],
-      nhipTheo: 'tong',
-      deBai: 'Chinh phục bản đồ địa chất của 2 khoang hang. Khởi tạo d = {"a": 3, "b": 2}, gọi n = walk_dict(d) để đi 2 cạnh đầu và nhận n = 2, sau đó tiến forward(safe_lookup(d, "c", n)) bước sang trái, rẽ trái bằng turn_left() và tiến n bước xuống cờ.',
-      veMaMau: 'Kết hợp walk_dict(d), safe_lookup(d, "c", n), turn_left() và forward(n).',
+      ten: 'Trùm: Ba trang sổ hang',
+      taoHam: ['trip'], chinhCoDinh: true,
+      khoaTD: ['ngang', 'doc', 'lui'],
+      hamCuaEmCan: ['forward', 'turn_right', 'turn_left', 'back'],
+      deBai: 'Giúp Sola với! Ba trang sổ, trang nào cũng có "ngang" và "doc". Trang nào có thêm khoá "lui" thì sau khi đi ngang, R1 phải lùi đúng số ô đó trước khi rẽ xuống. Chế trip(book).',
+      veMaMau: 'Chương trình chính đã khoá. Chế trip(book): đi ngang, nếu có "lui" thì lùi, rồi rẽ phải, xuống, rẽ trái.',
       san: [
-        [
-          '######',
-          '#.II.#',
-          '#.uuI#',
-          '#.I..#',
-          '#.I###',
-          '#.F###',
-          '######'
-        ],
-        [
-          '######',
-          '#..I.#',
-          '#uuu.#',
-          '#..I.#',
-          '#.I###',
-          '#.F###',
-          '######'
-        ]
+        '##########',
+        '#.IIIu####',
+        '#uIuuu####',
+        '#uIIIIu###',
+        '#uuuIuu###',
+        '#uuuIIII##',
+        '#uuuuuuI##',
+        '#######F##',
+        '##########'
       ],
-      batDau: [
-        { x: 1, y: 1, huong: 1 },
-        { x: 1, y: 1, huong: 1 }
-      ],
-      maMau: bai([]),
-      loiGiai: bai([
-        'd = {"a": 3, "b": 2}',
-        'n = walk_dict(d)',
-        'forward(safe_lookup(d, "c", n))',
-        'turn_left()',
-        'forward(n)'
+      batDau: { x: 1, y: 1, huong: 1 },
+      maMau: bai(['a = {"ngang": 3, "lui": 2, "doc": 2}', 'b = {"ngang": 3, "lui": 1, "doc": 2}', 'c = {"ngang": 3, "doc": 2}', 'trip(a)', 'trip(b)', 'trip(c)']),
+      loiGiai: bai(['a = {"ngang": 3, "lui": 2, "doc": 2}', 'b = {"ngang": 3, "lui": 1, "doc": 2}', 'c = {"ngang": 3, "doc": 2}', 'trip(a)', 'trip(b)', 'trip(c)'], [], [
+        ham('trip', ['forward(book["ngang"])', 'if "lui" in book:', '    for i in range(book["lui"]):', '        back()', 'turn_right()', 'forward(book["doc"])', 'turn_left()'], ['book'])
       ]),
       loiSai: [
-        { moTa: 'Quên rẽ trái turn_left() trước đoạn cuối: đâm tường bên trái', baiLam: bai(['d = {"a": 3, "b": 2}', 'n = walk_dict(d)', 'forward(safe_lookup(d, "c", n))', 'forward(n)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Đoạn cuối chỉ đi 1 bước: dừng trên ô (2, 4) trước cờ', baiLam: bai(['d = {"a": 3, "b": 2}', 'n = walk_dict(d)', 'forward(safe_lookup(d, "c", n))', 'turn_left()', 'move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa chế hàm trip', baiLam: bai(['a = {"ngang": 3, "lui": 2, "doc": 2}', 'b = {"ngang": 3, "lui": 1, "doc": 2}', 'c = {"ngang": 3, "doc": 2}', 'trip(a)', 'trip(b)', 'trip(c)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên lùi: R1 rẽ xuống từ cuối dải, rơi xuống hố', baiLam: bai(['a = {"ngang": 3, "lui": 2, "doc": 2}', 'b = {"ngang": 3, "lui": 1, "doc": 2}', 'c = {"ngang": 3, "doc": 2}', 'trip(a)', 'trip(b)', 'trip(c)']), hamCuaEmMoi: [FOLLOW && ham('trip', ['forward(book["ngang"])', 'turn_right()', 'forward(book["doc"])', 'turn_left()'], ['book'])], phaiCoMa: ['roi-ho'] },
+        { moTa: 'Lùi mà không hỏi "lui" in book: trang c không có khoá "lui" nên chương trình dừng', baiLam: bai(['a = {"ngang": 3, "lui": 2, "doc": 2}', 'b = {"ngang": 3, "lui": 1, "doc": 2}', 'c = {"ngang": 3, "doc": 2}', 'trip(a)', 'trip(b)', 'trip(c)']), hamCuaEmMoi: [ham('trip', ['forward(book["ngang"])', 'for i in range(book["lui"]):', '    back()', 'turn_right()', 'forward(book["doc"])', 'turn_left()'], ['book'])], phaiCoMa: ['loi-chay'] }
       ],
-      sao: { o: 20, nhip: 24 },
+      sao: { o: 25, nhip: 23 },
       goiY: [
-        'n = walk_dict(d) đưa robot tới (4, 3) hướng sang trái và trả về n = 2.',
-        'Tiếp theo gọi forward(safe_lookup(d, "c", n)) để sang (2, 3), rồi turn_left() và forward(n) xuống cờ (2, 5).'
+        'Luna: Lùi book["lui"] ô là một vòng for i in range(book["lui"]): với back() bên trong.',
+        'Luna: Đặt vòng lùi dưới if "lui" in book: để trang c không bị lỗi.'
       ]
     })
   ];

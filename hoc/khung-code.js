@@ -67,6 +67,8 @@
 
   /** Dòng dùng DANH SÁCH: dấu [ ] ngoài chuỗi chữ (literal `[1, 2]`, chỉ số `a[0]`) hay lệnh `.append(`. Bỏ chú thích và nội dung trong dấu nháy. */
   function laList(s) { var t = boChuThich(s).replace(/"[^"]*"|'[^']*'/g, '""'); return /[\[\]]|\.\s*append\s*\(/.test(t); }
+  /** Màn có từ điển (cauTruc 'dict', mùa 8): d["k"], d[k] là đọc sổ, không phải danh sách; chỉ ngoặc vuông mở danh sách (`= [`, `in [`, `([`) và .append mới tính. */
+  function laListTD(s) { var t = boChuThich(s).replace(/"[^"]*"|'[^']*'/g, '""'); return /(^|[=(,:]|\bin)\s*\[|\.\s*append\s*\(/.test(t); }
 
   /** Khung đầy đủ (điền mặc định). */
   function khungDayDu(khung) {
@@ -239,7 +241,7 @@
       var dsCau = [['for', laFor, 'vòng lặp for'], ['if', laIf, 'lệnh rẽ nhánh if']];
       if (khung && khung.chanWhile) dsCau.push(['while', laWhile, 'vòng lặp while']);
       if (khung && khung.chanBien) dsCau.push(['bien', laBienDem, 'biến đếm (gán biến, range(n))']);
-      dsCau.push(['list', laList, 'danh sách (list)']);
+      dsCau.push(['list', k.cauTruc.indexOf('dict') >= 0 ? laListTD : laList, 'danh sách (list)']);
       dsCau.forEach(function (cau) {
         if (k.cauTruc.indexOf(cau[0]) >= 0) return;
         var vi = null, dCau = dongDau(chinh, cau[1]);

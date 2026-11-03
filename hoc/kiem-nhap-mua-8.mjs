@@ -207,6 +207,19 @@ console.log('\n== 6. Khung chương trình: chạm ô của dòng mùa 8 ==');
   E3.ed.chenTai('s.add(1)', 1, 0);
   E3.ed.chenTai('if 1 not in s:', 2, 0);
   kiem('chèn s.add / if … not in s dưới `da_go = set()` → dùng da_go', E3.arr[1] === 'da_go.add(1)' && /not in da_go:$/.test(E3.arr[2]), J(E3.arr));
+
+  // Xưởng hàm: đối số là sổ (follow(book), walk_book(book) của gói 1): kiểu 'td' suy từ lời giải của màn
+  const E4 = K.dungEditor(['forward(1)', 'for k in book:', '    rim(1)'], { bienDuoc: () => ['book'], kieuBien: (t) => (t === 'book' ? 'td' : 'so') });
+  E4.cham(0, '.num');
+  kiem('thân hàm có đối số sổ book: chạm số trong forward(1) → chip book["ngang"], book["doc"]', ['book["ngang"]', 'book["doc"]'].every((x) => nutBien(E4).includes(x)), J(nutBien(E4)));
+  E4.dongBang();
+  E4.cham(2, '.num');
+  kiem('dưới for k in book: chạm số trong rim(1) → chip book[k]', nutBien(E4).includes('book[k]'), J(nutBien(E4)));
+  E4.dongBang();
+  const E5 = K.dungEditor(['a = {"ngang": 2}', 'b = {"ngang": 3}', 'follow(a)'], { kieuDoiSo: (ten) => (ten === 'follow' ? 'td' : 'so') });
+  E5.cham(2, '.num');
+  kiem('chạm đối số của follow(a) (đối số là sổ) → chọn tên sổ a, b', ['a', 'b'].every((x) => nutBien(E5).includes(x)) && !nutBien(E5).includes('1'), J(nutBien(E5)));
+  E5.dongBang();
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' + (dat + hong) : 'ĐẠT cả ' + dat) + ' phép kiểm nhập liệu mùa 8');

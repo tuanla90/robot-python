@@ -689,6 +689,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (d.ten === 'color' && huongCam().length) return 'huong';          // c = color("up"): bảng chọn hướng camera (mùa 4)
       if (d.ten === 'spray' || d.ten === 'spray_back') return 'luc';       // spray(p): bảng chọn lực "low" / "high"
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
+      if (kd === 'td' && CHE_TD) return 'tdten';                           // mùa 8: follow(a) — đối số là một sổ (từ điển / tập hợp): chọn tên sổ
       return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' || kd === 'luc' ? kd : 'so';
     }
     /** Biến kiểu kb có đặt được vào ô kiểu slot không (một chữ đặt được vào chuỗi ghép, ngược lại thì không). */
@@ -843,6 +844,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function moBoChon(so, i, kk) {
       var arr = lay(), d = tachDoiSo(arr[i]), kd = so.getAttribute('data-them') && d && d.cau ? 'ptu' : kieuArg(d, kk);      // dấu + của danh sách rỗng luôn là ô 'ptu'
       if (kd === 'td') { moTD(so, i, d, kk); return; }
+      if (kd === 'tdten') {                                                                // đối số là sổ: chọn trong các sổ gán phía trên (và đối số sổ của hàm đang sửa)
+        var dsTen = tenTDTai(arr, i, 'dict').concat(tenTDTai(arr, i, 'set'), bienDuoc().filter(function (p) { return kieuBienCua(p) === 'td'; }));
+        if (dsTen.indexOf(d.ds[kk]) < 0) dsTen.unshift(d.ds[kk]);
+        if (dsTen.length < 2) return;
+        chonChuoi({ neo: so, kieu: 'bien', gia: '', hien: d.ds[kk], bien: dsTen, khiChon: function (x) { ed.datSo(i, x, kk); } });
+        return;
+      }
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }

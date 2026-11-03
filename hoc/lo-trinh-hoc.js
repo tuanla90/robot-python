@@ -2055,38 +2055,38 @@
   })();
   // ========================================================================= MÙA HANG ĐỘNG (mua-8, Robot thám hiểm hang động R1)
   var MUA_HANG = [
-    { ma: 'banh-gai', ten: 'Bánh gai leo vách', loai: 'bo-phan', hinh: 'banh-gai',
+    { ma: 'banh-gai', ten: 'Bánh gai', loai: 'bo-phan', hinh: 'banh-gai',
       chuong: [['banh-gai', []], ['tu-dien', []]] },
-    { ma: 'loa', ten: 'Loa cộng hưởng', loai: 'bo-phan', hinh: 'loa',
+    { ma: 'loa', ten: 'Loa', loai: 'bo-phan', hinh: 'loa',
       chuong: [['loa', []], ['tap-hop', []]] },
     { ma: 'am-thanh', ten: 'Cảm biến âm thanh', loai: 'bo-phan', hinh: 'am-thanh',
       chuong: [['am-thanh', []], ['che-am-thanh', []]] },
-    { ma: 'san-hang-dong', ten: 'Ngách hang đá vôi', hinh: 'san-hang-dong',
+    { ma: 'san-hang-dong', ten: 'Ngách hang ngầm', hinh: 'san-hang-dong',
       chuong: [['san-hang-dong', []], ['che-hang-dong', []]] },
-    { ma: 'thu-gai', ten: 'Thu gai trượt đá', loai: 'bo-phan', hinh: 'thu-gai',
+    { ma: 'thu-gai', ten: 'Thu gai', loai: 'bo-phan', hinh: 'thu-gai',
       chuong: [['thu-gai', []], ['che-thu-gai', []]] },
-    { ma: 'phat-not', ten: 'Phát nốt cộng hưởng', loai: 'bo-phan', hinh: 'phat-not',
+    { ma: 'phat-not', ten: 'Ngân dài', loai: 'bo-phan', hinh: 'phat-not',
       chuong: [['phat-not', []], ['che-phat-not', []]] },
-    { ma: 'nghe-not', ten: 'Thẩm âm chuông đá', loai: 'bo-phan', hinh: 'nghe-not',
+    { ma: 'nghe-not', ten: 'Nghe nốt', loai: 'bo-phan', hinh: 'nghe-not',
       chuong: [['nghe-not', []], ['che-nghe-not', []]] },
-    { ma: 'hang-cu', ten: 'Hang đá cổ', loai: 'thu-thach', hinh: 'hang-cu',
+    { ma: 'hang-cu', ten: 'Hang có dấu cũ', loai: 'thu-thach', hinh: 'hang-cu',
       chuong: [['hang-cu', []], ['che-hang-cu', []]] },
     { ma: 'doi-hang-dong', ten: 'Đội thám hiểm hang', loai: 'doi', hinh: 'doi-hang-dong',
       chuong: [['doi-hang-dong', []], ['che-doi-hang-dong', []]] },
-    { ma: 'tong-hop-hang', ten: 'Robot hang động R1', loai: 'thu-thach', hinh: 'tong-hop-hang',
+    { ma: 'tong-hop-hang', ten: 'Cứu hộ hang sâu', loai: 'thu-thach', hinh: 'tong-hop-hang',
       chuong: [['tong-hop-hang', []], ['trum-mua-hang', []]] }
   ];
   var TEN_MUA_HANG = {
-    'banh-gai': 'Bánh gai bám đá', 'tu-dien': 'Từ điển tra cứu',
-    'loa': 'Gõ nhịp cộng hưởng', 'tap-hop': 'Tập hợp không trùng',
-    'am-thanh': 'Lắng nghe tiếng vang', 'che-am-thanh': 'Chế lệnh: dò sóng âm',
-    'san-hang-dong': 'Ngách hang đá vôi', 'che-hang-dong': 'Chế lệnh: vượt ngách hang',
-    'thu-gai': 'Thu gai trượt băng', 'che-thu-gai': 'Chế lệnh: lướt đá ướt',
-    'phat-not': 'Cộng hưởng thạch nhũ', 'che-phat-not': 'Chế lệnh: tấu khúc phá đá',
-    'nghe-not': 'Thẩm âm chuông đá', 'che-nghe-not': 'Chế lệnh: giải mã giai điệu',
-    'hang-cu': 'Khám phá hang cổ', 'che-hang-cu': 'Chế lệnh: giải cứu hang sâu',
-    'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang-dong': 'Chế lệnh: phối hợp trong hang',
-    'tong-hop-hang': 'Tổng hợp hang động', 'trum-mua-hang': 'Trùm mùa hang động'
+    'banh-gai': 'Bám đá ướt', 'tu-dien': 'Sổ tay đường hang',
+    'loa': 'Gõ đá chuông', 'tap-hop': 'Không gõ trùng',
+    'am-thanh': 'Nghe tiếng vang', 'che-am-thanh': 'Chế lệnh: dò tiếng vang',
+    'san-hang-dong': 'Chui ngách ngầm', 'che-hang-dong': 'Chế lệnh: vượt ngách',
+    'thu-gai': 'Lướt đá ướt', 'che-thu-gai': 'Chế lệnh: lướt rồi bám',
+    'phat-not': 'Vừa đi vừa ngân', 'che-phat-not': 'Chế lệnh: tấu phá đá',
+    'nghe-not': 'Bắt nốt chuông đá', 'che-nghe-not': 'Chế lệnh: giải mã giai điệu',
+    'hang-cu': 'Qua máy cũ trong hang', 'che-hang-cu': 'Chế lệnh: qua máy cũ',
+    'doi-hang-dong': 'Lấp hố, phá đá cho nhau', 'che-doi-hang-dong': 'Chế lệnh: phối hợp trong hang',
+    'tong-hop-hang': 'Một chương trình, mọi sân', 'trum-mua-hang': 'Chế lệnh: cứu hộ hang sâu'
   };
   var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong', 'manThuGai', 'manPhatNot', 'manNgheNot', 'manHangCu', 'manDoiHangDong', 'manTrumMuaHang'];
   (function () {
