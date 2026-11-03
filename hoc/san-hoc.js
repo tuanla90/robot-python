@@ -883,7 +883,7 @@
     function layMang(l) { return l ? (nhieu && Array.isArray(l) && Array.isArray(l[0]) ? (l[i] || null) : l) : null; }
     var dieuSan = !m.dieu ? null : (nhieu && Array.isArray(m.dieu) && (Array.isArray(m.dieu[0]) || (typeof m.dieu[0] === 'string' && m.dieu[0].length > 1)) ? (m.dieu[i] || null) : m.dieu);
     return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatDang: lay(m.vatDang), vatThem: lay(m.vatThem), thungThem: lay(m.thungThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), lua: lay(m.lua), demTu: lay(m.demTu), sanDoc: lay(m.sanDoc), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau), dong: lay(m.dong),
-      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao),
+      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao), contTroi: lay(m.contTroi),
       dieu: dieuSan, ngachHang: layMang(m.ngachHang), chuongDa: layMang(m.chuongDa || m.danDoi), daChuong: layMang(m.daChuong) };
   }
   function laLenhSon(t) { return TAY_SON.indexOf(t) >= 0; }
@@ -1545,7 +1545,7 @@
     function chupTay() { var o = { tuThe: tay.tuThe, kep: tay.kep, cam: tay.cam }; if (coXoay) o.xoay = tay.xoay; return o; }
     function chupNamCham() { return { bat: nc.bat, cuc: nc.cuc, cam: nc.cam }; }
     function chupNem() { return { tam: nem.tam, ro: nem.ro }; }
-    function chupVat() { return vats.map(function (v) { var o = { id: v.id, x: v.x, y: v.y, trangThai: v.trangThai }; if (v.mau) o.mau = v.mau; if (coNamCham || v.chat === 'sat' || v.chat === 'nam-cham') o.chat = v.chat; if (v.cuc) o.cuc = v.cuc; if (v.dang) o.dang = v.dang; if (v.noi) o.noi = v.noi; return o; }); }
+    function chupVat() { return vats.map(function (v) { var o = { id: v.id, x: v.x, y: v.y, trangThai: v.trangThai }; if (v.mau) o.mau = v.mau; if (coNamCham || v.chat === 'sat' || v.chat === 'nam-cham') o.chat = v.chat; if (v.cuc) o.cuc = v.cuc; if (v.dang) o.dang = v.dang; if (v.noi) o.noi = v.noi; if (v.so !== undefined) { o.so = v.so; o.tan = v.tan; } return o; }); }
     /** Màu sàn của ô (x, y): tên màu hay null. */
     function mauNen(x, y) { return (san.mau && san.mau[y] && san.mau[y][x]) || null; }
     /** Màu cảm biến thấy ở ô (x, y) khi không có vật: sơn phủ lên sàn (xem SƠN VÀ CẢM BIẾN MÀU). { mau, son: true nếu là màu sơn }. */
@@ -1610,6 +1610,20 @@
     san.vat.forEach(themVat); (cfg.vat || []).forEach(themVat);
     // BẾN SÔNG: vật nổi (B bè / L lục bình) cũng là VẬT chiếm ô (trangThai 'dat', chat 'go'), thêm noi; kéo bằng dây phao, trôi theo dòng, làm cầu phao cho xe cạn
     san.vatNoi.forEach(function (o) { vats.push({ id: vats.length + 1, x: o.x, y: o.y, trangThai: 'dat', mau: null, chat: 'go', cuc: null, noi: o.noi }); });
+    // M9B2 (lai L2): CONTAINER TRÔI — lớp cfg.contTroi = [{ x, y, so, tan? }]: mỗi mục biến vật nổi 'B' ở ô đó thành container trôi (noi 'container', số so 1–99, tấn tan 1–4 mặc định 1).
+    // Cùng luật vật nổi (chiếm ô nước, tay lưới kéo được, làm cầu phao); đầu đọc mã của xuồng đọc so / tan ở ô trước mũi. Màn không khai lớp này thì không có container trôi.
+    if (cfg.contTroi !== undefined && cfg.contTroi !== null) {
+      if (!Array.isArray(cfg.contTroi)) throw new Error('contTroi phải là mảng [{ x, y, so, tan? }] (container trôi, đặt trên ô bè B).');
+      cfg.contTroi.forEach(function (q) {
+        if (!q || !laSoNguyen(q.x) || !laSoNguyen(q.y)) throw new Error('Container trôi: mỗi mục là { x, y, so, tan? }.');
+        var vq = null; vats.forEach(function (v) { if (v.noi === 'be' && v.x === q.x && v.y === q.y) vq = v; });
+        if (!vq) throw new Error('Container trôi (' + q.x + ', ' + q.y + ') phải đặt trên ô bè B.');
+        if (!laSoNguyen(q.so) || q.so < 1 || q.so > CONT_SO_TOI_DA) throw new Error('Container trôi (' + q.x + ', ' + q.y + '): so phải là số nguyên 1–' + CONT_SO_TOI_DA + '.');
+        var tq = q.tan === undefined ? 1 : q.tan;
+        if (!laSoNguyen(tq) || tq < 1 || tq > CONT_TAN_TOI_DA) throw new Error('Container trôi (' + q.x + ', ' + q.y + '): tan phải là số nguyên 1–' + CONT_TAN_TOI_DA + '.');
+        vq.noi = 'container'; vq.so = q.so; vq.tan = tq;
+      });
+    }
     var coVatNoi = san.vatNoi.length > 0;
     san.dich.forEach(themDich); (cfg.dich || []).forEach(themDich);
     function apRoBanDau(rc) {
@@ -1714,6 +1728,9 @@
     var conts = [], chongTai = {}, taus = [], tauTai = {}, giaoDs = null, daGiao = [], rayO = null;
     var taiToiDa = cfg.taiToiDa === undefined || cfg.taiToiDa === null ? null : cfg.taiToiDa;
     var luatThap = !!cfg.luatThap;
+    // M9B2 (tương tác T2 mùa 9): cfg.contLapHo = true → set_down() lên ô hố 'u' lấp hố: container DƯỚI CÙNG đang treo thành sàn (ô thành '.', hố mất cho mọi robot), sự kiện 'lap-ho' { o, cont };
+    // container còn lại (móc đôi) nằm lên trên thành chồng 1. Màn không khai thì hố vẫn chặn hạ ('ha-bi-chan' vat 'ho') như mùa 4 (màn Cảng sông cũ có ô 'u' trong tầm cần).
+    var contLapHo = !!cfg.contLapHo, lapHoDs = [];
     var coCau = dsRc.some(function (rc) { return (rc.loaiRobot || 'banh') === 'cau'; });
     if (taiToiDa !== null && !(laSoNguyen(taiToiDa) && taiToiDa >= 1)) throw new Error('taiToiDa (luật tải của cẩu) phải là số nguyên dương: tổng tấn đang treo × tầm phải ≤ taiToiDa.');
     if ((taiToiDa !== null || luatThap) && !coCau) throw new Error('taiToiDa / luatThap chỉ dùng cho màn có cần cẩu (loaiRobot "cau").');
@@ -3256,6 +3273,22 @@
         if (ten === 'set_down') {
           if (!treo.length) { var ekt = { ma: 'khong-treo', nhip: nhip, o: o, lenh: lg }; sk.push(ekt); suKienChan.push(ekt); return; }
           var lyH = oHaChan(o.x, o.y, treo.length);
+          if (lyH === 'ho' && contLapHo) {                                        // T2: container lấp hố
+            var cH = treo[0];
+            san.o[o.y] = san.o[o.y].slice(0, o.x) + '.' + san.o[o.y].slice(o.x + 1);
+            san.ho = san.ho.filter(function (q) { return !(q.x === o.x && q.y === o.y); });
+            cH.trangThai = 'lap-ho'; cH.x = o.x; cH.y = o.y;
+            lapHoDs.push({ x: o.x, y: o.y, so: cH.so, tan: cH.tan });
+            sk.push({ ma: 'lap-ho', nhip: nhip, o: o, cont: chupCont(cH) });
+            var conLai = treo.slice(1);
+            treo = [];
+            if (conLai.length) {
+              if (!chongTai[k]) chongTai[k] = [];
+              conLai.forEach(function (c) { c.trangThai = 'chong'; c.x = o.x; c.y = o.y; chongTai[k].push(c); });
+              sk.push({ ma: 'ha-cont', nhip: nhip, o: o, cont: conLai.map(chupCont), doi: false, tau: null });
+            }
+            return;
+          }
           if (lyH) { var ehb = { ma: 'ha-bi-chan', nhip: nhip, o: o, vat: lyH, cont: chupTreo(), lenh: lg }; sk.push(ehb); suKienChan.push(ehb); return; }
           var chH = chongO(o.x, o.y);
           if (luatThap && chH.length && treo[0].so > chH[chH.length - 1].so) {
@@ -3769,6 +3802,10 @@
     /** Đọc MÁY QUÉT MÃ (Cảng sông): ô ĐẦU CẦN. read_code() = số của container trên cùng ở đó, −1 nếu không có (hay ngoài sân); weight() = tổng tấn đang treo, không treo thì tấn của container
      *  trên cùng ở đầu cần, không có gì thì 0. Không tốn nhịp, không đổi sân. */
     function docQuetMa(yc) {
+      if (laXuong) {                                                                // M9B2 (L2): đầu đọc mã trên xuồng đọc VẬT NỔI ở ô trước mũi: container trôi → so / tan; bè, lục bình, nước trống → −1 / 0
+        var ot = oTruoc(), vn = vatNoiTai(ot.x, ot.y), coSo = !!(vn && vn.so !== undefined);
+        return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: rb.huong, o: ot, so: coSo ? vn.so : -1, tan: coSo ? vn.tan : 0, idVat: vn ? vn.id : null, noi: vn ? vn.noi : null, trong: !coSo, nhip: nhip };
+      }
       var o = oDauCan(), ch = oTai(san, o.x, o.y) === null ? [] : chongO(o.x, o.y), top = ch.length ? ch[ch.length - 1] : null;
       return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: o, so: top ? top.so : -1, tan: treo.length ? tongTan(treo) : top ? top.tan : 0, treo: treo.length, trong: !top, nhip: nhip };
     }
@@ -4455,7 +4492,7 @@
         thang: thang, nhip: nhip, loi: loiDoi, doi: dsKq,
         vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
         cua: chupCua(), nut: chupNut(), nutDe: chupNutDe(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau, nutDeBanDau: nutDeBanDau, lua: chupLua(), luaBanDau: luaBanDau,
-        thung: chupThung(), thungBanDau: thungBanDau, bongMo: null, diQua: [], mauO: san.mau, sac: san.sac.slice(), daSon: chupSon(), racCat: chupRacCat(), hinh: hinh, sonBanDau: sonBanDau,
+        thung: chupThung(), thungBanDau: thungBanDau, bongMo: null, diQua: [], mauO: san.mau, sac: san.sac.slice(), daSon: chupSon(), racCat: chupRacCat(), lapHo: lapHoDs.slice(), hinh: hinh, sonBanDau: sonBanDau,
         daChoi: daChoi.slice(), dieu: dieuDoi, dieuDung: dieuDung, dieuBatDau: dieuBatDau,
         ngachHang: ngachs.slice(), chuongDa: chuongDas.slice(), daChuong: chupDaChuong(), daChuongBanDau: daChuongBanDau,
         cong: chupCong(), van: chupVan(), dongTat: chupDongTat(), congBanDau: congBanDau, vanBanDau: vanBanDau,
@@ -4497,7 +4534,7 @@
       thang: thang, nhip: nhip, robot: chup(), loi: loi, vet: vet,
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
       tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coHoi ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
-      son: coSon ? { ha: son.ha, mau: son.mau } : null, daSon: chupSon(), racCat: chupRacCat(), hinh: hinh, sonBanDau: sonBanDau,
+      son: coSon ? { ha: son.ha, mau: son.mau } : null, daSon: chupSon(), racCat: chupRacCat(), lapHo: lapHoDs.slice(), hinh: hinh, sonBanDau: sonBanDau,
       loa: coLoa ? { am: loa.am } : null, daChoi: daChoi.slice(), dieu: dieu, dieuDung: dieuDung, dieuBatDau: dieuBatDau,
       ngachHang: ngachs.slice(), chuongDa: chuongDas.slice(), daChuong: chupDaChuong(), daChuongBanDau: daChuongBanDau,
       cua: chupCua(), nut: chupNut(), nutDe: chupNutDe(), bangTat: chupBangTat(), cuaBanDau: cuaBanDau, nutBanDau: nutBanDau, nutDeBanDau: nutDeBanDau, lua: chupLua(), luaBanDau: luaBanDau,
