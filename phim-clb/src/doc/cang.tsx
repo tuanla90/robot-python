@@ -110,7 +110,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="VƯỚNG THÀNH CẢNG!" at={66} den={138} x={tamO(1, 3).x + 110} y={tamO(1, 3).y - 40} />
       <CoiTauBar con="Tàu rời bến: 10 giờ" />
       <NhanGoi so={1} ten="Thân cần cẩu" />
-      <Mai dang="mai-hoang" says={[{at: 72, out: 175, text: 'Bậc thềm bê-tông cầu cảng cao quá, chân nhện không bước qua vách chắn được đâu!'}]} at={58} />
+      <Mai dang="mai-hoang" says={[{at: 72, out: 175, text: 'Bậc thềm cao quá, chân nhện không bước qua được!'}]} at={58} />
     </NenHienTruong>
   </Shake>
 );
@@ -142,7 +142,7 @@ const G2Thu: React.FC = () => (
       <ChuNay chu="CÁCH MÉP NƯỚC!" at={60} den={140} x={tamO(3, 4).x + 60} y={tamO(3, 4).y - 50} />
       <CoiTauBar con="Tàu rời bến: 9 giờ" />
       <NhanGoi so={2} ten="Móc cẩu tầm xa" />
-      <Mai says={[{at: 68, out: 220, text: 'Tàu đậu cách cầu cảng một luồng nước sâu, xe không chạy ra sát mạn tàu được!'}]} at={54} />
+      <Mai says={[{at: 68, out: 220, text: 'Tàu cách cầu một luồng nước, xe không ra được!'}]} at={54} />
     </NenHienTruong>
   </Shake>
 );
@@ -177,7 +177,7 @@ const G3Thu: React.FC = () => (
       <ChuNay chu="NHẦM TÀU HÀNG!" at={68} den={142} x={tamO(2, 2).x + 90} y={tamO(2, 2).y - 40} />
       <CoiTauBar con="Tàu rời bến: 8 giờ" />
       <NhanGoi so={3} ten="Đầu đọc mã vạch" />
-      <Sola mat={[[0, 'normal'], [66, 'surprised']]} says={[{at: 12, out: 64, text: 'Kiện hàng phủ bạt kín mít, đoán đại là hàng Đỏ nhé!'}, {at: 72, out: 220, text: 'Ái, bên trong là hàng Vàng, xếp nhầm bến tàu rồi!'}]} />
+      <Sola mat={[[0, 'normal'], [66, 'surprised']]} says={[{at: 12, out: 64, text: 'Bạt phủ kín mít, đoán đại hàng Đỏ nhé!'}, {at: 72, out: 220, text: 'Ái, hàng Vàng, xếp nhầm bến rồi!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -212,7 +212,7 @@ const G4Thu: React.FC = () => (
       <ChuNay chu="CHƯA ĐỦ CHUYẾN!" at={58} den={140} x={tamO(2, 2).x + 80} y={tamO(2, 2).y - 45} />
       <CoiTauBar con="Tàu rời bến: 7 giờ" />
       <NhanGoi so={4} ten="Bến tàu xuất hàng" />
-      <Mai dang="mai-sot-ruot" says={[{at: 64, out: 230, text: 'Mỗi chuyến tàu phải xếp đủ 2 container lên boong thì tàu mới kéo còi rời cảng và đón tàu mới vào!'}]} at={50} />
+      <Mai dang="mai-sot-ruot" says={[{at: 64, out: 230, text: 'Mỗi tàu xếp đủ 2 container mới được rời cảng!'}]} at={50} />
     </NenHienTruong>
   </Shake>
 );
@@ -251,7 +251,7 @@ const G5Thu: React.FC = () => (
       <ChuNay chu="CHẬM NHỊP TÀU!" at={65} den={140} x={tamO(2, 4).x + 90} y={tamO(2, 4).y - 35} />
       <CoiTauBar con="Tàu rời bến: 6 giờ" />
       <NhanGoi so={5} ten="Khớp kẹp đường ray" />
-      <Luna mat={[[0, 'normal'], [65, 'surprised']]} says={[{at: 12, out: 60, text: 'Cầu cảng dài tít tắp, nhích từng ô bánh lốp lâu quá!'}, {at: 68, out: 220, text: 'Có đường ray thép dưới sàn kìa, giá mà trượt vèo dọc ray được nhỉ!'}]} />
+      <Luna mat={[[0, 'normal'], [65, 'surprised']]} says={[{at: 12, out: 60, text: 'Cầu cảng dài tít, nhích từng ô lâu quá!'}, {at: 68, out: 220, text: 'Có ray thép dưới sàn, giá mà trượt vèo!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -286,7 +286,7 @@ const G6Thu: React.FC = () => (
       <ChuNay chu="CHỒNG CAO NẶNG!" at={68} den={145} x={tamO(2, 2).x + 80} y={tamO(2, 2).y - 45} />
       <CoiTauBar con="GIÔNG GIÓ TRÊN CẢNG!" gap />
       <NhanGoi so={6} ten="Cẩu đôi 2 container" />
-      <Mai dang="mai-hoang" says={[{at: 52, out: 230, text: 'Gió sông thổi mạnh làm chồng container 2 tầng rung lắc, gắp từng chiếc một không kịp trước cơn giông đâu!'}]} at={40} />
+      <Mai dang="mai-hoang" says={[{at: 52, out: 230, text: 'Gió giông lắc chồng thùng, gắp lẻ không kịp!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -320,7 +320,7 @@ const G7Thu: React.FC = () => (
       <ChuNay chu="QUÁ TẢI BOONG!" at={68} den={140} x={tamO(2, 2).x + 90} y={tamO(2, 2).y - 40} />
       <CoiTauBar con="Tàu rời bến: 4 giờ" />
       <NhanGoi so={7} ten="Cảm biến cân tải" />
-      <Sola mat={[[0, 'normal'], [68, 'surprised']]} says={[{at: 12, out: 64, text: 'Container này nhìn giống hệt mấy thùng kia, đặt lên tàu nhỏ luôn!'}, {at: 72, out: 225, text: 'Ối, thùng máy siêu trọng nặng 15 tấn, phải đặt sang tàu trọng tải lớn!'}]} />
+      <Sola mat={[[0, 'normal'], [68, 'surprised']]} says={[{at: 12, out: 64, text: 'Thùng này giống hệt mấy thùng kia, lên tàu nhỏ!'}, {at: 72, out: 225, text: 'Ối, nặng 15 tấn, phải sang tàu lớn!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -355,7 +355,7 @@ const G8Thu: React.FC = () => (
       <ChuNay chu="TRÔI QUA CẦU TÀU!" at={65} den={140} x={tamO(3, 3).x + 70} y={tamO(3, 3).y - 40} />
       <CoiTauBar con="Tàu rời bến: 3 giờ" />
       <NhanGoi so={8} ten="Băng chuyền cầu cảng" />
-      <Mai dang="mai-tin" says={[{at: 66, out: 230, text: 'Băng chuyền từ kho chú Tùng và nhà máy cô Hạnh đưa hàng thẳng ra cảng, phải bấm nút chặn và đón đúng nhịp nhé!'}]} at={52} />
+      <Mai dang="mai-tin" says={[{at: 66, out: 230, text: 'Hàng chú Tùng, cô Hạnh tới, bấm chặn đúng nhịp!'}]} at={52} />
     </NenHienTruong>
   </Shake>
 );
@@ -391,7 +391,7 @@ const G9Thu: React.FC = () => (
       <ChuNay chu="KẸT CHỐT ĐƯỜNG RAY!" at={60} den={140} x={tamO(3, 4).x + 70} y={tamO(3, 4).y - 35} />
       <CoiTauBar con="Tàu rời bến: 2 giờ" />
       <NhanGoi so={9} ten="Phối hợp R2 ở cảng" />
-      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 14, out: 58, text: 'Khối chốt sắt từ bãi bác Sơn kẹt cứng ngay trên đường ray cần cẩu!'}, {at: 64, out: 220, text: 'Móc cẩu container không hút được khối sắt đặc, phải gọi R2 nam châm thôi!'}]} />
+      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 14, out: 58, text: 'Chốt sắt bãi bác Sơn kẹt trên ray cần cẩu!'}, {at: 64, out: 220, text: 'Móc cẩu không hút sắt đặc, gọi R2 nam châm!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -437,7 +437,7 @@ const ThaTayCang: React.FC = () => {
           {m.nhan}
         </div>
       ))}
-      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'Cần cẩu container R1 đã đủ trọn bộ đồ nghề bến cảng, sẵn sàng xuất 4 chuyến tàu lớn!'}]} />
+      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'Cần cẩu R1 đủ đồ nghề, sẵn sàng xuất bến!'}]} />
     </NenHienTruong>
   );
 };

@@ -111,7 +111,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="DẬP MẦM!" at={66} den={138} x={tamO(2, 3).x + 150} y={tamO(2, 3).y - 30} />
       <DongHoTet con="Tết còn 10 ngày" />
       <NhanGoi so={1} ten="Cánh quạt bay" />
-      <Lan dang="lan-hoang" says={[{at: 72, out: 175, text: 'Đất luống mới tưới nước mềm lắm, đi trên đất là giẫm nát hết mầm non!'}]} at={58} />
+      <Lan dang="lan-hoang" says={[{at: 72, out: 175, text: 'Đất mới tưới mềm lắm, đi trên là nát mầm!'}]} at={58} />
     </NenHienTruong>
   </Shake>
 );
@@ -142,8 +142,8 @@ const G2Thu: React.FC = () => {
       <ChuNay chu="TRỐNG KHÔNG!" at={72} den={145} x={tamO(2, 2).x} y={tamO(2, 2).y - 60} mau={C.warn} />
       <DongHoTet con="Tết còn 8 ngày" />
       <NhanGoi so={2} ten="Bộ gieo hạt" />
-      <Sola says={[{at: 8, out: 68, text: 'Bay tới nơi rồi mà chưa có phễu thả hạt giống xuống!'}]} mat={[[0, 'worried'], [72, 'confused']]} />
-      {f >= 90 ? <Lan dang="lan-tin" says={[{at: 98, out: 230, text: 'Phải rải đúng hạt hoa hồng đỏ và hoa cúc vàng vào từng ô nhé!'}]} at={90} /> : null}
+      <Sola says={[{at: 8, out: 68, text: 'Bay tới rồi mà chưa có phễu thả hạt!'}]} mat={[[0, 'worried'], [72, 'confused']]} />
+      {f >= 90 ? <Lan dang="lan-tin" says={[{at: 98, out: 230, text: 'Rải đúng hồng đỏ, cúc vàng vào từng ô nhé!'}]} at={90} /> : null}
     </NenHienTruong>
   );
 };
@@ -185,7 +185,7 @@ const G3Thu: React.FC = () => {
       <DongHoTet con="Tết còn 7 ngày" />
       <NhanGoi so={3} ten="Camera 4 hướng" />
       <Sola says={[{at: 6, out: 60, text: 'Cứ gieo màu đỏ đại vào ô trống!'}]} mat={[[0, 'confident'], [70, 'facepalm']]} />
-      {f >= 92 ? <Lan says={[{at: 100, out: 235, text: 'Phải nhìn xem luống mẫu bên cạnh màu gì rồi mới gieo chứ!'}]} at={92} /> : null}
+      {f >= 92 ? <Lan says={[{at: 100, out: 235, text: 'Nhìn luống mẫu bên cạnh màu gì rồi gieo chứ!'}]} at={92} /> : null}
     </NenHienTruong>
   );
 };
@@ -227,7 +227,7 @@ const G4Thu: React.FC = () => {
       <CodeBox lines={['c = color("up")', 'ink(c); dot()', 'go_right()']} x={270} y={145} w={460} size={30} title="Viết rời từng ô" />
       <DongHoTet con="Tết còn 6 ngày" />
       <NhanGoi so={4} ten="Sao chép luống" />
-      {f >= 102 ? <Lan dang="lan-sot-ruot" says={[{at: 110, out: 245, text: 'Cả dãy dài giống nhau mà viết lẻ từng ô thế kia dễ bỏ sót lắm!'}]} at={102} /> : null}
+      {f >= 102 ? <Lan dang="lan-sot-ruot" says={[{at: 110, out: 245, text: 'Dãy dài giống nhau, viết lẻ từng ô dễ sót!'}]} at={102} /> : null}
     </NenHienTruong>
   );
 };
@@ -272,7 +272,7 @@ const G5Thu: React.FC = () => {
       <CodeBox lines={['for i in range(6):', '    go_up()']} x={280} y={145} w={440} size={30} title="Bay một mạch quên sạc" />
       <DongHoTet con="Tết còn 5 ngày" />
       <NhanGoi so={5} ten="Trạm sạc pin" />
-      {f >= 92 ? <Lan dang="lan-sot-ruot" says={[{at: 100, out: 235, text: 'Bay đường xa tốn pin lắm, thấy trạm sạc giữa đồng mà không ghé vào!'}]} at={92} /> : null}
+      {f >= 92 ? <Lan dang="lan-sot-ruot" says={[{at: 100, out: 235, text: 'Bay xa tốn pin, sao không ghé trạm sạc!'}]} at={92} /> : null}
     </NenHienTruong>
   );
 };
@@ -319,7 +319,7 @@ const G6Thu: React.FC = () => {
       <CodeBox lines={['dot(); go_right()', 'dot(); go_right()']} x={270} y={145} w={460} size={30} title="Chấm lẻ từng ô" />
       <DongHoTet con="Tết còn 4 ngày" />
       <NhanGoi so={6} ten="Rải theo hàng" />
-      {f >= 92 ? <Lan dang="lan-hoang" says={[{at: 100, out: 245, text: 'Gió làm hỏng cả dải dài, chấm lẻ từng ô thế kia bao giờ mới kịp!'}]} at={92} /> : null}
+      {f >= 92 ? <Lan dang="lan-hoang" says={[{at: 100, out: 245, text: 'Gió hỏng cả dải, chấm lẻ từng ô sao kịp!'}]} at={92} /> : null}
     </NenHienTruong>
   );
 };
@@ -353,7 +353,7 @@ const G7Thu: React.FC = () => {
       <CodeBox lines={['c = color("up")', 'ink(c)']} x={280} y={145} w={440} size={30} title="Nhìn ngang thay vì nhìn bụng" />
       <DongHoTet con="Tết còn 3 ngày" gap />
       <NhanGoi so={7} ten="Mắt nhìn xuống" />
-      {f >= 82 ? <Lan dang="lan-ngac-nhien" says={[{at: 90, out: 235, text: 'Thẻ màu nằm ngay dưới bụng drone kìa, nhìn đi đâu thế!'}]} at={82} /> : null}
+      {f >= 82 ? <Lan dang="lan-ngac-nhien" says={[{at: 90, out: 235, text: 'Thẻ màu ngay dưới bụng drone, nhìn đâu thế!'}]} at={82} /> : null}
     </NenHienTruong>
   );
 };
@@ -392,7 +392,7 @@ const G8Thu: React.FC = () => {
       </div>
       <DongHoTet con="Tết còn 2 ngày" />
       <NhanGoi so={8} ten="Dãy màu hoa" />
-      {f >= 92 ? <Lan dang="lan-tin" says={[{at: 100, out: 235, text: 'Chậu dọc bờ kênh xếp theo dãy màu sẵn rồi, gieo nhầm thứ tự là lệch cả giàn!'}]} at={92} /> : null}
+      {f >= 92 ? <Lan dang="lan-tin" says={[{at: 100, out: 235, text: 'Chậu xếp dãy màu, nhầm thứ tự là lệch giàn!'}]} at={92} /> : null}
     </NenHienTruong>
   );
 };
@@ -433,7 +433,7 @@ const G9Thu: React.FC = () => (
     <ChuNay chu="VƯỚNG SẮT!" at={42} den={125} x={tamO(2, 2).x + 150} y={tamO(2, 2).y - 40} mau={C.warn} />
     <DongHoTet con="Tết còn 1 ngày" />
     <NhanGoi so={9} ten="Phối hợp 2 tầng" />
-    <Sola says={[{at: 55, out: 220, text: 'Drone bay trên trời thì không dọn được tấm sắt nặng đè luống hoa dưới đất!'}]} mat={[[0, 'worried'], [42, 'shocked']]} />
+    <Sola says={[{at: 55, out: 220, text: 'Drone trên trời không dọn được tấm sắt đè luống!'}]} mat={[[0, 'worried'], [42, 'shocked']]} />
   </NenHienTruong>
 );
 const R2_G9K: Moc[] = [[0, 2, 4.2, 0], [30, 2, 2.68, 0], [75, 0, 2.68, 0], [150, 0, 2.68, 0]];
@@ -466,7 +466,7 @@ const G10Mo: React.FC = () => (
     <Xe anh="drone-cam" moc={[[0, 0, 4.5, 0]]} />
     <DongHoTet con="Chợ hoa Tết: hôm nay!" gap />
     <NhanGoi so={10} ten="Xuất xưởng" />
-    <Lan dang="lan-sot-ruot" says={[{at: 10, out: 145, text: 'Khách sắp vào xem hội hoa Tết rồi, còn thảm hoa lớn giữa sân nữa thôi!'}]} />
+    <Lan dang="lan-sot-ruot" says={[{at: 10, out: 145, text: 'Khách sắp tới, còn thảm hoa lớn giữa sân thôi!'}]} />
   </NenHienTruong>
 );
 const ThaTayM5: React.FC = () => {

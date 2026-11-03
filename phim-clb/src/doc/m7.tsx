@@ -109,7 +109,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="TRƯỢT ĐÁ ƯỚT!" at={66} den={138} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <PinBoDamBar con="Pin đàm: 80%" />
       <NhanGoi so={1} ten="Thân bánh gai bám đá" />
-      <Phong says={[{at: 72, out: 175, text: 'Nền đá vôi trong hang phủ bùn nhũ và rêu ướt trơn bóng, bánh thường vào là trượt xoay vòng ngay!'}]} at={58} />
+      <Phong says={[{at: 72, out: 175, text: 'Nền đá ướt trơn bóng, bánh thường vào là trượt!'}]} at={58} />
     </NenHienTruong>
   </Shake>
 );
@@ -142,7 +142,7 @@ const G2Mo: React.FC = () => (
       <ChuNay chu="SƯƠNG TỐI ĐẶC!" at={65} den={140} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <PinBoDamBar con="Pin đàm: 75%" />
       <NhanGoi so={2} ten="Loa phát xung còi" />
-      <Phong dang="phong-sot-ruot" says={[{at: 68, out: 175, text: 'Vòm hang sâu tối đen lại nhiều vách khuất, chỉ bật đèn thôi thì đoàn khảo sát trong hốc đá không biết có xe cứu hộ tới!'}]} at={54} />
+      <Phong dang="phong-sot-ruot" says={[{at: 68, out: 175, text: 'Vách khuất, bật đèn thôi đoàn khảo sát không thấy!'}]} at={54} />
     </NenHienTruong>
   </Shake>
 );
@@ -172,7 +172,7 @@ const G3Mo: React.FC = () => (
       <ChuNay chu="NHẦM NGÁCH VỌNG!" at={88} den={145} x={tamO(2, 4).x + 90} y={tamO(2, 4).y - 40} />
       <PinBoDamBar con="Pin đàm: 68%" />
       <NhanGoi so={3} ten="Cảm biến âm thanh Sonar" />
-      <Sola mat={[[0, 'normal'], [86, 'surprised']]} says={[{at: 16, out: 82, text: 'Có tiếng gõ đá cầu cứu, chắc ở ngách phía nam này rồi!'}, {at: 88, out: 175, text: 'Ái, đó là tiếng vang dội vào vách đá, đi nhầm ngách cụt rồi!'}]} />
+      <Sola mat={[[0, 'normal'], [86, 'surprised']]} says={[{at: 16, out: 82, text: 'Tiếng gõ cầu cứu, chắc ở ngách nam này!'}, {at: 88, out: 175, text: 'Ái, tiếng vang dội vách, nhầm ngách cụt rồi!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -203,7 +203,7 @@ const G4Mo: React.FC = () => (
       <ChuNay chu="KHE VỰC CHẮN NGANG!" at={58} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 45} />
       <PinBoDamBar con="Pin đàm: 60%" />
       <NhanGoi so={4} ten="Ngách hang xuyên núi" />
-      <Phong dang="phong-tin" says={[{at: 64, out: 175, text: 'Khe vực ngầm chia đôi lòng hang rồi, nhưng ở vách bên có cặp cửa ngách hang ngầm thông sang nhau đấy!'}]} at={50} />
+      <Phong dang="phong-tin" says={[{at: 64, out: 175, text: 'Vách bên có cặp cửa ngách thông nhau đấy!'}]} at={50} />
     </NenHienTruong>
   </Shake>
 );
@@ -241,7 +241,7 @@ const G5Mo: React.FC = () => (
       <ChuNay chu="BÒ QUÁ CHẬM!" at={85} den={142} x={tamO(2, 3).x + 110} y={tamO(2, 3).y - 30} />
       <PinBoDamBar con="Pin đàm: 50%" />
       <NhanGoi so={5} ten="Thu gai trượt dốc" />
-      <Luna mat={[[0, 'normal'], [82, 'surprised']]} says={[{at: 16, out: 78, text: 'Gai thép cắm chặt từng bước nên xuống máng dốc dài chậm rì...'}, {at: 85, out: 175, text: 'Pin bộ đàm tụt còn 50% thôi, phải trượt nhanh xuống mới kịp!'}]} />
+      <Luna mat={[[0, 'normal'], [82, 'surprised']]} says={[{at: 16, out: 78, text: 'Gai thép bám từng bước, xuống dốc chậm rì...'}, {at: 85, out: 175, text: 'Pin bộ đàm còn 50%, phải trượt nhanh xuống!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -277,7 +277,7 @@ const G6Mo: React.FC = () => (
       <ChuNay chu="CÒI THƯỜNG VÔ HIỆU!" at={68} den={145} x={tamO(2, 3).x + 60} y={tamO(2, 3).y - 45} />
       <PinBoDamBar con="DƯ CHẤN SẬP NGÁCH!" gap />
       <NhanGoi so={6} ten="Phát nốt cộng hưởng" />
-      <Phong dang="phong-hoang" says={[{at: 52, out: 175, text: 'Khối thạch nhũ rỗng sập chắn ngách hang rồi! Đá chuông chỉ cộng hưởng khi phát đúng nốt nhạc trong sổ địa chất thôi!'}]} at={40} />
+      <Phong dang="phong-hoang" says={[{at: 52, out: 175, text: 'Đá chuông chỉ cộng hưởng với đúng nốt trong sổ!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -312,7 +312,7 @@ const G7Mo: React.FC = () => (
       <ChuNay chu="LỆCH TẦN SỐ!" at={68} den={140} x={tamO(2, 3).x + 70} y={tamO(2, 3).y - 45} />
       <PinBoDamBar con="Pin đàm: 35%" />
       <NhanGoi so={7} ten="Nghe giọng đàn đá" />
-      <Sola mat={[[0, 'normal'], [68, 'surprised']]} says={[{at: 16, out: 64, text: 'Thử phát nốt số 3 như cột trước xem sao...'}, {at: 70, out: 175, text: 'Không nhúc nhích! Cột đàn đá cổ này có tần số riêng chưa ghi trong sổ!'}]} />
+      <Sola mat={[[0, 'normal'], [68, 'surprised']]} says={[{at: 16, out: 64, text: 'Thử phát nốt số 3 như cột trước xem sao...'}, {at: 70, out: 175, text: 'Không nhúc nhích! Cột này có tần số chưa ghi!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -349,7 +349,7 @@ const G8Mo: React.FC = () => (
       <ChuNay chu="KHE VỰC SÂU!" at={60} den={140} x={tamO(3, 3).x + 60} y={tamO(3, 3).y - 40} />
       <PinBoDamBar con="Pin đàm: 28%" />
       <NhanGoi so={8} ten="Lăn ngọc động lấp vực" />
-      <Phong dang="phong-tin" says={[{at: 64, out: 175, text: 'Anh Dũng mỏ đá nhắn qua bộ đàm: tảng ngọc động tròn trên dốc kia đẩy nhẹ là lăn xuống lấp khe vực ngầm ngay!'}]} at={50} />
+      <Phong dang="phong-tin" says={[{at: 64, out: 175, text: 'Anh Dũng nhắn: đẩy nhẹ ngọc động lăn lấp vực!'}]} at={50} />
     </NenHienTruong>
   </Shake>
 );
@@ -385,7 +385,7 @@ const G9Mo: React.FC = () => (
       <ChuNay chu="CHẶN SÓNG ĐÀM!" at={60} den={140} x={tamO(2, 3).x + 80} y={tamO(2, 3).y - 40} />
       <PinBoDamBar con="Pin đàm: 15%!" gap />
       <NhanGoi so={9} ten="Phối hợp R2 mật mã âm" />
-      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 16, out: 56, text: 'Vách đá vôi dày chặn kín sóng radio giữa hai tầng hang rồi!'}, {at: 62, out: 175, text: 'Sóng radio không qua được nhưng âm thanh gõ vào vách đá thì truyền qua được!'}]} />
+      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 16, out: 56, text: 'Vách đá vôi dày chặn sóng radio hai tầng rồi!'}, {at: 62, out: 175, text: 'Radio không qua, nhưng tiếng gõ vách thì qua được!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -433,7 +433,7 @@ const ThaTayM7: React.FC = () => {
           {m.nhan}
         </div>
       ))}
-      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 110, text: 'Xe thám hiểm hang động R1 hội tụ đủ 4 công nghệ âm học & địa hình, sẵn sàng xuất phát!'}]} />
+      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 110, text: 'R1 đủ công nghệ âm học, sẵn sàng xuất phát!'}]} />
     </NenHienTruong>
   );
 };
