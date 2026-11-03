@@ -90,7 +90,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   V.dangKy({
     loai: 'than', ma: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'rail'], ten: 'Thân cần cẩu container',
-    oGan: { tay: { x: 50, y: 86 }, hongTrai: { x: 70, y: 54 }, hongPhai: { x: 30, y: 54 }, tren: { x: 66, y: 72 }, sau: { x: 50, y: 25 }, bung: { x: 50, y: 79 } },   // M9B2: ổ bung ở chốt gốc cần (camera bụng L13 vẽ tạm theo ổ; hình ở đầu cần là gói hình sau)
+    oGan: { tay: { x: 50, y: 86 }, hongTrai: { x: 70, y: 54 }, hongPhai: { x: 30, y: 54 }, tren: { x: 66, y: 72 }, sau: { x: 50, y: 25 }, bung: { x: 50, y: 72 } },   // M9B2: ổ bung ở mép dưới vỏ, sát gốc cần (camera bụng L13 vẽ tạm theo ổ; hình ở đầu cần là gói hình sau)
     oCam: { x: 58, y: 36 }, vo: { x: 29, y: 34, w: 42, h: 39 },
     ve: function (g, s, M, H) { veDe(g, s, H); veTren(g, s, M, H); }
   });
