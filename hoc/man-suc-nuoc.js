@@ -47,7 +47,8 @@
     'turn_left()',
     'a = flow_power()',
     'u_turn()',
-    'if a == calmer_power(a):',
+    't = calmer_power(a)',
+    'if a == t:',
     '    u_turn()'
   ];
   var T_BEST_BRANCH = [
@@ -58,7 +59,8 @@
     'turn_left()',
     'a = flow_power()',
     'u_turn()',
-    'if a == faster_power(a):',
+    't = faster_power(a)',
+    'if a == t:',
     '    u_turn()',
     'forward(n)'
   ];
@@ -66,7 +68,8 @@
     'turn_left()',
     'a = flow_power()',
     'u_turn()',
-    'if a == calmer_power(a):',
+    't = calmer_power(a)',
+    'if a == t:',
     '    u_turn()',
     'forward(n)'
   ];
@@ -122,10 +125,10 @@
       san: ['#########', '#~~~~~~Q#', '#########'],
       dong: [{ x: 2, y: 1, huong: 1, suc: 2 }],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai(['h, s = flow()', 'forward(6 - s)']),
-      loiGiai: bai(['h, s = flow()', 'forward(6 - s)']),
+      maMau: bai(['h, s = flow()', 't = 6 - s', 'forward(t)']),
+      loiGiai: bai(['h, s = flow()', 't = 6 - s', 'forward(t)']),
       sao: { o: 7, nhip: 4 },
-      loiGiaiKhac: { moTa: 'Lấy phần tử thứ hai của tuple bằng flow()[1]', baiLam: bai(['s = flow()[1]', 'forward(6 - s)']) },
+      loiGiaiKhac: { moTa: 'Lấy phần tử thứ hai của tuple bằng flow()[1]', baiLam: bai(['t = flow()', 's = t[1]', 'k = 6 - s', 'forward(k)']) },
       loiSai: [],
       goiY: ['Luna: Chỉ cần bấm nút Chạy để quan sát cảm biến flow() trả về bộ đôi ("front", 2).']
     }),
@@ -138,9 +141,9 @@
       dong: [[{ x: 2, y: 1, huong: 1, suc: 1 }], [{ x: 2, y: 1, huong: 1, suc: 2 }]],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai(['h, s = flow()']),
-      loiGiai: bai(['h, s = flow()', 'forward(6 - s)']),
+      loiGiai: bai(['h, s = flow()', 't = 6 - s', 'forward(t)']),
       sao: { o: 7, nhip: 9 },
-      loiGiaiKhac: { moTa: 'Dùng chỉ số s = flow()[1] rồi gọi forward(6 - s)', baiLam: bai(['s = flow()[1]', 'forward(6 - s)']) },
+      loiGiaiKhac: { moTa: 'Dùng chỉ số s = flow()[1] rồi gọi forward(6 - s)', baiLam: bai(['t = flow()', 's = t[1]', 'k = 6 - s', 'forward(k)']) },
       loiSai: [
         { moTa: 'Đếm cứng forward(4) nên ở sân 1 dòng sức 1 đẩy thiếu 1 ô', baiLam: bai(['forward(4)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Truyền nhầm forward(s) thay vì forward(6 - s) nên xuồng dừng giữa kênh', baiLam: bai(['h, s = flow()', 'forward(s)']), phaiCoMa: ['chua-toi-co'] }
@@ -159,15 +162,15 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai(['for i in range(2):', '    h, s = flow()']),
-      loiGiai: bai(['for i in range(2):', '    h, s = flow()', '    forward(4 - s)']),
+      loiGiai: bai(['for i in range(2):', '    h, s = flow()', '    t = 4 - s', '    forward(t)']),
       sao: { o: 8, nhip: 10 },
       loiGiaiKhac: {
         moTa: 'Đo và đi từng chặng 4 ô mà không dùng vòng lặp',
-        baiLam: bai(['h, s = flow()', 'forward(4 - s)', 'h, s = flow()', 'forward(4 - s)'])
+        baiLam: bai(['h, s = flow()', 't = 4 - s', 'forward(t)', 'h, s = flow()', 't = 4 - s', 'forward(t)'])
       },
       loiSai: [
         { moTa: 'Luôn gọi forward(2) trong vòng lặp nên chặng sức 1 đi thiếu bước', baiLam: bai(['for i in range(2):', '    forward(2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Chỉ đo và đi 1 chặng ngoài vòng lặp nên mới tới giữa kênh', baiLam: bai(['h, s = flow()', 'forward(4 - s)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chỉ đo và đi 1 chặng ngoài vòng lặp nên mới tới giữa kênh', baiLam: bai(['h, s = flow()', 't = 4 - s', 'forward(t)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Mỗi chặng dài đúng 4 ô, nên bước vào ô đầu chặng có sức đẩy s sẽ cần forward(4 - s).', 'Luna: Sau chặng 1 xuồng dừng đúng tại (5, 1) để đo tiếp ô (6, 1) ở chặng 2.']
     }),
@@ -180,12 +183,12 @@
       dong: [[{ x: 4, y: 1, huong: 1, suc: 1 }], [{ x: 4, y: 1, huong: 1, suc: 2 }]],
       batDau: [{ x: 3, y: 1, huong: 3 }, { x: 3, y: 1, huong: 3 }],
       maMau: bai(['tow_to_tail()', 'u_turn()', 'h, s = flow()']),
-      loiGiai: bai(['tow_to_tail()', 'u_turn()', 'h, s = flow()', 'forward(4 - s)']),
+      loiGiai: bai(['tow_to_tail()', 'u_turn()', 'h, s = flow()', 't = 4 - s', 'forward(t)']),
       sao: { o: 16, nhip: 10 },
-      loiGiaiKhac: { moTa: 'Dùng hai lần turn_right() thay cho u_turn()', baiLam: bai(['tow_to_tail()', 'turn_right()', 'turn_right()', 'h, s = flow()', 'forward(4 - s)']) },
+      loiGiaiKhac: { moTa: 'Dùng hai lần turn_right() thay cho u_turn()', baiLam: bai(['tow_to_tail()', 'turn_right()', 'turn_right()', 'h, s = flow()', 't = 4 - s', 'forward(t)']) },
       loiSai: [
         { moTa: 'Đếm cứng forward(2) sau khi quay đầu nên ở sân 1 bè B dừng trước bến', baiLam: bai(['tow_to_tail()', 'u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi tow_to_tail() nên bè B vẫn nằm lại ở (1, 1)', baiLam: bai(['u_turn()', 'h, s = flow()', 'forward(4 - s)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên gọi tow_to_tail() nên bè B vẫn nằm lại ở (1, 1)', baiLam: bai(['u_turn()', 'h, s = flow()', 't = 4 - s', 'forward(t)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau tow_to_tail() và u_turn(), xuồng ở (3, 1) hướng Đông còn bè B ở (2, 1) cách 1 ô.', 'Luna: Để kéo B vào (6, 1), xuồng cần tới (7, 1) cách 4 ô, nên gọi forward(4 - s).']
     }),
@@ -201,15 +204,15 @@
       ],
       batDau: [{ x: 3, y: 2, huong: 0 }, { x: 3, y: 2, huong: 0 }],
       maMau: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()']),
-      loiGiai: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()', 'move()']),
+      loiGiai: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'move()']),
       sao: { o: 15, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Dùng điều kiện if a < b: u_turn() trước khi gọi move()',
         baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a < b:', '    u_turn()', 'move()'])
       },
       loiSai: [
-        { moTa: 'Dùng max(a, b) thay vì min(a, b) nên rẽ nhầm sang nhánh nước xiết', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == max(a, b):', '    u_turn()', 'move()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên gọi move() sau khi chọn hướng nhánh êm', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Dùng max(a, b) thay vì min(a, b) nên rẽ nhầm sang nhánh nước xiết', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = max(a, b)', 'if a == t:', '    u_turn()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên gọi move() sau khi chọn hướng nhánh êm', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Hàm min(a, b) trả về số nhỏ hơn giữa hai sức nước a và b.', 'Luna: Nếu a == min(a, b) thì nhánh trái êm hơn nên cần gọi u_turn() quay lại hướng trái rồi gọi move().']
     }),
@@ -225,14 +228,14 @@
       ],
       batDau: [{ x: 4, y: 2, huong: 0 }, { x: 4, y: 2, huong: 0 }],
       maMau: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()']),
-      loiGiai: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == max(a, b):', '    u_turn()', 'move()']),
+      loiGiai: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = max(a, b)', 'if a == t:', '    u_turn()', 'move()']),
       sao: { o: 15, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'So sánh if a > b: u_turn() rồi gọi move()',
         baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a > b:', '    u_turn()', 'move()'])
       },
       loiSai: [
-        { moTa: 'Dùng min(a, b) thay vì max(a, b) nên đi nhầm vào nhánh chảy chậm', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Dùng min(a, b) thay vì max(a, b) nên đi nhầm vào nhánh chảy chậm', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'move()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Chỉ rẽ trái rồi move() mà không đo nhánh phải', baiLam: bai(['turn_left()', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Hàm max(a, b) trả về giá trị lớn hơn giữa a và b (tức là dòng sức 2).', 'Luna: Sau khi hướng về dòng sức 2, một lệnh move() giúp xuồng tiến 1 ô và trôi thêm 2 ô tới Q.']
@@ -252,15 +255,15 @@
       ],
       batDau: [{ x: 4, y: 3, huong: 0 }, { x: 4, y: 3, huong: 0 }],
       maMau: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()']),
-      loiGiai: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()', 'forward(2)']),
+      loiGiai: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'forward(2)']),
       sao: { o: 24, nhip: 13 },
       loiGiaiKhac: {
         moTa: 'Quét chọn nhánh min(a, b) bằng if a < b: u_turn()',
         baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a < b:', '    u_turn()', 'forward(2)'])
       },
       loiSai: [
-        { moTa: 'Chỉ gọi move() thay vì forward(2) nên bè B mới tới (3, 3) hoặc (5, 3), chưa vào bến q', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()', 'move()']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chọn nhầm nhánh max(a, b) nên kéo bè sang phía không có bến q', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == max(a, b):', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chỉ gọi move() thay vì forward(2) nên bè B mới tới (3, 3) hoặc (5, 3), chưa vào bến q', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'move()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chọn nhầm nhánh max(a, b) nên kéo bè sang phía không có bến q', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = max(a, b)', 'if a == t:', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau tow_to_tail(), B ở (4, 2) cách xuồng 1 ô nên xuồng quay tại chỗ ở (4, 3) không làm vướng bè.', 'Luna: Sau khối if a == min(a, b): u_turn(), gọi forward(2) để kéo B vào bến q.']
     }),
@@ -283,7 +286,7 @@
       sao: { o: 30, nhip: 15 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng lặp for i in range(2 - s): wait() sau khi thả neo',
-        baiLam: bai(['h, s = flow()', 'drop_anchor()', 'for i in range(2 - s):', '    wait()', 'tow_to_tail()', 'lift_anchor()', 'pair_step("R", 2)'])
+        baiLam: bai(['h, s = flow()', 'drop_anchor()', 't = 2 - s', 'for i in range(t):', '    wait()', 'tow_to_tail()', 'lift_anchor()', 'pair_step("R", 2)'])
       },
       loiSai: [
         { moTa: 'Không chờ thêm nhịp khi s == 1 nên ở sân 1 bè B còn ở (5, 1) ngoài tầm lưới', baiLam: bai(['drop_anchor()', 'tow_to_tail()', 'lift_anchor()', 'pair_step("R", 2)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
@@ -303,11 +306,11 @@
       dong: [[{ x: 2, y: 3, huong: 2, suc: 1 }], [{ x: 2, y: 3, huong: 2, suc: 2 }]],
       batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
       maMau: bai(['tug_corner("R", 1)', 'h, s = flow()']),
-      loiGiai: bai(['tug_corner("R", 1)', 'h, s = flow()', 'forward(4 - s)']),
+      loiGiai: bai(['tug_corner("R", 1)', 'h, s = flow()', 't = 4 - s', 'forward(t)']),
       sao: { o: 24, nhip: 13 },
       loiGiaiKhac: {
         moTa: 'Viết tách tow_to_tail() và pair_step("R", 1) trước khi đo dòng',
-        baiLam: bai(['tow_to_tail()', 'pair_step("R", 1)', 'h, s = flow()', 'forward(4 - s)'])
+        baiLam: bai(['tow_to_tail()', 'pair_step("R", 1)', 'h, s = flow()', 't = 4 - s', 'forward(t)'])
       },
       loiSai: [
         { moTa: 'Đếm cứng forward(2) sau khi vào nhánh dọc nên ở sân 1 lục bình L chưa tới bến', baiLam: bai(['tug_corner("R", 1)', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
@@ -331,15 +334,15 @@
       ],
       batDau: [{ x: 4, y: 3, huong: 0 }, { x: 4, y: 3, huong: 0 }],
       maMau: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()']),
-      loiGiai: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()', 'forward(3 - min(a, b))']),
+      loiGiai: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 't = min(a, b)', 'k = 3 - t', 'forward(k)']),
       sao: { o: 24, nhip: 14 },
       loiGiaiKhac: {
         moTa: 'Đọc lại h, s = flow() sau khi đã quay về nhánh êm rồi gọi forward(3 - s)',
-        baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()', 'h, s = flow()', 'forward(3 - s)'])
+        baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'h, s = flow()', 't = 3 - s', 'forward(t)'])
       },
       loiSai: [
-        { moTa: 'Đếm cứng forward(2) cho cả hai sân nên ở sân 2 nhánh nước êm sức 0 đi thiếu 1 ô', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == min(a, b):', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chọn nhầm nhánh max(a, b) nên kéo bè vào dòng nước xiết sức 2', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 'if a == max(a, b):', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đếm cứng forward(2) cho cả hai sân nên ở sân 2 nhánh nước êm sức 0 đi thiếu 1 ô', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chọn nhầm nhánh max(a, b) nên kéo bè vào dòng nước xiết sức 2', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = max(a, b)', 'if a == t:', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau khi kiểm tra if a == min(a, b): u_turn(), xuồng đã hướng về nhánh êm có sức đẩy đúng bằng min(a, b).', 'Luna: Gọi forward(3 - min(a, b)) để xuồng đi đủ 3 ô kéo B vào bến q trên cả hai sân.']
     }),
@@ -358,17 +361,17 @@
         [{ x: 2, y: 1, huong: 1, suc: 1 }, { x: 6, y: 1, huong: 1, suc: 2 }]
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['for i in range(2):', '    forward(4 - flow_power())']),
-      loiGiai: bai(['for i in range(2):', '    forward(4 - flow_power())'], { hamCuaEmMoi: [hFlowPower()] }),
+      maMau: bai(['for i in range(2):', '    p = flow_power()', '    t = 4 - p', '    forward(t)']),
+      loiGiai: bai(['for i in range(2):', '    p = flow_power()', '    t = 4 - p', '    forward(t)'], { hamCuaEmMoi: [hFlowPower()] }),
       sao: { o: 9, nhip: 10 },
       loiGiaiKhac: {
         moTa: 'Viết return flow()[1] trong hàm flow_power()',
-        baiLam: bai(['for i in range(2):', '    forward(4 - flow_power())']),
-        hamCuaEmMoi: [hFlowPower(['return flow()[1]'])]
+        baiLam: bai(['for i in range(2):', '    p = flow_power()', '    t = 4 - p', '    forward(t)']),
+        hamCuaEmMoi: [hFlowPower(['t = flow()', 'return t[1]'])]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm flow_power()', baiLam: bai(['for i in range(2):', '    forward(4 - flow_power())']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trả về cố định return 2 trong hàm flow_power() nên chặng sức 1 đi thiếu bước', baiLam: bai(['for i in range(2):', '    forward(4 - flow_power())']), hamCuaEmMoi: [hFlowPower(['h, s = flow()', 'return 2'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa tạo hàm flow_power()', baiLam: bai(['for i in range(2):', '    p = flow_power()', '    t = 4 - p', '    forward(t)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trả về cố định return 2 trong hàm flow_power() nên chặng sức 1 đi thiếu bước', baiLam: bai(['for i in range(2):', '    p = flow_power()', '    t = 4 - p', '    forward(t)']), hamCuaEmMoi: [hFlowPower(['h, s = flow()', 'return 2'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Trong hàm flow_power(), dòng đầu tách h, s = flow() và dòng thứ hai trả về return s.', 'Luna: Chương trình chính đã có sẵn vòng lặp gọi forward(4 - flow_power()).']
     }),
@@ -385,17 +388,17 @@
         [{ x: 2, y: 2, huong: 3, suc: 2 }, { x: 4, y: 2, huong: 1, suc: 1 }]
       ],
       batDau: [{ x: 3, y: 2, huong: 0 }, { x: 3, y: 2, huong: 0 }],
-      maMau: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == calmer_power(a):', '    u_turn()', 'move()']),
-      loiGiai: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == calmer_power(a):', '    u_turn()', 'move()'], { hamCuaEmMoi: [hCalmerPower()] }),
+      maMau: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = calmer_power(a)', 'if a == t:', '    u_turn()', 'move()']),
+      loiGiai: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = calmer_power(a)', 'if a == t:', '    u_turn()', 'move()'], { hamCuaEmMoi: [hCalmerPower()] }),
       sao: { o: 18, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Viết gọn return min(a, flow_power()) trong calmer_power(a)',
-        baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == calmer_power(a):', '    u_turn()', 'move()']),
-        hamCuaEmMoi: [hCalmerPower(['return min(a, flow_power())'])]
+        baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = calmer_power(a)', 'if a == t:', '    u_turn()', 'move()']),
+        hamCuaEmMoi: [hCalmerPower(['p = flow_power()', 'return min(a, p)'])]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm calmer_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == calmer_power(a):', '    u_turn()', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Viết nhầm return max(a, b) trong calmer_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == calmer_power(a):', '    u_turn()', 'move()']), hamCuaEmMoi: [hCalmerPower(['b = flow_power()', 'return max(a, b)'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa tạo hàm calmer_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = calmer_power(a)', 'if a == t:', '    u_turn()', 'move()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Viết nhầm return max(a, b) trong calmer_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = calmer_power(a)', 'if a == t:', '    u_turn()', 'move()']), hamCuaEmMoi: [hCalmerPower(['b = flow_power()', 'return max(a, b)'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Hàm calmer_power(a) gồm 2 dòng: b = flow_power() và return min(a, b).', 'Luna: Giữ nguyên chương trình chính đã viết sẵn để kiểm tra hàm mới.']
     }),
@@ -412,17 +415,17 @@
         [{ x: 3, y: 2, huong: 3, suc: 1 }, { x: 5, y: 2, huong: 1, suc: 2 }]
       ],
       batDau: [{ x: 4, y: 2, huong: 0 }, { x: 4, y: 2, huong: 0 }],
-      maMau: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == faster_power(a):', '    u_turn()', 'move()']),
-      loiGiai: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == faster_power(a):', '    u_turn()', 'move()'], { hamCuaEmMoi: [hFasterPower()] }),
+      maMau: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = faster_power(a)', 'if a == t:', '    u_turn()', 'move()']),
+      loiGiai: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = faster_power(a)', 'if a == t:', '    u_turn()', 'move()'], { hamCuaEmMoi: [hFasterPower()] }),
       sao: { o: 18, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Viết gọn return max(a, flow_power()) trong faster_power(a)',
-        baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == faster_power(a):', '    u_turn()', 'move()']),
-        hamCuaEmMoi: [hFasterPower(['return max(a, flow_power())'])]
+        baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = faster_power(a)', 'if a == t:', '    u_turn()', 'move()']),
+        hamCuaEmMoi: [hFasterPower(['p = flow_power()', 'return max(a, p)'])]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm faster_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == faster_power(a):', '    u_turn()', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Viết nhầm return min(a, b) trong faster_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 'if a == faster_power(a):', '    u_turn()', 'move()']), hamCuaEmMoi: [hFasterPower(['b = flow_power()', 'return min(a, b)'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa tạo hàm faster_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = faster_power(a)', 'if a == t:', '    u_turn()', 'move()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Viết nhầm return min(a, b) trong faster_power(a)', baiLam: bai(['turn_left()', 'a = flow_power()', 'u_turn()', 't = faster_power(a)', 'if a == t:', '    u_turn()', 'move()']), hamCuaEmMoi: [hFasterPower(['b = flow_power()', 'return min(a, b)'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Hàm faster_power(a) gồm 2 dòng: b = flow_power() và return max(a, b).', 'Luna: Sau khi chọn được nhánh sức 2, lệnh move() đưa xuồng tới thẳng Q.']
     }),
@@ -584,15 +587,15 @@
       ],
       batDau: [{ x: 4, y: 3, huong: 0 }, { x: 4, y: 3, huong: 0 }],
       maMau: bai(['tow_to_tail()', 'turn_to_calmer()']),
-      loiGiai: bai(['tow_to_tail()', 'turn_to_calmer()', 'forward(3 - flow_power())']),
+      loiGiai: bai(['tow_to_tail()', 'turn_to_calmer()', 'p = flow_power()', 't = 3 - p', 'forward(t)']),
       sao: { o: 28, nhip: 14 },
       loiGiaiKhac: {
         moTa: 'Gán s = flow_power() sau khi quay về nhánh êm rồi gọi forward(3 - s)',
-        baiLam: bai(['tow_to_tail()', 'turn_to_calmer()', 's = flow_power()', 'forward(3 - s)'])
+        baiLam: bai(['tow_to_tail()', 'turn_to_calmer()', 's = flow_power()', 't = 3 - s', 'forward(t)'])
       },
       loiSai: [
         { moTa: 'Gọi best_branch(2) cố định nên ở sân 2 nhánh sức 0 đi thiếu 1 ô', baiLam: bai(['tow_to_tail()', 'best_branch(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi tow_to_tail() trước khi rẽ vào nhánh êm nên bè B bị bỏ lại', baiLam: bai(['turn_to_calmer()', 'forward(3 - flow_power())']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên gọi tow_to_tail() trước khi rẽ vào nhánh êm nên bè B bị bỏ lại', baiLam: bai(['turn_to_calmer()', 'p = flow_power()', 't = 3 - p', 'forward(t)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau khi turn_to_calmer() chạy xong, mũi xuồng đang nhìn thẳng vào nhánh êm đã chọn.', 'Luna: Gọi forward(3 - flow_power()) để đi 2 bước khi sức nước là 1 và 3 bước khi sức nước là 0.']
     }),
@@ -612,16 +615,16 @@
         [{ x: 4, y: 5, huong: 0, suc: 2 }, { x: 3, y: 2, huong: 3, suc: 1 }]
       ],
       batDau: [{ x: 4, y: 6, huong: 2 }, { x: 4, y: 6, huong: 2 }],
-      maMau: bai(['tow_to_tail()', 'u_turn()', 'forward(4 - flow_power())']),
-      loiGiai: bai(['tow_to_tail()', 'u_turn()', 'forward(4 - flow_power())', 'turn_to_calmer()', 'forward(3 - flow_power())']),
+      maMau: bai(['tow_to_tail()', 'u_turn()', 'p = flow_power()', 't = 4 - p', 'forward(t)']),
+      loiGiai: bai(['tow_to_tail()', 'u_turn()', 'p = flow_power()', 't = 4 - p', 'forward(t)', 'turn_to_calmer()', 'p = flow_power()', 't = 3 - p', 'forward(t)']),
       sao: { o: 31, nhip: 21 },
       loiGiaiKhac: {
         moTa: 'Tách biến s1 và s2 ở hai chặng dọc và ngang',
-        baiLam: bai(['tow_to_tail()', 'u_turn()', 's1 = flow_power()', 'forward(4 - s1)', 'turn_to_calmer()', 's2 = flow_power()', 'forward(3 - s2)'])
+        baiLam: bai(['tow_to_tail()', 'u_turn()', 's1 = flow_power()', 't = 4 - s1', 'forward(t)', 'turn_to_calmer()', 's2 = flow_power()', 't = 3 - s2', 'forward(t)'])
       },
       loiSai: [
-        { moTa: 'Đếm cứng forward(3) ở chặng dọc nên ở sân 2 đi lố qua ngã ba, rẽ lệch khỏi bến q', baiLam: bai(['tow_to_tail()', 'u_turn()', 'forward(3)', 'turn_to_calmer()', 'forward(3 - flow_power())']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Dùng best_branch(2) cố định ở ngã ba nên sân 2 nhánh nước êm sức 0 đi thiếu 1 ô', baiLam: bai(['tow_to_tail()', 'u_turn()', 'forward(4 - flow_power())', 'best_branch(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đếm cứng forward(3) ở chặng dọc nên ở sân 2 đi lố qua ngã ba, rẽ lệch khỏi bến q', baiLam: bai(['tow_to_tail()', 'u_turn()', 'forward(3)', 'turn_to_calmer()', 'p = flow_power()', 't = 3 - p', 'forward(t)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Dùng best_branch(2) cố định ở ngã ba nên sân 2 nhánh nước êm sức 0 đi thiếu 1 ô', baiLam: bai(['tow_to_tail()', 'u_turn()', 'p = flow_power()', 't = 4 - p', 'forward(t)', 'best_branch(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau tow_to_tail(), u_turn() và forward(4 - flow_power()), xuồng dừng đúng tại ngã ba (4, 2) trên cả hai sân.', 'Luna: Gọi tiếp turn_to_calmer() rồi forward(3 - flow_power()) để kéo bè B vào bến q.']
     })

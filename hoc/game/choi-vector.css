@@ -295,6 +295,7 @@ body.ve-vector .num.mc-yellow{background:var(--g-luatSanVang);color:var(--g-vecC
 body.ve-vector .num.mc-none{background:var(--g-vecTheLom);color:var(--g-vecChu);box-shadow:inset 0 0 0 1px var(--g-vecKeDam)}
 body.ve-vector .strip .lap{right:3px;top:3px;bottom:3px;padding:0 6px;border-radius:var(--r-full);font:600 10px/1 var(--mono);color:var(--g-vecThe);background:var(--g-vecTimDam);box-shadow:none}
 body.ve-vector .strip.hai .num{padding:0 4px}
+body.ve-vector .strip .num.bt{padding-left:3px;padding-right:3px;margin:0}      /* mùa 4–7 (B chặt, 3/11): chip biểu thức gọn để `t = c // 10`, `if m == "green":` vừa một dòng ở 375px */
 /* KÉO THẢ: bóng kéo nổi mềm; ô thả nét đứt tím chàm thở; khung nhận sáng viền */
 body.ve-vector .keo-bong{transform:rotate(-2deg) scale(1.04);filter:drop-shadow(0 10px 18px rgba(var(--g-vecBrandRgb),.22))}
 body.ve-vector .keo-bong.bad{filter:drop-shadow(0 10px 18px rgba(var(--g-vecLoiRgb),.25)) saturate(.7)}

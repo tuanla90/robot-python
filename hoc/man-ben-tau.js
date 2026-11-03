@@ -75,7 +75,9 @@
     '    wait()'
   ];
   var T_SHIP_PAIR = [
-    'if read_code() // 10 == 1:',
+    'c = read_code()',
+    't = c // 10',
+    'if t == 1:',
     '    carry_by(-1)',
     '    swing_by(1)',
     'else:',
@@ -83,33 +85,43 @@
     '    swing_by(-1)'
   ];
   var T_SHIP_ALL_PAIR = [
-    'while read_code() != -1:',
-    '    ship_pair()'
+    'c = read_code()',
+    'while c != -1:',
+    '    ship_pair()',
+    '    c = read_code()'
   ];
   var T_MOVE_TOWER2 = [
     'carry_by(d1)',
     'swing_by(-d1)',
     'carry_by(d2)',
-    'swing_by(d1 - d2)',
-    'carry_by(d2 - d1)'
+    't = d1 - d2',
+    'swing_by(t)',
+    't = d2 - d1',
+    'carry_by(t)'
   ];
   var T_FILTER_SHIP_SAI = [
-    'while read_code() != -1:',
-    '    if read_code() % 10 == t:',
+    'c = read_code()',
+    'while c != -1:',
+    '    k = c % 10',
+    '    if k == t:',
     '        carry_by(-1)',
     '        swing_by(1)',
     '    else:',
     '        carry_by(1)',
-    '        swing_by(-1)'
+    '        swing_by(-1)',
+    '    c = read_code()'
   ];
   var T_FILTER_SHIP_DUNG = [
-    'while read_code() != -1:',
-    '    if read_code() // 10 == t:',
+    'c = read_code()',
+    'while c != -1:',
+    '    k = c // 10',
+    '    if k == t:',
     '        carry_by(-1)',
     '        swing_by(1)',
     '    else:',
     '        carry_by(1)',
-    '        swing_by(-1)'
+    '        swing_by(-1)',
+    '    c = read_code()'
   ];
   var T_SHIP_TOWER2 = [
     'wait_ticks(w)',
@@ -371,26 +383,34 @@
         [{ tau: 0, so: [12, 19] }, { tau: 1, so: [28] }]
       ],
       maMau: bai([
-        'while read_code() != -1:',
-        '    if read_code() // 10 == 1:',
+        'c = read_code()',
+        'while c != -1:',
+        '    t = c // 10',
+        '    if t == 1:',
         '        carry_by(-1)',
-        '        swing_by(1)'
+        '        swing_by(1)',
+        '    c = read_code()'
       ]),
       loiGiai: bai([
-        'while read_code() != -1:',
-        '    if read_code() // 10 == 1:',
+        'c = read_code()',
+        'while c != -1:',
+        '    t = c // 10',
+        '    if t == 1:',
         '        carry_by(-1)',
         '        swing_by(1)',
         '    else:',
         '        carry_by(1)',
-        '        swing_by(-1)'
+        '        swing_by(-1)',
+        '    c = read_code()'
       ]),
       sao: { o: 14, nhip: 22 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng for 3 lần thay cho while read_code() != -1',
         baiLam: bai([
           'for i in range(3):',
-          '    if read_code() // 10 == 1:',
+          '    c = read_code()',
+          '    t = c // 10',
+          '    if t == 1:',
           '        carry_by(-1)',
           '        swing_by(1)',
           '    else:',
@@ -399,8 +419,8 @@
         ])
       },
       loiSai: [
-        { moTa: 'Đưa mọi kiện sang Tàu 1 nên bị giao nhầm kiện 2x', baiLam: bai(['while read_code() != -1:', '    carry_by(-1)', '    swing_by(1)']), phaiCoMa: ['giao-nham'] },
-        { moTa: 'Không dùng vòng lặp nên chỉ giao được 1 kiện đầu tiên', baiLam: bai(['if read_code() // 10 == 1:', '    carry_by(-1)', 'else:', '    carry_by(1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Đưa mọi kiện sang Tàu 1 nên bị giao nhầm kiện 2x', baiLam: bai(['c = read_code()', 'while c != -1:', '    carry_by(-1)', '    swing_by(1)', '    c = read_code()']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Không dùng vòng lặp nên chỉ giao được 1 kiện đầu tiên', baiLam: bai(['c = read_code()', 't = c // 10', 'if t == 1:', '    carry_by(-1)', 'else:', '    carry_by(1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Trong nhánh if read_code() // 10 == 1:, gọi carry_by(-1) rồi swing_by(1).', 'Luna: Trong nhánh else:, gọi carry_by(1) rồi swing_by(-1).']
     }),
@@ -773,20 +793,23 @@
           ['filter_ship(1)'],
           {
             hamCuaMan: [H('filter_ship', ['t'], [
-              'while read_code() != -1:',
-              '    if read_code() // 10 != t:',
+              'c = read_code()',
+              'while c != -1:',
+              '    k = c // 10',
+              '    if k != t:',
               '        carry_by(1)',
               '        swing_by(-1)',
               '    else:',
               '        carry_by(-1)',
-              '        swing_by(1)'
+              '        swing_by(1)',
+              '    c = read_code()'
             ])]
           }
         )
       },
       loiSai: [
         { moTa: 'Để nguyên hàm mẫu dùng % 10 nên cất nhầm cả 3 kiện sang nấc 3', baiLam: bai(['filter_ship(1)'], { hamCuaMan: [hFilterShip(T_FILTER_SHIP_SAI)] }), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Đưa mọi kiện lên tàu nên kiện 24 bị lỗi giao nhầm', baiLam: bai(['filter_ship(1)'], { hamCuaMan: [hFilterShip(['while read_code() != -1:', '    carry_by(-1)', '    swing_by(1)'])] }), phaiCoMa: ['giao-nham'] }
+        { moTa: 'Đưa mọi kiện lên tàu nên kiện 24 bị lỗi giao nhầm', baiLam: bai(['filter_ship(1)'], { hamCuaMan: [hFilterShip(['c = read_code()', 'while c != -1:', '    carry_by(-1)', '    swing_by(1)', '    c = read_code()'])] }), phaiCoMa: ['giao-nham'] }
       ],
       goiY: ['Luna: Phép % 10 lấy chữ số hàng đơn vị nên không khớp chữ số hàng chục t = 1.', 'Luna: Đổi dòng điều kiện thành if read_code() // 10 == t: là xong.']
     }),

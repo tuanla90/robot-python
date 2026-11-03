@@ -251,16 +251,16 @@
         [{ x: 5, y: 3, huong: 2, suc: 1 }]
       ],
       batDau: [{ x: 4, y: 3, huong: 1 }, { x: 4, y: 3, huong: 1 }],
-      maMau: bai(['tow_grab()', 'set_length(1)', 'wait()', 'if flow_dir() == "left":', '    pair_step("L", 3)']),
-      loiGiai: bai(['tow_grab()', 'set_length(1)', 'wait()', 'if flow_dir() == "left":', '    pair_step("L", 3)', 'else:', '    pair_step("R", 3)']),
+      maMau: bai(['tow_grab()', 'set_length(1)', 'wait()', 'h = flow_dir()', 'if h == "left":', '    pair_step("L", 3)']),
+      loiGiai: bai(['tow_grab()', 'set_length(1)', 'wait()', 'h = flow_dir()', 'if h == "left":', '    pair_step("L", 3)', 'else:', '    pair_step("R", 3)']),
       sao: { o: 24, nhip: 12 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra if flow_dir() == "right": pair_step("R", 3) else: pair_step("L", 3)',
-        baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'if flow_dir() == "right":', '    pair_step("R", 3)', 'else:', '    pair_step("L", 3)'])
+        baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'h = flow_dir()', 'if h == "right":', '    pair_step("R", 3)', 'else:', '    pair_step("L", 3)'])
       },
       loiSai: [
         { moTa: 'Chỉ rẽ trái cho cả 2 sân nên ở sân 2 bè đi nhầm lên nhánh Bắc', baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'pair_step("L", 3)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Thiếu nhánh else cho sân 2', baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'if flow_dir() == "left":', '    pair_step("L", 3)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Thiếu nhánh else cho sân 2', baiLam: bai(['tow_grab()', 'set_length(1)', 'wait()', 'h = flow_dir()', 'if h == "left":', '    pair_step("L", 3)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Khi xuồng ở (4, 3) hướng Đông, dòng chảy hướng Bắc ở (5, 3) cho flow_dir() == "left".', 'Luna: Thêm nhánh else: pair_step("R", 3) để kéo B xuống bến Nam (4, 5) ở sân 2.']
     }),
@@ -559,16 +559,16 @@
         [{ x: 4, y: 3, huong: 2, suc: 1 }]
       ],
       batDau: [{ x: 3, y: 3, huong: 1 }, { x: 3, y: 3, huong: 1 }],
-      maMau: bai(['if flow_dir() == "left":', '    tug_corner("L", 3)']),
-      loiGiai: bai(['if flow_dir() == "left":', '    tug_corner("L", 3)', 'else:', '    tug_corner("R", 3)']),
+      maMau: bai(['h = flow_dir()', 'if h == "left":', '    tug_corner("L", 3)']),
+      loiGiai: bai(['h = flow_dir()', 'if h == "left":', '    tug_corner("L", 3)', 'else:', '    tug_corner("R", 3)']),
       sao: { o: 27, nhip: 12 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra if flow_dir() == "right": tug_corner("R", 3) else: tug_corner("L", 3)',
-        baiLam: bai(['if flow_dir() == "right":', '    tug_corner("R", 3)', 'else:', '    tug_corner("L", 3)'])
+        baiLam: bai(['h = flow_dir()', 'if h == "right":', '    tug_corner("R", 3)', 'else:', '    tug_corner("L", 3)'])
       },
       loiSai: [
         { moTa: 'Luôn gọi tug_corner("L", 3) nên ở sân 2 kéo bè đi nhầm lên nhánh Bắc', baiLam: bai(['tug_corner("L", 3)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Thiếu nhánh else cho sân 2', baiLam: bai(['if flow_dir() == "left":', '    tug_corner("L", 3)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Thiếu nhánh else cho sân 2', baiLam: bai(['h = flow_dir()', 'if h == "left":', '    tug_corner("L", 3)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Lưu ý phải đọc flow_dir() ngay đầu chương trình trước khi gọi tug_corner.', 'Luna: Thêm nhánh else: tug_corner("R", 3) để xử lý sân 2.']
     }),
@@ -686,16 +686,16 @@
         [{ x: 3, y: 4, huong: 3, suc: 1 }]
       ],
       batDau: [{ x: 3, y: 1, huong: 1 }, { x: 3, y: 1, huong: 1 }],
-      maMau: bai(['deliver_tail("R", 2)', 'if flow_dir() == "left":', '    turn_left()']),
-      loiGiai: bai(['deliver_tail("R", 2)', 'if flow_dir() == "left":', '    turn_left()', 'else:', '    turn_right()', 'tow_pair(0, 1)']),
+      maMau: bai(['deliver_tail("R", 2)', 'h = flow_dir()', 'if h == "left":', '    turn_left()']),
+      loiGiai: bai(['deliver_tail("R", 2)', 'h = flow_dir()', 'if h == "left":', '    turn_left()', 'else:', '    turn_right()', 'tow_pair(0, 1)']),
       sao: { o: 41, nhip: 18 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra if flow_dir() == "right": turn_right() else: turn_left()',
-        baiLam: bai(['deliver_tail("R", 2)', 'if flow_dir() == "right":', '    turn_right()', 'else:', '    turn_left()', 'tow_pair(0, 1)'])
+        baiLam: bai(['deliver_tail("R", 2)', 'h = flow_dir()', 'if h == "right":', '    turn_right()', 'else:', '    turn_left()', 'tow_pair(0, 1)'])
       },
       loiSai: [
         { moTa: 'Luôn quay trái sau deliver_tail("R", 2) nên ở sân 2 tung lưới vào bờ kè phía Đông', baiLam: bai(['deliver_tail("R", 2)', 'turn_left()', 'tow_pair(0, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
-        { moTa: 'Quên gọi tow_pair(0, 1) sau khối if/else nên chưa giao lục bình L', baiLam: bai(['deliver_tail("R", 2)', 'if flow_dir() == "left":', '    turn_left()', 'else:', '    turn_right()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên gọi tow_pair(0, 1) sau khối if/else nên chưa giao lục bình L', baiLam: bai(['deliver_tail("R", 2)', 'h = flow_dir()', 'if h == "left":', '    turn_left()', 'else:', '    turn_right()']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Khi xuồng ở (3, 3) hướng Nam, dòng chảy hướng Đông ở (3, 4) là bên trái mũi xuồng ("left").', 'Luna: Sau khối if/else quay hướng, gọi tow_pair(0, 1) để bắt và kéo L lùi 1 ô vào bến q.']
     }),

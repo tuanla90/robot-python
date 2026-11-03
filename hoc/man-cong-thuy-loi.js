@@ -39,7 +39,8 @@
     'forward(n)'
   ];
   var T_SHUT_STREAM_TOW = [
-    'if flow_dir() == "back":',
+    'h = flow_dir()',
+    'if h == "back":',
     '    flip_valve()',
     'tow_pair(1, n)'
   ];
@@ -360,13 +361,15 @@
       ],
       batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
       maMau: bai([
-        'if flow_dir() == "back":',
+        'h = flow_dir()',
+        'if h == "back":',
         '    turn_left()',
         '    tow_grab()',
         '    pair_step("R", 3)'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "back":',
+        'h = flow_dir()',
+        'if h == "back":',
         '    turn_left()',
         '    tow_grab()',
         '    pair_step("R", 3)',
@@ -377,7 +380,8 @@
       loiGiaiKhac: {
         moTa: 'Kiểm tra flow_dir() == "front" trước rồi mới else',
         baiLam: bai([
-          'if flow_dir() == "front":',
+          'h = flow_dir()',
+          'if h == "front":',
           '    forward(2)',
           'else:',
           '    turn_left()',
@@ -386,7 +390,7 @@
         ])
       },
       loiSai: [
-        { moTa: 'Thiếu nhánh else cho sân có dòng chảy xuôi', baiLam: bai(['if flow_dir() == "back":', '    turn_left()', '    tow_grab()', '    pair_step("R", 3)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu nhánh else cho sân có dòng chảy xuôi', baiLam: bai(['h = flow_dir()', 'if h == "back":', '    turn_left()', '    tow_grab()', '    pair_step("R", 3)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Không tắt dòng ở sân dòng ngược mà đi thẳng forward(2)', baiLam: bai(['forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Ở sân 2, dòng chảy xuôi giúp bước đầu đi được 2 ô nên chỉ cần forward(2) là tới (5, 1).', 'Luna: Thêm nhánh else: forward(2) vào cuối chương trình.']
@@ -713,7 +717,7 @@
         hamCuaEmMoi: [hShutStreamTow(['if not is_calm_front():', '    flip_valve()', 'tow_pair(1, n)'])]
       },
       loiSai: [
-        { moTa: 'Quên gọi tow_pair(1, n) ở cuối hàm shut_stream_tow(n)', baiLam: bai(['shut_stream_tow(2)']), hamCuaEmMoi: [hShutStreamTow(['if flow_dir() == "back":', '    flip_valve()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên gọi tow_pair(1, n) ở cuối hàm shut_stream_tow(n)', baiLam: bai(['shut_stream_tow(2)']), hamCuaEmMoi: [hShutStreamTow(['h = flow_dir()', 'if h == "back":', '    flip_valve()'])], phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Không tắt dòng ngược trước khi gọi tow_pair(1, n)', baiLam: bai(['shut_stream_tow(2)']), hamCuaEmMoi: [hShutStreamTow(['tow_pair(1, n)'])], phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Nếu flow_dir() == "back" thì gọi flip_valve() để tắt dòng ở (3, 1).', 'Luna: Cuối hàm shut_stream_tow(n), gọi tow_pair(1, n) (ngoài khối if).']

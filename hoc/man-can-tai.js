@@ -74,20 +74,23 @@
 
   // Các hàm chế ở Gói 7 chương che-can-tai
   var T_SAFE_LIFT = [
-    'if weight() <= 2:',
+    'w = weight()',
+    'if w <= 2:',
     '    pick_up2()',
     'else:',
     '    pick_up()'
   ];
   var T_SAFE_CARRY = [
-    'if weight() <= 2:',
+    'w = weight()',
+    'if w <= 2:',
     '    carry2_by(d)',
     '    swing_by(-d)',
     'else:',
     '    carry_n(2, d)'
   ];
   var T_SAFE_EXTEND = [
-    'if weight() <= 2:',
+    'w = weight()',
+    'if w <= 2:',
     '    pick_up()',
     '    extend()',
     '    set_down()',
@@ -97,14 +100,18 @@
     '    swing_by(4)'
   ];
   var T_HEAVY_RAIL = [
-    'while read_code() != -1:',
-    '    if weight() <= 2:',
+    'c = read_code()',
+    'while c != -1:',
+    '    w = weight()',
+    '    if w <= 2:',
     '        rail_drop(-1)',
     '    else:',
-    '        rail_drop(1)'
+    '        rail_drop(1)',
+    '    c = read_code()'
   ];
   var T_LOAD_SAFE_STACK = [
-    'if weight() == 1:',
+    'w = weight()',
+    'if w == 1:',
     '    carry2_by(4)',
     'else:',
     '    move_tower2(1, 4)'
@@ -112,7 +119,8 @@
   var T_CHECK_LOAD_SAI = [
     'for i in range(n):',
     '    rail(1)',
-    '    if weight() >= 2:',
+    '    w = weight()',
+    '    if w >= 2:',
     '        carry2_by(4)',
     '        swing_by(4)',
     '    else:',
@@ -121,7 +129,8 @@
   var T_CHECK_LOAD_DUNG = [
     'for i in range(n):',
     '    rail(1)',
-    '    if weight() <= 2:',
+    '    w = weight()',
+    '    if w <= 2:',
     '        carry2_by(4)',
     '        swing_by(4)',
     '    else:',
@@ -234,13 +243,15 @@
       giao: [{ tau: 0, so: [15] }, { tau: 1, so: [28] }],
       maMau: bai([
         'for i in range(2):',
-        '    if weight() <= 2:',
+        '    w = weight()',
+        '    if w <= 2:',
         '        rail_drop(-1)',
         '    else:'
       ]),
       loiGiai: bai([
         'for i in range(2):',
-        '    if weight() <= 2:',
+        '    w = weight()',
+        '    if w <= 2:',
         '        rail_drop(-1)',
         '    else:',
         '        rail_drop(1)'
@@ -249,16 +260,19 @@
       loiGiaiKhac: {
         moTa: 'Dùng while read_code() != -1 thay cho for i in range(2)',
         baiLam: bai([
-          'while read_code() != -1:',
-          '    if weight() <= 2:',
+          'c = read_code()',
+          'while c != -1:',
+          '    w = weight()',
+          '    if w <= 2:',
           '        rail_drop(-1)',
           '    else:',
-          '        rail_drop(1)'
+          '        rail_drop(1)',
+          '    c = read_code()'
         ])
       },
       loiSai: [
         { moTa: 'Đưa cả 2 kiện sang Tàu 1 nên kiện 3 tấn bị giao nhầm', baiLam: bai(['for i in range(2):', '    rail_drop(-1)']), phaiCoMa: ['giao-nham'] },
-        { moTa: 'Dùng điều kiện ngược weight() > 2 cho Tàu 1 nên giao ngược cả 2 kiện', baiLam: bai(['for i in range(2):', '    if weight() > 2:', '        rail_drop(-1)', '    else:', '        rail_drop(1)']), phaiCoMa: ['giao-nham'] }
+        { moTa: 'Dùng điều kiện ngược weight() > 2 cho Tàu 1 nên giao ngược cả 2 kiện', baiLam: bai(['for i in range(2):', '    w = weight()', '    if w > 2:', '        rail_drop(-1)', '    else:', '        rail_drop(1)']), phaiCoMa: ['giao-nham'] }
       ],
       goiY: ['Luna: Lệnh weight() đo ngay kiện trên đỉnh tại (3, 2) trước khi nhấc.', 'Luna: Trong nhánh else, gọi rail_drop(1) để chuyển kiện nặng sang Tàu 2.']
     }),
@@ -354,7 +368,8 @@
       maMau: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if weight() <= 2:',
+        '    w = weight()',
+        '    if w <= 2:',
         '        carry2_by(4)',
         '        swing_by(4)',
         '    else:'
@@ -362,7 +377,8 @@
       loiGiai: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if weight() <= 2:',
+        '    w = weight()',
+        '    if w <= 2:',
         '        carry2_by(4)',
         '        swing_by(4)',
         '    else:',
@@ -374,7 +390,8 @@
         baiLam: bai([
           'for i in range(3):',
           '    rail(1)',
-          '    if weight() > 2:',
+          '    w = weight()',
+          '    if w > 2:',
           '        carry_n(2, 4)',
           '    else:',
           '        carry2_by(4)',
@@ -383,7 +400,7 @@
       },
       loiSai: [
         { moTa: 'Gọi carry2_by(4) ở mọi cột nên gặp cột 3 gồm 2 kiện 3 tấn bị quá tải', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry2_by(4)', '    swing_by(4)']), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Trong nhánh else chỉ gọi carry_n(1, 4) nên sót 1 kiện ở cột 3', baiLam: bai(['for i in range(3):', '    rail(1)', '    if weight() <= 2:', '        carry2_by(4)', '        swing_by(4)', '    else:', '        carry_n(1, 4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Trong nhánh else chỉ gọi carry_n(1, 4) nên sót 1 kiện ở cột 3', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w <= 2:', '        carry2_by(4)', '        swing_by(4)', '    else:', '        carry_n(1, 4)']), phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Cột 2 và cột 4 có weight() <= 2 nên nhấc đôi được, còn cột 3 có weight() == 3 phải nhấc đơn 2 chuyến.', 'Luna: Trong nhánh else, gọi carry_n(2, 4) (hàm này đã tự quay về nấc 4 sau mỗi chuyến).']
     }),
@@ -400,31 +417,38 @@
       tau: tauDoi(16, 2),
       giao: [{ tau: 0, so: [12, 14] }, { tau: 1, so: [25, 28] }],
       maMau: bai([
-        'while read_code() != -1:',
-        '    if weight() <= 2:',
-        '        rail_drop(-1)'
+        'c = read_code()',
+        'while c != -1:',
+        '    w = weight()',
+        '    if w <= 2:',
+        '        rail_drop(-1)',
+        '    c = read_code()'
       ]),
       loiGiai: bai([
-        'while read_code() != -1:',
-        '    if weight() <= 2:',
+        'c = read_code()',
+        'while c != -1:',
+        '    w = weight()',
+        '    if w <= 2:',
         '        rail_drop(-1)',
         '    else:',
-        '        rail_drop(1)'
+        '        rail_drop(1)',
+        '    c = read_code()'
       ]),
       sao: { o: 9, nhip: 16 },
       loiGiaiKhac: {
         moTa: 'Dùng for i in range(4) thay cho while read_code() != -1',
         baiLam: bai([
           'for i in range(4):',
-          '    if weight() <= 2:',
+          '    w = weight()',
+          '    if w <= 2:',
           '        rail_drop(-1)',
           '    else:',
           '        rail_drop(1)'
         ])
       },
       loiSai: [
-        { moTa: 'Chưa viết nhánh else nên gặp kiện nặng 3 tấn thì lặp vô hạn', baiLam: bai(['while read_code() != -1:', '    if weight() <= 2:', '        rail_drop(-1)']), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Dùng điều kiện weight() < 2 nên kiện 12 nặng 2 tấn bị giao nhầm sang Tàu 2', baiLam: bai(['while read_code() != -1:', '    if weight() < 2:', '        rail_drop(-1)', '    else:', '        rail_drop(1)']), phaiCoMa: ['giao-nham'] }
+        { moTa: 'Chưa viết nhánh else nên gặp kiện nặng 3 tấn thì lặp vô hạn', baiLam: bai(['c = read_code()', 'while c != -1:', '    w = weight()', '    if w <= 2:', '        rail_drop(-1)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Dùng điều kiện weight() < 2 nên kiện 12 nặng 2 tấn bị giao nhầm sang Tàu 2', baiLam: bai(['c = read_code()', 'while c != -1:', '    w = weight()', '    if w < 2:', '        rail_drop(-1)', '    else:', '        rail_drop(1)', '    c = read_code()']), phaiCoMa: ['giao-nham'] }
       ],
       goiY: ['Luna: Tàu 1 nhận các kiện có weight() <= 2 (1 tấn hoặc 2 tấn).', 'Luna: Thêm nhánh else: và gọi rail_drop(1) để giao các kiện 3 tấn, 4 tấn sang Tàu 2.']
     }),
@@ -443,7 +467,8 @@
       maMau: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if weight() == 1:',
+        '    w = weight()',
+        '    if w == 1:',
         '        pick_up2()',
         '    else:',
         '        pick_up()'
@@ -451,7 +476,8 @@
       loiGiai: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if weight() == 1:',
+        '    w = weight()',
+        '    if w == 1:',
         '        pick_up2()',
         '    else:',
         '        pick_up()',
@@ -465,7 +491,8 @@
         baiLam: bai([
           'for i in range(3):',
           '    rail(1)',
-          '    if weight() == 3:',
+          '    w = weight()',
+          '    if w == 3:',
           '        pick_up()',
           '    else:',
           '        pick_up2()',
@@ -475,8 +502,8 @@
         ])
       },
       loiSai: [
-        { moTa: 'Mới nhấc kiện lên ở cột 2 mà chưa gọi aim_crane(4, -1), set_down(), aim_crane(4, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    if weight() == 1:', '        pick_up2()', '    else:', '        pick_up()']), phaiCoMa: ['dang-treo'] },
-        { moTa: 'Không thu cần về tầm 1 khi quay sang nấc 0 nên hạ hàng xuống nước ở (2, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    if weight() == 1:', '        pick_up2()', '    else:', '        pick_up()', '    swing_by(4)', '    set_down()', '    swing_by(4)']), phaiCoMa: ['ha-bi-chan'] }
+        { moTa: 'Mới nhấc kiện lên ở cột 2 mà chưa gọi aim_crane(4, -1), set_down(), aim_crane(4, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()']), phaiCoMa: ['dang-treo'] },
+        { moTa: 'Không thu cần về tầm 1 khi quay sang nấc 0 nên hạ hàng xuống nước ở (2, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()', '    swing_by(4)', '    set_down()', '    swing_by(4)']), phaiCoMa: ['ha-bi-chan'] }
       ],
       goiY: ['Luna: Hàng đang ở y = 5 (tầm 2), còn boong tàu ở y = 2 (tầm 1) nên cần dùng aim_crane(4, -1) để vừa quay vừa thu cần.', 'Luna: Sau set_down(), gọi aim_crane(4, 1) để trở lại nấc 4, tầm 2 cho cột tiếp theo.']
     }),
@@ -541,14 +568,16 @@
       maMau: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if weight() <= 2:',
+        '    w = weight()',
+        '    if w <= 2:',
         '        carry2_by(4)',
         '        swing_by(4)'
       ]),
       loiGiai: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if weight() <= 2:',
+        '    w = weight()',
+        '    if w <= 2:',
         '        carry2_by(4)',
         '        swing_by(4)',
         '    else:',
@@ -560,7 +589,8 @@
         baiLam: bai([
           'for i in range(3):',
           '    rail(1)',
-          '    if weight() > 2:',
+          '    w = weight()',
+          '    if w > 2:',
           '        carry_n(2, 4)',
           '    else:',
           '        carry2_by(4)',
@@ -606,7 +636,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm safe_lift mà đã bấm Chạy', baiLam: bai(['safe_lift()', 'swing_by(4)', 'set_down()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong safe_lift dùng điều kiện weight() < 2 nên chỉ nhấc 1 kiện 2 tấn', baiLam: bai(['safe_lift()', 'swing_by(4)', 'set_down()']), hamCuaEmMoi: [hSafeLift(['if weight() < 2:', '    pick_up2()', 'else:', '    pick_up()'])], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Trong safe_lift dùng điều kiện weight() < 2 nên chỉ nhấc 1 kiện 2 tấn', baiLam: bai(['safe_lift()', 'swing_by(4)', 'set_down()']), hamCuaEmMoi: [hSafeLift(['w = weight()', 'if w < 2:', '    pick_up2()', 'else:', '    pick_up()'])], phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Thân hàm safe_lift() gồm 4 dòng: if weight() <= 2:, pick_up2(), else:, pick_up().', 'Luna: Chương trình chính gọi safe_lift(), swing_by(4), set_down().']
     }),
@@ -699,7 +729,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm heavy_rail mà đã bấm Chạy', baiLam: bai(['heavy_rail()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong heavy_rail quên vòng lặp while nên chỉ giao được 1 kiện', baiLam: bai(['heavy_rail()']), hamCuaEmMoi: [hHeavyRail(['if weight() <= 2:', '    rail_drop(-1)', 'else:', '    rail_drop(1)'])] , phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Trong heavy_rail quên vòng lặp while nên chỉ giao được 1 kiện', baiLam: bai(['heavy_rail()']), hamCuaEmMoi: [hHeavyRail(['w = weight()', 'if w <= 2:', '    rail_drop(-1)', 'else:', '    rail_drop(1)'])] , phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Thân hàm heavy_rail() gồm while read_code() != -1: bọc ngoài khối if weight() <= 2: gọi rail_drop(-1) / rail_drop(1).', 'Luna: Ở chương trình chính chỉ cần gọi heavy_rail().']
     }),
@@ -730,7 +760,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm load_safe_stack mà đã bấm Chạy', baiLam: bai(['load_safe_stack()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong load_safe_stack dùng weight() <= 2 nên gọi carry2_by(4) cho tháp 5 tấn bị quá tải', baiLam: bai(['load_safe_stack()']), hamCuaEmMoi: [hLoadSafeStack(['if weight() <= 2:', '    carry2_by(4)', 'else:', '    move_tower2(1, 4)'])], phaiCoMa: ['qua-tai'] }
+        { moTa: 'Trong load_safe_stack dùng weight() <= 2 nên gọi carry2_by(4) cho tháp 5 tấn bị quá tải', baiLam: bai(['load_safe_stack()']), hamCuaEmMoi: [hLoadSafeStack(['w = weight()', 'if w <= 2:', '    carry2_by(4)', 'else:', '    move_tower2(1, 4)'])], phaiCoMa: ['qua-tai'] }
       ],
       goiY: ['Luna: Vì kiện đáy nặng 3 tấn nên chỉ khi kiện đỉnh có weight() == 1 mới nhấc đôi được (3 + 1 = 4).', 'Luna: Thân hàm load_safe_stack() kiểm tra if weight() == 1: gọi carry2_by(4), else: gọi move_tower2(1, 4).']
     }),
@@ -803,7 +833,8 @@
             hamCuaMan: [H('check_load', ['n'], [
               'for i in range(n):',
               '    rail(1)',
-              '    if weight() < 3:',
+              '    w = weight()',
+              '    if w < 3:',
               '        carry2_by(4)',
               '        swing_by(4)',
               '    else:',

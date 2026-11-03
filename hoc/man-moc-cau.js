@@ -53,7 +53,7 @@
   }
 
   // Các hàm chế ở Gói 2 chương chia-du
-  var T_TURN_CW = ['swing_r((b - a) % 8)'];
+  var T_TURN_CW = ['t = b - a', 'k = t % 8', 'swing_r(k)'];
   var T_CARRY_BY = ['pick_up()', 'swing_by(d)', 'set_down()'];
   var T_CARRY_N = [
     'for i in range(n):',
@@ -61,16 +61,22 @@
     '    swing_by(-d)'
   ];
   var T_SPLIT_PAIR = [
-    'carry_n(n // 2, d1)',
-    'carry_n(n // 2, d2)'
+    't = n // 2',
+    'carry_n(t, d1)',
+    't = n // 2',
+    'carry_n(t, d2)'
   ];
   var T_SPLIT_REM_SAI = [
-    'carry_n(n % 2, d1)',
-    'carry_n(n // 2, d2)'
+    't = n % 2',
+    'carry_n(t, d1)',
+    't = n // 2',
+    'carry_n(t, d2)'
   ];
   var T_SPLIT_REM_DUNG = [
-    'carry_n(n // 2, d1)',
-    'carry_n(n % 2, d2)'
+    't = n // 2',
+    'carry_n(t, d1)',
+    't = n % 2',
+    'carry_n(t, d2)'
   ];
   var T_HAUL_TO = ['pick_up()', 'aim_crane(d, dr)', 'set_down()'];
 
@@ -244,7 +250,8 @@
         '    pick_up()',
         '    swing_by(k)',
         '    set_down()',
-        '    swing_by(1 - k)'
+        '    t = 1 - k',
+        '    swing_by(t)'
       ]),
       sao: { o: 13, nhip: 15 },
       loiGiaiKhac: {
@@ -255,11 +262,12 @@
           '    pick_up()',
           '    swing_by(k)',
           '    set_down()',
-          '    swing_by(1 - k)'
+          '    t = 1 - k',
+          '    swing_by(t)'
         ])
       },
       loiSai: [
-        { moTa: 'Duyệt ngược [1, 2, 3] nên móc sai nấc và sai thứ tự chồng', baiLam: bai(['for k in [1, 2, 3]:', '    pick_up()', '    swing_by(k)', '    set_down()', '    swing_by(1 - k)']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Duyệt ngược [1, 2, 3] nên móc sai nấc và sai thứ tự chồng', baiLam: bai(['for k in [1, 2, 3]:', '    pick_up()', '    swing_by(k)', '    set_down()', '    t = 1 - k', '    swing_by(t)']), phaiCoMa: ['chua-xep-chong'] },
         { moTa: 'Quay về bằng swing_by(-k) nên cả 3 lượt đều quay lại nấc 1 đã trống', baiLam: bai(['for k in [3, 2, 1]:', '    pick_up()', '    swing_by(k)', '    set_down()', '    swing_by(-k)']), phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
       ],
       goiY: ['Luna: Đang ở nấc 4 muốn lùi về nấc kế tiếp thì cần lệch (1 - k) nấc.', 'Luna: Sau set_down(), thêm dòng swing_by(1 - k) để sang đúng nấc tiếp theo.']
@@ -443,8 +451,8 @@
       batDau: { x: 3, y: 3, nac: 6, tam: 2 },
       chong: [C(1, 3, [10])],
       bongMo: BM([{ x: 5, y: 1, so: [10] }]),
-      maMau: bai(['pick_up()', 'd = (1 - 6) % 8', 'swing_r(d)', 'set_down()']),
-      loiGiai: bai(['pick_up()', 'd = (1 - 6) % 8', 'swing_r(d)', 'set_down()']),
+      maMau: bai(['pick_up()', 't = 1 - 6', 'd = t % 8', 'swing_r(d)', 'set_down()']),
+      loiGiai: bai(['pick_up()', 't = 1 - 6', 'd = t % 8', 'swing_r(d)', 'set_down()']),
       sao: { o: 6, nhip: 5 },
       loiSai: [],
       goiY: ['Luna: Trong Python, (-5) % 8 bằng 3 vì -5 + 8 = 3.', 'Luna: Nhờ % 8, công thức (b - a) % 8 luôn cho số bước quay phải từ 0 đến 7.']
@@ -461,7 +469,8 @@
       bongMo: BM([{ x: 5, y: 3, so: [10] }, { x: 5, y: 5, so: [30] }, { x: 5, y: 1, so: [20] }]),
       maMau: bai([
         'n = 3',
-        'for i in range(n // 2):',
+        't = n // 2',
+        'for i in range(t):',
         '    pick_up()',
         '    swing_by(1)',
         '    set_down()',
@@ -469,12 +478,14 @@
       ]),
       loiGiai: bai([
         'n = 3',
-        'for i in range(n // 2):',
+        't = n // 2',
+        'for i in range(t):',
         '    pick_up()',
         '    swing_by(1)',
         '    set_down()',
         '    swing_by(-1)',
-        'for i in range(n % 2):',
+        't = n % 2',
+        'for i in range(t):',
         '    pick_up()',
         '    swing_by(-1)',
         '    set_down()'
@@ -484,7 +495,8 @@
         moTa: 'Quay về nấc 2 sau khi đặt kiện phần dư ở nấc 1',
         baiLam: bai([
           'n = 3',
-          'for i in range(n // 2):',
+          't = n // 2',
+          'for i in range(t):',
           '    pick_up()',
           '    swing_by(1)',
           '    set_down()',
@@ -496,8 +508,8 @@
         ])
       },
       loiSai: [
-        { moTa: 'Mới chuyển phần nguyên n // 2, quên chuyển phần dư n % 2 sang nấc 1', baiLam: bai(['n = 3', 'for i in range(n // 2):', '    pick_up()', '    swing_by(1)', '    set_down()', '    swing_by(-1)']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Đưa phần dư sang nấc 3 thay vì nấc 1', baiLam: bai(['n = 3', 'for i in range(n // 2):', '    pick_up()', '    swing_by(1)', '    set_down()', '    swing_by(-1)', 'for i in range(n % 2):', '    pick_up()', '    swing_by(1)', '    set_down()']), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Mới chuyển phần nguyên n // 2, quên chuyển phần dư n % 2 sang nấc 1', baiLam: bai(['n = 3', 't = n // 2', 'for i in range(t):', '    pick_up()', '    swing_by(1)', '    set_down()', '    swing_by(-1)']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Đưa phần dư sang nấc 3 thay vì nấc 1', baiLam: bai(['n = 3', 't = n // 2', 'for i in range(t):', '    pick_up()', '    swing_by(1)', '    set_down()', '    swing_by(-1)', 't = n % 2', 'for i in range(t):', '    pick_up()', '    swing_by(1)', '    set_down()']), phaiCoMa: ['chua-xep-chong'] }
       ],
       goiY: ['Luna: Với n = 3 thì n // 2 là 1 và n % 2 cũng là 1.', 'Luna: Thêm vòng for i in range(n % 2): nhấc hàng, swing_by(-1) rồi set_down().']
     }),
@@ -521,11 +533,11 @@
       loiGiaiKhac: {
         moTa: 'Viết vòng for trực tiếp trong thân turn_cw(a, b)',
         baiLam: bai(['pick_up()', 'turn_cw(5, 1)', 'set_down()', 'turn_cw(1, 6)', 'pick_up()', 'turn_cw(6, 2)', 'set_down()']),
-        hamCuaEmMoi: [hTurnCw(['for i in range((b - a) % 8):', '    swing_right()'])]
+        hamCuaEmMoi: [hTurnCw(['t = b - a', 'k = t % 8', 'for i in range(k):', '    swing_right()'])]
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm turn_cw mà đã bấm Chạy', baiLam: bai(['pick_up()', 'turn_cw(5, 1)', 'set_down()', 'turn_cw(1, 6)', 'pick_up()', 'turn_cw(6, 2)', 'set_down()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Viết nhầm (a - b) % 8 trong turn_cw nên quay sai số nấc ở bước 1 -> 6', baiLam: bai(['pick_up()', 'turn_cw(5, 1)', 'set_down()', 'turn_cw(1, 6)', 'pick_up()', 'turn_cw(6, 2)', 'set_down()']), hamCuaEmMoi: [hTurnCw(['swing_r((a - b) % 8)'])], phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
+        { moTa: 'Viết nhầm (a - b) % 8 trong turn_cw nên quay sai số nấc ở bước 1 -> 6', baiLam: bai(['pick_up()', 'turn_cw(5, 1)', 'set_down()', 'turn_cw(1, 6)', 'pick_up()', 'turn_cw(6, 2)', 'set_down()']), hamCuaEmMoi: [hTurnCw(['t = a - b', 'k = t % 8', 'swing_r(k)'])], phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
       ],
       goiY: ['Luna: Mở Xưởng hàm, tạo turn_cw với 2 tham số a, b.', 'Luna: Thân hàm turn_cw(a, b) viết: swing_r((b - a) % 8).']
     }),
@@ -623,7 +635,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm split_pair mà đã bấm Chạy', baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(4)', 'split_pair(2, 1, -1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Dùng n % 2 thay vì n // 2 trong split_pair', baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(4)', 'split_pair(2, 1, -1)']), hamCuaEmMoi: [hSplitPair(['carry_n(n % 2, d1)', 'carry_n(n % 2, d2)'])], phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Dùng n % 2 thay vì n // 2 trong split_pair', baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(4)', 'split_pair(2, 1, -1)']), hamCuaEmMoi: [hSplitPair(['t = n % 2', 'carry_n(t, d1)', 't = n % 2', 'carry_n(t, d2)'])], phaiCoMa: ['chua-xep-chong'] }
       ],
       goiY: ['Luna: Với chồng 3 kiện ở nấc 2, 3 // 2 = 1 kiện sang nấc 1, 1 kiện sang nấc 3, còn dư 1 kiện ở nấc 2.', 'Luna: Với chồng 2 kiện ở nấc 6, 2 // 2 = 1 kiện sang nấc 7, 1 kiện sang nấc 5, còn dư 0 kiện.']
     }),
@@ -662,7 +674,7 @@
       },
       loiSai: [
         { moTa: 'Chưa sửa hàm split_rem nên chồng 4 kiện bị chuyển nhầm sang hướng d2', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(T_SPLIT_REM_SAI)] }), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Cả hai dòng đều dùng n // 2 nên chồng 3 kiện mất kiện cuối cùng', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(['carry_n(n // 2, d1)', 'carry_n(n // 2, d2)'])] }), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Cả hai dòng đều dùng n // 2 nên chồng 3 kiện mất kiện cuối cùng', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(['t = n // 2', 'carry_n(t, d1)', 't = n // 2', 'carry_n(t, d2)'])] }), phaiCoMa: ['chua-xep-chong'] }
       ],
       goiY: ['Luna: Dòng đầu của split_rem phải chuyển phần nguyên: carry_n(n // 2, d1).', 'Luna: Dòng thứ hai của split_rem chuyển phần dư: carry_n(n % 2, d2).']
     }),

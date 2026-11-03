@@ -45,8 +45,8 @@
 
   var T_SWING_L = ['for i in range(n):', '    swing_left()'];
   var T_SWING_R = ['for i in range(n):', '    swing_right()'];
-  var T_SWING_BY = ['if d < 0:', '    swing_l(abs(d))', 'else:', '    swing_r(d)'];
-  var T_REACH_BY = ['if d < 0:', '    for i in range(abs(d)):', '        retract()', 'else:', '    for i in range(d):', '        extend()'];
+  var T_SWING_BY = ['if d < 0:', '    t = abs(d)', '    swing_l(t)', 'else:', '    swing_r(d)'];
+  var T_REACH_BY = ['if d < 0:', '    t = abs(d)', '    for i in range(t):', '        retract()', 'else:', '    for i in range(d):', '        extend()'];
   var T_AIM_CRANE = ['swing_by(da)', 'reach_by(dr)'];
 
   function manCanCau(cfg) {
@@ -309,8 +309,8 @@
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 5, tam: 2 },
       bongMo: { x: 3, y: 3, nac: 2, tam: 2 },
-      maMau: bai(['d = 2 - 5', 'if d < 0:', '    for i in range(abs(d)):', '        swing_left()', 'else:', '    for i in range(d):', '        swing_right()']),
-      loiGiai: bai(['d = 2 - 5', 'if d < 0:', '    for i in range(abs(d)):', '        swing_left()', 'else:', '    for i in range(d):', '        swing_right()']),
+      maMau: bai(['d = 2 - 5', 'if d < 0:', '    t = abs(d)', '    for i in range(t):', '        swing_left()', 'else:', '    for i in range(d):', '        swing_right()']),
+      loiGiai: bai(['d = 2 - 5', 'if d < 0:', '    t = abs(d)', '    for i in range(t):', '        swing_left()', 'else:', '    for i in range(d):', '        swing_right()']),
       sao: { o: 7, nhip: 3 },
       goiY: ['Luna: Khi b < a thì hiệu d = b - a mang dấu âm, cho biết cần quay sang trái.', 'Luna: range() cần số nguyên không âm nên ta dùng abs(d) để lấy độ lớn khoảng cách.']
     }),
@@ -323,11 +323,11 @@
       batDau: { x: 3, y: 3, nac: 6, tam: 2 },
       bongMo: { x: 3, y: 3, nac: 1, tam: 2 },
       maMau: bai(['d = 1 - 6']),
-      loiGiai: bai(['d = 1 - 6', 'for i in range(abs(d)):', '    swing_left()']),
+      loiGiai: bai(['d = 1 - 6', 't = abs(d)', 'for i in range(t):', '    swing_left()']),
       sao: { o: 3, nhip: 5 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra if d < 0 trước vòng lặp',
-        baiLam: bai(['d = 1 - 6', 'if d < 0:', '    for i in range(abs(d)):', '        swing_left()'])
+        baiLam: bai(['d = 1 - 6', 'if d < 0:', '    t = abs(d)', '    for i in range(t):', '        swing_left()'])
       },
       loiSai: [
         { moTa: 'Mới tính d = 1 - 6 mà chưa quay cần', baiLam: bai(['d = 1 - 6']), phaiCoMa: ['lech-bong-mo'] },
@@ -343,17 +343,17 @@
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 6, tam: 1 },
       bongMo: { x: 3, y: 3, nac: 2, tam: 2 },
-      maMau: bai(['d = 2 - 6', 'swing_l(abs(d))', 'extend()']),
-      loiGiai: bai(['d = 2 - 6', 'swing_l(abs(d))', 'extend()'], { hamCuaEmMoi: [H('swing_l', ['n'], T_SWING_L)] }),
+      maMau: bai(['d = 2 - 6', 't = abs(d)', 'swing_l(t)', 'extend()']),
+      loiGiai: bai(['d = 2 - 6', 't = abs(d)', 'swing_l(t)', 'extend()'], { hamCuaEmMoi: [H('swing_l', ['n'], T_SWING_L)] }),
       sao: { o: 5, nhip: 5 },
       loiGiaiKhac: {
         moTa: 'Gọi thẳng swing_l(abs(2 - 6)) rồi extend() kèm wait()',
-        baiLam: bai(['d = 2 - 6', 'swing_l(abs(d))', 'extend()', 'wait()']),
+        baiLam: bai(['d = 2 - 6', 't = abs(d)', 'swing_l(t)', 'extend()', 'wait()']),
         hamCuaEmMoi: [H('swing_l', ['n'], T_SWING_L)]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm swing_l mà đã bấm Chạy', baiLam: bai(['d = 2 - 6', 'swing_l(abs(d))', 'extend()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong swing_l(n) quên vòng lặp range(n), chỉ quay trái 1 nấc', baiLam: bai(['d = 2 - 6', 'swing_l(abs(d))', 'extend()']), hamCuaEmMoi: [H('swing_l', ['n'], ['swing_left()'])], phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Chưa tạo hàm swing_l mà đã bấm Chạy', baiLam: bai(['d = 2 - 6', 't = abs(d)', 'swing_l(t)', 'extend()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong swing_l(n) quên vòng lặp range(n), chỉ quay trái 1 nấc', baiLam: bai(['d = 2 - 6', 't = abs(d)', 'swing_l(t)', 'extend()']), hamCuaEmMoi: [H('swing_l', ['n'], ['swing_left()'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Luna: Hàm swing_l có tham số n.', 'Luna: Thân hàm swing_l(n) gồm 2 dòng: for i in range(n): và swing_left().']
     }),
@@ -365,17 +365,17 @@
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 0, tam: 2 },
       bongMo: { x: 3, y: 3, nac: 1, tam: 2, diQua: [{ x: 3, y: 5 }] },
-      maMau: bai(['swing_r(4)', 'swing_l(abs(1 - 4))']),
-      loiGiai: bai(['swing_r(4)', 'swing_l(abs(1 - 4))'], { hamCuaEmMoi: [H('swing_r', ['n'], T_SWING_R)] }),
+      maMau: bai(['swing_r(4)', 't = 1 - 4', 'k = abs(t)', 'swing_l(k)']),
+      loiGiai: bai(['swing_r(4)', 't = 1 - 4', 'k = abs(t)', 'swing_l(k)'], { hamCuaEmMoi: [H('swing_r', ['n'], T_SWING_R)] }),
       sao: { o: 6, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Gán d = 1 - 4 vào biến trước khi gọi swing_l(abs(d))',
-        baiLam: bai(['swing_r(4)', 'd = 1 - 4', 'swing_l(abs(d))']),
+        baiLam: bai(['swing_r(4)', 'd = 1 - 4', 't = abs(d)', 'swing_l(t)']),
         hamCuaEmMoi: [H('swing_r', ['n'], T_SWING_R)]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm swing_r mà đã bấm Chạy', baiLam: bai(['swing_r(4)', 'swing_l(abs(1 - 4))']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Thân hàm swing_r(n) chỉ quay 1 lần không dùng vòng lặp range(n)', baiLam: bai(['swing_r(4)', 'swing_l(abs(1 - 4))']), hamCuaEmMoi: [H('swing_r', ['n'], ['swing_right()'])], phaiCoMa: ['chua-qua-diem', 'lech-bong-mo'] }
+        { moTa: 'Chưa tạo hàm swing_r mà đã bấm Chạy', baiLam: bai(['swing_r(4)', 't = 1 - 4', 'k = abs(t)', 'swing_l(k)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm swing_r(n) chỉ quay 1 lần không dùng vòng lặp range(n)', baiLam: bai(['swing_r(4)', 't = 1 - 4', 'k = abs(t)', 'swing_l(k)']), hamCuaEmMoi: [H('swing_r', ['n'], ['swing_right()'])], phaiCoMa: ['chua-qua-diem', 'lech-bong-mo'] }
       ],
       goiY: ['Luna: Giống như swing_l(n), hàm swing_r(n) lặp range(n) lần lệnh swing_right().', 'Luna: Mở Xưởng hàm và tạo swing_r(n).']
     }),
@@ -387,8 +387,8 @@
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 1, tam: 2 },
       bongMo: { x: 3, y: 3, nac: 2, tam: 2, diQua: [{ x: 1, y: 5 }] },
-      maMau: bai(['swing_by(5 - 1)', 'swing_by(2 - 5)']),
-      loiGiai: bai(['swing_by(5 - 1)', 'swing_by(2 - 5)'], { hamCuaEmMoi: [H('swing_by', ['d'], T_SWING_BY)] }),
+      maMau: bai(['t = 5 - 1', 'swing_by(t)', 't = 2 - 5', 'swing_by(t)']),
+      loiGiai: bai(['t = 5 - 1', 'swing_by(t)', 't = 2 - 5', 'swing_by(t)'], { hamCuaEmMoi: [H('swing_by', ['d'], T_SWING_BY)] }),
       sao: { o: 10, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Gán d1, d2 vào biến rồi truyền vào swing_by',
@@ -396,8 +396,8 @@
         hamCuaEmMoi: [H('swing_by', ['d'], T_SWING_BY)]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm swing_by mà đã bấm Chạy', baiLam: bai(['swing_by(5 - 1)', 'swing_by(2 - 5)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong swing_by(d) quên nhánh d < 0, luôn gọi swing_r(abs(d))', baiLam: bai(['swing_by(5 - 1)', 'swing_by(2 - 5)']), hamCuaEmMoi: [H('swing_by', ['d'], ['swing_r(abs(d))'])], phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Chưa tạo hàm swing_by mà đã bấm Chạy', baiLam: bai(['t = 5 - 1', 'swing_by(t)', 't = 2 - 5', 'swing_by(t)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong swing_by(d) quên nhánh d < 0, luôn gọi swing_r(abs(d))', baiLam: bai(['t = 5 - 1', 'swing_by(t)', 't = 2 - 5', 'swing_by(t)']), hamCuaEmMoi: [H('swing_by', ['d'], ['t = abs(d)', 'swing_r(t)'])], phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Luna: Trong swing_by(d), kiểm tra if d < 0: để gọi swing_l(abs(d)).', 'Luna: Nhánh else: gọi swing_r(d).']
     }),
@@ -409,17 +409,17 @@
       san: SAN_CANG_RONG,
       batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       bongMo: { x: 3, y: 3, nac: 5, tam: 1, diQua: [{ x: 6, y: 3 }] },
-      maMau: bai(['reach_by(3 - 1)', 'swing_by(5 - 2)', 'reach_by(1 - 3)']),
-      loiGiai: bai(['reach_by(3 - 1)', 'swing_by(5 - 2)', 'reach_by(1 - 3)'], { hamCuaEmMoi: [H('reach_by', ['d'], T_REACH_BY)] }),
+      maMau: bai(['t = 3 - 1', 'reach_by(t)', 't = 5 - 2', 'swing_by(t)', 't = 1 - 3', 'reach_by(t)']),
+      loiGiai: bai(['t = 3 - 1', 'reach_by(t)', 't = 5 - 2', 'swing_by(t)', 't = 1 - 3', 'reach_by(t)'], { hamCuaEmMoi: [H('reach_by', ['d'], T_REACH_BY)] }),
       sao: { o: 15, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Quay sang nấc 5 sau khi thu cần bằng cách tách bước',
-        baiLam: bai(['dr = 3 - 1', 'reach_by(dr)', 'swing_by(5 - 2)', 'reach_by(1 - 3)']),
+        baiLam: bai(['dr = 3 - 1', 'reach_by(dr)', 't = 5 - 2', 'swing_by(t)', 't = 1 - 3', 'reach_by(t)']),
         hamCuaEmMoi: [H('reach_by', ['d'], T_REACH_BY)]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm reach_by mà đã bấm Chạy', baiLam: bai(['reach_by(3 - 1)', 'swing_by(5 - 2)', 'reach_by(1 - 3)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Viết ngược nhánh d < 0 gọi extend() làm cần vươn quá tầm', baiLam: bai(['reach_by(3 - 1)', 'swing_by(5 - 2)', 'reach_by(1 - 3)']), hamCuaEmMoi: [H('reach_by', ['d'], ['if d < 0:', '    for i in range(abs(d)):', '        extend()', 'else:', '    for i in range(d):', '        retract()'])], phaiCoMa: ['can-het-tam'] }
+        { moTa: 'Chưa tạo hàm reach_by mà đã bấm Chạy', baiLam: bai(['t = 3 - 1', 'reach_by(t)', 't = 5 - 2', 'swing_by(t)', 't = 1 - 3', 'reach_by(t)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Viết ngược nhánh d < 0 gọi extend() làm cần vươn quá tầm', baiLam: bai(['t = 3 - 1', 'reach_by(t)', 't = 5 - 2', 'swing_by(t)', 't = 1 - 3', 'reach_by(t)']), hamCuaEmMoi: [H('reach_by', ['d'], ['if d < 0:', '    t = abs(d)', '    for i in range(t):', '        extend()', 'else:', '    for i in range(d):', '        retract()'])], phaiCoMa: ['can-het-tam'] }
       ],
       goiY: ['Luna: Khi d < 0 cần thu đầu cần vào bằng retract() đúng abs(d) lần.', 'Luna: Khi d >= 0 cần vươn đầu cần ra bằng extend() đúng d lần.']
     }),
@@ -431,25 +431,25 @@
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 5, tam: 1 },
       bongMo: { x: 3, y: 3, nac: 5, tam: 2, diQua: [{ x: 5, y: 3 }] },
-      maMau: bai(['turn_to(5, 2)', 'reach_by(2 - 1)', 'turn_to(2, 5)'], {
-        hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    swing_r(abs(d))', 'else:', '    swing_l(d)'])]
+      maMau: bai(['turn_to(5, 2)', 't = 2 - 1', 'reach_by(t)', 'turn_to(2, 5)'], {
+        hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    t = abs(d)', '    swing_r(t)', 'else:', '    swing_l(d)'])]
       }),
-      loiGiai: bai(['turn_to(5, 2)', 'reach_by(2 - 1)', 'turn_to(2, 5)'], {
-        hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    swing_l(abs(d))', 'else:', '    swing_r(d)'])]
+      loiGiai: bai(['turn_to(5, 2)', 't = 2 - 1', 'reach_by(t)', 'turn_to(2, 5)'], {
+        hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    t = abs(d)', '    swing_l(t)', 'else:', '    swing_r(d)'])]
       }),
       sao: { o: 18, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Thêm wait() cuối chương trình chính sau khi sửa hàm turn_to',
-        baiLam: bai(['turn_to(5, 2)', 'reach_by(2 - 1)', 'turn_to(2, 5)', 'wait()'], {
-          hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    swing_l(abs(d))', 'else:', '    swing_r(d)'])]
+        baiLam: bai(['turn_to(5, 2)', 't = 2 - 1', 'reach_by(t)', 'turn_to(2, 5)', 'wait()'], {
+          hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    t = abs(d)', '    swing_l(t)', 'else:', '    swing_r(d)'])]
         })
       },
       loiSai: [
-        { moTa: 'Không sửa hàm turn_to: quay ngược chiều nên không qua mốc (5, 3)', baiLam: bai(['turn_to(5, 2)', 'reach_by(2 - 1)', 'turn_to(2, 5)'], {
-          hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    swing_r(abs(d))', 'else:', '    swing_l(d)'])]
+        { moTa: 'Không sửa hàm turn_to: quay ngược chiều nên không qua mốc (5, 3)', baiLam: bai(['turn_to(5, 2)', 't = 2 - 1', 'reach_by(t)', 'turn_to(2, 5)'], {
+          hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    t = abs(d)', '    swing_r(t)', 'else:', '    swing_l(d)'])]
         }), phaiCoMa: ['chua-qua-diem'] },
-        { moTa: 'Chỉ đổi nhánh if sang swing_l(abs(d)) mà quên đổi nhánh else sang swing_r(d)', baiLam: bai(['turn_to(5, 2)', 'reach_by(2 - 1)', 'turn_to(2, 5)'], {
-          hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    swing_l(abs(d))', 'else:', '    swing_l(d)'])]
+        { moTa: 'Chỉ đổi nhánh if sang swing_l(abs(d)) mà quên đổi nhánh else sang swing_r(d)', baiLam: bai(['turn_to(5, 2)', 't = 2 - 1', 'reach_by(t)', 'turn_to(2, 5)'], {
+          hamCuaMan: [H('turn_to', ['a', 'b'], ['d = b - a', 'if d < 0:', '    t = abs(d)', '    swing_l(t)', 'else:', '    swing_l(d)'])]
         }), phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Luna: Khi d = b - a < 0, nấc đích b nhỏ hơn nấc a nên phải gọi swing_l(abs(d)).', 'Luna: Ở nhánh else (khi d >= 0), đổi swing_l(d) thành swing_r(d).']
@@ -462,17 +462,17 @@
       san: SAN_CANG_RONG,
       batDau: { x: 3, y: 3, nac: 6, tam: 1 },
       bongMo: { x: 3, y: 3, nac: 5, tam: 1, diQua: [{ x: 6, y: 3 }] },
-      maMau: bai(['aim_crane(2 - 6, 3 - 1)', 'aim_crane(5 - 2, 1 - 3)']),
-      loiGiai: bai(['aim_crane(2 - 6, 3 - 1)', 'aim_crane(5 - 2, 1 - 3)'], { hamCuaEmMoi: [H('aim_crane', ['da', 'dr'], T_AIM_CRANE)] }),
+      maMau: bai(['t = 2 - 6', 'k = 3 - 1', 'aim_crane(t, k)', 't = 5 - 2', 'k = 1 - 3', 'aim_crane(t, k)']),
+      loiGiai: bai(['t = 2 - 6', 'k = 3 - 1', 'aim_crane(t, k)', 't = 5 - 2', 'k = 1 - 3', 'aim_crane(t, k)'], { hamCuaEmMoi: [H('aim_crane', ['da', 'dr'], T_AIM_CRANE)] }),
       sao: { o: 18, nhip: 11 },
       loiGiaiKhac: {
         moTa: 'Thêm wait() cuối chương trình chính',
-        baiLam: bai(['aim_crane(2 - 6, 3 - 1)', 'aim_crane(5 - 2, 1 - 3)', 'wait()']),
+        baiLam: bai(['t = 2 - 6', 'k = 3 - 1', 'aim_crane(t, k)', 't = 5 - 2', 'k = 1 - 3', 'aim_crane(t, k)', 'wait()']),
         hamCuaEmMoi: [H('aim_crane', ['da', 'dr'], T_AIM_CRANE)]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm aim_crane mà đã bấm Chạy', baiLam: bai(['aim_crane(2 - 6, 3 - 1)', 'aim_crane(5 - 2, 1 - 3)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Truyền nhầm dr vào swing_by và da vào reach_by làm vươn quá tầm', baiLam: bai(['aim_crane(2 - 6, 3 - 1)', 'aim_crane(5 - 2, 1 - 3)']), hamCuaEmMoi: [H('aim_crane', ['da', 'dr'], ['swing_by(dr)', 'reach_by(da)'])], phaiCoMa: ['can-het-tam'] }
+        { moTa: 'Chưa tạo hàm aim_crane mà đã bấm Chạy', baiLam: bai(['t = 2 - 6', 'k = 3 - 1', 'aim_crane(t, k)', 't = 5 - 2', 'k = 1 - 3', 'aim_crane(t, k)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Truyền nhầm dr vào swing_by và da vào reach_by làm vươn quá tầm', baiLam: bai(['t = 2 - 6', 'k = 3 - 1', 'aim_crane(t, k)', 't = 5 - 2', 'k = 1 - 3', 'aim_crane(t, k)']), hamCuaEmMoi: [H('aim_crane', ['da', 'dr'], ['swing_by(dr)', 'reach_by(da)'])], phaiCoMa: ['can-het-tam'] }
       ],
       goiY: ['Luna: Hàm aim_crane có hai tham số (da, dr).', 'Luna: Trong thân hàm aim_crane, gọi swing_by(da) rồi gọi reach_by(dr).']
     }),
@@ -510,16 +510,16 @@
         { x: 3, y: 3, nac: 6, tam: 2, diQua: [{ x: 0, y: 6 }, { x: 4, y: 3 }] },
         { x: 3, y: 3, nac: 7, tam: 2, diQua: [{ x: 0, y: 3 }, { x: 4, y: 4 }] }
       ],
-      maMau: bai(['aim_crane(5 - 1, 3 - 1)']),
-      loiGiai: bai(['aim_crane(5 - 1, 3 - 1)', 'aim_crane(2 - 5, 1 - 3)', 'aim_crane(6 - 2, 2 - 1)']),
+      maMau: bai(['t = 5 - 1', 'k = 3 - 1', 'aim_crane(t, k)']),
+      loiGiai: bai(['t = 5 - 1', 'k = 3 - 1', 'aim_crane(t, k)', 't = 2 - 5', 'k = 1 - 3', 'aim_crane(t, k)', 't = 6 - 2', 'k = 2 - 1', 'aim_crane(t, k)']),
       sao: { o: 19, nhip: 32 },
       loiGiaiKhac: {
         moTa: 'Đặt ba cặp độ lệch vào danh sách rồi duyệt bằng for',
         baiLam: bai(['steps = [[4, 2], [-3, -2], [4, 1]]', 'for s in steps:', '    aim_crane(s[0], s[1])'])
       },
       loiSai: [
-        { moTa: 'Mới chạy chặng đầu tiên nên thiếu mốc thứ hai và lệch đích', baiLam: bai(['aim_crane(5 - 1, 3 - 1)']), phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Tính ngược hiệu ở chặng 2 thành (5 - 2, 1 - 3) nên quay sai chiều', baiLam: bai(['aim_crane(5 - 1, 3 - 1)', 'aim_crane(5 - 2, 1 - 3)', 'aim_crane(6 - 2, 2 - 1)']), phaiCoMa: ['lech-bong-mo'] }
+        { moTa: 'Mới chạy chặng đầu tiên nên thiếu mốc thứ hai và lệch đích', baiLam: bai(['t = 5 - 1', 'k = 3 - 1', 'aim_crane(t, k)']), phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Tính ngược hiệu ở chặng 2 thành (5 - 2, 1 - 3) nên quay sai chiều', baiLam: bai(['t = 5 - 1', 'k = 3 - 1', 'aim_crane(t, k)', 't = 5 - 2', 'k = 1 - 3', 'aim_crane(t, k)', 't = 6 - 2', 'k = 2 - 1', 'aim_crane(t, k)']), phaiCoMa: ['lech-bong-mo'] }
       ],
       goiY: ['Luna: Chặng 2 đi từ (nấc 5, tầm 3) về (nấc 2, tầm 1) nên gọi aim_crane(2 - 5, 1 - 3).', 'Luna: Chặng 3 đi từ (nấc 2, tầm 1) sang (nấc 6, tầm 2) nên gọi aim_crane(6 - 2, 2 - 1).']
     })

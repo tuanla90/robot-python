@@ -61,14 +61,14 @@
     return man(m);
   }
 
-  var T_FIX_QUARRY = ['if shape("front") == "round":', '    fill_pit()', 'else:', '    move()'];
-  var T_FIX_QUARRY_SAI = ['if shape("front") == "ore":', '    fill_pit()', 'else:', '    move()'];
+  var T_FIX_QUARRY = ['s = shape("front")', 'if s == "round":', '    fill_pit()', 'else:', '    move()'];
+  var T_FIX_QUARRY_SAI = ['s = shape("front")', 'if s == "ore":', '    fill_pit()', 'else:', '    move()'];
 
   var T_ORE_PAD = ['pad_kind()', 'forward(2)'];
   var T_DIAG_FILL = ['diag_right()', 'fill_pit()'];
   var T_BELT_PAD = ['belt_lob(n)', 'forward(2)'];
-  var T_PIT_STEP = ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'];
-  var T_PIT_STEP_SAI = ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'];
+  var T_PIT_STEP = ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'];
+  var T_PIT_STEP_SAI = ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'];
   var T_QUARRY_RUN = ['for i in range(n):', '    smart_pad()', '    slide_r(1)'];
 
   var DS = [

@@ -125,13 +125,17 @@
 
   /* --- Ham sua loi --- */
   var T_SMART_DOCK_DUNG = [
-    'if read_code() // 10 == 1:',
+    'c = read_code()',
+    't = c // 10',
+    'if t == 1:',
     '    rail_drop(-1)',
     'else:',
     '    rail_drop(1)'
   ];
   var T_SMART_DOCK_SAI = [
-    'if read_code() // 10 == 1:',
+    'c = read_code()',
+    't = c // 10',
+    'if t == 1:',
     '    rail_drop(-1)',
     'else:',
     '    rail_drop(2)'
@@ -139,14 +143,16 @@
   function hSmartDock(than) { return H('smart_dock', [], than || T_SMART_DOCK_DUNG); }
 
   var T_PORT_STEP_DUNG = [
-    'if read_code() != -1:',
+    'c = read_code()',
+    'if c != -1:',
     '    safe_carry(4)',
     'else:',
     '    over_wall(4)',
     '    swing_by(4)'
   ];
   var T_PORT_STEP_SAI = [
-    'if read_code() != -1:',
+    'c = read_code()',
+    'if c != -1:',
     '    safe_carry(4)',
     'else:',
     '    over_wall(2)',
@@ -409,7 +415,9 @@
       ],
       maMau: B(['safe_carry(4)']),
       loiGiai: B([
-        'if read_code() % 10 == 9:',
+        'c = read_code()',
+        't = c % 10',
+        'if t == 9:',
         '    safe_carry(4)',
         'else:',
         '    rail(1)',

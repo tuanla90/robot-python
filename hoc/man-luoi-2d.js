@@ -103,17 +103,17 @@
       veMaMau: 'Chương trình có sẵn đã đi theo g[0][0] và g[0][1]. Viết thêm hai dòng lấy g[1][0] và g[1][1].',
       san: ['#####F', '#####.', '###...', '....##'],
       batDau: { x: 0, y: 3, huong: 0 },
-      maMau: bai(['g = [[3, 1], [2, 2]]', 'slide_r(g[0][0])', 'forward(g[0][1])']),
-      loiGiai: bai(['g = [[3, 1], [2, 2]]', 'slide_r(g[0][0])', 'forward(g[0][1])', 'slide_r(g[1][0])', 'forward(g[1][1])']),
+      maMau: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)']),
+      loiGiai: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)', 't = g[1][0]', 'slide_r(t)', 't = g[1][1]', 'forward(t)']),
       sao: { o: 13, nhip: 8 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng lặp for r in g để đi qua cả hai hàng',
         baiLam: bai(['g = [[3, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])'])
       },
       loiSai: [
-        { moTa: 'Gọi lại g[0][0] và g[0][1] ở đoạn hai: xe trượt quá đà đâm tường', baiLam: bai(['g = [[3, 1], [2, 2]]', 'slide_r(g[0][0])', 'forward(g[0][1])', 'slide_r(g[0][0])', 'forward(g[0][1])']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Chỉ trượt g[1][0] mà quên forward(g[1][1])', baiLam: bai(['g = [[3, 1], [2, 2]]', 'slide_r(g[0][0])', 'forward(g[0][1])', 'slide_r(g[1][0])']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Dùng chỉ số g[2][0] vượt quá số hàng của lưới', baiLam: bai(['g = [[3, 1], [2, 2]]', 'slide_r(g[0][0])', 'forward(g[0][1])', 'slide_r(g[2][0])']), phaiCoMa: ['loi-chay'] }
+        { moTa: 'Gọi lại g[0][0] và g[0][1] ở đoạn hai: xe trượt quá đà đâm tường', baiLam: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Chỉ trượt g[1][0] mà quên forward(g[1][1])', baiLam: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)', 't = g[1][0]', 'slide_r(t)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Dùng chỉ số g[2][0] vượt quá số hàng của lưới', baiLam: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)', 't = g[2][0]', 'slide_r(t)']), phaiCoMa: ['loi-chay'] }
       ],
       goiY: ['Luna: g[1] là hàng thứ hai [2, 2]; phần tử đầu là g[1][0], phần tử sau là g[1][1].', 'Luna: Sau hai dòng có sẵn, thêm slide_r(g[1][0]) rồi forward(g[1][1]).']
     }),
@@ -129,7 +129,7 @@
       sao: { o: 12, nhip: 11 },
       loiGiaiKhac: {
         moTa: 'Duyệt theo chỉ số i trong range(len(g))',
-        baiLam: bai(['g = [[2, 2], [3, 1], [2, 1]]', 'for i in range(len(g)):', '    slide_r(g[i][0])', '    forward(g[i][1])'])
+        baiLam: bai(['g = [[2, 2], [3, 1], [2, 1]]', 'for i in range(len(g)):', '    t = g[i][0]', '    slide_r(t)', '    t = g[i][1]', '    forward(t)'])
       },
       loiSai: [
         { moTa: 'Không sửa gì: bậc giữa chỉ trượt 1 ô nên tiến lên đâm tường', baiLam: bai(['g = [[2, 2], [1, 1], [2, 1]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
@@ -217,7 +217,7 @@
       },
       loiSai: [
         { moTa: 'Chưa thêm bước trượt cuối cùng: xe dừng đầu hành lang trên', baiLam: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Dùng len(g[0]) thay vì len(g): mỗi hàng chỉ có 2 số nên xe trượt thiếu 1 ô', baiLam: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)', 'slide_r(len(g[0]))']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Dùng len(g[0]) thay vì len(g): mỗi hàng chỉ có 2 số nên xe trượt thiếu 1 ô', baiLam: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)', 't = len(g[0])', 'slide_r(t)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đặt slide_r(len(g)) thụt lề vào trong vòng lặp for: xe đâm tường hai hàng đầu', baiLam: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)', '    slide_r(len(g))']), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Luna: Lưới g có 3 hàng con nên len(g) bằng 3, còn len(g[0]) là độ dài một hàng (bằng 2).', 'Luna: Đặt dòng slide_r(len(g)) ở ngoài vòng lặp for.']

@@ -335,7 +335,8 @@
         'pick_up()',
         'retract()',
         'swing_by(4)',
-        'if c // 10 == 1:',
+        't = c // 10',
+        'if t == 1:',
         '    rail(-1)'
       ]),
       loiGiai: bai([
@@ -344,7 +345,8 @@
         'pick_up()',
         'retract()',
         'swing_by(4)',
-        'if c // 10 == 1:',
+        't = c // 10',
+        'if t == 1:',
         '    rail(-1)',
         'else:',
         '    rail(1)',
@@ -359,7 +361,8 @@
           'pick_up()',
           'retract()',
           'swing_by(4)',
-          'if c // 10 == 2:',
+          't = c // 10',
+          'if t == 2:',
           '    rail(1)',
           'else:',
           '    rail(-1)',
@@ -368,7 +371,7 @@
       },
       loiSai: [
         { moTa: 'Luôn trượt rail(-1) sang Tàu 1 nên ở sân 2 giao nhầm kiện 25', baiLam: bai(['extend()', 'pick_up()', 'retract()', 'swing_by(4)', 'rail(-1)', 'set_down()']), phaiCoMa: ['giao-nham'] },
-        { moTa: 'Quên gọi set_down() sau khi trượt ray tới tàu', baiLam: bai(['extend()', 'c = read_code()', 'pick_up()', 'retract()', 'swing_by(4)', 'if c // 10 == 1:', '    rail(-1)', 'else:', '    rail(1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Quên gọi set_down() sau khi trượt ray tới tàu', baiLam: bai(['extend()', 'c = read_code()', 'pick_up()', 'retract()', 'swing_by(4)', 't = c // 10', 'if t == 1:', '    rail(-1)', 'else:', '    rail(1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Sau khi thu cần và quay về nấc 0 ở cột 3, kiểm tra c // 10 == 1 để trượt rail(-1) sang Tàu 1 hoặc rail(1) sang Tàu 2.', 'Luna: Cuối cùng gọi set_down() để hạ kiện hàng xuống boong tàu.']
     }),
@@ -443,14 +446,16 @@
         [{ tau: 1, so: [26, 28] }]
       ],
       maMau: bai([
-        'if weight() == 1:',
+        'w = weight()',
+        'if w == 1:',
         '    pick_up2()',
         '    retract()',
         '    swing_by(4)',
         '    set_down()'
       ]),
       loiGiai: bai([
-        'if weight() == 1:',
+        'w = weight()',
+        'if w == 1:',
         '    pick_up2()',
         '    retract()',
         '    swing_by(4)',
@@ -660,7 +665,8 @@
         'safe_over(4)',
         'swing_by(4)',
         'extend()',
-        'if read_code() != -1:',
+        'c = read_code()',
+        'if c != -1:',
         '    retract()',
         '    safe_over(4)'
       ]),
@@ -668,14 +674,15 @@
         'safe_over(4)',
         'swing_by(4)',
         'extend()',
-        'if read_code() != -1:',
+        'c = read_code()',
+        'if c != -1:',
         '    retract()',
         '    safe_over(4)'
       ], { hamCuaEmMoi: [hSafeOver()] }),
       sao: { o: 21, nhip: 22 },
       loiSai: [
-        { moTa: 'Dùng pick_up2() thay vì safe_lift() nên ở sân 2 gặp cặp 3 tấn ở tầm 2 bị quá tải (6 * 2 = 12 > 8)', baiLam: bai(['safe_over(4)', 'swing_by(4)', 'extend()', 'if read_code() != -1:', '    retract()', '    safe_over(4)']), hamCuaEmMoi: [hSafeOver(['extend()', 'pick_up2()', 'retract()', 'swing_by(d)', 'set_down()'])], phaiCoMa: ['qua-tai'] },
-        { moTa: 'Chưa tạo hàm safe_over mà đã bấm Chạy', baiLam: bai(['safe_over(4)', 'swing_by(4)', 'extend()', 'if read_code() != -1:', '    retract()', '    safe_over(4)']), phaiCoMa: ['ham-chua-co'] }
+        { moTa: 'Dùng pick_up2() thay vì safe_lift() nên ở sân 2 gặp cặp 3 tấn ở tầm 2 bị quá tải (6 * 2 = 12 > 8)', baiLam: bai(['safe_over(4)', 'swing_by(4)', 'extend()', 'c = read_code()', 'if c != -1:', '    retract()', '    safe_over(4)']), hamCuaEmMoi: [hSafeOver(['extend()', 'pick_up2()', 'retract()', 'swing_by(d)', 'set_down()'])], phaiCoMa: ['qua-tai'] },
+        { moTa: 'Chưa tạo hàm safe_over mà đã bấm Chạy', baiLam: bai(['safe_over(4)', 'swing_by(4)', 'extend()', 'c = read_code()', 'if c != -1:', '    retract()', '    safe_over(4)']), phaiCoMa: ['ham-chua-co'] }
       ],
       goiY: ['Luna: Thân hàm safe_over(d) gồm 5 dòng: extend(), safe_lift(), retract(), swing_by(d), set_down().', 'Luna: Sân 1 nhấc đôi xong trong 1 chuyến, còn sân 2 còn lại kiện thứ hai nên chương trình chính tự kiểm tra read_code() != -1 để gọi safe_over(4) lần nữa.']
     }),

@@ -591,7 +591,8 @@
           'else:',
           '    turn_left()',
           'forward(n)',
-          'return d, n + 1'
+          't = n + 1',
+          'return d, t'
         ], ['d', 'n'])]
       ),
       loiSai: [
@@ -637,7 +638,7 @@
           'forward(d)',
           'pull_back(s)'
         ],
-        [ham('fix_pair_tow', ['forward(a)', 'pull_back(b)', 'tow_drop()', 'return a + b, b'], ['a', 'b'])]
+        [ham('fix_pair_tow', ['forward(a)', 'pull_back(b)', 'tow_drop()', 't = a + b', 'return t, b'], ['a', 'b'])]
       ),
       loiSai: [
         { moTa: 'Để nguyên mã mẫu: thiếu tow_drop() nên khi đi xuống nhánh dọc kéo bè đầu rời khỏi bến (3, 1)', baiLam: bai(['s, d = fix_pair_tow(1, 2)', 'turn_right()', 'forward(d)', 'pull_back(s)'], [ham('fix_pair_tow', ['forward(a)', 'pull_back(b)', 'return a, b'], ['a', 'b'])]), phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
@@ -713,12 +714,13 @@
           'forward(a)',
           'pull_back(b)',
           'tow_drop()',
-          'return a + b, b'
+          't = a + b',
+          'return t, b'
         ], ['a', 'b'])]
       ),
       loiSai: [
         { moTa: 'Chưa tạo hàm tow_pair', baiLam: bai(['s, d = tow_pair(1, 2)', 'turn_right()', 'tow_pair(d, d)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong tow_pair quên gọi tow_drop(): khi đi xuống nhánh dọc kéo bè đầu rời khỏi bến (3, 1)', baiLam: bai(['s, d = tow_pair(1, 2)', 'turn_right()', 'tow_pair(d, d)']), hamCuaEmMoi: [ham('tow_pair', ['forward(a)', 'pull_back(b)', 'return a + b, b'], ['a', 'b'])], phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
+        { moTa: 'Trong tow_pair quên gọi tow_drop(): khi đi xuống nhánh dọc kéo bè đầu rời khỏi bến (3, 1)', baiLam: bai(['s, d = tow_pair(1, 2)', 'turn_right()', 'tow_pair(d, d)']), hamCuaEmMoi: [ham('tow_pair', ['forward(a)', 'pull_back(b)', 't = a + b', 'return t, b'], ['a', 'b'])], phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
         { moTa: 'Trong tow_pair trả về a, a thay vì a + b, b: d bằng 1 nên ở nhánh dọc chưa tiếp cận tới tầm lưới của bè thứ hai', baiLam: bai(['s, d = tow_pair(1, 2)', 'turn_right()', 'tow_pair(d, d)']), hamCuaEmMoi: [ham('tow_pair', ['forward(a)', 'pull_back(b)', 'tow_drop()', 'return a, a'], ['a', 'b'])], phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       sao: { o: 27, nhip: 12 },

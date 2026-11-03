@@ -33,7 +33,7 @@
   var T_DIAG_L = ['for i in range(n):', '    diag_left()'];
   var T_BYPASS_R = ['diag_right()', 'diag_left()'];
   var T_DIAG_LOB = ['diag_right()', 'lob()'];
-  var T_AUTO_BYPASS = ['g = radar()', 'if g[0][1] == "#":', '    bypass_r()', 'else:', '    forward(2)'];
+  var T_AUTO_BYPASS = ['g = radar()', 't = g[0][1]', 'if t == "#":', '    bypass_r()', 'else:', '    forward(2)'];
 
   function manDC(o) {
     return Object.assign({
@@ -277,20 +277,22 @@
       maMau: bai([
         'for i in range(4):',
         '    g = radar()',
-        '    if g[0][1] == "#":',
+        '    t = g[0][1]',
+        '    if t == "#":',
         '        diag_right()'
       ]),
       loiGiai: bai([
         'for i in range(4):',
         '    g = radar()',
-        '    if g[0][1] == "#":',
+        '    t = g[0][1]',
+        '    if t == "#":',
         '        diag_right()',
         '    else:',
         '        move()'
       ]),
       sao: { o: 9, nhip: 4 },
       loiSai: [
-        { moTa: 'Thiếu nhánh else: move() nên gặp ô trống xe đứng yên', baiLam: bai(['for i in range(4):', '    g = radar()', '    if g[0][1] == "#":', '        diag_right()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu nhánh else: move() nên gặp ô trống xe đứng yên', baiLam: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "#":', '        diag_right()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đi thẳng cả 4 bước không kiểm tra radar nên đâm vào vách đá', baiLam: bai(['for i in range(4):', '    move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       loiBinh: 'Nhờ radar() nhìn trước 1 hàng, R1 biết đúng lúc nào cần lách chéo để tránh vách đá.'
@@ -333,20 +335,22 @@
       maMau: bai([
         'for i in range(4):',
         '    g = radar()',
-        '    if g[0][2] != "#":',
+        '    t = g[0][2]',
+        '    if t != "#":',
         '        diag_right()'
       ]),
       loiGiai: bai([
         'for i in range(4):',
         '    g = radar()',
-        '    if g[0][2] != "#":',
+        '    t = g[0][2]',
+        '    if t != "#":',
         '        diag_right()',
         '    else:',
         '        diag_left()'
       ]),
       sao: { o: 6, nhip: 4 },
       loiSai: [
-        { moTa: 'Chưa có nhánh else gọi diag_left() nên chưa lên tới cờ', baiLam: bai(['for i in range(4):', '    g = radar()', '    if g[0][2] != "#":', '        diag_right()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chưa có nhánh else gọi diag_left() nên chưa lên tới cờ', baiLam: bai(['for i in range(4):', '    g = radar()', '    t = g[0][2]', '    if t != "#":', '        diag_right()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Chỉ gọi diag_right() 4 lần nên đâm vào vách đá', baiLam: bai(['for i in range(4):', '    diag_right()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       loiBinh: 'Đọc góc g[0][2] của radar() giúp R1 biết ngay ngả chéo bên phải thông hay bị vách đá chắn.'
@@ -426,13 +430,15 @@
       maMau: bai([
         'for i in range(3):',
         '    g = radar()',
-        '    if g[0][1] == "V":',
+        '    t = g[0][1]',
+        '    if t == "V":',
         '        fill_pit()'
       ]),
       loiGiai: bai([
         'for i in range(3):',
         '    g = radar()',
-        '    if g[0][1] == "V":',
+        '    t = g[0][1]',
+        '    if t == "V":',
         '        fill_pit()',
         '    else:',
         '        diag_right()',
@@ -441,7 +447,7 @@
       ]),
       sao: { o: 19, nhip: 9 },
       loiSai: [
-        { moTa: 'Thiếu nhánh else lách qua trụ đá và lệnh move() cuối', baiLam: bai(['for i in range(3):', '    g = radar()', '    if g[0][1] == "V":', '        fill_pit()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu nhánh else lách qua trụ đá và lệnh move() cuối', baiLam: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        fill_pit()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Chỉ lách chéo mà không lấp hố khi gặp đá nên rơi xuống hố sâu', baiLam: bai(['for i in range(3):', '    diag_right()', '    diag_left()', 'move()']), phaiCoMa: ['roi-ho'] }
       ],
       loiBinh: 'Quét radar kết hợp fill_pit() và lách chéo giúp R1 vượt qua cả hố sâu lẫn trụ đá chắn đường.'
@@ -676,7 +682,7 @@
       sao: { o: 14, nhip: 6 },
       loiSai: [
         { moTa: 'Trong auto_bypass() luôn gọi forward(2) nên đâm vào trụ đá', baiLam: bai(['for i in range(3):', '    auto_bypass()']), hamCuaEmMoi: [H('auto_bypass', [], ['g = radar()', 'forward(2)'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Thiếu nhánh else gọi forward(2) nên khi đường trống xe đứng yên', baiLam: bai(['for i in range(3):', '    auto_bypass()']), hamCuaEmMoi: [H('auto_bypass', [], ['g = radar()', 'if g[0][1] == "#":', '    bypass_r()'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else gọi forward(2) nên khi đường trống xe đứng yên', baiLam: bai(['for i in range(3):', '    auto_bypass()']), hamCuaEmMoi: [H('auto_bypass', [], ['g = radar()', 't = g[0][1]', 'if t == "#":', '    bypass_r()'])], phaiCoMa: ['chua-toi-co'] }
       ],
       loiBinh: 'Dù chặng đường trống hay có trụ đá chắn, auto_bypass() đều đưa R1 tiến 2 hàng trong đúng 2 nhịp.'
     }),

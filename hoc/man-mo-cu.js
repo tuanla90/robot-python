@@ -32,7 +32,7 @@
   var T_BELT_LOB = ['move()', 'aim_lob(n)'];
   var T_SPIN_PAD = ['load()', 'wait()', 'move()', 'aim(n)', 'throw()', 'wait()'];
   var T_DIAG_PAD = ['diag_right()', 'aim_lob(n)', 'diag_left()'];
-  var T_SMART_PAD = ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'];
+  var T_SMART_PAD = ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'];
 
   function manMC(o) {
     var nhieuSan = Array.isArray(o.san[0]);
@@ -258,13 +258,15 @@
       ],
       batDau: { x: 3, y: 4, huong: 0 },
       maMau: bai([
-        'if shape("front") == "round":',
+        's = shape("front")',
+        'if s == "round":',
         '    fill_pit()',
         'else:',
         '    aim_lob(3)'
       ]),
       loiGiai: bai([
-        'if shape("front") == "round":',
+        's = shape("front")',
+        'if s == "round":',
         '    fill_pit()',
         'else:',
         '    aim_lob(3)',
@@ -273,7 +275,7 @@
       ]),
       sao: { o: 22, nhip: 12 },
       loiSai: [
-        { moTa: 'Thiếu forward(2) trong nhánh else và slide_r(2) ở cuối', baiLam: bai(['if shape("front") == "round":', '    fill_pit()', 'else:', '    aim_lob(3)']), phaiCoMa: ['chua-toi-co'], cung: true },
+        { moTa: 'Thiếu forward(2) trong nhánh else và slide_r(2) ở cuối', baiLam: bai(['s = shape("front")', 'if s == "round":', '    fill_pit()', 'else:', '    aim_lob(3)']), phaiCoMa: ['chua-toi-co'], cung: true },
         { moTa: 'Dùng fill_pit() cố định cho cả hai sân nên ở sân 2 ném tầm 2 không tới nút M và đâm vào cửa C đóng', baiLam: bai(['fill_pit()', 'slide_r(2)']), phaiCoMa: ['dam-tuong'], cung: true }
       ],
       loiBinh: 'Đá vuông tuy không lấp vừa hố tròn nhưng lại là quả tạ tuyệt vời để đè nút M mở cổng sắt!'
@@ -812,15 +814,15 @@
       ],
       batDau: { x: 3, y: 6, huong: 0 },
       maMau: bai(['for i in range(2):', '    smart_pad()', '    slide_r(1)'], {
-        hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:'])]
+        hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:'])]
       }),
       loiGiai: bai(['for i in range(2):', '    smart_pad()', '    slide_r(1)'], {
         hamCuaEmMoi: [H('smart_pad', [], T_SMART_PAD)]
       }),
       sao: { o: 24, nhip: 20 },
       loiSai: [
-        { moTa: 'Trong nhánh else gọi lob_pad(2) thay vì lob_pad(3) nên đá vuông không mở được cổng C', baiLam: bai(['for i in range(2):', '    smart_pad()', '    slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])], phaiCoMa: ['dam-tuong'], cung: true },
-        { moTa: 'Trong nhánh else gọi aim_lob(3) mà quên tiến 2 ô như lob_pad(3)', baiLam: bai(['for i in range(2):', '    smart_pad()', '    slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    aim_lob(3)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    aim_lob(3)'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Trong nhánh else gọi lob_pad(2) thay vì lob_pad(3) nên đá vuông không mở được cổng C', baiLam: bai(['for i in range(2):', '    smart_pad()', '    slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])], phaiCoMa: ['dam-tuong'], cung: true },
+        { moTa: 'Trong nhánh else gọi aim_lob(3) mà quên tiến 2 ô như lob_pad(3)', baiLam: bai(['for i in range(2):', '    smart_pad()', '    slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    aim_lob(3)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    aim_lob(3)'])], phaiCoMa: ['chua-toi-co'] }
       ],
       loiBinh: 'Đã lưu hàm smart_pad() vào Kho hàm của em! Chỉ một lệnh duy nhất giải quyết cả hố sâu lẫn cổng khóa tùy theo hình dạng viên đá.'
     }),
@@ -883,15 +885,15 @@
       ],
       batDau: { x: 3, y: 6, huong: 0 },
       maMau: bai(['smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)'], {
-        hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])]
+        hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])]
       }),
       loiGiai: bai(['smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)'], {
         hamCuaEmMoi: [H('smart_pad', [], T_SMART_PAD)]
       }),
       sao: { o: 25, nhip: 20 },
       loiSai: [
-        { moTa: 'Chưa sửa lob_pad(2) thành lob_pad(3) nên đá vuông không bay tới nút đè M và R1 đâm vào cổng C đang đóng', baiLam: bai(['smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])], phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Đổi nhầm điều kiện "round" thành "square" nên hất đá vuông vào hố u không lấp được hố', baiLam: bai(['smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "square":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['if shape("front") == "square":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'])], phaiCoMa: ['roi-ho'], cung: true }
+        { moTa: 'Chưa sửa lob_pad(2) thành lob_pad(3) nên đá vuông không bay tới nút đè M và R1 đâm vào cổng C đang đóng', baiLam: bai(['smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đổi nhầm điều kiện "round" thành "square" nên hất đá vuông vào hố u không lấp được hố', baiLam: bai(['smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)'], { hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "square":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'])] }), hamCuaEmMoi: [H('smart_pad', [], ['s = shape("front")', 'if s == "square":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'])], phaiCoMa: ['roi-ho'], cung: true }
       ],
       loiBinh: 'Chỉ một con số tầm hất đúng chuẩn giúp smart_pad() mở toang cánh cổng sắt trên cả hai sân!'
     }),

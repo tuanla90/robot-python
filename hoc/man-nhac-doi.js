@@ -81,8 +81,10 @@
     '    swing_by(-d)'
   ];
   var T_FAST_STACK = [
-    'carry2_n(n // 2, d)',
-    'carry_n(n % 2, d)'
+    't = n // 2',
+    'carry2_n(t, d)',
+    't = n % 2',
+    'carry_n(t, d)'
   ];
   var T_RAIL_CARRY2 = [
     'pick_up2()',
@@ -91,18 +93,24 @@
     'rail(-dx)'
   ];
   var T_SHIP_PAIR2 = [
-    'if read_code() // 10 == 1:',
+    'c = read_code()',
+    't = c // 10',
+    'if t == 1:',
     '    rail_carry2(-1)',
     'else:',
     '    rail_carry2(1)'
   ];
   var T_SPLIT_STACK2_SAI = [
-    'carry2_n(n % 2, 4)',
-    'carry_n(n // 2, 4)'
+    't = n % 2',
+    'carry2_n(t, 4)',
+    't = n // 2',
+    'carry_n(t, 4)'
   ];
   var T_SPLIT_STACK2_DUNG = [
-    'carry2_n(n // 2, 4)',
-    'carry_n(n % 2, 4)'
+    't = n // 2',
+    'carry2_n(t, 4)',
+    't = n % 2',
+    'carry_n(t, 4)'
   ];
 
   function hCarry2By(than) { return H('carry2_by', ['d'], than || T_CARRY2_BY); }
@@ -450,14 +458,18 @@
       maMau: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if read_code() // 10 == 2:',
+        '    c = read_code()',
+        '    t = c // 10',
+        '    if t == 2:',
         '        pick_up2()',
         '    else:'
       ]),
       loiGiai: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    if read_code() // 10 == 2:',
+        '    c = read_code()',
+        '    t = c // 10',
+        '    if t == 2:',
         '        pick_up2()',
         '    else:',
         '        pick_up()',
@@ -471,7 +483,9 @@
         baiLam: bai([
           'for i in range(3):',
           '    rail(1)',
-          '    if read_code() // 10 == 1:',
+          '    c = read_code()',
+          '    t = c // 10',
+          '    if t == 1:',
           '        pick_up()',
           '    else:',
           '        pick_up2()',
@@ -557,7 +571,9 @@
       ],
       maMau: bai([
         'for i in range(2):',
-        '    if read_code() // 10 == 1:',
+        '    c = read_code()',
+        '    t = c // 10',
+        '    if t == 1:',
         '        pick_up2()',
         '        rail(-1)',
         '        set_down()',
@@ -565,7 +581,9 @@
       ]),
       loiGiai: bai([
         'for i in range(2):',
-        '    if read_code() // 10 == 1:',
+        '    c = read_code()',
+        '    t = c // 10',
+        '    if t == 1:',
         '        pick_up2()',
         '        rail(-1)',
         '        set_down()',
@@ -580,8 +598,10 @@
       loiGiaiKhac: {
         moTa: 'Dùng while read_code() != -1 thay cho for i in range(2)',
         baiLam: bai([
-          'while read_code() != -1:',
-          '    if read_code() // 10 == 1:',
+          'c = read_code()',
+          'while c != -1:',
+          '    t = c // 10',
+          '    if t == 1:',
           '        pick_up2()',
           '        rail(-1)',
           '        set_down()',
@@ -590,11 +610,12 @@
           '        pick_up2()',
           '        rail(1)',
           '        set_down()',
-          '        rail(-1)'
+          '        rail(-1)',
+          '    c = read_code()'
         ])
       },
       loiSai: [
-        { moTa: 'Dùng pick_up() thay vì pick_up2() nên vừa không kịp giờ tàu chạy vừa sai luật tháp', baiLam: bai(['for i in range(2):', '    if read_code() // 10 == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    else:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Dùng pick_up() thay vì pick_up2() nên vừa không kịp giờ tàu chạy vừa sai luật tháp', baiLam: bai(['for i in range(2):', '    c = read_code()', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    else:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)']), phaiCoMa: ['chua-giao-tau'] },
         { moTa: 'Giao nhầm cặp hàng chục bằng 2 sang Tàu 1', baiLam: bai(['for i in range(2):', '    pick_up2()', '    rail(-1)', '    set_down()', '    rail(1)']), phaiCoMa: ['giao-nham'] }
       ],
       goiY: ['Luna: Mỗi lần gọi pick_up2() sẽ nhấc trọn 1 cặp 2 kiện giữ đúng thứ tự tháp.', 'Luna: Trong nhánh else, gọi pick_up2(), rail(1), set_down(), rail(-1) để giao sang Tàu 2.']
@@ -685,7 +706,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm fast_stack mà đã bấm Chạy', baiLam: bai(['fast_stack(3, 4)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên dòng carry_n(n % 2, d) nên còn sót kiện lẻ cuối cùng ở (3, 4)', baiLam: bai(['fast_stack(3, 4)']), hamCuaEmMoi: [hFastStack(['carry2_n(n // 2, d)'])], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Quên dòng carry_n(n % 2, d) nên còn sót kiện lẻ cuối cùng ở (3, 4)', baiLam: bai(['fast_stack(3, 4)']), hamCuaEmMoi: [hFastStack(['t = n // 2', 'carry2_n(t, d)'])], phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Phép chia nguyên n // 2 tính số cặp nhấc đôi, còn phép chia dư n % 2 tính kiện lẻ còn lại.', 'Luna: Thân hàm fast_stack(n, d) gồm carry2_n(n // 2, d) và carry_n(n % 2, d).']
     }),
@@ -817,8 +838,10 @@
           ['split_stack2(4)'],
           {
             hamCuaMan: [H('split_stack2', ['n'], [
-              'carry_n(n % 2, 4)',
-              'carry2_n(n // 2, 4)'
+              't = n % 2',
+              'carry_n(t, 4)',
+              't = n // 2',
+              'carry2_n(t, 4)'
             ])]
           }
         )

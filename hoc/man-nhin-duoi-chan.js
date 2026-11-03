@@ -36,18 +36,18 @@
   }
   function manChe(m) { m.chuong = 'che-nhin-duoi'; if (m.chinhCoDinh !== false) m.chinhCoDinh = true; else delete m.chinhCoDinh; return man(m); }
 
-  var C_TOI_DO = ['while color("here") != "red":', '    go_right()', 'go_down()'];
-  var C_DUONG = LAP(5, ['if color("here") == "blue":', '    go_down()', 'else:', '    go_right()']);
+  var C_TOI_DO = ['m = color("here")', 'while m != "red":', '    go_right()', '    m = color("here")', 'go_down()'];
+  var C_DUONG = LAP(5, ['m = color("here")', 'if m == "blue":', '    go_down()', 'else:', '    go_right()']);
   var SAN_DUONG = [['ggb#', '##gb', '###F'], ['b###', 'gb##', '#ggF']];
-  var C_DEM = ['n = 0', 'for i in range(4):', '    go_right()', '    if color("here") == "red":', '        n = n + 1', 'for i in range(n):', '    go_down()'];
-  var C_GHI = ['a = []', 'for i in range(3):', '    go_right()', '    a.append(color("here"))', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
+  var C_DEM = ['n = 0', 'for i in range(4):', '    go_right()', '    m = color("here")', '    if m == "red":', '        n = n + 1', 'for i in range(n):', '    go_down()'];
+  var C_GHI = ['a = []', 'for i in range(3):', '    go_right()', '    m = color("here")', '    a.append(m)', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
   var C_HOP = ['go_right()', 'c = color("here")', 'ink(c)', 'if c == "red":', '    go_up()', 'else:', '    go_down()', 'dot()', 'wait()'];
-  var C_TIM_DO = ['while color("here") != "red":', '    go_right()', 'go_up()', 'go_up()', 'dot()', 'wait()'];
-  var T_SEEK = ['while color("here") != col:', '    go_right()'];
-  var T_GHI_DUOI = ['for i in range(n):', '    go_right()', '    a.append(color("here"))'];
+  var C_TIM_DO = ['m = color("here")', 'while m != "red":', '    go_right()', '    m = color("here")', 'go_up()', 'go_up()', 'dot()', 'wait()'];
+  var T_SEEK = ['m = color("here")', 'while m != col:', '    go_right()', '    m = color("here")'];
+  var T_GHI_DUOI = ['for i in range(n):', '    go_right()', '    m = color("here")', '    a.append(m)'];
   var C_GHI_HAM = ['a = []', 'read_below(a, 3)', 'for c in a:', '    if c == "red":', '        go_down()', '    else:', '        go_right()'];
-  var T_MUI_TEN = ['if color("here") == "blue":', '    go_down()', 'else:', '    go_right()'];
-  var T_DEM_MAU = ['for i in range(n):', '    go_right()', '    if color("here") == col:', '        a.append(col)'];      // ghi màu thật (nghiệm thu 30/10: mẹo append(1) chỉ dạy một lần ở che-cam-bon.3)
+  var T_MUI_TEN = ['m = color("here")', 'if m == "blue":', '    go_down()', 'else:', '    go_right()'];
+  var T_DEM_MAU = ['for i in range(n):', '    go_right()', '    m = color("here")', '    if m == col:', '        a.append(col)'];      // ghi màu thật (nghiệm thu 30/10: mẹo append(1) chỉ dạy một lần ở che-cam-bon.3)
   var C_DEM_HAM = ['a = []', 'count_here(a, 4, "red")', 'for i in range(len(a)):', '    go_down()'];
   var T_NANG = ['for i in range(n):', '    go_up()', 'dot()', 'wait()'];
 
@@ -75,7 +75,7 @@
       sao: { o: 3, nhip: 4 },
       loiSai: [
         { moTa: 'Bay cố định ba ô: sân thứ hai quá ô đỏ', baiLam: bai(['go_right()', 'go_right()', 'go_right()', 'go_down()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Hỏi "right" thay vì "here": dừng sớm một ô', baiLam: bai(['while color("right") != "red":', '    go_right()', 'go_down()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Hỏi "right" thay vì "here": dừng sớm một ô', baiLam: bai(['m = color("right")', 'while m != "red":', '    go_right()', '    m = color("right")', 'go_down()']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['color("here") đọc ô drone đang ở.', 'Hết vòng while thì drone đứng trên ô đỏ.']
     }),
@@ -91,7 +91,7 @@
       sao: { o: 5, nhip: 5 },
       loiSai: [
         { moTa: 'Bay theo đường sân thứ nhất', baiLam: bai(['go_right()', 'go_right()', 'go_down()', 'go_right()', 'go_down()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đọc "down" thay vì "here": đọc ô phía dưới, lệch một bước', baiLam: bai(LAP(5, ['if color("down") == "blue":', '    go_down()', 'else:', '    go_right()'])), phaiCoMa: [] }
+        { moTa: 'Đọc "down" thay vì "here": đọc ô phía dưới, lệch một bước', baiLam: bai(LAP(5, ['m = color("down")', 'if m == "blue":', '    go_down()', 'else:', '    go_right()'])), phaiCoMa: [] }
       ],
       goiY: ['Mỗi bước: đọc ô dưới chân TRƯỚC, rồi mới bay.', 'Ô xuất phát cũng là một mũi tên.']
     }),
@@ -106,7 +106,7 @@
       loiGiai: bai(C_DEM),
       sao: { o: 7, nhip: 7 },
       loiSai: [
-        { moTa: 'Đọc trước khi bay: đếm lệch một ô', baiLam: bai(['n = 0', 'for i in range(4):', '    if color("here") == "red":', '        n = n + 1', '    go_right()', 'for i in range(n):', '    go_down()']), phaiCoMa: [] }
+        { moTa: 'Đọc trước khi bay: đếm lệch một ô', baiLam: bai(['n = 0', 'for i in range(4):', '    m = color("here")', '    if m == "red":', '        n = n + 1', '    go_right()', 'for i in range(n):', '    go_down()']), phaiCoMa: [] }
       ],
       goiY: ['Bay sang ô mới rồi mới đọc ô dưới chân.', 'n = n + 1 nằm trong if.']
     }),
@@ -117,11 +117,11 @@
       veMaMau: 'Chương trình có sẵn đã ghi mật lệnh. Viết phần đi theo: duyệt từng màu trong a.',
       san: [['.rgr..', '###..#', '####F#'], ['.grg..', '###..F', '######']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(['a = []', 'for i in range(3):', '    go_right()', '    a.append(color("here"))']),
+      maMau: bai(['a = []', 'for i in range(3):', '    go_right()', '    m = color("here")', '    a.append(m)']),
       loiGiai: bai(C_GHI),
       sao: { o: 9, nhip: 6 },
       loiSai: [
-        { moTa: 'Đi ngược mật lệnh', baiLam: bai(['a = []', 'for i in range(3):', '    go_right()', '    a.append(color("here"))', 'for c in a:', '    if c == "red":', '        go_right()', '    else:', '        go_down()']), phaiCoMa: [] }
+        { moTa: 'Đi ngược mật lệnh', baiLam: bai(['a = []', 'for i in range(3):', '    go_right()', '    m = color("here")', '    a.append(m)', 'for c in a:', '    if c == "red":', '        go_right()', '    else:', '        go_down()']), phaiCoMa: [] }
       ],
       goiY: ['a.append(color("here")) ghi màu ô dưới chân.', 'Mỗi màu trong a là đúng một bước bay.']
     }),
@@ -149,11 +149,11 @@
       veMaMau: 'Chạm chữ hướng trong color(…) để đổi "down" thành "here".',
       san: [['gb..', '.gb.', '..gF'], ['.b..', 'gggb', '...F']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(LAP(5, ['if color("down") == "blue":', '    go_down()', 'else:', '    go_right()'])),
+      maMau: bai(LAP(5, ['m = color("down")', 'if m == "blue":', '    go_down()', 'else:', '    go_right()'])),
       loiGiai: bai(C_DUONG),
       sao: { o: 5, nhip: 5 },
       loiSai: [
-        { moTa: 'Không sửa', baiLam: bai(LAP(5, ['if color("down") == "blue":', '    go_down()', 'else:', '    go_right()'])), phaiCoMa: [] }
+        { moTa: 'Không sửa', baiLam: bai(LAP(5, ['m = color("down")', 'if m == "blue":', '    go_down()', 'else:', '    go_right()'])), phaiCoMa: [] }
       ],
       goiY: ['"here" là ô drone đang ở.', 'Chỉ cần đổi một chữ.']
     }),
@@ -181,10 +181,10 @@
       san: [['.....F', '......', '.ygbyg'], ['......', '.....F', '.rybgb']],
       batDau: { x: 0, y: 2 },
       maMau: bai(['n = 0', 'for i in range(5):', '    go_right()', 'for i in range(n):', '    go_up()']),
-      loiGiai: bai(['n = 0', 'for i in range(5):', '    go_right()', '    if color("here") == "yellow":', '        n = n + 1', 'for i in range(n):', '    go_up()']),
+      loiGiai: bai(['n = 0', 'for i in range(5):', '    go_right()', '    m = color("here")', '    if m == "yellow":', '        n = n + 1', 'for i in range(n):', '    go_up()']),
       sao: { o: 7, nhip: 7 },
       loiSai: [
-        { moTa: 'Đếm ô đỏ thay vì vàng', baiLam: bai(['n = 0', 'for i in range(5):', '    go_right()', '    if color("here") == "red":', '        n = n + 1', 'for i in range(n):', '    go_up()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Đếm ô đỏ thay vì vàng', baiLam: bai(['n = 0', 'for i in range(5):', '    go_right()', '    m = color("here")', '    if m == "red":', '        n = n + 1', 'for i in range(n):', '    go_up()']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Camera "here" đọc màu ô dưới drone.', 'Bay lên n ô.']
     }),
@@ -197,11 +197,11 @@
       hinh: [['...y..', '......', '......'], ['.g....', '......', '......']],
       batDau: { x: 0, y: 2 },
       maMau: bai(['c = color("here")']),
-      loiGiai: bai(['c = color("here")', 'go_right()', 'while color("here") != c:', '    go_right()', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']),
+      loiGiai: bai(['c = color("here")', 'go_right()', 'm = color("here")', 'while m != c:', '    go_right()', '    m = color("here")', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']),
       sao: { o: 9, nhip: 6 },
       loiSai: [
-        { moTa: 'Tìm ô đỏ cố định: lệch cột', baiLam: bai(['c = color("here")', 'go_right()', 'while color("here") != "red":', '    go_right()', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] },
-        { moTa: 'Quên rời ô đơn hàng trước khi tìm: vòng while không chạy', baiLam: bai(['c = color("here")', 'while color("here") != c:', '    go_right()', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] }
+        { moTa: 'Tìm ô đỏ cố định: lệch cột', baiLam: bai(['c = color("here")', 'go_right()', 'm = color("here")', 'while m != "red":', '    go_right()', '    m = color("here")', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] },
+        { moTa: 'Quên rời ô đơn hàng trước khi tìm: vòng while không chạy', baiLam: bai(['c = color("here")', 'm = color("here")', 'while m != c:', '    go_right()', '    m = color("here")', 'ink(c)', 'go_up()', 'go_up()', 'dot()', 'wait()']), phaiCoMa: ['to-thua'] }
       ],
       goiY: ['Ô đơn hàng cũng có màu c: rời nó một ô rồi mới tìm.', 'while color("here") != c: bay tới ô cùng màu đơn, rồi ink(c) và bay lên chấm.']
     }),
@@ -216,10 +216,10 @@
       maMau: bai(['seek_here("red")', 'go_down()']),
       loiGiai: bai(['seek_here("red")', 'go_down()'], { hamCuaEmMoi: [H('seek_here', ['col'], T_SEEK)] }),
       sao: { o: 4, nhip: 4 },
-      congThucKhac: [{ moTa: 'Viết bằng not và ==', hamCuaEmMoi: [H('seek_here', ['col'], ['while not color("here") == col:', '    go_right()'])] }],
+      congThucKhac: [{ moTa: 'Viết bằng not và ==', hamCuaEmMoi: [H('seek_here', ['col'], ['m = color("here")', 't = m == col', 'while not t:', '    go_right()', '    m = color("here")', '    t = m == col'])] }],
       loiSai: [
         { moTa: 'Gọi seek_here mà chưa chế hàm', baiLam: bai(['seek_here("red")', 'go_down()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Đọc "right": dừng sớm một ô', baiLam: bai(['seek_here("red")', 'go_down()']), hamCuaEmMoi: [H('seek_here', ['col'], ['while color("right") != col:', '    go_right()'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Đọc "right": dừng sớm một ô', baiLam: bai(['seek_here("red")', 'go_down()']), hamCuaEmMoi: [H('seek_here', ['col'], ['m = color("right")', 'while m != col:', '    go_right()', '    m = color("right")'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Còn bay khi màu dưới chân KHÁC col.', 'Chương trình chính đưa "red" vào col.']
     }),
@@ -236,7 +236,7 @@
       congThucKhac: [{ moTa: 'Ghi màu vào biến trước', hamCuaEmMoi: [H('read_below', ['a', 'n'], ['for i in range(n):', '    go_right()', '    c = color("here")', '    a.append(c)'])] }],
       loiSai: [
         { moTa: 'Gọi read_below mà chưa chế hàm', baiLam: bai(C_GHI_HAM), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Ghi trước khi bay: lệch một ô', baiLam: bai(C_GHI_HAM), hamCuaEmMoi: [H('read_below', ['a', 'n'], ['for i in range(n):', '    a.append(color("here"))', '    go_right()'])], phaiCoMa: [] }
+        { moTa: 'Ghi trước khi bay: lệch một ô', baiLam: bai(C_GHI_HAM), hamCuaEmMoi: [H('read_below', ['a', 'n'], ['for i in range(n):', '    m = color("here")', '    a.append(m)', '    go_right()'])], phaiCoMa: [] }
       ],
       goiY: ['Bay sang ô mới rồi mới đọc.', 'a.append(…) thêm vào cuối a.']
     }),
@@ -250,7 +250,7 @@
       maMau: bai(LAP(5, 'arrow_step()')),
       loiGiai: bai(LAP(5, 'arrow_step()'), { hamCuaEmMoi: [H('arrow_step', [], T_MUI_TEN)] }),
       sao: { o: 6, nhip: 5 },
-      congThucKhac: [{ moTa: 'Hỏi khác xanh dương trước', hamCuaEmMoi: [H('arrow_step', [], ['if color("here") != "blue":', '    go_right()', 'else:', '    go_down()'])] }],
+      congThucKhac: [{ moTa: 'Hỏi khác xanh dương trước', hamCuaEmMoi: [H('arrow_step', [], ['m = color("here")', 'if m != "blue":', '    go_right()', 'else:', '    go_down()'])] }],
       loiSai: [
         { moTa: 'Gọi arrow_step() mà chưa chế hàm', baiLam: bai(LAP(5, 'arrow_step()')), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Luôn bay sang phải', baiLam: bai(LAP(5, 'arrow_step()')), hamCuaEmMoi: [H('arrow_step', [], ['go_right()'])], phaiCoMa: ['chua-toi-co'] }
@@ -267,10 +267,10 @@
       maMau: bai(C_DEM_HAM),
       loiGiai: bai(C_DEM_HAM, { hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], T_DEM_MAU)] }),
       sao: { o: 8, nhip: 7 },
-      congThucKhac: [{ moTa: 'Thêm số 1 thay cho màu: len(a) vẫn đúng', hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    go_right()', '    if color("here") == col:', '        a.append(1)'])] }],
+      congThucKhac: [{ moTa: 'Thêm số 1 thay cho màu: len(a) vẫn đúng', hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    go_right()', '    m = color("here")', '    if m == col:', '        a.append(1)'])] }],
       loiSai: [
         { moTa: 'Gọi count_here mà chưa chế hàm', baiLam: bai(C_DEM_HAM), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên bay: đọc mãi một ô', baiLam: bai(C_DEM_HAM), hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    if color("here") == col:', '        a.append(col)'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Quên bay: đọc mãi một ô', baiLam: bai(C_DEM_HAM), hamCuaEmMoi: [H('count_here', ['a', 'n', 'col'], ['for i in range(n):', '    m = color("here")', '    if m == col:', '        a.append(col)'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Ba đối số: danh sách, số ô, màu cần đếm.', 'len(a) là số ô đếm được.']
     }),
@@ -317,11 +317,11 @@
       veMaMau: 'Chạm chữ hướng trong find_col để đổi "down" thành "here".',
       san: [['.gbyr', '...F.', '.....'], ['.ybgr', '.F...', '.....']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(['find_col("yellow")', 'go_down()'], { hamCuaMan: [H('find_col', ['col'], ['while color("down") != col:', '    go_right()'])] }),
+      maMau: bai(['find_col("yellow")', 'go_down()'], { hamCuaMan: [H('find_col', ['col'], ['m = color("down")', 'while m != col:', '    go_right()', '    m = color("down")'])] }),
       loiGiai: bai(['find_col("yellow")', 'go_down()'], { hamCuaMan: [H('find_col', ['col'], T_SEEK)] }),
       sao: { o: 4, nhip: 4 },
       loiSai: [
-        { moTa: 'Không sửa', baiLam: bai(['find_col("yellow")', 'go_down()'], { hamCuaMan: [H('find_col', ['col'], ['while color("down") != col:', '    go_right()'])] }), phaiCoMa: [] }
+        { moTa: 'Không sửa', baiLam: bai(['find_col("yellow")', 'go_down()'], { hamCuaMan: [H('find_col', ['col'], ['m = color("down")', 'while m != col:', '    go_right()', '    m = color("down")'])] }), phaiCoMa: [] }
       ],
       goiY: ['"down" là ô phía dưới trên bản đồ; "here" là ô drone đang ở.', 'Chỉ đổi một chữ.']
     }),

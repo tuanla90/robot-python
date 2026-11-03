@@ -258,8 +258,8 @@
         [{ x: 1, y: 1, huong: 2, suc: 1 }, { x: 4, y: 1, huong: 3, suc: 1 }, { x: 3, y: 1, huong: 2, suc: 1 }]
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['anchor()', 'wait()', 'if flow_dir() == "back":', '    wait()']),
-      loiGiai: bai(['anchor()', 'wait()', 'if flow_dir() == "back":', '    wait()', 'tow_grab()', 'unanchor()', 'wait()', 'forward(3)']),
+      maMau: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "back":', '    wait()']),
+      loiGiai: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "back":', '    wait()', 'tow_grab()', 'unanchor()', 'wait()', 'forward(3)']),
       sao: { o: 15, nhip: 13 },
       loiGiaiKhac: {
         moTa: 'Dùng if not is_calm_front(): wait() thay cho so sánh chuỗi "back"',
@@ -383,14 +383,16 @@
       maMau: bai([
         'anchor()',
         'wait()',
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    wait()',
         'tow_grab()'
       ]),
       loiGiai: bai([
         'anchor()',
         'wait()',
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    wait()',
         'tow_grab()',
         'unanchor()',
@@ -417,7 +419,7 @@
       },
       loiSai: [
         { moTa: 'Không kiểm tra dòng chảy để chờ thêm 1 nhịp ở sân 1 nên bè B chưa xuống tới ngã tư', baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'pair_step("R", 1)', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
-        { moTa: 'Quên gọi unanchor(), wait() trước khi quay phải', baiLam: bai(['anchor()', 'wait()', 'if flow_dir() == "front":', '    wait()', 'tow_grab()', 'pair_step("R", 1)', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['dang-neo', 'chua-dua-vat'] }
+        { moTa: 'Quên gọi unanchor(), wait() trước khi quay phải', baiLam: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "front":', '    wait()', 'tow_grab()', 'pair_step("R", 1)', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['dang-neo', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau tow_grab(), bè B đã dừng ngay tại (7, 3) trên cả 2 sân và cống (2, 3) đã mở.', 'Luna: Gọi unanchor(), wait(), pair_step("R", 1), flow_step() và tow_pair(1, 1) để đưa B tới bến (6, 3).']
     }),
@@ -697,8 +699,8 @@
         [{ nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 3 }], dong: [{ x: 1, y: 3 }, { x: 5, y: 2 }, { x: 5, y: 3 }] }]
       ],
       batDau: [{ x: 1, y: 3, huong: 0 }, { x: 1, y: 3, huong: 0 }],
-      maMau: bai(['if flow_dir() == "front":', '    hold_and_valve(1)', 'else:', '    hold_and_valve(0)']),
-      loiGiai: bai(['if flow_dir() == "front":', '    hold_and_valve(1)', 'else:', '    hold_and_valve(0)', 'turn_right()', 'tow_pair(2, 1)']),
+      maMau: bai(['h = flow_dir()', 'if h == "front":', '    hold_and_valve(1)', 'else:', '    hold_and_valve(0)']),
+      loiGiai: bai(['h = flow_dir()', 'if h == "front":', '    hold_and_valve(1)', 'else:', '    hold_and_valve(0)', 'turn_right()', 'tow_pair(2, 1)']),
       sao: { o: 29, nhip: 17 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra if is_calm_front(): hold_and_valve(0) else: hold_and_valve(1)',
@@ -760,7 +762,7 @@
       sao: { o: 36, nhip: 20 },
       loiGiaiKhac: {
         moTa: 'Dùng if flow_dir() == "front": hold_and_valve(1) else: hold_and_valve(0)',
-        baiLam: bai(['if flow_dir() == "front":', '    hold_and_valve(1)', 'else:', '    hold_and_valve(0)', 'turn_right()', 'move()', 'flow_step()', 'tow_pair(1, 1)'])
+        baiLam: bai(['h = flow_dir()', 'if h == "front":', '    hold_and_valve(1)', 'else:', '    hold_and_valve(0)', 'turn_right()', 'move()', 'flow_step()', 'tow_pair(1, 1)'])
       },
       loiSai: [
         { moTa: 'Dùng hold_and_valve(0) cho cả 2 sân nên ở sân 1 bè B chưa xuống tới (7, 3)', baiLam: bai(['hold_and_valve(0)', 'turn_right()', 'move()', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },

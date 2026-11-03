@@ -32,7 +32,7 @@
   var T_AIM_LOB = ['aim(n)', 'lob()'];
   var T_FILL_FAR = ['aim_lob(3)', 'forward(3)'];
   var T_LOB_STEP = ['slide_r(r[0])', 'aim_lob(r[1])'];
-  var T_AUTO_AIM = ['g = radar()', 'if g[1][2] == "#":', '    aim_lob(3)', 'else:', '    aim_lob(2)', 'forward(3)'];
+  var T_AUTO_AIM = ['g = radar()', 't = g[1][2]', 'if t == "#":', '    aim_lob(3)', 'else:', '    aim_lob(2)', 'forward(3)'];
   var T_DIAG_AIM = ['diag_right()', 'aim_lob(n)'];
 
   function manCL(o) {
@@ -297,7 +297,8 @@
         'wait()',
         'move()',
         'g = radar()',
-        'if g[0][1] == "D":',
+        't = g[0][1]',
+        'if t == "D":',
         '    aim(1)',
         'else:',
         '    aim(2)',
@@ -356,13 +357,15 @@
       maMau: bai([
         'for i in range(2):',
         '    g = radar()',
-        '    if g[1][2] == "#":',
+        '    t = g[1][2]',
+        '    if t == "#":',
         '        aim(3)'
       ]),
       loiGiai: bai([
         'for i in range(2):',
         '    g = radar()',
-        '    if g[1][2] == "#":',
+        '    t = g[1][2]',
+        '    if t == "#":',
         '        aim(3)',
         '    else:',
         '        aim(2)',
@@ -372,8 +375,8 @@
       ]),
       sao: { o: 18, nhip: 11 },
       loiSai: [
-        { moTa: 'Chưa gọi lob() và forward(3) sau khi chọn tầm', baiLam: bai(['for i in range(2):', '    g = radar()', '    if g[1][2] == "#":', '        aim(3)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Thiếu nhánh else đặt lại aim(2) nên sau chặng tầm 3 máy ném vẫn giữ tầm 3', baiLam: bai(['for i in range(2):', '    g = radar()', '    if g[1][2] == "#":', '        aim(3)', '    lob()', '    forward(3)', 'move()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Chưa gọi lob() và forward(3) sau khi chọn tầm', baiLam: bai(['for i in range(2):', '    g = radar()', '    t = g[1][2]', '    if t == "#":', '        aim(3)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu nhánh else đặt lại aim(2) nên sau chặng tầm 3 máy ném vẫn giữ tầm 3', baiLam: bai(['for i in range(2):', '    g = radar()', '    t = g[1][2]', '    if t == "#":', '        aim(3)', '    lob()', '    forward(3)', 'move()']), phaiCoMa: ['roi-ho'] }
       ],
       loiBinh: 'Đọc cọc mốc bên hông qua g[1][2] giúp R1 chỉnh đúng tầm 2 hay 3 ô cho từng chặng hầm.'
     }),
@@ -464,7 +467,8 @@
         'diag_r(1)',
         'for i in range(2):',
         '    g = radar()',
-        '    if g[1][2] == "#":',
+        '    t = g[1][2]',
+        '    if t == "#":',
         '        aim(3)',
         '    else:',
         '        aim(2)',
@@ -692,7 +696,7 @@
       sao: { o: 20, nhip: 11 },
       loiSai: [
         { moTa: 'Trong auto_aim() luôn gọi aim_lob(2) nên ném đá ngắn chắn đường xe', baiLam: bai(['for i in range(2):', '    auto_aim()', 'move()']), hamCuaEmMoi: [H('auto_aim', [], ['g = radar()', 'aim_lob(2)', 'forward(3)'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Trong auto_aim() quên gọi forward(3) ở cuối nên xe chưa tới cờ', baiLam: bai(['for i in range(2):', '    auto_aim()', 'move()']), hamCuaEmMoi: [H('auto_aim', [], ['g = radar()', 'if g[1][2] == "#":', '    aim_lob(3)', 'else:', '    aim_lob(2)'])], phaiCoMa: ['nap-hut', 'chua-toi-co'] }
+        { moTa: 'Trong auto_aim() quên gọi forward(3) ở cuối nên xe chưa tới cờ', baiLam: bai(['for i in range(2):', '    auto_aim()', 'move()']), hamCuaEmMoi: [H('auto_aim', [], ['g = radar()', 't = g[1][2]', 'if t == "#":', '    aim_lob(3)', 'else:', '    aim_lob(2)'])], phaiCoMa: ['nap-hut', 'chua-toi-co'] }
       ],
       loiBinh: 'Hàm auto_aim() giúp R1 tự nhìn cọc mốc bên hông để lấp cả hố gần lẫn hố xa rồi tiến lên 3 ô.'
     }),

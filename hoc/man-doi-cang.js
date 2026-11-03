@@ -666,13 +666,15 @@
       maMau: B([
         'wait_n(4)',
         'rail(2)',
-        'if weight() == 1:',
+        'w = weight()',
+        'if w == 1:',
         '    carry2_by(4)'
       ], ['clear_pole("R")']),
       loiGiai: B([
         'wait_n(4)',
         'rail(2)',
-        'if weight() == 1:',
+        'w = weight()',
+        'if w == 1:',
         '    carry2_by(4)',
         'else:',
         '    carry_by(4)'
@@ -680,7 +682,7 @@
       sao: { o: 36, nhip: 12 },
       loiSai: [
         { moTa: 'R1 luôn gọi carry2_by(4) nên ở sân 2 chỉ có 1 kiện bị lỗi móc thiếu', baiLam: B(['wait_n(4)', 'rail(2)', 'carry2_by(4)'], ['clear_pole("R")']), phaiCoMa: ['moc-thieu'] },
-        { moTa: 'R2 gọi clear_pole("L") lùi về (2, 3) nên đứng chắn đường trượt rail(2) của R1', baiLam: B(['wait_n(4)', 'rail(2)', 'if weight() == 1:', '    carry2_by(4)', 'else:', '    carry_by(4)'], ['clear_pole("L")']), phaiCoMa: ['het-ray'] }
+        { moTa: 'R2 gọi clear_pole("L") lùi về (2, 3) nên đứng chắn đường trượt rail(2) của R1', baiLam: B(['wait_n(4)', 'rail(2)', 'w = weight()', 'if w == 1:', '    carry2_by(4)', 'else:', '    carry_by(4)'], ['clear_pole("L")']), phaiCoMa: ['het-ray'] }
       ],
       goiY: ['Luna: R2 đã có clear_pole("R") dọn mẩu nam châm ở (3, 3) và bước sang (4, 3).', 'Luna: R1 chỉ cần thêm nhánh else: gọi carry_by(4).']
     }),

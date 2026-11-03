@@ -173,8 +173,8 @@
   var STEP_SAI = ['go_down()', 'go_right()'];
   var STEP_DUNG = ['go_right()', 'go_down()'];
   var T_STRIPES = ['for c in colors:', '    color_line(c, 3)', '    next_row(3)'];
-  var T_COPY_ROW = ['seen = []', 'for i in range(n):', '    seen.append(color("up"))', '    go_right()', 'next_row(n)', 'for c in seen:', '    ink(c)', '    dot()', '    go_right()'];
-  var T_FILL_GAPS = ['ink(c)', 'for i in range(n):', '    if color("right") == "none":', '        go_right()', '        dot()', '    else:', '        go_right()'];
+  var T_COPY_ROW = ['seen = []', 'for i in range(n):', '    m = color("up")', '    seen.append(m)', '    go_right()', 'next_row(n)', 'for c in seen:', '    ink(c)', '    dot()', '    go_right()'];
+  var T_FILL_GAPS = ['ink(c)', 'for i in range(n):', '    m = color("right")', '    if m == "none":', '        go_right()', '        dot()', '    else:', '        go_right()'];
   var C_1 = ['line(3)'];
   var C_2 = ['color_line("red", 2)', 'go_right()', 'color_line("blue", 2)'];
   var C_3 = ['color_line("red", 3)', 'next_row(3)', 'color_line("blue", 3)'];
@@ -319,7 +319,7 @@
       ],
       loiSai: [
         { moTa: 'Gọi line(3) mà chưa chế hàm', baiLam: { chinh: C_1.slice() }, phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Bay thiếu một bước: nét ba ô', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('line', ['pen_down()', 'for i in range(n - 1):', '    go_right()', 'pen_up()'], ['n'])], phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Bay thiếu một bước: nét ba ô', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('line', ['pen_down()', 't = n - 1', 'for i in range(t):', '    go_right()', 'pen_up()'], ['n'])], phaiCoMa: ['chua-to-hinh'] },
         { moTa: 'Chấm thay vì hạ đầu sơn: chỉ một chấm', baiLam: { chinh: C_1.slice() }, hamCuaEmMoi: [H('line', ['dot()', 'for i in range(n):', '    go_right()', 'pen_up()'], ['n'])], phaiCoMa: ['chua-to-hinh'] }
       ],
       goiY: ['line(n) tô n + 1 ô: ô xuất phát và n ô bay sang phải.', 'Nhấc đầu sơn ở cuối để lần bay sau không vẽ bậy.']
@@ -411,13 +411,13 @@
       loiGiai: { chinh: C_6.slice(), hamCuaEmMoi: [H('copy_row', T_COPY_ROW, ['n'])] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', nhieu(['# đọc hàng trên, chép xuống hàng dưới'], T_COPY_ROW), ['n'])] },
       congThucKhac: [
-        { moTa: 'Chép theo chỉ số: seen[i]', hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    seen.append(color("up"))', '    go_right()', 'next_row(n)', 'for i in range(n):', '    ink(seen[i])', '    dot()', '    go_right()'], ['n'])] }
+        { moTa: 'Chép theo chỉ số: seen[i]', hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    m = color("up")', '    seen.append(m)', '    go_right()', 'next_row(n)', 'for i in range(n):', '    ink(seen[i])', '    dot()', '    go_right()'], ['n'])] }
       ],
       loiSai: [
         { moTa: 'Gọi copy_row mà chưa chế hàm', baiLam: { chinh: C_6.slice() }, phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Bay rồi mới đọc màu: lệch một ô, đọc phải ô không màu', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    go_right()', '    seen.append(color("up"))', 'next_row(n)', 'for c in seen:', '    ink(c)', '    dot()', '    go_right()'], ['n'])], phaiCoMa: ['mau-son-sai'] },
+        { moTa: 'Bay rồi mới đọc màu: lệch một ô, đọc phải ô không màu', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    go_right()', '    m = color("up")', '    seen.append(m)', 'next_row(n)', 'for c in seen:', '    ink(c)', '    dot()', '    go_right()'], ['n'])], phaiCoMa: ['mau-son-sai'] },
         { moTa: 'Ghi cứng bốn màu của sân 1: sân 2 màu khác', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', ['for i in range(n):', '    go_right()', 'next_row(n)', 'for c in ["red", "yellow", "blue", "red"]:', '    ink(c)', '    dot()', '    go_right()'], ['n'])], phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Quên xuống hàng: chép đè lên hàng giữa', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    seen.append(color("up"))', '    go_right()', 'for c in seen:', '    ink(c)', '    dot()', '    go_right()'], ['n'])], phaiCoMa: ['to-thua'] }
+        { moTa: 'Quên xuống hàng: chép đè lên hàng giữa', baiLam: { chinh: C_6.slice() }, hamCuaEmMoi: [H('copy_row', ['seen = []', 'for i in range(n):', '    m = color("up")', '    seen.append(m)', '    go_right()', 'for c in seen:', '    ink(c)', '    dot()', '    go_right()'], ['n'])], phaiCoMa: ['to-thua'] }
       ],
       goiY: ['Đọc màu TRƯỚC khi bay: color("up") đọc ô hàng trên ngay phía trên drone.', 'Xuống hàng bằng next_row(n) rồi lặp qua seen: chọn màu, chấm, bay sang phải.']
     },
@@ -431,14 +431,14 @@
       loiGiai: { chinh: C_9.slice(), hamCuaEmMoi: [H('fill_gaps', T_FILL_GAPS, ['c', 'n'])] },
       loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', nhieu(['# chỉ chấm ô chưa có sơn'], T_FILL_GAPS), ['c', 'n'])] },
       congThucKhac: [
-        { moTa: 'Hỏi ngược lại: ô bên phải đã có sơn thì chỉ bay tiếp', hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    if color("right") != "none":', '        go_right()', '    else:', '        go_right()', '        dot()'], ['c', 'n'])] },
+        { moTa: 'Hỏi ngược lại: ô bên phải đã có sơn thì chỉ bay tiếp', hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    m = color("right")', '    if m != "none":', '        go_right()', '    else:', '        go_right()', '        dot()'], ['c', 'n'])] },
         { moTa: 'Ghi màu ô bên phải vào biến rồi mới bay', hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    m = color("right")', '    go_right()', '    if m == "none":', '        dot()'], ['c', 'n'])] }
       ],
       loiSai: [
         { moTa: 'Gọi fill_gaps mà chưa chế hàm', baiLam: { chinh: C_9.slice() }, phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Chấm mọi ô: đè mất màu sơn sẵn', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    go_right()', '    dot()'], ['c', 'n'])], phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Hỏi "khác màu c": ô đỏ, xanh, vàng cũng bị chấm đè', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    if color("right") != c:', '        go_right()', '        dot()', '    else:', '        go_right()'], ['c', 'n'])], phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Gọi color() không hướng: camera bốn hướng cần biết nhìn phía nào', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    if color() == "none":', '        go_right()', '        dot()', '    else:', '        go_right()'], ['c', 'n'])], phaiCoMa: ['loi-chay'] }
+        { moTa: 'Hỏi "khác màu c": ô đỏ, xanh, vàng cũng bị chấm đè', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    m = color("right")', '    if m != c:', '        go_right()', '        dot()', '    else:', '        go_right()'], ['c', 'n'])], phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Gọi color() không hướng: camera bốn hướng cần biết nhìn phía nào', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('fill_gaps', ['ink(c)', 'for i in range(n):', '    m = color()', '    if m == "none":', '        go_right()', '        dot()', '    else:', '        go_right()'], ['c', 'n'])], phaiCoMa: ['loi-chay'] }
       ],
       goiY: ['Hỏi color("right") == "none" để biết ô bên phải còn trống.', 'Chọn màu một lần ở đầu hàm là đủ.']
     },

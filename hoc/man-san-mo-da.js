@@ -29,7 +29,7 @@
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than }; }
 
   var T_FILL_PIT = ['lob()', 'forward(2)'];
-  var T_AUTO_FILL = ['g = radar()', 'if g[0][1] == "V":', '    lob()', 'move()'];
+  var T_AUTO_FILL = ['g = radar()', 't = g[0][1]', 'if t == "V":', '    lob()', 'move()'];
   var T_BRIDGE_SLOPE = ['fill_pit()', 'move()'];
   var T_SPIN_LOB = ['load()', 'wait()', 'slide_r(1)', 'throw()', 'wait()'];
   var T_FILL_ROW = ['for i in range(n):', '    slide_r(1)', '    lob()'];
@@ -220,15 +220,15 @@
       ],
       batDau: [{ x: 1, y: 5, huong: 0 }, { x: 1, y: 5, huong: 0 }],
       maMau: bai(['for i in range(4):', '    g = radar()', '    move()']),
-      loiGiai: bai(['for i in range(4):', '    g = radar()', '    if g[0][1] == "V":', '        lob()', '    move()']),
+      loiGiai: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob()', '    move()']),
       sao: { o: 12, nhip: 6 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra trực tiếp radar()[0][1] == "V"',
-        baiLam: bai(['g = 0', 'for i in range(4):', '    if radar()[0][1] == "V":', '        lob()', '    move()'])
+        baiLam: bai(['g = 0', 'for i in range(4):', '    t = radar()', '    k = t[0][1]', '    if k == "V":', '        lob()', '    move()'])
       },
       loiSai: [
         { moTa: 'Chưa gọi lob() khi gặp đá: xe đâm vào tảng đá chắn đường', baiLam: bai(['for i in range(4):', '    g = radar()', '    move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Thụt lề nhầm move() vào trong if: gặp ô trống xe đứng yên không đi', baiLam: bai(['for i in range(4):', '    g = radar()', '    if g[0][1] == "V":', '        lob()', '        move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thụt lề nhầm move() vào trong if: gặp ô trống xe đứng yên không đi', baiLam: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob()', '        move()']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Tảng đá nằm ngay trước hố sâu, nên khi thấy g[0][1] == "V" thì gọi lob() sẽ lấp luôn hố.', 'Luna: Sau khối if, gọi move() để tiến lên từng bước tới cờ.']
     }),
@@ -269,11 +269,11 @@
       ],
       batDau: [{ x: 1, y: 8, huong: 0 }, { x: 1, y: 8, huong: 0 }],
       maMau: bai(['for i in range(8):', '    g = radar()']),
-      loiGiai: bai(['for i in range(8):', '    g = radar()', '    if g[0][1] == "V":', '        lob()', '    move()']),
+      loiGiai: bai(['for i in range(8):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        lob()', '    move()']),
       sao: { o: 12, nhip: 12 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra trực tiếp radar()[0][1] == "V" trong vòng lặp 8 bước',
-        baiLam: bai(['g = 0', 'for i in range(8):', '    if radar()[0][1] == "V":', '        lob()', '    move()'])
+        baiLam: bai(['g = 0', 'for i in range(8):', '    t = radar()', '    k = t[0][1]', '    if k == "V":', '        lob()', '    move()'])
       },
       loiSai: [
         { moTa: 'Chưa viết lệnh lấp hố và di chuyển trong vòng lặp', baiLam: bai(['for i in range(8):', '    g = radar()']), phaiCoMa: ['chua-toi-co'] },
@@ -324,7 +324,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm auto_fill mà đã bấm Chạy', baiLam: bai(['for i in range(4):', '    auto_fill()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong auto_fill() thụt lề nhầm move() vào trong if: gặp ô trống xe đứng yên', baiLam: bai(['for i in range(4):', '    auto_fill()']), hamCuaEmMoi: [H('auto_fill', [], ['g = radar()', 'if g[0][1] == "V":', '    lob()', '    move()'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Trong auto_fill() thụt lề nhầm move() vào trong if: gặp ô trống xe đứng yên', baiLam: bai(['for i in range(4):', '    auto_fill()']), hamCuaEmMoi: [H('auto_fill', [], ['g = radar()', 't = g[0][1]', 'if t == "V":', '    lob()', '    move()'])], phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Trong auto_fill() chỉ gọi move() không kiểm tra đá: xe đâm vào tảng đá', baiLam: bai(['for i in range(4):', '    auto_fill()']), hamCuaEmMoi: [H('auto_fill', [], ['move()'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       goiY: ['Luna: Thân hàm auto_fill() gồm: g = radar(), if g[0][1] == "V": lob(), và move() ở ngoài if.', 'Luna: Dòng move() đặt ngoài if để bước nào xe cũng tiến lên 1 ô.']

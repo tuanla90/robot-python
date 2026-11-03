@@ -3346,6 +3346,32 @@
   M.danhSach.forEach(function (m) {
     if (nguong && nguong[m.ma]) m.sao = Object.assign({}, m.sao, nguong[m.ma]);
   });
+  // Mùa 4–7 viết "mỗi dòng một việc" (3/11, user: bỏ biểu thức lồng, `c = read_code()` rồi `t = c // 10` rồi `if t == 1:`): lời giải dài thêm vài dòng,
+  // nên khung nới (bước 2 ô) cho vừa lời giải và lời giải khác: chương trình chính theo khung.chinh, thân hàm của em theo khung.moiHam.
+  (function () {
+    var MUA_PHANG = ['mua-4', 'mua-5', 'mua-6', 'mua-7'], chuong = {};
+    (TT.goi || []).forEach(function (g) { if (MUA_PHANG.indexOf(g.mua) >= 0) (g.chuong || []).forEach(function (c) { chuong[c] = true; }); });
+    function soDong(ds) { return (ds || []).filter(function (s) { return String(s).trim() !== ''; }).length; }      // như KhungCode: dòng trống không tính ô
+    function chan(n) { return n + (n % 2); }
+    var manMua = M.danhSach.filter(function (m) { return chuong[m.chuong] && m.khung; }), thanDai = {};      // hàm em viết ở màn trước (kho) cũng phải vừa khung màn sau gọi nó
+    function baiCua(m) {      // lời giải, lời giải khác (thân hàm có thể nằm ngoài baiLam), từng công thức khác
+      var k = m.loiGiaiKhac;
+      return [m.loiGiai, k && k.baiLam, k && { hamCuaEmMoi: k.hamCuaEmMoi }].concat((m.congThucKhac || []).map(function (c) { return { hamCuaEmMoi: c.hamCuaEmMoi }; })).filter(Boolean);
+    }
+    manMua.forEach(function (m) { baiCua(m).forEach(function (b) { (b.hamCuaEmMoi || []).forEach(function (f) { thanDai[f.ten] = Math.max(thanDai[f.ten] || 0, soDong(f.than)); }); }); });
+    manMua.forEach(function (m) {
+      var chinh = 0, than = 0;
+      baiCua(m).forEach(function (b) {
+        [b.chinh].concat((b.doi || []).map(function (r) { return r && r.chinh; })).forEach(function (c) {
+          chinh = Math.max(chinh, soDong(c));
+          (c || []).join('\n').replace(/[A-Za-z_]\w*(?=\()/g, function (ten) { than = Math.max(than, thanDai[ten] || 0); return ten; });
+        });
+        [].concat(b.hamCuaEmMoi || [], b.hamCuaMan || []).forEach(function (f) { than = Math.max(than, soDong(f.than)); });
+      });
+      var k = m.khung, cu = k.chinh === undefined ? 10 : k.chinh, cuHam = k.moiHam === undefined ? 10 : k.moiHam;
+      if (chinh > cu - (k.khoaChinh || 0) || than > cuHam - (k.khoaHam || 0)) m.khung = Object.assign({}, k, { chinh: Math.max(cu, chan(chinh + (k.khoaChinh || 0))), moiHam: Math.max(cuHam, chan(than + (k.khoaHam || 0))) });
+    });
+  })();
   // Chạy cuối lộ trình (sau mọi đoạn sửa taoHam của mùa dựng lại). Sổ lệnh: màn của mục còn trong lộ trình mà không màn nào tạo hàm đó nữa (SM1-B: trùm vong-lap.10 viết lại chỉ chế bend_left / bend_right, row thôi là hàm cốt truyện)
   // thì bỏ mục, để trang Sổ lệnh không hiện "???" mãi cho một hàm không chế được.
   if (SL && SL.ds) for (var si = SL.ds.length - 1; si >= 0; si--) {

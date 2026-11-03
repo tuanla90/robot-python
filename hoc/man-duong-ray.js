@@ -88,27 +88,34 @@
     'swing_by(4)'
   ];
   var T_RAIL_CLEAR = [
-    'while read_code() != -1:',
-    '    rail_drop(dx)'
+    'c = read_code()',
+    'while c != -1:',
+    '    rail_drop(dx)',
+    '    c = read_code()'
   ];
   var T_SCAN_RAIL = [
-    'while read_code() != -1:',
-    '    if read_code() // 10 == 1:',
+    'c = read_code()',
+    'while c != -1:',
+    '    t = c // 10',
+    '    if t == 1:',
     '        rail_drop(-1)',
     '    else:',
-    '        rail_drop(1)'
+    '        rail_drop(1)',
+    '    c = read_code()'
   ];
   var T_RAIL_SORT_SAI = [
     'for i in range(n):',
     '    rail(1)',
-    '    if read_code() == -1:',
+    '    c = read_code()',
+    '    if c == -1:',
     '        carry_by(4)',
     '        swing_by(4)'
   ];
   var T_RAIL_SORT_DUNG = [
     'for i in range(n):',
     '    rail(1)',
-    '    if read_code() != -1:',
+    '    c = read_code()',
+    '    if c != -1:',
     '        carry_by(4)',
     '        swing_by(4)'
   ];
@@ -363,7 +370,9 @@
       giao: [{ tau: 0, so: [13] }, { tau: 1, so: [28] }],
       maMau: bai([
         'for i in range(2):',
-        '    if read_code() // 10 == 1:',
+        '    c = read_code()',
+        '    t = c // 10',
+        '    if t == 1:',
         '        pick_up()',
         '        rail(-1)',
         '        set_down()',
@@ -372,7 +381,9 @@
       ]),
       loiGiai: bai([
         'for i in range(2):',
-        '    if read_code() // 10 == 1:',
+        '    c = read_code()',
+        '    t = c // 10',
+        '    if t == 1:',
         '        pick_up()',
         '        rail(-1)',
         '        set_down()',
@@ -387,8 +398,10 @@
       loiGiaiKhac: {
         moTa: 'Dùng vòng lặp while read_code() != -1 thay cho for i in range(2)',
         baiLam: bai([
-          'while read_code() != -1:',
-          '    if read_code() // 10 == 1:',
+          'c = read_code()',
+          'while c != -1:',
+          '    t = c // 10',
+          '    if t == 1:',
           '        pick_up()',
           '        rail(-1)',
           '        set_down()',
@@ -397,12 +410,13 @@
           '        pick_up()',
           '        rail(1)',
           '        set_down()',
-          '        rail(-1)'
+          '        rail(-1)',
+          '    c = read_code()'
         ])
       },
       loiSai: [
         { moTa: 'Đưa cả 2 kiện sang Tàu 1 bên trái nên kiện 28 bị giao nhầm', baiLam: bai(['for i in range(2):', '    pick_up()', '    rail(-1)', '    set_down()', '    rail(1)']), phaiCoMa: ['giao-nham'] },
-        { moTa: 'Trong nhánh else quên gọi rail(-1) quay về cột 3', baiLam: bai(['for i in range(2):', '    if read_code() // 10 == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    else:', '        pick_up()', '        rail(1)', '        set_down()']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Trong nhánh else quên gọi rail(-1) quay về cột 3', baiLam: bai(['for i in range(2):', '    c = read_code()', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    else:', '        pick_up()', '        rail(1)', '        set_down()']), phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Khi đầu cần giữ nguyên ở nấc 0, trượt bệ bằng rail(-1) sẽ đưa đầu cần sang (2, 2) trên Tàu 1, còn rail(1) sẽ đưa đầu cần sang (4, 2) trên Tàu 2.', 'Luna: Nhánh else gồm 4 lệnh: pick_up(), rail(1), set_down(), rail(-1).']
     }),
@@ -418,37 +432,43 @@
       tau: tauDon(36, 2),
       giao: [{ tau: 0, so: [12, 15, 19] }],
       maMau: bai([
-        'while read_code() != -1:',
+        'c = read_code()',
+        'while c != -1:',
         '    pick_up()',
         '    rail(1)',
         '    swing_by(4)',
-        '    set_down()'
+        '    set_down()',
+        '    c = read_code()'
       ]),
       loiGiai: bai([
-        'while read_code() != -1:',
+        'c = read_code()',
+        'while c != -1:',
         '    pick_up()',
         '    rail(1)',
         '    swing_by(4)',
         '    set_down()',
         '    swing_by(4)',
-        '    rail(-1)'
+        '    rail(-1)',
+        '    c = read_code()'
       ]),
       sao: { o: 13, nhip: 36 },
       loiGiaiKhac: {
         moTa: 'Lùi rail(-1) về cột 1 trước rồi mới gọi swing_by(4)',
         baiLam: bai([
-          'while read_code() != -1:',
+          'c = read_code()',
+          'while c != -1:',
           '    pick_up()',
           '    rail(1)',
           '    swing_by(4)',
           '    set_down()',
           '    rail(-1)',
-          '    swing_by(4)'
+          '    swing_by(4)',
+          '    c = read_code()'
         ])
       },
       loiSai: [
-        { moTa: 'Hạ kiện tại (1, 2) khi chưa gọi rail(1) nên kiện nằm trên cầu cảng chứ không lên tàu', baiLam: bai(['while read_code() != -1:', '    pick_up()', '    swing_by(4)', '    set_down()', '    swing_by(4)']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Quên lùi rail(-1) về cột 1 nên vòng sau đọc ô trống (2, 4)', baiLam: bai(['while read_code() != -1:', '    pick_up()', '    rail(1)', '    swing_by(4)', '    set_down()', '    swing_by(4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Hạ kiện tại (1, 2) khi chưa gọi rail(1) nên kiện nằm trên cầu cảng chứ không lên tàu', baiLam: bai(['c = read_code()', 'while c != -1:', '    pick_up()', '    swing_by(4)', '    set_down()', '    swing_by(4)', '    c = read_code()']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Quên lùi rail(-1) về cột 1 nên vòng sau đọc ô trống (2, 4)', baiLam: bai(['c = read_code()', 'while c != -1:', '    pick_up()', '    rail(1)', '    swing_by(4)', '    set_down()', '    swing_by(4)', '    c = read_code()']), phaiCoMa: ['chua-giao-tau'] }
       ],
       goiY: ['Luna: Ô (1, 2) là bến cảng D chứ không phải boong tàu T, nên phải gọi rail(1) sang cột 2 mới hạ lên tàu được.', 'Luna: Cuối vòng lặp cần thêm swing_by(4) và rail(-1) để đầu cần trở lại (1, 4).']
     }),
@@ -574,16 +594,21 @@
         [{ tau: 0, so: [12, 16] }, { tau: 1, so: [25, 29] }]
       ],
       maMau: bai([
-        'while read_code() != -1:',
-        '    if read_code() // 10 == 1:',
+        'c = read_code()',
+        'while c != -1:',
+        '    t = c // 10',
+        '    if t == 1:',
         '        pick_up()',
         '        rail(-1)',
         '        set_down()',
-        '        rail(1)'
+        '        rail(1)',
+        '    c = read_code()'
       ]),
       loiGiai: bai([
-        'while read_code() != -1:',
-        '    if read_code() // 10 == 1:',
+        'c = read_code()',
+        'while c != -1:',
+        '    t = c // 10',
+        '    if t == 1:',
         '        pick_up()',
         '        rail(-1)',
         '        set_down()',
@@ -592,14 +617,17 @@
         '        pick_up()',
         '        rail(1)',
         '        set_down()',
-        '        rail(-1)'
+        '        rail(-1)',
+        '    c = read_code()'
       ]),
       sao: { o: 11, nhip: 32 },
       loiGiaiKhac: {
         moTa: 'Dùng for i in range(4) thay cho while read_code() != -1',
         baiLam: bai([
           'for i in range(4):',
-          '    if read_code() // 10 == 1:',
+          '    c = read_code()',
+          '    t = c // 10',
+          '    if t == 1:',
           '        pick_up()',
           '        rail(-1)',
           '        set_down()',
@@ -612,8 +640,8 @@
         ])
       },
       loiSai: [
-        { moTa: 'Chưa viết nhánh else nên gặp kiện hàng chục bằng 2 thì đứng im', baiLam: bai(['while read_code() != -1:', '    if read_code() // 10 == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)']), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Trượt nhầm hướng nên giao ngược tàu', baiLam: bai(['while read_code() != -1:', '    if read_code() // 10 == 1:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)', '    else:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)']), phaiCoMa: ['giao-nham'] }
+        { moTa: 'Chưa viết nhánh else nên gặp kiện hàng chục bằng 2 thì đứng im', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Trượt nhầm hướng nên giao ngược tàu', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)', '    else:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    c = read_code()']), phaiCoMa: ['giao-nham'] }
       ],
       goiY: ['Luna: Khi chữ số hàng chục là 1 thì trượt sang trái bằng rail(-1), đặt xuống Tàu 1 rồi rail(1) về (3, 2).', 'Luna: Trong nhánh else, gọi pick_up(), rail(1), set_down(), rail(-1) để giao sang Tàu 2 rồi quay về (3, 2).']
     }),
@@ -805,7 +833,7 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm scan_rail mà đã bấm Chạy', baiLam: bai(['scan_rail()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong scan_rail dùng nhầm % 10 thay vì // 10 nên giao nhầm tàu', baiLam: bai(['scan_rail()']), hamCuaEmMoi: [hScanRail(['while read_code() != -1:', '    if read_code() % 10 == 1:', '        rail_drop(-1)', '    else:', '        rail_drop(1)'])], phaiCoMa: ['giao-nham'] }
+        { moTa: 'Trong scan_rail dùng nhầm % 10 thay vì // 10 nên giao nhầm tàu', baiLam: bai(['scan_rail()']), hamCuaEmMoi: [hScanRail(['c = read_code()', 'while c != -1:', '    t = c % 10', '    if t == 1:', '        rail_drop(-1)', '    else:', '        rail_drop(1)', '    c = read_code()'])], phaiCoMa: ['giao-nham'] }
       ],
       goiY: ['Luna: Nhờ có sẵn rail_drop(dx), thân hàm scan_rail() rất gọn: kiểm tra if read_code() // 10 == 1: để gọi rail_drop(-1) hoặc rail_drop(1).', 'Luna: Ở chương trình chính chỉ cần gọi scan_rail().']
     }),
@@ -838,7 +866,8 @@
             hamCuaMan: [H('rail_sort', ['n'], [
               'for i in range(n):',
               '    rail(1)',
-              '    if read_code() > 0:',
+              '    c = read_code()',
+              '    if c > 0:',
               '        carry_by(4)',
               '        swing_by(4)'
             ])]

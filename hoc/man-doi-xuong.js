@@ -279,17 +279,17 @@
       ],
       bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 4, huong: 1 }],
       maMau: B(
-        ['tug_corner("R", 1)', 'forward(3 - flow_power())'],
+        ['tug_corner("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)'],
         ['wait_n(6)', 'forward(2)']
       ),
       loiGiai: B(
-        ['tug_corner("R", 1)', 'forward(3 - flow_power())', 'tether_drop()'],
+        ['tug_corner("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'],
         ['wait_n(6)', 'forward(2)', 'pick()', 'turn_left()', 'drop()']
       ),
       sao: { o: 47, nhip: 24 },
       loiSai: [
         { moTa: 'R1 đếm cứng forward(1) thay vì forward(3 - flow_power()) nên ở sân 1 bè B chưa tới ô cầu phao (2, 4)', baiLam: B(['tug_corner("R", 1)', 'forward(1)', 'tether_drop()'], ['wait_n(6)', 'forward(2)', 'pick()', 'turn_left()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'R2 chỉ chờ 3 nhịp wait_n(3) đã bước ra (2, 4) khi R1 chưa kéo bè tới nơi', baiLam: B(['tug_corner("R", 1)', 'forward(3 - flow_power())', 'tether_drop()'], ['wait_n(3)', 'forward(2)', 'pick()', 'turn_left()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'R2 chỉ chờ 3 nhịp wait_n(3) đã bước ra (2, 4) khi R1 chưa kéo bè tới nơi', baiLam: B(['tug_corner("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'], ['wait_n(3)', 'forward(2)', 'pick()', 'turn_left()', 'drop()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau tug_corner("R", 1), R1 ở (2, 2) và B ở (2, 1); tiến 3 - flow_power() bước đưa R1 xuống (2, 5) và B vào đúng (2, 4).', 'Luna: R2 chờ 6 nhịp rồi gọi forward(2), pick(), turn_left(), drop().']
     }),
@@ -715,17 +715,17 @@
       ],
       bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 4, huong: 1 }],
       maMau: B(
-        ['tail_over_calm("R", 1)', 'forward(3 - flow_power())'],
+        ['tail_over_calm("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)'],
         ['sync_dock_pass(11, 2)', 'u_turn()']
       ),
       loiGiai: B(
-        ['tail_over_calm("R", 1)', 'forward(3 - flow_power())', 'tether_drop()'],
+        ['tail_over_calm("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'],
         ['sync_dock_pass(11, 2)', 'u_turn()', 'ferry_drop(2)']
       ),
       sao: { o: 60, nhip: 38 },
       loiSai: [
-        { moTa: 'R1 dùng tug_corner("R", 1) thay vì tail_over_calm("R", 1) nên ở sân 1 cống K ở (2, 3) chưa mở', baiLam: B(['tug_corner("R", 1)', 'forward(3 - flow_power())', 'tether_drop()'], ['sync_dock_pass(11, 2)', 'u_turn()', 'ferry_drop(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'R2 chỉ chờ 4 nhịp sync_dock_pass(4, 2) nên ở sân 1 bước ra (2, 4) trước khi L tới nơi', baiLam: B(['tail_over_calm("R", 1)', 'forward(3 - flow_power())', 'tether_drop()'], ['sync_dock_pass(4, 2)', 'u_turn()', 'ferry_drop(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'R1 dùng tug_corner("R", 1) thay vì tail_over_calm("R", 1) nên ở sân 1 cống K ở (2, 3) chưa mở', baiLam: B(['tug_corner("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'], ['sync_dock_pass(11, 2)', 'u_turn()', 'ferry_drop(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'R2 chỉ chờ 4 nhịp sync_dock_pass(4, 2) nên ở sân 1 bước ra (2, 4) trước khi L tới nơi', baiLam: B(['tail_over_calm("R", 1)', 'p = flow_power()', 't = 3 - p', 'forward(t)', 'tether_drop()'], ['sync_dock_pass(4, 2)', 'u_turn()', 'ferry_drop(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau tail_over_calm("R", 1), R1 gọi forward(3 - flow_power()) và tether_drop() để đặt L vào (2, 4) ở nhịp 10.', 'Luna: R2 gọi sync_dock_pass(11, 2) sang (3, 4) nhặt hàng ở (4, 4), rồi gọi u_turn() và ferry_drop(2) về (1, 4) thả hàng vào D ở (0, 4)!']
     }),

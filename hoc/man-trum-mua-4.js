@@ -58,7 +58,7 @@
   var C_TRAM = ['fly_dock(3)', 'go_right()', 'sow_up(3)'];
   var C_XANH = ['seek_here("yellow")', 'span_sow("yellow", 3)'];
   var C_DON = ['c = color("here")', 'go_right()', 'seek_here(c)', 'span_sow(c, 2)'];
-  var C_DO = ['ink("blue")', 'pen_down()', 'while color("right") != "red":', '    go_right()', 'while color("down") != "red":', '    go_down()', 'pen_up()', 'wait()'];
+  var C_DO = ['ink("blue")', 'pen_down()', 'm = color("right")', 'while m != "red":', '    go_right()', '    m = color("right")', 'm = color("down")', 'while m != "red":', '    go_down()', '    m = color("down")', 'pen_up()', 'wait()'];
   var C_CONG = ['c = color("here")', 'wait()', 'gate_sow(c)', 'go_right()', 'span_sow(c, 2)'];
   var C_MAT = ['a = []', 'read_row(a, 4)'].concat(LAP(4, 'go_left()'), ['dot_row(a)']);
   var C_DUOI = ['a = []', 'read_below(a, 3)', 'go_down()'].concat(LAP(3, 'go_left()'), ['dot_row(a)']);
@@ -68,9 +68,9 @@
     'for c in ["red", "blue", "red"]:', '    go_left()', '    ink(c)', '    dot()', 'wait()'];
 
   /* ---------------------------------------------------------------- chương trum-mua-4 */
-  var T_SAC = ['if battery() < k:', '    land()', '    take_off()'];
+  var T_SAC = ['b = battery()', 'if b < k:', '    land()', '    take_off()'];
   var C_SAC = ['ink("yellow")', 'pen_down()'].concat(LAP(3, ['go_right()', 'go_right()', 'charge_if(4)'], 'j'));
-  var T_DASH = ['for i in range(n):', '    if color("here") == "yellow":', '        dot()', '    go_right()'];
+  var T_DASH = ['for i in range(n):', '    m = color("here")', '    if m == "yellow":', '        dot()', '    go_right()'];
   var T_STAIRS = ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_right()', '    go_down()', 'pen_up()'];
   var C_STAIRS = ['c = color("here")', 'stair_line(c, 2)', 'go_right()', 'stair_line("blue", 1)'];
   var T_FRAME = ['pen_down()'].concat(LAP('n', 'go_right()'), LAP('n', 'go_down()'), LAP('n', 'go_left()'), LAP('n', 'go_up()'));
@@ -284,11 +284,11 @@
       maMau: bai(C_SAC),
       loiGiai: bai(C_SAC, { hamCuaEmMoi: [H('charge_if', ['k'], T_SAC)] }),
       sao: { o: 9, nhip: 18 },
-      congThucKhac: [{ moTa: 'Gọi dock() đã chế', hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() < k:', '    dock()'])] }],
+      congThucKhac: [{ moTa: 'Gọi dock() đã chế', hamCuaEmMoi: [H('charge_if', ['k'], ['b = battery()', 'if b < k:', '    dock()'])] }],
       loiSai: [
         { moTa: 'Gọi charge_if mà chưa chế hàm', baiLam: bai(C_SAC), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'So ngược: chỉ sạc khi pin còn nhiều', baiLam: bai(C_SAC), hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() > k:', '    dock()'])], phaiCoMa: ['het-pin'] },
-        cung('Chỉ sạc khi battery() == 6 theo ngày 2: ngày 1 hết pin', bai(C_SAC), ['het-pin'], { hamCuaEmMoi: [H('charge_if', ['k'], ['if battery() == 6:', '    dock()'])] })
+        { moTa: 'So ngược: chỉ sạc khi pin còn nhiều', baiLam: bai(C_SAC), hamCuaEmMoi: [H('charge_if', ['k'], ['b = battery()', 'if b > k:', '    dock()'])], phaiCoMa: ['het-pin'] },
+        cung('Chỉ sạc khi battery() == 6 theo ngày 2: ngày 1 hết pin', bai(C_SAC), ['het-pin'], { hamCuaEmMoi: [H('charge_if', ['k'], ['b = battery()', 'if b == 6:', '    dock()'])] })
       ],
       goiY: ['battery() trả về số pin còn lại.', 'Hạ miệng gieo thì mỗi bước bay tốn 2 pin; dưới k thì đáp sạc.']
     }),

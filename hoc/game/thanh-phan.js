@@ -1192,7 +1192,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (CHE_BT && tdA === SO_TOI_DA) {                               // mùa 4–7: bảng số có thêm phép tính (số âm, // 2, % 2, abs…) và nguồn số của màn
           var cur = d ? String(d.ds[kk]) : '1', bs = bienTam('so', i, null, d && d.ten);
           bienBT(i).forEach(function (x) { if (bs.indexOf(x) < 0) bs.push(x); });
-          chonBT({ neo: so, v: cur, so: true, bien: bs, chu: [], phep: phepDuoc(['not', 'ss']),
+          var doiSo = !!d && d.loai === 'goi';                            // đối số lời gọi: chỉ giá trị (B chặt, 3/11), phép tính / cảm biến viết ở dòng gán trước
+          chonBT({ neo: so, v: cur, so: true, bien: doiSo ? giaTriBT(bs) : bs, chu: [], phep: doiSo ? phepDuoc().filter(function (p) { return p === 'am'; }) : phepDuoc(['not', 'ss']),
             khiChon: function (v) { ed.datSo(i, v, kk); }, khiPhep: function (p) { ed.datSo(i, phepBT(p, cur), kk); } });
           return;
         }
@@ -1218,6 +1219,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       BT.nguon.forEach(them); BT.ham.forEach(them);
       return kq;
     }
+    /** Chỉ giữ giá trị một bước: tên, len(a), a[i]; bỏ lời gọi (read_code(), color("left"), hàm trả về) và g[i][j] — những thứ ấy viết thành dòng gán riêng. */
+    function giaTriBT(ds) { return ds.filter(function (x) { return !/\(/.test(x.replace(/^len\(\w+\)$/, '')) && !/\]\[/.test(x); }); }
     /** Khối biểu thức của kho (`if n == 1:`, `while n > 0:`, `return n`): n đổi thành biến gán / biến vòng gần nhất phía trên, không có thì nguồn đầu của màn (read_code()…). null: không phải khối ấy. */
     function thichNghiBT(txt, at) {
       if (!/^\s*(?:(?:if|elif) n == 1:|while n > 0:|return n)$/.test(txt)) return null;
@@ -1242,7 +1245,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           khiChon: function (x) { dat(d.doi(kk, x)); }, khiBo: function () { dat(d.bo(kk)); } });
         return;
       }
-      chonBT({ neo: so, v: v, so: true, bien: bienBT(i), chu: BT.chu, phep: phepDuoc(d.kieu === 'dk' ? [] : ['not']),
+      var phang = cho.cha !== d.e || d.kieu === 'goi' || d.kieu === 'forR' || d.kieu === 'them' || d.e.length > 1;      // B chặt (3/11): ô nằm trong một phép / đối số lời gọi chỉ nhận giá trị (số, tên, chuỗi), không lồng thêm phép hay cảm biến
+      var cha = cho.cha && cho.cha.t, phepPhang = phepDuoc().filter(function (p) { return (p === 'am' && cha !== 'am') || (p === 'chi' && cha === 'chi' && cho.khoa === 'o' && cho.cha.o.t === 'la'); });      // còn được: −x (số âm là một giá trị), g[i] → g[0][i]
+      chonBT({ neo: so, v: v, so: true, bien: phang && cha !== 'not' ? giaTriBT(bienBT(i)) : bienBT(i), chu: BT.chu, phep: phang ? phepPhang : phepDuoc(d.kieu === 'dk' ? [] : ['not']),
         ptu: cho && cho.ptu ? { coThem: cho.ptu.ds.e.length < LIST_TOI_DA } : null, bo: vai === 'ham' && /^(abs|min|max)$/.test(cho.nut.f),
         khiChon: function (x) { dat(d.doi(kk, x)); }, khiPhep: function (p) { dat(d.doi(kk, phepBT(p, v))); },
         khiThem: function () { dat(d.them(kk)); }, khiBo: function () { dat(d.bo(kk)); } });

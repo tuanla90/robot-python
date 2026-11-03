@@ -53,12 +53,18 @@ console.log('\n== 1. Tách dòng biểu thức, in lại, bọc phép tính ==')
 console.log('\n== 2. Khung chương trình: chạm ô của dòng biểu thức ==');
 {
   TP.datCheBT(true, { nguon: ['read_code()'], chu: [], ten: ['d', 'k'], ham: [], cam: [] });
-  const E = K.dungEditor(['d = read_code()', 'rail(-d)', 'if d < 0:', '    swing_l(abs(d))']);
+  const E = K.dungEditor(['d = read_code()', 'rail(-d)', 'if d < 0:', '    swing_l(abs(d))', 't = d']);
   const nutCo = (sel) => !!E.nut(sel);
   E.cham(1, '.num[data-k="1"]');
-  kiem('chạm d trong rail(-d): bảng có số 0–12, chip d và read_code(), nút phép tính', nutCo('[data-so="0"]') && nutCo('[data-so="12"]') && nutCo('[data-bien="d"]') && nutCo('[data-bien="read_code()"]') && nutCo('[data-phep="//2"]'));
+  kiem('B chặt: chạm d trong rail(-d) → chỉ giá trị (số 0–12, chip d), không read_code(), không phép tính', nutCo('[data-so="0"]') && nutCo('[data-so="12"]') && nutCo('[data-bien="d"]') && !nutCo('[data-bien="read_code()"]') && !nutCo('[data-phep="//2"]'));
+  E.dongBang();
+  E.cham(2, '.num[data-k="0"]');
+  kiem('B chặt: chạm d trong if d < 0: → không read_code(), không phép tính', nutCo('[data-bien="d"]') && !nutCo('[data-bien="read_code()"]') && !nutCo('[data-phep="%2"]'));
+  E.dongBang();
+  E.cham(4, '.num[data-k="1"]');
+  kiem('ô đứng một mình t = d: có read_code() và phép tính', nutCo('[data-bien="read_code()"]') && nutCo('[data-phep="%2"]'));
   E.nut('[data-phep="%2"]').click();
-  kiem('bấm % 2 → rail(-(d % 2))', E.arr[1] === 'rail(-(d % 2))', E.arr[1]);
+  kiem('bấm % 2 → t = d % 2', E.arr[4] === 't = d % 2', E.arr[4]);
   E.cham(2, '.num[data-k="1"]');
   kiem('chạm < trong if d < 0: → bảng phép so sánh', nutCo('[data-op="=="]') && nutCo('[data-op=">="]'));
   E.nut('[data-op="!="]').click();
