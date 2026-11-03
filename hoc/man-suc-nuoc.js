@@ -146,7 +146,7 @@
       loiGiaiKhac: { moTa: 'Dùng chỉ số: t = flow(), s = t[1]', baiLam: bai(['t = flow()', 's = t[1]', 'k = 6 - s', 'forward(k)']) },
       loiSai: [
         { moTa: 'Đếm cứng forward(4) nên ở sân 1 dòng sức 1 đẩy thiếu 1 ô', baiLam: bai(['forward(4)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Truyền nhầm forward(s) thay vì forward(6 - s) nên xuồng dừng giữa kênh', baiLam: bai(['h, s = flow()', 'forward(s)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Truyền nhầm forward(s) thay vì tính t = 6 - s rồi forward(t) nên xuồng dừng giữa kênh', baiLam: bai(['h, s = flow()', 'forward(s)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Ô (2, 1) đẩy thêm s ô nên tổng số bước tự đi chỉ còn 6 - s.', 'Luna: Sau dòng h, s = flow(), viết t = 6 - s rồi gọi forward(t).']
     }),
@@ -195,8 +195,8 @@
 
     manSucNuoc({
       so: 5, ten: 'Làm quen hàm min(a, b) chọn nhánh nước êm hơn', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola hướng dẫn: ở ngã ba (3, 2), cả hai nhánh trái (2, 2) và phải (4, 2) đều có dòng chảy nhưng một nhánh êm hơn (sức 1) dẫn vào Q, nhánh kia chảy xiết (sức 2). Hãy gọi turn_left() đo h, a = flow(), gọi u_turn() đo h, b = flow(); nếu a == min(a, b) thì gọi u_turn() quay lại nhánh trái, cuối cùng gọi move() lướt vào Q!',
-      veMaMau: 'So sánh if a == min(a, b): u_turn() rồi gọi move().',
+      deBai: 'Sola hướng dẫn: ở ngã ba (3, 2), cả hai nhánh trái (2, 2) và phải (4, 2) đều có dòng chảy nhưng một nhánh êm hơn (sức 1) dẫn vào Q, nhánh kia chảy xiết (sức 2). Hãy gọi turn_left() đo h, a = flow(), gọi u_turn() đo h, b = flow(); tính t = min(a, b), nếu a == t thì gọi u_turn() quay lại nhánh trái, cuối cùng gọi move() lướt vào Q!',
+      veMaMau: 'Tính t = min(a, b), so sánh if a == t: u_turn() rồi gọi move().',
       san: [['#######', '#~~~~~#', '#Q~~~~#', '#######'], ['#######', '#~~~~~#', '#~~~~Q#', '#######']],
       dong: [
         [{ x: 2, y: 2, huong: 3, suc: 1 }, { x: 4, y: 2, huong: 1, suc: 2 }],
@@ -214,13 +214,13 @@
         { moTa: 'Dùng max(a, b) thay vì min(a, b) nên rẽ nhầm sang nhánh nước xiết', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = max(a, b)', 'if a == t:', '    u_turn()', 'move()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Quên gọi move() sau khi chọn hướng nhánh êm', baiLam: bai(['turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Hàm min(a, b) trả về số nhỏ hơn giữa hai sức nước a và b.', 'Luna: Nếu a == min(a, b) thì nhánh trái êm hơn nên cần gọi u_turn() quay lại hướng trái rồi gọi move().']
+      goiY: ['Luna: Hàm min(a, b) trả về số nhỏ hơn giữa hai sức nước a và b.', 'Luna: Nếu a == t (t = min(a, b)) thì nhánh trái êm hơn nên cần gọi u_turn() quay lại hướng trái rồi gọi move().']
     }),
 
     manSucNuoc({
       so: 6, ten: 'Làm quen hàm max(a, b) chọn luồng nước xiết lướt nhanh', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola đổi bài toán: lần này phao Q nằm cách ngã ba (4, 2) tới 3 ô ở phía có dòng chảy xiết sức 2! Hãy quét hai bên lấy sức nước a và b, dùng if a == max(a, b): u_turn() để hướng mặt về nhánh có sức nước lớn hơn, rồi chỉ cần gọi move() một nhịp là dòng sức 2 đẩy xuồng tới thẳng Q!',
-      veMaMau: 'Kiểm tra if a == max(a, b): u_turn() rồi gọi move().',
+      deBai: 'Sola đổi bài toán: lần này phao Q nằm cách ngã ba (4, 2) tới 3 ô ở phía có dòng chảy xiết sức 2! Hãy quét hai bên lấy sức nước a và b, tính t = max(a, b) rồi dùng if a == t: u_turn() để hướng mặt về nhánh có sức nước lớn hơn, rồi chỉ cần gọi move() một nhịp là dòng sức 2 đẩy xuồng tới thẳng Q!',
+      veMaMau: 'Tính t = max(a, b), kiểm tra if a == t: u_turn() rồi gọi move().',
       san: [['#########', '#~~~~~~~#', '#Q~~~~~~#', '#########'], ['#########', '#~~~~~~~#', '#~~~~~~Q#', '#########']],
       dong: [
         [{ x: 3, y: 2, huong: 3, suc: 2 }, { x: 5, y: 2, huong: 1, suc: 1 }],
@@ -265,7 +265,7 @@
         { moTa: 'Chỉ gọi move() thay vì forward(2) nên bè B mới tới (3, 3) hoặc (5, 3), chưa vào bến q', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'move()']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Chọn nhầm nhánh max(a, b) nên kéo bè sang phía không có bến q', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = max(a, b)', 'if a == t:', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau tow_to_tail(), B ở (4, 2) cách xuồng 1 ô nên xuồng quay tại chỗ ở (4, 3) không làm vướng bè.', 'Luna: Sau khối if a == min(a, b): u_turn(), gọi forward(2) để kéo B vào bến q.']
+      goiY: ['Luna: Sau tow_to_tail(), B ở (4, 2) cách xuồng 1 ô nên xuồng quay tại chỗ ở (4, 3) không làm vướng bè.', 'Luna: Sau t = min(a, b) và khối if a == t: u_turn(), gọi forward(2) để kéo B vào bến q.']
     }),
 
     manSucNuoc({
@@ -314,7 +314,7 @@
       },
       loiSai: [
         { moTa: 'Đếm cứng forward(2) sau khi vào nhánh dọc nên ở sân 1 lục bình L chưa tới bến', baiLam: bai(['tug_corner("R", 1)', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi forward(4 - s) sau khi đo dòng', baiLam: bai(['tug_corner("R", 1)', 'h, s = flow()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên tính t = 4 - s và gọi forward(t) sau khi đo dòng', baiLam: bai(['tug_corner("R", 1)', 'h, s = flow()']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau tug_corner("R", 1), xuồng ở (2, 2) hướng Nam còn L ở (2, 1).', 'Luna: Xuồng cần tới (2, 6) cách 4 ô để kéo L vào (2, 5), nên tính t = 4 - s rồi gọi forward(t).']
     }),
@@ -322,8 +322,8 @@
     manSucNuoc({
       so: 10, ten: 'Trùm: Chọn nhánh êm bằng min(a, b) rồi bù sức nước giao bè', hang: 'trum', mucTieu: 'dua-vat', nhipTheo: 'tong',
       huyHieu: { ma: 'suc-nuoc', ten: 'Huy hiệu Đo sức nước' },
-      deBai: 'Sola giao bài kiểm tra Trùm chương 1: từ ngã ba (4, 3) hướng Bắc, hãy gọi tow_to_tail() bắt bè B ở (4, 1) và thu dây về 1 ô, rồi quét hai nhánh trái (3, 3) và phải (5, 3) lấy sức nước a và b. Ở sân 1 nhánh êm có sức 1 (so với 2), còn ở sân 2 nhánh êm có sức 0 (so với 2)! Hãy quay về nhánh có min(a, b) rồi gọi forward(3 - min(a, b)) để kéo B vào đúng bến q!',
-      veMaMau: 'Kết hợp tow_to_tail(), quét a và b chọn nhánh min(a, b), rồi gọi forward(3 - min(a, b)).',
+      deBai: 'Sola giao bài kiểm tra Trùm chương 1: từ ngã ba (4, 3) hướng Bắc, hãy gọi tow_to_tail() bắt bè B ở (4, 1) và thu dây về 1 ô, rồi quét hai nhánh trái (3, 3) và phải (5, 3) lấy sức nước a và b. Ở sân 1 nhánh êm có sức 1 (so với 2), còn ở sân 2 nhánh êm có sức 0 (so với 2)! Hãy tính t = min(a, b), quay về nhánh có sức t, rồi tính k = 3 - t và gọi forward(k) để kéo B vào đúng bến q!',
+      veMaMau: 'Kết hợp tow_to_tail(), quét a và b, t = min(a, b) để chọn nhánh, rồi k = 3 - t và forward(k).',
       san: [
         ['#########', '#~~~B~~~#', '#~~~~~~~#', '#~q~~~~~#', '#########'],
         ['#########', '#~~~B~~~#', '#~~~~~~~#', '#~~~~~q~#', '#########']
@@ -344,7 +344,7 @@
         { moTa: 'Đếm cứng forward(2) cho cả hai sân nên ở sân 2 nhánh nước êm sức 0 đi thiếu 1 ô', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = min(a, b)', 'if a == t:', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Chọn nhầm nhánh max(a, b) nên kéo bè vào dòng nước xiết sức 2', baiLam: bai(['tow_to_tail()', 'turn_left()', 'h, a = flow()', 'u_turn()', 'h, b = flow()', 't = max(a, b)', 'if a == t:', '    u_turn()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau khi kiểm tra if a == min(a, b): u_turn(), xuồng đã hướng về nhánh êm có sức đẩy đúng bằng min(a, b).', 'Luna: Gọi forward(3 - min(a, b)) để xuồng đi đủ 3 ô kéo B vào bến q trên cả hai sân.']
+      goiY: ['Luna: Sau t = min(a, b) và if a == t: u_turn(), xuồng đã hướng về nhánh êm có sức đẩy đúng bằng min(a, b).', 'Luna: Tính k = 3 - t rồi gọi forward(k) để xuồng đi đủ 3 ô kéo B vào bến q trên cả hai sân.']
     }),
 
     /* ========================================================================
