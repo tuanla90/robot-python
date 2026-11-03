@@ -257,7 +257,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (tay && tay.ma !== 'nam-cham' && tay.ma !== 'son' && !laLaiBang(than.ma, 'tay', tay.ma)) throw new Error('Drone không gắn được ' + tay.ten + '.');          // mùa 4: máy sơn treo dưới bụng drone (combo gói 9)
       for (i = 0; i < cams.length; i++) if (['khoang-cach', 'mau', 'camera-bay', 'camera-4'].indexOf(cams[i].ma) < 0 && !laLaiBang(than.ma, 'camBien', cams[i].ma)) throw new Error('Drone không gắn được ' + lay('cam-bien', cams[i].ma).ten + '.');   // M9B1: ô ★ của bảng (L11 drone + radar) vẽ được
     }
-    if (!drone && co('camera-bay')) throw new Error('Camera nhìn xuống (camera-bay) chỉ gắn được lên drone.');
+    if (!drone && co('camera-bay') && !laLaiBang(than.ma, 'camBien', 'camera-bay')) throw new Error('Camera nhìn xuống (camera-bay) chỉ gắn được lên drone.');
     if (co('camera') && co('mau')) throw new Error('Robot không gắn được cả cảm biến màu lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');
     if (co('camera-4') && (co('mau') || co('camera'))) throw new Error('Camera bốn hướng không gắn chung với cảm biến màu ở bụng hay camera trước: color() sẽ không biết đọc kiểu nào.');
     if (tay && !oTay(than, tay, cfg).length) throw new Error((drone ? 'Drone' : 'Tay ' + tay.ma) + ' không gắn được vào ổ này.');

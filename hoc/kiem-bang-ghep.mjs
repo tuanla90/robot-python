@@ -146,7 +146,7 @@ kiem('LapRap.kiemGhep(c, màn): đọc man.lapRap.moLai, không thì man.moLai; 
   !LapRap.kiemGhep({ than: 'nhen', camBien: 'am-thanh' }).ok && !LapRap.kiemGhep({ than: 'nhen', camBien: 'am-thanh' }, { lapRap: { moLai: ['L5'] } }).ok);
 {
   const lai = TAT_CA.filter((x) => x.tt === 'lai'), loiVe = [];
-  const CHO_HINH = ['cau/camBien/camera-bay'];                                       // L13 cần cẩu + camera bụng: thân cau chưa có ổ 'bung' (gói hình sau)
+  const CHO_HINH = [];                                                               // M9B2: thân cau đã có ổ 'bung' (L13 camera bụng vẽ được theo ổ)
   for (const x of lai) { const l = veO(x); if (l && !CHO_HINH.includes(x.than + '/' + x.khe + '/' + x.ma)) loiVe.push(x.than + '/' + x.ma + ' (' + x.lai + '): ' + l); }
   kiem(lai.length + ' ô ★ (trừ ' + CHO_HINH.join(', ') + ': chờ ổ của hình): VeVector.kiemGhep không ném, VeVector.robot vẽ được (theo ổ gắn của thân; hình riêng để gói sau)', loiVe.length === 0, loiVe.join(' | '));
 }

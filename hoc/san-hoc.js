@@ -3709,12 +3709,16 @@
      *  (nguon 'chan'). Vật đang dính dưới nam châm không tính. Không tốn nhịp, không đổi sân. */
     function docNhin(yc) {
       var m = 'none', nguon = 'san', idVat = null, x = rb.x, y = rb.y;
-      if (oTai(san, x, y) === '=' || thungTai(x, y) || cuaDong(x, y)) nguon = 'chan';
+      if (laCau) { var od = oDauCan(); x = od.x; y = od.y; }                     // M9B2 (L13): camera bụng treo ở đầu cần, nhìn xuống Ô ĐẦU CẦN
+      if (laCau && chongO(x, y).length) nguon = 'chong';                           // container (không màu) dưới đầu cần: "none"
+      else if (oTai(san, x, y) === '=' || thungTai(x, y) || cuaDong(x, y) || (laCau && (oTai(san, x, y) === '#' || oTai(san, x, y) === 'N'))) nguon = 'chan';   // cẩu: đầu cần trên tường / nút cũng "none" (chặn)
       else {
         var v = vatNamTai(x, y);
         if (v) { m = v.mau || 'none'; nguon = 'vat'; idVat = v.id; } else { var mn = mauThay(x, y); m = mn.mau || 'none'; if (mn.son) nguon = 'son'; }
       }
-      return { ma: 'doc-cam-bien', cam: MA_CAM_BAY, ham: yc.ten, tu: { x: x, y: y }, o: { x: x, y: y }, mau: m, nguon: nguon, idVat: idVat, nhip: nhip };
+      var ed = { ma: 'doc-cam-bien', cam: MA_CAM_BAY, ham: yc.ten, tu: { x: rb.x, y: rb.y }, o: { x: x, y: y }, mau: m, nguon: nguon, idVat: idVat, nhip: nhip };
+      if (laCau) { ed.nac = nac; ed.tam = tam; }
+      return ed;
     }
 
     /** Đọc pin battery() của drone: số pin còn lại. Không tốn nhịp, không đổi sân. */
@@ -3724,6 +3728,11 @@
 
     /** Đọc cảm biến từ: front_metal() True nếu vật đầu tiên trong 3 ô là SẮT cách ≤ 2 ô; front_pole() là cực ("N" / "S") của vật NAM CHÂM đầu tiên trong 3 ô, không thì "none". Không tốn nhịp, không đổi sân. */
     function docTu(yc) {
+      if (laCau) {                                                                 // M9B2 (L13): cảm biến từ ở đầu cần đọc vật nằm ở Ô ĐẦU CẦN (qua tường); front_metal() = sắt, front_pole() = cực vật nam châm
+        var od = oDauCan(), vc = vatNamTai(od.x, od.y), cc = vc && vc.chat === 'nam-cham' ? vc.cuc : null;
+        return { ma: 'doc-cam-bien', cam: 'tu', ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: od, khoang: 0, chat: vc ? vc.chat : null, cuc: cc, idVat: vc ? vc.id : null,
+          trong: yc.ten === 'front_pole' ? cc !== null : !!(vc && vc.chat === 'sat'), nhip: nhip };
+      }
       var nt = nhinTruoc(), vt = nt.vat, cuc = vt && vt.chat === 'nam-cham' ? vt.cuc : null;
       var trong = yc.ten === 'front_pole' ? cuc !== null : !!(vt && vt.chat === 'sat' && nt.khoang <= TAM_HUT);
       return { ma: 'doc-cam-bien', cam: 'tu', ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: rb.huong, o: nt.o, khoang: nt.khoang,
