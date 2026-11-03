@@ -149,15 +149,20 @@ const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu,
         <button className="bt g-wd md-chay pc-play" data-nut="md-chay" onClick={() => ref.current?.play()} aria-label="Chạy tiếp"
           style={{position: 'absolute', left: '50%', top: '42%', transform: 'translate(-50%, -50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 26, zIndex: 2}}>▶</button>
       )}
-      <div style={{position: 'absolute', left: 12, right: 12, bottom: 12, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 2}}>
-        <button className="bt g-wd md-bo-qua" data-nut={laMoDau ? 'md-bo-qua' : 'pg-bo-qua'} onClick={xong} style={{position: 'static'}}>{chu.boQua}</button>
-        <div className="md-cham">{starts.map((_, i) => <i key={i} className={i === canh ? 'on' : undefined} />)}</div>
-        {TU_PHAT && !het ? <span style={{width: 36}} /> : (
+      {/* 3/11 (user): ẩn Bỏ qua và chấm cảnh khi tự phát; hết phim mới hiện nút vào game ở GIỮA màn hình. Đặt TU_PHAT = false là về hàng nút đáy cũ. */}
+      {TU_PHAT ? (het ? (
+        <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep' : 'pg-tiep'} onClick={xong}
+          style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 'auto', height: 48, padding: '0 28px', fontSize: 19,
+            letterSpacing: 0, borderRadius: 24, zIndex: 2, animation: 'pclb-nhip 1.1s ease-in-out infinite'}}>{chu.cuoi}</button>
+      ) : null) : (
+        <div style={{position: 'absolute', left: 12, right: 12, bottom: 12, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 2}}>
+          <button className="bt g-wd md-bo-qua" data-nut={laMoDau ? 'md-bo-qua' : 'pg-bo-qua'} onClick={xong} style={{position: 'static'}}>{chu.boQua}</button>
+          <div className="md-cham">{starts.map((_, i) => <i key={i} className={i === canh ? 'on' : undefined} />)}</div>
           <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep' : 'pg-tiep'} onClick={tiep}
             style={{width: 'auto', height: 36, padding: '0 16px', fontSize: 15, letterSpacing: 0, borderRadius: 18,
               animation: cho || het ? 'pclb-nhip 1.1s ease-in-out infinite' : 'none'}}>{cuoi ? chu.cuoi : (chu.tiep || 'Tiếp') + ' ›'}</button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
