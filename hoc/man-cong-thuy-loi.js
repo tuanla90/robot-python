@@ -337,8 +337,8 @@
 
     manCongThuyLoi({
       so: 7, ten: 'Đo dòng chảy để quyết định gạt van', hang: 'bien-the', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: trên hai sân, ô nước (3, 1) trước mũi xuồng có thể chảy ngược ("back") hoặc chảy xuôi ("front"). Van V ở (2, 0) điều khiển dòng chảy đó. Nếu flow_dir() == "back" thì hãy quay trái (turn_left()), gạt van tắt dòng (tow_grab()) rồi gọi pair_step("R", 3) tới Q; ngược lại nếu dòng xuôi thì giữ nguyên dòng và chỉ cần gọi forward(2)!',
-      veMaMau: 'Kiểm tra flow_dir() == "back" để chỉ tắt dòng khi dòng chảy ngược.',
+      deBai: 'Sola nhờ bạn: trên hai sân, ô nước (3, 1) trước mũi xuồng có thể chảy ngược ("back") hoặc chảy xuôi ("front"). Van V ở (2, 0) điều khiển dòng chảy đó. Đọc h = flow_dir(): nếu h == "back" thì hãy quay trái (turn_left()), gạt van tắt dòng (tow_grab()) rồi gọi pair_step("R", 3) tới Q; ngược lại nếu dòng xuôi thì giữ nguyên dòng và chỉ cần gọi forward(2)!',
+      veMaMau: 'Đã có h = flow_dir() và if h == "back": tắt dòng. Thêm nhánh else khi dòng xuôi.',
       san: [
         [
           '##V####',
@@ -378,7 +378,7 @@
       ]),
       sao: { o: 23, nhip: 8 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra flow_dir() == "front" trước rồi mới else',
+        moTa: 'Hỏi h == "front" trước rồi mới else',
         baiLam: bai([
           'h = flow_dir()',
           'if h == "front":',
@@ -679,8 +679,8 @@
       so: 4, ten: 'Chế hàm tắt dòng ngược rồi kéo bè shut_stream_tow(n)', hang: 'luyen', mucTieu: 'dua-vat', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['flip_valve', 'open_gate_pass']),
       taoHam: ['shut_stream_tow'],
-      deBai: 'Sola hướng dẫn: trước khi tiến vào ô (3, 1) để kéo bè, nếu thấy dòng chảy ngược (if flow_dir() == "back":) thì cần gọi flip_valve() tắt dòng, sau đó gọi tow_pair(1, n) để tiến 1 ô, tung lưới bắt bè và kéo lùi n ô vào bến. Hãy chế hàm shut_stream_tow(n) và gọi shut_stream_tow(2).',
-      veMaMau: 'Trong shut_stream_tow(n), kiểm tra if flow_dir() == "back": flip_valve(), rồi gọi tow_pair(1, n).',
+      deBai: 'Sola hướng dẫn: trước khi tiến vào ô (3, 1) để kéo bè, đọc h = flow_dir(), nếu thấy dòng chảy ngược (if h == "back":) thì cần gọi flip_valve() tắt dòng, sau đó gọi tow_pair(1, n) để tiến 1 ô, tung lưới bắt bè và kéo lùi n ô vào bến. Hãy chế hàm shut_stream_tow(n) và gọi shut_stream_tow(2).',
+      veMaMau: 'Trong shut_stream_tow(n), đọc h = flow_dir(), kiểm tra if h == "back": flip_valve(), rồi gọi tow_pair(1, n).',
       san: [
         [
           '##V#####',
@@ -720,7 +720,7 @@
         { moTa: 'Quên gọi tow_pair(1, n) ở cuối hàm shut_stream_tow(n)', baiLam: bai(['shut_stream_tow(2)']), hamCuaEmMoi: [hShutStreamTow(['h = flow_dir()', 'if h == "back":', '    flip_valve()'])], phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Không tắt dòng ngược trước khi gọi tow_pair(1, n)', baiLam: bai(['shut_stream_tow(2)']), hamCuaEmMoi: [hShutStreamTow(['tow_pair(1, n)'])], phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Nếu flow_dir() == "back" thì gọi flip_valve() để tắt dòng ở (3, 1).', 'Luna: Cuối hàm shut_stream_tow(n), gọi tow_pair(1, n) (ngoài khối if).']
+      goiY: ['Luna: Đọc h = flow_dir(); nếu h == "back" thì gọi flip_valve() để tắt dòng ở (3, 1).', 'Luna: Cuối hàm shut_stream_tow(n), gọi tow_pair(1, n) (ngoài khối if).']
     }),
 
     manCheCong({
