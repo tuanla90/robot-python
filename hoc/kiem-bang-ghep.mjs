@@ -74,9 +74,9 @@ kiem('mã của bảng = mã danh mục lắp ráp (LapRap.DANH_MUC) ở cả ba
   J(['than', 'tay', 'camBien'].map((k) => [BG.dsCua(k).length, LapRap.DANH_MUC[k].length])));
 const cam = BG.dsO('cam'), lai = BG.dsO('lai');
 kiem('mọi ô ✗ (' + cam.length + ') có lý do tiếng Việt cho trẻ (≥ 20 chữ, không nói tên luật lõi)', cam.every((x) => x.lyDo && x.lyDo.length >= 20 && !/loai|hamGoc|cfg|rc\./.test(x.lyDo)), J(cam.filter((x) => !x.lyDo || x.lyDo.length < 20)));
-kiem('mọi ô ★ (' + lai.length + ') có mã lai L1…L14', lai.every((x) => /^L([1-9]|1[0-4])$/.test(x.lai || '')), J(lai.filter((x) => !/^L([1-9]|1[0-4])$/.test(x.lai || ''))));
-kiem('ba điều cấm vì sức: drone + loa / móc cẩu / vòi phun / máy ném ✗; xuồng + vòi phun / máy ném ✗; chong chóng ✗ trên mọi thân trừ xuồng',
-  ['loa', 'moc-cau', 'hoi', 'nem'].every((t) => BG.trangThai('drone', 'tay', t) === 'cam') && ['hoi', 'nem'].every((t) => BG.trangThai('xuong', 'tay', t) === 'cam') &&
+kiem('mọi ô ★ (' + lai.length + ') có mã lai L1…L15', lai.every((x) => /^L([1-9]|1[0-5])$/.test(x.lai || '')), J(lai.filter((x) => !/^L([1-9]|1[0-5])$/.test(x.lai || ''))));
+kiem('ba điều cấm vì sức: drone + loa / móc cẩu / máy ném ✗ (drone + vòi phun = ★ L15 bình xịt nhỏ, M9L15 4/11); xuồng + vòi phun / máy ném ✗; chong chóng ✗ trên mọi thân trừ xuồng',
+  ['loa', 'moc-cau', 'nem'].every((t) => BG.trangThai('drone', 'tay', t) === 'cam') && BG.trangThai('drone', 'tay', 'hoi') === 'lai' && BG.o('drone', 'tay', 'hoi').lai === 'L15' && ['hoi', 'nem'].every((t) => BG.trangThai('xuong', 'tay', t) === 'cam') &&
   BG.THAN.every((th) => BG.trangThai(th, 'camBien', 'dong-chay') === (th === 'xuong' ? 'goc' : 'cam')));
 kiem('nhóm thân: xe có bánh (4) có mũi; nhện, drone không mũi có bụng; cần cẩu đứng yên; xuồng có mũi', BG.THAN.every((th) => !!BG.NHOM[BG.NHOM_THAN[th]]) && ['hai-banh', 'xich', 'omni', 'gai'].every((t) => BG.NHOM_THAN[t] === 'banh') && BG.NHOM['khong-mui'].bung && !BG.NHOM.banh.bung);
 kiem('ô cũ của lắp ráp giữ câu báo cũ (drone + kẹp nhắc nam châm; nhện + kẹp xoay / khoảng cách nhắc hướng mặt; xe + camera bụng nhắc drone)',

@@ -104,10 +104,13 @@ for (const th of THANS) for (const ta of TAYS) for (const cb of CAMS) {
 kiem('bảng luật (bang-ghep.js) khớp VeVector.kiemGhep VÀ SanHoc.chay ở cả ' + soTo + ' tổ hợp danh mục cũ 5 × 6 × 6 (' + soDat + ' ghép được)', lech.length === 0, lech.slice(0, 3).join(' | '));
 {
   const khac = [];
+  // M9L15 (4/11, user mở): drone + vòi phun là ô ★ L15 (bình xịt bụng) — bộ vẽ cho qua như ô ★ khác (treo ở ổ bụng). Kỳ vọng lỗi = kỳ vọng đã chụp của drone + nam châm cùng cảm biến.
+  const loiChupLR = new Map(CHUP.lapRap.map((r) => [J(r.cach), r.loi]));
+  const kyVongLR = (r) => (r.cach.than === 'drone' && r.cach.tay === 'hoi' ? loiChupLR.get(J(Object.assign({}, r.cach, { tay: 'nam-cham' }))) : r.loi);
   for (const r of CHUP.lapRap) {
     let loi = null, hg; try { VV.kiemGhep(r.cfg); } catch (e) { loi = e.message; }
     try { hg = VV.hamGoc(r.cfg); } catch (e) { hg = 'ném: ' + e.message; }
-    if (loi !== tenMoi(r.loi)) khac.push(J(r.cach) + ' lỗi: vector ' + loi + ' ≠ chụp ' + tenMoi(r.loi));
+    if (loi !== tenMoi(kyVongLR(r))) khac.push(J(r.cach) + ' lỗi: vector ' + loi + ' ≠ chụp ' + tenMoi(kyVongLR(r)));
     if (J(hg) !== J(r.hamGoc)) khac.push(J(r.cach) + ' hamGoc: vector ' + J(hg) + ' ≠ chụp ' + J(r.hamGoc));
     if (LapRap.kiemGhep(r.cach).ok !== (r.loi === null) && !(r.loi === null && !LapRap.kiemGhep(r.cach).ok)) khac.push(J(r.cach) + ' kiemGhep.ok ≠ chụp');
   }
