@@ -313,6 +313,13 @@ console.log('\n== 5. Màn giả soát hình (ThuMua9.san9): qua cham.js phát đ
     const thieu = CAN[ten].filter((k) => !ma.has(k));
     kiem("ThuMua9.vao('" + ten + "'): lời giải nạp sẵn chạy qua cham.js, phát " + CAN[ten].join(' / '), !loi && thieu.length === 0, loi || ('thiếu: ' + thieu.join(' ') + ' (có: ' + [...ma].join(' ') + ')'));
   }
+  {                                                                                            // M9L15: lời Việt của bình xịt bụng qua cham.js (xit-hut thông tin, het-dan drone, xit-tham-so)
+    const m = T9.san9('binh-xit'), cd = (chinh) => { try { return Cham.cham(m, { chinh, hamCuaMan: [] }, []).chanDoan || []; } catch (e) { return [{ ma: 'nem', loi: e.message }]; } };
+    const a = cd(['spray()', 'wait()', 'spray()', 'wait()', 'spray()', 'wait()', 'spray()', 'wait()']), b = cd(['spray("high")', 'wait()']);
+    const xh = a.find((c) => c.ma === 'xit-hut'), hd = a.find((c) => c.ma === 'het-dan'), ts = b.find((c) => c.ma === 'xit-tham-so');
+    kiem("ThuMua9.vao('binh-xit') qua cham.js: xịt ô trống → 'xit-hut' mức thông tin; lần thứ tư → 'het-dan' lời drone (bình 3 lần); spray(\"high\") → 'xit-tham-so'",
+      xh && xh.muc === 'thong-tin' && /dưới bụng không có lửa, van hay nút/.test(xh.loi) && hd && hd.muc === 'loi' && /xịt được 3 lần/.test(hd.loi) && ts && ts.muc === 'loi', JSON.stringify(a.concat(b).map((c) => [c.ma, c.muc])));
+  }
   let soDoc = null; try { const m = T9.san9('cont-troi'), r = Cham.cham(m, { chinh: m.maMau.chinh, hamCuaMan: [] }, []); r.theoSan[0].vet.forEach((e) => (e.suKien || []).forEach((k) => { if (k.ma === 'doc-cam-bien' && soDoc === null) soDoc = k.so; })); } catch (e) { soDoc = e.message; }
   kiem("ThuMua9.vao('cont-troi'): qua cham.js, read_code() đọc số container trôi 12 (cham.js đưa contTroi xuống lõi)", soDoc === 12, String(soDoc));
   const ch = doc('cham.js'), chua = ['contTroi', 'beSac', 'contLapHo'].filter((k) => !ch.includes(k));
