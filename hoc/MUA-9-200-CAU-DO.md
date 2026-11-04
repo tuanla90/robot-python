@@ -1,5 +1,7 @@
 # Mùa 9 Về CLB: 200 câu đố (3/11/2026, CHỜ USER DUYỆT)
 
+> 4/11: **L15 drone + bình xịt bụng** mở (user duyệt; luật ở KE-HOACH-MUA-9-TO-HOP.md mục 4), chưa xếp vào câu đố nào.
+
 Đi kèm [KE-HOACH-MUA-9-TO-HOP.md](KE-HOACH-MUA-9-TO-HOP.md) (luật ghép, lai L1–L14, tương tác R, T2–T4, người P, dấu câu đố mục 8c).
 User 3/11: "đa dạng hoá, càng nhiều tổ hợp càng tốt, mỗi màn là một câu đố không trùng nhau".
 
