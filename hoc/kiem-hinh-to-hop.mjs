@@ -9,9 +9,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import os from 'node:os';
+import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+const NEN = 'e80c5e8';                                                       // nền so hình cũ: HEAD trước gói M9H2 (4/11)
 
+if (process.argv[2] === '--chup') chupCon();                                 // chế độ con (phần d): chỉ nạp bộ vẽ nền, không nạp bộ vẽ hiện tại
 const day = path.dirname(fileURLToPath(import.meta.url));
 const game = path.join(day, 'game');
 const require = createRequire(import.meta.url);
@@ -119,6 +124,185 @@ function chayTrang(hanhDong) {
   const soGai = (() => { const h = (k) => [null].concat(BG.dsCua(k).filter((m) => TT_HIEN.includes(BG.trangThai('gai', k, m)))); return h('tay').length * h('camBien').length - 1; })();
   const kyGai = O_HIEN.filter((x) => x.than === 'gai').length + DS.filter((d) => d[0] === 'gai').length + soGai;
   kiem('lọc thân "gai": hiện ô của thân đó + bộ ba của nó + mọi bộ ba (' + kyGai + ' thẻ), không "Lỗi vẽ"', !!dem2 && dem2.the === kyGai && dem2.loi.length === 0, loi || J(dem2 && { the: dem2.the, loi: dem2.loi.slice(0, 4) }));
+}
+
+/* -------------------------------------------- d. ô cũ không đổi hình (so lệnh vẽ với NEN) */
+console.log('d. hình cũ y nguyên: mọi bộ ba ngoài nhóm có hình riêng M9H2 ra đúng từng lệnh vẽ như nền ' + NEN);
+/** Nhóm bộ ba CÓ HÌNH RIÊNG M9H2 (được phép khác nền): drone + vòi phun (L15 bình xịt bụng) / tay lưới (L10 phao); nhện + gieo hạt / loa (L6 / L7 bụng), nhện + radar / camera bốn hướng / mic
+ *  (L12 / L4 trên nóc); cần cẩu + kẹp / nam châm / tay lưới (L8 gầu, L1 đĩa nam châm, L9 giỏ: thẻ ở đầu đoạn cần, sân chỉ tời, đầu cáp không móc), cần cẩu + từ / camera bụng (L13 ở đầu cần). */
+function laHinhRieng(than, tay, cam) {
+  if (than === 'drone') return tay === 'hoi' || tay === 'day-keo';
+  if (than === 'nhen') return tay === 'son' || tay === 'loa' || ['radar', 'camera-4', 'am-thanh'].includes(cam);
+  if (than === 'cau') return ['kep', 'nam-cham', 'day-keo'].includes(tay) || ['tu', 'camera-bay'].includes(cam);
+  return false;
+}
+/** Mọi bộ ba của thân: (tay hợp lệ | không) × (cảm biến hợp lệ | không), trừ bộ trống; ô ● ✔ ★. */
+function moiBoBa() {
+  const kq = [];
+  for (const th of BG.THAN) {
+    const hop = (khe) => [null].concat(BG.dsCua(khe).filter((m) => TT_HIEN.includes(BG.trangThai(th, khe, m))));
+    for (const tay of hop('tay')) for (const cam of hop('camBien')) if (BG.kiemGhep(th, tay, cam, MO_HET).ok) kq.push([th, tay, cam]);
+  }
+  return kq;
+}
+/** Danh sách lần vẽ để so: mỗi bộ ba × 4 hướng × (nghỉ, đang làm, nhện co chân) ở cỡ 56, R1 và R2; cần cẩu thêm veCanCau 3 nấc. */
+function dsVe() {
+  const ds = [];
+  for (const [th, tay, cam] of moiBoBa()) {
+    for (const son of ['', 'lam']) {
+      const cfg = cfgCua(th, tay, cam, son);
+      const sts = [{}, stLam(cfg)].concat(th === 'nhen' ? [{ than: { co: true } }] : []);
+      for (const h of [0, 1, 2, 3]) sts.forEach((s, i) => ds.push({ k: [th, tay, cam, son, h, i].join('|'), bo: [th, tay, cam], cfg, st: s, h }));
+      if (th === 'cau') [1, 4, 6].forEach((nac) => [{}, stLam(cfg)].forEach((s, i) => ds.push({ k: [th, tay, cam, son, 'nac' + nac, i].join('|'), bo: [th, tay, cam], cfg, st: s, nac })));
+    }
+  }
+  return ds;
+}
+function bam(VVx, d) {
+  VVx.xoaDem();
+  let lenh;
+  if (d.nac !== undefined) { const cv = new VVx.CanvasGia(168, 168); VVx.veCanCau(cv.getContext('2d'), { bx: 84, by: 84, nac: d.nac, tam: 1, o: 56, be: true, cfg: d.cfg, st: d.st }); lenh = cv.lenh; }
+  else lenh = VVx.robot(d.cfg, d.st, d.h, 56).lenh;
+  return crypto.createHash('sha1').update(JSON.stringify(lenh)).digest('hex');
+}
+/* chế độ con: nạp bộ vẽ của nền từ thư mục, băm từng lần vẽ, ghi ra tệp */
+function chupCon() {
+  const [, , , dirNen, vao, ra] = process.argv, g = path.join(dirNen, 'hoc', 'game'), rq = createRequire(path.join(g, 'x.js'));
+  const V0 = rq('./ve-vector.js');
+  fs.readdirSync(g).filter((n) => /^ve-vector-(than|tay)-[\w-]+\.js$|^ve-vector-cam(-[\w-]+)?\.js$/.test(n)).sort().forEach((n) => rq('./' + n));
+  const kq = {};
+  for (const d of JSON.parse(fs.readFileSync(vao, 'utf8'))) { try { kq[d.k] = bam(V0, d); } catch (e) { kq[d.k] = 'LOI ' + e.message; } }
+  fs.writeFileSync(ra, JSON.stringify(kq));
+  process.exit(0);
+}
+function chupNen(ds) {
+  const tm = path.join(os.tmpdir(), 'kiem-hinh-to-hop-' + NEN), g = path.join(tm, 'hoc', 'game');
+  fs.mkdirSync(g, { recursive: true });
+  const tep = execFileSync('git', ['ls-tree', '--name-only', NEN, 'hoc/game/'], { cwd: path.dirname(day), encoding: 'utf8' }).split('\n').filter((n) => /^hoc\/game\/(ve-vector[\w-]*|bang-mau)\.js$/.test(n)).concat(['hoc/bang-ghep.js']);
+  for (const t of tep) fs.writeFileSync(path.join(tm, t), execFileSync('git', ['show', NEN + ':' + t], { cwd: path.dirname(day), encoding: 'utf8', maxBuffer: 1 << 26 }));
+  const vao = path.join(tm, 'ds.json'), ra = path.join(tm, 'bam.json');
+  fs.writeFileSync(vao, JSON.stringify(ds));
+  execFileSync(process.execPath, [fileURLToPath(import.meta.url), '--chup', tm, vao, ra], { stdio: 'inherit' });
+  return JSON.parse(fs.readFileSync(ra, 'utf8'));
+}
+function soNen(ds, nen) {
+  const khacCu = [], giongMoi = new Map();
+  for (const d of ds) {
+    let b; try { b = bam(VV, d); } catch (e) { b = 'LOI ' + e.message; }
+    const rieng = laHinhRieng(...d.bo), khac = b !== nen[d.k];
+    if (!rieng && khac) khacCu.push(d.k);
+    if (rieng) { const kb = d.bo.join('+'); giongMoi.set(kb, (giongMoi.get(kb) || false) || khac); }
+  }
+  return { khacCu, chuaDoi: [...giongMoi].filter(([, khac]) => !khac).map(([k]) => k), soRieng: giongMoi.size };
+}
+const DS_VE = dsVe();
+let NEN_BAM = null;
+try { NEN_BAM = chupNen(DS_VE); } catch (e) { kiem('chụp hình nền ' + NEN + ' (git show + node con)', false, e.message); }
+if (NEN_BAM) {
+  const r = soNen(DS_VE, NEN_BAM), soBo = new Set(DS_VE.map((d) => d.bo.join('+'))).size;
+  kiem(DS_VE.length + ' lần vẽ (' + soBo + ' bộ ba × 4 hướng × nghỉ / đang làm / co chân × R1 / R2; cần cẩu thêm veCanCau 3 nấc): mọi bộ ba NGOÀI nhóm hình riêng ra đúng từng lệnh như ' + NEN, r.khacCu.length === 0, r.khacCu.length + ' khác: ' + r.khacCu.slice(0, 8).join(', '));
+  kiem(r.soRieng + ' bộ ba nhóm hình riêng M9H2: mỗi bộ đều khác nền (hình đã đổi thật)', r.chuaDoi.length === 0, r.chuaDoi.join(', '));
+}
+
+/* -------------------------------------------------- e. hình riêng: gắn đúng chỗ */
+console.log('e. hình riêng M9H2: part gắn trên thân, không tràn ô, cảm biến nóc nhện không che mắt');
+/** Hộp bao (px thiết bị) của các lệnh vẽ do hàm `ve` của bộ phận (loai, ma) ra khi vẽ robot cfg: bọc hàm ve ghi chỉ số lệnh, rồi phát lại lệnh theo dõi phép biến đổi. */
+function hopPart(cfg, st, h, canh, loai, ma) {
+  const d = VV.lay(loai, ma), goc = d.ve, khoang = [];
+  d.ve = function (g) { const i0 = g.lenh.length; const kq = goc.apply(this, arguments); khoang.push([i0, g.lenh.length]); return kq; };
+  let cv; try { VV.xoaDem(); cv = VV.robot(cfg, st, h, canh); } finally { d.ve = goc; }
+  return hopLenh(cv.lenh, khoang);
+}
+function hopLenh(lenh, khoang) {
+  let m = [1, 0, 0, 1, 0, 0]; const stack = [], hop = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+  const mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];
+  const trong = (i) => khoang.some(([a, b]) => i >= a && i < b);
+  const them = (x, y, r) => { const X = m[0] * x + m[2] * y + m[4], Y = m[1] * x + m[3] * y + m[5], R = (r || 0) * Math.sqrt(Math.abs(m[0] * m[3] - m[1] * m[2])); hop.x0 = Math.min(hop.x0, X - R); hop.y0 = Math.min(hop.y0, Y - R); hop.x1 = Math.max(hop.x1, X + R); hop.y1 = Math.max(hop.y1, Y + R); };
+  lenh.forEach((l, i) => {
+    const [k, ...a] = l;
+    if (k === 'save') stack.push(m.slice()); else if (k === 'restore') m = stack.pop() || m;
+    else if (k === 'translate') m = mul(m, [1, 0, 0, 1, a[0], a[1]]); else if (k === 'scale') m = mul(m, [a[0], 0, 0, a[1], 0, 0]);
+    else if (k === 'rotate') { const c = Math.cos(a[0]), s = Math.sin(a[0]); m = mul(m, [c, s, -s, c, 0, 0]); }
+    else if (trong(i)) {
+      if (k === 'moveTo' || k === 'lineTo') them(a[0], a[1]);
+      else if (k === 'arc') them(a[0], a[1], a[2]); else if (k === 'ellipse') them(a[0], a[1], Math.max(a[2], a[3]));
+      else if (k === 'rect') { them(a[0], a[1]); them(a[0] + a[2], a[1] + a[3]); }
+      else if (k === 'bezierCurveTo') { them(a[4], a[5]); } else if (k === 'quadraticCurveTo') { them(a[2], a[3]); } else if (k === 'arcTo') { them(a[0], a[1]); them(a[2], a[3]); }
+    }
+  });
+  return hop;
+}
+/** Hộp (px thiết bị) của hộp thân `b` ({ x, y, w, h } hệ thân) trên canvas cạnh `canh` sau xoay (dung: thân đứng thẳng thanDung). */
+function hopThan(cfg, b, h, canh, dung) {
+  const t = VV.lay('than', cfg.than), pts = [[b.x, b.y], [b.x + b.w, b.y], [b.x, b.y + b.h], [b.x + b.w, b.y + b.h]].map(([x, y]) => VV.diemTrenO({ x, y }, h, canh, t, dung));
+  return { x0: Math.min(...pts.map((p) => p.x)), y0: Math.min(...pts.map((p) => p.y)), x1: Math.max(...pts.map((p) => p.x)), y1: Math.max(...pts.map((p) => p.y)) };
+}
+const giao = (a, b, lo) => a.x0 <= b.x1 + lo && b.x0 <= a.x1 + lo && a.y0 <= b.y1 + lo && b.y0 <= a.y1 + lo;
+const trongHop = (a, b, lo) => a.x0 >= b.x0 - lo && a.x1 <= b.x1 + lo && a.y0 >= b.y0 - lo && a.y1 <= b.y1 + lo;
+const chongLen = (a, b) => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+function kiemHinhRieng() {
+  const C = 100, loi = { tran: [], loLung: [], noc: [], cheMat: [] };
+  for (const [th, tay, cam] of moiBoBa().filter((b) => laHinhRieng(...b))) {
+    const cfg = cfgCua(th, tay, cam), t = VV.lay('than', th), ten = [th, tay, cam].join('+');
+    for (const h of [0, 1, 2, 3]) for (const st of [{}, stLam(cfg)]) {
+      const o = { x0: 0, y0: 0, x1: C, y1: C }, vo = hopThan(cfg, t.vo, h, C, !!t.thanDung);
+      const rieng = [];
+      if (tay && (th !== 'nhen' || tay === 'son' || tay === 'loa') && (th !== 'drone' || tay === 'hoi' || tay === 'day-keo') && (th !== 'cau' || ['kep', 'nam-cham', 'day-keo'].includes(tay))) rieng.push(['tay', tay]);
+      if (cam && VV.choVeCam(t, { ma: cam, o: 'tren' }).o) rieng.push(['cam-bien', cam]);
+      for (const [loai, ma] of rieng) {
+        const p = hopPart(cfg, st, h, C, loai, ma);
+        if (!trongHop(p, o, 0.5)) loi.tran.push(ten + ' h' + h + ' ' + ma + ' ' + J(p));
+        if (!giao(p, vo, C * 0.12)) loi.loLung.push(ten + ' h' + h + ' ' + ma);
+        if (th === 'nhen' && loai === 'cam-bien') {
+          if (!trongHop(p, vo, 1)) loi.noc.push(ten + ' h' + h);
+          const k = VV.kinhCua(t), kb = hopThan(cfg, k, h, C, true);
+          if (!st.camBien && chongLen(p, kb) > 0.08 * (kb.x1 - kb.x0) * (kb.y1 - kb.y0)) loi.cheMat.push(ten + ' h' + h);   // lúc nghỉ (đang đọc: quầng sáng mờ của mic được loang qua mắt)
+        }
+      }
+    }
+  }
+  return loi;
+}
+{
+  const loi = kiemHinhRieng();
+  kiem('part hình riêng nằm trong ô (không tràn) ở 4 hướng, nghỉ / đang làm', loi.tran.length === 0, loi.tran.slice(0, 4).join(' | '));
+  kiem('part hình riêng chạm vỏ thân (cách vỏ ≤ 0,12 ô: không lơ lửng)', loi.loLung.length === 0, loi.loLung.slice(0, 6).join(' | '));
+  kiem('nhện: radar / camera bốn hướng / mic nằm trọn trên vỏ (nóc) và lúc nghỉ che dải mắt ≤ 8%', loi.noc.length === 0 && loi.cheMat.length === 0, J({ noc: loi.noc.slice(0, 4), cheMat: loi.cheMat.slice(0, 4) }));
+}
+{
+  const ok = (cfg, h) => { const d = VV.lay('tay', cfg.tay); return VV.oTay(VV.lay('than', cfg.than), d, cfg)[0]; };
+  kiem('nhện + gieo hạt / loa treo ổ bụng (duoi) như nam châm; nhện + kẹp vẫn ở ổ tay; drone + vòi phun / tay lưới ở ổ duoi',
+    ok(cfgCua('nhen', 'son')) === 'duoi' && ok(cfgCua('nhen', 'loa')) === 'duoi' && ok(cfgCua('nhen', 'kep')) === 'tay' && ok(cfgCua('drone', 'hoi')) === 'duoi' && ok(cfgCua('drone', 'day-keo')) === 'duoi');
+  const tc = VV.lay('than', 'cau');
+  kiem('cần cẩu: tay lai thay chỗ móc (VeVector.TAY_THAY_MOC_CAU = nam châm, kẹp, tay lưới) đúng các ô ★ L1 / L8 / L9 của bảng; cảm biến đầu cần đúng ô ★ L13',
+    J([...VV.TAY_THAY_MOC_CAU].sort()) === J(BG.TAY.filter((m) => BG.trangThai('cau', 'tay', m) === 'lai').sort()) && J([...tc.camDauCan].sort()) === J(BG.CAM_BIEN.filter((m) => BG.o('cau', 'camBien', m).lai === 'L13').sort()));
+}
+
+/* ------------------------------------------------------ f. tự chứng minh */
+console.log('f. tự chứng minh (phá tạm trong bộ nhớ, đặt lại)');
+if (NEN_BAM) {
+  const kep = VV.lay('tay', 'kep'), goc = kep.ve;
+  kep.ve = function (g) { g.save(); g.restore(); return goc.apply(this, arguments); };
+  const r = soNen(DS_VE.filter((d) => d.bo[0] === 'hai-banh' && d.bo[1] === 'kep'), NEN_BAM);
+  kep.ve = goc;
+  kiem('phá tạm tay kẹp (thêm một cặp save / restore): phép d thấy hình cũ hai bánh + kẹp đổi', r.khacCu.length > 0, r.khacCu.length);
+  const r2 = soNen(DS_VE.filter((d) => d.bo[0] === 'hai-banh' && d.bo[1] === 'kep'), NEN_BAM);
+  kiem('đặt lại xong: hai bánh + kẹp y nguyên nền', r2.khacCu.length === 0, r2.khacCu.length);
+}
+{
+  const t = VV.lay('than', 'nhen'), cu = t.oNoc;
+  t.oNoc = { x: 50, y: 58 };
+  const l1 = kiemHinhRieng();
+  t.oNoc = { x: 50, y: 4 };
+  const l2 = kiemHinhRieng();
+  t.oNoc = cu;
+  const tc = VV.lay('than', 'cau'), cuD = tc.oDauCan;
+  tc.oDauCan = { x: 50, y: 160 };
+  const l3 = kiemHinhRieng();
+  tc.oDauCan = cuD;
+  const l4 = kiemHinhRieng();
+  kiem('phá tạm nóc nhện xuống dải mắt → phép e kêu "che mắt"; lên ngoài vỏ → kêu "không trên nóc"; đầu cần cẩu ra ngoài ô → kêu "tràn"; đặt lại thì sạch',
+    l1.cheMat.length > 0 && l2.noc.length > 0 && l3.tran.length > 0 && !l4.tran.length && !l4.loLung.length && !l4.noc.length && !l4.cheMat.length, J({ che: l1.cheMat.length, noc: l2.noc.length, tran: l3.tran.length, sau: l4 }));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
