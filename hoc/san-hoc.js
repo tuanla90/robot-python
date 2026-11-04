@@ -663,7 +663,7 @@
   //     land() lên bè sạc được (bè thường vẫn 'dap-bi-chan' vat), drone đậu trên bè đi theo bè ('theo-be' { id, tu, den }).
   // M9L15 (4/11, user mở "Mở L15"; mục 4 dòng L15): DRONE + BÌNH XỊT BỤNG — tay vòi phun ('hoi') treo dưới bụng drone. Lõi nhận cấu hình vật lý (không biết bảng ghép):
   //   drone có spray trên khay là drone mang bình xịt; bảng ghép (hoc/bang-ghep.js, ô ★ L15) chặn khi màn chưa mở L15.
-  //   · LỆNH: chỉ spray(), KHÔNG đối số ('xit-tham-so', lỗi chạy); spray_back trên khay drone = lỗi cấu hình (drone không có mũi / đuôi); cờ lucBan bỏ qua với drone.
+  //   · LỆNH: chỉ spray(), KHÔNG đối số ('xit-tham-so', lỗi chạy); spray_back trên khay drone = lỗi cấu hình (drone không có mũi / đuôi; daoChieu đã cấm với drone từ trước); cờ lucBan bỏ qua với drone.
   //   · NHỊP: spray() chỉ ra lệnh (như xe), làm ở nhịp kế của drone — wait() / go_*() / land() / take_off() — TRƯỚC khi bay (như đầu sơn bụng): "spray(); go_right()" xịt ô cũ rồi bay.
   //     Xịt được cả lúc đang bay lẫn đang đậu. Hai spray() chưa trôi nhịp: 'ban-goi-lai' (như xe). Không giật (drone lơ lửng), không có tia bay xa, không có sự kiện 'ban' / 'giat'.
   //   · Ô DƯỚI BỤNG = ô drone đang ở. Drone mang bình xịt BAY LÊN TRÊN được ô lửa đang cháy, ô van V và nút N (drone khác vẫn bị chặn như cũ); land() không đáp xuống lửa / van / nút ('dap-bi-chan' vat 'lua' | 'van' | 'nut').
@@ -1287,7 +1287,6 @@
           if (DAO_CHIEU_TAY.indexOf(b) >= 0 && !coTay) throw new Error('daoChieu "' + b + '" cần robot có tay kẹp (hamGoc có arm_down, arm_up, grab, release).');
           if (b === 'xoay' && !coXoay) throw new Error('daoChieu "xoay" cần robot có tay xoay (hamGoc có arm_left, arm_right).');
           if (b === DAO_CHIEU_SUNG && !coHoi) throw new Error('daoChieu "sung" cần robot có vòi phun (hamGoc có spray, spray_back).');
-          if (b === DAO_CHIEU_SUNG && laDrone) throw new Error('daoChieu "sung" không dùng cho drone: bình xịt dưới bụng chỉ xịt thẳng xuống, không có trước / sau.');   // M9L15
           if (b === DAO_CHIEU_CUC && !coNamCham) throw new Error('daoChieu "cuc" cần robot có tay nam châm (hamGoc có magnet_n, magnet_s, magnet_off).');
           if (b === DAO_CHIEU_CAM && !coCamBien) throw new Error('daoChieu "cam" cần robot có cảm biến khoảng cách (hamGoc có front_clear / left_clear / right_clear).');
           dao[b] = true;

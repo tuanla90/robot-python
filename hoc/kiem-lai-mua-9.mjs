@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-lai-mua-9.mjs — máy kiểm TỔ HỢP LAI mùa 9 (M9B1: L4 L5 L6 L7 L11 L12 L14 + R rắc cát; M9B2: L1 L2 L8 L13 + T2 container lấp hố; M9C1: L3 xe tời bờ + P người cần cứu; M9C2: L9 giỏ cứu hộ, L10 thả phao, T3 vòi phun gạt van, T4 bè sạc) của "Mật Lệnh Robot"
+   kiem-lai-mua-9.mjs — máy kiểm TỔ HỢP LAI mùa 9 (M9B1: L4 L5 L6 L7 L11 L12 L14 + R rắc cát; M9B2: L1 L2 L8 L13 + T2 container lấp hố; M9C1: L3 xe tời bờ + P người cần cứu; M9C2: L9 giỏ cứu hộ, L10 thả phao, T3 vòi phun gạt van, T4 bè sạc; M9L15: L15 drone + bình xịt bụng) của "Mật Lệnh Robot"
    (gói M9B1 / M9B2 4/11; kế hoạch hoc/KE-HOACH-MUA-9-TO-HOP.md mục 4, cột "Luật thêm"). Mỗi lai:
    a. BẢNG: ô ★ bị chặn khi màn không mở (ma 'lai-chua-co'), ghép được khi man.lapRap.moLai (hay man.moLai) có mã — BangGhep, LapRap.kiemGhep / kiemCachLap / apDung;
    b. LÕI: một sân nhỏ chứng minh HÀNH VI của cột "Luật thêm" (SanHoc.chay trên robot dựng bằng LapRap.apDung);
@@ -76,7 +76,9 @@ const CAU_HINH = [
   { lai: 'L3', cach: { than: 'gai', tay: 'day-keo', camBien: null } },
   // M9C2 (4/11): cần cẩu + tay lưới (giỏ cứu hộ), drone + tay lưới (thả phao)
   { lai: 'L9', cach: { than: 'cau', tay: 'day-keo', camBien: null } },
-  { lai: 'L10', cach: { than: 'drone', tay: 'day-keo', camBien: null } }
+  { lai: 'L10', cach: { than: 'drone', tay: 'day-keo', camBien: null } },
+  // M9L15 (4/11): drone + bình xịt bụng (tay vòi phun treo dưới bụng)
+  { lai: 'L15', cach: { than: 'drone', tay: 'hoi', camBien: null } }
 ];
 const moTa = (x) => x.lai + ' ' + LapRap.moTa(x.cach);
 function manLap(x, moLai) {
@@ -576,6 +578,84 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
   kiem('L9: một tay — giỏ cứu hộ không đi chung móc cẩu trên đầu cần (lõi báo)', /giỏ cứu hộ .* không đi chung móc cẩu/.test(mt9 || ''), mt9);
   const ts9 = thu(() => L9(GIO, 'cast_net("front")\n'));
   kiem('L9: cast_net("front") trên cẩu → lỗi chạy lời Việt (giỏ thả ngay ở đầu cần)', ts9 && ts9.loi && /không nhận đối số/.test(ts9.loi.thongDiep), ts9 && J(ts9.loi));
+}
+
+/* ============================================================ M9L15 (4/11, user mở "Mở L15"): drone + bình xịt bụng (tay vòi phun 'hoi' treo dưới bụng drone)
+   Luật: 1 chỉ spray() không đối số (spray_back / daoChieu sung trên drone = lỗi cấu hình; spray(p) = lỗi chạy 'xit-tham-so');
+         2 một spray() = một nhịp (làm ở nhịp kế: wait / go_* / land / take_off, TRƯỚC khi bay), xịt cả lúc bay lẫn lúc đậu; drone mang bình bay lên trên lửa / van V / nút N;
+         3 ô dưới bụng: lửa → 'lua-nho' / 'lua-tat'; V → doiVan, 'phun-van' tu = o; N → 'nut-doi'; ô khác → 'xit-hut' (không lỗi, không chạm người);
+         4 bình mặc định 3 lần (danToiDa khai thì theo màn), hết → 'het-dan' { drone: true, binh } (lỗi), vẫn mất nhịp; 5 có tác dụng → 'xit-bung' { o, trung } TRƯỚC mã cũ.
+         Xe gắn vòi phun KHÔNG đổi (bóng bay thẳng, giật). */
+{
+  const BX = { than: 'drone', tay: 'hoi' }, BAY_L15 = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
+  const SAN_LUA = ['.=..F'];                                                                 // hàng rào '=' (xe không qua, drone bay qua), lửa ở (2, 0), cờ (4, 0)
+  const L15 = (lai, cach, code, them) => chay(lai, cach, SAN_LUA, { x: 0, y: 0 }, code, Object.assign({ lua: [{ x: 2, y: 0, suc: 1 }], mucTieu: 'dap-lua' }, them || {}));
+  const XIT_LUA = 'go_right()\ngo_right()\nspray()\ngo_right()\ngo_right()\n';
+  const okLua = (k) => !k.loi && k.thang && coSk(k, 'lua-tat') && !coSk(k, 'ban') && !coSk(k, 'giat') && sk1(k, 'xit-bung') && sk1(k, 'xit-bung').trung === 'lua' && J(sk1(k, 'xit-bung').o) === J({ x: 2, y: 0 }) && k.robot.x === 4;
+  const l15 = thu(() => L15('L15', BX, XIT_LUA));
+  const nhipXit = l15 && vetNhip(l15).find((v) => v.suKien.some((e) => e.ma === 'xit-bung'));
+  const thuTu = nhipXit && nhipXit.suKien.map((e) => e.ma);
+  kiem('L15 b (luật 2, 3, 5): drone bay qua rào lên ô lửa (2, 0), spray() xịt thẳng xuống: "xit-bung" trung lua TRƯỚC "lua-nho" / "lua-tat", cùng nhịp bay tiếp; không "ban", không "giat"; dập lửa xong tới cờ → thắng',
+    l15 && okLua(l15) && thuTu && thuTu.indexOf('xit-bung') < thuTu.indexOf('lua-nho') && thuTu.indexOf('lua-nho') < thuTu.indexOf('lua-tat') && thuTu.indexOf('lua-tat') < thuTu.indexOf('di') && l15.nhip === 4,
+    l15 && (J(l15.loi) + ' ' + skNg(l15)));
+  kiem('L15 d: cùng sân, chương trình KHÔNG spray() → lửa còn, không thắng (phép b đỏ)', !thu(() => okLua(L15('L15', BX, 'go_right()\ngo_right()\ngo_right()\ngo_right()\n'))));
+  kiem('L15 d: drone KHÔNG gắn vòi phun (spray không có trên khay) → phép b đỏ (lửa chặn drone như cũ: "dam-tuong" vat lua)',
+    !thu(() => okLua(L15('L15', { than: 'drone', tay: null }, XIT_LUA))) && thu(() => { const k = L15('L15', { than: 'drone', tay: null }, 'go_right()\ngo_right()\n'); return k.robot.x === 1 && k.suKien.some((e) => e.ma === 'dam-tuong' && e.vat === 'lua'); }));
+  kiem('L15 d: màn CHƯA mở L15 (moLai khác) → lắp ráp chặn drone + vòi phun, phép b đỏ', !thu(() => okLua(L15('L1', BX, XIT_LUA))));
+  const suc2 = thu(() => L15('L15', BX, 'go_right()\ngo_right()\nspray()\nwait()\nspray()\nwait()\n', { lua: [{ x: 2, y: 0, suc: 2 }] }));
+  kiem('L15 b (luật 3): lửa suc 2 cần hai lần xịt (xịt lúc lơ lửng bằng wait()): "lua-nho" suc 1 rồi "lua-tat"', suc2 && !suc2.loi && suc2.thang === false && suc2.lua[0].suc === 0 && vetNhip(suc2).filter((v) => v.suKien.some((e) => e.ma === 'xit-bung')).length === 2, suc2 && skNg(suc2));
+
+  /* luật 3: van V giữa nước (xe không tới được), tia không bay — tu = o, soO 0, huong null; cống đổi cuối nhịp */
+  const van = thu(() => chay('L15', BX, ['..~~~', '~~~V~', '~K~~~', '#####'], { x: 0, y: 0 }, 'go_right()\ngo_right()\ngo_right()\ngo_down()\nspray()\nwait()\n'));
+  const pv = van && sk1(van, 'phun-van');
+  kiem('L15 b (luật 3): drone bay ra van V (3, 1) giữa nước, spray(): "xit-bung" trung van, "phun-van" tu = o = (3, 1), soO 0, huong null; van bật, cống K (1, 2) mở',
+    van && !van.loi && sk1(van, 'xit-bung') && sk1(van, 'xit-bung').trung === 'van' && pv && J(pv.tu) === J({ x: 3, y: 1 }) && J(pv.o) === J({ x: 3, y: 1 }) && pv.soO === 0 && pv.huong === null && van.van[0].bat === true && van.cong[0].mo === true,
+    van && (J(van.loi) + ' ' + skNg(van)));
+  kiem('L15 d: drone không gắn vòi phun → van V chặn ("dam-tuong" vat van), van không đổi (phép b đỏ)',
+    thu(() => { const k = chay('L15', { than: 'drone', tay: null }, ['..~~~', '~~~V~', '~K~~~', '#####'], { x: 0, y: 0 }, 'go_right()\ngo_right()\ngo_right()\ngo_down()\n'); return k.robot.y === 0 && k.suKien.some((e) => e.ma === 'dam-tuong' && e.vat === 'van') && k.van[0].bat === false; }));
+
+  /* luật 3: nút N */
+  const nut = thu(() => chay('L15', BX, ['.N.C.F'], { x: 0, y: 0 }, 'go_right()\nspray()\ngo_right()\ngo_right()\ngo_right()\ngo_right()\n'));
+  kiem('L15 b (luật 3): drone lên trên nút N (1, 0), spray(): "xit-bung" trung nut, "nut-doi", cửa C (3, 0) mở cuối nhịp, drone bay qua cửa tới cờ',
+    nut && !nut.loi && sk1(nut, 'xit-bung') && sk1(nut, 'xit-bung').trung === 'nut' && coSk(nut, 'nut-doi') && nut.thang && nut.robot.x === 5, nut && (J(nut.loi) + ' ' + skNg(nut)));
+  kiem('L15 d: cùng sân không spray() → cửa đóng chặn drone, không thắng (phép b đỏ)', !thu(() => chay('L15', BX, ['.N.C.F'], { x: 0, y: 0 }, 'go_right()\ngo_right()\ngo_right()\ngo_right()\ngo_right()\n').thang));
+
+  /* luật 3: xịt hụt — ô sàn, ô có người: thông tin, không lỗi, không chạm người */
+  const hut = thu(() => chay('L15', BX, ['~~~', '..F'], { x: 0, y: 0 }, 'spray()\nwait()\ngo_right()\nspray()\nwait()\n', { nguoi: [{ x: 1, y: 0 }], tramCuu: [{ x: 0, y: 1 }] }));
+  const hutDs = hut ? hut.suKien.filter((e) => e.ma === 'xit-hut') : [];
+  kiem('L15 b (luật 3): xịt ô nước trống và ô có người (1, 0) → hai "xit-hut" { o } (không lỗi, không "cham-nguoi", không "xit-bung")',
+    hut && !hut.loi && hutDs.length === 2 && J(hutDs[1].o) === J({ x: 1, y: 0 }) && !coSk(hut, 'cham-nguoi') && !coSk(hut, 'xit-bung'), hut && (J(hut.loi) + ' ' + skNg(hut)));
+
+  /* luật 4: bình nhỏ */
+  const het = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nwait()\nspray()\nwait()\nspray()\nwait()\nspray()\nwait()\n'));
+  const hd = het && het.suKien.filter((e) => e.ma === 'het-dan');
+  kiem('L15 b (luật 4): bình mặc định 3 lần: ba "xit-hut" rồi lần thứ tư "het-dan" { drone: true, binh: 3 }, không xịt, vẫn mất nhịp (4 nhịp)',
+    het && !het.loi && hd.length === 1 && hd[0].drone === true && hd[0].binh === 3 && het.suKien.filter((e) => e.ma === 'xit-hut').length === 3 && het.nhip === 4 && het.sung && het.sung.dan === 0, het && skNg(het));
+  const het1 = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nwait()\nspray()\nwait()\n', { danToiDa: 1 }));
+  kiem('L15 b (luật 4): màn khai danToiDa = 1 → lần thứ hai đã "het-dan" binh 1', het1 && het1.suKien.filter((e) => e.ma === 'het-dan').length === 1 && sk1(het1, 'het-dan').binh === 1 && het1.suKien.filter((e) => e.ma === 'xit-hut').length === 1, het1 && skNg(het1));
+  kiem('L15 d: cùng chương trình nhưng danToiDa = 5 → không "het-dan" (phép b đỏ)', !thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nwait()\nspray()\nwait()\nspray()\nwait()\nspray()\nwait()\n', { danToiDa: 5 }).suKien.some((e) => e.ma === 'het-dan')));
+
+  /* luật 1: lệnh */
+  const ts = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray("high")\nwait()\n', { lucBan: true }));
+  kiem('L15 (luật 1): spray("high") trên drone → lỗi chạy "xit-tham-so" lời Việt (kể cả màn bật lucBan)', ts && ts.loi && ts.loi.ma === 'xit-tham-so' && /không có đối số/.test(ts.loi.thongDiep), ts && J(ts.loi));
+  let sb = null; try { SanHoc.chay({ san: ['...'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY_L15.concat(['spray', 'spray_back']) }, ''); } catch (e) { sb = e.message; }
+  kiem('L15 (luật 1): spray_back trên khay drone → lỗi cấu hình "không có mũi hay đuôi"', /không có mũi hay đuôi/.test(sb || ''), sb);
+  let dc = null; try { SanHoc.chay({ san: ['...'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY_L15.concat(['spray']), daoChieu: ['sung'] }, ''); } catch (e) { dc = e.message; }
+  kiem('L15 (luật 1): daoChieu "sung" trên drone → lỗi cấu hình (luật cũ: daoChieu chỉ cho xe có bánh)', /daoChieu chỉ dùng cho robot có hai bánh/.test(dc || ''), dc);
+  const khay = thu(() => LapRap.apDung({ ma: 't', lapRap: { moLai: ['L15'] } }, BX).hamGoc);
+  kiem('L15 (luật 1): lắp ráp drone + vòi phun chỉ đưa spray lên khay (không spray_back)', khay && khay.indexOf('spray') >= 0 && khay.indexOf('spray_back') < 0, J(khay));
+
+  /* luật 2: nhịp — xịt ô cũ rồi mới bay; xịt lúc đậu; land không xuống lửa */
+  const dap = thu(() => SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY_L15.concat(['land', 'take_off', 'spray']), lua: [{ x: 1, y: 0, suc: 1 }] }, 'go_right()\nland()\nspray()\nwait()\ngo_right()\nland()\nspray()\ntake_off()\n'));
+  kiem('L15 b (luật 2): land() xuống ô lửa → "dap-bi-chan" vat lua; spray() lúc đang lơ lửng dập lửa; drone đáp ở (2, 0), spray() lúc đang đậu → "xit-hut" rồi cất cánh',
+    dap && !dap.loi && dap.suKien.some((e) => e.ma === 'dap-bi-chan' && e.vat === 'lua') && dap.lua[0].suc === 0 && dap.suKien.filter((e) => e.ma === 'xit-hut').length === 1 && J(sk1(dap, 'xit-hut').o) === J({ x: 2, y: 0 }), dap && skNg(dap));
+  const goi = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nspray()\nwait()\n'));
+  kiem('L15 (luật 2): hai spray() chưa trôi nhịp → "ban-goi-lai" (như xe), chỉ một lần xịt', goi && goi.suKien.some((e) => e.ma === 'ban-goi-lai') && goi.suKien.filter((e) => e.ma === 'xit-hut').length === 1, goi && J(goi.suKien.map((e) => e.ma)));
+
+  /* xe gắn vòi phun KHÔNG đổi */
+  const xe = thu(() => SanHoc.chay({ san: ['.....', '#####'], batDau: { x: 2, y: 0, huong: 1 }, hamGoc: BANH.concat(['spray']), lucBan: true }, 'spray("high")\nwait()\nspray()\nwait()\n'));
+  kiem('L15: xe gắn vòi phun không đổi — tia "ban" bay thẳng, spray("high") giật lùi một ô, không "xit-bung" / "xit-hut"',
+    xe && !xe.loi && xe.suKien.length >= 0 && vetNhip(xe).filter((v) => v.suKien.some((e) => e.ma === 'ban')).length === 2 && coSk(xe, 'giat') && xe.robot.x === 1 && !coSk(xe, 'xit-bung') && !coSk(xe, 'xit-hut'), xe && skNg(xe));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
