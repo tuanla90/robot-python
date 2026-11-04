@@ -487,5 +487,26 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
   kiem('T3 d: xe không gắn vòi phun (spray không có trên khay) → phép b đỏ', !thu(() => { const k = T3('spray()\nwait()\n', BANH); return k.cong[0].mo && k.doi[1].robot.x === 3; }));
 }
 
+/* T4 bè sạc: cfg.beSac = [{ x, y }] gắn ô sạc lên bè B ở ô đó; ô sạc đi theo bè; drone bay / đậu trên bè sạc được sạc như ô P */
+{
+  const BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'land', 'take_off'];
+  const DONG = [{ x: 1, y: 0, huong: 1, suc: 1 }, { x: 2, y: 0, huong: 1, suc: 1 }];
+  const T4 = (them, code, bd) => SanHoc.chay(Object.assign({ san: ['~B~~', '....', '...F'], batDau: bd || { x: 0, y: 1 }, loaiRobot: 'drone', hamGoc: BAY, pin: 6, dong: DONG, beSac: [{ x: 1, y: 0 }] }, them || {}), code);
+  const t4 = thu(() => T4({}, 'go_right()\ngo_right()\ngo_right()\ngo_up()\nland()\n'));
+  const dap4 = t4 && sk1(t4, 'dap');
+  kiem('T4 b: bè sạc trôi 2 ô (1, 0) → (3, 0) ("be-sac-di" ×2), drone bay tới, land() trên bè ở chỗ mới: "dap" be, "sac-pin" ở (3, 0), pin đầy 6',
+    t4 && !t4.loi && vetNhip(t4).filter((v) => v.suKien.some((e) => e.ma === 'be-sac-di')).length === 2 && dap4 && dap4.be === 1 && dap4.sac === true && sk1(t4, 'sac-pin') && sk1(t4, 'sac-pin').o.x === 3 && t4.pin === 6 && t4.vat[0].sac === true,
+    t4 && (skNg(t4) + ' pin ' + t4.pin));
+  const theo = thu(() => T4({}, 'land()\nwait()\nwait()\n', { x: 1, y: 0 }));
+  kiem('T4 b: drone đậu trên bè sạc đang trôi đi theo bè ("theo-be" ×2), cuối cùng ở (3, 0) vẫn đậu, pin đầy', theo && !theo.loi && theo.robot.x === 3 && vetNhip(theo).filter((v) => v.suKien.some((e) => e.ma === 'theo-be')).length === 2 && theo.pin === 6,
+    theo && (skNg(theo) + ' ' + J(theo.robot)));
+  const bay4 = thu(() => T4({ hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait'] }, 'go_right()\ngo_right()\ngo_right()\ngo_up()\n'));
+  kiem('T4 b: drone gốc (không land) bay tới đứng trên bè sạc cuối nhịp: pin đầy như ô P', bay4 && !bay4.loi && bay4.pin === 6 && sk1(bay4, 'sac-pin'), bay4 && (skNg(bay4) + ' pin ' + bay4.pin));
+  const t4d = thu(() => T4({ beSac: undefined }, 'go_right()\ngo_right()\ngo_right()\ngo_up()\nland()\n'));
+  kiem('T4 d: cùng sân KHÔNG khai beSac → bè thường: land() trên bè bị chặn ("dap-bi-chan"), không sạc (phép b đỏ)', t4d && !sk1(t4d, 'sac-pin') && t4d.suKien.some((e) => e.ma === 'dap-bi-chan') && t4d.pin < 6, t4d && skNg(t4d));
+  let cfg4 = null; try { T4({ beSac: [{ x: 0, y: 1 }] }, 'wait()\n'); } catch (e) { cfg4 = e.message; }
+  kiem('T4: beSac đặt ngoài ô bè B → lỗi cấu hình nói rõ', /phải đặt trên ô bè B/.test(cfg4 || ''), cfg4);
+}
+
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);
