@@ -33,6 +33,8 @@ const BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
 const TIEN = 'left_move()\nright_move()\nwait()\n';
 const XUONG = BANH.concat(['cast_net', 'drop_net']);
 const BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
+const BINH_XIT = 'go_right()\ngo_right()\nspray()\ngo_right()\ngo_down()\ngo_right()\ngo_right()\nspray()\ngo_down()\ngo_right()\n';   // M9L15: qua rào tới lửa (2, 0), xịt; ra van V (5, 1) giữa nước, xịt; về cờ
+const XIT_NUT = 'go_right()\nspray()\nwait()\ngo_right()\nspray()\nwait()\nspray()\nwait()\nspray()\nwait()\n';   // M9L15: xịt nút N (1, 0), hai lần hụt, lần thứ tư hết bình (3 lần)
 const CAU = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'];
 
 /* ---------- 1. sự kiện lõi ↔ san-ve.js */
@@ -64,7 +66,10 @@ const SAN_MAU = [
   ['L10 phao: thu, hụt', () => chay('L10', { than: 'drone', tay: 'day-keo' }, ['~~~~~', '~~~~~', '...F.'], { x: 2, y: 0 }, 'cast_net()\nwait()\ndrop_net()\nwait()\ncast_net()\nwait()\ncast_net()\nwait()\ngo_down()\ngo_down()\ndrop_net()\nwait()\n', { nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 0, y: 2 }] })],
   ['L10 thác', () => SanHoc.chay({ san: ['~~~~', '....', '...F'], batDau: { x: 0, y: 1, huong: 1 }, hamGoc: BANH, mucTieu: 'cuu-nguoi', nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 2 }], thac: [{ x: 1, y: 0 }], dong: [{ x: 0, y: 0, huong: 1, suc: 1 }] }, 'wait()\nwait()\n')],
   ['L9 giỏ vớt người, đặt lên bờ', () => chay('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_left()\nswing_left()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] })],
-  ['L9 giỏ hụt (đặt xuống nước)', () => chay('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_right()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] })]
+  ['L9 giỏ hụt (đặt xuống nước)', () => chay('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_right()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] })],
+  // M9L15 (4/11): drone + bình xịt bụng — xịt lửa, van giữa nước; xịt nút N, xịt hụt, hết bình
+  ['L15 bình xịt: lửa, van', () => chay('L15', { than: 'drone', tay: 'hoi' }, ['.=.....', '.=..~V~', '......F'], { x: 0, y: 0 }, BINH_XIT, { lua: [{ x: 2, y: 0, suc: 1 }] })],
+  ['L15 bình xịt: nút, hụt, hết bình', () => chay('L15', { than: 'drone', tay: 'hoi' }, ['.N...', '....F'], { x: 0, y: 0 }, XIT_NUT)]
 ];
 const tenSK = new Set(), thieu = [], nguonSK = {};
 function gom(vet, ten) { (vet || []).filter((e) => e.loai === 'nhip').forEach((e) => (e.suKien || []).forEach((s) => { tenSK.add(s.ma); (nguonSK[s.ma] = nguonSK[s.ma] || ten); })); }
@@ -77,7 +82,7 @@ for (const [ten, f] of SAN_MAU) {
 }
 const CU = ['tien', 'lui', 'quay-trai', 'quay-phai', 'quay-dau', 'dam-tuong', 'toi-co', 'dung-yen', 'doc-cam-bien', 'xong-dua-vat'];
 const MA_9 = ['rac-cat', 'cau-hut', 'cau-tha', 'gau-ngoam', 'gau-tha', 'gau-hut', 'lap-ho', 'nguoi-buoc', 'nguoi-cho', 'nguoi-troi', 'nguoi-troi-chan', 'nguoi-len-bo', 'nguoi-toi-tram', 'nguoi-troi-xa', 'xong-cuu-nguoi', 'cham-nguoi',
-  'phun-van', 'be-sac-di', 'theo-be', 'tha-phao', 'bam-phao', 'thu-phao', 'phao-hut', 'gio-vot', 'gio-dat', 'gio-hut'];
+  'phun-van', 'be-sac-di', 'theo-be', 'tha-phao', 'bam-phao', 'thu-phao', 'phao-hut', 'gio-vot', 'gio-dat', 'gio-hut', 'xit-bung', 'xit-hut'];
 const thieuMau = MA_9.filter((k) => !tenSK.has(k));
 kiem('sân mẫu phát ra đủ ' + MA_9.length + ' mã sự kiện mới của mùa 9', thieuMau.length === 0, 'sân mẫu chưa phát: ' + thieuMau.join(' '));
 for (const ma of tenSK) if (!co(sv, "'" + ma + "'")) thieu.push(ma + ' (' + nguonSK[ma] + ')');
@@ -146,7 +151,7 @@ async function phatSan(cfg, r) {
   const K = taoKhung(), cv = new K.Cv(); cv.parentNode = K.cha;
   let F = null, loi = null; const dem = {};
   const P = K.ctx.SanVe.Field.prototype;                                                       // đếm lời gọi các hàm vẽ mùa 9 (veTreoCau9: chỉ khi có vật treo; veDayPhao: chỉ dây của xe tời bờ)
-  ['veTreoCau9', 'veCat9', 'veTram9', 'veThac9', 'veDayPhao', 'veNguoi9', 'veSan9'].forEach((ten) => { const f = P[ten]; if (!f) return; P[ten] = function () {
+  ['veTreoCau9', 'veCat9', 'veTram9', 'veThac9', 'veDayPhao', 'veNguoi9', 'veSan9', 'veXitBung9'].forEach((ten) => { const f = P[ten]; if (!f) return; P[ten] = function () {
     const tinh = ten === 'veTreoCau9' ? !!(this.vis.cau && this.vis.cau.mang) : ten === 'veDayPhao' ? !!(this.dayKeo && this.dayKeo.toi9 !== undefined) : true;
     if (tinh) dem[ten] = (dem[ten] || 0) + 1; return f.apply(this, arguments); }; });
   const nm0 = P.nhipMua9; P.nhipMua9 = function (s) { DA_PHAT_9.add(s.ma); return nm0.apply(this, arguments); };
@@ -216,7 +221,12 @@ const CA_VE = [
   { ten: 'L10 phao: thu, hụt', mk: () => chayCfg('L10', { than: 'drone', tay: 'day-keo' }, ['~~~~~', '~~~~~', '...F.'], { x: 2, y: 0 }, 'cast_net()\nwait()\ndrop_net()\nwait()\ncast_net()\nwait()\ncast_net()\nwait()\ngo_down()\ngo_down()\ndrop_net()\nwait()\n', { nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 0, y: 2 }] }),
     kiem: (h, F) => coHinh(h, 'phao-cuu', {}) && F.phaoBay9 === null, mo: 'phao thả, thu lại, thả lần hai; không phao bay kẹt giữa chừng' },
   { ten: 'L9 giỏ hụt (đặt xuống nước)', mk: () => chayCfg('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_right()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }),
-    kiem: (h, F) => coHinh(h, 'gio-cuu-ho', { day: true }), mo: 'giỏ vớt người rồi hụt khi đặt xuống nước' }
+    kiem: (h, F) => coHinh(h, 'gio-cuu-ho', { day: true }), mo: 'giỏ vớt người rồi hụt khi đặt xuống nước' },
+  // M9L15 (4/11): bình xịt bụng drone — tia thẳng xuống (veXitBung9), lửa tắt, van bật; nút đổi, hụt '?'
+  { ten: 'L15 bình xịt: lửa, van', mk: () => chayCfg('L15', { than: 'drone', tay: 'hoi' }, ['.=.....', '.=..~V~', '......F'], { x: 0, y: 0 }, BINH_XIT, { lua: [{ x: 2, y: 0, suc: 1 }] }),
+    kiem: (h, F, d) => d.veXitBung9 > 3 && F.luaT['2,0'].suc === 0 && F.vanT['5,1'] && F.vanT['5,1'].bat === true && !F.vis.xit9 && F.vis.x === 6 && F.vis.y === 2, mo: 'tia nước từ bụng drone (veXitBung9), lửa (2, 0) tắt, van (5, 1) bật, drone tới cờ (6, 2)' },
+  { ten: 'L15 bình xịt: nút, hụt, hết bình', mk: () => chayCfg('L15', { than: 'drone', tay: 'hoi' }, ['.N...', '....F'], { x: 0, y: 0 }, XIT_NUT),
+    kiem: (h, F, d) => d.veXitBung9 > 3 && F.nutO(1, 0).bat === true && !F.vis.xit9, mo: 'xịt nút N (1, 0): nút đổi; xịt hụt hai lần (dấu ?), lần thứ tư hết bình' }
 ];
 for (const ca of CA_VE) {
   let o = null, loi0 = null; try { o = ca.mk(); } catch (e) { loi0 = e.message; }
@@ -295,7 +305,7 @@ console.log('\n== 5. Màn giả soát hình (ThuMua9.san9): qua cham.js phát đ
   const Cham = require(path.join(day, 'cham.js')), T9 = require(path.join(day, 'game', 'thu-mua-9.js'));
   const CAN = { 'cuu-nguoi': ['keo-vat', 'nguoi-len-bo', 'nguoi-toi-tram', 'xong-cuu-nguoi'], thac: ['nguoi-troi', 'nguoi-troi-xa'], 'rac-cat': ['rac-cat'],
     phao: ['tha-phao', 'bam-phao'], gio: ['gio-vot', 'gio-dat', 'nguoi-toi-tram'], 'nam-cham': ['cau-hut', 'cau-tha'], gau: ['gau-ngoam', 'gau-tha'], 'xe-toi': ['keo-vat'], 'phun-van': ['phun-van', 'cong-doi'],
-    'cont-troi': ['doc-cam-bien'], 'be-sac': ['be-sac-di', 'dap', 'sac-pin'], 'lap-ho': ['lap-ho'] };
+    'cont-troi': ['doc-cam-bien'], 'be-sac': ['be-sac-di', 'dap', 'sac-pin'], 'lap-ho': ['lap-ho'], 'binh-xit': ['xit-bung', 'lua-tat', 'phun-van', 'toi-co'] };
   kiem('ThuMua9.dsSan9 có đủ ' + Object.keys(CAN).length + ' màn giả', JSON.stringify(T9.dsSan9) === JSON.stringify(Object.keys(CAN)), JSON.stringify(T9.dsSan9));
   for (const ten of Object.keys(CAN)) {
     let ma = new Set(), loi = '';

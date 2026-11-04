@@ -6,7 +6,7 @@
      ThuMua9.manLapRobot2() → màn đội, lắp robot thứ hai (lapRap.robot = 1): R1 xe chở hàng đặt sẵn, Luna tự lắp (xích / hai bánh, tay vòi phun)
      ThuMua9.manBaRobot()   → màn đội thường ba robot (đội đã ghép sẵn, không chọn), R3 khoá
      ThuMua9.vao('chon-doi' | 'lap-r2' | 'ba-robot')   (trình duyệt) vào thẳng màn giả qua App.vaoManDuLieu (cùng đường với App.vaoMan)
-     ThuMua9.vao('cuu-nguoi' | 'thac' | 'rac-cat' | 'phao' | 'gio' | 'nam-cham' | 'gau' | 'xe-toi' | 'phun-van')   (M9H1) màn giả một robot soát hình sân mùa 9; ThuMua9.dsSan9 = danh sách
+     ThuMua9.vao('cuu-nguoi' | 'thac' | 'rac-cat' | 'phao' | 'gio' | 'nam-cham' | 'gau' | 'xe-toi' | 'phun-van' | 'cont-troi' | 'be-sac' | 'lap-ho' | 'binh-xit')   (M9H1; binh-xit M9L15) màn giả một robot soát hình sân mùa 9; ThuMua9.dsSan9 = danh sách
    Node: máy kiểm hoc/kiem-giao-dien-chon-doi.mjs require tệp này (cần co-may.js, man-chuoi-1.js).
    ========================================================================== */
 (function () {
@@ -141,7 +141,11 @@
     'lap-ho': function () { return manSan9('lap-ho', 'Thử lấp hố', 'Cẩu hạ container xuống hố.', null, null,
       { san: ['.....', '.#u#.', '.....', '....F'], batDau: { x: 2, y: 0, nac: 5, tam: 2 }, loaiRobot: 'cau', robot: { than: 'cau', tay: 'moc-cau', camBien: [] },
         hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'], contLapHo: true, chong: [{ x: 0, y: 2, cont: [{ so: 5 }] }] },
-      ['pick_up()', 'swing_left()', 'retract()', 'set_down()']); }
+      ['pick_up()', 'swing_left()', 'retract()', 'set_down()']); },
+    // M9L15 (4/11): drone + bình xịt bụng — bay qua hàng rào tới ô lửa, xịt (lửa tắt), rồi bay ra van V giữa nước, xịt (van đổi), về cờ
+    'binh-xit': function () { return manSan9('binh-xit', 'Thử bình xịt', 'Drone xịt tắt lửa, rồi xịt gạt van giữa nước.', 'L15', { than: 'drone', tay: 'hoi' },
+      { san: ['.=.....', '.=..~V~', '......F'], batDau: { x: 0, y: 0 }, lua: [{ x: 2, y: 0, suc: 1 }] },
+      ['go_right()', 'go_right()', 'spray()', 'go_right()', 'go_down()', 'go_right()', 'go_right()', 'spray()', 'go_down()', 'go_right()']); }
   };
 
   var API = { manChonDoi: manChonDoi, manLapRobot2: manLapRobot2, manBaRobot: manBaRobot };

@@ -108,9 +108,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* MÙA 9 (M9H1, 4/11): sự kiện của lõi mùa 9 (san-hoc.js luật R, P, L1, L2, L3, L8, L9, L10, T2, T3, T4) có bước hoạt cảnh riêng (Field.nhipMua9) và trọng số thời gian (TRONG_9);
      TUC_THI_9 không chiếm thời gian của nhịp (hiệu ứng sau vòng bước, hieuUng9). 'lap-ho' của Mỏ đá (đá lấp hố, không có cont) giữ nguyên như trước (một bước chờ). */
   var NHIP_9 = { 'rac-cat': 1, 'cau-hut': 1, 'cau-tha': 1, 'gau-ngoam': 1, 'gau-tha': 1, 'gau-hut': 1, 'lap-ho': 1, 'nguoi-buoc': 1, 'nguoi-cho': 1, 'nguoi-troi': 1, 'nguoi-troi-chan': 1,
-    'nguoi-len-bo': 1, 'nguoi-toi-tram': 1, 'nguoi-troi-xa': 1, 'cham-nguoi': 1, 'phun-van': 1, 'theo-be': 1, 'tha-phao': 1, 'bam-phao': 1, 'thu-phao': 1, 'phao-hut': 1, 'gio-vot': 1, 'gio-dat': 1, 'gio-hut': 1 };
+    'nguoi-len-bo': 1, 'nguoi-toi-tram': 1, 'nguoi-troi-xa': 1, 'cham-nguoi': 1, 'phun-van': 1, 'theo-be': 1, 'tha-phao': 1, 'bam-phao': 1, 'thu-phao': 1, 'phao-hut': 1, 'gio-vot': 1, 'gio-dat': 1, 'gio-hut': 1,
+    'xit-bung': 1, 'xit-hut': 1 };                                                    // M9L15: bình xịt bụng drone (tia thẳng xuống ô dưới bụng; hụt thì '?')
   var TRONG_9 = { 'rac-cat': 0.9, 'cau-hut': 1.3, 'cau-tha': 1.1, 'gau-ngoam': 1.3, 'gau-tha': 1.1, 'gio-vot': 1.3, 'gio-dat': 1.2, 'nguoi-troi': 1.2, 'nguoi-len-bo': 1.2, 'nguoi-troi-xa': 1.3,
-    'nguoi-toi-tram': 0.6, 'bam-phao': 0.5, 'tha-phao': 1.2, 'thu-phao': 0.9, 'phun-van': 0.7, 'theo-be': 1.2, 'cham-nguoi': 1.2 };
+    'nguoi-toi-tram': 0.6, 'bam-phao': 0.5, 'tha-phao': 1.2, 'thu-phao': 0.9, 'phun-van': 0.7, 'theo-be': 1.2, 'cham-nguoi': 1.2,
+    'xit-bung': 1.2, 'xit-hut': 1 };
   var TUC_THI_9 = { 'be-sac-di': 1, 'xong-cuu-nguoi': 1 };
   var NAC_CAU = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];        // nấc cần cẩu (như NAC_VEC của lõi, NAC của ve-vector-than-cau.js): 0 lên, thuận chiều kim đồng hồ
 
@@ -1532,6 +1534,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       HU().bongDrone(g, cx, cy + 3 - cao, Math.max(7, 13 - alt * 0.8 - cao * 0.4), Math.min(0.5, 0.24 + (4 - Math.min(4, alt)) * 0.04 + cao * 0.03));    // bóng elip mềm ở mặt ô, lệch xuống dưới thân, không làm tròn
       if (v.nc) this.veTuTreo(g, cx, cy, now);
+      if (v.xit9 && !d.roi) this.veXitBung9(g, cx, cy - alt + HANG, cy + 4, v.xit9, now);   // M9L15: tia bình xịt bụng (dưới thân drone)
       for (i = 0; i < this.objs.length; i++) {                                         // vật treo dưới bụng: nằm giữa khung bốn cánh, ngay dưới nam châm (thân drone che phần giữa)
         o = this.objs[i];
         if (o.tt !== 'cam') continue;
@@ -1539,6 +1542,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var hd = d.roi ? this.coVatDat() : this.coVatNang();                            // gói V7a, luật cỡ vật V6b: vật treo đã nhấc khỏi sàn = cỡ vật nâng, bóng xa và nhạt; drone rơi nằm đất thì cỡ sàn
         this.veMotVat(g, o, 8, cx + lech, d.roi ? cy - 1 : cy - alt + HANG, hd, hd * (d.roi ? VeVector.BONG_SAN : VeVector.BONG_NANG), rung ? 0.3 + 0.2 * Math.abs(Math.sin(now / 60)) : 0);     // treo ngay dưới thân: hai càng nam châm đè lên mép trên của vật
       }
+    },
+    /** M9L15 BÌNH XỊT BỤNG: cột nước thẳng từ bụng drone (y0) xuống mặt ô (y1), dài dần theo xi.k; hụt (xi.hut) thì nhạt hơn. */
+    veXitBung9: function (g, cx, y0, y1, xi, now) {
+      var k = Math.max(0, Math.min(1, xi.k)), yd = y0 + (y1 - y0) * k, i;
+      g.save(); g.globalAlpha = xi.hut ? 0.55 : 0.85;
+      g.strokeStyle = BM.vecNuocSang; g.lineCap = 'round'; g.lineWidth = 2.2; g.beginPath(); g.moveTo(cx, y0); g.lineTo(cx, yd); g.stroke();
+      g.strokeStyle = BM.sanTrang; g.lineWidth = 0.8; g.beginPath(); g.moveTo(cx - 0.4, y0); g.lineTo(cx - 0.4, yd); g.stroke();
+      if (k > 0.9) { g.fillStyle = BM.vecNuocSang; for (i = 0; i < 4; i++) { var a = now / 90 + i * 1.57; g.beginPath(); g.arc(cx + Math.cos(a) * 2.6, y1 + Math.sin(a) * 0.9, 0.7, 0, Math.PI * 2); g.fill(); } }
+      g.restore();
     },
     /** NAM CHÂM BỤNG NHỆN (mùa 3): gợn từ ở mặt ô (như drone) và vật đang dính vẽ ngay dưới thân (thân vẽ sau, hơi trong). Nhện rơi hố thì vật rơi theo thân (v.roi). */
     veDuoiNhen: function (g, cx, cy, now) {
@@ -3068,6 +3080,25 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (vanEvs && vanEvs.length) this.apVanDoi(vanEvs);
         if (s.o) { this.burst(s.o.x * T + 7, s.o.y * T + 7, 7, [BM.vecNuocSang, BM.sanTrang, BM.sanXanhLa], 0.6); }
         await ngu(per); return;
+      }
+      if (m === 'xit-bung' || m === 'xit-hut') {                                                     // M9L15: bình xịt bụng drone: tia nước thẳng xuống ô dưới bụng, bọt ở ô; hụt thì '?'
+        var hut = m === 'xit-hut', ox9 = s.o ? s.o.x : v.x, oy9 = s.o ? s.o.y : v.y;
+        v.xit9 = { k: 0, hut: hut };
+        await this.tween(per * 0.6, my, function (k) { if (v.xit9) v.xit9.k = ease(k); });
+        if (my !== this.rid) { v.xit9 = null; return; }
+        this.burst(ox9 * T + 7, oy9 * T + 8, hut ? 5 : 10, s.trung === 'lua' ? [BM.sanTrangV1, BM.sanKem, BM.sanXam] : BOT, hut ? 0.45 : 0.7);
+        if (s.trung === 'lua') {                                                                     // lửa nhỏ đi một cỡ; 'lua-tat' (tắt hẳn) thì hơi trắng bốc lên
+          evs.filter(function (q) { return q.ma === 'lua-nho' && q.o.x === ox9 && q.o.y === oy9; }).forEach(function (q) { var l = self.luaT && self.luaT[q.o.x + ',' + q.o.y]; if (l) l.suc = q.suc; });
+          if (evs.some(function (q) { return q.ma === 'lua-tat' && q.o.x === ox9 && q.o.y === oy9; })) this.burst(ox9 * T + 7, oy9 * T + 5, 8, [BM.sanTrangV1, BM.sanXam], 0.5);
+        }
+        else if (s.trung === 'nut') {
+          var nE = evs.filter(function (q) { return q.ma === 'nut-doi'; })[0], nt9 = this.nutO(ox9, oy9); nt9.loe = now + per + 340;
+          if (nE) { if (nt9.bat !== !!nE.bat) nt9.quay = performance.now(); nt9.bat = !!nE.bat; }
+          evs.filter(function (q) { return q.ma === 'bang-doi'; }).forEach(function (q) { var k2 = q.o.x + ',' + q.o.y; if (q.bat) delete self.bangTat[k2]; else self.bangTat[k2] = true; self.bangLoe[k2] = performance.now() + 300; });
+        }
+        if (hut) { this.baoHieu('?', 1100); this.canhBao = { x: ox9, y: oy9, den: now + per + 600 }; }
+        await this.tween(per * 0.4, my, function (k) { if (v.xit9) v.xit9.k = 1 - ease(k) * 0.999; });
+        v.xit9 = null; return;
       }
       if (m === 'theo-be') {                                                                           // T4: drone đậu trên bè sạc dời theo bè (bè dời không do trôi: kéo lưới)
         var tx0 = v.x, ty0 = v.y;
