@@ -305,5 +305,57 @@ if (NEN_BAM) {
     l1.cheMat.length > 0 && l2.noc.length > 0 && l3.tran.length > 0 && !l4.tran.length && !l4.loLung.length && !l4.noc.length && !l4.cheMat.length, J({ che: l1.cheMat.length, noc: l2.noc.length, tran: l3.tran.length, sau: l4 }));
 }
 
+/* ------------------------------------------- g. năm chỗ giao diện thô (M9H2 mục c) */
+console.log('g. năm chỗ giao diện: thẻ cỗ máy Chọn đội, ổ khóa thẻ R3, chữ thắng cứu người, thanh pin drone, trạm cứu màn giả');
+{
+  const css = fs.readFileSync(path.join(game, 'choi.css'), 'utf8'), cssV = fs.readFileSync(path.join(game, 'choi-vector.css'), 'utf8');
+  const luat = (src, sel) => src.split('\n').filter((d) => d.startsWith(sel + '{')).join(' ');   // mọi luật đúng bộ chọn (cùng bộ chọn có thể khai nhiều dòng)
+  const hang = luat(css, '.cd-menu .lr-hang'), ten = luat(css, '.cd-menu .lr-the-ten'), the = luat(css, '.cd-menu .lr-the');
+  kiem('1. Chọn đội: bảng cỗ máy 2 cột xuống hàng (grid, không cuộn ngang), thẻ không giới hạn bề ngang, tên xuống dòng không "…"',
+    /display:grid/.test(hang) && /repeat\(2,/.test(hang) && /overflow-x:hidden/.test(hang) && /max-width:none/.test(the) && /white-space:normal/.test(ten) && /text-overflow:clip/.test(ten), J({ hang, the, ten }));
+  const mc = fs.readFileSync(path.join(game, 'man-choi.js'), 'utf8');
+  kiem('2. Màn đội: ổ khóa "Cố định" ở tiêu đề chỉ còn biểu tượng (.co-doi ẩn chữ), tên đọc qua title + aria-label',
+    luat(css, '.co-doi .bh .chinh-khoa .ck-chu').includes('display:none') && /e\.parentNode\.setAttribute\('title', nhan\); e\.parentNode\.setAttribute\('aria-label', nhan\)/.test(mc) && /body\.ve-vector \.co-doi \.bh \.chinh-khoa\{/.test(cssV));
+  const chu = fs.readFileSync(path.join(game, 'chu.js'), 'utf8');
+  kiem("3. Bảng thắng mục tiêu 'cuu-nguoi': chữ 'thang.tieuDe.cuuNguoi' (CỨU ĐƯỢC NGƯỜI!), không còn TỚI CỜ!",
+    /'thang\.tieuDe\.cuuNguoi': 'CỨU ĐƯỢC NGƯỜI!'/.test(chu) && /m\.mucTieu === 'cuu-nguoi' \? 'thang\.tieuDe\.cuuNguoi'/.test(mc));
+  /* 4. thanh pin: nạp san-ve.js trong vm (như kiem-ve-mua-9), thử SanVe.Field.prototype.coGiTrenDrone trên vài sân */
+  const cvGia = () => ({ width: 300, height: 150, style: {}, classList: { add() {}, remove() {}, toggle() {} }, setAttribute() {}, appendChild() {},
+    getContext: () => new Proxy({}, { get: (t, k) => k in t ? t[k] : k === 'measureText' ? () => ({ width: 5 }) : k === 'getTransform' ? () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }) : /^create/.test(k) ? () => ({ addColorStop() {} }) : () => {}, set: (t, k, v) => { t[k] = v; return true; } }) });
+  const ctx = { console: { log() {}, warn() {}, error() {}, info() {} }, document: { createElement: cvGia, querySelector: () => null, body: {} }, devicePixelRatio: 2, location: { search: '?ve=vector' },
+    localStorage: { getItem: () => null, setItem() {} }, performance: { now: () => 0 }, setTimeout() {}, clearTimeout() {}, requestAnimationFrame: () => 0,
+    Math, JSON, Object, Array, String, Number, Boolean, Date, Error, RegExp, Map, Set, WeakMap, Symbol, Promise, parseFloat, parseInt, isFinite, isNaN, Uint8ClampedArray };
+  ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
+  let loiNap = null;
+  try {
+    const choi = fs.readFileSync(path.join(game, 'choi.html'), 'utf8');
+    [...choi.matchAll(/<script src="([\w./-]+\.js)"/g)].map((m) => m[1]).filter((f) => /^(bang-mau|chu|ve|ve-vector[\w-]*|ve-robot|san-ve)\.js$/.test(f))
+      .forEach((f) => vm.runInContext(fs.readFileSync(path.join(game, f), 'utf8'), ctx, { filename: f }));
+  } catch (e) { loiNap = e.message; }
+  const P = ctx.SanVe && ctx.SanVe.Field.prototype;
+  const tren = (rows, x, y, them) => P.coGiTrenDrone.call({ vis: { x, y }, cfg: Object.assign({ rows }, them || {}), objs: (them && them.objs) || [] });
+  const ca = P && P.coGiTrenDrone ? [
+    ["ThuMua9 'be-sac': drone ngay dưới bè sạc B", tren(['~B~~', '....', '...F'], 1, 1), true],
+    ['ô trên là nước trống', tren(['~~~~', '....', '...F'], 1, 1), false],
+    ['ô trên là trạm cứu', tren(['....', '....'], 1, 1, { tramCuu: [{ x: 1, y: 0 }] }), true],
+    ['ô trên có vật trên sân', tren(['....', '....'], 1, 1, { objs: [{ x: 1, y: 0, tt: 'dat' }] }), true],
+    ['ô trên có vật đã vào rổ (tt ro)', tren(['....', '....'], 1, 1, { objs: [{ x: 1, y: 0, tt: 'ro' }] }), false],
+    ['drone ở hàng trên cùng', tren(['....', '....'], 1, 0), false]
+  ].filter(([, co, can]) => co !== can).map(([t]) => t) : ['không nạp được san-ve.js: ' + loiNap];
+  const sv = fs.readFileSync(path.join(game, 'san-ve.js'), 'utf8');
+  kiem('4. Thanh pin drone: sân mùa 9, ô phía trên có bè / vật / ký hiệu / trạm cứu → thanh mờ (globalAlpha 0,38), sạc / đọc pin / pin thấp vẫn rõ; sân cũ (không co9) y nguyên',
+    ca.length === 0 && /var mo = this\.co9 && !sac && !nay && !thap && this\.coGiTrenDrone\(\)/.test(sv), ca.join(' | '));
+  const t9 = fs.readFileSync(path.join(game, 'thu-mua-9.js'), 'utf8'), mCuu = t9.match(/'cuu-nguoi': function[\s\S]*?san: (\[[^\]]*\])[\s\S]*?tramCuu: (\[[^\]]*\])/);
+  let ok5 = false, ct5 = '';
+  if (mCuu) {
+    const san = JSON.parse(mCuu[1].replace(/'/g, '"')), tram = JSON.parse(mCuu[2].replace(/(\w+):/g, '"$1":'));
+    ok5 = tram.every((q) => san[q.y] && san[q.y][q.x] !== 'F');
+    const XUONG = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net'];
+    const r = require(path.join(day, 'san-hoc.js')).chay({ san, batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'xuong', hamGoc: XUONG, mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 1 }], tramCuu: tram }, 'cast_net()\n' + 'wait()\n'.repeat(5));
+    ok5 = ok5 && r.thang; ct5 = J({ tram, thang: r.thang });
+  }
+  kiem("5. ThuMua9 'cuu-nguoi': trạm cứu không nằm trên ô cờ F, lời giải nạp sẵn vẫn thắng (lõi san-hoc)", ok5, ct5 || 'không đọc được màn giả');
+}
+
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);

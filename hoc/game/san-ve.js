@@ -1589,8 +1589,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var tl = Math.max(0, Math.min(1, d.pin / d.pinMax));
       var sac = d.sacLoe > now, nay = d.nhay > now && ((now / 90 | 0) & 1) === 0, thap = d.pin <= Math.max(1.5, d.pinMax * 0.25), nguy = thap && !d.roi && ((now / 240 | 0) & 1) === 0;
       g.restore();                                                              // gói V4: viên pin bo tròn, ruột theo mức (không làm tròn: sạc chạy mượt)
+      var mo = this.co9 && !sac && !nay && !thap && this.coGiTrenDrone();         // M9H2: sân mùa 9, ô phía trên drone có vật / bè / ký hiệu → thanh pin mờ đi cho thấy vật (sạc, đọc pin, pin thấp: vẫn rõ)
+      if (mo) { g.save(); g.globalAlpha = 0.38; }
       HU().thanhPin(g, { x: cx - tong / 2 + 1, y: cy - this.dinhDrone() - 6, W: W, tong: tong, fill: d.pin > 0 ? Math.max(1, W * tl) : 0, mau: sac ? BM.vecDen : thap ? BM.vecDo : tl <= 0.6 ? BM.vecVang : BM.vecXanhLa,
         nen: nay ? BM.vecVo : nguy ? BM.vecDoSang : BM.vecDe, vach: d.pinMax <= 16 ? d.pinMax : 0, so: so, mauSo: sac ? BM.vecDenToi : thap ? BM.vecDo : BM.vecVien });
+      if (mo) g.restore();
+    },
+    /** M9H2: ô ngay phía trên drone (thanh pin nổi đè lên) có gì cần thấy: vật / bè / người trên sân (this.objs chưa vỡ / chưa vào rổ), hay ký hiệu sân khác '.' và '~' (cờ, van, cống, bè sạc B…). */
+    coGiTrenDrone: function () {
+      var tx = Math.round(this.vis.x), ty = Math.round(this.vis.y) - 1, c = this.cfg;
+      if (ty < 0) return false;
+      var ch = c.rows[ty] && c.rows[ty][tx];
+      if (ch && ch !== '.' && ch !== '~' && ch !== ' ') return true;
+      if ((c.tramCuu || []).concat(c.thac || []).some(function (q) { return q && q.x === tx && q.y === ty; })) return true;     // trạm cứu, thác (lớp cấu hình mùa 9)
+      return this.objs.some(function (o) { return o.tt !== 'vo' && o.tt !== 'ro' && o.tt !== 'cam' && Math.round(o.x) === tx && Math.round(o.y) === ty; });
     },
     /** Gió cánh quạt xả xuống vật bị bay qua ('bay-qua'): vài hạt bụi / mảnh gỗ / bọt xanh quanh ô. */
     giuQuat: function (s) {

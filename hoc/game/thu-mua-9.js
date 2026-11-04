@@ -109,7 +109,7 @@
   var SAN9 = {
     'cuu-nguoi': function () { return manSan9('cuu-nguoi', 'Thử kéo người', 'Quăng lưới kéo người lên bờ.', null, null,
       { san: ['~~~~~', '~~~~~', '.....', '....F'], batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'xuong', robot: { than: 'xuong', tay: 'day-keo', camBien: [] },
-        hamGoc: BANH.concat(['cast_net', 'drop_net']), mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 1 }], tramCuu: [{ x: 4, y: 3 }] },
+        hamGoc: BANH.concat(['cast_net', 'drop_net']), mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 1 }], tramCuu: [{ x: 3, y: 3 }] },   // M9H2: trạm cứu cạnh cờ F (trước ở ngay ô F, hai hình chồng nhau)
       ['cast_net()', 'wait()', 'wait()', 'wait()', 'wait()', 'wait()']); },
     'thac': function () { return manSan9('thac', 'Thử thác', 'Người trôi vào thác (thua).', null, null,
       { san: ['~~~~', '....', '...F'], batDau: { x: 0, y: 1, huong: 1 }, hamGoc: BANH, mucTieu: 'cuu-nguoi', nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 2 }],

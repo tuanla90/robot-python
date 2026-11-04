@@ -195,6 +195,7 @@
       'thang.tieuDe.bongMo': 'ĐÚNG CHỖ!',
       'thang.tieuDe.toHinh': 'TÔ XONG!',
       'thang.tieuDe.dapLua': 'HẾT CHÁY!',
+      'thang.tieuDe.cuuNguoi': 'CỨU ĐƯỢC NGƯỜI!',          // M9H2: mục tiêu 'cuu-nguoi' (mùa 9: đưa người về trạm cứu)
       'thang.o': 'Gọn: {x} ô (cần ≤ {y})',
       'thang.nhip': 'Nhanh: {x} nhịp (cần ≤ {y})',
       'thang.nhipTong': 'Nhanh: tổng {x} nhịp (cần ≤ {y})',

@@ -157,6 +157,7 @@ body.ve-vector .bh .del:not(.het){--vc:var(--g-vecChuPhu)}
 body.ve-vector .thut-nut{width:24px;height:26px;border-radius:8px}
 body.ve-vector .bh .chinh-khoa{height:22px;padding:0 7px 0 5px;border-radius:var(--r-full);font:600 10px/1 var(--px);color:var(--g-vecHoPhachDam);background:var(--g-vecHoPhachNhat);box-shadow:none}
 body.ve-vector .bh .chinh-khoa .ck-ic{margin-bottom:0}
+body.ve-vector .co-doi .bh .chinh-khoa{padding:0 5px}                    /* M9H2: màn đội: chỉ ổ khóa (choi.css) */
 /* chớp đỏ khi chương trình sai chỗ: quầng đỏ mờ dần (không nháy bậc) */
 body.ve-vector .pan.flash{animation:vec-redfl .6s ease-out 1}
 @keyframes vec-redfl{0%{box-shadow:inset 0 0 0 2px var(--g-vecLoi),0 0 0 4px rgba(var(--g-vecLoiRgb),.35)}100%{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}}
