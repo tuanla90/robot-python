@@ -1,6 +1,7 @@
 /* ============================================================================
    ung-dung.js — "Robot Chấn Hưng": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
    Bốn màn hình (kiểu Cut the Rope, 15/10): 'dau' khởi đầu (man-dau.js) → 'goi' chọn gói (man-goi.js) → 'chon' lưới màn của gói (man-chon.js) → 'choi' màn chơi.
+   Thêm màn 'doi' (M9D2 4/11, man-chon-doi.js): màn có man.chonDoi thì App.vaoMan mở màn Chọn đội TRƯỚC (rồi Lắp robot nếu màn còn lapRap), "Vào màn" mới chơi bản LapRap.apDungDoi; App.doiDoi quay về đó.
    Thêm màn 'lap' (17/10, chế độ lắp ráp, man-lap.js): màn có man.lapRap thì App.vaoMan mở màn Lắp robot TRƯỚC, "Lắp xong" mới vào 'choi' (Choi.vao(m, cachLap)); trong màn chơi App.lapLai quay về đó đổi part.
    Luật mở khóa (gói mở bằng tổng sao, chương / hàng / thử thách trong gói) ở game/mo-goi.js; App chỉ gọi qua.
    ========================================================================== */
@@ -128,9 +129,9 @@
   };
 
   /* ---------------------------------------------------------------- màn hình */
-  var MAN_HINH = { dau: 'sc-dau', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi', lap: 'sc-lap' };
+  var MAN_HINH = { dau: 'sc-dau', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi', lap: 'sc-lap', doi: 'sc-doi' };
   App.manHinh = null;
-  /** Hiện một màn hình: 'dau' (khởi đầu) | 'goi' (chọn gói) | 'chon' (lưới màn của gói App.goi) | 'choi' | 'lap' (Lắp robot, màn lắp ráp). */
+  /** Hiện một màn hình: 'dau' (khởi đầu) | 'goi' (chọn gói) | 'chon' (lưới màn của gói App.goi) | 'choi' | 'lap' (Lắp robot, màn lắp ráp) | 'doi' (Chọn đội, màn chọn đội M9D2). */
   App.hien = function (ten) {
     TP.Chan.giu(400);                                  // cú bấm đến muộn không rơi xuống màn mới
     Object.keys(MAN_HINH).forEach(function (k) { var e = document.getElementById(MAN_HINH[k]); if (e) e.classList.toggle('hidden', k !== ten); });
@@ -155,10 +156,21 @@
   /** Vào màn theo mã cố định (vd 'vong-lap.4'); nhận cả id hiển thị ('3.4') cho tiện thử. */
   App.vaoMan = function (ma) {
     var m = ManHoc.timMa(ma) || ManHoc.tim(ma); if (!m) return;
+    App.vaoManDuLieu(m);
+  };
+  /** Vào màn theo dữ liệu màn (App.vaoMan sau khi tìm mã; thu-mua-9.js gọi thẳng với màn giả khi gỡ lỗi).
+   *  Màn chọn đội (man.chonDoi, M9D2) → màn Chọn đội trước; màn lắp ráp (man.lapRap) → màn Lắp robot; còn lại vào thẳng màn chơi. */
+  App.vaoManDuLieu = function (m) {
+    if (!m) return;
     if (App.moHet && window.GoLoi && GoLoi.napKhiMoHet) GoLoi.napKhiMoHet(m);   // "Mở hết" (gỡ lỗi): nhảy cóc vẫn có hàm cốt truyện các màn trước
     napMuaTruoc(m);
     App.man = m; App.chuong = m.chuong;
     var g = App.goiCua(m.chuong); if (g) { App.goi = g.ma; App.mua = g.mua; }
+    if (m.chonDoi && window.ChonDoi) {                 // M9D2 màn chọn đội: chọn cỗ máy cho Sola / Luna trước, "Vào màn" mới chơi (hay sang Lắp robot nếu màn còn lapRap); ◀ về lưới màn
+      App.hien('doi');
+      ChonDoi.vao(m, { chon: Luu.docDoi(m.ma), khiVe: function () { App.veChon(); }, khiXong: function (chon) { sauChonDoi(m, chon, function () { App.vaoManDuLieu(m); }); } });
+      return;
+    }
     if (m.lapRap && window.LapRobot) {                 // màn lắp ráp (lap-rap.js): chọn part trước, "Lắp xong" mới vào màn chơi; ◀ về lưới màn
       App.hien('lap');
       LapRobot.vao(m, { cach: Luu.docLap(m.ma), khiVe: function () { App.veChon(); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(m, cach); } });
@@ -167,15 +179,35 @@
     App.hien('choi');
     Choi.vao(m);
   };
+  /** Đã chọn đội `chon` cho màn gốc goc: bản màn đội (LapRap.apDungDoi); màn còn lapRap thì sang màn Lắp robot (◀ ở đó gọi veLai: quay về bước chọn đội), không thì vào màn chơi. */
+  function sauChonDoi(goc, chon, veLai) {
+    var a = LapRap.apDungDoi(goc, chon);
+    if (goc.lapRap && window.LapRobot) {
+      App.hien('lap');
+      LapRobot.vao(a, { cach: Luu.docLap(goc.ma), khiVe: veLai, khiXong: function (cach) { App.hien('choi'); Choi.vao(a, cach); } });
+      return;
+    }
+    App.hien('choi');
+    Choi.vao(a);
+  }
   /** Màn lắp ráp đang chơi: quay về màn Lắp robot để đổi part. "Lắp xong" → vào lại màn chơi với robot mới (chương trình đang viết được giữ, dòng gọi lệnh part đã tháo bị tô đỏ);
-   *  ◀ → về màn chơi, không đổi gì. */
+   *  ◀ → về màn chơi, không đổi gì. Màn vừa chọn đội vừa lắp: Lắp robot dựng trên đội đang chơi (m.chonDaChon). */
   App.lapLai = function () {
     var c = window.Choi && Choi.trangThai(), m = c && c.man;
     if (!m || !m.lapRap || !window.LapRobot) return;
-    var goc = m.manGoc || m;
+    var goc = m.manGoc || m, nen = goc.chonDoi && m.chonDaChon ? LapRap.apDungDoi(goc, m.chonDaChon) : goc;
     TP.Hop.dong(); Choi.roi && Choi.roi();
     App.hien('lap');
-    LapRobot.vao(goc, { cach: m.cachLapDaChon, khiVe: function () { App.hien('choi'); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(goc, cach); } });
+    LapRobot.vao(nen, { cach: m.cachLapDaChon, khiVe: function () { App.hien('choi'); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(nen, cach); } });
+  };
+  /** M9D2 màn chọn đội đang chơi: quay về màn Chọn đội (đội đang chơi được chọn sẵn). "Vào màn" → chơi lại với đội mới (chương trình đang viết được giữ); ◀ → về màn chơi, không đổi gì. */
+  App.doiDoi = function () {
+    var c = window.Choi && Choi.trangThai(), m = c && c.man;
+    var goc = m && (m.manGoc || m);
+    if (!goc || !goc.chonDoi || !window.ChonDoi) return;
+    TP.Hop.dong(); Choi.roi && Choi.roi();
+    App.hien('doi');
+    ChonDoi.vao(goc, { chon: m.chonDaChon, khiVe: function () { App.hien('choi'); }, khiXong: function (chon) { sauChonDoi(goc, chon, function () { App.hien('doi'); }); } });
   };
   /** Mở lưới màn của gói ma (chương xem = chương đầu của gói, trừ khi chương đang xem nằm trong gói). */
   App.vaoGoi = function (ma) {
@@ -218,6 +250,7 @@
     Chon.dung(kb);
     Choi.dung(kc);
     if (kl && window.LapRobot) LapRobot.dung(kl);
+    var kdoi = document.getElementById('sc-doi'); if (kdoi && window.ChonDoi) ChonDoi.dung(kdoi);
     ghiGoiDaMo();
     // gói / chương mở ban đầu: của màn tiếp theo cần chơi
     var dau = App.manTiepTheo(), dsc = App.dsChuong();

@@ -19,6 +19,9 @@
    MÃ PART lấy đúng mã bộ phận của bộ vẽ vector game/ve-vector-*.js (VeVector.lay; V7c1: bộ pixel game/part không còn là nguồn; bảng DANH_MUC giữ thêm `ham` = lệnh gốc
    của bộ phận, máy kiểm so với VeVector.hamGoc và dữ liệu chụp hoc/du-lieu-chup-pixel.json): thân hai-banh · xich · omni · nhen · drone; tay kep · xoay · nam-cham · nem · hoi;
    cảm biến khoang-cach · mau · camera · camera-bay · và 'tu' = CẢM BIẾN TỪ, part riêng từ P1 mùa 3 29/10 (trước: part khoang-cach + hai hàm front_metal / front_pole; hình giống khoang-cach).
+   M9A (3/11, mùa 9 Về CLB): thêm thân gai · xuong · cau; tay son · loa · moc-cau · day-keo; não hong-ngoai · camera-4 · radar · am-thanh · quet-ma · dong-chay (8 × 9 × 11).
+   LUẬT GHÉP đọc từ hoc/bang-ghep.js (BangGhep.kiemGhep, một chỗ cho cả game; trạng thái ● ✔ ★ · ✗ + lý do ba câu); kiemGhep trả thêm ma 'lai-chua-co' (ô ★, kèm lai 'L1'…) và 'khong-mo' (ô ·).
+   Mục có `nangCap` (cần cẩu rail): lệnh chỉ lên khay khi màn khai trong man.hamGoc; `tenCu` (tay lưới tow…): tên cũ trong bộ vẽ, không lên khay.
 
    API (window.LapRap, hay module.exports trong Node; trong Node tự nạp game/ve-vector.js + các bộ phận vector):
      KHE                          ['than', 'tay', 'camBien']
@@ -26,7 +29,9 @@
      tim(khe, ma) · tenCua(khe, ma) · moTa(cach) → "Hai bánh + Tay kẹp + Màu bụng"
      chuanCach(c) → { than, tay, camBien }      giaCach(c) → số xu
      cauHinhCua(c) → { than, tay, camBien: [{ ma, o }] }   (đưa thẳng cho VeRobot.ve / VeVector.kiemGhep)
-     kiemGhep(c) → { ok, lyDo, ma: 'ghep-sai' | 'khe-la', xung: [khe…] }   ghép có hợp lệ không (KHÔNG xét ngân sách, không xét danh sách màn cho phép)
+     kiemGhep(c, man?) → { ok, lyDo, ma: 'ghep-sai' | 'khe-la' | 'lai-chua-co' | 'khong-mo', xung: [khe…] }   ghép có hợp lệ không (KHÔNG xét ngân sách, không xét danh sách màn cho phép)
+                                  man (M9B1 4/11): màn mở lai ★ nào — moLaiCua(man) = man.lapRap.moLai, không thì man.moLai (vd ['L4']); không có man = không mở lai nào
+     moLaiCua(man) → ['L4', …]
      kiemCachLap(man, c) → { ok, gia, lyDo, ma, thieu, khe }    ma: 'khong-cho' | 'thieu-khe' | 'ghep-sai' | 'vuot-ngan-sach' | null; thieu = số xu còn thiếu khi vượt ngân sách; khe = khe liên quan (khong-cho, thieu-khe)
                                   (có thêm bí danh không đếm được `giá` = gia)
      dsCachLap(man) → [{ than, tay, camBien, gia }]  mọi cách lắp hợp lệ trong ngân sách, xếp theo giá rồi theo thứ tự danh sách
@@ -43,6 +48,17 @@
      veVector() → bộ vẽ vector đã nạp (Node: tự nạp game/ve-vector.js + ve-vector-than-* / tay-* / cam.js); null nếu không có (khi đó bỏ bước nhờ kiemGhep xét lại)
      honHan(a, b) · cachBiHonHan(thongKe) → các cặp { hon, kem }: cách hơn hẳn cách khác ở cả giá, nhịp, ô (luật cân màn: phải rỗng)
      lenhKhongCon(man, dong) → chỉ số các dòng gọi lệnh gốc của part mà robot hiện tại không có (khi "Lắp lại" đổi part mà chương trình còn lệnh cũ)
+
+   M9D1 (4/11, mùa 9 chương 1 CHỌN ĐỘI + chương 2 LẮP ROBOT THỨ HAI; KE-HOACH-MUA-9-TO-HOP.md mục 7, 8, 8b, 9.4; máy kiểm hoc/kiem-chon-doi.mjs):
+     man.chonDoi = { menu: ['CH', 'DR', 'CU'], so?: 2, trung?: false, cachMau: [{ chon: ['CH', 'CU'], loiGiai: { doi: [{ chinh }…], hamCuaMan?, hamCuaEmMoi? }, ghiChu? }] }
+       man.doi[i] của robot em lập trình chỉ khai phần riêng (batDau, co, son, pin, coThem); robot khoá (coDinh) khai đủ như màn đội thường, chạy maMau.doi[i]. chon[k] = robot em thứ k.
+     man.lapRap.robot = i  → màn đội, lắp cho robot thứ i: apDung gắn vào man.doi[i] (bỏ cờ cỗ máy cũ, giữ batDau / co / son), cachLap[k].loiGiai = { doi } (lời giải đội).
+     robotEm(man) · soChonCua(man) · robotLapCua(man) · coMay() (co-may.js)
+     kiemChon(man, chon) → { ok, ma: 'khong-chon-doi' | 'thieu' | 'thua' | 'khong-co' | 'trung' | null, lyDo }    dsCachChon(man) → [[mã…]] mọi lựa chọn hợp lệ (có thứ tự)
+     apDungDoi(man, chon | cachMau) → bản màn đủ man.doi[i] (CoMay.dung: loaiRobot, robot, hamGoc, cờ), chonDaChon, manGoc, loiGiai (khi là cách mẫu). Ném lỗi lời Việt khi chọn sai.
+     kiemDuLieuDoi(man) · thongKeMauDoi(man, kho?) → [{ chon, ten, thang, nhip, o, sao, loi, ghiChu }] · kiemCanManDoi(man, kho?)
+     loiGiaiCua(lg, man?) → lời giải dạng máy chấm chạy (màn đội: robot khoá không có trong lg thì lấy maMau.doi[i]) · baiCua(lg) → bài làm đưa Cham.cham
+     macDinh(man) điền thêm: chonDoi theo cachMau[0]; lapRap.robot theo cachLap[0] vào man.doi[i]. (man-chuoi-1.js chuanHoa chỉ gọi macDinh khi m.lapRap → màn chọn đội gọi LapRap.macDinh trước chuanHoa, hay chuanHoa thêm `|| m.chonDoi` ở gói D2.)
    ========================================================================== */
 (function () {
   'use strict';
@@ -54,20 +70,30 @@
   /* ------------------------------------------------------------------ danh mục */
   // loai: loaiRobot của thân trong lõi SanHoc ('banh' cho hai bánh). gia: xu (khởi điểm, chỉnh khi cân màn).
   // ham: các lệnh gốc part mở ra (đúng hamGoc của bộ phận vector; kiem-lap-rap.mjs so từng mục) — để apDung / macDinh chạy được cả lúc nạp màn, khi bộ vẽ chưa nạp.
+  // M9A (3/11): danh mục 8 thân × 9 tay × 11 não (mùa 9 Về CLB, KE-HOACH-MUA-9-TO-HOP.md mục 9.3). Năm thân / tay / não đầu giữ nguyên thứ tự, giá, câu "vượt" (màn rap-* đang dùng).
+  // nangCap: lệnh nâng cấp của part CHỈ lên khay khi màn khai nó trong man.hamGoc (như land / take_off của drone): rail của cần cẩu cần xuất phát trên ray R.
+  // tenCu: tên lệnh cũ còn trong hamGoc của bộ vẽ (tay lưới: tow / drop_tow / tether / untether), lõi không nhận → không lên khay.
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back'], BAY = ['go_up', 'go_down', 'go_left', 'go_right'], KHOANG_CACH = ['front_clear', 'left_clear', 'right_clear'];
   var THAN = [
     { ma: 'hai-banh', part: 'hai-banh', loai: 'banh', ten: 'Hai bánh', gia: 2, icon: 'denBanh', vuot: 'Đi, rẽ trên sàn phẳng', ham: BANH.concat(['wait']) },
     { ma: 'xich', part: 'xich', loai: 'xich', ten: 'Bánh xích', gia: 3, icon: 'denXich', vuot: 'Leo bậc, không trôi băng chuyền', ham: BANH.concat(['wait']) },
-    { ma: 'omni', part: 'omni', loai: 'omni', ten: 'Bánh omni', gia: 4, icon: 'denTruot', vuot: 'Trượt ngang, không cần quay', ham: BANH.concat(['slide_left', 'slide_right', 'wait']) },
+    { ma: 'omni', part: 'omni', loai: 'omni', ten: 'Bánh omni', gia: 4, icon: 'denTruot', vuot: 'Trượt ngang, không cần quay', ham: BANH.concat(['slide_left', 'slide_right', 'wait']), nangCap: ['diag_left', 'diag_right'] },   // M9A: đi chéo (mùa 6 gói 5) là nâng cấp lõi, bộ vẽ không có
     { ma: 'nhen', part: 'nhen', loai: 'nhen', ten: 'Thân nhện', gia: 4, icon: 'denChan', vuot: 'Chui gầm, nhảy hố, leo bậc', ham: BAY.concat(['wait', 'crouch', 'stand']) },
-    { ma: 'drone', part: 'drone', loai: 'drone', ten: 'Thân drone', gia: 5, icon: 'denCanh', vuot: 'Bay qua rào, băng chuyền, vật', ham: BAY.concat(['wait', 'battery', 'land', 'take_off']) }
+    { ma: 'drone', part: 'drone', loai: 'drone', ten: 'Thân drone', gia: 5, icon: 'denCanh', vuot: 'Bay qua rào, băng chuyền, vật', ham: BAY.concat(['wait', 'battery', 'land', 'take_off']) },
+    { ma: 'gai', part: 'gai', loai: 'gai', ten: 'Bánh gai', gia: 4, icon: 'denBanh', vuot: 'Bám đá ướt, bùn trơn khi bung gai', ham: BANH.concat(['wait', 'retract_spikes', 'extend_spikes']) },
+    { ma: 'xuong', part: 'xuong', loai: 'xuong', ten: 'Xuồng', gia: 5, icon: 'denTruot', vuot: 'Đi trên nước, thả neo', ham: BANH.concat(['wait', 'anchor', 'unanchor']) },
+    { ma: 'cau', part: 'cau', loai: 'cau', ten: 'Cần cẩu', gia: 6, icon: 'denTayLen', vuot: 'Quay, vươn cần qua tường, nước', ham: ['swing_left', 'swing_right', 'extend', 'retract', 'wait'], nangCap: ['rail'] }
   ];
   var TAY = [
     { ma: 'kep', part: 'kep', ten: 'Tay kẹp', gia: 2, icon: 'denKepMo', vuot: 'Nhặt vật lên, thả xuống', ham: ['arm_down', 'arm_up', 'grab', 'release'] },
     { ma: 'xoay', part: 'xoay', ten: 'Tay kẹp xoay', gia: 3, icon: 'denXoay', vuot: 'Kẹp vật ở trước, trái, phải', ham: ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'] },
     { ma: 'nam-cham', part: 'nam-cham', ten: 'Nam châm', gia: 3, icon: 'denNamCham', vuot: 'Hút vật sắt, vật nam châm từ xa', ham: ['magnet_n', 'magnet_s', 'magnet_off'] },
     { ma: 'nem', part: 'nem', ten: 'Máy ném', gia: 3, icon: 'denNem', vuot: 'Ném vật qua rào, xa 1 đến 3 ô', ham: ['aim', 'throw', 'load'] },
-    { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Phun mạnh đẩy thùng nặng', ham: ['spray', 'spray_back'] }
+    { ma: 'hoi', part: 'hoi', ten: 'Vòi phun', gia: 3, icon: 'denSung', vuot: 'Phun mạnh đẩy thùng nặng', ham: ['spray', 'spray_back'] },
+    { ma: 'son', part: 'son', ten: 'Bộ gieo hạt', gia: 3, icon: 'denSon', vuot: 'Gieo hạt, chấm màu ô đang đứng', ham: ['ink', 'dot', 'pen_down', 'pen_up'] },
+    { ma: 'loa', part: 'loa', ten: 'Loa', gia: 3, icon: 'denLoa', vuot: 'Phát nốt nhạc, phá đá chuông', ham: ['note', 'beat'] },
+    { ma: 'moc-cau', part: 'moc-cau', ten: 'Móc cẩu', gia: 4, icon: 'denKepDong', vuot: 'Nhấc, hạ container ở đầu cần', ham: ['pick_up', 'set_down', 'pick_up2'] },
+    { ma: 'day-keo', part: 'day-keo', ten: 'Tay lưới', gia: 3, icon: 'denTayXuong', vuot: 'Tung lưới kéo bè, vật nổi về mũi', ham: ['cast_net', 'drop_net', 'set_length'], tenCu: ['tow', 'drop_tow', 'tether', 'untether'] }
   ];
   // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu'): PART RIÊNG (P1 mùa 3 29/10; hình ve-vector-cam.js 'tu'), chỉ hai hàm front_metal / front_pole; trước đó là
   // part khoang-cach + hai hàm. Giá giữ 2 (rap-du.9 cách mẫu 'tu' không dùng front_clear nên kết quả cũ y nguyên).
@@ -76,7 +102,13 @@
     { ma: 'mau', part: 'mau', o: 'hong', ten: 'Màu bụng', gia: 2, icon: 'denCam', vuot: 'Đọc màu ô dưới bụng xe', ham: ['color'] },
     { ma: 'camera', part: 'camera', o: 'tren', ten: 'Camera trước', gia: 2, icon: 'denCam', vuot: 'Đọc màu và vật ở ô trước mặt', ham: ['color'] },
     { ma: 'tu', part: 'tu', o: 'hong', ten: 'Cảm biến từ', gia: 2, icon: 'denCam', vuot: 'Biết vật sắt hay cực nam châm', ham: ['front_metal', 'front_pole'] },
-    { ma: 'camera-bay', part: 'camera-bay', o: 'bung', ten: 'Camera bụng', gia: 2, icon: 'denCam', vuot: 'Drone thấy màu ô và vật dưới bụng', ham: ['look'] }
+    { ma: 'camera-bay', part: 'camera-bay', o: 'bung', ten: 'Camera bụng', gia: 2, icon: 'denCam', vuot: 'Drone thấy màu ô và vật dưới bụng', ham: ['look'] },
+    { ma: 'hong-ngoai', part: 'hong-ngoai', o: 'tren', ten: 'Hồng ngoại', gia: 2, icon: 'denCam', vuot: 'Đếm ô trống phía trước, đo nóng', ham: ['distance', 'warm'] },
+    { ma: 'camera-4', part: 'camera-4', o: 'tren', ten: 'Camera bốn hướng', gia: 3, icon: 'denCam', vuot: 'Đọc màu ô ở bốn hướng quanh xe', ham: ['color'] },
+    { ma: 'radar', part: 'radar', o: 'tren', ten: 'Radar tròn', gia: 3, icon: 'denCam', vuot: 'Thấy 3 × 3 ô quanh xe, dạng đá', ham: ['radar', 'shape'] },
+    { ma: 'am-thanh', part: 'am-thanh', o: 'tren', ten: 'Mic', gia: 2, icon: 'denCam', vuot: 'Nghe nốt chuông đá quanh xe', ham: ['hear', 'listen'] },
+    { ma: 'quet-ma', part: 'quet-ma', o: 'tren', ten: 'Đầu đọc mã', gia: 2, icon: 'denCam', vuot: 'Đọc số, cân container ở đầu cần', ham: ['read_code', 'weight'] },
+    { ma: 'dong-chay', part: 'dong-chay', o: 'tren', ten: 'Chong chóng', gia: 2, icon: 'denCam', vuot: 'Biết hướng, sức dòng chảy trước mũi', ham: ['flow_dir', 'flow'] }
   ];
   var DANH_MUC = { than: THAN, tay: TAY, camBien: CAM_BIEN };
 
@@ -98,9 +130,25 @@
     if (!vvNode) {
       var fs = require('fs'), path = require('path'), dir = path.join(__dirname, 'game');
       vvNode = require(path.join(dir, 've-vector.js'));
-      fs.readdirSync(dir).filter(function (n) { return /^ve-vector-(than|tay)-[\w-]+\.js$|^ve-vector-cam\.js$/.test(n); }).sort().forEach(function (n) { require(path.join(dir, n)); });
+      fs.readdirSync(dir).filter(function (n) { return /^ve-vector-(than|tay)-[\w-]+\.js$|^ve-vector-cam(-[\w-]+)?\.js$/.test(n); }).sort().forEach(function (n) { require(path.join(dir, n)); });   // M9A: cả ve-vector-cam-cang / cam-song (quet-ma, dong-chay)
     }
     return vvNode;
+  }
+  /** Bảng ghép một chỗ (bang-ghep.js): trình duyệt dùng window.BangGhep (choi.html nạp trước lap-rap.js), Node tự require. */
+  var bgNode = null;
+  function BG() {
+    var b = (typeof window !== 'undefined' && window.BangGhep) || (typeof globalThis !== 'undefined' && globalThis.BangGhep) || null;
+    if (b) return b;
+    if (!laNode) throw new Error('lap-rap.js cần bang-ghep.js nạp trước (window.BangGhep).');
+    return bgNode || (bgNode = require('./bang-ghep.js'));
+  }
+  /** Tám bộ cỗ máy (co-may.js): trình duyệt dùng window.CoMay (nạp trước lap-rap.js khi màn có chonDoi), Node tự require. */
+  var cmNode = null;
+  function CM() {
+    var c = (typeof window !== 'undefined' && window.CoMay) || (typeof globalThis !== 'undefined' && globalThis.CoMay) || null;
+    if (c) return c;
+    if (!laNode) throw new Error('lap-rap.js cần co-may.js nạp trước (window.CoMay) cho màn chọn đội.');
+    return cmNode || (cmNode = require('./co-may.js'));
   }
 
   /* ------------------------------------------------------------- một cách lắp */
@@ -122,29 +170,24 @@
   function tenKhe(c, khe) { return c[khe] ? tenCua(khe, c[khe]) : ''; }
 
   /**
-   * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). Luật = luật của VeVector.kiemGhep + luật của lõi SanHoc.chay (cấu hình robot):
-   *   drone: chỉ treo nam châm dưới bụng, không camera trước / cảm biến khoảng cách / cảm biến từ (không có mặt trước); camera bụng chỉ gắn lên drone;
-   *   nhện: tay kẹp hoặc nam châm (nam châm treo dưới bụng, mùa 3 gói 9; không tay xoay, máy ném, súng hơi), không cảm biến khoảng cách / từ (không có hướng mặt).
-   * Cuối cùng nhờ VeVector.kiemGhep xét lại (bắt luật ghép mới thêm vào bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
+   * Ghép có hợp lệ không (không xét ngân sách, không xét danh sách màn cho phép). M9A (3/11): luật đọc từ BẢNG GHÉP MỘT CHỖ bang-ghep.js (trước: các nhánh if riêng cho drone / nhện,
+   * câu báo cũ nay nằm trong bảng, y nguyên chữ). ma: 'khe-la' | 'ghep-sai' (ô ✗, lyDo theo ba câu) | 'lai-chua-co' (ô ★, kèm `lai` = mã L; gói B bật BangGhep.MO_LAI) | 'khong-mo' (ô ·).
+   * Cuối cùng nhờ VeVector.kiemGhep xét lại (ổ gắn thật của bộ vẽ; V7c1: trước là Part.ghep của bộ pixel, cùng câu báo).
    */
-  function kiemGhep(c) {
+  /** Mã lai ★ màn mở (M9B1 4/11): man.lapRap.moLai, không thì man.moLai (màn không lắp ráp mà robot là tổ hợp lai); mảng mới, không có thì []. */
+  function moLaiCua(man) {
+    if (!man) return [];
+    var g = man.manGoc || null;
+    var ds = (man.lapRap && man.lapRap.moLai) || man.moLai || (g && ((g.lapRap && g.lapRap.moLai) || g.moLai)) || [];
+    return Array.isArray(ds) ? ds.slice() : [];
+  }
+  function kiemGhep(c, man) {
     c = chuanCach(c);
     if (!c.than || !tim('than', c.than)) return { ok: false, ma: 'khe-la', lyDo: c.than ? 'Không có thân "' + c.than + '".' : 'Chưa chọn thân.', xung: ['than'] };
     if (c.tay && !tim('tay', c.tay)) return { ok: false, ma: 'khe-la', lyDo: 'Không có tay "' + c.tay + '".', xung: ['tay'] };
     if (c.camBien && !tim('camBien', c.camBien)) return { ok: false, ma: 'khe-la', lyDo: 'Không có cảm biến "' + c.camBien + '".', xung: ['camBien'] };
-    var sai = null;
-    var than = tenKhe(c, 'than'), tay = tenKhe(c, 'tay'), cam = tenKhe(c, 'camBien');
-    if (c.than === 'drone') {
-      if (c.tay && c.tay !== 'nam-cham') sai = { lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };
-      else if (c.camBien === 'khoang-cach' || c.camBien === 'tu' || c.camBien === 'camera') sai = { lyDo: 'Drone không có mặt trước để đo hay nhìn phía trước, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };
-    } else {
-      if (c.camBien === 'camera-bay') sai = { lyDo: 'Camera bụng chỉ gắn được lên drone.', xung: ['than', 'camBien'] };
-      else if (c.than === 'nhen') {
-        if (c.tay && c.tay !== 'kep' && c.tay !== 'nam-cham') sai = { lyDo: 'Nhện không có hướng mặt, không gắn ' + tay.toLowerCase() + '.', xung: ['than', 'tay'] };     // nam châm: treo dưới bụng (mùa 3)
-        else if (c.camBien === 'khoang-cach') sai = { lyDo: 'Nhện không có hướng mặt, không gắn "' + cam.toLowerCase() + '".', xung: ['than', 'camBien'] };     // 31/10: cảm biến từ gắn được lên nhện (đo theo cạnh trước cố định)
-      }
-    }
-    if (sai) return { ok: false, ma: 'ghep-sai', lyDo: sai.lyDo, xung: sai.xung };
+    var b = BG().kiemGhep(c.than, c.tay, c.camBien, { moLai: moLaiCua(man) });
+    if (!b.ok) { var kq = { ok: false, ma: b.ma, lyDo: b.lyDo, xung: b.xung }; if (b.lai) kq.lai = b.lai; return kq; }
     var vv = VV();
     if (vv) {
       try { vv.kiemGhep(cauHinhCua(c)); }
@@ -178,7 +221,7 @@
     if (!c.than) return ketQua(false, gia, 'thieu-khe', 'Chưa chọn thân.', 0, 'than');
     var can = phaiCoCua(L).filter(function (k) { return (L[k] || []).length && !c[k]; })[0];
     if (can) return ketQua(false, gia, 'thieu-khe', 'Màn này cần gắn khe ' + TEN_KHE[can].toLowerCase() + '.', 0, can);
-    var g = kiemGhep(c);
+    var g = kiemGhep(c, man);
     if (!g.ok) return ketQua(false, gia, 'ghep-sai', g.lyDo);
     var ns = nganSachCua(L);
     if (gia > ns) return ketQua(false, gia, 'vuot-ngan-sach', 'Thiếu ' + (gia - ns) + ' xu.', gia - ns);
@@ -242,30 +285,200 @@
       (d && d.ham || []).forEach(function (h) { if (goc.indexOf(h) < 0) goc.push(h); });
     });
     if (goc.indexOf('wait') < 0) goc.push('wait');
+    if (c.than === 'cau') goc = goc.filter(function (h) { return h !== 'arm_down' && h !== 'arm_up'; });   // M9B2 (L8): gầu ngoạm trên cần cẩu chỉ grab() / release() (gầu thả từ đầu cần, không nâng hạ tay)
+    if (c.than === 'cau' || c.than === 'drone') goc = goc.filter(function (h) { return h !== 'set_length'; });   // M9C2 (L9, L10): giỏ cứu hộ / phao chỉ cast_net() / drop_net()
     if (!(c.than === 'drone' && coPinMan(man))) goc = goc.filter(function (h) { return h !== 'battery'; });
     // land / take_off: nâng cấp drone đáp đất để sạc (mùa 4 gói 5) chỉ khi màn mở nó trên khay
     if (!(c.than === 'drone' && (man.hamGoc || []).indexOf('land') >= 0)) goc = goc.filter(function (h) { return h !== 'land' && h !== 'take_off'; });
+    // M9A: lệnh nâng cấp (nangCap) của part mới chỉ lên khay khi màn khai nó trong man.hamGoc (cần cẩu rail: bệ phải xuất phát trên ray)
+    KHE.forEach(function (k) {
+      var d = c[k] ? tim(k, c[k]) : null;
+      (d && d.nangCap || []).forEach(function (h) { if ((man.hamGoc || []).indexOf(h) < 0) goc = goc.filter(function (x) { return x !== h; }); else if (goc.indexOf(h) < 0) goc.push(h); });
+    });
     return goc;
   }
+  /** Lời giải của một cách mẫu (lắp hay chọn đội) ở dạng máy chấm / máy kiểm chạy được: màn một robot { chinh, hamCuaMan, hamCuaEmMoi }; màn đội { doi: [{ chinh }…], hamCuaMan, hamCuaEmMoi }.
+   *  Màn đội (truyền `man`): robot KHOÁ (man.doi[i].coDinh) mà lời giải không ghi chương trình thì lấy maMau.doi[i] của màn (máy khách R3 chạy chương trình khoá; cách mẫu chỉ cần viết cho robot em lập trình). */
+  function loiGiaiCua(lg, man) {
+    lg = lg || {};
+    var kq = Array.isArray(lg.doi) ? { doi: lg.doi.map(function (d) { return { chinh: ((d && d.chinh) || []).slice() }; }) } : { chinh: (lg.chinh || []).slice() };
+    if (kq.doi && man && Array.isArray(man.doi)) man.doi.forEach(function (r, i) {
+      var mm = r.coDinh && man.maMau && man.maMau.doi && man.maMau.doi[i];
+      if (mm && !(lg.doi[i] && lg.doi[i].chinh && lg.doi[i].chinh.length)) kq.doi[i] = { chinh: (mm.chinh || []).slice() };
+      else if (!kq.doi[i]) kq.doi[i] = { chinh: [] };
+    });
+    kq.hamCuaMan = lg.hamCuaMan || []; kq.hamCuaEmMoi = lg.hamCuaEmMoi || [];
+    return kq;
+  }
+  /** Bài làm đưa máy chấm từ loiGiai (chinh hay doi). */
+  function baiCua(lg) { return lg.doi ? { doi: lg.doi.map(function (d) { return { chinh: d.chinh.slice() }; }), hamCuaMan: lg.hamCuaMan || [] } : { chinh: lg.chinh.slice(), hamCuaMan: lg.hamCuaMan || [] }; }
+  /** Chỉ số robot được lắp trong màn đội (man.lapRap.robot); null = màn một robot (lắp vào chính màn). */
+  function robotLapCua(man) {
+    var L = lapRapCua(man);
+    return L && typeof L.robot === 'number' && Array.isArray(man.doi) ? L.robot : null;
+  }
+  /** Các khoá cấu hình cỗ máy trên một mục man.doi[i] (CoMay.dung đặt): bỏ đi trước khi gắn cỗ máy / cách lắp mới, để cờ của cỗ máy cũ không sót lại. */
+  function khoaCoMay() {
+    var ks = ['loaiRobot', 'robot', 'hamGoc', 'pin'], DS = CM().DS;
+    Object.keys(DS).forEach(function (m) { Object.keys(DS[m].co || {}).forEach(function (k) { if (ks.indexOf(k) < 0) ks.push(k); }); });
+    return ks;
+  }
+  function locCoMay(r) {
+    var kq = Object.assign({}, r), ks = khoaCoMay();
+    ks.forEach(function (k) { delete kq[k]; });
+    return kq;
+  }
+  /** Màu đế của robot thứ i trong đội: khai ở doi[i].son hay doi[i].robot.son; mặc định R2 'lam' (hồng Luna), R1 không (xanh Sola). */
+  function sonCua(r, i) { return r.son || (r.robot && r.robot.son) || (i === 1 ? 'lam' : undefined); }
   function apDung(man, cach) {
-    var c = chuanCach(cach), g = kiemGhep(c);
+    var c = chuanCach(cach), g = kiemGhep(c, man);
     if (!g.ok) throw new Error(g.lyDo);
     var th = tim('than', c.than), ch = cauHinhCua(c);
     var kq = Object.assign({}, man);
     kq.manGoc = man.manGoc || man;
     kq.cachLapDaChon = c;
     kq.giaLap = giaCach(c);                                                                // máy chấm dùng cho sao "rẻ" (man.sao.re)
-    kq.loaiRobot = th.loai;
-    if (c.than === 'drone' && coPinMan(man)) { ch.camBien.push({ ma: 'pin', o: 'than' }); kq.pin = pinCua(man); }
-    else delete kq.pin;
-    delete kq.pinDrone;                                                                    // pin chỉ dành cho drone: thân khác thì lõi ném lỗi nếu còn pin
-    kq.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
-    kq.hamGoc = hamGocCua(man, c);
-    if (cach && cach.loiGiai) {                                                            // cách mẫu: máy kiểm / máy chấm chạy lời giải của chính cách này
-      var lg = cach.loiGiai;
-      kq.loiGiai = { chinh: (lg.chinh || []).slice(), hamCuaMan: lg.hamCuaMan || [], hamCuaEmMoi: lg.hamCuaEmMoi || [] };
+    var i = robotLapCua(man);
+    if (i !== null) {                                                                      // M9D1: màn đội, lắp cho robot thứ i (man.lapRap.robot): gắn vào man.doi[i], không đụng robot khác
+      if (!man.doi[i]) throw new Error('Màn không có robot thứ ' + (i + 1) + ' để lắp.');
+      if (man.doi[i].coDinh) throw new Error('Robot thứ ' + (i + 1) + ' bị khoá, không lắp được.');
+      var r = locCoMay(man.doi[i]), pinR = man.doi[i].pin !== undefined ? man.doi[i].pin : pinCua(man);
+      r.loaiRobot = th.loai;
+      if (c.than === 'drone' && pinR !== undefined && pinR !== null) { ch.camBien.push({ ma: 'pin', o: 'than' }); r.pin = pinR; }
+      r.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
+      var sonR = sonCua(man.doi[i], i); if (sonR) r.robot.son = sonR;
+      r.hamGoc = hamGocCua(Object.assign({}, man, { hamGoc: man.doi[i].hamGoc || man.hamGoc }), c);
+      delete r.son;
+      kq.doi = man.doi.slice(); kq.doi[i] = r;
+      if (i === 0) { kq.loaiRobot = r.loaiRobot; kq.robot = r.robot; kq.hamGoc = r.hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)
+    } else {
+      kq.loaiRobot = th.loai;
+      if (c.than === 'drone' && coPinMan(man)) { ch.camBien.push({ ma: 'pin', o: 'than' }); kq.pin = pinCua(man); }
+      else delete kq.pin;
+      delete kq.pinDrone;                                                                  // pin chỉ dành cho drone: thân khác thì lõi ném lỗi nếu còn pin
+      kq.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
+      kq.hamGoc = hamGocCua(man, c);
     }
+    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai, man);                  // cách mẫu: máy kiểm / máy chấm chạy lời giải của chính cách này (màn đội: loiGiai.doi, robot khoá lấy maMau)
     return kq;
+  }
+
+  /* ------------------------------------------------------------- chọn đội (M9D1, mùa 9 chương 1; KE-HOACH-MUA-9-TO-HOP.md mục 7, 8, 9.4)
+     man.chonDoi = {
+       menu: ['CH', 'DR', 'CU'],              // mã cỗ máy (CoMay.DS) trên bảng chọn
+       so: 2,                                  // (tuỳ chọn) số cỗ máy phải chọn; mặc định = số robot em lập trình (man.doi[i] không coDinh)
+       trung: false,                           // (tuỳ chọn) true = được chọn cùng một cỗ máy cho hai robot; mặc định cấm trùng
+       cachMau: [ { chon: ['CH', 'DR'], loiGiai: { doi: [{ chinh }, { chinh }], hamCuaMan?, hamCuaEmMoi? }, ghiChu? }, … ]   // đôi tốt đứng đầu (ứng với sao 3)
+     }
+     man.doi[i] của robot em lập trình chỉ khai phần riêng (batDau, co, son, pin cho drone…); cỗ máy do người chơi chọn điền vào (CoMay.dung). Robot khoá (coDinh) khai đủ như màn đội thường
+     và chạy maMau.doi[i] (cham.js). chon[k] ứng với robot em lập trình thứ k theo thứ tự trong man.doi. */
+  function chonDoiCua(man) { return (man && man.chonDoi) || null; }
+  /** Chỉ số các robot em lập trình (không coDinh) của màn đội. */
+  function robotEm(man) {
+    var kq = [];
+    (Array.isArray(man && man.doi) ? man.doi : []).forEach(function (r, i) { if (!r.coDinh) kq.push(i); });
+    return kq;
+  }
+  function soChonCua(man) { var C = chonDoiCua(man); return C && typeof C.so === 'number' ? C.so : robotEm(man).length; }
+  function tenCoMay(ma) { var d = CM().DS[ma]; return d ? d.ten : String(ma); }
+  /** Lựa chọn `chon` (mảng mã cỗ máy) có hợp lệ với màn không: { ok, lyDo, ma: 'khong-chon-doi' | 'thieu' | 'thua' | 'khong-co' | 'trung' | null }. */
+  function kiemChon(man, chon) {
+    var C = chonDoiCua(man);
+    if (!C) return { ok: false, ma: 'khong-chon-doi', lyDo: 'Màn này không phải màn chọn đội.' };
+    chon = Array.isArray(chon) ? chon : [];
+    var so = soChonCua(man), menu = C.menu || [];
+    if (chon.length < so) return { ok: false, ma: 'thieu', lyDo: 'Chọn đủ ' + so + ' cỗ máy cho đội.' };
+    if (chon.length > so) return { ok: false, ma: 'thua', lyDo: 'Đội này chỉ có ' + so + ' chỗ.' };
+    for (var i = 0; i < chon.length; i++) {
+      if (menu.indexOf(chon[i]) < 0) return { ok: false, ma: 'khong-co', lyDo: 'Bảng chọn không có ' + (CM().DS[chon[i]] ? tenCoMay(chon[i]).toLowerCase() : 'cỗ máy "' + chon[i] + '"') + '.' };
+      if (C.trung !== true && chon.indexOf(chon[i]) < i) return { ok: false, ma: 'trung', lyDo: 'Hai bạn không chọn cùng một ' + tenCoMay(chon[i]).toLowerCase() + '.' };
+    }
+    return { ok: true, ma: null, lyDo: '' };
+  }
+  /** Mọi lựa chọn hợp lệ của màn (thứ tự theo menu; [R1, R2]): bảng chọn của giao diện / máy kiểm. */
+  function dsCachChon(man) {
+    var C = chonDoiCua(man), kq = [];
+    if (!C) return kq;
+    var so = soChonCua(man), menu = C.menu || [];
+    (function de(dang) {
+      if (dang.length === so) { if (kiemChon(man, dang).ok) kq.push(dang.slice()); return; }
+      menu.forEach(function (m) { dang.push(m); de(dang); dang.pop(); });
+    })([]);
+    return kq;
+  }
+  /**
+   * Gắn đội đã chọn vào màn: bản màn mới với man.doi[i] đủ loaiRobot / robot / hamGoc / cờ cỗ máy (CoMay.dung) cho từng robot em lập trình, robot khoá giữ nguyên.
+   * `chon` là mảng mã hay một cách mẫu { chon, loiGiai } (khi đó kq.loiGiai = lời giải đội của cách ấy). Ném lỗi lời Việt khi chọn sai (kiemChon).
+   */
+  function apDungDoi(man, chon) {
+    var cach = chon && !Array.isArray(chon) ? chon : null;
+    chon = cach ? cach.chon : chon;
+    var k = kiemChon(man, chon);
+    if (!k.ok) throw new Error(k.lyDo);
+    var kq = Object.assign({}, man), em = robotEm(man), CoMay = CM();
+    kq.manGoc = man.manGoc || man;
+    kq.chonDaChon = chon.slice();
+    kq.doi = man.doi.map(function (r, i) {
+      var j = em.indexOf(i);
+      if (j < 0) return r;
+      var goc = locCoMay(r), d = CoMay.dung(chon[j], { son: sonCua(r, i), pin: r.pin !== undefined ? r.pin : man.pin, co: r.coThem || undefined });
+      delete goc.son; delete goc.coThem;
+      return Object.assign(goc, d);
+    });
+    if (em.indexOf(0) >= 0) { kq.loaiRobot = kq.doi[0].loaiRobot; kq.robot = kq.doi[0].robot; kq.hamGoc = kq.doi[0].hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)
+    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai, man);
+    return kq;
+  }
+  /** Lỗi dữ liệu chonDoi của màn (rỗng = ổn). */
+  function kiemDuLieuDoi(man) {
+    var C = chonDoiCua(man), ma = (man && man.ma) || '(màn)', loi = [], DS = CM().DS;
+    function them(s) { loi.push(ma + ': ' + s); }
+    if (!C) { them('thiếu chonDoi.'); return loi; }
+    if (!Array.isArray(man.doi) || !man.doi.length) { them('màn chọn đội phải có man.doi.'); return loi; }
+    if (!Array.isArray(C.menu) || C.menu.length < 2) them('chonDoi.menu cần ít nhất 2 cỗ máy.');
+    (C.menu || []).forEach(function (m) { if (!DS[m]) them('chonDoi.menu có mã lạ "' + m + '".'); });
+    var so = soChonCua(man), em = robotEm(man);
+    if (so < 1 || so > em.length) them('chonDoi.so = ' + so + ' mà màn có ' + em.length + ' robot em lập trình.');
+    if (C.trung !== true && so > (C.menu || []).length) them('bảng ' + (C.menu || []).length + ' cỗ máy không đủ chọn ' + so + ' khác nhau.');
+    if (!Array.isArray(C.cachMau) || !C.cachMau.length) { them('chonDoi.cachMau cần ít nhất 1 cách mẫu.'); return loi; }
+    var thay = {};
+    C.cachMau.forEach(function (cm, i) {
+      var nhan = 'cachMau[' + i + ']', r = kiemChon(man, cm.chon);
+      if (!r.ok) them(nhan + ' (' + (cm.chon || []).join(' + ') + ') không hợp lệ: ' + r.lyDo);
+      var khoa = (cm.chon || []).join('|');
+      if (thay[khoa] !== undefined) them(nhan + ' trùng với cachMau[' + thay[khoa] + '].'); else thay[khoa] = i;
+      if (!cm.loiGiai || !Array.isArray(cm.loiGiai.doi) || cm.loiGiai.doi.length < em.length) them(nhan + ' thiếu loiGiai.doi (mỗi robot em lập trình một chương trình).');
+    });
+    return loi;
+  }
+  /** Chạy lời giải từng cách mẫu chọn đội qua máy chấm: [{ chon, ten, thang, nhip, o, sao, loi }]. */
+  function thongKeMauDoi(man, kho) {
+    var C = chonDoiCua(man), cham = chamHoc(), kq = [];
+    if (!C || !cham) return kq;
+    (C.cachMau || []).forEach(function (cm) {
+      var mau = { chon: (cm.chon || []).slice(), ten: (cm.chon || []).map(tenCoMay).join(' + '), thang: false, nhip: null, o: null, sao: 0, loi: null, ghiChu: cm.ghiChu || '' };
+      try {
+        var m = apDungDoi(man, cm), lg = m.loiGiai || loiGiaiCua({ doi: [] }, man);
+        var r = cham.cham(m, baiCua(lg), (kho || []).concat(lg.hamCuaEmMoi || []));
+        mau.thang = !!r.thang; mau.nhip = r.soNhip; mau.o = r.soO; mau.sao = r.sao;
+      } catch (e) { mau.loi = e.message; }
+      kq.push(mau);
+    });
+    return kq;
+  }
+  /** Kiểm cân màn chọn đội: dữ liệu + mọi cách mẫu thắng + cachMau[0] đạt 3 sao (mảng lỗi; rỗng = ổn). */
+  function kiemCanManDoi(man, kho) {
+    var loi = kiemDuLieuDoi(man), ma = (man && man.ma) || '(màn)';
+    if (loi.length) return loi;
+    var tk = thongKeMauDoi(man, kho);
+    tk.forEach(function (x, i) {
+      if (x.loi) loi.push(ma + ': cachMau[' + i + '] (' + x.ten + ') chấm lỗi: ' + x.loi);
+      else if (!x.thang) loi.push(ma + ': cachMau[' + i + '] (' + x.ten + ') không thắng.');
+    });
+    if (loi.length) return loi;
+    var ss = man.sao || {};
+    if ((ss.nhip !== undefined && tk[0].nhip > ss.nhip) || (ss.o !== undefined && tk[0].o > ss.o)) loi.push(ma + ': cachMau[0] (' + tk[0].ten + ') phải đạt 3 sao: ' + tk[0].nhip + ' nhịp, ' + tk[0].o + ' ô so với sao ' + JSON.stringify(ss) + '.');
+    return loi;
   }
 
   /**
@@ -273,9 +486,23 @@
    * ManHoc.danhSach (máy kiểm chung, Sổ lệnh, Gỡ lỗi) thấy một màn đủ trường. Giao diện không chơi bản này mà chơi apDung(màn, cách người chơi chọn). man-chuoi-1.js gọi hàm này trong chuanHoa.
    */
   function macDinh(man) {
+    var C = chonDoiCua(man), i = robotLapCua(man), a;
+    if (C && Array.isArray(C.cachMau) && C.cachMau.length && kiemChon(man, C.cachMau[0].chon).ok) {   // M9D1: màn chọn đội: bản mặc định = cách mẫu đầu (đôi tốt)
+      a = apDungDoi(man, C.cachMau[0]);
+      man.doi = man.doi.map(function (r, j) { return Object.assign({}, a.doi[j], r); });
+      ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
+      if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
+    }
     var L = lapRapCua(man);
-    if (!L || !Array.isArray(L.cachLap) || !L.cachLap.length || !kiemGhep(L.cachLap[0]).ok) return man;
-    var a = apDung(man, L.cachLap[0]);
+    if (!L || !Array.isArray(L.cachLap) || !L.cachLap.length || !kiemGhep(L.cachLap[0], man).ok) return man;
+    if (i !== null && (!man.doi[i] || man.doi[i].coDinh)) return man;
+    a = apDung(man, L.cachLap[0]);
+    if (i !== null) {                                                                      // M9D1: lắp cho robot thứ i của màn đội: điền man.doi[i] (và trường đầu màn khi i = 0)
+      man.doi[i] = Object.assign({}, a.doi[i], man.doi[i]);
+      if (i === 0) ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
+      if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
+      return man;
+    }
     ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
     if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
     if (a.loaiRobot !== 'drone' && man.pin !== undefined && man.pinDrone === undefined) { man.pinDrone = man.pin; delete man.pin; }          // bản mặc định không phải drone thì không mang pin
@@ -301,8 +528,11 @@
       if (!r.ok) them(nhan + ' (' + moTa(c) + ') không hợp lệ: ' + r.lyDo);
       var khoa = c.than + '|' + c.tay + '|' + c.camBien;
       if (thay[khoa]) them(nhan + ' trùng với cachLap[' + thay[khoa].i + '].'); else thay[khoa] = { i: i };
-      if (!cl.loiGiai || !Array.isArray(cl.loiGiai.chinh)) them(nhan + ' thiếu loiGiai.chinh.');
+      if (robotLapCua(man) !== null) { if (!cl.loiGiai || !Array.isArray(cl.loiGiai.doi)) them(nhan + ' thiếu loiGiai.doi (màn đội lắp robot thứ ' + (robotLapCua(man) + 1) + ').'); }
+      else if (!cl.loiGiai || !Array.isArray(cl.loiGiai.chinh)) them(nhan + ' thiếu loiGiai.chinh.');
     });
+    var ri = robotLapCua(man);
+    if (ri !== null && (!man.doi[ri] || man.doi[ri].coDinh)) them('lapRap.robot = ' + ri + ' không phải robot em lập trình của màn.');
     return loi;
   }
 
@@ -341,7 +571,7 @@
       var c = chuanCach(cl), mau = { cach: c, ten: moTa(c), gia: giaCach(c), thang: false, nhip: null, o: null, sao: 0, loi: null, ghiChu: cl.ghiChu || '' };
       try {
         var m = apDung(man, cl), lg = m.loiGiai || { chinh: [], hamCuaMan: [], hamCuaEmMoi: [] };
-        var r = cham.cham(m, { chinh: lg.chinh.slice(), hamCuaMan: lg.hamCuaMan || [] }, (kho || []).concat(lg.hamCuaEmMoi || []));
+        var r = cham.cham(m, baiCua(lg), (kho || []).concat(lg.hamCuaEmMoi || []));
         mau.thang = !!r.thang; mau.nhip = r.soNhip; mau.o = r.soO; mau.sao = r.sao;
       } catch (e) { mau.loi = e.message; }
       kq.push(mau);
@@ -388,7 +618,7 @@
   function lenhCuaMoiPart() {
     if (tatCaLenh) return tatCaLenh;
     var kq = [];
-    KHE.forEach(function (k) { DANH_MUC[k].forEach(function (d) { d.ham.forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
+    KHE.forEach(function (k) { DANH_MUC[k].forEach(function (d) { d.ham.concat(d.nangCap || []).forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
     return (tatCaLenh = kq);
   }
   /** Chỉ số (từ 0) các dòng của `dong` gọi một lệnh gốc của part (mọi part trong danh mục) mà robot của `man` KHÔNG có; wait() thì thân nào cũng có. */
@@ -407,8 +637,10 @@
   var API = {
     KHE: KHE, TEN_KHE: TEN_KHE, DANH_MUC: DANH_MUC,
     tim: tim, tenCua: tenCua, moTa: moTa, chuanCach: chuanCach, giaCach: giaCach, cauHinhCua: cauHinhCua,
-    kiemGhep: kiemGhep, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
-    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV
+    kiemGhep: kiemGhep, moLaiCua: moLaiCua, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
+    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV, bangGhep: BG,
+    // M9D1: màn đội chọn đội (man.chonDoi) và lắp cho một robot của màn đội (man.lapRap.robot)
+    coMay: CM, robotLapCua: robotLapCua, robotEm: robotEm, soChonCua: soChonCua, kiemChon: kiemChon, dsCachChon: dsCachChon, apDungDoi: apDungDoi, kiemDuLieuDoi: kiemDuLieuDoi, thongKeMauDoi: thongKeMauDoi, kiemCanManDoi: kiemCanManDoi, loiGiaiCua: loiGiaiCua, baiCua: baiCua
   };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.LapRap = API;

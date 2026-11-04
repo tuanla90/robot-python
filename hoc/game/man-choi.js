@@ -32,6 +32,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         '<div class="plaque"><span class="n"></span><span class="d"></span><span class="t"></span></div>' +
         '<div class="stars"></div>' +
         '<button class="bt g-or lap-lai" data-nut="lap-lai" style="display:none" aria-label="' + t('lap.lapLaiNhan') + '"><span data-i="banhRang" data-s="1" data-l="' + BM.goToiV13 + '"></span><span class="ll-chu">' + t('lap.lapLai') + '</span></button>' +
+        '<button class="bt g-or lap-lai doi-doi" data-nut="doi-doi" style="display:none" aria-label="' + t('doi.doiNhan') + '" title="' + t('doi.doiNhan') + '"><span data-i="car" data-s="1" data-l="' + BM.goToiV13 + '"></span><span class="ll-chu">' + t('doi.doi') + '</span></button>' +
         '<button class="bt g-pu menu" data-nut="menu" aria-label="' + t('choi.menu') + '" title="' + t('choi.menu') + '"><span data-i="menu" data-s="2" data-l="' + BM.timToi2 + '"></span></button>' +
       '</div>' +
       '<div class="fblock">' +
@@ -62,7 +63,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var q = function (s) { return host.querySelector(s); };
     E.n = q('.plaque .n'); E.t = q('.plaque .t'); E.sao = q('.top .stars');
     E.toast = q('.toast'); E.bongD = q('.p-pal .bong'); E.clock = q('.clock .v'); E.side = q('.side');
-    E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov'); E.lapLai = q('[data-nut="lap-lai"]');
+    E.btnToc = q('[data-nut="toc"]'); E.ov = q('.ws-ov'); E.lapLai = q('[data-nut="lap-lai"]'); E.doiDoi = q('[data-nut="doi-doi"]');
     DenBoPhan.dung(q('.clock'));                                                      // vùng đèn theo bộ phận: dòng thứ hai trong ô đồng hồ NHỊP
     E.xeTabs = q('.p-prog .xe-tabs');
     E.fb = q('.fblock'); E.bar = q('.sanbar'); E.tong = q('.clock .tong'); E.hamDem = q('.p-prog .ham-dem');
@@ -114,6 +115,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     q('[data-nut="menu"]').addEventListener('click', moMenu);
     E.lapLai.addEventListener('click', function () { if (window.App && App.lapLai) App.lapLai(); });
+    E.doiDoi.addEventListener('click', function () { if (window.App && App.doiDoi) App.doiDoi(); });
     q('[data-nut="chay"]').addEventListener('click', function () { chay(false); });
     q('[data-nut="nhip"]').addEventListener('click', function () { chay(true); });
     q('[data-nut="lai"]').addEventListener('click', function () { datLaiChay(); });
@@ -228,16 +230,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Vào màn m. Màn lắp ráp (m.lapRap): `cach` = cách lắp đã chọn ở màn Lắp robot (không có thì lấy cách đã lưu, rồi cách mặc định); S.man là bản đã gắn robot
    *  (LapRap.apDung), còn màn gốc ở S.man.manGoc. Vào màn mà chương trình (bản nháp) còn dòng gọi lệnh của part không gắn thì tô đỏ và báo (baoLenhMat). */
   function vao(m, cach) {
-    var goc = m.manGoc || m;
+    var goc = m.manGoc || m, nen = goc;
+    if (goc.chonDoi && !m.chonDaChon) {                                                 // M9D2 màn chọn đội vào thẳng (không qua màn Chọn đội): đội đã lưu, không thì cách mẫu đầu
+      var ch = Luu.docDoi(goc.ma);
+      if (!ch || !LapRap.kiemChon(goc, ch).ok) ch = goc.chonDoi.cachMau[0].chon;
+      m = LapRap.apDungDoi(goc, ch);
+    }
+    if (goc.chonDoi) nen = m;                                                            // màn vừa chọn đội vừa lắp: lắp trên đội đã chọn
     if (goc.lapRap) {
       var c = cach || Luu.docLap(goc.ma) || LapRap.cachMacDinh(goc);
-      try { m = LapRap.apDung(goc, c); } catch (e) { m = LapRap.apDung(goc, LapRap.cachMacDinh(goc)); }
+      try { m = LapRap.apDung(nen, c); } catch (e) { m = LapRap.apDung(nen, LapRap.cachMacDinh(goc)); }
     }
     roi(); anBongD();
     S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0; S.theTao = {};
     S.xe = 0;                                                                           // nhiều robot: khung code đang xem robot 1
     dungTabXe();
     E.lapLai.style.display = goc.lapRap ? '' : 'none';
+    E.doiDoi.style.display = goc.chonDoi ? '' : 'none';                               // M9D2: nút "Đổi đội" chỉ ở màn chọn đội
     E.lapLai.classList.remove('nhay');
     S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
     TP.datCheList(TP.coListCua(m));                    // màn có cauTruc 'list': dòng danh sách (a = [1, 2], for n in a:, a.append(1)) tách thành ô phần tử chạm được
@@ -463,7 +472,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var m = S.man; if (!m) return false;
     var hm = (bai.hamCuaMan || []).map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: (f.than || []).slice() }; });
     if (m.doi) {
-      var doi = m.doi.map(function (r, i) { return { chinh: ((bai.doi && bai.doi[i] && bai.doi[i].chinh) || []).slice() }; });
+      var md = (m.maMau && m.maMau.doi) || [];
+      var doi = m.doi.map(function (r, i) {                                                    // robot khoá (coDinh, R3 máy khách): luôn chương trình của màn, như nhanBan — bài nạp thiếu R3 không làm R3 đứng yên
+        if (r.coDinh && md[i] && !m.chiChay) return { chinh: (md[i].chinh || []).slice() };
+        return { chinh: ((bai.doi && bai.doi[i] && bai.doi[i].chinh) || []).slice() };
+      });
       S.bai = { doi: doi, chinh: doi[S.xe].chinh, hamCuaMan: hm };
     } else S.bai = { chinh: (bai.chinh || []).slice(), hamCuaMan: hm };
     Luu.ghiNhap(m.ma, S.bai);
@@ -773,7 +786,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     var tiep = App.manTiep(m);
     if (tiep && tiep.chuong !== (m.manGoc || m).chuong) tiep = null;               // xong màn cuối chương: về lưới màn của gói, không tự sang chương / gói mới
-    var hang = h('div', 'hop-hang' + (m.lapRap ? ' ba' : ''));
+    var coDoi = !!(m.manGoc || m).chonDoi;
+    var hang = h('div', 'hop-hang' + (m.lapRap || coDoi ? ' ba' : ''));
+    if (coDoi && !m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('doi.doi'), function () { TP.Hop.dong(); if (window.App && App.doiDoi) App.doiDoi(); }, 'doi-doi'));   // M9D2 màn chọn đội: đổi đội rồi chơi lại
     if (m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('thang.lapLai'), function () { TP.Hop.dong(); if (window.App && App.lapLai) App.lapLai(); }, 'lap-lai'));
     hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); datLaiChay(); }, 'choi-lai'));
     hang.appendChild(TP.Hop.nut('g-gr', tiep ? t('thang.manTiep') : t('thang.hetChuoi'), function () {
