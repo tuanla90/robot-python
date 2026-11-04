@@ -2763,6 +2763,7 @@
         if (l.ten === 'dot' && laDaUot(rb.x, rb.y) && !laCau) {                   // RẮC CÁT (M9B1, R): chấm lên ô đá ướt / bùn trơn 'I' dưới đầu gieo → ô thành sàn thường cho cả lượt
           racCat[rb.x + ',' + rb.y] = true;
           sk.push({ ma: 'rac-cat', nhip: nhip, o: { x: rb.x, y: rb.y }, lenh: lg });
+          return;                                                                  // rắc cát không phải chấm sơn: không ghi daSon / 'to-o' (trước 4/11 bộ vẽ vẽ thêm bông hoa của máy sơn lên ô cát)
         }
         if (l.ten === 'pen_up') { if (son.ha) { son.ha = false; sk.push({ ma: 'nhac-but', o: { x: rb.x, y: rb.y } }); } return; }
         if (l.ten === 'pen_down' && !son.ha) { son.ha = true; sk.push({ ma: 'ha-but', o: { x: rb.x, y: rb.y } }); }

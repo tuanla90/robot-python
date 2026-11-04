@@ -235,6 +235,8 @@ console.log('b + d. lõi: hành vi đúng cột "Luật thêm", và phép b đ�
     const k = chay(lai || 'R', cach, ['..I.F', '.....'], { x: 2, y: 0, huong: 1 }, 'ink("yellow")\n' + (coDot ? 'dot()\n' : '') + 'wait()\n' + TOI + LUI);
     return { k, ok: !k.loi && k.robot.x === 2 && J(k.racCat) === J([{ x: 2, y: 0 }]) && coSk(k, 'rac-cat') && !coSk(k, 'truot-da-uot') };
   };
+  const rs = thu(() => R({ than: 'hai-banh', tay: 'son' }, true).k);
+  kiem('R: rắc cát KHÔNG là chấm sơn (không "to-o", daSon rỗng; trước 4/11 bộ vẽ vẽ bông hoa máy sơn lên ô cát)', rs && !coSk(rs, 'to-o') && Array.isArray(rs.daSon) && rs.daSon.length === 0, rs && J(rs.daSon));
   kiem('R b: xe hai bánh dot() trên ô bùn trơn I rồi tiến ra, lùi về: KHÔNG trượt (dừng ở ô đã rắc), sự kiện rac-cat, racCat = [(2, 0)]', thu(() => R({ than: 'hai-banh', tay: 'son' }, true).ok), J(thu(() => R({ than: 'hai-banh', tay: 'son' }, true).k.robot)));
   const khong = thu(() => R({ than: 'hai-banh', tay: 'son' }, false).k);
   kiem('R d: cùng sân KHÔNG dot() → trượt thẳng tới (1, 0) như luật đá ướt mùa 8, không có racCat (phép b đỏ)', khong && khong.robot.x === 1 && khong.racCat.length === 0 && !R({ than: 'hai-banh', tay: 'son' }, false).ok && coSk(khong, 'truot-da-uot'), J(khong && khong.robot));
