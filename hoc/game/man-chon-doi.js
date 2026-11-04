@@ -28,9 +28,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     'doi.khach': 'Khách',
     'doi.khachNhan': 'Máy khách {ten}: khoá, không chọn được',
     'doi.chamThe': 'Chạm thẻ để chọn cho {ai}.',
-    'doi.dangDung': 'cho {ai}',
-    'lap.choAi': 'Lắp cho {ai}',
-    'lap.daCo': '{ai} đã có'
+    'doi.dangDung': 'cho {ai}'
   };
   if (window.CHU && CHU.vi) Object.keys(CHU_DOI).forEach(function (k) { if (CHU.vi[k] === undefined) CHU.vi[k] = CHU_DOI[k]; });
 

@@ -152,7 +152,7 @@ console.log('4. Màn Chọn đội trên DOM giả (man-chon-doi.js)');
   const nguon = docNguon('game/man-chon-doi.js');
   new Function('window', 'document', 'TP', 'Ve', 'VeRobot', 'Luu', 'LapRap', 't', 'CHU', 'require', nguon)(win, D.document, win.TP, win.Ve, win.VeRobot, win.Luu, LapRap, win.t, win.CHU, undefined);
   const CD = win.ChonDoi, host = D.document.createElement('div');
-  kiem('nạp được: window.ChonDoi { dung, vao, trangThai }; chữ doi.* điền vào CHU.vi', !!CD && typeof CD.vao === 'function' && win.CHU.vi['doi.vao'] === 'Vào màn' && win.CHU.vi['lap.choAi'] === 'Lắp cho {ai}');
+  kiem('nạp được: window.ChonDoi { dung, vao, trangThai }; chữ doi.* điền vào CHU.vi', !!CD && typeof CD.vao === 'function' && win.CHU.vi['doi.vao'] === 'Vào màn');
   CD.dung(host);
   let xongVoi = null, ve = 0;
   const m = ThuMua9.manChonDoi();
@@ -191,6 +191,66 @@ console.log('4. Màn Chọn đội trên DOM giả (man-chon-doi.js)');
   CD.vao(mt, {}); the()[0].bam(); the()[0].bam();
   kiem('màn cho trùng (chonDoi.trung): chạm Xe chở hàng hai lần → cả đội xe chở hàng, "Vào màn" sáng', J(CD.trangThai().chon) === '["CH","CH"]' && !nutVao().classList.contains('khoa'));
   kiem('nguồn man-chon-doi.js: không emoji; lời báo lấy lyDo của LapRap.kiemChon (không câu chung chung)', !/\p{Extended_Pictographic}/u.test(nguon) && /datLoi\(r\.lyDo, 'bad', 4200\)/.test(nguon) && /LapRap\.kiemChon\(S\.m, du\)/.test(nguon));
+}
+
+/* ------------------------------------------------------------- 5. màn Lắp robot thứ i của màn đội (man-lap.js thật, lõi thật; vẽ / lưu / sân là bản giả) */
+console.log('5. Màn Lắp robot thứ i (man-lap.js)');
+{
+  const D = DomGia(), luuLap = {}, sanGoi = [], CoMay = require(path.join(day, 'co-may.js'));
+  D.El.prototype.scrollLeft = 0;
+  const win = {
+    CHU: { vi: {} }, LapRap, CoMay, BangMau: {},
+    addEventListener() {},
+    TP: { h(tag, cls, noi) { const e = D.document.createElement(tag); if (cls) e.className = cls; if (noi !== undefined && noi !== null) e.textContent = noi; return e; },
+      vanBan(el, s) { el.textContent = s; return el; }, Hop: { dong() {}, mo() { return { than: D.document.createElement('div') }; }, nut() { return D.document.createElement('button'); } } },
+    Ve: { hydrate() {}, mk(cv) { const e = D.document.createElement('canvas'); e.cfg = cv.cfg; return e; }, ico(ten) { const e = D.document.createElement('svg'); e.setAttribute('data-ico', ten); return e; }, khoa() { const e = D.document.createElement('svg'); e.setAttribute('data-ico', 'lock'); return e; } },
+    VeRobot: { PX_O_PART: 24, veCo(cfg) { const e = D.document.createElement('canvas'); e.cfg = cfg; return e; }, heSoCss() { return 1; } },
+    Luu: { docLap: (ma) => luuLap[ma] || null, ghiLap: (ma, c) => { luuLap[ma] = Object.assign({}, c); return true; } },
+    DenBoPhan: { mauIcon() { return {}; } },
+    SanHoc: { lopMauCuaSan() { return {}; } },
+    SanVe: { thuSan(cv, rows, bd) { sanGoi.push(bd); } }
+  };
+  win.t = (k, tham) => { let s = win.CHU.vi[k] !== undefined ? win.CHU.vi[k] : k; if (tham) s = s.replace(/\{(\w+)\}/g, (m, x) => (tham[x] === undefined ? m : String(tham[x]))); return s; };
+  const doc = Object.assign({ getElementById: () => null }, D.document);
+  const nguon = docNguon('game/man-lap.js');
+  new Function('window', 'document', 'TP', 'Ve', 'VeRobot', 'Luu', 'LapRap', 't', 'CHU', 'DenBoPhan', 'SanHoc', 'SanVe', 'require', nguon)(win, doc, win.TP, win.Ve, win.VeRobot, win.Luu, LapRap, win.t, win.CHU, win.DenBoPhan, win.SanHoc, win.SanVe, undefined);
+  const LR = win.LapRobot, host = D.document.createElement('div');
+  kiem('nạp được: window.LapRobot; chữ lap.choAi / lap.daCo điền vào CHU.vi', !!LR && win.CHU.vi['lap.choAi'] === 'Lắp cho {ai}' && win.CHU.vi['lap.daCo'] === '{ai} đã có {ten}');
+  LR.dung(host);
+  const timLop = (c) => host.querySelectorAll(c), nut = (n) => host.tatCa().find((e) => e.getAttribute('data-nut') === n);
+  const hinhRobot = () => host.querySelector('lr-robot').tatCa().find((e) => e.cfg);
+  let xongVoi = null;
+  const m = ThuMua9.manLapRobot2();
+  LR.vao(m, { khiXong: (c) => { xongVoi = c; }, khiVe() {} });
+  kiem('màn đội lapRap.robot = 1: trangThai().robot = 1; góc hình robot ghi "Lắp cho Luna"', LR.trangThai().robot === 1 && host.querySelector('lr-ai') && host.querySelector('lr-ai').textContent === 'Lắp cho Luna',
+    J([LR.trangThai().robot, host.querySelector('lr-ai') && host.querySelector('lr-ai').textContent]));
+  kiem('hình robot đang lắp mang màu đế của robot 2 (lam) và thân cách mặc định (xích)', !!hinhRobot() && hinhRobot().cfg.son === 'lam' && hinhRobot().cfg.than === 'xich', J(hinhRobot() && hinhRobot().cfg));
+  const ro = timLop('lr-doi-ro');
+  kiem('cột đội: một ô Sola (div role img, không bấm được), hình xe chở hàng của R1, aria-label + title "Sola đã có xe chở hàng"', host.querySelector('lr-doi').style.display === '' && ro.length === 1 && ro[0].tagName === 'DIV' && ro[0].getAttribute('role') === 'img'
+    && ro[0].getAttribute('aria-label') === 'Sola đã có xe chở hàng' && ro[0].title === 'Sola đã có xe chở hàng' && ro[0].tatCa().some((e) => e.cfg && e.cfg.than === 'hai-banh') && !(ro[0].nghe.click || []).length && ro[0].textContent === 'Sola',
+    J(ro.map((o) => [o.tagName, o.getAttribute('aria-label'), o.textContent])));
+  const theHaiBanh = host.tatCa().find((e) => e.classList.contains('lr-the') && e.getAttribute('data-khe') === 'than' && e.getAttribute('data-ma') === 'hai-banh');
+  theHaiBanh.bam();
+  kiem('chạm thẻ Hai bánh: robot 2 đổi thân, vẫn màu lam; cột Sola giữ nguyên', LR.trangThai().cach.than === 'hai-banh' && hinhRobot().cfg.than === 'hai-banh' && hinhRobot().cfg.son === 'lam' && timLop('lr-doi-ro').length === 1);
+  nut('lap-de').bam();
+  kiem('đề bài: sân thu nhỏ đặt robot ở batDau của robot 2 (6, 2)', J(sanGoi[sanGoi.length - 1]) === J(m.doi[1].batDau), J(sanGoi));
+  nut('lap-xong').bam();
+  kiem('Lắp xong: Luu.ghiLap theo mã màn, khiXong(cách) → LapRap.apDung gắn vào doi[1], doi[0] không đổi', xongVoi && xongVoi.than === 'hai-banh' && luuLap['thu.lap-r2'] && (() => { const a = LapRap.apDung(m, xongVoi); return a.doi[1].robot.than === 'hai-banh' && a.doi[1].robot.son === 'lam' && J(a.doi[0].robot) === J(m.doi[0].robot); })());
+
+  const R3 = ThuMua9.manChonDoi(), mt = Object.assign({}, R3, { ma: 'thu.lap-r2-ba', lapRap: { robot: 1, than: ['xich', 'hai-banh'], tay: ['hoi'], camBien: [], nganSach: 6, cachLap: [] } });
+  delete mt.chonDoi;
+  LR.vao(mt, {});
+  const ro3 = timLop('lr-doi-ro');
+  kiem('màn ba robot lắp R2: cột đội có Sola + máy khách (ô khoá, có ổ khoá, nhãn "Khách đã có xe cứu hỏa")', ro3.length === 2 && ro3[1].classList.contains('khoa') && ro3[1].tatCa().some((e) => e.getAttribute('data-ico') === 'lock')
+    && ro3[1].getAttribute('aria-label') === 'Khách đã có xe cứu hỏa' && ro3[0].getAttribute('aria-label') === 'Sola đã có xe chở hàng', J(ro3.map((o) => o.getAttribute('aria-label'))));
+
+  const ManRap = require(path.join(day, 'man-rap-tay.js'));
+  const cu = ManRap.danhSach.find((x) => x.lapRap && !x.doi);
+  LR.vao(cu, {});
+  nut('lap-de').bam();
+  kiem('màn lắp một robot (' + cu.ma + ') y như cũ: robot null, không nhãn "Lắp cho", cột đội ẩn, sân đặt man.batDau', LR.trangThai().robot === null && !host.querySelector('lr-ai') && host.querySelector('lr-doi').style.display === 'none'
+    && timLop('lr-doi-ro').length === 0 && J(sanGoi[sanGoi.length - 1]) === J(cu.batDau) && hinhRobot() && hinhRobot().cfg.son === undefined);
+  kiem('nguồn man-lap.js: không emoji; nhánh đội chỉ chạy khi LapRap.robotLapCua(man) khác null', !/\p{Extended_Pictographic}/u.test(nguon.replace(/◀/g, '')) && /S\.i = LapRap\.robotLapCua\(S\.m\);/.test(nguon) && /if \(S\.i === null\) \{ E\.doi\.style\.display = 'none'; return; \}/.test(nguon));
 }
 
 console.log('\n' + dat + ' đạt, ' + hong + ' hỏng');

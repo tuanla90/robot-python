@@ -9,13 +9,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Ô chữ cạnh robot (E.loi) là một chỗ duy nhất cho lời: mặc định là đề bài (chạm để xem đề bài + sân đầy đủ), khi cần thì đổi thành lý do ghép sai / thiếu xu.
    Khung thấp (≈640): bảng robot + xu + ba hàng thẻ; khung cao (điện thoại dài, ≥ 700): có thêm hàng "sân + đề bài" riêng.
    Dùng:  LapRobot.dung(host) (một lần, ung-dung.js)  ·  LapRobot.vao(man, { cach, khiXong, khiVe })  ·  App.vaoMan / App.lapLai gọi.
+   M9D2 (4/11) màn đội lắp cho robot thứ i (man.lapRap.robot = i, LapRap.robotLapCua): đội lấy từ man.doi của màn truyền vào (bản apDungDoi khi vừa chọn đội);
+     hình robot đang lắp tô màu đế của robot i, góc hình ghi "Lắp cho Luna"; cột bên cạnh hiện hình robot còn lại của đội (không bấm được, "Sola đã có …");
+     sân thu nhỏ đặt robot ở batDau của robot i. Màn lắp một robot: không có gì khác.
    ========================================================================== */
 (function () {
   'use strict';
 
+  var CHU_LAP_DOI = {                                  // M9D2: chữ màn lắp robot thứ i (chưa có trong chu.js — chuyển sang chu.js khi soát chữ)
+    'lap.choAi': 'Lắp cho {ai}',
+    'lap.daCo': '{ai} đã có {ten}',
+    'lap.khach': 'Khách'
+  };
+  if (window.CHU && CHU.vi) Object.keys(CHU_LAP_DOI).forEach(function (k) { if (CHU.vi[k] === undefined) CHU.vi[k] = CHU_LAP_DOI[k]; });
+
   var h = TP.h;
   var E = {};
-  var S = { m: null, cach: null, tuyChon: null, loiHen: null, loiRieng: null, keo: null, vuaKeo: 0, cao: false };
+  var S = { m: null, cach: null, tuyChon: null, loiHen: null, loiRieng: null, keo: null, vuaKeo: 0, cao: false, doi: null, i: null };
+  var TEN_BAN = ['Sola', 'Luna'];
   var CAO_TU = 700;                                    // chiều cao khung (--sh) từ đây trở lên: có hàng sân + đề bài riêng
   var MAU_KHE = { than: BM.ngocToi, tay: BM.cam, camBien: BM.ngoc };
   var MAU_RIENG = { 'nam-cham': BM.doSangV6 };
@@ -40,6 +51,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
     E.bang = h('div', 'lr-bang chalk');
     E.robot = h('div', 'lr-robot'); E.bang.appendChild(E.robot);
+    E.doi = h('div', 'lr-doi'); E.doi.style.display = 'none'; E.bang.appendChild(E.doi);     // M9D2: robot còn lại của đội (màn lắp robot thứ i)
     var tt = h('div', 'lr-tt');
     var xuHang = h('div', 'lr-xu-hang');
     E.xu = h('div', 'lr-xu'); E.xuChu = h('div', 'lr-xu-chu');
@@ -102,6 +114,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     S.m = m.manGoc || m; S.tuyChon = tuyChon || {};
     var c = LapRap.chuanCach(S.tuyChon.cach || Luu.docLap(S.m.ma));
     S.cach = c.than && hopLe(S.m, c) ? c : LapRap.cachMacDinh(S.m);
+    S.i = LapRap.robotLapCua(S.m);                                     // M9D2: màn đội lắp robot thứ i; đội = man.doi của màn truyền vào (bản đã ghép đội), không thì của màn gốc
+    S.doi = S.i === null ? null : ((Array.isArray(m.doi) && m.doi[S.i] ? m.doi : S.m.doi) || null);
+    if (S.doi && !S.doi[S.i]) { S.i = null; S.doi = null; }
+    veDoi();
     TP.Hop.dong();
     clearTimeout(S.loiHen); S.loiRieng = null;
     E.n.textContent = S.m.id; E.t.textContent = S.m.ten;
@@ -115,14 +131,48 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function ve() { veRobot(); veXu(); veKheTrangThai(); veNut(); veLoi(); }
 
   /* --------------------------------------------------------------------- robot */
+  /** Tên người lái robot thứ j: R1 Sola, R2 Luna (CLB); robot khoá (máy khách) "Khách"; khác "R<j+1>". */
+  function tenAi(j) { var r = S.doi && S.doi[j]; return r && r.coDinh ? t('lap.khach') : (TEN_BAN[j] || ('R' + (j + 1))); }
+  /** Màu đế robot thứ j (như lap-rap.js sonCua). */
+  function sonCua(j) { var r = (S.doi && S.doi[j]) || {}; return r.son || (r.robot && r.robot.son) || (j === 1 ? 'lam' : undefined); }
+  /** Tên cỗ máy của robot r: tên bộ CoMay khi đúng thân + tay gốc, không thì "Thân + Tay + Não". */
+  function tenMay(r) {
+    var rb = r.robot || {}, CM = LapRap.coMay ? LapRap.coMay() : null, ma = CM && CM.cuaThan(rb.than), d = ma && CM.DS[ma];
+    if (d && (d.tay || null) === (rb.tay || null)) return d.ten;
+    return LapRap.moTa({ than: rb.than, tay: rb.tay, camBien: rb.camBien && rb.camBien[0] && rb.camBien[0].ma !== 'pin' ? rb.camBien[0].ma : null });
+  }
+  function hinhNho(cfg, px) {
+    var cv; try { cv = VeRobot.veCo(cfg, {}, 0, px); } catch (e) { cv = null; }
+    if (!cv) return null;
+    var c = Ve.mk(cv, VeRobot.heSoCss(cv)); c.classList.add('lr-hinh');
+    return c;
+  }
+  /** M9D2: cột robot còn lại của đội (chỉ xem, không sửa). Màn lắp một robot: ẩn. */
+  function veDoi() {
+    E.doi.innerHTML = '';
+    if (S.i === null) { E.doi.style.display = 'none'; return; }
+    E.doi.style.display = '';
+    S.doi.forEach(function (r, j) {
+      if (j === S.i || !r || !r.robot) return;
+      var o = h('div', 'lr-doi-ro' + (r.coDinh ? ' khoa' : '')); o.setAttribute('data-robot', String(j + 1)); o.setAttribute('role', 'img');
+      var nh = t('lap.daCo', { ai: tenAi(j), ten: tenMay(r).toLowerCase() }); o.setAttribute('aria-label', nh); o.title = nh;
+      var hi = hinhNho(Object.assign({}, r.robot, { son: sonCua(j) }), VeRobot.PX_O_PART); if (hi) o.appendChild(hi);
+      o.appendChild(h('div', 'lr-doi-ten', tenAi(j)));
+      if (r.coDinh) { var kh = h('span', 'lr-doi-khoa'); kh.appendChild(Ve.khoa(1, true)); o.appendChild(kh); }
+      E.doi.appendChild(o);
+    });
+  }
+
   function veRobot() {
     var cfg = LapRap.cauHinhCua(S.cach), cv;
+    if (S.i !== null) cfg.son = sonCua(S.i);                                    // M9D2: robot thứ i mang màu đế của nó
     E.robot.innerHTML = '';
     try { cv = VeRobot.veCo(cfg, {}, 0, 2 * VeRobot.PX_O_PART); } catch (e) { cv = null; }      // cỡ hiển thị: một ô 48 px CSS (pixel: bội số 2 như cũ; vector: đúng cỡ, nét theo pixel thiết bị)
     if (!cv) return;
     var c = Ve.mk(cv, VeRobot.heSoCss(cv));
     c.classList.add('lr-hinh');
     E.robot.appendChild(c);
+    if (S.i !== null) { var ai = h('div', 'lr-ai', t('lap.choAi', { ai: tenAi(S.i) })); ai.setAttribute('data-nut', 'lap-cho-ai'); E.robot.appendChild(ai); }
     E.robot.classList.remove('doi'); void E.robot.offsetWidth; E.robot.classList.add('doi');
   }
 
@@ -150,7 +200,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   function canvasSan(rong, cao) {
     var m = S.m, nhieu = Array.isArray(m.san[0]), lm = SanHoc.lopMauCuaSan(m, 0), cv = h('canvas', 'tex');
-    SanVe.thuSan(cv, nhieu ? m.san[0] : m.san, Array.isArray(m.batDau) ? m.batDau[0] : m.batDau, rong, cao, { mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatThem: lm.vatThem, cuaNhip: lm.cuaNhip, nutBat: lm.nutBat, lua: lm.lua, vo: m.vo });
+    var bd = S.i !== null && S.doi[S.i].batDau ? S.doi[S.i].batDau : (Array.isArray(m.batDau) ? m.batDau[0] : m.batDau);   // M9D2: màn đội đặt robot đang lắp
+    SanVe.thuSan(cv, nhieu ? m.san[0] : m.san, bd, rong, cao, { mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatThem: lm.vatThem, cuaNhip: lm.cuaNhip, nutBat: lm.nutBat, lua: lm.lua, vo: m.vo });
     return cv;
   }
   /** Hộp đề bài đầy đủ + sân. */
@@ -297,5 +348,5 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (cb) cb(Object.assign({}, S.cach));
   }
 
-  window.LapRobot = { dung: dung, vao: vao, trangThai: function () { return { man: S.m, cach: S.cach && Object.assign({}, S.cach) }; } };
+  window.LapRobot = { dung: dung, vao: vao, trangThai: function () { return { man: S.m, cach: S.cach && Object.assign({}, S.cach), robot: S.i }; } };
 })();
