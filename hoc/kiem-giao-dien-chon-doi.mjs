@@ -161,7 +161,7 @@ console.log('4. Màn Chọn đội trên DOM giả (man-chon-doi.js)');
   kiem('3 khe: Sola, Luna (nút bấm) + máy khách R3 (div khoá, có ổ khoá, aria-label + title nói khoá)', khe().length === 3 && khe()[0].tagName === 'BUTTON' && khe()[1].tagName === 'BUTTON' && khe()[2].tagName === 'DIV'
     && khe()[0].textContent.includes('Sola') && khe()[1].textContent.includes('Luna') && khe()[2].classList.contains('khoa') && khe()[2].tatCa().some((e) => e.getAttribute('data-ico') === 'lock') && /khoá/.test(khe()[2].getAttribute('aria-label')) && khe()[2].title === khe()[2].getAttribute('aria-label'),
     J(khe().map((k) => [k.tagName, k.textContent])));
-  kiem('R3 máy khách vẽ đúng cỗ máy của nó (xe cứu hỏa, thân xích, đế lam)', /Xe cứu hỏa/.test(khe()[2].textContent) && khe()[2].tatCa().some((e) => e.cfg && e.cfg.than === 'xich' && e.cfg.son === 'lam'));
+  kiem('R3 máy khách vẽ đúng cỗ máy của nó (xe cứu hỏa, thân xích, đế tím)', /Xe cứu hỏa/.test(khe()[2].textContent) && khe()[2].tatCa().some((e) => e.cfg && e.cfg.than === 'xich' && e.cfg.son === 'tim'));
   kiem('bảng 3 thẻ theo menu (CH, DR, CU): hình robot, tên, một dòng "giỏi"; nút có aria-label + title "Chọn … cho Sola"', the().length === 3 && J(the().map((b) => b.getAttribute('data-ma'))) === '["CH","DR","CU"]'
     && the().every((b) => b.tatCa().some((e) => e.cfg)) && the()[0].textContent.includes('Xe chở hàng') && the()[0].textContent.includes('mang thùng gỗ') && the()[0].getAttribute('aria-label') === 'Chọn xe chở hàng cho Sola' && the()[0].title === 'Chọn xe chở hàng cho Sola',
     J(the().map((b) => [b.textContent, b.getAttribute('aria-label')])));
@@ -251,6 +251,41 @@ console.log('5. Màn Lắp robot thứ i (man-lap.js)');
   kiem('màn lắp một robot (' + cu.ma + ') y như cũ: robot null, không nhãn "Lắp cho", cột đội ẩn, sân đặt man.batDau', LR.trangThai().robot === null && !host.querySelector('lr-ai') && host.querySelector('lr-doi').style.display === 'none'
     && timLop('lr-doi-ro').length === 0 && J(sanGoi[sanGoi.length - 1]) === J(cu.batDau) && hinhRobot() && hinhRobot().cfg.son === undefined);
   kiem('nguồn man-lap.js: không emoji; nhánh đội chỉ chạy khi LapRap.robotLapCua(man) khác null', !/\p{Extended_Pictographic}/u.test(nguon.replace(/◀/g, '')) && /S\.i = LapRap\.robotLapCua\(S\.m\);/.test(nguon) && /if \(S\.i === null\) \{ E\.doi\.style\.display = 'none'; return; \}/.test(nguon));
+}
+
+/* ------------------------------------------------------------- 6. màn chơi ba robot (man-choi.js): tab R1 R2 R3, R3 khoá, R3 luôn chạy chương trình của màn */
+console.log('6. Màn chơi ba robot (man-choi.js, go-loi.js, man-so-lenh.js)');
+{
+  const mc = docNguon('game/man-choi.js');
+  const ham = (s, ten) => { const i = s.indexOf('function ' + ten + '('); if (i < 0) return ''; const j = s.indexOf('\n  }\n', i); return s.slice(i, j < 0 ? undefined : j); };
+  kiemNguon('dungTabXe: một tab cho MỖI robot của man.doi (R1 R2 R3…, màu đế theo robot.son), robot coDinh: tab lớp khoa + ổ khoá (Ve.khoa)', mc, (s) => {
+    const b = ham(s, 'dungTabXe');
+    return /S\.man\.doi\.forEach\(function \(r, i\) \{/.test(b) && /h\('button', 'bt xe-tab', 'R' \+ \(i \+ 1\)\)/.test(b) && /var sonTab = \(r\.robot && r\.robot\.son\)/.test(b)
+      && /if \(r\.coDinh\) \{ b\.classList\.add\('khoa'\); b\.appendChild\(Ve\.khoa\(1, true\)\); \}/.test(b) && /b\.setAttribute\('aria-label', t\('choi\.xeTab', \{ n: i \+ 1 \}\)\)/.test(b);
+  }, [["if (r.coDinh) { b.classList.add('khoa'); b.appendChild(Ve.khoa(1, true)); }", ''], ["S.man.doi.forEach(function (r, i) {\n      var b = h('button', 'bt xe-tab'", "S.man.doi.slice(0, 2).forEach(function (r, i) {\n      var b = h('button', 'bt xe-tab'"]]);
+  kiemNguon('chonXeCode: mở xem được tab robot khoá (không chặn coDinh); khungCoDinh: khung của robot coDinh chỉ đọc', mc, (s) => {
+    const b = ham(s, 'chonXeCode');
+    return /if \(!S\.man \|\| !S\.man\.doi \|\| i === S\.xe \|\| S\.busy\) return;/.test(b) && !/coDinh/.test(b)
+      && /function khungCoDinh\(\) \{ return !!\(S\.man && \(S\.man\.chinhCoDinh \|\| S\.man\.chiChay \|\| \(S\.man\.doi && S\.man\.doi\[S\.xe\] && S\.man\.doi\[S\.xe\]\.coDinh\)\)\); \}/.test(s);
+  }, [['(S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh)))', '(false)))']]);
+  kiemNguon('nhanBan: robot coDinh luôn lấy maMau.doi[i] (bản nháp cũ không ghi đè chương trình R3)', mc,
+    (s) => /chinh: nd && !r\.coDinh && !m\.chiChay \? nd\[i\]\.chinh\.slice\(\) : \(\(md\[i\] && md\[i\]\.chinh\) \|\| \[\]\)\.slice\(\)/.test(s), [['nd && !r.coDinh && !m.chiChay ?', 'nd ?']]);
+
+  // chạy thật: bài của Sola / Luna (lời giải), R3 theo đúng cách napBai / nhanBan điền (coDinh → maMau.doi[i])
+  const m = ThuMua9.manBaRobot(), md = m.maMau.doi, lg = m.loiGiai;
+  const dienR3 = (bai) => ({ doi: m.doi.map((r, i) => (r.coDinh && md[i] ? { chinh: md[i].chinh.slice() } : { chinh: ((bai.doi[i] || {}).chinh || []).slice() })), hamCuaMan: bai.hamCuaMan });
+  const baiThieuR3 = { doi: [lg.doi[0], lg.doi[1]], hamCuaMan: lg.hamCuaMan };                 // bảng Gỡ lỗi / bản nháp cũ chỉ có chương trình hai robot em
+  const thieu = Cham.cham(m, { doi: [lg.doi[0], lg.doi[1], { chinh: [] }], hamCuaMan: lg.hamCuaMan }, []);
+  const du = Cham.cham(m, dienR3(baiThieuR3), []);
+  kiem('R3 đứng yên thì màn thua (phép dưới có nghĩa); bài thiếu R3 qua napBai (điền maMau.doi[2]) thì thắng — kho hàm của em rỗng (Sổ lệnh xoá hết) R3 vẫn chạy', !thieu.thang && du.thang, J([thieu.thang, du.thang, du.chanDoan && du.chanDoan.slice(0, 2)]));
+  const goc = new Set([...(m.doi[2].hamGoc || []), ...(m.maMau.hamCuaMan || []).map((f) => f.ten)]);
+  const goiR3 = md[2].chinh.map((d) => (d.match(/^\s*([a-z_]\w*)\(/) || [])[1]).filter(Boolean);
+  kiem('chương trình R3 (maMau.doi[2]) chỉ gọi lệnh gốc của R3 và hàm của màn (không cần hàm của em trong kho)', goiR3.length > 0 && goiR3.every((n) => goc.has(n)), J(goiR3));
+  const sl = docNguon('game/man-so-lenh.js');
+  kiem('man-so-lenh.js (Sổ lệnh) không đụng bài đang chơi (không gọi Choi.*, không ghi nháp)', !/\bChoi\./.test(sl) && !/ghiNhap/.test(sl));
+  const cv = docNguon('game/choi-vector.css');
+  kiem('choi-vector.css có màu tab cho son "tim" (R3 máy khách của màn giả) và "lam" (Luna R2)', /\.xe-tab\[data-son="tim"\]/.test(cv) && /\.xe-tab\[data-son="lam"\]/.test(cv));
+  kiem('màn giả ba robot: ba màu đế khác nhau (R1 mặc định, R2 lam, R3 tim)', J(m.doi.map((r) => (r.robot && r.robot.son) || null)) === J([null, 'lam', 'tim']), J(m.doi.map((r) => r.robot && r.robot.son)));
 }
 
 console.log('\n' + dat + ' đạt, ' + hong + ' hỏng');

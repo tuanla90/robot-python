@@ -1,7 +1,7 @@
 /* ============================================================================
    thu-mua-9.js — "Mật Lệnh Robot": MÀN GIẢ ĐỂ SOÁT GIAO DIỆN MÙA 9 (window.ThuMua9 / module.exports). Gói M9D2 (4/11).
    CHỈ DÙNG KHI GỠ LỖI: không thêm màn nào vào lộ trình; không gọi thì không có gì xảy ra. Nạp CUỐI choi.html (sau ung-dung.js).
-   Dữ liệu chép từ màn giả của hoc/kiem-chon-doi.mjs (gói M9D1): cùng sân, cùng lời giải mẫu.
+   Dữ liệu chép từ màn giả của hoc/kiem-chon-doi.mjs (gói M9D1): cùng sân, cùng lời giải mẫu. Khác một chỗ: R3 máy khách sơn 'tim' (bản gốc 'lam' trùng màu hồng của Luna R2).
      ThuMua9.manChonDoi()   → màn chọn đội: bảng 3 cỗ máy (CH, DR, CU), chọn 2 cho Sola / Luna; R3 máy khách khoá (xe cứu hỏa) chạy maMau.doi[2]
      ThuMua9.manLapRobot2() → màn đội, lắp robot thứ hai (lapRap.robot = 1): R1 xe chở hàng đặt sẵn, Luna tự lắp (xích / hai bánh, tay vòi phun)
      ThuMua9.manBaRobot()   → màn đội thường ba robot (đội đã ghép sẵn, không chọn), R3 khoá
@@ -35,7 +35,7 @@
   function chuan(m) { return ManHoc().chuanHoa(m); }
 
   function thoChonDoi() {
-    var r3 = Object.assign(CoMay().dung('CU', { son: 'lam', batDau: { x: 1, y: 3, huong: 1 } }), { coDinh: true, co: [{ x: 6, y: 3 }] });
+    var r3 = Object.assign(CoMay().dung('CU', { son: 'tim', batDau: { x: 1, y: 3, huong: 1 } }), { coDinh: true, co: [{ x: 6, y: 3 }] });
     return {
       ma: 'thu.chon-doi', id: 'T9.1', chuong: chuongThu(), so: 1, ten: 'Thử chọn đội', hang: 'lam-quen', san: SAN3.slice(),
       noi: [{ nut: { x: 1, y: 2 }, cua: [{ x: 3, y: 3 }] }],
