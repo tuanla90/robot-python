@@ -529,6 +529,8 @@
         them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.', { cho: cho(m), tam: l.tamDat });
       } else if (l.ma === 'luc-ban-sai') {
         them('luc-ban-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Lực phun viết chữ thường trong dấu nháy: "low" phun nhẹ (bay 2 ô, không giật), "high" phun mạnh (bay xa, xe giật).', { cho: cho(m), luc: l.lucDat });
+      } else if (l.ma === 'xit-tham-so') {                                // M9L15: bình xịt bụng drone không nhận đối số
+        them('xit-tham-so', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Bình xịt treo dưới bụng drone xịt thẳng xuống ô drone đang ở, không chọn lực hay hướng: bay tới đúng ô rồi gọi spray().', { ten: l.ten, cho: cho(m) });
       } else if (l.ma === 'luc-chua-mo') {
         them('luc-chua-mo', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Phun mạnh "high" mở khoá ở gói Lực phun; trước đó spray() không đối số là phun nhẹ.', { ten: l.ten, cho: cho(m) });
       } else if (l.ma === 'huong-radar-sai') {
@@ -789,8 +791,17 @@
     var hetDan = res.suKien.filter(function (e) { return e.ma === 'het-dan'; });
     if (hetDan.length) {
       var hd0 = hetDan[0];
-      them('het-dan', 'Ở nhịp ' + hd0.nhip + ', vòi phun đã hết nước nên không phun được gì (và xe cũng không giật).' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
+      if (hd0.drone) them('het-dan', 'Ở nhịp ' + hd0.nhip + ', bình xịt dưới bụng drone đã hết nước nên không xịt được gì.' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +   // M9L15: bình xịt bụng
+        ' Bình nhỏ chỉ xịt được ' + (hd0.binh || 0) + ' lần, xịt hụt cũng mất một lần: chỉ spray() khi drone đang ở ngay trên lửa, van hay nút.', { nhip: hd0.nhip, soLan: hetDan.length, drone: true, cho: cho(hd0.lenh ? (g.anhXa[hd0.lenh.dongPy] || null) : null) });
+      else them('het-dan', 'Ở nhịp ' + hd0.nhip + ', vòi phun đã hết nước nên không phun được gì (và xe cũng không giật).' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
         ' Màn này chỉ có ' + (man.danToiDa || 0) + ' lượt phun: dùng cho đúng chỗ.', { nhip: hd0.nhip, soLan: hetDan.length, cho: cho(hd0.lenh ? (g.anhXa[hd0.lenh.dongPy] || null) : null) });
+    }
+    var xitHut = res.suKien.filter(function (e) { return e.ma === 'xit-hut'; });       // M9L15: bình xịt bụng drone xịt ô không có lửa / van / nút (thông tin, không lỗi)
+    if (xitHut.length) {
+      var xh0 = xitHut[0];
+      cd.push({ ma: 'xit-hut', muc: 'thong-tin', nhip: xh0.nhip, soLan: xitHut.length, o: xh0.o, cho: cho(xh0.lenh ? (g.anhXa[xh0.lenh.dongPy] || null) : null),
+        loi: 'Ở nhịp ' + xh0.nhip + ', drone xịt nước xuống ô (' + xh0.o.x + ', ' + xh0.o.y + ') nhưng dưới bụng không có lửa, van hay nút nên chẳng có gì đổi.' +
+          (xitHut.length > 1 ? ' Chuyện này xảy ra ' + xitHut.length + ' lần.' : '') + ' Bình xịt chỉ xịt thẳng xuống ô drone đang ở: bay tới ngay trên chỗ cần xịt rồi mới gọi spray().' });
     }
     var banHut = res.suKien.filter(function (e) { return e.ma === 'ban-hut'; });
     if (banHut.length) {
