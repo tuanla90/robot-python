@@ -131,6 +131,14 @@
     if (!laNode) throw new Error('lap-rap.js cần bang-ghep.js nạp trước (window.BangGhep).');
     return bgNode || (bgNode = require('./bang-ghep.js'));
   }
+  /** Tám bộ cỗ máy (co-may.js): trình duyệt dùng window.CoMay (nạp trước lap-rap.js khi màn có chonDoi), Node tự require. */
+  var cmNode = null;
+  function CM() {
+    var c = (typeof window !== 'undefined' && window.CoMay) || (typeof globalThis !== 'undefined' && globalThis.CoMay) || null;
+    if (c) return c;
+    if (!laNode) throw new Error('lap-rap.js cần co-may.js nạp trước (window.CoMay) cho màn chọn đội.');
+    return cmNode || (cmNode = require('./co-may.js'));
+  }
 
   /* ------------------------------------------------------------- một cách lắp */
   function mot(v) {                                                              // chuỗi mã | mảng một phần tử | rỗng → mã hay null
@@ -278,6 +286,33 @@
     });
     return goc;
   }
+  /** Lời giải của một cách mẫu (lắp hay chọn đội) ở dạng máy chấm / máy kiểm chạy được: màn một robot { chinh, hamCuaMan, hamCuaEmMoi }; màn đội { doi: [{ chinh }…], hamCuaMan, hamCuaEmMoi }. */
+  function loiGiaiCua(lg) {
+    lg = lg || {};
+    var kq = Array.isArray(lg.doi) ? { doi: lg.doi.map(function (d) { return { chinh: ((d && d.chinh) || []).slice() }; }) } : { chinh: (lg.chinh || []).slice() };
+    kq.hamCuaMan = lg.hamCuaMan || []; kq.hamCuaEmMoi = lg.hamCuaEmMoi || [];
+    return kq;
+  }
+  /** Bài làm đưa máy chấm từ loiGiai (chinh hay doi). */
+  function baiCua(lg) { return lg.doi ? { doi: lg.doi.map(function (d) { return { chinh: d.chinh.slice() }; }), hamCuaMan: lg.hamCuaMan || [] } : { chinh: lg.chinh.slice(), hamCuaMan: lg.hamCuaMan || [] }; }
+  /** Chỉ số robot được lắp trong màn đội (man.lapRap.robot); null = màn một robot (lắp vào chính màn). */
+  function robotLapCua(man) {
+    var L = lapRapCua(man);
+    return L && typeof L.robot === 'number' && Array.isArray(man.doi) ? L.robot : null;
+  }
+  /** Các khoá cấu hình cỗ máy trên một mục man.doi[i] (CoMay.dung đặt): bỏ đi trước khi gắn cỗ máy / cách lắp mới, để cờ của cỗ máy cũ không sót lại. */
+  function khoaCoMay() {
+    var ks = ['loaiRobot', 'robot', 'hamGoc', 'pin'], DS = CM().DS;
+    Object.keys(DS).forEach(function (m) { Object.keys(DS[m].co || {}).forEach(function (k) { if (ks.indexOf(k) < 0) ks.push(k); }); });
+    return ks;
+  }
+  function locCoMay(r) {
+    var kq = Object.assign({}, r), ks = khoaCoMay();
+    ks.forEach(function (k) { delete kq[k]; });
+    return kq;
+  }
+  /** Màu đế của robot thứ i trong đội: khai ở doi[i].son hay doi[i].robot.son; mặc định R2 'lam' (hồng Luna), R1 không (xanh Sola). */
+  function sonCua(r, i) { return r.son || (r.robot && r.robot.son) || (i === 1 ? 'lam' : undefined); }
   function apDung(man, cach) {
     var c = chuanCach(cach), g = kiemGhep(c, man);
     if (!g.ok) throw new Error(g.lyDo);
@@ -286,17 +321,147 @@
     kq.manGoc = man.manGoc || man;
     kq.cachLapDaChon = c;
     kq.giaLap = giaCach(c);                                                                // máy chấm dùng cho sao "rẻ" (man.sao.re)
-    kq.loaiRobot = th.loai;
-    if (c.than === 'drone' && coPinMan(man)) { ch.camBien.push({ ma: 'pin', o: 'than' }); kq.pin = pinCua(man); }
-    else delete kq.pin;
-    delete kq.pinDrone;                                                                    // pin chỉ dành cho drone: thân khác thì lõi ném lỗi nếu còn pin
-    kq.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
-    kq.hamGoc = hamGocCua(man, c);
-    if (cach && cach.loiGiai) {                                                            // cách mẫu: máy kiểm / máy chấm chạy lời giải của chính cách này
-      var lg = cach.loiGiai;
-      kq.loiGiai = { chinh: (lg.chinh || []).slice(), hamCuaMan: lg.hamCuaMan || [], hamCuaEmMoi: lg.hamCuaEmMoi || [] };
+    var i = robotLapCua(man);
+    if (i !== null) {                                                                      // M9D1: màn đội, lắp cho robot thứ i (man.lapRap.robot): gắn vào man.doi[i], không đụng robot khác
+      if (!man.doi[i]) throw new Error('Màn không có robot thứ ' + (i + 1) + ' để lắp.');
+      if (man.doi[i].coDinh) throw new Error('Robot thứ ' + (i + 1) + ' bị khoá, không lắp được.');
+      var r = locCoMay(man.doi[i]), pinR = man.doi[i].pin !== undefined ? man.doi[i].pin : pinCua(man);
+      r.loaiRobot = th.loai;
+      if (c.than === 'drone' && pinR !== undefined && pinR !== null) { ch.camBien.push({ ma: 'pin', o: 'than' }); r.pin = pinR; }
+      r.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
+      var sonR = sonCua(man.doi[i], i); if (sonR) r.robot.son = sonR;
+      r.hamGoc = hamGocCua(Object.assign({}, man, { hamGoc: man.doi[i].hamGoc || man.hamGoc }), c);
+      delete r.son;
+      kq.doi = man.doi.slice(); kq.doi[i] = r;
+      if (i === 0) { kq.loaiRobot = r.loaiRobot; kq.robot = r.robot; kq.hamGoc = r.hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)
+    } else {
+      kq.loaiRobot = th.loai;
+      if (c.than === 'drone' && coPinMan(man)) { ch.camBien.push({ ma: 'pin', o: 'than' }); kq.pin = pinCua(man); }
+      else delete kq.pin;
+      delete kq.pinDrone;                                                                  // pin chỉ dành cho drone: thân khác thì lõi ném lỗi nếu còn pin
+      kq.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
+      kq.hamGoc = hamGocCua(man, c);
     }
+    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai);                       // cách mẫu: máy kiểm / máy chấm chạy lời giải của chính cách này (màn đội: loiGiai.doi)
     return kq;
+  }
+
+  /* ------------------------------------------------------------- chọn đội (M9D1, mùa 9 chương 1; KE-HOACH-MUA-9-TO-HOP.md mục 7, 8, 9.4)
+     man.chonDoi = {
+       menu: ['CH', 'DR', 'CU'],              // mã cỗ máy (CoMay.DS) trên bảng chọn
+       so: 2,                                  // (tuỳ chọn) số cỗ máy phải chọn; mặc định = số robot em lập trình (man.doi[i] không coDinh)
+       trung: false,                           // (tuỳ chọn) true = được chọn cùng một cỗ máy cho hai robot; mặc định cấm trùng
+       cachMau: [ { chon: ['CH', 'DR'], loiGiai: { doi: [{ chinh }, { chinh }], hamCuaMan?, hamCuaEmMoi? }, ghiChu? }, … ]   // đôi tốt đứng đầu (ứng với sao 3)
+     }
+     man.doi[i] của robot em lập trình chỉ khai phần riêng (batDau, co, son, pin cho drone…); cỗ máy do người chơi chọn điền vào (CoMay.dung). Robot khoá (coDinh) khai đủ như màn đội thường
+     và chạy maMau.doi[i] (cham.js). chon[k] ứng với robot em lập trình thứ k theo thứ tự trong man.doi. */
+  function chonDoiCua(man) { return (man && man.chonDoi) || null; }
+  /** Chỉ số các robot em lập trình (không coDinh) của màn đội. */
+  function robotEm(man) {
+    var kq = [];
+    (Array.isArray(man && man.doi) ? man.doi : []).forEach(function (r, i) { if (!r.coDinh) kq.push(i); });
+    return kq;
+  }
+  function soChonCua(man) { var C = chonDoiCua(man); return C && typeof C.so === 'number' ? C.so : robotEm(man).length; }
+  function tenCoMay(ma) { var d = CM().DS[ma]; return d ? d.ten : String(ma); }
+  /** Lựa chọn `chon` (mảng mã cỗ máy) có hợp lệ với màn không: { ok, lyDo, ma: 'khong-chon-doi' | 'thieu' | 'thua' | 'khong-co' | 'trung' | null }. */
+  function kiemChon(man, chon) {
+    var C = chonDoiCua(man);
+    if (!C) return { ok: false, ma: 'khong-chon-doi', lyDo: 'Màn này không phải màn chọn đội.' };
+    chon = Array.isArray(chon) ? chon : [];
+    var so = soChonCua(man), menu = C.menu || [];
+    if (chon.length < so) return { ok: false, ma: 'thieu', lyDo: 'Chọn đủ ' + so + ' cỗ máy cho đội.' };
+    if (chon.length > so) return { ok: false, ma: 'thua', lyDo: 'Đội này chỉ có ' + so + ' chỗ.' };
+    for (var i = 0; i < chon.length; i++) {
+      if (menu.indexOf(chon[i]) < 0) return { ok: false, ma: 'khong-co', lyDo: 'Bảng chọn không có ' + (CM().DS[chon[i]] ? tenCoMay(chon[i]).toLowerCase() : 'cỗ máy "' + chon[i] + '"') + '.' };
+      if (C.trung !== true && chon.indexOf(chon[i]) < i) return { ok: false, ma: 'trung', lyDo: 'Hai bạn không chọn cùng một ' + tenCoMay(chon[i]).toLowerCase() + '.' };
+    }
+    return { ok: true, ma: null, lyDo: '' };
+  }
+  /** Mọi lựa chọn hợp lệ của màn (thứ tự theo menu; [R1, R2]): bảng chọn của giao diện / máy kiểm. */
+  function dsCachChon(man) {
+    var C = chonDoiCua(man), kq = [];
+    if (!C) return kq;
+    var so = soChonCua(man), menu = C.menu || [];
+    (function de(dang) {
+      if (dang.length === so) { if (kiemChon(man, dang).ok) kq.push(dang.slice()); return; }
+      menu.forEach(function (m) { dang.push(m); de(dang); dang.pop(); });
+    })([]);
+    return kq;
+  }
+  /**
+   * Gắn đội đã chọn vào màn: bản màn mới với man.doi[i] đủ loaiRobot / robot / hamGoc / cờ cỗ máy (CoMay.dung) cho từng robot em lập trình, robot khoá giữ nguyên.
+   * `chon` là mảng mã hay một cách mẫu { chon, loiGiai } (khi đó kq.loiGiai = lời giải đội của cách ấy). Ném lỗi lời Việt khi chọn sai (kiemChon).
+   */
+  function apDungDoi(man, chon) {
+    var cach = chon && !Array.isArray(chon) ? chon : null;
+    chon = cach ? cach.chon : chon;
+    var k = kiemChon(man, chon);
+    if (!k.ok) throw new Error(k.lyDo);
+    var kq = Object.assign({}, man), em = robotEm(man), CoMay = CM();
+    kq.manGoc = man.manGoc || man;
+    kq.chonDaChon = chon.slice();
+    kq.doi = man.doi.map(function (r, i) {
+      var j = em.indexOf(i);
+      if (j < 0) return r;
+      var goc = locCoMay(r), d = CoMay.dung(chon[j], { son: sonCua(r, i), pin: r.pin !== undefined ? r.pin : man.pin, co: r.coThem || undefined });
+      delete goc.son; delete goc.coThem;
+      return Object.assign(goc, d);
+    });
+    if (em.indexOf(0) >= 0) { kq.loaiRobot = kq.doi[0].loaiRobot; kq.robot = kq.doi[0].robot; kq.hamGoc = kq.doi[0].hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)
+    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai);
+    return kq;
+  }
+  /** Lỗi dữ liệu chonDoi của màn (rỗng = ổn). */
+  function kiemDuLieuDoi(man) {
+    var C = chonDoiCua(man), ma = (man && man.ma) || '(màn)', loi = [], DS = CM().DS;
+    function them(s) { loi.push(ma + ': ' + s); }
+    if (!C) { them('thiếu chonDoi.'); return loi; }
+    if (!Array.isArray(man.doi) || !man.doi.length) { them('màn chọn đội phải có man.doi.'); return loi; }
+    if (!Array.isArray(C.menu) || C.menu.length < 2) them('chonDoi.menu cần ít nhất 2 cỗ máy.');
+    (C.menu || []).forEach(function (m) { if (!DS[m]) them('chonDoi.menu có mã lạ "' + m + '".'); });
+    var so = soChonCua(man), em = robotEm(man);
+    if (so < 1 || so > em.length) them('chonDoi.so = ' + so + ' mà màn có ' + em.length + ' robot em lập trình.');
+    if (C.trung !== true && so > (C.menu || []).length) them('bảng ' + (C.menu || []).length + ' cỗ máy không đủ chọn ' + so + ' khác nhau.');
+    if (!Array.isArray(C.cachMau) || !C.cachMau.length) { them('chonDoi.cachMau cần ít nhất 1 cách mẫu.'); return loi; }
+    var thay = {};
+    C.cachMau.forEach(function (cm, i) {
+      var nhan = 'cachMau[' + i + ']', r = kiemChon(man, cm.chon);
+      if (!r.ok) them(nhan + ' (' + (cm.chon || []).join(' + ') + ') không hợp lệ: ' + r.lyDo);
+      var khoa = (cm.chon || []).join('|');
+      if (thay[khoa] !== undefined) them(nhan + ' trùng với cachMau[' + thay[khoa] + '].'); else thay[khoa] = i;
+      if (!cm.loiGiai || !Array.isArray(cm.loiGiai.doi) || cm.loiGiai.doi.length < em.length) them(nhan + ' thiếu loiGiai.doi (mỗi robot em lập trình một chương trình).');
+    });
+    return loi;
+  }
+  /** Chạy lời giải từng cách mẫu chọn đội qua máy chấm: [{ chon, ten, thang, nhip, o, sao, loi }]. */
+  function thongKeMauDoi(man, kho) {
+    var C = chonDoiCua(man), cham = chamHoc(), kq = [];
+    if (!C || !cham) return kq;
+    (C.cachMau || []).forEach(function (cm) {
+      var mau = { chon: (cm.chon || []).slice(), ten: (cm.chon || []).map(tenCoMay).join(' + '), thang: false, nhip: null, o: null, sao: 0, loi: null, ghiChu: cm.ghiChu || '' };
+      try {
+        var m = apDungDoi(man, cm), lg = m.loiGiai || loiGiaiCua({ doi: [] });
+        var r = cham.cham(m, baiCua(lg), (kho || []).concat(lg.hamCuaEmMoi || []));
+        mau.thang = !!r.thang; mau.nhip = r.soNhip; mau.o = r.soO; mau.sao = r.sao;
+      } catch (e) { mau.loi = e.message; }
+      kq.push(mau);
+    });
+    return kq;
+  }
+  /** Kiểm cân màn chọn đội: dữ liệu + mọi cách mẫu thắng + cachMau[0] đạt 3 sao (mảng lỗi; rỗng = ổn). */
+  function kiemCanManDoi(man, kho) {
+    var loi = kiemDuLieuDoi(man), ma = (man && man.ma) || '(màn)';
+    if (loi.length) return loi;
+    var tk = thongKeMauDoi(man, kho);
+    tk.forEach(function (x, i) {
+      if (x.loi) loi.push(ma + ': cachMau[' + i + '] (' + x.ten + ') chấm lỗi: ' + x.loi);
+      else if (!x.thang) loi.push(ma + ': cachMau[' + i + '] (' + x.ten + ') không thắng.');
+    });
+    if (loi.length) return loi;
+    var ss = man.sao || {};
+    if ((ss.nhip !== undefined && tk[0].nhip > ss.nhip) || (ss.o !== undefined && tk[0].o > ss.o)) loi.push(ma + ': cachMau[0] (' + tk[0].ten + ') phải đạt 3 sao: ' + tk[0].nhip + ' nhịp, ' + tk[0].o + ' ô so với sao ' + JSON.stringify(ss) + '.');
+    return loi;
   }
 
   /**
@@ -304,9 +469,23 @@
    * ManHoc.danhSach (máy kiểm chung, Sổ lệnh, Gỡ lỗi) thấy một màn đủ trường. Giao diện không chơi bản này mà chơi apDung(màn, cách người chơi chọn). man-chuoi-1.js gọi hàm này trong chuanHoa.
    */
   function macDinh(man) {
+    var C = chonDoiCua(man), i = robotLapCua(man), a;
+    if (C && Array.isArray(C.cachMau) && C.cachMau.length && kiemChon(man, C.cachMau[0].chon).ok) {   // M9D1: màn chọn đội: bản mặc định = cách mẫu đầu (đôi tốt)
+      a = apDungDoi(man, C.cachMau[0]);
+      man.doi = man.doi.map(function (r, j) { return Object.assign({}, a.doi[j], r); });
+      ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
+      if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
+    }
     var L = lapRapCua(man);
     if (!L || !Array.isArray(L.cachLap) || !L.cachLap.length || !kiemGhep(L.cachLap[0], man).ok) return man;
-    var a = apDung(man, L.cachLap[0]);
+    if (i !== null && (!man.doi[i] || man.doi[i].coDinh)) return man;
+    a = apDung(man, L.cachLap[0]);
+    if (i !== null) {                                                                      // M9D1: lắp cho robot thứ i của màn đội: điền man.doi[i] (và trường đầu màn khi i = 0)
+      man.doi[i] = Object.assign({}, a.doi[i], man.doi[i]);
+      if (i === 0) ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
+      if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
+      return man;
+    }
     ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
     if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
     if (a.loaiRobot !== 'drone' && man.pin !== undefined && man.pinDrone === undefined) { man.pinDrone = man.pin; delete man.pin; }          // bản mặc định không phải drone thì không mang pin
@@ -332,8 +511,11 @@
       if (!r.ok) them(nhan + ' (' + moTa(c) + ') không hợp lệ: ' + r.lyDo);
       var khoa = c.than + '|' + c.tay + '|' + c.camBien;
       if (thay[khoa]) them(nhan + ' trùng với cachLap[' + thay[khoa].i + '].'); else thay[khoa] = { i: i };
-      if (!cl.loiGiai || !Array.isArray(cl.loiGiai.chinh)) them(nhan + ' thiếu loiGiai.chinh.');
+      if (robotLapCua(man) !== null) { if (!cl.loiGiai || !Array.isArray(cl.loiGiai.doi)) them(nhan + ' thiếu loiGiai.doi (màn đội lắp robot thứ ' + (robotLapCua(man) + 1) + ').'); }
+      else if (!cl.loiGiai || !Array.isArray(cl.loiGiai.chinh)) them(nhan + ' thiếu loiGiai.chinh.');
     });
+    var ri = robotLapCua(man);
+    if (ri !== null && (!man.doi[ri] || man.doi[ri].coDinh)) them('lapRap.robot = ' + ri + ' không phải robot em lập trình của màn.');
     return loi;
   }
 
@@ -372,7 +554,7 @@
       var c = chuanCach(cl), mau = { cach: c, ten: moTa(c), gia: giaCach(c), thang: false, nhip: null, o: null, sao: 0, loi: null, ghiChu: cl.ghiChu || '' };
       try {
         var m = apDung(man, cl), lg = m.loiGiai || { chinh: [], hamCuaMan: [], hamCuaEmMoi: [] };
-        var r = cham.cham(m, { chinh: lg.chinh.slice(), hamCuaMan: lg.hamCuaMan || [] }, (kho || []).concat(lg.hamCuaEmMoi || []));
+        var r = cham.cham(m, baiCua(lg), (kho || []).concat(lg.hamCuaEmMoi || []));
         mau.thang = !!r.thang; mau.nhip = r.soNhip; mau.o = r.soO; mau.sao = r.sao;
       } catch (e) { mau.loi = e.message; }
       kq.push(mau);
@@ -439,7 +621,9 @@
     KHE: KHE, TEN_KHE: TEN_KHE, DANH_MUC: DANH_MUC,
     tim: tim, tenCua: tenCua, moTa: moTa, chuanCach: chuanCach, giaCach: giaCach, cauHinhCua: cauHinhCua,
     kiemGhep: kiemGhep, moLaiCua: moLaiCua, kiemCachLap: kiemCachLap, dsCachLap: dsCachLap, apDung: apDung, cachMacDinh: cachMacDinh, khongQua: khongQua, dsKhe: dsKhe,
-    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV, bangGhep: BG
+    macDinh: macDinh, kiemDuLieu: kiemDuLieu, kiemCanMan: kiemCanMan, thongKeMau: thongKeMau, khoMau: khoMau, honHan: honHan, cachBiHonHan: cachBiHonHan, lenhKhongCon: lenhKhongCon, veVector: VV, bangGhep: BG,
+    // M9D1: màn đội chọn đội (man.chonDoi) và lắp cho một robot của màn đội (man.lapRap.robot)
+    coMay: CM, robotLapCua: robotLapCua, robotEm: robotEm, soChonCua: soChonCua, kiemChon: kiemChon, dsCachChon: dsCachChon, apDungDoi: apDungDoi, kiemDuLieuDoi: kiemDuLieuDoi, thongKeMauDoi: thongKeMauDoi, kiemCanManDoi: kiemCanManDoi, loiGiaiCua: loiGiaiCua, baiCua: baiCua
   };
   if (laNode) module.exports = API;
   if (typeof window !== 'undefined') window.LapRap = API;
