@@ -365,8 +365,8 @@ console.log('\n== 5. Cửa nhịp + front_clear; nhịp có bắn (ban-dung-yen,
   kiem('danToiDa cho robot không có súng → lỗi cấu hình; danToiDa âm / lẻ cũng lỗi; không khai thì đạn vô hạn', /chỉ dùng cho robot có vòi phun/.test(loi(() => SanHoc.chay({ san: ['..'], batDau: { x: 0, y: 0, huong: 0 }, loaiRobot: 'banh', danToiDa: 1 }, ''))) &&
     /số nguyên không âm/.test(loi(() => chay(S1, { x: 2, y: 0, huong: 1 }, '', { danToiDa: -1 }))) && chay(S1, { x: 2, y: 0, huong: 1 }, BAN.repeat(2)).sung.dan === null);
   // thân không hợp
-  kiem('nhện không gắn vòi phun (nhện không có hướng mặt) → lỗi cấu hình; drone cũng vậy', /Nhện không gắn vòi phun/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'spray'] }, ''))) &&
-    /Drone không gắn vòi phun/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'spray_back'] }, ''))));
+  kiem('nhện không gắn vòi phun (nhện không có hướng mặt) → lỗi cấu hình; drone với spray_back cũng vậy (M9L15: drone chỉ có bình xịt bụng spray())', /Nhện không gắn vòi phun/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'spray'] }, ''))) &&
+    /Drone không có mũi hay đuôi/.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'drone', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'spray_back'] }, ''))));
   for (const tay of [['arm_down', 'arm_up', 'grab', 'release'], ['magnet_n', 'magnet_off'], ['aim', 'throw', 'load']]) {
     kiem('súng hơi không đi chung ' + tay[0] + ' (một robot một tay) → lỗi cấu hình', /một robot chỉ có một tay/i.test(loi(() => SanHoc.chay({ san: trong(5), batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH.concat(['spray'], tay) }, ''))));
   }

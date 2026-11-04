@@ -666,9 +666,9 @@
   //   · LỆNH: chỉ spray(), KHÔNG đối số ('xit-tham-so', lỗi chạy); spray_back trên khay drone = lỗi cấu hình (drone không có mũi / đuôi); cờ lucBan bỏ qua với drone.
   //   · NHỊP: spray() chỉ ra lệnh (như xe), làm ở nhịp kế của drone — wait() / go_*() / land() / take_off() — TRƯỚC khi bay (như đầu sơn bụng): "spray(); go_right()" xịt ô cũ rồi bay.
   //     Xịt được cả lúc đang bay lẫn đang đậu. Hai spray() chưa trôi nhịp: 'ban-goi-lai' (như xe). Không giật (drone lơ lửng), không có tia bay xa, không có sự kiện 'ban' / 'giat'.
-  //   · Ô DƯỚI BỤNG = ô drone đang ở. Drone mang bình xịt BAY LÊN TRÊN được ô lửa đang cháy và ô van V (drone khác vẫn bị chặn như cũ); land() không đáp xuống lửa / van ('dap-bi-chan' vat 'lua' | 'van').
+  //   · Ô DƯỚI BỤNG = ô drone đang ở. Drone mang bình xịt BAY LÊN TRÊN được ô lửa đang cháy, ô van V và nút N (drone khác vẫn bị chặn như cũ); land() không đáp xuống lửa / van / nút ('dap-bi-chan' vat 'lua' | 'van' | 'nut').
   //     Lửa → như tia nước trúng lửa: suc giảm 1 ('lua-nho'), về 0 thì 'lua-tat' (ô thành sàn, không cháy lại; cửa chống cháy đổi cuối nhịp).
-  //     Van V → doiVan như T3 ('phun-van' { tu = o = ô đó, huong: null, soO: 0 }). Nút N → đổi như bóng trúng nút ('nut-doi'; drone không bay lên N được nên hiện chưa tới).
+  //     Van V → doiVan như T3 ('phun-van' { tu = o = ô đó, huong: null, soO: 0 }). Nút N → doiNut như bóng trúng nút ('nut-doi', băng đổi ngay, cửa đổi cuối nhịp).
   //     Có tác dụng: 'xit-bung' { nhip, o, trung: 'lua' | 'van' | 'nut', lenh } (phát TRƯỚC mã cũ). Ô khác (sàn, nước, người, vật…): 'xit-hut' { nhip, o, lenh } — thông tin,
   //     KHÔNG là lỗi, KHÔNG tính chạm người.
   //   · BÌNH NHỎ: màn không khai danToiDa thì drone có BINH_XIT_DRONE = 3 lần xịt; khai danToiDa = n thì n. Hết bình: 'het-dan' { nhip, lenh, drone: true, binh } (lỗi), không xịt, vẫn mất nhịp.
