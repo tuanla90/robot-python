@@ -651,6 +651,16 @@
   //   bắt VẬT ĐẦU TIÊN trên dây rồi KÉO MỘT LẦN (không giữ, không dắt theo): vật nổi / người dưới nước → ô NƯỚC gần xe nhất trên dây; thùng gỗ (vật o, không thùng nặng H) / người trên cạn → ô TRƯỚC MŨI (ô 1 trên dây, phải là ô cạn trống).
   //   Sự kiện 'keo-vat' { id, tu, den, soO, doDai, huong, huongTuongDoi, toi: true }. Không kéo: thùng nặng 'thung-nang', vật có xe đứng 'co-xe', dây gặp tường / cửa / robot ('keo-hut' vat …), hết tầm 'het-tam'.
   //   drop_net() trên xe: 'khong-keo' (xe không giữ vật). Tay lưới là MỘT TAY: không đi chung kẹp / nam châm / máy ném / vòi phun.
+  // M9C2 (4/11, mục 4 dòng L9 L10 T3 T4). Cẩu / drone gắn tay lưới chỉ có cast_net() / drop_net(), KHÔNG đối số (không set_length); lỗi lời Việt nằm ở thongDiep của sự kiện.
+  //   L9 GIỎ CỨU HỘ (cẩu, mỗi lệnh một nhịp, ô đầu cần): cast_net() vớt người DƯỚI NƯỚC hay vật nổi vào giỏ ('gio-vot' { o, vat, nguoi }; vật trangThai 'gio', treo theo đầu cần, không trôi);
+  //     drop_net() đặt lên ô BỜ ở đầu cần ('gio-dat'); người đặt xuống tự đi về trạm (ô không có đường về trạm: không đặt). Không vớt người trên cạn / vật nằm đất / thùng / container. Không luật tải.
+  //     Một tay: không đi chung móc / gầu / nam châm. Không làm được: 'gio-hut' { o, lyDo, thongDiep } (xem LOI_GIO).
+  //   L10 THẢ PHAO (drone mang MỘT phao, làm ở nhịp kế như nam châm): cast_net() thả phao xuống ô nước dưới bụng ('tha-phao' { o, nguoi }); phao NEO tại ô (không trôi, không chặn ai);
+  //     người ở ô có phao (hay trôi tới ô đó) bám ('bam-phao' { id, o }), THÔI TRÔI, chờ lưới kéo vào (bám phao không tự lên bờ); drone không kéo. drop_net() ngay trên phao thu phao về ('thu-phao'),
+  //     không thu khi người đang bám. Không thả ở bờ / cống / thác / ô có vật nổi. Không làm được: 'phao-hut' { o, lyDo, thongDiep }. Vết: mucVet.phao = [{ x, y }].
+  //   T3 VÒI PHUN GẠT VAN: bóng spray / spray_back dừng ở van cống V ('van', trước 4/11 bay qua) → doiVan như lưới kéo van, sự kiện 'phun-van' { tu, o, huong, bat, soO, lenh }.
+  //   T4 BÈ SẠC: lớp cfg.beSac = [{ x, y }] gắn ô sạc lên bè B ở ô đó (vật sac: true). Ô sạc đi theo bè (trôi, kéo; 'be-sac-di' { id, tu, den } cuối nhịp); drone bay / đậu trên bè sạc được sạc như ô P;
+  //     land() lên bè sạc được (bè thường vẫn 'dap-bi-chan' vat), drone đậu trên bè đi theo bè ('theo-be' { id, tu, den }).
   var NGUOI_NOI = 'nguoi';
   var LOI_CHAM_NGUOI = { phun: 'Không phun nước vào người!', kep: 'Không kẹp người!', 'nam-cham': 'Không hút người bằng nam châm!', nem: 'Không ném vào người!', nap: 'Không nạp người vào máy ném!', moc: 'Không móc cẩu vào người!' };
   HAM_GOC.gai = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];   // BÁNH GAI (mùa 8 Hang động): đi như xe hai bánh, bám đá vôi ướt 'I' khi đang bung gai
@@ -658,8 +668,8 @@
   var NUOC_KY = { '~': 'nuoc', 'Q': 'co', 'q': 'dich', 'K': 'cong', 'k': 'cong' };   // ký hiệu là MẶT NƯỚC (xuồng đi được; xe cạn đâm 'nuoc'; drone bay qua)
   var VAT_NOI_KY = { 'B': 'be', 'L': 'luc-binh' };                                   // vật nổi trên nước (ô dưới là nước), cùng luật, khác hình
   var THAN_NEO = ['anchor', 'unanchor'];          // xuồng nâng cấp thân: thả / nhổ neo (chỉ ra lệnh, làm ở nhịp wait() kế)
-  var TAY_PHAO = ['cast_net', 'drop_net', 'set_length'];
-  var TAY_GIO = ['cast_net', 'drop_net'];                    // M9C2: tay lưới trên cần cẩu (giỏ cứu hộ L9) và drone (thả phao L10): chỉ cast_net() / drop_net(), không đối số   // tay lưới thủy lợi của xuồng: tung lưới bắt vật nổi / thả lưới; nâng cấp set_length(n) thu / thả dây lưới (0 = kéo về khoang, 1..3 = độ dài dây)
+  var TAY_PHAO = ['cast_net', 'drop_net', 'set_length'];   // tay lưới thủy lợi của xuồng: tung lưới bắt vật nổi / thả lưới; nâng cấp set_length(n) thu / thả dây lưới (0 = kéo về khoang, 1..3 = độ dài dây)
+  var TAY_GIO = ['cast_net', 'drop_net'];                    // M9C2: tay lưới trên cần cẩu (giỏ cứu hộ L9) và drone (thả phao L10): chỉ cast_net() / drop_net(), không đối số
   var HUONG_LUOI = { front: 0, right: 1, back: 2, left: 3 };   // hướng tung lưới tương đối theo mũi xuồng (mặc định "front")
   var DAI_LUOI_MAC_DINH = 2;                      // độ dài dây lưới mặc định khi chưa nâng cấp set_length (2 ô)
   var CAM_DONG_HAM = ['flow_dir', 'flow'];        // chong chóng dòng chảy: hướng dòng ở ô trước mũi theo mũi xuồng; flow() (nâng cấp) trả tuple (huong, suc)

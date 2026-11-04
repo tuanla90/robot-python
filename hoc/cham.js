@@ -1119,6 +1119,14 @@
           (kh0.vat === 'het-tam' ? 'ô rơi của lưới (' + kh0.o.x + ', ' + kh0.o.y + ') là mặt nước trống.' : 'lưới bị chặn ở ô (' + kh0.o.x + ', ' + kh0.o.y + '), là ' + (LY_SONG[kh0.vat] || kh0.vat) + '.') +
           (keoHut.length > 1 ? ' Chuyện này xảy ra ' + keoHut.length + ' lần.' : '') + ' Canh khoảng cách từ xuồng tới bè đúng bằng độ dài dây lưới rồi mới gọi cast_net().' });
     }
+    ['gio-hut', 'phao-hut'].forEach(function (maH) {                       // M9C2: giỏ cứu hộ (cẩu L9) / phao (drone L10) không làm được: lời Việt có sẵn ở thongDiep của lõi
+      var ds = res.suKien.filter(function (e) { return e.ma === maH; });
+      if (!ds.length) return;
+      var e0 = ds[0], m0 = e0.lenh ? (g.anhXa[e0.lenh.dongPy] || null) : null;
+      cd.push({ ma: maH, muc: 'thong-tin', nhip: e0.nhip, soLan: ds.length, o: e0.o, lyDo: e0.lyDo, cho: cho(m0),
+        loi: 'Ở nhịp ' + e0.nhip + ', ' + (e0.lenh ? e0.lenh.ten + '()' : 'lệnh') + (m0 ? ' ở ' + viTri(m0) : '') + ' không làm được ở ô (' + e0.o.x + ', ' + e0.o.y + '): ' + e0.thongDiep +
+          (ds.length > 1 ? ' Chuyện này xảy ra ' + ds.length + ' lần.' : '') });
+    });
     var congKet = res.suKien.filter(function (e) { return e.ma === 'cong-ket'; });
     if (congKet.length) {
       var cgk0 = congKet[0];
