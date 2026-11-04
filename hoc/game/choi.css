@@ -998,6 +998,21 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .lr-xong .lx-phu{font:600 calc(11px*var(--kp))/1 var(--px);color:var(--g-vangV2);text-shadow:0 1px 0 var(--g-moToiV8)}
 .lr-xong.khoa{filter:saturate(.25) brightness(.7)}
 .lr-xong.rung{animation:shake .25s 2}
+/* M9D2 màn Chọn đội (man-chon-doi.js, #sc-doi): dùng lại lr-*; hàng khe Sola / Luna / máy khách thay ô robot, ô lời đứng riêng dưới bảng */
+.cd-bang{padding:4px}
+.cd-khes{flex:1;min-width:0;display:flex;gap:6px}
+.lr-the.cd-khe{flex:1 1 0;min-width:0;max-width:none;min-height:44px;align-items:center;text-align:center;justify-content:center;gap:2px}
+.cd-hinh{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;line-height:0}
+.cd-ai{text-align:center}
+.cd-may{flex:none;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.lr-the.cd-khe.khoa{cursor:default;opacity:.85}
+.lr-the.cd-khe.khoa:active{transform:none}
+.cd-khoa{position:absolute;right:5px;top:5px;line-height:0}
+.lr-loi.cd-loi{flex:none;height:44px;margin-bottom:6px}
+.cd-the-hd{height:40px}
+.cd-the-hinh{flex:none}
+.cd-ai-the{font:700 calc(11px*var(--kp))/1 var(--px);color:var(--g-vangV2);white-space:nowrap}
+.cd-menu .lr-the{min-height:44px}
 /* bảng thắng: mục "Cách lắp khác" và ba nút */
 .hop-hang.ba{gap:6px}
 .hop-hang.ba .hop-nut{font-size:calc(13px*var(--kp))}
