@@ -661,6 +661,20 @@
   //   T3 VÒI PHUN GẠT VAN: bóng spray / spray_back dừng ở van cống V ('van', trước 4/11 bay qua) → doiVan như lưới kéo van, sự kiện 'phun-van' { tu, o, huong, bat, soO, lenh }.
   //   T4 BÈ SẠC: lớp cfg.beSac = [{ x, y }] gắn ô sạc lên bè B ở ô đó (vật sac: true). Ô sạc đi theo bè (trôi, kéo; 'be-sac-di' { id, tu, den } cuối nhịp); drone bay / đậu trên bè sạc được sạc như ô P;
   //     land() lên bè sạc được (bè thường vẫn 'dap-bi-chan' vat), drone đậu trên bè đi theo bè ('theo-be' { id, tu, den }).
+  // M9L15 (4/11, user mở "Mở L15"; mục 4 dòng L15): DRONE + BÌNH XỊT BỤNG — tay vòi phun ('hoi') treo dưới bụng drone. Lõi nhận cấu hình vật lý (không biết bảng ghép):
+  //   drone có spray trên khay là drone mang bình xịt; bảng ghép (hoc/bang-ghep.js, ô ★ L15) chặn khi màn chưa mở L15.
+  //   · LỆNH: chỉ spray(), KHÔNG đối số ('xit-tham-so', lỗi chạy); spray_back trên khay drone = lỗi cấu hình (drone không có mũi / đuôi); cờ lucBan bỏ qua với drone.
+  //   · NHỊP: spray() chỉ ra lệnh (như xe), làm ở nhịp kế của drone — wait() / go_*() / land() / take_off() — TRƯỚC khi bay (như đầu sơn bụng): "spray(); go_right()" xịt ô cũ rồi bay.
+  //     Xịt được cả lúc đang bay lẫn đang đậu. Hai spray() chưa trôi nhịp: 'ban-goi-lai' (như xe). Không giật (drone lơ lửng), không có tia bay xa, không có sự kiện 'ban' / 'giat'.
+  //   · Ô DƯỚI BỤNG = ô drone đang ở. Drone mang bình xịt BAY LÊN TRÊN được ô lửa đang cháy và ô van V (drone khác vẫn bị chặn như cũ); land() không đáp xuống lửa / van ('dap-bi-chan' vat 'lua' | 'van').
+  //     Lửa → như tia nước trúng lửa: suc giảm 1 ('lua-nho'), về 0 thì 'lua-tat' (ô thành sàn, không cháy lại; cửa chống cháy đổi cuối nhịp).
+  //     Van V → doiVan như T3 ('phun-van' { tu = o = ô đó, huong: null, soO: 0 }). Nút N → đổi như bóng trúng nút ('nut-doi'; drone không bay lên N được nên hiện chưa tới).
+  //     Có tác dụng: 'xit-bung' { nhip, o, trung: 'lua' | 'van' | 'nut', lenh } (phát TRƯỚC mã cũ). Ô khác (sàn, nước, người, vật…): 'xit-hut' { nhip, o, lenh } — thông tin,
+  //     KHÔNG là lỗi, KHÔNG tính chạm người.
+  //   · BÌNH NHỎ: màn không khai danToiDa thì drone có BINH_XIT_DRONE = 3 lần xịt; khai danToiDa = n thì n. Hết bình: 'het-dan' { nhip, lenh, drone: true, binh } (lỗi), không xịt, vẫn mất nhịp.
+  //     Xịt hụt vẫn tốn một lần. Pin: xịt không tốn thêm pin.
+  //   · MỘT TAY: bình xịt không đi chung nam châm, đầu sơn, phao. Xe gắn vòi phun KHÔNG đổi (bóng bay thẳng, giật).
+  var BINH_XIT_DRONE = 3;
   var NGUOI_NOI = 'nguoi';
   var LOI_CHAM_NGUOI = { phun: 'Không phun nước vào người!', kep: 'Không kẹp người!', 'nam-cham': 'Không hút người bằng nam châm!', nem: 'Không ném vào người!', nap: 'Không nạp người vào máy ném!', moc: 'Không móc cẩu vào người!' };
   HAM_GOC.gai = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];   // BÁNH GAI (mùa 8 Hang động): đi như xe hai bánh, bám đá vôi ướt 'I' khi đang bung gai
@@ -1244,7 +1258,9 @@
       if (laDrone) {
         if (coTay) throw new Error('Drone không gắn tay kẹp (arm_down, arm_up, grab, release): thân drone chỉ gắn được nam châm treo.');
         if (coNem) throw new Error('Drone không gắn máy ném (aim, throw, load): thân drone chỉ gắn được nam châm treo.');
-        if (coHoi) throw new Error('Drone không gắn vòi phun (spray, spray_back): thân drone chỉ gắn được nam châm treo.');
+        // M9L15 (4/11): bỏ câu ném "Drone không gắn vòi phun" — lõi nhận cấu hình vật lý; drone + vòi phun = bình xịt bụng (lai L15), bảng ghép chặn khi màn chưa mở
+        if (coHoi && (hamGoc.indexOf('spray_back') >= 0 || phanCung.indexOf('spray_back') >= 0)) throw new Error('Drone không có mũi hay đuôi: bình xịt dưới bụng chỉ xịt thẳng xuống bằng spray(), không có spray_back().');
+        if (coHoi && (coPhao || coSon)) throw new Error('Một robot chỉ có một tay: bình xịt dưới bụng drone không đi chung phao hay đầu sơn.');
         if (coCamBien || coCamTu) throw new Error('Drone không gắn cảm biến khoảng cách hay cảm biến từ (drone không có hướng mặt để đo "phía trước").');
         if (coHongNgoai) throw new Error('Drone không gắn cảm biến hồng ngoại (drone không có hướng mặt để đo "phía trước").');
       } else if (coPinCamBien) throw new Error('battery() chỉ dành cho drone (robot có pin).');
@@ -1316,8 +1332,8 @@
         if (!coHoi) throw new Error('danToiDa chỉ dùng cho robot có vòi phun (hamGoc có spray, spray_back).');
         if (typeof rc.danToiDa !== 'number' || Math.floor(rc.danToiDa) !== rc.danToiDa || rc.danToiDa < 0) throw new Error('danToiDa phải là số nguyên không âm.');
         dan = rc.danToiDa;
-      }
-      lucBan = !!rc.lucBan && coHoi;          // vòi phun: spray(p) / spray_back(p) chọn được lực "low" / "high"; robot không vòi phun bỏ qua cờ
+      } else if (laDrone && coHoi) dan = BINH_XIT_DRONE;                    // M9L15: bình xịt bụng của drone mặc định 3 lần
+      lucBan = !!rc.lucBan && coHoi && !laDrone;                              // M9L15: drone xịt thẳng xuống, không chọn lực          // vòi phun: spray(p) / spray_back(p) chọn được lực "low" / "high"; robot không vòi phun bỏ qua cờ
                                               // (29/10: lộ trình bật lucBan cho mọi màn từ gói 6 Lực phun, kể cả robot không vòi phun)
       xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
       beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật; robot không súng bỏ qua cờ, để màn nhiều robot khai một chỗ)
