@@ -140,6 +140,7 @@ function taoKhung() {
   }
   return { ctx, Cv, cha, chayToi, hinh };
 }
+const DA_PHAT_9 = new Set(), BO_QUA_9 = {};                                                   // mã đã qua nhipMua9 / mã lọt xuống cuối nhipMua9 (không có nhánh)
 /** Phát vết r (một robot hay r.doi) của cfg qua Field thật; trả { F, hinh, loi }. */
 async function phatSan(cfg, r) {
   const K = taoKhung(), cv = new K.Cv(); cv.parentNode = K.cha;
@@ -148,8 +149,10 @@ async function phatSan(cfg, r) {
   ['veTreoCau9', 'veCat9', 'veTram9', 'veThac9', 'veDayPhao', 'veNguoi9', 'veSan9'].forEach((ten) => { const f = P[ten]; if (!f) return; P[ten] = function () {
     const tinh = ten === 'veTreoCau9' ? !!(this.vis.cau && this.vis.cau.mang) : ten === 'veDayPhao' ? !!(this.dayKeo && this.dayKeo.toi9 !== undefined) : true;
     if (tinh) dem[ten] = (dem[ten] || 0) + 1; return f.apply(this, arguments); }; });
+  const nm0 = P.nhipMua9; P.nhipMua9 = function (s) { DA_PHAT_9.add(s.ma); return nm0.apply(this, arguments); };
+  const nmm = P.nhipMuaMoi; P.nhipMuaMoi = function (s) { if (s.ma === 'troi' && (this.theoBe9 || []).length) DA_PHAT_9.add('theo-be@troi'); return nmm.apply(this, arguments); };   // mã nào đã thật sự đi qua nhipMua9
   try {
-    F = new K.ctx.SanVe.Field(cv, {}); F.nap(cfg);
+    F = new K.ctx.SanVe.Field(cv, {}); F.boQua9 = BO_QUA_9; F.nap(cfg);
     const vets = r.doi ? r.doi.map((d) => d.vet.filter((e) => e.loai === 'nhip')) : [r.vet.filter((e) => e.loai === 'nhip')];
     const n = Math.max(...vets.map((v) => v.length));
     for (let i = 0; i < n; i++) for (let k = 0; k < vets.length; k++) { if (!vets[k][i]) continue; if (F.xe) F.chonXe(k); await K.chayToi(F.phatNhip(vets[k][i], 300), F); }
@@ -202,7 +205,18 @@ const CA_VE = [
     kiem: (h, F, d) => d.veDayPhao > 3 && F.objs[0].x === 1 && F.dayKeo === null, mo: 'dây xe tời bay ra (veDayPhao), bè kéo về (1, 0), dây thu' },
   { ten: 'T3 vòi phun gạt van', mk: () => { const cfg = { san: ['.V...', '~K~~~', '#####'], doi: [{ batDau: { x: 0, y: 0, huong: 1 }, hamGoc: BANH.concat(['spray']), tay: 'hoi' }, { batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'xuong', hamGoc: BANH }] };
     return { cfg, r: SanHoc.chay(cfg, ['spray()\nwait()\n', 'wait()\n' + TIEN]) }; },
-    kiem: (h, F) => F.vanT['1,0'] && F.vanT['1,0'].bat === true && F.congT['1,1'].mo === true, mo: 'van (1, 0) bật, cống (1, 1) mở' }
+    kiem: (h, F) => F.vanT['1,0'] && F.vanT['1,0'].bat === true && F.congT['1,1'].mo === true, mo: 'van (1, 0) bật, cống (1, 1) mở' },
+  /* các nhánh hụt / lỗi: chỉ đòi phát hết không lỗi + không vật treo kẹt; độ phủ mã kiểm ở phép sau vòng */
+  { ten: 'L8 gầu hụt (thùng nặng)', mk: () => chayCfg('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#H..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\n'),
+    kiem: (h, F) => !F.vis.cau.mang, mo: 'gầu ngoạm hụt, không treo gì' },
+  { ten: 'P người chờ robot chắn lối', mk: () => { const cfg = { san: ['.....', '....F'], batDau: { x: 1, y: 0, huong: 2 }, hamGoc: BANH, mucTieu: 'cuu-nguoi', nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }] }; return { cfg, r: SanHoc.chay(cfg, 'wait()\nwait()\n' + TIEN) }; },
+    kiem: (h, F) => coHinh(h, 'nguoi-cuu', { tram: true }), mo: 'người đứng chờ rồi đi tiếp về trạm' },
+  { ten: 'P cấm phun vào người', mk: () => { const cfg = { san: ['.....', '....F'], batDau: { x: 0, y: 1, huong: 1 }, hamGoc: BANH.concat(['spray']), mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 1 }], tramCuu: [{ x: 3, y: 0 }] }; return { cfg, r: SanHoc.chay(cfg, 'spray()\nwait()\n') }; },
+    kiem: (h, F) => coHinh(h, 'nguoi-cuu', {}) || coHinh(h, 'nguoi-cuu', { vay: 1 }), mo: 'tia trúng người: người rung, báo lỗi' },
+  { ten: 'L10 phao: thu, hụt', mk: () => chayCfg('L10', { than: 'drone', tay: 'day-keo' }, ['~~~~~', '~~~~~', '...F.'], { x: 2, y: 0 }, 'cast_net()\nwait()\ndrop_net()\nwait()\ncast_net()\nwait()\ncast_net()\nwait()\ngo_down()\ngo_down()\ndrop_net()\nwait()\n', { nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 0, y: 2 }] }),
+    kiem: (h, F) => coHinh(h, 'phao-cuu', {}) && F.phaoBay9 === null, mo: 'phao thả, thu lại, thả lần hai; không phao bay kẹt giữa chừng' },
+  { ten: 'L9 giỏ hụt (đặt xuống nước)', mk: () => chayCfg('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_right()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }),
+    kiem: (h, F) => coHinh(h, 'gio-cuu-ho', { day: true }), mo: 'giỏ vớt người rồi hụt khi đặt xuống nước' }
 ];
 for (const ca of CA_VE) {
   let o = null, loi0 = null; try { o = ca.mk(); } catch (e) { loi0 = e.message; }
@@ -210,6 +224,13 @@ for (const ca of CA_VE) {
   const kq = await phatSan(cfgVe(o.cfg, o.robot), o.r);
   let ok = false; try { ok = !kq.loi && ca.kiem(kq.hinh, kq.F, kq.dem); } catch (e) { kq.loi = kq.loi || e.stack; }
   kiem('vẽ "' + ca.ten + '": phát hết vết không lỗi, ' + ca.mo, ok, kq.loi ? String(kq.loi).split('\n').slice(0, 3).join(' | ') : JSON.stringify(kq.dem) + ' ' + JSON.stringify(Object.fromEntries(Object.entries(kq.hinh).map(([k, v]) => [k, [...v]]))).slice(0, 600));
+}
+{
+  const NH = ((sv.match(/var NHIP_9 = \{([\s\S]*?)\};/) || [, ''])[1].match(/'([a-z0-9-]+)'/g) || []).map((q) => q.replace(/'/g, ''));
+  const chuaPhat = NH.filter((ma) => !DA_PHAT_9.has(ma) && !(ma === 'theo-be' && DA_PHAT_9.has('theo-be@troi')));   // theo-be đi cùng 'troi' của bè thì phát trong bước trôi
+  kiem('mỗi mã của NHIP_9 đã được phát thật qua nhipMua9 trong các sân vẽ trên', chuaPhat.length === 0, 'chưa phát: ' + chuaPhat.join(' '));
+  const lot = Object.keys(BO_QUA_9);
+  kiem('không mã nào lọt xuống cuối nhipMua9 (mã nào cũng có nhánh hoạt cảnh riêng)', lot.length === 0, 'lọt: ' + lot.join(' '));
 }
 
 /* ---------- 3. màn cũ không đổi: lớp mùa 9 chỉ bật khi sân có lớp / robot mùa 9 */

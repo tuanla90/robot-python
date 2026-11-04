@@ -3082,6 +3082,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         await ngu(per); if (this.onRung) this.onRung(); return;
       }
       /* ---- người cần cứu (luật P): mọi bước theo id người */
+      if (m.indexOf('nguoi-') !== 0) { if (this.boQua9) this.boQua9[m] = 1; await ngu(per); return; }   // mã không phải của người mà lọt tới đây = chưa có nhánh vẽ
       ov = this.objTheoId(s.id);
       if (!ov) { await ngu(per); return; }
       if (m === 'nguoi-buoc') {                                                                        // người tự bước một ô trên đường về trạm (nhún nhẹ mỗi bước, bụi chân)
@@ -3118,6 +3119,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         this.baoHieu('!', 1500);
         await lac(ov, 6, 1.4); return;
       }
+      if (this.boQua9) this.boQua9[m] = 1;                                                            // mã lọt xuống đây = chưa có nhánh vẽ (máy kiểm kiem-ve-mua-9 bật boQua9 = {} để bắt)
       await ngu(per);
     },
     /** Hiệu ứng tức thì (TUC_THI_9) sau vòng bước: bè sạc dời (tia lửa điện nhỏ ở chỗ mới), cứu xong (mắt cười). */
