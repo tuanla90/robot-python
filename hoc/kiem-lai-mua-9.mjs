@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-lai-mua-9.mjs — máy kiểm TỔ HỢP LAI mùa 9 (M9B1: L4 L5 L6 L7 L11 L12 L14 + R rắc cát; M9B2: L1 L2 L8 L13 + T2 container lấp hố; M9C1: L3 xe tời bờ + P người cần cứu) của "Mật Lệnh Robot"
+   kiem-lai-mua-9.mjs — máy kiểm TỔ HỢP LAI mùa 9 (M9B1: L4 L5 L6 L7 L11 L12 L14 + R rắc cát; M9B2: L1 L2 L8 L13 + T2 container lấp hố; M9C1: L3 xe tời bờ + P người cần cứu; M9C2: L9 giỏ cứu hộ, L10 thả phao, T3 vòi phun gạt van, T4 bè sạc) của "Mật Lệnh Robot"
    (gói M9B1 / M9B2 4/11; kế hoạch hoc/KE-HOACH-MUA-9-TO-HOP.md mục 4, cột "Luật thêm"). Mỗi lai:
    a. BẢNG: ô ★ bị chặn khi màn không mở (ma 'lai-chua-co'), ghép được khi man.lapRap.moLai (hay man.moLai) có mã — BangGhep, LapRap.kiemGhep / kiemCachLap / apDung;
    b. LÕI: một sân nhỏ chứng minh HÀNH VI của cột "Luật thêm" (SanHoc.chay trên robot dựng bằng LapRap.apDung);
@@ -16,6 +16,10 @@
            người dưới nước chỉ tự lên bờ khi VỪA ĐƯỢC LƯỚI KÉO (đang trong lưới hay vừa thả) và ô sát bờ đi được; cấm chạm = lỗi chạy 'cham-nguoi' (chương trình dừng);
            thua nhẹ 'nguoi-troi-xa' khi trôi bị chặn ở mép sân / vào cống mở / ô thac; mục tiêu 'cuu-nguoi'; mục tiêu khác + có người → chờ mọi người tới trạm; chương trình hết → nhịp rỗng cho người đi tiếp.
            L3 cast_net trên xe cạn kéo MỘT LẦN (không giữ, không dắt), vật đầu tiên trên dây; drop_net trên xe chỉ báo 'khong-keo'.
+     M9C2 (mục 4 dòng L9 L10 T3 T4): cẩu / drone chỉ có cast_net() / drop_net() không đối số (không set_length);
+           L9 giỏ vớt người dưới nước / vật nổi ở ô đầu cần (không người trên cạn, không vật nằm đất / thùng / container), đặt CHỈ lên ô bờ có đường về trạm; không luật tải;
+           L10 drone mang MỘT phao, phao neo tại ô (không trôi, không chặn), người trôi tới ô có phao cũng bám; drop_net() thu phao (không khi người bám); thả phao không được ở bờ / cống / thác;
+           T3 bóng vòi phun dừng ở van V (trước 4/11 bay qua V); T4 bè sạc = lớp cfg.beSac gắn lên bè B, drone đậu trên bè đi theo bè.
    Chạy: node hoc/kiem-lai-mua-9.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
@@ -543,6 +547,33 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
   kiem('L10: một tay — phao trên drone không đi chung nam châm (lõi báo)', /phao \(tay lưới trên drone\) không đi chung/.test(mt || ''), mt);
   let ts = null; const ts1 = thu(() => SanHoc.chay({ san: ['~~', '.F'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY.concat(['cast_net', 'drop_net']) }, 'cast_net("front")\nwait()\n')); ts = ts1 && ts1.loi;
   kiem('L10: cast_net("front") trên drone → lỗi chạy lời Việt (phao thả thẳng xuống, không nhận đối số)', ts && /không nhận đối số/.test(ts.thongDiep), J(ts));
+}
+
+/* L9 cần cẩu + tay lưới (giỏ cứu hộ): cast_net() vớt người / vật nổi ở ô đầu cần, giỏ treo theo đầu cần; drop_net() đặt lên ô bờ ở đầu cần; người lên bờ tự về trạm */
+{
+  const GIO = { than: 'cau', tay: 'day-keo' };
+  const SAN9 = ['~~~~~', '.....', '.....'];
+  const VOT = 'cast_net()\nswing_left()\nswing_left()\ndrop_net()\n';           // vớt ở (2, 0), quay cần 2 nấc trái (lên-trái rồi trái), đặt ở (1, 1)
+  const L9 = (cach, code, them) => chay('L9', cach, SAN9, { x: 2, y: 1, nac: 0, tam: 1 }, code, Object.assign({ mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }, them || {}));
+  const l9 = thu(() => L9(GIO, VOT));
+  const n9 = l9 && vetNhip(l9);
+  kiem('L9 b: cẩu vớt người ở ô nước đầu cần (2, 0) ("gio-vot" nguoi), quay cần: người treo theo đầu cần (1, 0) rồi (1, 1), drop_net() đặt lên bờ ("gio-dat") → người tự đi về trạm (0, 2) → thắng',
+    l9 && l9.thang && coSk(l9, 'gio-vot') && sk1(l9, 'gio-vot').nguoi === true && J([n9[1].nguoi[0].x, n9[1].nguoi[0].y]) === J([1, 0]) && J([n9[2].nguoi[0].x, n9[2].nguoi[0].y]) === J([1, 1]) && coSk(l9, 'gio-dat') && l9.nguoi[0].toiTram && !coSk(l9, 'cham-nguoi'),
+    l9 && (J(l9.loi) + ' ' + skNg(l9)));
+  kiem('L9 d: cẩu KHÔNG gắn tay lưới (cast_net không có) → phép b đỏ', !thu(() => L9({ than: 'cau', tay: null }, VOT).thang));
+  kiem('L9 d: cùng sân không cast_net() (chỉ quay cần) → người vẫn nổi ở (2, 0), không thắng (phép b đỏ)', !thu(() => L9(GIO, 'swing_left()\nswing_left()\ndrop_net()\n').thang));
+  const nuoc = thu(() => L9(GIO, 'cast_net()\nswing_right()\ndrop_net()\n'));
+  kiem('L9 b: drop_net() khi đầu cần trên mặt nước (3, 0) → "gio-hut" nuoc lời Việt ("phải đặt lên ô bờ"), người vẫn trong giỏ', nuoc && !nuoc.loi && nuoc.suKien.some((e) => e.ma === 'gio-hut' && e.lyDo === 'nuoc' && /ô bờ/.test(e.thongDiep)) && nuoc.vat[0].trangThai === 'gio', nuoc && skNg(nuoc));
+  const be = thu(() => chay('L9', GIO, ['~B~~~', '.....', '....F'], { x: 2, y: 1, nac: 7, tam: 1 }, 'cast_net()\nswing_left()\ndrop_net()\n'));
+  kiem('L9 b: giỏ vớt vật nổi (bè B ở (1, 0)) rồi đặt lên bờ (1, 1): "gio-vot" nguoi false, bè nằm trên bờ', be && !be.loi && sk1(be, 'gio-vot') && sk1(be, 'gio-vot').nguoi === false && be.vat[0].trangThai === 'dat' && J([be.vat[0].x, be.vat[0].y]) === J([1, 1]), be && skNg(be));
+  const vDat = thu(() => chay('L9', GIO, ['~~~~~', '.o...', '....F'], { x: 2, y: 1, nac: 6, tam: 1 }, 'cast_net()\n'));
+  kiem('L9 b: giỏ không nhặt vật nằm đất (thùng gỗ o) → "gio-hut" vat-dat', vDat && vDat.suKien.some((e) => e.ma === 'gio-hut' && e.lyDo === 'vat-dat') && vDat.vat[0].trangThai === 'dat', vDat && skNg(vDat));
+  const can = thu(() => chay('L9', GIO, SAN9, { x: 2, y: 1, nac: 6, tam: 1 }, 'cast_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 0, y: 2 }] }));
+  kiem('L9 b: người trên cạn ở đầu cần → không vớt ("gio-hut" nguoi-tren-can)', can && can.suKien.some((e) => e.ma === 'gio-hut' && e.lyDo === 'nguoi-tren-can'), can && skNg(can));
+  let mt9 = null; try { SanHoc.chay({ san: SAN9, batDau: { x: 2, y: 1, nac: 0, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'cast_net', 'drop_net'] }, 'wait()\n'); } catch (e) { mt9 = e.message; }
+  kiem('L9: một tay — giỏ cứu hộ không đi chung móc cẩu trên đầu cần (lõi báo)', /giỏ cứu hộ .* không đi chung móc cẩu/.test(mt9 || ''), mt9);
+  const ts9 = thu(() => L9(GIO, 'cast_net("front")\n'));
+  kiem('L9: cast_net("front") trên cẩu → lỗi chạy lời Việt (giỏ thả ngay ở đầu cần)', ts9 && ts9.loi && /không nhận đối số/.test(ts9.loi.thongDiep), ts9 && J(ts9.loi));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);

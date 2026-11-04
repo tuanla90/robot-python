@@ -3486,6 +3486,7 @@
         var o = oDauCan(); treo.forEach(function (c) { c.x = o.x; c.y = o.y; });
         var idCam = coNamCham ? nc.cam : coTay ? tay.cam : null;                 // M9B2 (L1, L8): vật dính nam châm / trong gầu ngoạm treo ở ô đầu cần
         if (idCam !== null) { var vc = vatTheoId(idCam); vc.x = o.x; vc.y = o.y; }
+        if (lai9.gio !== null) { var vgo = vatTheoId(lai9.gio); vgo.x = o.x; vgo.y = o.y; }   // M9C2 (L9): giỏ cứu hộ treo theo đầu cần khi quay / vươn
       }
       /** M9B2: lý do ô đầu cần (x, y) không nhận vật thả từ nam châm / gầu ngoạm (null = thả được): như oThaChan, thêm mặt nước (trừ boong tàu đang cập) và ô có chồng container. */
       function cauThaChan(x, y) {
@@ -3522,6 +3523,53 @@
         }
         var e = vd.chat === 'nam-cham' ? { ma: 'cung-cuc', nhip: nhip, id: vd.id, o: o, cuc: vd.cuc } : { ma: 'hut-go', nhip: nhip, id: vd.id, o: o, khoang: 0 };
         sk.push(e); suKienChan.push(e);
+      }
+      /** M9C2 (L9) CẦN CẨU + TAY LƯỚI = GIỎ CỨU HỘ (mỗi lệnh một nhịp, ở Ô ĐẦU CẦN, qua tường được như móc):
+       *  cast_net() vớt NGƯỜI dưới nước hay VẬT NỔI (bè, container trôi) ở ô đầu cần vào giỏ ('gio-vot' { o, vat, nguoi }); vật trong giỏ (trangThai 'gio') treo theo đầu cần, không trôi.
+       *  drop_net() đặt vật trong giỏ lên Ô BỜ ở đầu cần ('gio-dat' { o, vat, nguoi }); người đặt lên bờ thì tự đi về trạm (luật P). Không áp luật tải (người / vật nổi không có tấn).
+       *  Không làm được: 'gio-hut' { o, lyDo, thongDiep } (thông tin, chương trình chạy tiếp): vớt — 'gio-day' | 'ngoai-san' | 'container' | 'thung-nang' | 'vat-dat' | 'nguoi-tren-can' | 'co-xe' | 'dang-keo' | 'trong';
+       *  đặt — 'gio-trong' | 'nuoc' | 'khong-duong' | lý do của oThaChan ('tuong', 'vat', 'thung-nang', 'dong-doi', …). */
+      var LOI_GIO = {
+        'gio-day': 'Giỏ đang có rồi: drop_net() đặt xuống bờ trước đã.', 'ngoai-san': 'Đầu cần ở ngoài sân.', container: 'Container nặng: dùng móc cẩu, không vớt bằng giỏ.',
+        'thung-nang': 'Thùng nặng quá, giỏ không vớt nổi.', 'vat-dat': 'Giỏ chỉ vớt người hay vật nổi dưới nước, không nhặt vật nằm trên đất.', 'nguoi-tren-can': 'Người đang ở trên cạn, tự đi về trạm được: không cần vớt.',
+        'co-xe': 'Đang có xe đứng trên bè này.', 'dang-keo': 'Vật này đang trong lưới của robot khác.', trong: 'Ô đầu cần không có người hay vật nổi để vớt.',
+        'gio-trong': 'Giỏ đang trống, chưa có gì để đặt.', nuoc: 'Ô đầu cần là mặt nước: giỏ phải đặt lên ô bờ.', 'khong-duong': 'Từ ô này người không có đường đi bộ về trạm cứu: chọn ô bờ khác.'
+      };
+      function apGio(ten, o, lg) {
+        function hutG(lyDo) { var e = { ma: 'gio-hut', nhip: nhip, o: o, lyDo: lyDo, thongDiep: LOI_GIO[lyDo] || ('Ô đầu cần bị chặn (' + lyDo + '): giỏ không đặt xuống được.'), lenh: lg }; sk.push(e); suKienChan.push(e); }
+        if (ten === 'cast_net') {
+          if (lai9.gio !== null) return hutG('gio-day');
+          if (oTai(san, o.x, o.y) === null) return hutG('ngoai-san');
+          if (chongO(o.x, o.y).length) return hutG('container');
+          if (thungTai(o.x, o.y)) return hutG('thung-nang');
+          var v = vatNamTai(o.x, o.y);
+          if (!v) return hutG('trong');
+          if (!v.noi) return hutG('vat-dat');
+          if (laNguoi(v) && v.nguoi.can) return hutG('nguoi-tren-can');
+          if (xeDatTai(o.x, o.y)) return hutG('co-xe');
+          if (xeKhac.some(function (xk) { return xk.keoId === v.id; })) return hutG('dang-keo');
+          v.trangThai = 'gio'; lai9.gio = v.id;
+          if (laNguoi(v)) { v.nguoi.keoDen = false; nguoiDoiNhip = nhip; }
+          sk.push({ ma: 'gio-vot', nhip: nhip, o: o, vat: v.id, nguoi: laNguoi(v) });
+          return;
+        }
+        if (lai9.gio === null) return hutG('gio-trong');
+        var vg = vatTheoId(lai9.gio);
+        if (oTai(san, o.x, o.y) === null) return hutG('ngoai-san');
+        if (laNuoc(san, o.x, o.y)) return hutG('nuoc');
+        var ly = oThaChan(o.x, o.y) || (chongO(o.x, o.y).length ? 'chong' : null) || lyCua(o.x, o.y);
+        if (ly) return hutG(ly);
+        var ng = laNguoi(vg), dg = null;
+        if (ng && !laTram(o.x, o.y)) { dg = timDuongVeTram(o.x, o.y); if (dg === null) return hutG('khong-duong'); }
+        vg.trangThai = 'dat'; vg.x = o.x; vg.y = o.y; lai9.gio = null;
+        sk.push({ ma: 'gio-dat', nhip: nhip, o: o, vat: vg.id, nguoi: ng });
+        if (ng) {
+          vg.nguoi.can = true; vg.nguoi.duong = dg || []; vg.nguoi.keoDen = false; nguoiDoiNhip = nhip;
+          if (laTram(o.x, o.y)) { vg.nguoi.toiTram = true; sk.push({ ma: 'nguoi-toi-tram', nhip: nhip, id: vg.id, o: o }); }
+        } else if (dichSet[o.x + ',' + o.y] && !hopMauDich(vg, o.x, o.y)) {
+          var esm = { ma: 'dat-sai-mau', nhip: nhip, id: vg.id, o: o, mauVat: vg.mau || 'none', mauDich: dichMau[o.x + ',' + o.y], chat: vg.chat, cuc: vg.cuc };
+          sk.push(esm); suKienChan.push(esm);
+        }
       }
       function hetTam(vat, o, lg) { var e = { ma: 'can-het-tam', nhip: nhip, lenh: lg, vat: vat, nac: nac, tam: tam, o: o || oDauCan() }; sk.push(e); suKienChan.push(e); }
       function quaTai(tan, tamXet, lg, cont) { var e = { ma: 'qua-tai', nhip: nhip, lenh: lg, tan: tan, tam: tamXet, tai: tan * tamXet, taiToiDa: taiToiDa, o: oDauCan(), cont: cont.map(chupCont) }; sk.push(e); suKienChan.push(e); }
@@ -3621,6 +3669,7 @@
           if (!cauTha(vatTheoId(tay.cam), o, 'gau', lg)) return;
           tay.cam = null; tay.kep = false; return;
         }
+        if (TAY_GIO.indexOf(ten) >= 0) return apGio(ten, o, lg);              // M9C2 (L9): giỏ cứu hộ
         if (ten === 'rail') {
           var r = h.ray;
           if (r.chan) { sk.push({ ma: 'dung-yen' }); return; }                        // phần còn lại của rail(n) sau khi bị chặn: bệ đứng yên, nhịp vẫn trôi
@@ -4227,6 +4276,13 @@
       if (laCau) {                                               // CẢNG SÔNG: mọi lệnh cần cẩu là MỘT nhịp ngay (như go_* của drone); không có hàng chờ nên không có quen-wait
         if (yc.ten === 'wait') return motNhip({ kieu: 'cau', ten: null, lenhDi: null });
         if (CAU_LENH[yc.ten] || TAY_MOC.indexOf(yc.ten) >= 0) return motNhip({ kieu: 'cau', ten: yc.ten, lenhDi: { ten: yc.ten, dongPy: yc.dong } });
+        if (TAY_GIO.indexOf(yc.ten) >= 0) {                      // M9C2 (L9): giỏ cứu hộ ở đầu cần, mỗi lệnh một nhịp như móc; không đối số
+          if (yc.thamSo && yc.thamSo.length) {
+            loi = { loai: 'runtime-error', ma: 'tham-so-luoi-sai', dong: yc.dong, ten: yc.ten, thongDiep: 'Giỏ cứu hộ thả ngay ở đầu cần: ' + yc.ten + '() không nhận đối số, đang có ' + yc.thamSo.length + '.' };
+            return true;
+          }
+          return motNhip({ kieu: 'cau', ten: yc.ten, lenhDi: { ten: yc.ten, dongPy: yc.dong } });
+        }
         if (TAY_NAM_CHAM.indexOf(yc.ten) >= 0 || yc.ten === 'grab' || yc.ten === 'release')      // M9B2 (L1, L8): nam châm / gầu ngoạm ở đầu cần, mỗi lệnh một nhịp như móc
           return motNhip({ kieu: 'cau', ten: yc.ten, lenhDi: { ten: yc.ten, dongPy: yc.dong }, cuc: yc.ten === 'magnet_off' || TAY_NAM_CHAM.indexOf(yc.ten) < 0 ? null : (dao.cuc ? CUC_DOI[CUC_LENH[yc.ten]] : CUC_LENH[yc.ten]) });
         if (yc.ten === 'rail') {                                 // rail(n): n nguyên khác 0, abs(n) ≤ 9; abs(n) nhịp, mỗi nhịp bệ chạy 1 ô dọc ray
