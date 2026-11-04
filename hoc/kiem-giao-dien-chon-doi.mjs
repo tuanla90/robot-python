@@ -76,6 +76,14 @@ console.log('2. Đường vào màn (ung-dung.js, man-choi.js, luu.js, go-loi.js
   kiemNguon("màn hình 'doi' (sc-doi) có trong MAN_HINH; ChonDoi.dung(sc-doi) lúc khởi động", ud,
     (s) => /doi: 'sc-doi'/.test(s) && /getElementById\('sc-doi'\); if \(kdoi && window\.ChonDoi\) ChonDoi\.dung\(kdoi\);/.test(s), [["doi: 'sc-doi'", "doi: 'sc-x'"]]);
 
+  const html = docNguon('game/choi.html');
+  const viTri = (s, f) => s.indexOf('<script src="' + f + '"></script>');
+  kiemNguon('choi.html: có #sc-doi; nạp man-chon-doi.js sau co-may.js / lap-rap.js / chu.js / man-lap.js, trước ung-dung.js; thu-mua-9.js nạp CUỐI', html, (s) => {
+    const iCM = viTri(s, '../co-may.js'), iLR = viTri(s, '../lap-rap.js'), iChu = viTri(s, 'chu.js'), iML = viTri(s, 'man-lap.js'), iCD = viTri(s, 'man-chon-doi.js'), iUD = viTri(s, 'ung-dung.js'), iT = viTri(s, 'thu-mua-9.js');
+    const sau = s.slice(iT + 1);
+    return /id="sc-doi"/.test(s) && iCM >= 0 && iCM < iLR && iLR < iCD && iChu < iCD && iML < iCD && iCD < iUD && iUD < iT && !/<script/.test(sau);
+  }, [['<script src="man-chon-doi.js"></script>', ''], ['<script src="thu-mua-9.js"></script>', ''], ['id="sc-doi"', 'id="sc-x"']]);
+
   const mc = docNguon('game/man-choi.js');
   kiemNguon('man-choi.js vao: màn chonDoi vào thẳng → apDungDoi theo đội đã lưu (Luu.docDoi, kiemChon) hay cachMau[0]; lapRap thì lắp trên bản đội (nen)', mc,
     (s) => /if \(goc\.chonDoi && !m\.chonDaChon\) \{[^\n]*\n\s*var ch = Luu\.docDoi\(goc\.ma\);\s*if \(!ch \|\| !LapRap\.kiemChon\(goc, ch\)\.ok\) ch = goc\.chonDoi\.cachMau\[0\]\.chon;\s*m = LapRap\.apDungDoi\(goc, ch\);/.test(s)
@@ -135,7 +143,7 @@ console.log('4. Màn Chọn đội trên DOM giả (man-chon-doi.js)');
     CHU: { vi: {} }, LapRap, CoMay,
     TP: { h(tag, cls, noi) { const e = D.document.createElement(tag); if (cls) e.className = cls; if (noi !== undefined && noi !== null) e.textContent = noi; return e; },
       vanBan(el, s) { el.textContent = s; }, Hop: { dong() {}, mo() { return { than: D.document.createElement('div') }; }, nut() { return D.document.createElement('button'); } } },
-    Ve: { hydrate() {}, mk() { return D.document.createElement('canvas'); }, ico(ten) { const e = D.document.createElement('svg'); e.setAttribute('data-ico', ten); return e; }, khoa() { const e = D.document.createElement('svg'); e.setAttribute('data-ico', 'lock'); return e; } },
+    Ve: { hydrate() {}, mk(cv) { const e = D.document.createElement('canvas'); e.cfg = cv.cfg; return e; }, ico(ten) { const e = D.document.createElement('svg'); e.setAttribute('data-ico', ten); return e; }, khoa() { const e = D.document.createElement('svg'); e.setAttribute('data-ico', 'lock'); return e; } },
     VeRobot: { PX_O_PART: 24, veCo(cfg) { const e = D.document.createElement('canvas'); e.cfg = cfg; return e; }, heSoCss() { return 1; } },
     Luu: { docDoi: (ma) => luuGia[ma] || null, ghiDoi: (ma, c) => { luuGia[ma] = c.slice(); return true; } },
     BangMau: {}
@@ -179,7 +187,7 @@ console.log('4. Màn Chọn đội trên DOM giả (man-chon-doi.js)');
   kiem('đội truyền vào không hợp lệ (trùng) → bỏ, bắt đầu trống', J(CD.trangThai().chon) === '[null,null]');
   host.tatCa().find((e) => e.getAttribute('data-nut') === 'doi-ve').bam();
   kiem('◀ gọi khiVe; nút ◀ có aria-label + title', ve === 1 && !!host.tatCa().find((e) => e.getAttribute('data-nut') === 'doi-ve' && e.getAttribute('aria-label') && e.title));
-  const mt = ThuMua9.manChonDoi(); mt.chonDoi.trung = true;
+  const mt = ThuMua9.manChonDoi(); mt.chonDoi.trung = true; mt.ma = 'thu.chon-doi-trung';            // mã khác: không nạp đội đã lưu của màn trên
   CD.vao(mt, {}); the()[0].bam(); the()[0].bam();
   kiem('màn cho trùng (chonDoi.trung): chạm Xe chở hàng hai lần → cả đội xe chở hàng, "Vào màn" sáng', J(CD.trangThai().chon) === '["CH","CH"]' && !nutVao().classList.contains('khoa'));
   kiem('nguồn man-chon-doi.js: không emoji; lời báo lấy lyDo của LapRap.kiemChon (không câu chung chung)', !/\p{Extended_Pictographic}/u.test(nguon) && /datLoi\(r\.lyDo, 'bad', 4200\)/.test(nguon) && /LapRap\.kiemChon\(S\.m, du\)/.test(nguon));

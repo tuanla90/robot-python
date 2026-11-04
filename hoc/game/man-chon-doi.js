@@ -5,7 +5,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      · chạm khe → khe đó đang chọn; chạm thẻ → gắn cỗ máy cho khe đang chọn (chạm lại thẻ đang gắn = bỏ); xong một khe thì tự sang khe còn trống;
      · thẻ không hợp lệ cho khe đang chọn (trùng cỗ máy bạn kia khi màn cấm trùng) MỜ; chạm vào thì rung, ô lời báo lý do của LapRap.kiemChon;
      · robot khoá (man.doi[i].coDinh, máy khách R3): khe có hình + ổ khoá, không chọn được;
-     · "Vào màn" sáng khi LapRap.kiemChon(man, chon).ok; bấm: Luu.ghiDoi rồi tuyChon.khiXong(chon). ◀ gọi tuyChon.khiVe().
+     · "Vào màn" sáng khi LapRap.kiemChon(man, chon).ok; bấm: Luu.ghiDoi rồi tuyChon.khiXong(chon). Nút Về gọi tuyChon.khiVe().
    Theo kiểu màn Lắp robot (man-lap.js): dùng lại lớp lr-* (choi.css, choi-vector.css), chỉ thêm vài lớp cd-* cho hàng khe.
    Dùng:  ChonDoi.dung(host) (một lần, ung-dung.js)  ·  ChonDoi.vao(man, { chon, khiXong(chon), khiVe() })  ·  App.vaoManDuLieu / App.doiDoi gọi.
    Chữ (doi.*) chưa có trong chu.js (ngoài phạm vi gói M9D2): tệp này điền vào CHU.vi nếu chưa có — chuyển sang chu.js khi soát chữ.
