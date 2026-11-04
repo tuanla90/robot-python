@@ -42,8 +42,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       g.beginPath(); g.arc(50, cy, r, Math.PI * 0.32, Math.PI * 0.68); H.vien(g, mauSang(cuc), 0.9);
     });
   }
+  /* M9H2 (4/11): NAM CHÂM ĐIỆN ở đầu đoạn cần ngắn (lai L1 cần cẩu + nam châm; s.than 'cau'): cáp + ĐĨA nam châm thép tối nhìn từ trên (như đĩa san-ve.js veTreoCau9 vẽ ở đầu cần thật),
+     vành bạc, vòng cực nửa đỏ nửa xanh (chưa khai) hay màu cực; s.bat: quầng từ màu cực. s.trenCan (veBeCau trên sân): chỉ cụm tời ở mép mâm. */
+  function diaCan(g, H, cuc, bat) {
+    var cy = 95;
+    H.duong(g, 'M50 81 V88'); H.vien(g, BM.vecVien, 2.6); H.duong(g, 'M50 81 V88'); H.vien(g, BM.vecBac, 1.2);
+    if (bat) { H.tron(g, 50, cy, 13); g.fillStyle = H.gradToa(g, 50, cy, 13, [[0, H.rgba(rgbTu(cuc), 0.6)], [0.65, H.rgba(rgbTu(cuc), 0.24)], [1, H.rgba(rgbTu(cuc), 0)]]); g.fill(); }
+    H.tron(g, 50, cy, 8); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2.2);
+    if (cuc === 'N' || cuc === 'S') { H.tron(g, 50, cy, 5.4); H.vien(g, mauCuc(cuc), 2.2); }
+    else {
+      g.beginPath(); g.arc(50, cy, 5.4, Math.PI / 2, Math.PI * 1.5); H.vien(g, BM.luatVatXanhDuong, 2.2, 'butt');
+      g.beginPath(); g.arc(50, cy, 5.4, -Math.PI / 2, Math.PI / 2); H.vien(g, BM.luatVatDo, 2.2, 'butt');
+    }
+    H.tron(g, 50, cy, 2.4); H.to(g, bat ? BM.vecVo : BM.vecBac); H.vien(g, BM.vecVien, 1);
+  }
   V.dangKy({ loai: 'tay', ma: 'nam-cham', hamGoc: ['magnet_n',  'magnet_s',  'magnet_off'], ten: 'Nam châm chữ U trước mũi', gan: ['tay', 'duoi'], diemNeo: { x: 50, y: 80 }, diemNeoDuoi: { x: 50, y: 50 }, ve: function (g, s, M, H) {
     s = s || {};
+    if (s.than === 'cau') { g.save(); g.translate(0, -2); if (V.veToiCau) V.veToiCau(g, H); g.restore(); if (!s.trenCan) diaCan(g, H, s.cuc, !!s.bat); return; }   // M9H2: nam châm điện L1 (tời ngang móc cẩu)
     if (s.duoi && s.than === 'nhen') {                                       // NAM CHÂM BỤNG NHỆN (mùa 3): cụm nam châm elip 3D gắn DƯỚI GẦM BỤNG nhện (sát dưới đáy vỏ y = 71, giữa 2 chân gần; dịch d.y = -8 nên cy = 84 → y_thân = 76)
       var cy = 84, cuc = s.cuc;
       if (s.bat) {

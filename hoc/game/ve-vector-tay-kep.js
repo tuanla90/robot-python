@@ -27,10 +27,25 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function mauDen(ha) { return ha ? BM.robotCam : BM.vecDen; }
   /* khớp tròn tâm (x, y): vành bạc r 7, đèn báo nâng / hạ r 3 ở giữa (gói V8c: tay kẹp và tay xoay cùng một khớp; tay xoay quay cánh tay quanh đúng tâm này) */
   function khop(g, H, x, y, ha) { H.tron(g, x, y, 7); H.to(g, BM.vecBac); H.vien(g, BM.vecVien, 2.5); H.tron(g, x, y, 3); H.to(g, mauDen(ha)); }
+  /* M9H2 (4/11): GẦU NGOẠM ở đầu đoạn cần ngắn (lai L8 cần cẩu + tay kẹp; s.than 'cau'): cáp + khối puli + hai hàm gầu thép cong khép quanh tâm (như hai hàm san-ve.js veTreoCau9
+     vẽ ở đầu cần thật), răng ở mép hàm; s.kep 'dong' / s.cam: hai hàm khép sát. s.trenCan (veBeCau trên sân): chỉ cụm tời ở mép mâm (gầu treo ở đầu cần thật). */
+  function gauCan(g, H, kin) {
+    var cy = 95, mo = kin ? 3.2 : 5.6;
+    H.duong(g, 'M50 81 V88'); H.vien(g, BM.vecVien, 2.6); H.duong(g, 'M50 81 V88'); H.vien(g, BM.vecBac, 1.2);
+    H.bo(g, 45.5, 86, 9, 5, 1.6); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 1.4);
+    [-1, 1].forEach(function (k) {
+      var x0 = 50 + k * mo, x1 = 50 + k * (mo + 9.5);
+      H.duong(g, 'M' + x0 + ' ' + (cy - 7) + ' C' + x1 + ' ' + (cy - 7.5) + ' ' + x1 + ' ' + (cy + 7.5) + ' ' + x0 + ' ' + (cy + 7) + ' L' + (x0 + k * 2.6) + ' ' + cy + ' Z');
+      H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 1.8);
+      H.duong(g, 'M' + (x0 + k * 1.2) + ' ' + (cy - 4.5) + ' L' + (x0 - k * 1.2) + ' ' + (cy - 3) + ' M' + (x0 + k * 1.2) + ' ' + (cy + 4.5) + ' L' + (x0 - k * 1.2) + ' ' + (cy + 3)); H.vien(g, BM.vecThepToi, 1.3);
+    });
+    H.tron(g, 50, cy - 7.4, 1.6); H.to(g, BM.vecSat); H.vien(g, BM.vecVien, 1);
+  }
   V.dangKy({ loai: 'tay', ma: 'kep', hamGoc: ['arm_down',  'arm_up',  'grab',  'release'], ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: Y_VAT, canh: V.VAT_SAN / V.CO_THAN, ha: HA },
     dungChung: { cang: cang, cum: cum, khop: khop, mauDen: mauDen, MO: MO, HA: HA },   // gói V8b / V8c: tay xoay (ve-vector-tay-xoay.js) vẽ bằng đúng các hàm này
     ve: function (g, s, M, H) {
     s = s || {};
+    if (s.than === 'cau') { g.save(); g.translate(0, -2); if (V.veToiCau) V.veToiCau(g, H); g.restore(); if (!s.trenCan) gauCan(g, H, s.kep === 'dong' || !!s.cam); return; }   // M9H2: gầu ngoạm L8 (tời ngang móc cẩu)
     var mo = s.kep !== 'dong', om = !mo && !!s.cam, ha = s.tuThe === 'duoi', nk = V.nangCua(s.tuThe, s.nangK), yDau = (om ? Y_VAT + 2 : Y_VAT) + HA * (1 - nk);
     var k = typeof s.moK === 'number' && !om ? Math.max(0, Math.min(1, s.moK)) : null;       // gói V4: độ mở 0 (đóng) … 1 (mở) khi đang khép / mở dần
     var t = V._loiGia.kheCu ? 15 : V.coVatKep(nk) / V.CO_THAN / 2 + 1.5;                                             // gói V6b: nửa khe ôm vật ở cỡ hiện tại (thân vật / CO_THAN), càng không xuyên vật

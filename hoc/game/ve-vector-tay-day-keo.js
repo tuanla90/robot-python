@@ -50,6 +50,24 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     luoiMatCao(g, 50, 90, 10.5, 5.2, 1.6);
   }
 
+  /* M9H2 (4/11): PHAO BỤNG DRONE (lai L10: cast_net() thả phao cứu sinh xuống ô nước dưới bụng; s.duoi, diemNeoDuoi (50, 50) → ổ duoi (50, 70)): dây buộc cam ngắn,
+     vòng phao cam bốn khúc trắng như vật 'phao-cuu' của sân (ve-vector-vat-song.js) treo dưới bụng. */
+  function phaoBung(g) {
+    H.duong(g, 'M50 48.5 V55.5'); H.vien(g, BM.vecVien, 3.6); H.duong(g, 'M50 48.5 V55.5'); H.vien(g, BM.vecVanNongSang, 1.7);
+    H.tron(g, 50, 63.5, 7.6); H.vien(g, BM.vecVien, 6.4); H.vien(g, BM.vecVanNong, 4.4);
+    for (var i = 0; i < 4; i++) { var a = i * Math.PI / 2 + Math.PI / 4; g.beginPath(); g.arc(50, 63.5, 7.6, a - 0.32, a + 0.32); H.vien(g, BM.vecVo, 4.4, 'butt'); }
+    H.tron(g, 50, 63.5, 7.6); H.vien(g, BM.vecCamDam, 0.9);
+    H.tron(g, 50, 55.6, 1.6); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 1);
+  }
+  /* M9H2: GIỎ CỨU HỘ ở đầu đoạn cần ngắn (lai L9 cần cẩu + tay lưới, thẻ lắp ráp / VeVector.robot): cáp + giỏ lưới tròn khung cam như vật 'gio-cuu-ho' (san-ve.js treo ở đầu cần thật). */
+  function gioCan(g) {
+    var cy = 95, r = 8.4, i;
+    H.duong(g, 'M50 83 V' + (cy - r)); H.vien(g, BM.vecVien, 2.6); H.duong(g, 'M50 83 V' + (cy - r)); H.vien(g, BM.vecBac, 1.2);
+    H.tron(g, 50, cy, r); H.to(g, H.rgba(BM.vecMatSangRgb, 0.45)); H.vien(g, BM.vecVien, 2.8); H.vien(g, BM.vecVanNong, 1.6);
+    g.beginPath(); for (i = -1; i <= 1; i++) { var h = Math.sqrt(r * r - i * i * 16) - 0.8; g.moveTo(50 + i * 4, cy - h); g.lineTo(50 + i * 4, cy + h); g.moveTo(50 - h, cy + i * 4); g.lineTo(50 + h, cy + i * 4); }
+    H.vien(g, BM.vecVanNongSang, 0.9);
+    [[50, cy - r], [50 + r, cy], [50, cy + r], [50 - r, cy]].forEach(function (p) { H.tron(g, p[0], p[1], 1.3); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, 0.8); });
+  }
   function veDayKeo(g, o) {
     o = o || {};
     var x1 = +o.x1, y1 = +o.y1, x2 = +o.x2, y2 = +o.y2, c = o.o > 0 ? o.o : 48, day = Math.max(1.5, c * 0.05);
@@ -84,8 +102,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   V.dangKy({
     loai: 'tay', ma: 'day-keo', hamGoc: ['cast_net', 'drop_net', 'set_length', 'tow', 'drop_tow', 'tether', 'untether'], ten: 'Tay lưới thủy lợi', gan: 'tay', diemNeo: { x: 50, y: 82 },
+    diemNeoDuoi: { x: 50, y: 50 },
     ve: function (g, s, M, H) {
       s = s || {};
+      if (s.duoi) { phaoBung(g); return; }                                    // M9H2: drone + tay lưới = thả phao (L10)
+      if (s.than === 'cau') { if (V.veToiCau) V.veToiCau(g, H); if (!s.trenCan) gioCan(g); return; }   // M9H2: cần cẩu + tay lưới = giỏ cứu hộ (L9): trên sân chỉ tời (giỏ ở đầu cần thật)
       /* giá tời & khung phóng lưới chữ U gắn mũi xuồng: hai má thép tối + tang cuốn dây cam có rãnh cáp + hai càng dẫn lưới */
       H.bo(g, 36, 76.5, 28, 11.5, 4); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.4);
       H.bo(g, 37.5, 78, 3.5, 11, 1.2); H.to(g, BM.vecThepToi);

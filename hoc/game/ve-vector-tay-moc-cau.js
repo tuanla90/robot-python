@@ -24,16 +24,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     mocDon(g, x - r * 0.72, y + r * 0.1, r * 0.82); mocDon(g, x + r * 0.72, y + r * 0.1, r * 0.82);
   }
   V.veMocCau = veMocCau;
+  /** Cụm tời cáp thép (tang cuốn cáp bạc) ở mép trước mâm cẩu, hệ của tay (đỉnh y 73,5): móc cẩu vẽ nó; M9H2: tay lai trên cần cẩu (gầu L8, nam châm L1, giỏ L9) vẽ nó khi s.trenCan
+   *  (veBeCau: part thật treo ở đầu cần do san-ve.js veTreoCau9 vẽ). */
+  function veToiCau(g, H) {
+    H.bo(g, 39.5, 73.5, 21, 9.5, 3); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2.2);
+    H.bo(g, 42.5, 75.5, 15, 5.5, 1.8); H.to(g, BM.vecBacToi); H.vien(g, BM.vecVien, 1.3);
+    g.beginPath(); g.moveTo(46, 75.8); g.lineTo(46, 80.8); g.moveTo(50, 75.8); g.lineTo(50, 80.8); g.moveTo(54, 75.8); g.lineTo(54, 80.8);
+    H.vien(g, BM.vecThepToi, 1.2);
+  }
+  V.veToiCau = veToiCau;
 
   V.dangKy({
     loai: 'tay', ma: 'moc-cau', hamGoc: ['pick_up', 'set_down', 'pick_up2'], ten: 'Móc cẩu', gan: 'tay', diemNeo: { x: 50, y: 82 },
     ve: function (g, s, M, H) {
       s = s || {};
-      /* cụm tời cáp thép có tang cuốn dây cáp bạc */
-      H.bo(g, 39.5, 73.5, 21, 9.5, 3); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2.2);
-      H.bo(g, 42.5, 75.5, 15, 5.5, 1.8); H.to(g, BM.vecBacToi); H.vien(g, BM.vecVien, 1.3);
-      g.beginPath(); g.moveTo(46, 75.8); g.lineTo(46, 80.8); g.moveTo(50, 75.8); g.lineTo(50, 80.8); g.moveTo(54, 75.8); g.lineTo(54, 80.8);
-      H.vien(g, BM.vecThepToi, 1.2);
+      veToiCau(g, H);                                                          // cụm tời cáp thép có tang cuốn dây cáp bạc
       if (s.trenCan) return;
       g.beginPath(); g.moveTo(50, 83); g.lineTo(50, 86.2); H.vien(g, BM.vecVien, 2.6); H.vien(g, BM.vecBac, 1.2);
       veMocCau(g, 50, 87.5, 6.4, !!s.doi);
