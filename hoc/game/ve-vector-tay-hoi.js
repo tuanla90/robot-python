@@ -24,9 +24,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 44.5, Math.min(y + 0.3 * huong, y - 2.7 * huong), 11, 3, 1.4); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 1.8);
     H.elip(g, 50, yDau + 1.1 * huong, 3.2, 1.3); H.to(g, ban ? (lucCao ? BM.vecVo : BM.vecNuocSang) : BM.vecLoi); H.vien(g, BM.vecVien, 1.1);
   }
+  /* M9H2 (4/11): BÌNH XỊT BỤNG DRONE (lai L15: spray() xịt thẳng xuống ô dưới bụng, bình nhỏ; s.duoi, diemNeoDuoi (50, 50) → tâm hệ tay = ổ duoi (50, 70) của drone):
+     hai quai treo, bình nước nằm ngang (vỏ kính thấy mực nước xanh, hai nắp đỏ cứu hỏa như bình của đầu trước), cổ van vàng, VÒI ĐỎ ngắn chĩa XUỐNG (khác chữ U bạc của nam châm);
+     đang xịt (s.dangBanTruoc): miệng vòi sáng + ba giọt nước rơi thẳng xuống (tia dài do san-ve.js veXitBung9 vẽ). */
+  function binhBung(g, H, ban) {
+    H.duong(g, 'M44 48.5 V56 M56 48.5 V56'); H.vien(g, BM.vecVien, 4.2); H.duong(g, 'M44 48.5 V56 M56 48.5 V56'); H.vien(g, BM.vecBacToi, 1.9);
+    H.bo(g, 36, 54.5, 28, 12, 6); H.to(g, BM.vecNuocSang); H.vien(g, BM.vecVien, 2.4);
+    H.bo(g, 37.4, 59.4, 25.2, 5.8, 2.9); H.to(g, BM.vecNuoc);
+    H.duong(g, 'M41 59.4 Q45.5 58.2 50 59.4 Q54.5 60.6 59 59.4'); H.vien(g, BM.vecVo, 1.3);
+    H.bo(g, 36, 54.5, 6.5, 12, 3.2); H.to(g, BM.vecDo); H.vien(g, BM.vecVien, 2);
+    H.bo(g, 57.5, 54.5, 6.5, 12, 3.2); H.to(g, BM.vecDo); H.vien(g, BM.vecVien, 2);
+    H.bo(g, 45.5, 66, 9, 3.4, 1.4); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.6);
+    H.duong(g, 'M44.5 69.2 L55.5 69.2 L52.6 76 L47.4 76 Z'); H.to(g, BM.vecDo); H.vien(g, BM.vecVien, 2);
+    H.duong(g, 'M46.6 70.4 L47.9 74.8'); H.vien(g, BM.vecDoSang, 1.3);
+    H.elip(g, 50, 76.2, 2.4, 1); H.to(g, ban ? BM.vecNuocSang : BM.vecLoi); H.vien(g, BM.vecVien, 1);
+    if (ban) { H.duong(g, 'M47.6 77 L50 83 L52.4 77 Z'); H.to(g, BM.vecNuocSang); H.vien(g, BM.vecNuoc, 1); giot(g, H, 50, 84.5, 2.1); giot(g, H, 46.2, 81.4, 1.4); giot(g, H, 53.8, 81.4, 1.4); }
+  }
   function giot(g, H, x, y, r) { H.tron(g, x, y, r); H.to(g, BM.vecNuoc); H.vien(g, BM.vecNuocToi, 1); H.tron(g, x - r * 0.3, y - r * 0.3, r * 0.35); H.to(g, BM.vecNuocSang); }
-  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['spray',  'spray_back'], ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['spray',  'spray_back'], ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, diemNeoDuoi: { x: 50, y: 50 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
     s = s || {};
+    if (s.duoi) { binhBung(g, H, !!s.dangBanTruoc); return; }                  // M9H2: drone + vòi phun = bình xịt bụng (L15); thân khác không treo vòi phun ở bụng
     var tr = !!s.dangBanTruoc, sa = !!s.dangBanSau, lucCao = s.lucBan !== 'low', tu = !!s.tuLuc;
     /* đầu sau (vẽ trước: nằm dưới bình nước nếu thân ngắn) */
     if (!s.chiTruoc && s.sau) {
