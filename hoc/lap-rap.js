@@ -48,6 +48,17 @@
      veVector() → bộ vẽ vector đã nạp (Node: tự nạp game/ve-vector.js + ve-vector-than-* / tay-* / cam.js); null nếu không có (khi đó bỏ bước nhờ kiemGhep xét lại)
      honHan(a, b) · cachBiHonHan(thongKe) → các cặp { hon, kem }: cách hơn hẳn cách khác ở cả giá, nhịp, ô (luật cân màn: phải rỗng)
      lenhKhongCon(man, dong) → chỉ số các dòng gọi lệnh gốc của part mà robot hiện tại không có (khi "Lắp lại" đổi part mà chương trình còn lệnh cũ)
+
+   M9D1 (4/11, mùa 9 chương 1 CHỌN ĐỘI + chương 2 LẮP ROBOT THỨ HAI; KE-HOACH-MUA-9-TO-HOP.md mục 7, 8, 8b, 9.4; máy kiểm hoc/kiem-chon-doi.mjs):
+     man.chonDoi = { menu: ['CH', 'DR', 'CU'], so?: 2, trung?: false, cachMau: [{ chon: ['CH', 'CU'], loiGiai: { doi: [{ chinh }…], hamCuaMan?, hamCuaEmMoi? }, ghiChu? }] }
+       man.doi[i] của robot em lập trình chỉ khai phần riêng (batDau, co, son, pin, coThem); robot khoá (coDinh) khai đủ như màn đội thường, chạy maMau.doi[i]. chon[k] = robot em thứ k.
+     man.lapRap.robot = i  → màn đội, lắp cho robot thứ i: apDung gắn vào man.doi[i] (bỏ cờ cỗ máy cũ, giữ batDau / co / son), cachLap[k].loiGiai = { doi } (lời giải đội).
+     robotEm(man) · soChonCua(man) · robotLapCua(man) · coMay() (co-may.js)
+     kiemChon(man, chon) → { ok, ma: 'khong-chon-doi' | 'thieu' | 'thua' | 'khong-co' | 'trung' | null, lyDo }    dsCachChon(man) → [[mã…]] mọi lựa chọn hợp lệ (có thứ tự)
+     apDungDoi(man, chon | cachMau) → bản màn đủ man.doi[i] (CoMay.dung: loaiRobot, robot, hamGoc, cờ), chonDaChon, manGoc, loiGiai (khi là cách mẫu). Ném lỗi lời Việt khi chọn sai.
+     kiemDuLieuDoi(man) · thongKeMauDoi(man, kho?) → [{ chon, ten, thang, nhip, o, sao, loi, ghiChu }] · kiemCanManDoi(man, kho?)
+     loiGiaiCua(lg, man?) → lời giải dạng máy chấm chạy (màn đội: robot khoá không có trong lg thì lấy maMau.doi[i]) · baiCua(lg) → bài làm đưa Cham.cham
+     macDinh(man) điền thêm: chonDoi theo cachMau[0]; lapRap.robot theo cachLap[0] vào man.doi[i]. (man-chuoi-1.js chuanHoa chỉ gọi macDinh khi m.lapRap → màn chọn đội gọi LapRap.macDinh trước chuanHoa, hay chuanHoa thêm `|| m.chonDoi` ở gói D2.)
    ========================================================================== */
 (function () {
   'use strict';
