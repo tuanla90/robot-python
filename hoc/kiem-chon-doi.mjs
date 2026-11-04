@@ -4,10 +4,11 @@
    A. man.chonDoi (chương 1 chọn đội): LapRap.kiemChon / dsCachChon / apDungDoi / macDinh / kiemDuLieuDoi / thongKeMauDoi / kiemCanManDoi; lỗi lời Việt khi chọn sai;
       robot khoá (coDinh) không bị chọn thay; cách mẫu chạy thật qua máy chấm.
    B. man.lapRap.robot = i (chương 2 tự lắp cho MỘT robot của màn đội): apDung gắn vào man.doi[i], robot khác y nguyên, cờ cỗ máy cũ không sót; kiemDuLieu / thongKeMau / kiemCanMan.
-   C. Ba robot, R3 là máy khách khoá (mục 8b "cứu máy khách"): lõi SanHoc.chay 3 robot, thắng chỉ khi CẢ BA tới cờ (R3 tới cờ của nó); cham.js: R3 chạy maMau.doi[2] dù bài gửi lên có "sửa".
+   C. Ba robot, R3 là máy khách khoá (mục 8b "cứu máy khách"): lõi SanHoc.chay 3 robot, thắng chỉ khi CẢ BA tới cờ (R3 tới cờ của nó); cham.js chấm bài đội 3 chương trình; R3 khoá: giao diện gửi maMau.doi[2] (man-choi.js, như 150 robot khoá hiện có), cham.js không tự thay (các máy kiểm lời sai cố ý đổi chương trình robot khoá).
    D. Tự chứng minh: bài không giữ cửa → thua, chẩn đoán R3 đụng cửa; màn cũ (lắp ráp một robot, màn đội không chọn) không đổi dạng.
    Chạy: node hoc/kiem-chon-doi.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -81,7 +82,7 @@ console.log('A. Chọn đội (man.chonDoi)');
     && a.doi[2] === m.doi[2] && a.doi[2].coDinh === true, J(a.doi.map((r) => [r.loaiRobot, r.robot && r.robot.son, r.coDinh])));
   kiem('apDungDoi: giữ batDau / co riêng của từng robot, trường đầu màn = R1, chonDaChon, manGoc', J(a.doi[1].batDau) === J(m.doi[1].batDau) && J(a.doi[1].co) === J(m.doi[1].co) && a.loaiRobot === 'drone' && J(a.chonDaChon) === '["DR","CU"]' && a.manGoc === m);
   kiem('apDungDoi không đụng màn gốc (man.doi[0] vẫn chưa có cỗ máy)', m.doi[0].loaiRobot === undefined && m.doi[1].robot === undefined);
-  kiem('apDungDoi với cách mẫu → loiGiai đội { doi, hamCuaMan, hamCuaEmMoi }', (() => { const b = LapRap.apDungDoi(m, m.chonDoi.cachMau[0]); return Array.isArray(b.loiGiai.doi) && b.loiGiai.doi.length === 2 && b.loiGiai.hamCuaMan.length === 4 && Array.isArray(b.loiGiai.hamCuaEmMoi); })());
+  kiem('apDungDoi với cách mẫu → loiGiai đội { doi, hamCuaMan, hamCuaEmMoi }; R3 khoá không có trong cách mẫu thì điền maMau.doi[2]', (() => { const b = LapRap.apDungDoi(m, m.chonDoi.cachMau[0]); return Array.isArray(b.loiGiai.doi) && b.loiGiai.doi.length === 3 && J(b.loiGiai.doi[2].chinh) === J(m.maMau.doi[2].chinh) && b.loiGiai.hamCuaMan.length === 4 && Array.isArray(b.loiGiai.hamCuaEmMoi); })());
   const mt = manChonDoi({ chonDoi: Object.assign(clone(manChonDoi().chonDoi), { trung: true }) });
   kiem('chonDoi.trung = true: được chọn hai bạn cùng cỗ máy (9 cách)', LapRap.kiemChon(mt, ['CH', 'CH']).ok && LapRap.dsCachChon(mt).length === 9);
   const ms = manChonDoi({ chonDoi: Object.assign(clone(manChonDoi().chonDoi), { so: 1 }) });
@@ -113,16 +114,19 @@ console.log('C. Ba robot: R3 máy khách khoá (coDinh) chạy maMau, thắng ch
 {
   const md = chuan(manChonDoi());
   const a = LapRap.apDungDoi(md, ['DR', 'CH']);
-  const bai = { doi: [{ chinh: ['fly_right(5)'] }, { chinh: R2_GIU_CUA_BANH }], hamCuaMan: HAM.concat([QUAY_BANH]) };
+  const R3 = { chinh: md.maMau.doi[2].chinh.slice() };                                   // giao diện gửi chương trình khoá của màn cho robot coDinh (man-choi.js)
+  const bai = { doi: [{ chinh: ['fly_right(5)'] }, { chinh: R2_GIU_CUA_BANH }, R3], hamCuaMan: HAM.concat([QUAY_BANH]) };
   const r = Cham.cham(a, bai, []);
   kiem('cham: bài giữ cửa (R2 đứng trên M lúc R3 qua cửa) → thắng, ketQua.doi có 3 robot, R3 toiCo', r.thang && r.doi.length === 3 && r.doi[2].toiCo === true && r.doi[2].loaiRobot === 'xich', J([r.thang, r.doi.length, r.chanDoan.slice(0, 2)]));
   const sk = r.theoSan[0].doi.flatMap((d) => d.vet.filter((v) => v.loai === 'nhip').flatMap((v) => v.suKien || [])).filter((e) => e.ma === 'nut-de');
   kiem('vết có sự kiện nut-de bật ở ô M (giữ cửa) rồi tắt (sự kiện sân nằm ở vết R1, pha D cuối nhịp)', sk.length >= 2 && sk[0].bat === true && sk[0].o.x === 1 && sk[0].o.y === 2 && sk[sk.length - 1].bat === false, J(sk));
-  const rSua = Cham.cham(a, { doi: bai.doi.concat([{ chinh: ['wait()'] }]), hamCuaMan: bai.hamCuaMan }, []);
-  kiem('bài gửi lên có "sửa" chương trình R3 → bị bỏ, R3 vẫn chạy maMau.doi[2] và tới cờ', rSua.thang && rSua.doi[2].toiCo === true && rSua.soNhip === r.soNhip);
-  const rK = Cham.cham(a, { doi: [{ chinh: ['fly_right(5)'] }, { chinh: ['turn_back()', 'forward(4)'] }], hamCuaMan: HAM.concat([QUAY_BANH]) }, []);
+  const rSua = Cham.cham(a, { doi: bai.doi.slice(0, 2).concat([{ chinh: ['wait()'] }]), hamCuaMan: bai.hamCuaMan }, []);
+  kiem('bài gửi lên đổi chương trình R3 → máy chấm chạy đúng bài đó (R3 đứng yên, không tới cờ, thua): khoá R3 là việc của giao diện (man-choi.js gửi maMau cho robot coDinh)', !rSua.thang && rSua.doi[2].toiCo === false);
+  const src = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8');
+  kiem('man-choi.js: robot coDinh luôn gửi chương trình của màn (maMau.doi[i]) — R3 máy khách khoá dùng chung cơ chế', /!r\.coDinh && !m\.chiChay \? nd\[i\]\.chinh\.slice\(\) : \(\(md\[i\] && md\[i\]\.chinh\)/.test(src));
+  const rK = Cham.cham(a, { doi: [{ chinh: ['fly_right(5)'] }, { chinh: ['turn_back()', 'forward(4)'] }, R3], hamCuaMan: HAM.concat([QUAY_BANH]) }, []);
   kiem('D. bài KHÔNG giữ cửa → thua dù R1, R2 tới cờ; chẩn đoán "R3:" đụng cửa đóng', !rK.thang && rK.doi[0].toiCo && rK.doi[1].toiCo && !rK.doi[2].toiCo && rK.chanDoan.some((c) => /^R3: /.test(c.loi) && /cửa/.test(c.loi)), J(rK.chanDoan.map((c) => c.ma + ' ' + c.loi.slice(0, 60))));
-  const rL = Cham.cham(a, { doi: [{ chinh: ['fly_right(5)'] }, { chinh: ['forward(1)', 'turn_back()', 'forward(5)'] }], hamCuaMan: HAM.concat([QUAY_BANH]) }, []);
+  const rL = Cham.cham(a, { doi: [{ chinh: ['fly_right(5)'] }, { chinh: ['forward(1)', 'turn_back()', 'forward(5)'] }, R3], hamCuaMan: HAM.concat([QUAY_BANH]) }, []);
   kiem('D. R2 rời nút sớm (cửa đóng lại trước khi R3 qua) → thua', !rL.thang && !rL.doi[2].toiCo, J(rL.chanDoan.map((c) => c.ma)));
 
   // lõi trực tiếp: 3 robot, thắng cần cả ba

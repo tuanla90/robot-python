@@ -286,10 +286,16 @@
     });
     return goc;
   }
-  /** Lời giải của một cách mẫu (lắp hay chọn đội) ở dạng máy chấm / máy kiểm chạy được: màn một robot { chinh, hamCuaMan, hamCuaEmMoi }; màn đội { doi: [{ chinh }…], hamCuaMan, hamCuaEmMoi }. */
-  function loiGiaiCua(lg) {
+  /** Lời giải của một cách mẫu (lắp hay chọn đội) ở dạng máy chấm / máy kiểm chạy được: màn một robot { chinh, hamCuaMan, hamCuaEmMoi }; màn đội { doi: [{ chinh }…], hamCuaMan, hamCuaEmMoi }.
+   *  Màn đội (truyền `man`): robot KHOÁ (man.doi[i].coDinh) mà lời giải không ghi chương trình thì lấy maMau.doi[i] của màn (máy khách R3 chạy chương trình khoá; cách mẫu chỉ cần viết cho robot em lập trình). */
+  function loiGiaiCua(lg, man) {
     lg = lg || {};
     var kq = Array.isArray(lg.doi) ? { doi: lg.doi.map(function (d) { return { chinh: ((d && d.chinh) || []).slice() }; }) } : { chinh: (lg.chinh || []).slice() };
+    if (kq.doi && man && Array.isArray(man.doi)) man.doi.forEach(function (r, i) {
+      var mm = r.coDinh && man.maMau && man.maMau.doi && man.maMau.doi[i];
+      if (mm && !(lg.doi[i] && lg.doi[i].chinh && lg.doi[i].chinh.length)) kq.doi[i] = { chinh: (mm.chinh || []).slice() };
+      else if (!kq.doi[i]) kq.doi[i] = { chinh: [] };
+    });
     kq.hamCuaMan = lg.hamCuaMan || []; kq.hamCuaEmMoi = lg.hamCuaEmMoi || [];
     return kq;
   }
@@ -342,7 +348,7 @@
       kq.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
       kq.hamGoc = hamGocCua(man, c);
     }
-    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai);                       // cách mẫu: máy kiểm / máy chấm chạy lời giải của chính cách này (màn đội: loiGiai.doi)
+    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai, man);                  // cách mẫu: máy kiểm / máy chấm chạy lời giải của chính cách này (màn đội: loiGiai.doi, robot khoá lấy maMau)
     return kq;
   }
 
@@ -409,7 +415,7 @@
       return Object.assign(goc, d);
     });
     if (em.indexOf(0) >= 0) { kq.loaiRobot = kq.doi[0].loaiRobot; kq.robot = kq.doi[0].robot; kq.hamGoc = kq.doi[0].hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)
-    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai);
+    if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai, man);
     return kq;
   }
   /** Lỗi dữ liệu chonDoi của màn (rỗng = ổn). */
@@ -441,7 +447,7 @@
     (C.cachMau || []).forEach(function (cm) {
       var mau = { chon: (cm.chon || []).slice(), ten: (cm.chon || []).map(tenCoMay).join(' + '), thang: false, nhip: null, o: null, sao: 0, loi: null, ghiChu: cm.ghiChu || '' };
       try {
-        var m = apDungDoi(man, cm), lg = m.loiGiai || loiGiaiCua({ doi: [] });
+        var m = apDungDoi(man, cm), lg = m.loiGiai || loiGiaiCua({ doi: [] }, man);
         var r = cham.cham(m, baiCua(lg), (kho || []).concat(lg.hamCuaEmMoi || []));
         mau.thang = !!r.thang; mau.nhip = r.soNhip; mau.o = r.soO; mau.sao = r.sao;
       } catch (e) { mau.loi = e.message; }

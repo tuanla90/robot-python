@@ -1675,8 +1675,9 @@
     function laDoiThu(i) { return !!(man.doiKhang && man.doi[i].coDinh); }
     var bais = man.doi.map(function (r, i) {
       var ch = ds[i] ? ds[i].chinh : (i === 0 && baiLam && baiLam.chinh ? baiLam.chinh : null);
-      // robot khoá (doi[i].coDinh: đối thủ đối kháng, hay M9D1 máy khách R3 mục 8b): luôn chạy chương trình khoá của bản mẫu, bỏ bài gửi lên (như ganCoDinh của màn một robot)
-      if (man.doi[i].coDinh && man.maMau && man.maMau.doi && man.maMau.doi[i]) ch = man.maMau.doi[i].chinh;
+      // robot khoá KHÔNG đối kháng (doi[i].coDinh, kể cả M9D1 máy khách R3 mục 8b): máy chấm chạy đúng bài gửi lên (giao diện man-choi.js ~211 gửi maMau.doi[i] cho robot khoá;
+      // các máy kiểm lời sai / "bỏ một robot" cố ý đổi chương trình robot khoá) — chỉ đối thủ đối kháng mới bị thay bằng bản mẫu ở đây
+      if (laDoiThu(i) && man.maMau && man.maMau.doi && man.maMau.doi[i]) ch = man.maMau.doi[i].chinh;
       // HD3: màn trình diễn nhiều robot (man.chiChay, như ganCoDinh của màn một robot): mọi robot chạy chương trình khoá của bản mẫu, bỏ bài gửi lên
       if (man.chiChay === true && man.maMau && man.maMau.doi && man.maMau.doi[i]) ch = man.maMau.doi[i].chinh;
       var hm = laDoiThu(i) && man.maMau ? (man.maMau.hamCuaMan || []) : hamCuaMan;

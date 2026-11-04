@@ -92,7 +92,7 @@ export function chamMau(man) {
   const hs = new Map((khoTruoc.get(man.ma) || []).map((h) => [h.ten, h]));
   for (const h of (man.loiGiai && man.loiGiai.hamCuaEmMoi) || []) hs.set(h.ten, clone(h));
   const lg = man.loiGiai || {};
-  const bai = lg.doi ? { doi: lg.doi, hamCuaMan: lg.hamCuaMan || [] } : (lg.code !== undefined ? lg.code : lg);
+  const bai = lg.doi ? LapRap.baiCua(LapRap.loiGiaiCua(lg, man)) : (lg.code !== undefined ? lg.code : lg);   // màn đội: robot khoá không có chương trình trong lời giải thì lấy maMau.doi[i]
   return Cham.cham(man, bai, [...hs.values()]);
 }
 /** Sự kiện theo robot từ kết quả chấm sân đầu: [{ than, ds: [{ nhip, ma, o?, bat? }] }]; sự kiện sân có ô `o` (nut-de, cua-doi, lap-ho…) gắn cho robot đang đứng ở ô đó nhịp ấy (nếu có), không thì giữ ở robot ghi nó. */
