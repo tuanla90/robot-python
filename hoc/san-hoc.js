@@ -2755,6 +2755,7 @@
           var ly = null;
           if (c === '#') ly = 'tuong';
           else if (c === 'N') ly = 'nut';
+          else if (c === 'V' && vanTai[x + ',' + y]) ly = 'van';                 // M9C2 (T3): tia phun trúng van cống V thì van đổi (như lưới kéo van)
           else if (c === 'S') ly = 'bac-thang';
           else if (cuaDong(x, y)) ly = lyCua(x, y);                         // 'lua': tia nước trúng lửa (dập)
           else if (thungTai(x, y)) ly = 'thung';
@@ -2776,6 +2777,12 @@
           }
           return kqBan;
         }
+        if (trung === 'van') {                                                  // M9C2 (T3) VÒI PHUN GẠT VAN CỐNG: ô dòng của nhóm đổi ngay, cống đổi cuối nhịp (doiVan, như 'keo-van')
+          var vnP = vanTai[oVC.x + ',' + oVC.y];
+          doiVan(vnP);
+          sk.push({ ma: 'phun-van', nhip: nhip, tu: { x: rb.x, y: rb.y }, o: { x: vnP.x, y: vnP.y }, huong: hb, bat: vnP.bat, soO: d - 1, lenh: lenhGhi });
+          return kqBan;
+        }
         if (trung !== 'nut') return kqBan;
         var n = nutTai[oVC.x + ',' + oVC.y];
         n.bat = !n.bat;
@@ -2793,7 +2800,7 @@
       /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), phun nhẹ rơi vì hết tầm ('ban-ngan'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật
        *  của phát bắn đó chẳng dời được gì (xe và thùng đứng yên): phát bắn mà xe / thùng đi được một đoạn là phát bắn có ích, bóng đập vào tường là chuyện thường. */
       function thongTinBan(kb, l, hb, giatCoDoi) {
-        if (kb.trung === 'nut' || kb.trung === 'lua' || giatCoDoi) return;
+        if (kb.trung === 'nut' || kb.trung === 'lua' || kb.trung === 'van' || giatCoDoi) return;
         var lenhGhi = l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null;
         if (kb.hetTam) {
           var en = { ma: 'ban-ngan', nhip: nhip, tu: { x: rb.x, y: rb.y }, huong: hb, sau: !!l.sau, cuoi: kb.cuoi, lenh: lenhGhi };

@@ -471,5 +471,21 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
   kiem('P: người không có đường đi bộ tới trạm (tường chắn) → lỗi cấu hình nói rõ', /không có đường đi bộ tới trạm/.test(cfgLoi || ''), cfgLoi);
 }
 
+/* ============================================================ M9C2 (4/11): L9 giỏ cứu hộ, L10 thả phao, T3 vòi phun gạt van, T4 bè sạc */
+/* T3 vòi phun gạt van cống: tia phun (spray / spray_back) trúng van V thì van đổi như lưới kéo van ('phun-van'), cống đổi cuối nhịp */
+{
+  const XUONG_DI = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
+  const T3 = (codeXe, hamXe) => SanHoc.chay({ san: ['.V...', '~K~~~', '#####'], doi: [{ batDau: { x: 0, y: 0, huong: 1 }, hamGoc: hamXe || BANH.concat(['spray']) }, { batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'xuong', hamGoc: XUONG_DI }] },
+    [codeXe, 'wait()\n' + TIEN + TIEN + TIEN]);
+  const t3 = thu(() => T3('spray()\nwait()\n'));
+  kiem('T3 b: xe phun trúng van V (1, 0): "phun-van" bat true, cống K (1, 1) mở cuối nhịp 1 ("cong-doi"), xuồng chạy qua cống tới (3, 1)',
+    t3 && !t3.loi && coSk(t3.doi[0], 'phun-van') && t3.cong[0].mo === true && t3.doi[1].robot.x === 3 && t3.van[0].bat === true, t3 && J({ loi: t3.loi, cong: t3.cong, r: t3.doi[1].robot }));
+  const t3b = thu(() => SanHoc.chay({ san: ['...V.', '#####'], batDau: { x: 4, y: 0, huong: 1 }, hamGoc: BANH.concat(['spray', 'spray_back']) }, 'spray_back()\nwait()\n'));
+  kiem('T3 b: spray_back() ra sau đuôi cũng gạt van (tia trúng V ở ô sát đuôi, soO 0), không giật vì phun nhẹ', t3b && !t3b.loi && t3b.van[0].bat === true && sk1(t3b, 'phun-van') && sk1(t3b, 'phun-van').soO === 0 && t3b.robot.x === 4, t3b && skNg(t3b));
+  const t3d = thu(() => T3('wait()\n'));
+  kiem('T3 d: xe không phun → cống vẫn đóng, xuồng đâm cống ở (0, 1) (phép b đỏ)', t3d && t3d.cong[0].mo === false && t3d.doi[1].robot.x === 0 && !thu(() => { const k = T3('wait()\n'); return k.cong[0].mo && k.doi[1].robot.x === 3; }), t3d && J(t3d.doi[1].robot));
+  kiem('T3 d: xe không gắn vòi phun (spray không có trên khay) → phép b đỏ', !thu(() => { const k = T3('spray()\nwait()\n', BANH); return k.cong[0].mo && k.doi[1].robot.x === 3; }));
+}
+
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);
