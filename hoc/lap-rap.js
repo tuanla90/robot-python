@@ -266,8 +266,8 @@
       (d && d.ham || []).forEach(function (h) { if (goc.indexOf(h) < 0) goc.push(h); });
     });
     if (goc.indexOf('wait') < 0) goc.push('wait');
-    if (c.than === 'cau') goc = goc.filter(function (h) { return h !== 'arm_down' && h !== 'arm_up'; });
-    if (c.than === 'cau' || c.than === 'drone') goc = goc.filter(function (h) { return h !== 'set_length'; });   // M9C2 (L9, L10): giỏ cứu hộ / phao chỉ cast_net() / drop_net()   // M9B2 (L8): gầu ngoạm trên cần cẩu chỉ grab() / release() (gầu thả từ đầu cần, không nâng hạ tay)
+    if (c.than === 'cau') goc = goc.filter(function (h) { return h !== 'arm_down' && h !== 'arm_up'; });   // M9B2 (L8): gầu ngoạm trên cần cẩu chỉ grab() / release() (gầu thả từ đầu cần, không nâng hạ tay)
+    if (c.than === 'cau' || c.than === 'drone') goc = goc.filter(function (h) { return h !== 'set_length'; });   // M9C2 (L9, L10): giỏ cứu hộ / phao chỉ cast_net() / drop_net()
     if (!(c.than === 'drone' && coPinMan(man))) goc = goc.filter(function (h) { return h !== 'battery'; });
     // land / take_off: nâng cấp drone đáp đất để sạc (mùa 4 gói 5) chỉ khi màn mở nó trên khay
     if (!(c.than === 'drone' && (man.hamGoc || []).indexOf('land') >= 0)) goc = goc.filter(function (h) { return h !== 'land' && h !== 'take_off'; });
