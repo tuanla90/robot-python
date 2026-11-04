@@ -89,8 +89,7 @@
 
   /* ---- M9H1 (4/11): màn giả MỘT robot để soát hình sân mùa 9 (người cần cứu, thác, cát, phao, giỏ, nam châm, gầu, xe tời, phun van).
      Sân + lời giải chép từ sân mẫu hoc/kiem-ve-mua-9.mjs / kiem-lai-mua-9.mjs; lời giải nạp sẵn vào ô lệnh (maMau), bấm Chạy là xem.
-     CHƯA có màn giả cho container trôi (contTroi), bè sạc (beSac), container lấp hố (contLapHo): cham.js chưa đưa ba lớp này xuống lõi
-     (game chạy sẽ khác máy kiểm) — xem báo cáo M9H1. */
+     Container trôi, bè sạc, container lấp hố: 'cont-troi' / 'be-sac' / 'lap-ho' (thêm sau khi cham.js đưa ba lớp này xuống lõi). */
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   var TIEN9 = ['left_move()', 'right_move()', 'wait()'];
   function manSan9(ma, ten, deBai, lai, cach, them, chinh) {
@@ -132,7 +131,17 @@
       { san: ['.~~B', '...F'], batDau: { x: 0, y: 0, huong: 1 } }, ['set_length(3)', 'cast_net()', 'wait()']); },
     'phun-van': function () { return manSan9('phun-van', 'Thử phun van', 'Phun nước gạt van mở cống.', null, null,
       { san: ['.V...', '~K~~~', '#####'], batDau: { x: 0, y: 0, huong: 1 }, robot: { than: 'hai-banh', tay: 'hoi', camBien: [] }, hamGoc: BANH.concat(['spray']) },
-      ['spray()', 'wait()']); }
+      ['spray()', 'wait()']); },
+    // 4/11 sau M9H1: cham.js đã đưa contTroi / beSac / contLapHo xuống lõi — màn giả cho ba lớp này (sân chép kiem-lai-mua-9.mjs L2 / T4 / T2)
+    'cont-troi': function () { return manSan9('cont-troi', 'Thử container trôi', 'Đọc số container trôi trước mũi.', 'L2', { than: 'xuong', tay: 'day-keo', camBien: 'quet-ma' },
+      { san: ['~~~~~', '~~B~~', '~~~~Q'], batDau: { x: 1, y: 1, huong: 1 }, contTroi: [{ x: 2, y: 1, so: 12 }] }, ['a = read_code()', 'wait()']); },
+    'be-sac': function () { return manSan9('be-sac', 'Thử bè sạc', 'Drone đáp lên bè sạc đang trôi.', null, null,
+      { san: ['~B~~', '....', '...F'], batDau: { x: 0, y: 1 }, loaiRobot: 'drone', robot: { than: 'drone', tay: null, camBien: [] }, hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'land', 'take_off'],
+        pin: 6, dong: [{ x: 1, y: 0, huong: 1, suc: 1 }, { x: 2, y: 0, huong: 1, suc: 1 }], beSac: [{ x: 1, y: 0 }] }, ['go_right()', 'go_right()', 'go_right()', 'go_up()', 'land()']); },
+    'lap-ho': function () { return manSan9('lap-ho', 'Thử lấp hố', 'Cẩu hạ container xuống hố.', null, null,
+      { san: ['.....', '.#u#.', '.....', '....F'], batDau: { x: 2, y: 0, nac: 5, tam: 2 }, loaiRobot: 'cau', robot: { than: 'cau', tay: 'moc-cau', camBien: [] },
+        hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'], contLapHo: true, chong: [{ x: 0, y: 2, cont: [{ so: 5 }] }] },
+      ['pick_up()', 'swing_left()', 'retract()', 'set_down()']); }
   };
 
   var API = { manChonDoi: manChonDoi, manLapRobot2: manLapRobot2, manBaRobot: manBaRobot };

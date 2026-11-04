@@ -914,7 +914,7 @@
     function layMang(l) { return l ? (nhieu && Array.isArray(l) && Array.isArray(l[0]) ? (l[i] || null) : l) : null; }
     var dieuSan = !m.dieu ? null : (nhieu && Array.isArray(m.dieu) && (Array.isArray(m.dieu[0]) || (typeof m.dieu[0] === 'string' && m.dieu[0].length > 1)) ? (m.dieu[i] || null) : m.dieu);
     return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatDang: lay(m.vatDang), vatThem: lay(m.vatThem), thungThem: lay(m.thungThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), lua: lay(m.lua), demTu: lay(m.demTu), sanDoc: lay(m.sanDoc), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau), dong: lay(m.dong),
-      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao), contTroi: lay(m.contTroi),
+      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao), contTroi: lay(m.contTroi), beSac: layMang(m.beSac),   // T4 bè sạc: mảng ô như nguoi
       nguoi: layMang(m.nguoi), tramCuu: layMang(m.tramCuu), thac: layMang(m.thac),   // M9C1: người cần cứu, trạm cứu, thác (một sân: mảng ô; nhiều sân: mảng song song)
       dieu: dieuSan, ngachHang: layMang(m.ngachHang), chuongDa: layMang(m.chuongDa || m.danDoi), daChuong: layMang(m.daChuong) };
   }

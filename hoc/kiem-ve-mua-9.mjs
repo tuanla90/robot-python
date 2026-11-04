@@ -286,7 +286,7 @@ console.log('\n== 4. Mã nguồn: bảng NHIP_9, nạp lớp, đồng bộ vết
   kiem('khối mùa 9 của san-ve.js: màu từ BangMau (không mã hex), không fillRect / strokeRect, không emoji', !/#[0-9a-fA-F]{3,8}\b/.test(blk) && !/fillRect|strokeRect/.test(blk) && !/\p{Extended_Pictographic}/u.test(blk));
   kiem('ve-vector-vat-song.js khai hình nguoi-cuu (vẫy / nước / bám / trạm), phao-cuu, container-troi, be-sac, gio-cuu-ho; không mã hex',
     ['nguoi-cuu', 'phao-cuu', 'container-troi', 'be-sac', 'gio-cuu-ho'].every((m) => co(vs, "ma: '" + m + "'")) && co(vs, "{ nuoc: true, bam: true }, { tram: true }") && !/#[0-9a-fA-F]{3,8}\b/.test(vs.replace(/^var BM[^\n]*\n/, '')));
-  kiem('man-choi.js cauHinhSan đưa nguoi / tramCuu / thac / contTroi / contLapHo / beSac xuống Field', co(mc, 'nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined, contTroi: lm.contTroi || undefined, contLapHo: !!m.contLapHo') && co(mc, 'beSac: (nhieu && Array.isArray(m.beSac)'));
+  kiem('man-choi.js cauHinhSan đưa nguoi / tramCuu / thac / contTroi / contLapHo / beSac xuống Field', co(mc, 'nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined, contTroi: lm.contTroi || undefined, contLapHo: !!m.contLapHo') && co(mc, 'beSac: lm.beSac || undefined'));
 }
 
 /* ---------- 5. màn giả soát trên trình duyệt (thu-mua-9.js ThuMua9.vao(...)): chạy qua máy chấm thật cham.js, phát đúng sự kiện cần xem */
@@ -294,7 +294,8 @@ console.log('\n== 5. Màn giả soát hình (ThuMua9.san9): qua cham.js phát đ
 {
   const Cham = require(path.join(day, 'cham.js')), T9 = require(path.join(day, 'game', 'thu-mua-9.js'));
   const CAN = { 'cuu-nguoi': ['keo-vat', 'nguoi-len-bo', 'nguoi-toi-tram', 'xong-cuu-nguoi'], thac: ['nguoi-troi', 'nguoi-troi-xa'], 'rac-cat': ['rac-cat'],
-    phao: ['tha-phao', 'bam-phao'], gio: ['gio-vot', 'gio-dat', 'nguoi-toi-tram'], 'nam-cham': ['cau-hut', 'cau-tha'], gau: ['gau-ngoam', 'gau-tha'], 'xe-toi': ['keo-vat'], 'phun-van': ['phun-van', 'cong-doi'] };
+    phao: ['tha-phao', 'bam-phao'], gio: ['gio-vot', 'gio-dat', 'nguoi-toi-tram'], 'nam-cham': ['cau-hut', 'cau-tha'], gau: ['gau-ngoam', 'gau-tha'], 'xe-toi': ['keo-vat'], 'phun-van': ['phun-van', 'cong-doi'],
+    'cont-troi': ['doc-cam-bien'], 'be-sac': ['be-sac-di', 'dap', 'sac-pin'], 'lap-ho': ['lap-ho'] };
   kiem('ThuMua9.dsSan9 có đủ ' + Object.keys(CAN).length + ' màn giả', JSON.stringify(T9.dsSan9) === JSON.stringify(Object.keys(CAN)), JSON.stringify(T9.dsSan9));
   for (const ten of Object.keys(CAN)) {
     let ma = new Set(), loi = '';
@@ -302,6 +303,8 @@ console.log('\n== 5. Màn giả soát hình (ThuMua9.san9): qua cham.js phát đ
     const thieu = CAN[ten].filter((k) => !ma.has(k));
     kiem("ThuMua9.vao('" + ten + "'): lời giải nạp sẵn chạy qua cham.js, phát " + CAN[ten].join(' / '), !loi && thieu.length === 0, loi || ('thiếu: ' + thieu.join(' ') + ' (có: ' + [...ma].join(' ') + ')'));
   }
+  let soDoc = null; try { const m = T9.san9('cont-troi'), r = Cham.cham(m, { chinh: m.maMau.chinh, hamCuaMan: [] }, []); r.theoSan[0].vet.forEach((e) => (e.suKien || []).forEach((k) => { if (k.ma === 'doc-cam-bien' && soDoc === null) soDoc = k.so; })); } catch (e) { soDoc = e.message; }
+  kiem("ThuMua9.vao('cont-troi'): qua cham.js, read_code() đọc số container trôi 12 (cham.js đưa contTroi xuống lõi)", soDoc === 12, String(soDoc));
   const ch = doc('cham.js'), chua = ['contTroi', 'beSac', 'contLapHo'].filter((k) => !ch.includes(k));
   if (chua.length) console.log('  (ghi chú) cham.js chưa đưa ' + chua.join(', ') + ' xuống SanHoc.chay: màn thật có lớp này sẽ chạy khác — chưa có màn giả cho chúng (báo cáo M9H1, câu hỏi cho lõi / chấm)');
 }

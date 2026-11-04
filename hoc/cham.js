@@ -1588,6 +1588,7 @@
         dong: lm.dong || undefined,                                         // BẾN SÔNG: lớp dòng chảy (san-hoc.js phần BẾN SÔNG)
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1 người cần cứu, trạm cứu, thác
+        contTroi: lm.contTroi || undefined, beSac: lm.beSac || undefined, contLapHo: man.contLapHo === true || undefined,   // M9 L2 container trôi, T4 bè sạc, T2 container lấp hố
         damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
@@ -1734,6 +1735,7 @@
         dong: lm.dong || undefined,                                         // BẾN SÔNG
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1
+        contTroi: lm.contTroi || undefined, beSac: lm.beSac || undefined, contLapHo: man.contLapHo === true || undefined,   // M9 L2, T4, T2
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
         ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         doi: mans.map(function (mi, i) {

@@ -341,7 +341,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       vo: m.vo,                                                                                  // vỏ hình của mùa (30/10: 'nong-trai' ở mùa 4)
       dong: lm.dong || undefined,                                                                // BẾN SÔNG (31/10): lớp dòng chảy của sân này
       nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined, contTroi: lm.contTroi || undefined, contLapHo: !!m.contLapHo,   // MÙA 9: người cần cứu, trạm, thác, container trôi, container lấp hố
-      beSac: (nhieu && Array.isArray(m.beSac) && Array.isArray(m.beSac[0]) ? m.beSac[i] : m.beSac) || undefined,                                               // MÙA 9 (T4): bè sạc (lopMauCuaSan chưa có lớp này)
+      beSac: lm.beSac || undefined,                                                              // MÙA 9 (T4): bè sạc
       chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: m.taiToiDa, luatThap: m.luatThap, hamGoc: m.hamGoc,   // CẢNG SÔNG: chồng container, tàu, danh sách giao, luật tải / tháp; khay lệnh để hình biết nâng cấp (móc đôi, cân, ray, buộc đuôi, flow)
       chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined, ngachHang: lm.ngachHang || undefined,     // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm của sân này
       doiKhang: !!m.doiKhang,
