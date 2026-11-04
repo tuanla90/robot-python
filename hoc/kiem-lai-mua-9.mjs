@@ -69,7 +69,10 @@ const CAU_HINH = [
   { lai: 'L3', cach: { than: 'hai-banh', tay: 'day-keo', camBien: null } },
   { lai: 'L3', cach: { than: 'xich', tay: 'day-keo', camBien: null } },
   { lai: 'L3', cach: { than: 'omni', tay: 'day-keo', camBien: null } },
-  { lai: 'L3', cach: { than: 'gai', tay: 'day-keo', camBien: null } }
+  { lai: 'L3', cach: { than: 'gai', tay: 'day-keo', camBien: null } },
+  // M9C2 (4/11): cần cẩu + tay lưới (giỏ cứu hộ), drone + tay lưới (thả phao)
+  { lai: 'L9', cach: { than: 'cau', tay: 'day-keo', camBien: null } },
+  { lai: 'L10', cach: { than: 'drone', tay: 'day-keo', camBien: null } }
 ];
 const moTa = (x) => x.lai + ' ' + LapRap.moTa(x.cach);
 function manLap(x, moLai) {
@@ -506,6 +509,40 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
   kiem('T4 d: cùng sân KHÔNG khai beSac → bè thường: land() trên bè bị chặn ("dap-bi-chan"), không sạc (phép b đỏ)', t4d && !sk1(t4d, 'sac-pin') && t4d.suKien.some((e) => e.ma === 'dap-bi-chan') && t4d.pin < 6, t4d && skNg(t4d));
   let cfg4 = null; try { T4({ beSac: [{ x: 0, y: 1 }] }, 'wait()\n'); } catch (e) { cfg4 = e.message; }
   kiem('T4: beSac đặt ngoài ô bè B → lỗi cấu hình nói rõ', /phải đặt trên ô bè B/.test(cfg4 || ''), cfg4);
+}
+
+/* L10 drone + tay lưới (thả phao): cast_net() thả phao xuống ô nước dưới bụng; người ở ô có phao (hay trôi tới) bám, thôi trôi; drone không kéo; drop_net() thu phao */
+{
+  const BAY = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
+  const XUONG_DI = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net'];
+  const SAN10 = ['~~~~', '~~~~', '~~~~', '....'];
+  const DONG10 = [{ x: 1, y: 2, huong: 1, suc: 1 }, { x: 2, y: 2, huong: 1, suc: 1 }];
+  const XUONG_TOI = TIEN + TIEN + 'left_move()\nwait()\ncast_net()\nwait()\n';     // xuồng (0, 0) tiến 2 ô, quay phải (mặt xuống), tung lưới 2 ô xuống (2, 2) ở nhịp 4
+  const L10 = (codeDrone, hamDrone) => SanHoc.chay({ san: SAN10, mucTieu: 'cuu-nguoi', nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 0, y: 3 }], thac: [{ x: 3, y: 2 }], dong: DONG10,
+    doi: [{ batDau: { x: 2, y: 2 }, loaiRobot: 'drone', hamGoc: hamDrone || BAY.concat(['cast_net', 'drop_net']) }, { batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'xuong', hamGoc: XUONG_DI }] }, [codeDrone, XUONG_TOI]);
+  const l10 = thu(() => L10('cast_net()\nwait()\n'));
+  kiem('L10 b: drone thả phao ở (2, 2) ("tha-phao"), người trôi tới bám phao ("bam-phao"), không trôi tới thác (3, 2); xuồng tới kéo vào bờ ở nhịp 4 → người về trạm → thắng',
+    l10 && l10.thang && coSk(l10.doi[0], 'tha-phao') && vetNhip(l10.doi[0]).some((v) => v.suKien.some((e) => e.ma === 'bam-phao')) && l10.nguoi[0].toiTram && !l10.dungSom, l10 && (J(l10.loi) + ' ' + l10.dungSom + ' ' + skNg(l10.doi[0]) + ' || ' + skNg(l10.doi[1])));
+  const l10d = thu(() => L10('wait()\n'));
+  kiem('L10 d: cùng sân drone KHÔNG thả phao → người trôi tới thác ở nhịp 2: thua nhẹ "nguoi-troi-xa" vi thac (phép b đỏ)', l10d && !l10d.thang && l10d.dungSom === 'nguoi-troi-xa' && !thu(() => L10('wait()\n').thang), l10d && (l10d.dungSom + ' ' + l10d.nhip));
+  kiem('L10 d: drone KHÔNG gắn tay lưới (cast_net không có) → phép b đỏ', !thu(() => L10('cast_net()\nwait()\n', BAY).thang));
+  // drone không kéo: bay đi thì người vẫn bám phao tại chỗ; drop_net khi người bám → 'phao-hut' co-nguoi; drop_net xa phao → 'xa-phao'; thả hai lần → 'het-phao'
+  const D1 = (code, them) => chay('L10', { than: 'drone', tay: 'day-keo' }, ['~~~~~', '~~~~~', '...F.'], { x: 2, y: 0 }, code, Object.assign({ nguoi: [{ x: 1, y: 0 }], tramCuu: [{ x: 0, y: 2 }], dong: [1, 2, 3].map((x) => ({ x, y: 0, huong: 1, suc: 1 })) }, them || {}));
+  const keoKhong = thu(() => D1('cast_net()\ngo_right()\ngo_right()\ndrop_net()\nwait()\n'));
+  kiem('L10 b (lắp ráp drone + tay lưới): phao thả ở (2, 0), người trôi tới bám; drone bay sang phải 2 ô: người vẫn ở (2, 0) trên dòng (drone không kéo, không trôi tới mép), drop_net() xa phao → "phao-hut" xa-phao',
+    keoKhong && !keoKhong.loi && !keoKhong.dungSom && J([keoKhong.nguoi[0].x, keoKhong.nguoi[0].y]) === J([2, 0]) && keoKhong.suKien.some((e) => e.ma === 'phao-hut' && e.lyDo === 'xa-phao') && sk1(keoKhong, 'tha-phao').nguoi === null && sk1(keoKhong, 'bam-phao'),
+    keoKhong && (J(keoKhong.loi) + skNg(keoKhong)));
+  const coNg = thu(() => D1('cast_net()\nwait()\ndrop_net()\nwait()\ncast_net()\nwait()\n'));
+  kiem('L10 b: drop_net() khi người đang bám → "phao-hut" co-nguoi (không thu), cast_net() lần hai → "phao-hut" het-phao (drone mang một phao)',
+    coNg && coNg.suKien.some((e) => e.ma === 'phao-hut' && e.lyDo === 'co-nguoi' && /bám phao/.test(e.thongDiep)) && coNg.suKien.some((e) => e.ma === 'phao-hut' && e.lyDo === 'het-phao') && coNg.nguoi[0].x === 2, coNg && skNg(coNg));
+  const thuVe = thu(() => D1('cast_net()\nwait()\ndrop_net()\nwait()\ncast_net()\nwait()\n', { nguoi: [{ x: 1, y: 2 }], dong: [] }));
+  kiem('L10 b: phao thả ở ô nước trống, drop_net() ngay trên phao thu về ("thu-phao"), thả lại được; vết nhịp có phao', thuVe && !thuVe.loi && coSk(thuVe, 'thu-phao') && vetNhip(thuVe).filter((v) => v.suKien.some((e) => e.ma === 'tha-phao')).length === 2 && vetNhip(thuVe).some((v) => v.phao && v.phao.length === 1), thuVe && skNg(thuVe));
+  const bo = thu(() => D1('go_down()\ngo_down()\ncast_net()\nwait()\n', { nguoi: [{ x: 1, y: 2 }], dong: [] }));
+  kiem('L10 b: cast_net() trên bờ → "phao-hut" bo (lời Việt "phao chỉ thả xuống nước")', bo && bo.suKien.some((e) => e.ma === 'phao-hut' && e.lyDo === 'bo' && /thả xuống nước/.test(e.thongDiep)), bo && skNg(bo));
+  let mt = null; try { SanHoc.chay({ san: ['~~', '.F'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY.concat(['cast_net', 'drop_net', 'magnet_n', 'magnet_s', 'magnet_off']) }, 'wait()\n'); } catch (e) { mt = e.message; }
+  kiem('L10: một tay — phao trên drone không đi chung nam châm (lõi báo)', /phao \(tay lưới trên drone\) không đi chung/.test(mt || ''), mt);
+  let ts = null; const ts1 = thu(() => SanHoc.chay({ san: ['~~', '.F'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY.concat(['cast_net', 'drop_net']) }, 'cast_net("front")\nwait()\n')); ts = ts1 && ts1.loi;
+  kiem('L10: cast_net("front") trên drone → lỗi chạy lời Việt (phao thả thẳng xuống, không nhận đối số)', ts && /không nhận đối số/.test(ts.thongDiep), J(ts));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
