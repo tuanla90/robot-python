@@ -96,6 +96,9 @@ export function kiemCuu(man, p) {
     const doi = Array.isArray(man.doi) ? man.doi : [];
     const k = doi.findIndex((r) => r && r.coDinh);
     if (k < 0) return 'khai cứu máy mà màn không có robot khoá (coDinh)';
+    // M9M2b 5/11: đội có cần cẩu thì màn không dùng toi-co (cẩu không tới cờ, lõi bắt MỌI robot tới cờ) → cứu máy = robot khoá tự làm xong việc của nó
+    //   (chuỗi của nó có sự kiện chính khác xong-*, vd thung-di: ủi kệ vào đích). Màn toi-co vẫn bắt tới cờ như cũ.
+    if (man.mucTieu !== 'toi-co') { if (!(ds[k] || '').split(' → ').some((e) => e && !/^xong-/.test(e))) return 'khai cứu máy (màn ' + man.mucTieu + ') mà robot khoá R' + (k + 1) + ' không tự làm việc gì'; return ''; }
     if (!/toi-co/.test(ds[k] || '')) return 'khai cứu máy mà robot khoá R' + (k + 1) + ' không tới cờ';
   }
   return '';

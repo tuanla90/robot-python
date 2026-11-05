@@ -296,43 +296,57 @@
       cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['container', 'van', 'cua'], cuu: 'nguoi', meo: 'don-loi' }
     }),
 
-    manNM('cuu-nha-may', 6, 'cung-co', {
-      ten: 'Sóng âm phá đá chuông trước van hơi',
-      r2: R_GAI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'play_note', 'squirt'],
-      deBai: 'Trên đường của R1 có tảng đá chuông nốt 5 ở (2, 1) chắn trước van hơi N(3, 1). R2 (robot bánh gai gắn loa) đứng ở (2, 2) hướng lên: hãy cho R2 gọi play_note(listen()) phá đá chuông cho R1, rồi rẽ phải tiến 2 ô qua cửa C(3, 2) tới F(4, 2); R1 chờ 1 nhịp, gọi squirt("low") phun van N(3, 1) mở cửa C(3, 2) rồi tiến 1 ô vào F(2, 1).',
-      veMaMau: 'R2 chưa gọi play_note(listen()) để phá tảng đá chuông (2, 1).',
-      san: ['######', '#.FN.#', '##.CF#', '######'],
-      noi: [{ nut: { x: 3, y: 1 }, cua: [{ x: 3, y: 2 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 0 }],
-      co: [[{ x: 2, y: 1 }], [{ x: 4, y: 2 }]],
-      daChuong: [{ x: 2, y: 1, not: 5, ben: 1 }],
-      maMau: baiDoi(['wait()', 'squirt("low")', 'move()'], ['turn_right()', 'forward(2)']),
-      loiGiai: baiDoi(['wait()', 'squirt("low")', 'move()'], ['play_note(listen())', 'turn_right()', 'forward(2)']),
+    // 6 · dọn lối: băng chuyền đưa thanh sắt tới mép hố; ô bên kia hố có chồng container (nhện đáp vào là hụt). Cẩu nhấc chồng, nhện hút sắt, nhảy hố, thả sắt vào ô đích.
+    //     Bẫy: xe cứu hỏa (không qua hố, không nhấc container).
+    man9('cuu-nha-may', 6, 'cung-co', {
+      ten: 'Sắt trên băng',
+      mucTieu: 'dua-vat',
+      deBai: 'Băng chuyền đưa thanh sắt tới mép hố. Bên kia hố có chồng container. Đưa sắt vào ô đích.',
+      veMaMau: 'Nhện chưa có lệnh.',
+      san: ['#########', '#>>>.u.D#', '####.#..#', '####RRR##', '#########'],
+      doi: [khe({ x: 4, y: 3, huong: 0 }), khe({ x: 6, y: 3, huong: 0 })],
+      them: { contChan: true, chong: [{ x: 6, y: 1, cont: [{ so: 6 }] }], vatThem: [{ x: 3, y: 1, chat: 'sat' }] },
+      chonDoi: {
+        menu: ['CU', 'PL', 'CC'],
+        cachMau: [{ chon: ['PL', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['go_up()', 'go_up()', 'magnet_n()', 'go_left()', 'wait()', 'jump("R")', 'go_right()', 'magnet_off()', 'wait()'],
+          ['extend()', 'pick_up()', 'retract()', 'set_down()']]) }]
+      },
+      maMau: doiBai([['go_up()', 'go_up()'], []]),
       loiSai: [
-        { moTa: 'R2 quên phá đá chuông nên tia nước của R1 bị đá chuông (2, 1) chặn, cửa C(3, 2) không mở', baiLam: baiDoi(['wait()', 'squirt("low")', 'move()'], ['turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Cẩu không nhấc container: nhện nhảy hụt', baiLam: doiBai([['go_up()', 'go_up()', 'magnet_n()', 'go_left()', 'wait()', 'jump("R")', 'go_right()', 'magnet_off()', 'wait()'], []]), phaiCoMa: ['nhay-hut'] }
       ],
-      sao: { o: 18, nhip: 4 },
-      goiY: ['R2 gọi play_note(listen()) để phá đá chuông (2, 1), sau đó rẽ phải tiến 2 ô qua cửa C(3, 2) vào F(4, 2).']
+      sao: { o: 30, nhip: 16 },
+      goiY: ['Nhện nhảy qua hố: jump("R").', 'magnet_n() hút sắt dưới bụng.'],
+      cauDo: { doi: ['PL', 'CC'], lap: null, coChe: ['bang-chuyen', 'sat', 'ho', 'container'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manNM('cuu-nha-may', 7, 'van-dung', {
-      ten: 'Trượt ngang giữ nút cho xích đẩy thùng nặng',
-      r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'slide_r'],
-      deBai: 'R1 cần đi qua cửa C(3, 1) tới cờ F(4, 1)! Nút M điều khiển cửa C(3, 1) nằm ở (3, 2): hãy cho R2 (robot omni) ở (1, 2) hướng lên gọi slide_r(2) trượt ngang sang đè nút M(3, 2), chờ 2 nhịp bằng wait_n(2) cho R1 đi qua cửa C(3, 1) vào F(4, 1), rồi trượt tiếp slide_r(1) vào cờ F(4, 2)!',
-      veMaMau: 'R2 chưa chờ R1 qua cửa và trượt tiếp sang cờ F(4, 2).',
-      san: ['######', '#..CF#', '#..MF#', '######'],
+    // 7 · cứu máy: xe cứu hỏa khách (R3, khoá) kẹt giữa hai chồng container, đang đẩy kệ hàng về kho. Cẩu nhấc chồng trước mũi R3 đặt lên chồng kia;
+    //     nhện đè nút M giữ cửa C. R3 tự chờ phía trước trống rồi ủi kệ vào ô đích. Bẫy: drone (không nhấc, không đè nút).
+    //     Đội có cẩu nên mục tiêu là day-thung (cẩu không tới cờ): R3 ủi kệ vào đích là R3 thoát kẹt.
+    man9('cuu-nha-may', 7, 'van-dung', {
+      ten: 'Xe kẹt giữa chồng',
+      mucTieu: 'day-thung',
+      deBai: 'Xe cứu hỏa kẹt giữa hai chồng container. Xe chờ phía trước trống thì tiến. Mở lối cho xe ủi kệ vào kho.',
+      veMaMau: 'Đọc chương trình của xe khoá.',
+      san: ['#########', '#..C.HD##', '#.#M#####', '#RRR#####', '#########'],
       noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 2, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 4, y: 2 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(2)'], ['slide_r(2)']),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(2)'], ['slide_r(2)', 'wait_n(2)', 'slide_r(1)']),
+      doi: [khe({ x: 2, y: 3, huong: 0 }), khe({ x: 3, y: 3, huong: 0 }),
+        may('CU', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true })],
+      them: { contChan: true, chong: [{ x: 2, y: 1, cont: [{ so: 7 }] }, { x: 1, y: 2, cont: [{ so: 8 }] }] },
+      chonDoi: {
+        menu: ['CC', 'DR', 'PL'],
+        cachMau: [{ chon: ['CC', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['extend()', 'pick_up()', 'retract()', 'swing_left()', 'set_down()'],
+          ['go_up()']]) }]
+      },
+      maMau: doiBai([[], [], ['while distance() == 0:', '    wait()', 'forward(4)']]),
       loiSai: [
-        { moTa: 'R2 đè nút M(3, 2) nhưng chưa chờ R1 qua cửa và trượt tiếp vào F(4, 2)', baiLam: baiDoi(['wait_n(2)', 'forward(2)'], ['slide_r(2)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Cẩu nhấc chồng dưới: xe vẫn kẹt', baiLam: doiBai([['swing_left()', 'pick_up()', 'swing_right()', 'extend()', 'set_down()'], ['go_up()'], ['while distance() == 0:', '    wait()', 'forward(4)']]), phaiCoMa: ['vong-vo-han'] }
       ],
-      sao: { o: 12, nhip: 5 },
-      goiY: ['Sau slide_r(2), R2 gọi wait_n(2) rồi slide_r(1) để vào cờ F(4, 2).']
+      sao: { o: 17, nhip: 7 },
+      goiY: ['Xe khoá đọc distance(): chồng container như tường.', 'Cẩu đặt container lên chồng kia.'],
+      cauDo: { doi: ['CC', 'PL'], lap: null, coChe: ['container', 'nut-de', 'cua', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
 
     manNM('cuu-nha-may', 8, 'van-dung', {
