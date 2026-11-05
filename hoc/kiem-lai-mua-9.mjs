@@ -430,6 +430,15 @@ const T5 = {};
   const tn1 = thu(() => tp(true, ['..N.'])), tn0 = thu(() => tp(false, ['..N.']));
   kiem('T5 b (tia phun): nút N sau ô chồng không đổi (không "nut-doi")', tn1 && !tn1.loi && banTp(tn1).trung === 'container' && !skVet5(tn1).some((e) => e.ma === 'nut-doi'), tn1 && J(skVet5(tn1)));
   kiem('T5 d (tia phun): không khai contChan → tia trúng nút N, "nut-doi" (phép b đỏ)', tn0 && skVet5(tn0).some((e) => e.ma === 'nut-doi'), tn0 && J(skVet5(tn0)));
+
+  // NGƯỜI P: đường về trạm (0, 0) → (3, 0) tính trên sân TĨNH (qua ô chồng (1, 0)); chồng còn thì người chờ ('nguoi-cho' vat container), cẩu (1, 2) nấc 0 tầm 2 nhấc đi (nhịp 3) thì người đi tiếp
+  const ng5 = (cc, code) => SanHoc.chay({ san: ['....', '....', '....'], batDau: { x: 1, y: 2, nac: 0, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU5, mucTieu: 'cuu-nguoi', contChan: cc, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }], nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }] }, code);
+  const NG_NHAC = 'wait()\nwait()\npick_up()\nretract()\nset_down()\n' + 'wait()\n'.repeat(3);
+  const choNg = (k) => k.vet.filter((v) => v.loai === 'nhip' && (v.suKien || []).some((e) => e.ma === 'nguoi-cho' && e.vat === 'container')).map((v) => v.nhip);
+  const ngA = thu(() => ng5(true, NG_NHAC)), ngB = thu(() => ng5(true, 'wait()\n'.repeat(8))), ngC = thu(() => ng5(false, NG_NHAC));
+  kiem('T5 b (người): người chờ trước ô chồng ở nhịp 1, 2 ("nguoi-cho" container), cẩu nhấc đi ở nhịp 3 thì người đi tiếp, tới trạm nhịp 5 (thắng)', ngA && !ngA.loi && ngA.thang && ngA.nhip === 5 && J(choNg(ngA)) === J([1, 2]), ngA && J(choNg(ngA)) + ' nhip ' + ngA.nhip);
+  kiem('T5 b (người): cẩu không nhấc → người chờ mãi ở (0, 0), không thắng', ngB && !ngB.thang && ngB.nguoi[0].x === 0 && choNg(ngB).length === 8, ngB && J(ngB.nguoi));
+  kiem('T5 d (người): không khai contChan → người đi thẳng qua ô chồng, tới trạm nhịp 3 (phép b đỏ)', ngC && ngC.thang && ngC.nhip === 3 && !choNg(ngC).length, ngC && ngC.nhip);
 }
 
 /* ============================================================ M9C1 (4/11): L3 xe tời bờ, P người cần cứu */
