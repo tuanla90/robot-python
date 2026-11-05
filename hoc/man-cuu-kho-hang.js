@@ -1,16 +1,18 @@
 /* ============================================================================
-   man-cuu-kho-hang.js - Mùa 9 CLB Sáng Tạo: Gói 1 "Cứu hộ Kho hàng"
-   20 màn (10 màn cuu-kho-hang + 10 màn lap-kho-hang):
-   - R1: Robot hai bánh Mùa 1 (than: 'hai-banh', tay: 'xoay', camBien: khoang-cach)
-   - R2: Robot các mùa khác đến chi viện (xich, nhen, omni, gai)
-   - Màn 10 mỗi chương (hang: 'trum'): Hợp tấu 2 bè Đoạn 1 "Kìa con bướm vàng"
-     (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 1 3 5 3 4 4 1 1)
+   man-cuu-kho-hang.js - Mùa 9 Về CLB: Gói 1 "Kho hàng sau bão" (M9M1 5/11; MẪU cho 9 gói sau)
+   Câu đố: hoc/MUA-9-200-CAU-DO.md mục G1 (20 dòng); luật: hoc/KE-HOACH-MUA-9-TO-HOP.md. Bão: bùn trơn I, kệ sập thành hố u, thùng đổ.
+   - Chương 1 cuu-kho-hang: CHỌN ĐỘI (man.chonDoi, cỗ máy CoMay.dung); màn 7–9 có R3 máy khách khoá (coDinh, chạy maMau.doi[2]).
+   - Chương 2 lap-kho-hang: R1 xe chở hàng đặt sẵn, Luna TỰ LẮP R2 (man.lapRap.robot = 1).
+   - Mỗi màn khai man.cauDo (dấu câu đố, máy kiểm hoc/kiem-cau-do-mua-9.mjs). Ôn Python G1: def (hàm tự đặt ở Xưởng), for (đếm ô).
+   - Màn 10 mỗi chương: song ca đoạn 1 "Kìa con bướm vàng" (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 1 3 5 3 4 4 1 1), giữ để gói 10 ghép bài.
+   Khung một màn: man9(chuong, so, hang, cfg) bên dưới; cfg.doi = mảng robot (CoMay.dung cho màn đội cố định, hay { batDau, co } cho màn chọn đội / khe lắp).
    ========================================================================== */
 (function () {
   'use strict';
 
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
+  var CoMay = laNode ? require('./co-may.js') : window.CoMay;
 
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   var HAM_BANH = BANH.concat(['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear']);
@@ -127,43 +129,91 @@
     return ManHoc.chuanHoa(m);
   }
 
+  /* ---- M9M1: khung màn mùa 9 (chép sang 9 gói sau) ------------------------------------------------
+     cfg: ten, deBai, veMaMau, goiY, san, noi?, mucTieu?, doi: [robot…], chonDoi? | lapRap?, maMau, loiGiai? (màn chọn đội / lắp: lấy từ cách mẫu đầu),
+          loiSai?, sao, cauDo, chiChay?, taoHam?, hamCuaEmCan?, khung?, them? (trường lõi khác: nguoi, tramCuu, dieu, daChuong…). */
+  var HAM_EM = ['move', 'turn_right', 'turn_left', 'back', 'pick', 'drop', 'forward', 'wait_n', 'fly_right'];
+  /** Robot của màn: cỗ máy `ma` (CoMay.dung) ở ô xuất phát bd, cờ riêng co, đế son ('lam' Luna, 'tim' máy khách). */
+  function may(ma, bd, them) {
+    var t = them || {};
+    var r = CoMay.dung(ma, { batDau: bd, son: t.son, pin: t.pin });
+    if (t.co) r.co = t.co;
+    if (t.coDinh) r.coDinh = true;
+    if (t.tay) { r.robot.tay = t.tay; r.hamGoc = r.hamGoc.filter(function (h) { return (t.boHam || []).indexOf(h) < 0; }).concat(t.themHam || []); }
+    if (t.phatNot) r.phatNot = true;
+    return r;
+  }
+  /** Khe robot em lập trình ở màn chọn đội / khe lắp: chỉ ô xuất phát, cờ, pin (drone), đế. */
+  function khe(bd, them) { return Object.assign({ batDau: bd }, them || {}); }
+  function doiBai(ds, hamMan, hamEm) {
+    return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
+  }
+  function man9(chuong, so, hang, cfg) {
+    var r1 = cfg.doi[0];
+    var m = {
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'kho',
+      cauTruc: ['for', 'if', 'while', 'list'], vaHoac: true, moXuong: true, camHamCuaEm: false,
+      hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
+      khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'toi-co',
+      deBai: cfg.deBai, veMaMau: cfg.veMaMau || '', san: cfg.san, batDau: clone(r1.batDau),
+      doi: cfg.doi.map(clone), maMau: cfg.maMau, loiSai: cfg.loiSai || [], sao: cfg.sao, goiY: cfg.goiY || [], cauDo: cfg.cauDo
+    };
+    if (r1.loaiRobot) { m.loaiRobot = r1.loaiRobot; m.robot = clone(r1.robot); m.hamGoc = r1.hamGoc.slice(); }   // trường đầu màn = R1 (màn chọn đội: macDinh điền)
+    if (cfg.loiGiai) m.loiGiai = cfg.loiGiai;
+    if (cfg.chonDoi) m.chonDoi = cfg.chonDoi;
+    if (cfg.lapRap) m.lapRap = cfg.lapRap;
+    if (cfg.noi) m.noi = cfg.noi;
+    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
+    Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
+    return ManHoc.chuanHoa(m);
+  }
+
   ManHoc.manCuuKhoHang = [
     /* ========================================================================
        CHƯƠNG 1: cuu-kho-hang (10 màn)
        ======================================================================== */
-    manCK('cuu-kho-hang', 1, 'lam-quen', {
-      ten: 'Xe xích phun van mở cửa kho',
-      chiChay: true, r2: R_XICH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'squirt'],
-      deBai: 'Chào mừng em đến Mùa 9: CLB Sáng Tạo! Tại Kho hàng Mùa 1, cánh cửa sắt C(3, 1) đang đóng kín. Robot bánh xích R2 từ Nhà máy (Mùa 2) đến chi viện: R2 gọi squirt("low") phun tia hơi vào van N(3, 2) mở cửa C(3, 1) rồi lùi về cờ F(1, 2), giúp R1 tiến thẳng tới cờ F(4, 1). Nhấn Chạy để quan sát!',
-      veMaMau: 'Quan sát R2 phun van hơi N mở cửa C cho R1.',
-      san: ['######', '#..CF#', '#F.N.#', '######'],
-      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 1, y: 2 }]],
-      maMau: baiDoi(['wait()', 'forward(3)'], ['squirt("low")', 'back()']),
-      loiGiai: baiDoi(['wait()', 'forward(3)'], ['squirt("low")', 'back()']),
-      sao: { o: 12, nhip: 4 },
-      goiY: ['Nhấn Chạy để xem R2 phun van N mở cửa C cho R1 tiến về cờ.']
+    // 1 · show: drone rắc cát 3 ô bùn, xe chở thùng qua (chạy sẵn, khoá). Đội cố định CH + DR (màn chạy sẵn không qua bảng chọn: chọn ngược thì chương trình khoá sai robot).
+    man9('cuu-kho-hang', 1, 'lam-quen', {
+      ten: 'Cát trên bùn',
+      chiChay: true, mucTieu: 'dua-vat',
+      deBai: 'Bão làm sàn kho thành bùn trơn. Drone rắc cát, xe chở thùng qua. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
+      san: ['####F##', '#o.IIIu', '#####.#', '#####D#'],
+      doi: [may('CH', { x: 2, y: 1, huong: 3 }), may('DR', { x: 6, y: 1 }, { son: 'lam', co: [{ x: 4, y: 0 }] })],
+      maMau: doiBai([
+        ['pick()', 'turn_right()', 'turn_right()', 'forward(3)', 'turn_right()', 'move()', 'drop()'],
+        ['for i in range(3):', '    go_left()', '    dot()', 'go_right()', 'go_up()']]),
+      loiGiai: doiBai([
+        ['pick()', 'turn_right()', 'turn_right()', 'forward(3)', 'turn_right()', 'move()', 'drop()'],
+        ['for i in range(3):', '    go_left()', '    dot()', 'go_right()', 'go_up()']]),
+      sao: { o: 34, nhip: 12 },
+      goiY: ['Không có cát, xe trượt trên bùn rơi xuống hố.'],
+      cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'ho'], cuu: 'hang', meo: 'lam-cau' }
     }),
 
-    manCK('cuu-kho-hang', 2, 'lam-quen', {
-      ten: 'Nhện chui gầm thấp giữ nút đè M',
-      r2: R_NHEN,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'walk', 'go'],
-      deBai: 'Cửa C ở (3, 1) chắn trước cờ của R1, còn nút đè M ở (3, 2) nằm sau gầm thấp n ở (2, 2) mà xe bánh không chui qua được. Hãy lập trình cho R2 (robot nhện Mùa 3) dùng walk("RR") bò qua gầm thấp đè lên nút M(3, 2), chờ 1 nhịp cho R1 đi qua cửa C(3, 1) rồi gọi go("R") sang cờ F(4, 2)!',
-      veMaMau: 'R2 chưa bước qua gầm thấp n lên nút M(3, 2) và sang cờ F(4, 2).',
-      san: ['######', '#..CF#', '#.nMF#', '######'],
-      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1, chan: 'co' }],
-      co: [[{ x: 4, y: 1 }], [{ x: 4, y: 2 }]],
-      maMau: baiDoi(['wait_n(4)', 'forward(2)'], ['walk("R")']),
-      loiGiai: baiDoi(['wait_n(4)', 'forward(2)'], ['walk("RR")', 'wait()', 'go("R")']),
+    // 2 · ép for: drone chỉ đủ pin rắc một lối; lối trên 3 ô bùn (vừa pin), lối dưới 6 ô (hết pin). for đếm ô, khung 6 dòng buộc dùng vòng lặp.
+    man9('cuu-kho-hang', 2, 'lam-quen', {
+      ten: 'Lối nào ngắn',
+      mucTieu: 'dua-vat', khung: { chinh: 6, moiHam: 8 },
+      deBai: 'Pin drone chỉ đủ rắc một lối. Đếm ô bùn, rắc lối ngắn.',
+      veMaMau: 'Drone mới rắc một ô. Dùng for.',
+      san: ['####.#####', '#.IIID####', '#o########', '#.IIIIIID#', '##########'],
+      doi: [khe({ x: 1, y: 3, huong: 0 }), khe({ x: 1, y: 1, huong: 1 }, { pin: 6 })],
+      chonDoi: {
+        menu: ['CH', 'DR'],
+        cachMau: [{ chon: ['CH', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['pick()', 'forward(2)', 'turn_right()', 'forward(3)', 'drop()'],
+          ['for i in range(3):', '    go_right()', '    dot()', 'go_up()', 'land()']]) }]
+      },
+      maMau: doiBai([
+        ['pick()', 'forward(2)', 'turn_right()', 'forward(3)', 'drop()'],
+        ['go_right()', 'dot()', 'go_up()', 'land()']]),
       loiSai: [
-        { moTa: 'R2 mới đi 1 bước tới gầm thấp n, chưa đè nút M nên R1 đâm vào cửa C', baiLam: baiDoi(['wait_n(4)', 'forward(2)'], ['walk("R")']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Rắc lối dưới 6 ô: drone hết pin giữa đường', baiLam: doiBai([['pick()', 'turn_right()', 'forward(6)', 'drop()'], ['go_down()', 'go_down()', 'for i in range(6):', '    go_right()', '    dot()', 'land()']]), phaiCoMa: ['het-pin'] }
       ],
-      sao: { o: 16, nhip: 7 },
-      goiY: ['Ở chương trình R2, viết walk("RR"), wait(), go("R") để đè nút M(3, 2) cho R1 qua cửa rồi bước vào F(4, 2).']
+      sao: { o: 32, nhip: 11 },
+      goiY: ['Lối trên có 3 ô bùn: for i in range(3).'],
+      cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'pin'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
     manCK('cuu-kho-hang', 3, 'luyen', {
