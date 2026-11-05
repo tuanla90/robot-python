@@ -12,6 +12,8 @@
      R   chỉ dot() rắc cát (pen_down không), ô 'I' thành sàn thường cả lượt, sự kiện { ma: 'rac-cat', o }, kết quả / vết có racCat.
      M9B2: nam châm / gầu ngoạm trên cẩu không áp luật tải (vật không có tấn); gầu chỉ grab / release; container trôi = bè 'B' khai trong lớp contTroi;
            T2 chỉ bật khi màn khai cfg.contLapHo (màn Cảng sông cũ có ô 'u' trong tầm cần giữ luật "hố chặn hạ").
+     M9T5 (5/11): chồng container chặn như tường CHỈ khi màn khai cfg.contChan (6 màn Cảng sông cũ có nhện đứng trên ô chồng); drone bay qua (không đáp lên), cẩu không bị chặn;
+           người P chờ trước ô chồng (đường về trạm vẫn tính trên sân tĩnh); ô thông lại ngay khi cẩu nhấc hết (robot đứng sau cẩu trong đội đi vào được ngay nhịp đó).
      M9C1 (luật P mục 8b + L3 mục 4): người = lớp cfg.nguoi / cfg.tramCuu / cfg.thac (không ký hiệu sân mới); người là vật noi 'nguoi'; đường về trạm CỐ ĐỊNH = BFS sân tĩnh lúc khai (hay duong khai);
            người dưới nước chỉ tự lên bờ khi VỪA ĐƯỢC LƯỚI KÉO (đang trong lưới hay vừa thả) và ô sát bờ đi được; cấm chạm = lỗi chạy 'cham-nguoi' (chương trình dừng);
            thua nhẹ 'nguoi-troi-xa' khi trôi bị chặn ở mép sân / vào cống mở / ô thac; mục tiêu 'cuu-nguoi'; mục tiêu khác + có người → chờ mọi người tới trạm; chương trình hết → nhịp rỗng cho người đi tiếp.
@@ -454,6 +456,18 @@ const T5 = {};
   const th1 = thu(() => th5(true)), th0 = thu(() => th5(false));
   kiem('T5 b (thả vật): release() xuống ô chồng → "tha-bi-chan" vat container, vật vẫn ở tay', th1 && !th1.loi && th1.suKien.some((e) => e.ma === 'tha-bi-chan' && e.vat === 'container') && th1.vat[0].trangThai === 'cam', th1 && J(th1.suKien));
   kiem('T5 d (thả vật): không khai contChan → vật nằm lên ô chồng (2, 0) như cũ (phép b đỏ)', th0 && th0.vat[0].trangThai === 'dat' && th0.vat[0].x === 2, th0 && J(th0.vat));
+
+  // LỜI VIỆT (cham.js): màn khai contChan → cham.js đưa cờ xuống lõi; chẩn đoán "dam-tuong" nói chồng container + nhờ cần cẩu; người chờ nói "chồng container"
+  const ChamHoc = require(path.join(day, 'cham.js'));
+  const man5 = (cc) => ({ ma: 't5', san: ['....F'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH5, mucTieu: 'toi-co', contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }], cauTruc: ['for'] });
+  const CHINH5 = ['for i in range(4):', '    left_move()', '    right_move()', '    wait()'];
+  const cv1 = thu(() => ChamHoc.cham(man5(true), { chinh: CHINH5 }, [])), cv0 = thu(() => ChamHoc.cham(man5(false), { chinh: CHINH5 }, []));
+  const dt5 = cv1 && cv1.chanDoan.filter((d) => d.ma === 'dam-tuong')[0];
+  kiem('T5 (lời Việt): cham.js đưa contChan xuống lõi; "dam-tuong" nói "chồng container" ở ô (2, 0) và "Nhờ cần cẩu nhấc container đi trước"', cv1 && !cv1.thang && dt5 && /chồng container ở ô \(2, 0\)/.test(dt5.loi) && /Nhờ cần cẩu nhấc container đi trước/.test(dt5.loi), cv1 && J(cv1.chanDoan));
+  kiem('T5 d (lời Việt): màn không khai contChan → cùng chương trình thắng, không "dam-tuong" (phép trên đỏ)', cv0 && cv0.thang && !cv0.chanDoan.some((d) => d.ma === 'dam-tuong'), cv0 && J(cv0.chanDoan));
+  const mNg5 = { ma: 't5n', san: ['....', '....', '....'], batDau: { x: 1, y: 2, nac: 0, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU5, mucTieu: 'cuu-nguoi', contChan: true, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }], nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }], cauTruc: ['for'] };
+  const cn5 = thu(() => ChamHoc.cham(mNg5, { chinh: ['for i in range(4):', '    wait()'] }, []));
+  kiem('T5 (lời Việt): người chờ vì chồng → lời "chua-cuu-nguoi" nói ô (1, 0) "có chồng container"', cn5 && !cn5.thang && cn5.chanDoan.some((d) => d.ma === 'chua-cuu-nguoi' && /\(1, 0\) trên đường về trạm có chồng container/.test(d.loi)), cn5 && J(cn5.chanDoan));
 }
 
 /* ============================================================ M9C1 (4/11): L3 xe tời bờ, P người cần cứu */
