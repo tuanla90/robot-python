@@ -1,10 +1,12 @@
 /* ============================================================================
-   man-cuu-nha-may.js - Mùa 9 CLB Sáng Tạo: Gói 2 "Cứu hộ Nhà máy"
-   20 màn (10 màn cuu-nha-may + 10 màn lap-nha-may):
-   - R1: Robot xích Nhà máy Mùa 2 (than: 'xich', tay: 'hoi', camBien: hong-ngoai)
-   - R2: Robot các mùa khác đến chi viện (banh, nhen, omni, gai)
-   - Màn 10 mỗi chương (hang: 'trum'): Hợp tấu 2 bè Đoạn 2 "Kìa con bướm vàng"
-     (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 2 4 1 3 5 5 1 1)
+   man-cuu-nha-may.js - Mùa 9 Về CLB: Gói 2 "Nhà máy sau bão" (M9M2 5/11; dựng lại theo khuôn G1 hoc/man-cuu-kho-hang.js)
+   Câu đố: hoc/MUA-9-200-CAU-DO.md mục G2 (20 dòng); luật: hoc/KE-HOACH-MUA-9-TO-HOP.md. Bão: container văng chắn lối, sắt vụn rơi vào khe máy, vệt dầu trơn (ô I).
+   - Chương 1 cuu-nha-may: CHỌN ĐỘI (man.chonDoi); bảng có cần cẩu thì mọi khe em lập trình đứng trên MỘT dải ray R, mặt hướng lên (huong 0):
+     cần cẩu của CoMay có rail() nên phải xuất phát trên R, và không nhận huong khác 0 — đặt cỗ máy nào vào khe nào cũng không vỡ màn.
+   - Chương 2 lap-nha-may: R1 xe cứu hỏa đặt sẵn, Luna TỰ LẮP R2 (man.lapRap.robot = 1). Lai ra mắt: L1 cẩu + nam châm, L8 cẩu + gầu, L13 cẩu + cảm biến từ.
+   - Mỗi màn khai man.cauDo (máy kiểm hoc/kiem-cau-do-mua-9.mjs). Ôn Python G2: BIẾN (giữ số đọc được, số ô), THAM SỐ (hàm có n).
+   - Hàm của em do gói này tạo mà gói sau gọi: valve_step(n) [squirt("low"), forward(n)], push_valve(n) [forward(n), back()] (man-cuu-clb.js, man-cuu-hang-dong.js).
+   - Màn 10 mỗi chương: song ca đoạn 2 "Kìa con bướm vàng" (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 2 4 1 3 5 5 1 1), giữ để gói 10 ghép bài.
    ========================================================================== */
 (function () {
   'use strict';
@@ -65,6 +67,53 @@
   };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* ---- M9M2: khung màn mùa 9 (chép từ man-cuu-kho-hang.js) --------------------------------------------- */
+  var CoMay = laNode ? require('./co-may.js') : window.CoMay;
+  var HAM_EM = ['move', 'back', 'forward', 'wait_n', 'tr_left', 'tr_right', 'squirt', 'pick', 'drop', 'swing_l', 'swing_r', 'fly_right'];
+  /** Robot của màn: cỗ máy `ma` (CoMay.dung) ở ô xuất phát bd, cờ riêng co, đế son ('lam' Luna, 'tim' máy khách). */
+  function may(ma, bd, them) {
+    var t = them || {};
+    var r = CoMay.dung(ma, { batDau: bd, son: t.son, pin: t.pin });
+    if (t.co) r.co = t.co;
+    if (t.coDinh) r.coDinh = true;
+    if (t.tay) r.robot.tay = t.tay;
+    if (t.tay || t.boHam || t.themHam) r.hamGoc = r.hamGoc.filter(function (h) { return (t.boHam || []).indexOf(h) < 0; }).concat(t.themHam || []);
+    if (t.phatNot) r.phatNot = true;
+    return r;
+  }
+  /** Khe robot em lập trình ở màn chọn đội / khe lắp: chỉ ô xuất phát, cờ, pin (drone), đế. */
+  function khe(bd, them) { return Object.assign({ batDau: bd }, them || {}); }
+  function doiBai(ds, hamMan, hamEm) {
+    return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
+  }
+  /** Hàm của em tạo ở gói này (gói sau còn gọi: man-cuu-clb.js, man-cuu-hang-dong.js). */
+  var H_VALVE_STEP9 = { ten: 'valve_step', thamSo: ['n'], than: ['squirt("low")', 'forward(n)'] };
+  var H_PUSH_VALVE9 = { ten: 'push_valve', thamSo: ['n'], than: ['forward(n)', 'back()'] };
+  /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
+  function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
+  function lapR2(than, tay, cam, nganSach, cachLap, them) {
+    return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
+  }
+  function man9(chuong, so, hang, cfg) {
+    var r1 = cfg.doi[0];
+    var m = {
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'nha-may',
+      cauTruc: ['for', 'if', 'while', 'list'], vaHoac: true, moXuong: true, camHamCuaEm: false,
+      hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
+      khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'toi-co',
+      deBai: cfg.deBai, veMaMau: cfg.veMaMau || '', san: cfg.san, batDau: clone(r1.batDau),
+      doi: cfg.doi.map(clone), maMau: cfg.maMau, loiSai: cfg.loiSai || [], sao: cfg.sao, goiY: cfg.goiY || [], cauDo: cfg.cauDo
+    };
+    if (r1.loaiRobot) { m.loaiRobot = r1.loaiRobot; m.robot = clone(r1.robot); m.hamGoc = r1.hamGoc.slice(); }
+    if (cfg.loiGiai) m.loiGiai = cfg.loiGiai;
+    if (cfg.chonDoi) m.chonDoi = cfg.chonDoi;
+    if (cfg.lapRap) m.lapRap = cfg.lapRap;
+    if (cfg.noi) m.noi = cfg.noi;
+    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
+    Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
+    return ManHoc.chuanHoa(m);
+  }
 
   function baiDoi(r1Chinh, r2Chinh, hamEm, hamMan) {
     return {
@@ -128,39 +177,45 @@
     /* ========================================================================
        CHƯƠNG 1: cuu-nha-may (10 màn)
        ======================================================================== */
-    manNM('cuu-nha-may', 1, 'lam-quen', {
-      ten: 'Vòi hơi mở cửa cho xe kho',
-      chiChay: true, r2: R_BANH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'squirt'],
-      deBai: 'Chào mừng em đến Gói 2: Cứu hộ Nhà máy! R1 là robot bánh xích gắn vòi hơi và hồng ngoại của Nhà máy, còn R2 là robot hai bánh từ Kho hàng sang tiếp viện. R1 gọi squirt("low") phun vào van N(4, 1) để mở cửa C(3, 2) cho R2 rồi tiến 2 ô vào cờ F(3, 1); R2 chờ 1 nhịp rồi tiến 3 ô qua cửa C tới F(4, 2). Nhấn Chạy để quan sát!',
-      veMaMau: 'Quan sát R1 phun van hơi mở cửa C cho R2 cùng tiến về cờ.',
-      san: ['######', '#..FN#', '#..CF#', '######'],
-      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 3, y: 2 }] }],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }],
-      co: [[{ x: 3, y: 1 }], [{ x: 4, y: 2 }]],
-      maMau: baiDoi(['squirt("low")', 'move()'], ['wait()', 'forward(3)']),
-      loiGiai: baiDoi(['squirt("low")', 'move()'], ['wait()', 'forward(3)']),
-      sao: { o: 12, nhip: 4 },
-      goiY: ['Nhấn Chạy để xem R1 phun van N(4, 1) mở cửa C(3, 2) cho R2 về đích.']
+    // 1 · show: cần cẩu nhấc container chắn lối (treo luôn trên móc), xe cứu hỏa ủi thùng nặng vào ô đích (chạy sẵn, khoá). Đội cố định CU + CC (màn chạy sẵn không qua bảng chọn).
+    man9('cuu-nha-may', 1, 'lam-quen', {
+      ten: 'Cẩu mở lối',
+      chiChay: true, mucTieu: 'day-thung',
+      deBai: 'Bão hất container chắn lối. Cẩu nhấc container, xe cứu hỏa ủi thùng vào ô đích. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
+      san: ['##########', '#..H....D#', '#####R.###', '#####R####', '##########'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), may('CC', { x: 5, y: 3, nac: 0, tam: 2 }, { son: 'lam' })],
+      them: { chong: [{ x: 5, y: 1, cont: [{ so: 7 }] }] },
+      maMau: doiBai([['forward(6)'], ['pick_up()', 'swing_right()']]),
+      loiGiai: doiBai([['forward(6)'], ['pick_up()', 'swing_right()']]),
+      sao: { o: 10, nhip: 7 },
+      goiY: ['Còn container, thùng nặng không qua được.'],
+      cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['container', 'thung-nang'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manNM('cuu-nha-may', 2, 'lam-quen', {
-      ten: 'Xích đẩy thùng nặng mở cửa cho nhện',
-      r2: R_NHEN,
-      hamCuaEmCan: ['move', 'forward', 'walk'],
-      deBai: 'R1 (bánh xích) đứng trước thùng nặng H ở (2, 1) và nút đè M ở (3, 1). Khi R1 tiến 1 ô đẩy thùng H đè lên nút M, cửa C(3, 2) ở hành lang dưới sẽ mở ra cho R2 (robot nhện Bãi tái chế) bò qua gầm thấp n(2, 2) và cửa C(3, 2) tới cờ F(4, 2). Hãy viết lệnh cho R2 đợi 1 nhịp rồi gọi walk("RRR") sang phải 3 ô.',
-      veMaMau: 'R2 chưa bước qua gầm thấp n và cửa C tới cờ F(4, 2).',
-      san: ['######', '#FHm.#', '#.nCF#', '######'].map(function (r) { return r.replace('m', 'M'); }),
-      noi: [{ nut: { x: 3, y: 1 }, cua: [{ x: 3, y: 2 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1, chan: 'co' }],
-      co: [[{ x: 1, y: 1 }], [{ x: 4, y: 2 }]],
-      maMau: baiDoi(['move()', 'back()'], ['wait()']),
-      loiGiai: baiDoi(['move()', 'back()'], ['wait()', 'walk("RRR")']),
+    // 2 · chờ tín hiệu: băng chuyền đưa thùng nặng tới; container chặn băng. Cẩu nhấc container; xe cứu hỏa đọc hồng ngoại distance(), thùng tới sát mũi thì ủi vào đích.
+    //     Hai khe đứng trên dải ray, mặt hướng lên (bảng có cần cẩu).
+    man9('cuu-nha-may', 2, 'lam-quen', {
+      ten: 'Chờ thùng tới',
+      mucTieu: 'day-thung',
+      deBai: 'Băng chuyền đưa thùng nặng tới. Container chặn băng. Thùng tới sát mũi xe thì ủi vào đích.',
+      veMaMau: 'Xe chưa biết chờ thùng.',
+      san: ['########', '###D####', '#>>....#', '###RR###', '########'],
+      doi: [khe({ x: 3, y: 3, huong: 0 }), khe({ x: 4, y: 3, huong: 0 })],
+      them: { chong: [{ x: 3, y: 2, cont: [{ so: 4 }] }], thungThem: [{ x: 1, y: 2 }] },
+      chonDoi: {
+        menu: ['CU', 'CC'],
+        cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['wait_n(2)', 'while distance() > 0:', '    wait()', 'move()'],
+          ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()']]) }]
+      },
+      maMau: doiBai([['wait_n(2)', 'move()'], ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()']]),
       loiSai: [
-        { moTa: 'R2 chỉ chờ mà chưa gọi walk("RRR") sang phải 3 ô', baiLam: baiDoi(['move()', 'back()'], ['wait()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Xe ủi ngay khi thùng chưa tới', baiLam: doiBai([['wait_n(2)', 'move()'], ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()']]), phaiCoMa: ['chua-day-thung'] }
       ],
-      sao: { o: 12, nhip: 10 },
-      goiY: ['Sau lệnh wait(), R2 gọi walk("RRR") để bò qua gầm thấp n(2, 2), cửa C(3, 2) và vào cờ F(4, 2).']
+      sao: { o: 16, nhip: 6 },
+      goiY: ['distance() > 0: trước mũi còn ô trống.'],
+      cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['bang-chuyen', 'container', 'thung-nang'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
 
     manNM('cuu-nha-may', 3, 'luyen', {
