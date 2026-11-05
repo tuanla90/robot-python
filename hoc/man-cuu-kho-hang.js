@@ -178,15 +178,15 @@
       chiChay: true, mucTieu: 'dua-vat',
       deBai: 'Bão làm sàn kho thành bùn trơn. Drone rắc cát, xe chở thùng qua. Bấm Chạy.',
       veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
-      san: ['####F##', '#o.IIIu', '#####.#', '#####D#'],
-      doi: [may('CH', { x: 2, y: 1, huong: 3 }), may('DR', { x: 6, y: 1 }, { son: 'lam', co: [{ x: 4, y: 0 }] })],
+      san: ['####.##', '#o.IIIu', '#####.#', '#####D#'],
+      doi: [may('CH', { x: 2, y: 1, huong: 3 }), may('DR', { x: 6, y: 1 }, { son: 'lam' })],
       maMau: doiBai([
         ['pick()', 'turn_right()', 'turn_right()', 'forward(3)', 'turn_right()', 'move()', 'drop()'],
-        ['for i in range(3):', '    go_left()', '    dot()', 'go_right()', 'go_up()']]),
+        ['for i in range(3):', '    go_left()', '    dot()', 'go_right()', 'go_up()', 'land()']]),
       loiGiai: doiBai([
         ['pick()', 'turn_right()', 'turn_right()', 'forward(3)', 'turn_right()', 'move()', 'drop()'],
-        ['for i in range(3):', '    go_left()', '    dot()', 'go_right()', 'go_up()']]),
-      sao: { o: 34, nhip: 12 },
+        ['for i in range(3):', '    go_left()', '    dot()', 'go_right()', 'go_up()', 'land()']]),
+      sao: { o: 36, nhip: 12 },
       goiY: ['Không có cát, xe trượt trên bùn rơi xuống hố.'],
       cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'ho'], cuu: 'hang', meo: 'lam-cau' }
     }),
@@ -195,9 +195,9 @@
     man9('cuu-kho-hang', 2, 'lam-quen', {
       ten: 'Lối nào ngắn',
       mucTieu: 'dua-vat', khung: { chinh: 6, moiHam: 8 },
-      deBai: 'Pin drone chỉ đủ rắc một lối. Đếm ô bùn, rắc lối ngắn.',
+      deBai: 'Pin drone chỉ đủ rắc một lối rồi đáp xuống ô sạc P. Đếm ô bùn, rắc lối ngắn.',
       veMaMau: 'Drone mới rắc một ô. Dùng for.',
-      san: ['####.#####', '#.IIID####', '#o########', '#.IIIIIID#', '##########'],
+      san: ['####P#####', '#.IIID####', '#o########', '#.IIIIIID#', '##########'],
       doi: [khe({ x: 1, y: 3, huong: 0 }), khe({ x: 1, y: 1, huong: 1 }, { pin: 6 })],
       chonDoi: {
         menu: ['CH', 'DR'],
@@ -211,46 +211,53 @@
       loiSai: [
         { moTa: 'Rắc lối dưới 6 ô: drone hết pin giữa đường', baiLam: doiBai([['pick()', 'turn_right()', 'forward(6)', 'drop()'], ['go_down()', 'go_down()', 'for i in range(6):', '    go_right()', '    dot()', 'land()']]), phaiCoMa: ['het-pin'] }
       ],
-      sao: { o: 32, nhip: 11 },
+      sao: { o: 33, nhip: 11 },
       goiY: ['Lối trên có 3 ô bùn: for i in range(3).'],
       cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'pin'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manCK('cuu-kho-hang', 3, 'luyen', {
-      ten: 'Xích đẩy thùng nặng H đè nút mở kho',
-      r2: R_XICH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n'],
-      deBai: 'Thùng nặng H ở (2, 2) chỉ có thân bánh xích của R2 mới đẩy nổi! Hãy cho R2 tiến 1 ô đẩy thùng H đè lên nút M(3, 2) để mở cửa C(3, 1), rồi lùi 1 ô về cờ F(1, 2). R1 chờ 1 nhịp cho cửa mở rồi tiến 3 ô tới cờ F(4, 1).',
-      veMaMau: 'R2 chưa đẩy thùng nặng H lên nút M và lùi về cờ F(1, 2).',
-      san: ['######', '#..CF#', '#FHm.#', '######'].map(function (r) { return r.replace('m', 'M'); }),
-      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 1, y: 2 }]],
-      maMau: baiDoi(['wait()', 'forward(3)'], ['wait()']),
-      loiGiai: baiDoi(['wait()', 'forward(3)'], ['move()', 'back()']),
+    // 3 · bánh gai bám bùn, dừng giữa dải để rẽ xuống nút đè M giữ cửa; xe chở hàng mang thùng qua cửa. Xe thường vào dải là trượt tới hố.
+    man9('cuu-kho-hang', 3, 'luyen', {
+      ten: 'Gai giữ cửa',
+      mucTieu: 'dua-vat',
+      deBai: 'Nút M nằm dưới dải bùn. Bánh gai bám bùn, dừng được giữa dải. Ai giữ cửa?',
+      veMaMau: 'Robot dưới chưa qua cửa C.',
+      san: ['########', '#.IIIu##', '###M####', '#.o.C.D#', '########'],
+      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 4, y: 3 }] }],
+      doi: [khe({ x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 })],
+      chonDoi: {
+        menu: ['CH', 'HD'],
+        cachMau: [{ chon: ['HD', 'CH'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['forward(2)', 'turn_right()', 'move()'],
+          ['pick()', 'forward(4)', 'drop()']]) }]
+      },
+      maMau: doiBai([['forward(2)'], ['pick()', 'forward(4)', 'drop()']]),
       loiSai: [
-        { moTa: 'R2 đứng yên không đẩy thùng H lên nút M nên cửa C vẫn đóng', baiLam: baiDoi(['wait()', 'forward(3)'], ['wait()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Bánh gai chưa rẽ xuống nút M: cửa C đóng', baiLam: doiBai([['forward(2)'], ['pick()', 'forward(4)', 'drop()']]), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      sao: { o: 11, nhip: 4 },
-      goiY: ['Ở chương trình R2, gọi move() để đẩy thùng H đè lên nút M(3, 2), sau đó gọi back() lùi về cờ F(1, 2).']
+      sao: { o: 28, nhip: 9 },
+      goiY: ['Bánh gai lên dải bùn, xe chở hàng ở dưới.'],
+      cauDo: { doi: ['CH', 'HD'], lap: null, coChe: ['bun', 'nut-de', 'cua'], cuu: 'hang', meo: 'giu-cua' }
     }),
 
-    manCK('cuu-kho-hang', 4, 'luyen', {
-      ten: 'Tay hất lấp hố sâu trong kho',
-      r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'lob', 'slide_r'],
-      deBai: 'Sàn kho bị sụt một hố sâu u ở (2, 1) chắn đường R1. Robot omni R2 (Mùa 7 Mỏ đá) đứng ở (2, 3) ngay sau viên đá tròn o ở (2, 2). Hãy cho R2 gọi lob() để nạp và hất viên đá lấp đầy hố u(2, 1), rồi gọi slide_r(1) trượt sang cờ F(3, 3); R1 chờ 2 nhịp rồi tiến 3 ô qua ô hố đã lấp tới cờ F(4, 1).',
-      veMaMau: 'R2 chưa gọi lob() để hất đá lấp hố u(2, 1).',
-      san: ['######', '#.u.F#', '##o###', '##.F##', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 3, y: 3 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(3)'], ['slide_r(1)']),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(3)'], ['lob()', 'slide_r(1)']),
-      loiSai: [
-        { moTa: 'R2 quên gọi lob() lấp hố nên R1 rơi xuống hố u(2, 1)', baiLam: baiDoi(['wait_n(2)', 'forward(3)'], ['slide_r(1)']), phaiCoMa: ['roi-ho'] }
-      ],
-      sao: { o: 18, nhip: 5 },
-      goiY: ['R2 gọi lob() để nạp viên đá ở (2, 2) và hất tầm 2 ô vào hố u(2, 1), sau đó gọi slide_r(1) sang F(3, 3).']
+    // 4 · song song: drone phải rắc ô rẽ của dải xa TRƯỚC khi xe trượt qua dải gần tới đó (chờ thì quá trần). Bẫy: xe cứu hỏa (xích cũng trượt, không rắc được).
+    man9('cuu-kho-hang', 4, 'luyen', {
+      ten: 'Rắc kịp',
+      mucTieu: 'dua-vat',
+      deBai: 'Xe trượt qua dải gần. Ô rẽ ở dải xa phải có cát trước khi xe tới.',
+      veMaMau: 'Hai bạn cùng chạy ngay từ đầu.',
+      san: ['####....##', '#o.II.IIu#', '#######D##', '##########'],
+      doi: [khe({ x: 2, y: 1, huong: 3 }), khe({ x: 4, y: 0, huong: 1 })],
+      chonDoi: {
+        menu: ['CH', 'DR', 'CU'],
+        cachMau: [{ chon: ['CH', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['pick()', 'turn_right()', 'turn_right()', 'forward(2)', 'turn_right()', 'drop()'],
+          ['fly_right(3)', 'go_down()', 'dot()', 'go_up()']]) }]
+      },
+      maMau: doiBai([['pick()', 'turn_right()', 'turn_right()'], ['fly_right(3)']]),
+      sao: { o: 35, nhip: 10 },
+      goiY: ['Trên bùn, một bước move() trượt tới hết dải.'],
+      cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'ho'], cuu: 'hang', meo: 'song-song' }
     }),
 
     manCK('cuu-kho-hang', 5, 'cung-co', {
