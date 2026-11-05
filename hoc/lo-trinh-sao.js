@@ -994,8 +994,6 @@
   "trum-mua-hang.8": { "o": 20, "nhip": 20 },
   "trum-mua-hang.9": { "o": 28, "nhip": 24 },
   "trum-mua-hang.10": { "o": 29, "nhip": 45 },
-  "lap-nha-may.2": { "o": 12, "nhip": 4 },
-  "lap-nha-may.3": { "o": 22, "nhip": 9 },
   "lap-nha-may.4": { "o": 16, "nhip": 4 },
   "lap-nha-may.5": { "o": 15, "nhip": 4 },
   "lap-nha-may.6": { "o": 21, "nhip": 5 },

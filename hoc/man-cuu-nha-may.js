@@ -447,43 +447,55 @@
       cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'thung-nang', 'qua-tuong'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manNM('lap-nha-may', 2, 'lam-quen', {
-      ten: 'Chế tạo hàm valve_step cho xe xích',
-      r2: R_BANH,
-      taoHam: ['valve_step'],
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'squirt'],
-      deBai: 'Hãy định nghĩa hàm valve_step(n) cho R1 gồm 2 lệnh: squirt("low") để phun van hơi N mở cửa C cho đồng đội, sau đó gọi forward(n) để tiến n ô về cờ! Ở chương trình chính, R1 gọi valve_step(1) phun van N(3, 1) mở cửa C(3, 2) rồi tiến vào F(2, 1); R2 chờ 1 nhịp rồi tiến 3 ô qua cửa C(3, 2) tới F(4, 2).',
-      veMaMau: 'Hoàn thiện thân hàm valve_step(n) gồm squirt("low") và forward(n).',
-      san: ['######', '#.FN.#', '#..CF#', '######'],
-      noi: [{ nut: { x: 3, y: 1 }, cua: [{ x: 3, y: 2 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }],
-      co: [[{ x: 2, y: 1 }], [{ x: 4, y: 2 }]],
-      maMau: baiDoi(['valve_step(1)'], ['wait()', 'forward(3)']),
-      loiGiai: baiDoi(['valve_step(1)'], ['wait()', 'forward(3)'], [H_VALVE_STEP]),
+    // 12 · ép đổi tay: thanh sắt rơi vào khe máy sau hàng rào. Đặt sắt lên nút M thì cửa C mở cho xe cứu hỏa ủi thùng. Móc cẩu chỉ nhấc container (sắt: móc hụt);
+    //      nam châm hút sắt. Cẩu + nam châm (nhanh, đắt) hay drone + nam châm (rẻ, bay vòng qua rào, chậm).
+    man9('lap-nha-may', 2, 'lam-quen', {
+      ten: 'Móc hay nam châm',
+      mucTieu: 'day-thung',
+      deBai: 'Thanh sắt rơi vào khe máy. Đặt sắt lên nút M để mở cửa C. Lắp tay nào cho cẩu?',
+      veMaMau: 'Xe cứu hỏa chờ cửa mở.',
+      san: ['#########', '##o=M####', '##==.####', '####.####', '#...C.HD#', '#########'],
+      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 4, y: 4 }] }],
+      doi: [may('CU', { x: 1, y: 4, huong: 1 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam' })],
+      them: { vatChat: ['.........', '..s......', '.........', '.........', '.........', '.........'] },
+      lapRap: lapR2(['cau', 'drone'], ['moc-cau', 'nam-cham'], [], 9, [
+        cach('cau', 'nam-cham', null, [['wait_n(4)', 'forward(5)'], ['extend()', 'swing_left()', 'magnet_n()', 'swing_right()', 'magnet_off()']]),
+        cach('drone', 'nam-cham', null, [['wait_n(6)', 'forward(5)'], ['go_up()', 'go_up()', 'go_left()', 'go_left()', 'magnet_n()', 'wait()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()']])
+      ], { moLai: ['L1'] }),
+      maMau: doiBai([['wait_n(4)', 'forward(5)'], []]),
       loiSai: [
-        { moTa: 'Hàm valve_step(n) thiếu forward(n) nên R1 chưa tiến vào cờ F(2, 1)', baiLam: baiDoi(['valve_step(1)'], ['wait()', 'forward(3)']), hamCuaEmMoi: [{ ten: 'valve_step', thamSo: ['n'], than: ['squirt("low")'] }], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Hút sắt rồi thả ngay tại khe: cửa đóng', baiLam: doiBai([['wait_n(4)', 'forward(5)'], ['extend()', 'swing_left()', 'magnet_n()', 'magnet_off()']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 19, nhip: 4 },
-      goiY: ['Trong hàm valve_step(n), thêm forward(n) ngay sau squirt("low").']
+      sao: { o: 17, nhip: 11 },
+      goiY: ['Sắt không phải container.', 'magnet_n() hút, magnet_off() thả.'],
+      cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'nut-de', 'cua', 'thung-nang', 'doi-tay'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manNM('lap-nha-may', 3, 'luyen', {
-      ten: 'Tái sử dụng valve_step mở lối cho nhện',
-      r2: R_NHEN,
-      hamCuaEmCan: ['move', 'forward', 'walk', 'squirt', 'valve_step'],
-      deBai: 'Van hơi N(4, 1) điều khiển cửa C(4, 2) trên làn của R2 (robot nhện). R1 đứng ở (2, 1) hướng phải: hãy gọi valve_step(1) để phun van N(4, 1) và tiến vào F(3, 1); đồng thời viết lệnh cho R2 đợi 1 nhịp rồi gọi walk("RRRR") bò qua dãy gầm thấp n và cửa C(4, 2) tới F(5, 2).',
-      veMaMau: 'Gọi valve_step(1) cho R1 và walk("RRRR") cho R2.',
-      san: ['#######', '#..FN.#', '#.nnCF#', '#######'],
-      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 4, y: 2 }] }],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1, chan: 'co' }],
-      co: [[{ x: 3, y: 1 }], [{ x: 5, y: 2 }]],
-      maMau: baiDoi(['move()'], ['wait()', 'walk("RRRR")']),
-      loiGiai: baiDoi(['valve_step(1)'], ['wait()', 'walk("RRRR")']),
+    // 13 · lai L13 cẩu + nam châm + cảm biến từ: quanh bệ cẩu là đống lẫn sắt và gỗ. Sắt nằm trên lối xe cứu hỏa; hút nhầm gỗ là lỗi.
+    //      Quét năm ô quanh bệ, front_metal() đọc ô đầu cần: sắt thì hút, vươn cần thả ra ngoài lối; biến n đếm số sắt đã dọn.
+    //      Cách hai rẻ hơn: không lắp cảm biến, nhìn sân rồi quay thẳng tới từng thanh sắt.
+    man9('lap-nha-may', 3, 'luyen', {
+      ten: 'Sắt hay gỗ',
+      mucTieu: 'day-thung',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Sắt và gỗ lẫn quanh cẩu. Sắt chắn lối xe cứu hỏa. Chỉ hút sắt, thả ra ngoài lối.',
+      veMaMau: 'Cẩu mới quét một ô.',
+      san: ['#.#.#.###', '#.ooo.HD#', '##o.o####', '#########'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 3, y: 2, huong: 0 }, { son: 'lam' })],
+      them: { vatChat: ['.........', '..sss....', '..g.g....', '.........'] },
+      lapRap: lapR2(['cau'], ['moc-cau', 'nam-cham'], ['tu'], 11, [
+        cach('cau', 'nam-cham', 'tu', [['wait_n(12)', 'forward(5)'],
+          ['n = 0', 'swing_left()', 'swing_left()', 'for i in range(5):', '    if front_metal():', '        magnet_n()', '        extend()', '        magnet_off()', '        retract()', '        n = n + 1', '    swing_right()']]),
+        cach('cau', 'nam-cham', null, [['wait_n(10)', 'forward(5)'],
+          ['swing_left()', 'magnet_n()', 'extend()', 'magnet_off()', 'retract()', 'swing_right()', 'magnet_n()', 'extend()', 'magnet_off()', 'retract()', 'swing_right()', 'magnet_n()', 'extend()', 'magnet_off()']])
+      ], { moLai: ['L1', 'L13'] }),
+      maMau: doiBai([['wait_n(12)', 'forward(5)'], ['swing_left()', 'swing_left()', 'if front_metal():', '    magnet_n()']]),
       loiSai: [
-        { moTa: 'R1 gọi move() thay vì valve_step(1) nên cửa C(4, 2) không mở cho R2', baiLam: baiDoi(['move()'], ['wait()', 'walk("RRRR")']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Không đọc cảm biến: nam châm hút cả gỗ', baiLam: doiBai([['wait_n(12)', 'forward(5)'], ['swing_left()', 'swing_left()', 'for i in range(5):', '    magnet_n()', '    extend()', '    magnet_off()', '    retract()', '    swing_right()']]), phaiCoMa: ['hut-go'] }
       ],
-      sao: { o: 21, nhip: 12 },
-      goiY: ['Thay move() của R1 bằng valve_step(1).']
+      sao: { o: 24, nhip: 20 },
+      goiY: ['front_metal(): ô đầu cần có sắt không.', 'n = n + 1: đếm thêm một thanh.'],
+      cauDo: { doi: null, lap: 'cau+nam-cham+tu', coChe: ['sat', 'go', 'cam-bien', 'thung-nang'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
     manNM('lap-nha-may', 4, 'luyen', {
