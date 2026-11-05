@@ -188,7 +188,7 @@
       veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
       san: ['##########', '#..H....D#', '#####R.###', '#####R####', '##########'],
       doi: [may('CU', { x: 1, y: 1, huong: 1 }), may('CC', { x: 5, y: 3, nac: 0, tam: 2 }, { son: 'lam' })],
-      them: { chong: [{ x: 5, y: 1, cont: [{ so: 7 }] }] },
+      them: { contChan: true, chong: [{ x: 5, y: 1, cont: [{ so: 7 }] }] },
       maMau: doiBai([['forward(6)'], ['pick_up()', 'swing_right()']]),
       loiGiai: doiBai([['forward(6)'], ['pick_up()', 'swing_right()']]),
       sao: { o: 10, nhip: 7 },
@@ -205,7 +205,7 @@
       veMaMau: 'Xe chưa biết chờ thùng.',
       san: ['########', '###D####', '#>>....#', '###RR###', '########'],
       doi: [khe({ x: 3, y: 3, huong: 0 }), khe({ x: 4, y: 3, huong: 0 })],
-      them: { chong: [{ x: 3, y: 2, cont: [{ so: 4 }] }], thungThem: [{ x: 1, y: 2 }] },
+      them: { contChan: true, chong: [{ x: 3, y: 2, cont: [{ so: 4 }] }], thungThem: [{ x: 1, y: 2 }] },
       chonDoi: {
         menu: ['CU', 'CC'],
         cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
@@ -230,7 +230,7 @@
       veMaMau: 'Cẩu mới vươn tới chồng giữa.',
       san: ['#########', '#####.###', '#..H...D#', '#.###.###', '#RRRRR###', '#########'],
       doi: [khe({ x: 1, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0 })],
-      them: { chong: [{ x: 5, y: 1, cont: [{ so: 11 }, { so: 12 }, { so: 13 }, { so: 14 }] }, { x: 5, y: 2, cont: [{ so: 21 }, { so: 22 }] }, { x: 5, y: 3, cont: [{ so: 31 }] }] },
+      them: { contChan: true, chong: [{ x: 5, y: 1, cont: [{ so: 11 }, { so: 12 }, { so: 13 }, { so: 14 }] }, { x: 5, y: 2, cont: [{ so: 21 }, { so: 22 }] }, { x: 5, y: 3, cont: [{ so: 31 }] }] },
       chonDoi: {
         menu: ['CU', 'CC', 'DR'],
         cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
@@ -280,7 +280,7 @@
       san: ['#########', '#..C...N#', '#######.#', '######..#', '#####RRR#', '#########'],
       noi: [{ nut: { x: 7, y: 1 }, cua: [{ x: 3, y: 1 }] }],
       doi: [khe({ x: 7, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0 })],
-      them: { chong: [{ x: 7, y: 2, cont: [{ so: 5 }] }], nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 5, y: 1 }] },
+      them: { contChan: true, chong: [{ x: 7, y: 2, cont: [{ so: 5 }] }], nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 5, y: 1 }] },
       chonDoi: {
         menu: ['CU', 'CC', 'KT'],
         cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
