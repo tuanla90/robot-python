@@ -2411,8 +2411,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return kq;
   }
-  /** Lệnh đọc cảm biến (thân hàm gọi một trong số này thì hàm đó thuộc thẻ CẢM BIẾN) và mọi lệnh tay / dụng cụ (thẻ TAY). */
-  var CAM_TEN_TAT_CA = CAM_BIEN_TEN.concat(['color', 'look', 'battery']);
+  /** Lệnh đọc cảm biến (thân hàm gọi một trong số này thì hàm đó thuộc thẻ CẢM BIẾN) và mọi lệnh tay / dụng cụ (thẻ TAY).
+   *  BT_NGUON_TEN / AM_TEN: cảm biến TRẢ GIÁ TRỊ (read_code, weight, flow, flow_dir, radar, shape, hear, listen — Cảng sông / Bến sông / Mỏ đá / Hang động), không phải điều kiện boolean như CAM_BIEN_TEN,
+   *  nhưng hàm của em gọi chúng vẫn phải thuộc thẻ CẢM BIẾN chứ không rơi về THÂN. */
+  var CAM_TEN_TAT_CA = CAM_BIEN_TEN.concat(['color', 'look', 'battery'], BT_NGUON_TEN, AM_TEN);
   var LENH_TAY_TAT_CA = TAY_TEN.concat(NC_TEN, NEM_TEN, SUNG_TEN, SON_TEN, LOA_TEN, MOC_TEN, DAY_TEN);   // LOA_TEN / MOC_TEN / DAY_TEN: hàm gọi note/beat/pick_up/cast_net… cũng thuộc thẻ TAY, không rơi về THÂN
   var RE_DK_CAM = /\b(front_clear|left_clear|right_clear|front_metal|front_pole|color|look|battery|distance|warm)\s*\(/;       // khối điều kiện có đọc cảm biến
   /**
