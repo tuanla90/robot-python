@@ -14,6 +14,7 @@
      kho.sua('move', [dòng…])    → thay thân hàm (tham số thứ ba tuỳ chọn: thamSo mới)
      kho.doiTen('cu', 'moi', tuyChon)  → đổi tên + sửa chỗ gọi trong thân các hàm khác của kho
      kho.xoa('move')             → { ok, conDung: [hàm khác còn gọi nó] }
+     kho.coAiGoi('move')         → [hàm khác còn gọi nó] (như xoa() trả về nhưng không xóa, để kiểm trước khi dọn tự động)
      kho.datTenCoDinh([tên…])    → khóa tên các hàm THEO CỐT TRUYỆN (tên nằm trong taoHam của một màn nào đó):
                                    không đổi tên được, không xóa được (mã 'ten-co-dinh'); thân vẫn sửa tự do.
                                    Lõi không tự biết danh sách màn, nên giao diện gọi lúc khởi động (ung-dung.js).
@@ -261,6 +262,7 @@
       tao: tao, sua: sua, doiTen: doiTen, xoa: xoa, ds: ds, kiemTen: kiemTen,
       datTenCoDinh: datTenCoDinh, tenCoDinh: tenCoDinh, dsTenCoDinh: function () { return coDinh.slice(); },
       tim: function (ten) { var h = tim(ten); return h ? saoChep(h) : null; },
+      coAiGoi: aiGoi,
       soHam: function () { return ham.length; },
       soHamToiDa: function () { return toiDa; },
       soHamTuDat: soTuDat,

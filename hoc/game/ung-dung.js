@@ -238,12 +238,27 @@
     document.body.classList.toggle('dien-thoai', doc);
   }
 
+  /** Dọn khỏi Xưởng hàm của em những hàm demo-một-lần (ManHoc.hamDemoMotLan) mà kho CŨ (chơi từ trước khi có
+   *  danh sách này) còn giữ lại: không ai cần lại nên không khóa tên nữa (xem hamCotTruyen), ở đây xóa luôn
+   *  cho khay gọn, trừ khi em đã tự viết hàm khác GỌI nó (coAiGoi) — lúc đó để nguyên, không phá code của em. */
+  function donHamDemoMotLan() {
+    if (!window.ManHoc || typeof ManHoc.hamDemoMotLan !== 'function') return;
+    var doi = false;
+    ManHoc.hamDemoMotLan().forEach(function (ten) {
+      if (!KhoHam.tim(ten)) return;
+      if (KhoHam.coAiGoi(ten).length) return;
+      if (KhoHam.xoa(ten).ok) doi = true;
+    });
+    if (doi) Luu.ghiKho();
+  }
+
   /* ------------------------------------------------------------------ khởi động */
   function boot() {
     document.title = t('chung.tenGame');
-    // hàm theo cốt truyện (tên nằm trong taoHam của một màn nào đó): kho khóa tên, không cho đổi tên / xóa
-    KhoHam.datTenCoDinh([].concat.apply([], ManHoc.danhSach.map(function (m) { return m.taoHam || []; })));
+    // hàm theo cốt truyện (tên nằm trong taoHam của một màn nào đó, trừ hàm demo-một-lần): kho khóa tên, không cho đổi tên / xóa
+    KhoHam.datTenCoDinh(ManHoc.hamCotTruyen());
     var r = Luu.docKho();
+    donHamDemoMotLan();
     var kd = document.getElementById('sc-dau'), kg = document.getElementById('sc-goi'), kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi'), kl = document.getElementById('sc-lap');
     Dau.dung(kd);
     ChonGoi.dung(kg);

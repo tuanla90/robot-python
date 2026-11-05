@@ -325,12 +325,30 @@
   };
   ManHoc.chuanHoa = chuanHoaMan;
 
-  /* ---- hàm CỐT TRUYỆN (tên nằm trong `taoHam` của một màn nào đó; giao diện cũng khóa tên bằng KhoHam.datTenCoDinh) chỉ SỬA được ở màn cần sửa nó.
+  /** Hàm tự đặt chỉ DEMO một ý tưởng ở đúng màn tạo ra nó: không màn nào sau `hamCuaEmCan` nó, không lời giải màn
+   *  nào khác `hamCuaEmMoi` nó (khảo sát 5/11 trên lộ trình đã phát hành, script scratchpad/survey_hamtudat.js).
+   *  Không khóa tên (không vào hamCotTruyen) và bị dọn khỏi Xưởng hàm cũ của người chơi lúc khởi động (ung-dung.js),
+   *  để khay hàm không phình lên với những hàm học xong rồi không ai cần lại. */
+  var HAM_DEMO_MOT_LAN = ['stair', 'two', 'side', 'sweep', 'bend_left', 'bend_right', 'safe_move', 'clear_left',
+    'relay', 'swap_sides', 'next_lane', 'stair_down', 'go_open', 'open_behind', 'auto_right', 'auto_turn',
+    'switch_right', 'auto_left_on', 'hold_shot', 'scan_pads', 'warm_pad', 'guard', 'clear_row', 'box_spray',
+    'far_push', 'plant_row', 'mix_row', 'go_to', 'yellow_sides', 'cross4', 'fly_to', 'red_count', 'scout',
+    'frame', 'bend', 'checker', 'sow_rows', 'lift_by_color', 'stair_line', 'up_sow', 'bar_len', 'field_dock',
+    'two_marks', 'lob_r', 'smart_lob', 'fill_row', 'turn_cw', 'ship_tower2', 'shuttle_cont', 'rail_clear',
+    'fast_stack', 'safe_extend', 'reach_pick', 'wait_load', 'add_if_new', 'enter_tunnel', 'unique_glide',
+    'spray_push', 'fest_duet_open', 'lift_up', 'shift', 'wait_spray', 'catch_crate', 'open_step', 'fetch',
+    'kick', 'reel', 'sort', 'fling', 'wait_belt', 'toss_back', 'split', 'box', 'grid', 'border', 'seek_red',
+    'steer', 'obey', 'dispatch', 'patrol', 'spray_right', 'push_spray', 'patches', 'trace_marks', 'garden',
+    'copy_down'];
+  ManHoc.hamDemoMotLan = function () { return HAM_DEMO_MOT_LAN.slice(); };
+
+  /* ---- hàm CỐT TRUYỆN (tên nằm trong `taoHam` của một màn nào đó, trừ hamDemoMotLan; giao diện cũng khóa tên
+        bằng KhoHam.datTenCoDinh) chỉ SỬA được ở màn cần sửa nó.
         Các màn khác: mở trong Xưởng chỉ XEM, trên khay hiện ổ khóa. Hàm người chơi tự đặt (không phải tên cốt truyện) luôn sửa được. */
-  /** Tên mọi hàm cốt truyện: gộp `taoHam` của mọi màn (theo thứ tự màn). */
+  /** Tên mọi hàm cốt truyện: gộp `taoHam` của mọi màn (theo thứ tự màn), trừ hamDemoMotLan. */
   ManHoc.hamCotTruyen = function () {
     var kq = [];
-    ManHoc.danhSach.forEach(function (m) { (m.taoHam || []).forEach(function (n) { if (kq.indexOf(n) < 0) kq.push(n); }); });
+    ManHoc.danhSach.forEach(function (m) { (m.taoHam || []).forEach(function (n) { if (kq.indexOf(n) < 0 && HAM_DEMO_MOT_LAN.indexOf(n) < 0) kq.push(n); }); });
     return kq;
   };
   /** Tên các hàm cốt truyện màn `m` cho SỬA: `m.taoHam` (màn bắt chế) và mọi hàm có trong `hamCuaEmMoi` của lời giải (`loiGiai`, `loiGiaiKhac`, `congThucKhac`)
