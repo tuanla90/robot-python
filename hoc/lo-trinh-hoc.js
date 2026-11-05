@@ -9,6 +9,10 @@
 (function () {
   'use strict';
   var laNode = (typeof module !== 'undefined' && module.exports);
+  if (laNode) {
+    require('./man-co-so.js');
+    ['m1-than', 'm1-tay', 'm1-cambien', 'm1-san', 'm1-nangcap', 'm1-trum'].forEach(function (n) { require('./man-m1-' + n.replace('m1-', '') + '.js'); });
+  }
   var M = laNode ? require('./man-demo.js') : window.ManHoc;
   if (laNode) module.exports = M;
 })();

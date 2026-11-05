@@ -16,28 +16,7 @@
 
   function lap(ds, n) { var kq = []; for (var i = 0; i < n; i++) kq = kq.concat(ds); return kq; }
 
-  /* ---------------------------------------------------------- mùa 1 Kho hàng (hai bánh) */
-  (function () {
-    var HAM_GOC = ['left_move', 'right_move', 'wait'];
-    var TIEN = ['left_move()', 'right_move()', 'wait()'];
-    function man(m) {
-      m.chuong = 'demo-kho-hang';
-      m.loaiRobot = 'banh'; m.hamGoc = HAM_GOC; m.khung = { chinh: 10, moiHam: 10 };
-      m.moXuong = false; m.camHamCuaEm = true;
-      return ManHoc.chuanHoa(m);
-    }
-    ManHoc.them([
-      man({
-        so: 1, ten: 'Bước đầu tiên', hang: 'lam-quen',
-        deBai: 'Xe hai bánh đứng ngay trước lá cờ. Đưa xe tới cờ.',
-        san: ['.....', '.....', '.....', '..F..', '.....'],
-        batDau: { x: 2, y: 4, huong: 0 },
-        maMau: { chinh: TIEN.slice() },
-        sao: { o: 3, nhip: 1 },
-        loiGiai: { chinh: TIEN.slice() }
-      })
-    ]);
-  })();
+  /* mùa 1 Kho hàng: nội dung thật đã viết ở man-m1-*.js (xem thu-tu-chuong.js). */
 
   /* ---------------------------------------------------------- mùa 2 Nhà máy (xích) */
   (function () {
