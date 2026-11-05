@@ -311,41 +311,52 @@
       cauDo: { doi: ['DR', 'HD'], lap: null, coChe: ['bun', 'rac-cat', 'nut-de', 'da-chuong'], cuu: 'nguoi', meo: 'lam-cau' }
     }),
 
-    manCK('cuu-kho-hang', 7, 'van-dung', {
-      ten: 'Omni trượt ngang mở nút cho xe kho lấy hàng',
-      r2: R_OMNI, mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'pick', 'drop', 'slide_r'],
-      deBai: 'R1 cần đi qua cửa C(2, 1) để gắp kiện hàng o(3, 1), lùi 1 ô và xoay tay thả vào D(2, 2)? Không, ô đích D ở ngay (1, 1) sau lưng R1! R1 chờ 2 nhịp cho cửa mở, tiến 1 ô lên (2, 1), gắp kiện hàng o(3, 1), lùi 1 ô về (1, 1) rồi xoay tay thả vào D(1, 2). Để mở cửa C(2, 1), R2 (robot omni) ở (2, 3) hướng lên hãy gọi slide_r(1) rồi move() đè lên nút M(3, 2)!',
-      veMaMau: 'R2 chưa trượt ngang và tiến lên nút M(3, 2) để mở cửa C(2, 1).',
-      san: ['######', '#.Co.#', '#D.M.#', '##..##', '######'],
-      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 2, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      maMau: baiDoi(['wait_n(2)', 'move()', 'pick()', 'back()', 'drop_right()'], ['slide_r(1)']),
-      loiGiai: baiDoi(['wait_n(2)', 'move()', 'pick()', 'back()', 'drop_right()'], ['slide_r(1)', 'move()']),
+    // 7 · cứu máy: R3 xe chở hàng (khoá) chờ cửa C mở ("tiến khi trước trống") rồi đi qua ô bùn sát hố; drone rắc cát ô đó, bánh gai đè nút M giữ cửa. Chờ tín hiệu: R3 tự đọc cảm biến.
+    man9('cuu-kho-hang', 7, 'van-dung', {
+      ten: 'Xe kẹt mép hố',
+      deBai: 'Xe chở hàng kẹt sau cửa, chờ phía trước trống thì tiến. Mở cửa, rắc cát ô bùn sát hố. Ba bạn về cờ.',
+      veMaMau: 'Đọc chương trình của xe khoá.',
+      san: ['##########', '#.CIu.F###', '###.##MF##', '###F.IIIu#', '##########'],
+      noi: [{ nut: { x: 6, y: 2 }, cua: [{ x: 2, y: 1 }] }],
+      doi: [khe({ x: 5, y: 1, huong: 3 }, { co: [{ x: 6, y: 1 }] }), khe({ x: 4, y: 3, huong: 1 }, { co: [{ x: 7, y: 2 }] }),
+        may('CH', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 3, y: 3 }] })],
+      chonDoi: {
+        menu: ['DR', 'HD', 'CU'],
+        cachMau: [{ chon: ['DR', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['for i in range(2):', '    go_left()', 'dot()', 'for i in range(3):', '    go_right()'],
+          ['forward(2)', 'turn_left()', 'move()', 'wait_n(2)', 'turn_right()', 'move()']]) }]
+      },
+      maMau: doiBai([[], [], ['while not front_clear():', '    wait()', 'forward(2)', 'turn_right()', 'forward(2)']]),
       loiSai: [
-        { moTa: 'R2 mới trượt sang phải 1 ô, chưa tiến lên nút M(3, 2) nên cửa C không mở', baiLam: baiDoi(['wait_n(2)', 'move()', 'pick()', 'back()', 'drop_right()'], ['slide_r(1)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Không rắc cát: xe khoá trượt rơi hố', baiLam: doiBai([['fly_right(1)'], ['forward(2)', 'turn_left()', 'move()', 'wait_n(2)', 'turn_right()', 'move()'], ['while not front_clear():', '    wait()', 'forward(2)', 'turn_right()', 'forward(2)']]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 21, nhip: 8 },
-      goiY: ['Sau slide_r(1), R2 gọi thêm move() để tiến lên đè nút M(3, 2).']
+      sao: { o: 32, nhip: 11 },
+      goiY: ['Xe khoá chỉ tiến khi cửa mở. Rời nút sớm thì cửa đóng lại.'],
+      cauDo: { doi: ['DR', 'HD'], lap: null, coChe: ['bun', 'rac-cat', 'nut-de', 'cua', 'r3'], cuu: 'may', meo: 'cho-tin-hieu' }
     }),
 
-    manCK('cuu-kho-hang', 8, 'van-dung', {
-      ten: 'Cảm biến khoảng cách phối hợp xe xích mở van',
-      r2: R_XICH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'squirt'],
-      deBai: 'R2 (xe xích) tiến 1 ô rồi gọi squirt("low") phun vào van N(3, 2) để mở cửa C(3, 1), sau đó lùi về cờ F(1, 2). R1 ở (1, 1) tiến 1 ô tới trước cửa C(3, 1), dùng vòng lặp while not front_clear(): wait() chờ tới khi cửa mở rồi tiến 2 ô vào cờ F(4, 1)!',
-      veMaMau: 'R1 chưa tiến 2 ô qua cửa C sau vòng lặp chờ.',
-      san: ['######', '#..CF#', '#F.N.#', '######'],
-      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 1, y: 2 }]],
-      maMau: baiDoi(['move()', 'while not front_clear():', '    wait()'], ['move()', 'squirt("low")', 'back()']),
-      loiGiai: baiDoi(['move()', 'while not front_clear():', '    wait()', 'forward(2)'], ['move()', 'squirt("low")', 'back()']),
+    // 8 · cứu máy: kệ đổ (thùng nặng H) chắn trước mũi R3 (khoá, chờ phía trước trống). Drone rắc cát ô rẽ cho xe cứu hỏa; xích ủi kệ vào hốc trên, lùi ra cho R3 đi.
+    //     Bẫy: máy khai thác (omni không ủi được thùng nặng, cũng trượt bùn).
+    man9('cuu-kho-hang', 8, 'van-dung', {
+      ten: 'Kệ đổ chắn xe',
+      deBai: 'Kệ đổ chắn trước xe chở hàng. Ủi kệ vào hốc. Xích cũng trượt bùn. Ba bạn về cờ.',
+      veMaMau: 'Xe khoá chờ phía trước trống.',
+      san: ['###.######', '#..H...F##', '###.F#####', '#.IIIuF###', '##########'],
+      doi: [khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 4, y: 2 }] }), khe({ x: 4, y: 3, huong: 1 }, { co: [{ x: 6, y: 3 }] }),
+        may('CH', { x: 2, y: 1, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 7, y: 1 }] })],
+      chonDoi: {
+        menu: ['CU', 'DR', 'KT'],
+        cachMau: [{ chon: ['CU', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['wait_n(2)', 'move()', 'tr_left()', 'forward(2)', 'back()', 'tr_right()', 'move()'],
+          ['go_left()', 'dot()', 'for i in range(3):', '    go_right()']]) }]
+      },
+      maMau: doiBai([[], [], ['while not front_clear():', '    wait()', 'forward(5)']]),
       loiSai: [
-        { moTa: 'R1 chờ cửa mở xong nhưng chưa gọi forward(2) để vào cờ F(4, 1)', baiLam: baiDoi(['move()', 'while not front_clear():', '    wait()'], ['move()', 'squirt("low")', 'back()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không rắc cát: xích trượt rơi hố', baiLam: doiBai([['wait_n(2)', 'move()', 'tr_left()', 'forward(2)', 'back()', 'tr_right()', 'move()'], ['for i in range(2):', '    go_right()'], ['while not front_clear():', '    wait()', 'forward(5)']]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 15, nhip: 5 },
-      goiY: ['Thêm forward(2) ở cuối chương trình R1 sau vòng lặp while.']
+      sao: { o: 36, nhip: 15 },
+      goiY: ['Xích quay: tr_left(), tr_right().'],
+      cauDo: { doi: ['CU', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'thung-nang', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
 
     manCK('cuu-kho-hang', 9, 'bien-the', {
