@@ -420,6 +420,16 @@ const T5 = {};
   const bt1 = thu(() => bt(true)), bt0 = thu(() => bt(false));
   kiem('T5 b (thùng): băng chuyền đẩy thùng về ô chồng → "thung-bang-chan", thùng đứng ở (1, 0)', bt1 && J(bt1.thung) === J([{ id: 1, x: 1, y: 0 }]) && skVet5(bt1).some((e) => e.ma === 'thung-bang-chan' && J(e.den) === J({ x: 2, y: 0 })), bt1 && J(skVet5(bt1)));
   kiem('T5 d (thùng): không khai contChan → băng đẩy thùng lên ô chồng (2, 0) (phép b đỏ)', bt0 && bt0.thung[0].x === 2, bt0 && J(bt0.thung));
+
+  // TIA PHUN: tia dừng ở ô chồng — không tới lửa (2, 0) / nút N (2, 0) phía sau
+  const tp = (cc, rows, them) => SanHoc.chay(Object.assign({ san: rows, batDau: { x: 0, y: 0, huong: 1 }, hamGoc: BANH5.concat(['spray']), contChan: cc, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }] }, them || {}), 'spray()\nwait()\n');
+  const banTp = (k) => skVet5(k).filter((e) => e.ma === 'ban')[0];
+  const tl1 = thu(() => tp(true, ['....'], { lua: [{ x: 2, y: 0, suc: 1 }] })), tl0 = thu(() => tp(false, ['....'], { lua: [{ x: 2, y: 0, suc: 1 }] }));
+  kiem('T5 b (tia phun): tia spray() dừng ở ô chồng (1, 0) ("ban" trung container), lửa phía sau còn nguyên', tl1 && !tl1.loi && banTp(tl1) && banTp(tl1).trung === 'container' && J(banTp(tl1).o) === J({ x: 1, y: 0 }) && tl1.lua[0].suc === 1, tl1 && J(skVet5(tl1)));
+  kiem('T5 d (tia phun): không khai contChan → tia bay qua ô chồng dập lửa (2, 0) (phép b đỏ)', tl0 && tl0.lua[0].suc === 0 && banTp(tl0).trung === 'lua', tl0 && J(tl0.lua));
+  const tn1 = thu(() => tp(true, ['..N.'])), tn0 = thu(() => tp(false, ['..N.']));
+  kiem('T5 b (tia phun): nút N sau ô chồng không đổi (không "nut-doi")', tn1 && !tn1.loi && banTp(tn1).trung === 'container' && !skVet5(tn1).some((e) => e.ma === 'nut-doi'), tn1 && J(skVet5(tn1)));
+  kiem('T5 d (tia phun): không khai contChan → tia trúng nút N, "nut-doi" (phép b đỏ)', tn0 && skVet5(tn0).some((e) => e.ma === 'nut-doi'), tn0 && J(skVet5(tn0)));
 }
 
 /* ============================================================ M9C1 (4/11): L3 xe tời bờ, P người cần cứu */
