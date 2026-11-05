@@ -409,6 +409,17 @@ const T5 = {};
     ca && (ca.loi ? J(ca.loi) : J(ca.doi.map((d) => [d.robot, d.suKien.map((e) => e.nhip + ':' + e.ma + ':' + (e.vat || ''))]))));
   const caKhong = thu(() => T5.cau('pick_up()\nswing_left()\nswing_left()\nset_down()\n' + 'wait()\n'.repeat(6)));
   kiem('T5 d (cẩu): cẩu chỉ nhấc 1 trong 2 container → ô vẫn chặn, xe không tới cờ (phép b đỏ)', caKhong && !T5.cauOk(caKhong) && caKhong.doi[1].robot.x === 1, caKhong && J(caKhong.doi[1].robot));
+
+  // THÙNG NẶNG: xích ủi thùng (xichDay) vào ô chồng → thùng không đi, xích đứng yên ('dam-tuong' thung-nang chan container); băng chuyền đẩy thùng vào chồng → 'thung-bang-chan'
+  const xu = (cc) => SanHoc.chay({ san: ['.H...'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'xich', hamGoc: BANH5, xichDay: true, contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, TIEN5 + TIEN5);
+  T5.xuOk = (k) => !!k && !k.loi && J(k.thung) === J([{ id: 1, x: 1, y: 0 }]) && k.robot.x === 0 && k.suKien.filter((e) => e.ma === 'dam-tuong' && e.vat === 'thung-nang' && e.xichDay && e.chan === 'container').length === 2;
+  const xu1 = thu(() => xu(true)), xu0 = thu(() => xu(false));
+  kiem('T5 b (thùng): xích ủi thùng nặng về ô chồng → thùng đứng ở (1, 0), xích đứng yên ở (0, 0), "dam-tuong" thung-nang xichDay chan container', T5.xuOk(xu1), xu1 && J(xu1.suKien));
+  kiem('T5 d (thùng): không khai contChan → xích ủi thùng lên ô chồng rồi qua (thùng tới (3, 0); phép b đỏ)', xu0 && !T5.xuOk(xu0) && xu0.thung[0].x === 3, xu0 && J(xu0.thung));
+  const bt = (cc) => SanHoc.chay({ san: ['.>..', '....'], batDau: { x: 0, y: 1, huong: 1 }, thung: [{ x: 1, y: 0 }], hamGoc: BANH5, contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, 'wait()\nwait()\nwait()\n');
+  const bt1 = thu(() => bt(true)), bt0 = thu(() => bt(false));
+  kiem('T5 b (thùng): băng chuyền đẩy thùng về ô chồng → "thung-bang-chan", thùng đứng ở (1, 0)', bt1 && J(bt1.thung) === J([{ id: 1, x: 1, y: 0 }]) && skVet5(bt1).some((e) => e.ma === 'thung-bang-chan' && J(e.den) === J({ x: 2, y: 0 })), bt1 && J(skVet5(bt1)));
+  kiem('T5 d (thùng): không khai contChan → băng đẩy thùng lên ô chồng (2, 0) (phép b đỏ)', bt0 && bt0.thung[0].x === 2, bt0 && J(bt0.thung));
 }
 
 /* ============================================================ M9C1 (4/11): L3 xe tời bờ, P người cần cứu */
