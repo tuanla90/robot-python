@@ -483,6 +483,15 @@
         - BÓNG MỜ CHỒNG (mục tiêu bong-mo): cần cẩu không cần bongMo.huong; không khai x, y thì bệ ở nguyên chỗ xuất phát. bongMo.chong = [{ x, y, so: [đáy → đỉnh] }]: lúc chạy xong MỌI chồng trên sân phải đúng — ô khai phải đúng dãy số
           (so: [] = trống), ô không khai phải trống, móc không còn treo gì; sai thì không thắng (cham.js: chua-xep-chong). Dùng cho bài sắp xếp / Tháp Hà Nội (cùng luatThap).
         - NHIỀU ROBOT: bệ chiếm ô như tường với xe dưới đất (xe đâm 'dong-doi'); xe đi qua ô R như sàn; đầu cần KHÔNG chặn ai (xe đứng dưới đầu cần được, nhưng set_down xuống ô có xe → ha-bi-chan 'robot'); rail bị xe chặn ('robot').
+        - CHỒNG CHẶN (M9T5, 5/11; kế hoạch mùa 9 mục 5b "Container (Cảng) | Cần cẩu | mọi xe"): CHỈ khi màn khai cfg.contChan = true (cần lớp cfg.chong, sân không có chồng thì chong: [];
+          6 màn Cảng sông cũ có nhện đứng trên ô chồng nên mặc định TẮT, màn không khai không đổi gì). Ô có chồng cao ≥ 1 là KHỐI như tường (lyDoChan 'container', laChongChan đọc bảng chồng SỐNG):
+          · xe mặt đất (bánh, xích, omni, gai, nhện, xuồng nếu lên bờ) đi / lùi / trượt / chéo / giật vào: đứng yên, mất nhịp, 'dam-tuong' vat 'container' (cham.js: "Nhờ cần cẩu nhấc container đi trước");
+            băng chuyền đẩy xe vào: 'bang-chan' vat 'container'; nhện bật: chồng ở ô giữa hay ô đáp → 'nhay-hut' vat 'container'.
+          · thùng nặng không vào ô chồng (oThungChan 'container': xích ủi → 'dam-tuong' thung-nang chan 'container'; giật / băng chuyền cũng chặn); không thả / trượt vật lên chồng (oThaChan 'container').
+          · tia phun (spray / spray_back) dừng ở ô chồng: 'ban' trung 'container' (không tới van / lửa / nút phía sau). Cảm biến khoảng cách / hồng ngoại, dây lưới thấy chồng như tường.
+          · người P đi bộ: ô chồng trên đường về trạm → 'nguoi-cho' vat 'container' (người chờ); đường về trạm vẫn tính trên sân TĨNH bỏ qua chồng (chồng dời được).
+          · drone bay qua / dừng trên ô chồng được; land() lên ô chồng → 'dap-bi-chan' vat 'container'. Cần cẩu không bị chặn (cần cao hơn mọi thứ).
+          · cẩu pick_up / pick_up2 hết container ở ô → ô thông ngay (robot đứng sau cẩu trong đội đi vào được ngay nhịp đó, robot đứng trước thì nhịp sau); set_down lên ô có xe vẫn bị chặn ('robot').
         - NHÂN (nhan/san-robot-core.js, 31/10): phép % đổi theo Python (kết quả cùng dấu số chia: -5 % 8 = 3) để bài "(b - a) % 8 lần swing_right()" chạy đúng; // vẫn Math.floor; abs / min / max có sẵn.
 
    KHAY VÀ PHẦN CỨNG (luật chế lệnh, 14/10): hai tập lệnh gốc khác nhau.
@@ -994,8 +1003,11 @@
     if (c === 'S' && (loai === 'banh' || loai === 'omni' || loai === 'gai')) return 'bac-thang';
     if (c === 'n' && loai !== 'nhen' && loai !== 'drone') return 'gam-thap';       // gầm thấp: nhện chui được khi co chân (chay() xét thêm theo chân), drone bay qua, thân khác không vào
     if (san.demTu && san.demTu[x + ',' + y] && loai !== 'drone') return 'dem-tu';  // ĐỆM TỪ (mùa 3, cfg.demTu): ô đệm là KHỐI, mọi thân dưới đất đâm như tường; drone bay qua
+    if (laChongChan(san, x, y) && loai !== 'drone' && loai !== 'cau') return 'container';   // M9T5 (cfg.contChan): ô có chồng container là KHỐI với mọi thân dưới đất; drone bay qua
     return null;
   }
+  /** M9T5: ô (x, y) đang có chồng container (cao ≥ 1) mà màn khai cfg.contChan (san.contChan = bảng chồng sống của chay(); màn không khai: null, không chặn gì). */
+  function laChongChan(san, x, y) { var ch = san.contChan && san.contChan[x + ',' + y]; return !!(ch && ch.length); }
 
   /* ----------------------------------------------------------------- chạy */
 
@@ -1634,6 +1646,7 @@
       if (c === '=') return 'rao';
       if (c === 'S') return 'bac-thang';
       if (san.demTu && san.demTu[x + ',' + y]) return 'dem-tu';           // ô đệm từ là khối
+      if (laChongChan(san, x, y)) return 'container';                     // M9T5 (cfg.contChan): chồng container chặn thùng như tường
       if (cuaDong(x, y)) return lyCua(x, y);                              // cửa đang đóng (hay lửa đang cháy) chặn thùng như chặn xe
       if (thungTai(x, y)) return 'thung-nang';
       if (rb.x === x && rb.y === y && !laDrone) return 'xe';              // drone lơ lửng trên thùng, không chiếm ô
@@ -1705,7 +1718,8 @@
     /** Ô (x, y) người đi bộ được trên sân TĨNH (không xét robot, vật, cửa): như xe bánh, thêm không hố / thùng nặng lúc đầu / băng chuyền / bàn xoay / cổng / đá ướt / nước. */
     function oNguoiDiDuoc(x, y) {
       var c = oTai(san, x, y);
-      if (c === null || lyDoChan(san, 'banh', x, y)) return false;
+      var lyT = c === null ? 'ngoai-san' : lyDoChan(san, 'banh', x, y);
+      if (lyT && lyT !== 'container') return false;                          // M9T5: sân TĨNH bỏ qua chồng container (chồng dời được; oNguoiChan bắt người chờ)
       if (c === 'u' || c === 'I' || BANG[c] !== undefined || BAN_XOAY[c] !== undefined || CONG_KY[c]) return false;
       return !san.thung.some(function (t) { return t.x === x && t.y === y; });
     }
@@ -1902,6 +1916,10 @@
     // M9B2 (tương tác T2 mùa 9): cfg.contLapHo = true → set_down() lên ô hố 'u' lấp hố: container DƯỚI CÙNG đang treo thành sàn (ô thành '.', hố mất cho mọi robot), sự kiện 'lap-ho' { o, cont };
     // container còn lại (móc đôi) nằm lên trên thành chồng 1. Màn không khai thì hố vẫn chặn hạ ('ha-bi-chan' vat 'ho') như mùa 4 (màn Cảng sông cũ có ô 'u' trong tầm cần).
     var contLapHo = !!cfg.contLapHo, lapHoDs = [];
+    // M9T5: cfg.contChan = true → ô có chồng container (cao ≥ 1) chặn như tường (xem phần CẢNG SÔNG đầu tệp, đoạn CHỒNG CHẶN); san.contChan trỏ tới bảng chồng SỐNG (pick_up hết thì ô thông ngay).
+    var contChan = !!cfg.contChan;
+    if (contChan && !Array.isArray(cfg.chong)) throw new Error('contChan (chồng container chặn như tường) cần lớp cfg.chong = [{ x, y, cont: [...] }] (sân không có chồng nào thì khai chong: []).');
+    san.contChan = contChan ? chongTai : null;
     var coCau = dsRc.some(function (rc) { return (rc.loaiRobot || 'banh') === 'cau'; });
     if (taiToiDa !== null && !(laSoNguyen(taiToiDa) && taiToiDa >= 1)) throw new Error('taiToiDa (luật tải của cẩu) phải là số nguyên dương: tổng tấn đang treo × tầm phải ≤ taiToiDa.');
     if ((taiToiDa !== null || luatThap) && !coCau) throw new Error('taiToiDa / luatThap chỉ dùng cho màn có cần cẩu (loaiRobot "cau").');
@@ -2320,6 +2338,7 @@
       if (c === 'n') return 'gam-thap';
       if (c === 'u') return 'ho';
       if (san.demTu && san.demTu[x + ',' + y]) return 'dem-tu';           // ô đệm từ là khối
+      if (laChongChan(san, x, y)) return 'container';                     // M9T5 (cfg.contChan): không thả vật lên chồng container
       if (thungTai(x, y)) return 'thung-nang';
       if (vatNamTai(x, y)) return 'vat';
       if (xeDatTai(x, y)) return 'dong-doi';
@@ -2532,6 +2551,7 @@
         else if (laNuoc(san, rb.x, rb.y) && !cauPhaoTai(rb.x, rb.y)) ly = 'nuoc';                // Bến sông: không đáp xuống mặt nước (trừ cầu phao)
         else if (thungTai(rb.x, rb.y)) ly = 'thung-nang';
         else if (vatNamTai(rb.x, rb.y)) ly = 'vat';
+        else if (laChongChan(san, rb.x, rb.y)) ly = 'container';                                 // M9T5 (cfg.contChan): không đáp lên chồng container
         if (ly) { var eb = { ma: 'dap-bi-chan', nhip: nhip, o: o, vat: ly, lenh: lenhNhip }; sk.push(eb); suKienChan.push(eb); return; }
         dau = true;
         var bs = beSacTai(rb.x, rb.y); lai9.beDau = bs ? bs.id : null;
@@ -2818,6 +2838,7 @@
           else if (c === 'V' && vanTai[x + ',' + y]) ly = 'van';                 // M9C2 (T3): tia phun trúng van cống V thì van đổi (như lưới kéo van)
           else if (c === 'S') ly = 'bac-thang';
           else if (cuaDong(x, y)) ly = lyCua(x, y);                         // 'lua': tia nước trúng lửa (dập)
+          else if (laChongChan(san, x, y)) ly = 'container';                // M9T5 (cfg.contChan): tia dừng ở chồng container (không tới van / lửa / nút phía sau)
           else if (thungTai(x, y)) ly = 'thung';
           else if (laNguoi(vatNamTai(x, y))) { if (dan !== null) dan++; chamNguoi(sk, { x: x, y: y }, 'phun', lenhGhi); return false; }   // M9C1: không phun vào người (không bắn, không giật, không tốn đạn)
           else if (vatNamTai(x, y)) ly = 'vat';
@@ -3497,6 +3518,7 @@
        *  tới ô nước sát bờ thì lên ô bờ có đường về trạm ngắn nhất ('nguoi-len-bo', thả lưới đang giữ), tới trạm thì 'nguoi-toi-tram'. */
       function oNguoiChan(x, y) {
         var vq = vatNamTai(x, y);
+        if (laChongChan(san, x, y)) return 'container';                      // M9T5 (cfg.contChan): chồng container trên đường như tường, người chờ tới khi cẩu nhấc đi
         return thungTai(x, y) ? 'thung-nang' : vq ? (laNguoi(vq) ? 'nguoi' : 'vat') : lyCua(x, y) || (((!laDrone && rb.x === x && rb.y === y) || xeDatTai(x, y)) ? 'robot' : null);
       }
       /** M9C2 (T4): cuối nhịp, bè sạc đã dời ô (trôi / kéo) → 'be-sac-di' { id, tu, den } cho bộ vẽ (ô sạc vẽ theo bè). */
