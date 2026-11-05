@@ -88,6 +88,18 @@ export function dauCua(man) {
 const khoTruoc = new Map();
 { const kho = new Map(); for (const m of M.danhSach) { khoTruoc.set(m.ma, clone([...kho.values()])); if (!m.tietKiemNhip) for (const h of (m.loiGiai && m.loiGiai.hamCuaEmMoi) || []) kho.set(h.ten, clone(h)); } }
 /** Chạy lời giải mẫu của màn qua máy chấm (kho hàm của em như cham-het: hàm các màn trước trong lộ trình + hamCuaEmMoi của màn). */
+/** (e) M9M1 5/11: cứu khai đúng. cuu 'nguoi' → chuỗi có nguoi-toi-tram / xong-cuu-nguoi; cuu 'may' → màn có robot coDinh và chuỗi robot đó có toi-co. Trả chuỗi lỗi hay ''. */
+export function kiemCuu(man, p) {
+  const ds = (p.chuoi || []).map((c) => c.chuoi || '');
+  if (man.cauDo.cuu === 'nguoi' && !ds.some((c) => /nguoi-toi-tram|xong-cuu-nguoi/.test(c))) return 'khai cứu người mà không người nào tới trạm';
+  if (man.cauDo.cuu === 'may') {
+    const doi = Array.isArray(man.doi) ? man.doi : [];
+    const k = doi.findIndex((r) => r && r.coDinh);
+    if (k < 0) return 'khai cứu máy mà màn không có robot khoá (coDinh)';
+    if (!/toi-co/.test(ds[k] || '')) return 'khai cứu máy mà robot khoá R' + (k + 1) + ' không tới cờ';
+  }
+  return '';
+}
 export function chamMau(man) {
   const hs = new Map((khoTruoc.get(man.ma) || []).map((h) => [h.ten, h]));
   for (const h of (man.loiGiai && man.loiGiai.hamCuaEmMoi) || []) hs.set(h.ten, clone(h));
@@ -202,7 +214,7 @@ if (mainModule) {
   console.log('    (140 màn cũ có ' + chuoiCu.size + ' chuỗi khác nhau; ' + (140 - chuoiCu.size) + ' màn cũ trùng chuỗi với nhau — chỉ thông tin, mùa 2–8 không có luật này)');
   console.log('    màn có cauDo trong lộ trình: ' + coDau.length + (coDau.length ? '' : ' (chưa có — gói D2 mới dựng màn; máy kiểm chứng minh bằng màn giả ở mục 2)'));
   const dau = new Map(), chuoi = new Map();
-  let aHong = 0, bHong = 0, cHong = 0, dHong = 0;
+  let aHong = 0, bHong = 0, cHong = 0, dHong = 0, eHong = 0;
   coDau.forEach((m) => {
     const la = kiemDau(m); if (la.length) { aHong++; la.forEach((l) => console.log('    (a) ' + l)); return; }
     const k = dauCua(m); if (dau.has(k)) { bHong++; console.log('    (b) ' + m.ma + ' trùng dấu với ' + dau.get(k) + ': ' + k); } else dau.set(k, m.ma);
@@ -212,12 +224,14 @@ if (mainModule) {
     else chuoi.set(p.khoa, m.ma);
     if (p.meo.ok === false) { dHong++; console.log('    (d) ' + m.ma + ': ' + p.meo.lyDo); }
     else if (p.meo.ok === null) { chuaKiem++; console.log('    (d) ' + m.ma + ': ' + p.meo.lyDo); }
+    const e = kiemCuu(m, p); if (e) { eHong++; console.log('    (e) ' + m.ma + ': ' + e); }
   });
   if (coDau.length) {
     kiem('(a) mọi dấu hợp lệ', aHong === 0, aHong);
     kiem('(b) không màn nào trùng dấu', bHong === 0, bHong);
     kiem('(c) không màn nào trùng thật (kể cả với 140 màn cũ)', cHong === 0, cHong);
     kiem('(d) mẹo khai thấy trong sự kiện (4 mẹo kiểm được)', dHong === 0, dHong);
+    kiem('(e) kiểu cứu khai đúng (nguoi: có người tới trạm; may: có robot khoá tới cờ)', eHong === 0, eHong);
   }
 
   /* ============================================================================ 2. tự chứng minh bằng màn giả */

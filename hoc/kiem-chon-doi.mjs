@@ -196,9 +196,12 @@ console.log('B. Lắp ráp cho một robot của màn đội (man.lapRap.robot =
 console.log('Màn cũ');
 {
   const M = require(path.join(day, 'lo-trinh-hoc.js'));
-  const doi = M.danhSach.filter((m) => Array.isArray(m.doi)), rap = M.danhSach.filter((m) => m.lapRap);
-  kiem('lộ trình: chưa màn nào khai chonDoi / lapRap.robot (D2 mới dựng màn); mọi màn đội vẫn 2 robot', doi.every((m) => !m.chonDoi && LapRap.robotLapCua(m) === null && m.doi.length === 2) && rap.every((m) => LapRap.robotLapCua(m) === null), doi.length + ' màn đội, ' + rap.length + ' màn lắp');
-  const m1 = rap[0], a1 = LapRap.apDung(m1, m1.lapRap.cachLap[0]);
+  // M9M1 (5/11): màn mùa 9 dựng lại (khai man.cauDo) được dùng chonDoi / lapRap.robot / 3 robot; màn CŨ (không cauDo) giữ dạng 2 robot, lắp một robot
+  const cu = M.danhSach.filter((m) => !m.cauDo), doi = cu.filter((m) => Array.isArray(m.doi)), rap = cu.filter((m) => m.lapRap);
+  kiem('lộ trình: màn cũ (không cauDo) không khai chonDoi / lapRap.robot; mọi màn đội cũ vẫn 2 robot', doi.every((m) => !m.chonDoi && LapRap.robotLapCua(m) === null && m.doi.length === 2) && rap.every((m) => LapRap.robotLapCua(m) === null), doi.length + ' màn đội, ' + rap.length + ' màn lắp');
+  const m9 = M.danhSach.filter((m) => m.cauDo);
+  kiem('lộ trình: màn mùa 9 dựng lại (cauDo) có màn chọn đội và màn lắp robot thứ i', m9.length === 0 || (m9.some((m) => m.chonDoi) && m9.some((m) => m.lapRap && LapRap.robotLapCua(m) !== null)), m9.length + ' màn cauDo');
+  const m1 = rap.find((m) => !Array.isArray(m.doi)), a1 = LapRap.apDung(m1, m1.lapRap.cachLap[0]);
   kiem('màn lắp ráp một robot: apDung không sinh trường doi, loiGiai vẫn { chinh, hamCuaMan, hamCuaEmMoi }', a1.doi === undefined && J(Object.keys(a1.loiGiai)) === '["chinh","hamCuaMan","hamCuaEmMoi"]' && a1.loaiRobot === m1.loaiRobot, m1.ma);
 }
 
