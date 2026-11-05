@@ -439,6 +439,21 @@ const T5 = {};
   kiem('T5 b (người): người chờ trước ô chồng ở nhịp 1, 2 ("nguoi-cho" container), cẩu nhấc đi ở nhịp 3 thì người đi tiếp, tới trạm nhịp 5 (thắng)', ngA && !ngA.loi && ngA.thang && ngA.nhip === 5 && J(choNg(ngA)) === J([1, 2]), ngA && J(choNg(ngA)) + ' nhip ' + ngA.nhip);
   kiem('T5 b (người): cẩu không nhấc → người chờ mãi ở (0, 0), không thắng', ngB && !ngB.thang && ngB.nguoi[0].x === 0 && choNg(ngB).length === 8, ngB && J(ngB.nguoi));
   kiem('T5 d (người): không khai contChan → người đi thẳng qua ô chồng, tới trạm nhịp 3 (phép b đỏ)', ngC && ngC.thang && ngC.nhip === 3 && !choNg(ngC).length, ngC && ngC.nhip);
+
+  // DRONE: bay qua / dừng trên ô chồng được; land() lên ô chồng → 'dap-bi-chan' vat container
+  const BAY5 = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
+  const dq = thu(() => SanHoc.chay({ san: ['...F'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY5, contChan: true, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }, { x: 2, y: 0, cont: [{ so: 1 }, { so: 2 }] }] }, 'go_right()\nwait()\ngo_right()\ngo_right()\n'));
+  kiem('T5 b (drone): drone bay qua hai ô chồng, dừng một nhịp trên chồng, tới cờ (3, 0), không "dam-tuong"', dq && !dq.loi && dq.thang && dq.robot.x === 3 && !dq.suKien.some((e) => e.ma === 'dam-tuong'), dq && J(dq.suKien));
+  const dap5 = (cc) => SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY5.concat(['land', 'take_off']), contChan: cc, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }] }, 'go_right()\nland()\ntake_off()\n');
+  const dp1 = thu(() => dap5(true)), dp0 = thu(() => dap5(false));
+  kiem('T5 b (drone): land() trên ô chồng → "dap-bi-chan" vat container, không đáp', dp1 && !dp1.loi && dp1.suKien.some((e) => e.ma === 'dap-bi-chan' && e.vat === 'container') && !skVet5(dp1).some((e) => e.ma === 'dap'), dp1 && J(skVet5(dp1)));
+  kiem('T5 d (drone): không khai contChan → land() đáp lên ô chồng như cũ (phép b đỏ)', dp0 && skVet5(dp0).some((e) => e.ma === 'dap') && !dp0.suKien.some((e) => e.ma === 'dap-bi-chan'), dp0 && J(skVet5(dp0)));
+  // THẢ VẬT: tay kẹp release() xuống ô chồng → 'tha-bi-chan' vat container, vật vẫn ở tay
+  const TAY5 = BANH5.concat(['arm_down', 'arm_up', 'grab', 'release']);
+  const th5 = (cc) => SanHoc.chay({ san: ['.o..'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: TAY5, contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, 'arm_down()\ngrab()\nwait()\narm_up()\nwait()\n' + TIEN5 + 'arm_down()\nrelease()\nwait()\n');
+  const th1 = thu(() => th5(true)), th0 = thu(() => th5(false));
+  kiem('T5 b (thả vật): release() xuống ô chồng → "tha-bi-chan" vat container, vật vẫn ở tay', th1 && !th1.loi && th1.suKien.some((e) => e.ma === 'tha-bi-chan' && e.vat === 'container') && th1.vat[0].trangThai === 'cam', th1 && J(th1.suKien));
+  kiem('T5 d (thả vật): không khai contChan → vật nằm lên ô chồng (2, 0) như cũ (phép b đỏ)', th0 && th0.vat[0].trangThai === 'dat' && th0.vat[0].x === 2, th0 && J(th0.vat));
 }
 
 /* ============================================================ M9C1 (4/11): L3 xe tời bờ, P người cần cứu */
