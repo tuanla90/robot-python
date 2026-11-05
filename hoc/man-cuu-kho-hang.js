@@ -359,47 +359,51 @@
       cauDo: { doi: ['CU', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'thung-nang', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
 
-    manCK('cuu-kho-hang', 9, 'bien-the', {
-      ten: 'Mở khóa liên hoàn cứu kiện hàng cổ',
-      r2: R_GAI, mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'pick', 'drop', 'play_note', 'slide_stop'],
-      deBai: 'Thử thách phối hợp Kho hàng và Hang động! R2 (bánh gai) đứng ở (2, 2) hướng lên trước tảng đá chuông nốt 5 ở (2, 1): hãy cho R2 gọi play_note(listen()) phá đá chuông cho R1, rồi rẽ phải và gọi slide_stop() trượt qua dải đá ướt I(3, 2) tiến lên đè nút M(5, 2) mở cửa C(4, 1). R1 chờ 2 nhịp, tiến lên (2, 1), gắp kiện hàng o(3, 1), tiến 2 ô qua cửa C(4, 1) rồi thả vào D(5, 1)!',
-      veMaMau: 'Hoàn thiện lệnh cho R1 và R2 để phá đá chuông, trượt đè nút M và đưa kiện hàng vào D(5, 1).',
-      san: ['#######', '#..oCD#', '##.I.M#', '#######'],
-      noi: [{ nut: { x: 5, y: 2 }, cua: [{ x: 4, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 0 }],
-      daChuong: [{ x: 2, y: 1, not: 5, ben: 1 }],
-      maMau: baiDoi(['wait_n(2)', 'move()', 'pick()', 'forward(2)'], ['play_note(listen())', 'turn_right()']),
-      loiGiai: baiDoi(['wait_n(2)', 'move()', 'pick()', 'forward(2)', 'drop()'], ['play_note(listen())', 'turn_right()', 'slide_stop()']),
+    // 9 · cứu máy, phong phú: hố sụt chia kho, hai cửa trên lối R3 (khoá, for hai chặng "chờ trống rồi tiến"). Bánh gai qua bùn giữ nút gần M (3, 2);
+    //     nhện nhảy qua hố giữ nút xa M (7, 2). Rời nút sớm thì cửa đóng trước mũi R3. Bẫy: máy khai thác (omni trượt bùn, không nhảy hố).
+    man9('cuu-kho-hang', 9, 'bien-the', {
+      ten: 'Hai nút hai bên',
+      deBai: 'Xe chở hàng phải qua hai cửa. Mỗi cửa một nút. Một nút bên kia hố. Ba bạn về cờ.',
+      veMaMau: 'Xe khoá: hai lần chờ trống rồi tiến 3 ô.',
+      san: ['##########', '#..C..C.F#', '###M#.uMF#', '#.IIF#####', '##########'],
+      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }, { nut: { x: 7, y: 2 }, cua: [{ x: 6, y: 1 }] }],
+      doi: [khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 4, y: 3 }] }), khe({ x: 5, y: 2, huong: 1 }, { co: [{ x: 8, y: 2 }] }),
+        may('CH', { x: 2, y: 1, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 8, y: 1 }] })],
+      chonDoi: {
+        menu: ['PL', 'KT', 'HD'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['forward(2)', 'turn_left()', 'move()', 'wait_n(2)', 'back()', 'turn_right()', 'move()'],
+          ['jump("R")', 'wait_n(4)', 'go_right()']]) }]
+      },
+      maMau: doiBai([[], [], ['for i in range(2):', '    while not front_clear():', '        wait()', '    forward(3)']]),
       loiSai: [
-        { moTa: 'R2 chưa gọi slide_stop() đè nút M(5, 2) và R1 chưa gọi drop()', baiLam: baiDoi(['wait_n(2)', 'move()', 'pick()', 'forward(2)'], ['play_note(listen())', 'turn_right()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Nhện rời nút xa sớm: cửa thứ hai đóng', baiLam: doiBai([['forward(2)', 'turn_left()', 'move()', 'wait_n(2)', 'back()', 'turn_right()', 'move()'], ['jump("R")', 'go_right()'], ['for i in range(2):', '    while not front_clear():', '        wait()', '    forward(3)']]), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 21, nhip: 8 },
-      goiY: ['R2 thêm slide_stop() sau turn_right() để trượt qua I(3, 2) và dừng trên nút M(5, 2); R1 thêm drop() ở cuối.']
+      sao: { o: 48, nhip: 12 },
+      goiY: ['Nhện nhảy hố: jump("R").'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['bun', 'ho', 'nut-de', 'cua', 'hai-nut', 'r3'], cuu: 'may', meo: 'giu-cua' }
     }),
 
-    manCK('cuu-kho-hang', 10, 'trum', {
-      ten: 'Hợp tấu nhà kho: Đoạn 1 Kìa con bướm vàng',
-      r1: R1_KHO_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '1 1 5 5 6 6 5 5', r2: '1 3 5 3 4 4 1 1' },
+    // 10 · song ca đoạn 1 (giữ bài "Kìa con bướm vàng" cho gói 10 ghép): xe chở hàng lắp loa thay tay kẹp, xe hang động hát bè 2.
+    //     Tiếng hát đúng nốt làm vỡ đá chuông kệ sập trước mũi mỗi xe (nốt 5 của bè 1, nốt 4 của bè 2). Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-kho-hang', 10, 'trum', {
+      ten: 'Song ca nhà kho',
+      mucTieu: 'choi-dieu',
+      deBai: 'Mừng kho sạch bùn! Sola bè 1, Luna bè 2. Hát đúng nốt, đá chuông vỡ.',
+      veMaMau: 'Bè 2 mới có 4 nốt.',
       hamCuaEmCan: ['play_note'],
-      deBai: 'Màn kết chương Cứu hộ Kho hàng! Để mừng kho hàng hoạt động trở lại, R1 (gắn loa) và R2 cùng hợp tấu Đoạn 1 bài "Kìa con bướm vàng" ("Kìa con bướm vàng, kìa con bướm vàng") gồm 8 nhịp 2 bè: Bè 1 (R1) chơi giai điệu chính [1, 1, 5, 5, 6, 6, 5, 5], còn Bè 2 (R2) đệm hòa âm [1, 3, 5, 3, 4, 4, 1, 1]. Hãy hoàn thiện vòng lặp phát nốt của R2!',
-      veMaMau: 'R2 mới chơi 4 nốt đầu, hãy điền đủ danh sách 8 nốt bè 2.',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(
-        ['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'],
-        ['for n in [1, 3, 5, 3]:', '    play_note(n)']
-      ),
-      loiGiai: baiDoi(
-        ['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'],
-        ['for n in [1, 3, 5, 3, 4, 4, 1, 1]:', '    play_note(n)']
-      ),
+      san: ['#######', '#.....#', '#.....#', '#######'],
+      doi: [may('CH', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'], themHam: ['note', 'beat'], phatNot: true }),
+        may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      them: { dieu: { r1: '1 1 5 5 6 6 5 5', r2: '1 3 5 3 4 4 1 1' }, daChuong: [{ x: 5, y: 1, not: 5, ben: 1 }, { x: 5, y: 2, not: 4, ben: 1 }] },
+      maMau: doiBai([['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'], ['for n in [1, 3, 5, 3]:', '    play_note(n)']]),
+      loiGiai: doiBai([['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'], ['for n in [1, 3, 5, 3, 4, 4, 1, 1]:', '    play_note(n)']]),
       loiSai: [
-        { moTa: 'R2 chỉ chơi 4 nốt đầu [1, 3, 5, 3], thiếu 4 nốt sau [4, 4, 1, 1]', baiLam: baiDoi(['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'], ['for n in [1, 3, 5, 3]:', '    play_note(n)']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 thiếu 4 nốt cuối', baiLam: doiBai([['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'], ['for n in [1, 3, 5, 3]:', '    play_note(n)']]), phaiCoMa: ['lo-nhip'] }
       ],
-      sao: { o: 26, nhip: 8 },
-      goiY: ['Sửa danh sách của R2 thành [1, 3, 5, 3, 4, 4, 1, 1] để hai robot hòa âm đủ 8 nhịp.']
+      sao: { o: 7, nhip: 9 },
+      goiY: ['Bè 2: [1, 3, 5, 3, 4, 4, 1, 1].'],
+      cauDo: { doi: ['CH', 'HD'], lap: null, coChe: ['loa', 'da-chuong'], cuu: null, meo: 'song-song' }
     }),
 
     /* ========================================================================
