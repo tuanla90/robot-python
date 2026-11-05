@@ -15,119 +15,8 @@
   var CoMay = laNode ? require('./co-may.js') : window.CoMay;
 
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var HAM_BANH = BANH.concat(['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear']);
-  var HAM_BANH_LOA = BANH.concat(['beat', 'note', 'front_clear', 'left_clear', 'right_clear']);
-  var HAM_XICH = BANH.concat(['spray', 'spray_back', 'distance', 'warm']);
-  var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
-  var HAM_OMNI = BANH.concat(['slide_left', 'slide_right', 'load', 'throw', 'radar', 'diag_left', 'diag_right', 'aim', 'shape']);
-  var HAM_GAI = BANH.concat(['retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen']);
-
-  var R1_KHO = {
-    loaiRobot: 'banh',
-    robot: { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
-    hamGoc: HAM_BANH
-  };
-  var R1_KHO_LOA = {
-    loaiRobot: 'banh', phatNot: true,
-    robot: { than: 'hai-banh', tay: 'loa', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
-    hamGoc: HAM_BANH_LOA
-  };
-  var R_XICH = {
-    loaiRobot: 'xich', xichDay: true, lucBan: true,
-    robot: { than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }], son: 'lam' },
-    hamGoc: HAM_XICH
-  };
-  var R_NHEN = {
-    loaiRobot: 'nhen',
-    robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_NHEN
-  };
-  var R_OMNI = {
-    loaiRobot: 'omni', omniCheo: true, chinhLuc: true, nhanDang: true, tamNemMacDinh: 2, daLapHo: true,
-    robot: { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
-    hamGoc: HAM_OMNI
-  };
-  var R_GAI = {
-    loaiRobot: 'gai', thuGai: true, phatNot: true, phanAm: true,
-    robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }], son: 'lam' },
-    hamGoc: HAM_GAI
-  };
-
-  var H_SIDE_UNLOCK = {
-    ten: 'side_unlock', thamSo: ['n'],
-    than: ['lob()', 'slide_r(n)']
-  };
-  var H_SPRAY_PUSH = {
-    ten: 'spray_push', thamSo: ['n'],
-    than: ['squirt("low")', 'forward(n)']
-  };
-  var H_ECHO_GLIDE = {
-    ten: 'echo_glide', thamSo: [],
-    than: ['play_note(listen())', 'slide_stop()']
-  };
-  var H_PLAY_PART = {
-    ten: 'play_part', thamSo: ['notes'],
-    than: ['for n in notes:', '    play_note(n)']
-  };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-
-  function baiDoi(r1Chinh, r2Chinh, hamEm, hamMan) {
-    return {
-      doi: [{ chinh: r1Chinh.slice() }, { chinh: r2Chinh.slice() }],
-      hamCuaMan: hamMan ? clone(hamMan) : [],
-      hamCuaEmMoi: hamEm ? clone(hamEm) : []
-    };
-  }
-
-  function manCK(chuong, so, hang, cfg) {
-    var r1 = clone(cfg.r1 || R1_KHO);
-    var r2 = clone(cfg.r2 || R_XICH);
-    r1.batDau = cfg.bd[0];
-    r2.batDau = cfg.bd[1];
-    if (cfg.coDinhR1) r1.coDinh = true;
-    if (cfg.coDinhR2) r2.coDinh = true;
-    if (cfg.co) {
-      r1.co = cfg.co[0];
-      r2.co = cfg.co[1];
-    }
-    var m = {
-      chuong: chuong,
-      so: so,
-      ten: cfg.ten,
-      hang: hang,
-      vo: 'kho',
-      loaiRobot: r1.loaiRobot,
-      daLapHo: true,
-      robot: clone(r1.robot),
-      hamGoc: r1.hamGoc.slice(),
-      cauTruc: cfg.cauTruc || ['for', 'if', 'while', 'list'],
-      vaHoac: true,
-      moXuong: true,
-      camHamCuaEm: false,
-      hamCuaEmCan: cfg.hamCuaEmCan || ['move', 'forward', 'wait_n'],
-      taoHam: cfg.taoHam || [],
-      khung: cfg.khung || { chinh: 10, moiHam: 8 },
-      mucTieu: cfg.mucTieu || 'toi-co',
-      deBai: cfg.deBai,
-      veMaMau: cfg.veMaMau || '',
-      san: cfg.san,
-      batDau: cfg.bd[0],
-      doi: [r1, r2],
-      maMau: cfg.maMau,
-      loiGiai: cfg.loiGiai,
-      loiSai: cfg.loiSai || [],
-      sao: cfg.sao || { o: 16, nhip: 10 },
-      goiY: cfg.goiY || []
-    };
-    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
-    if (cfg.noi) m.noi = cfg.noi;
-    if (cfg.dieu) m.dieu = cfg.dieu;
-    if (cfg.vatChat) m.vatChat = cfg.vatChat;
-    if (cfg.chuongDa) m.chuongDa = cfg.chuongDa;
-    if (cfg.daChuong) m.daChuong = cfg.daChuong;
-    return ManHoc.chuanHoa(m);
-  }
 
   /* ---- M9M1: khung màn mùa 9 (chép sang 9 gói sau) ------------------------------------------------
      cfg: ten, deBai, veMaMau, goiY, san, noi?, mucTieu?, doi: [robot…], chonDoi? | lapRap?, maMau, loiGiai? (màn chọn đội / lắp: lấy từ cách mẫu đầu),
@@ -153,6 +42,8 @@
     loaiRobot: 'gai', robot: { than: 'gai', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }], son: 'lam' },
     hamGoc: BANH.concat(['retract_spikes', 'extend_spikes', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'front_clear', 'left_clear', 'right_clear'])
   };
+  /** Hàm của em ở màn song ca chương 2: mỗi nốt đi một ô (ôn def + for). */
+  var H_WALK_SING = { ten: 'walk_sing', thamSo: ['notes'], than: ['for n in notes:', '    note(n)', '    move()'] };
   /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
   function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
   /** lapRap của chương 2: Luna lắp R2; lời giải mẫu chạy trên kho hàm của em (dungKho). */
@@ -571,60 +462,76 @@
       cauDo: { doi: null, lap: 'drone+nam-cham', coChe: ['nut-de', 'cua', 'sat', 'ho'], cuu: 'hang', meo: 'giu-cua' }
     }),
 
-    manCK('lap-kho-hang', 8, 'van-dung', {
-      ten: 'Chế tạo hàm play_part cho dàn nhạc robot',
-      r1: R1_KHO_LOA, r2: R_GAI,
-      taoHam: ['play_part'],
-      hamCuaEmCan: ['move', 'play_note'],
-      deBai: 'Để chuẩn bị cho các màn hợp tấu 2 bè xuyên suốt Mùa 9, hãy định nghĩa hàm play_part(notes): dùng vòng lặp for n in notes: và gọi play_note(n) để phát lần lượt từng nốt trong danh sách! Trong màn thử loa này, R1 gọi play_part([1, 5]) phá tảng đá chuông nốt 5 ở (2, 1) rồi tiến vào F(2, 1), còn R2 gọi play_part([1, 3]) phá đá chuông nốt 3 ở (4, 1) rồi tiến vào F(4, 1).',
-      veMaMau: 'Hoàn thiện thân hàm play_part(notes) với vòng lặp for n in notes:.',
-      san: ['#######', '#.F.F.#', '#######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 5, y: 1, huong: 3 }],
-      co: [[{ x: 2, y: 1 }], [{ x: 4, y: 1 }]],
-      daChuong: [{ x: 2, y: 1, not: 5, ben: 1 }, { x: 4, y: 1, not: 3, ben: 1 }],
-      maMau: baiDoi(['play_part([1, 5])', 'move()'], ['play_part([1, 3])', 'move()']),
-      loiGiai: baiDoi(['play_part([1, 5])', 'move()'], ['play_part([1, 3])', 'move()'], [H_PLAY_PART]),
-      loiSai: [
-        { moTa: 'Thân vòng lặp trong play_part(notes) để trống gây lỗi cú pháp', baiLam: baiDoi(['play_part([1, 5])', 'move()'], ['play_part([1, 3])', 'move()']), hamCuaEmMoi: [{ ten: 'play_part', thamSo: ['notes'], than: ['for n in notes:'] }], phaiCoMa: ['loi-cu-phap'] }
-      ],
-      sao: { o: 24, nhip: 3 },
-      goiY: ['Bên trong for n in notes:, thụt lề 4 dấu cách và viết play_note(n).']
+    // 18 · cứu người: thùng gỗ chắn lối người, thùng nặng H chắn lối tới thùng gỗ. Xích (xichDay) ủi H vào hốc, kẹp gắp thùng gỗ, lùi lên hốc trên; xe chở hàng theo sau người về cờ.
+    //      Chỉ lắp xích (rẻ): xích ủi H rồi lùi, xe chở hàng (đỗ quay đầu vào kệ) vòng lại gắp thùng gỗ: chậm hơn. Bánh gai không ủi được H; vòi phun không gắp được thùng gỗ.
+    man9('lap-kho-hang', 8, 'van-dung', {
+      ten: 'Ủi và gắp',
+      mucTieu: 'cuu-nguoi',
+      hamCuaEmCan: HAM_EM.concat(['tr_left', 'tr_right']),
+      deBai: 'Bác thủ kho kẹt sau thùng gỗ. Thùng nặng chắn lối tới thùng gỗ. Mở lối cho bác ra trạm cứu.',
+      veMaMau: 'Xe chở hàng đang đỗ quay đầu vào kệ.',
+      san: ['#########', '##...####', '#Fo.H..##', '##.#.####', '##.######', '##.######', '##.######', '##.######', '##.######', '##.######', '##.######', '#########'],
+      them: { nguoi: [{ x: 2, y: 1 }], tramCuu: [{ x: 2, y: 10 }], xichDay: true },
+      doi: [may('CH', { x: 6, y: 2, huong: 1 }, { co: [{ x: 1, y: 2 }] }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam' })],
+      lapRap: lapR2(['xich', 'gai'], ['kep', 'hoi'], [], 7, [
+        cach('xich', 'kep', null, [['turn_right()', 'turn_right()', 'wait_n(5)', 'forward(5)'],
+          ['move()', 'tr_left()', 'move()', 'pick()', 'tr_right()', 'move()']]),
+        cach('xich', null, null, [['turn_right()', 'turn_right()', 'forward(3)', 'pick()', 'forward(2)'],
+          ['move()', 'back()']])
+      ]),
+      maMau: doiBai([['turn_right()', 'turn_right()'], []]),
+      sao: { o: 35, nhip: 15 },
+      goiY: ['Xích tiến vào thùng nặng là ủi thùng đi một ô.'],
+      cauDo: { doi: null, lap: 'xich+kep', coChe: ['thung-nang', 'thung'], cuu: 'nguoi', meo: 'don-loi' }
     }),
 
-    manCK('lap-kho-hang', 9, 'bien-the', {
-      ten: 'Tổng duyệt cứu hộ kho hàng liên mùa',
-      r2: R_OMNI, mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'pick', 'drop', 'lob', 'side_unlock'],
-      deBai: 'Tổng duyệt trước màn hợp tấu! Hành lang của R1 vừa có hố sâu u(2, 1) vừa có cửa C(3, 1) khóa trước kiện hàng o(4, 1) và ô đích D(5, 1). R2 (robot omni) ở (2, 3) hướng lên hãy gọi side_unlock(1) để vừa hất viên đá o(2, 2) lấp hố u(2, 1) vừa trượt sang (3, 3), sau đó gọi move() tiến lên đè nút M(3, 2) mở cửa C(3, 1)! R1 chờ 4 nhịp rồi tiến 2 ô tới (3, 1), gắp kiện hàng o(4, 1), tiến 1 ô và thả vào D(5, 1).',
-      veMaMau: 'Hoàn thiện chương trình cho cả R1 và R2.',
-      san: ['#######', '#.uCoD#', '##oM###', '##..###', '#######'],
-      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      maMau: baiDoi(['wait_n(4)', 'forward(2)', 'pick()'], ['side_unlock(1)']),
-      loiGiai: baiDoi(['wait_n(4)', 'forward(2)', 'pick()', 'move()', 'drop()'], ['side_unlock(1)', 'move()']),
-      loiSai: [
-        { moTa: 'R2 chưa gọi move() lên nút M(3, 2) và R1 chưa đặt kiện hàng vào D(5, 1)', baiLam: baiDoi(['wait_n(4)', 'forward(2)', 'pick()'], ['side_unlock(1)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
-      ],
-      sao: { o: 28, nhip: 10 },
-      goiY: ['R2 gọi side_unlock(1) rồi move(); R1 sau pick() gọi thêm move() và drop().']
+    // 19 · phong phú (bùn, hố, nút đè, cửa, sắt): hòm sắt trên kệ phía trên dải bùn; phải đặt hòm lên nút M để CẢ HAI xe qua cửa. Đọc sân rồi chọn:
+    //      bánh gai + kẹp (rẻ): dừng giữa dải bùn, gắp hòm, quay đặt xuống nút, vòng xuống lối; drone + nam châm (đắt, nhanh): bay hút hòm thả lên nút. Hai bánh vào bùn trượt rơi hố.
+    man9('lap-kho-hang', 9, 'bien-the', {
+      ten: 'Rẻ hay nhanh',
+      hamCuaEmCan: HAM_EM,
+      deBai: 'Hai xe phải qua cửa C. Đặt hòm sắt lên nút M. Lắp rẻ hay lắp nhanh? Em chọn.',
+      veMaMau: 'Xe chở hàng chờ cửa mở.',
+      san: ['#########', '###o#####', '#uIII..##', '##.M#####', '#...C.FF#', '#########'],
+      noi: [{ nut: { x: 3, y: 3 }, cua: [{ x: 4, y: 4 }] }],
+      them: { vatChat: ['.........', '...s.....', '.........', '.........', '.........', '.........'] },
+      doi: [may('CH', { x: 1, y: 4, huong: 1 }, { co: [{ x: 7, y: 4 }] }), khe({ x: 6, y: 2, huong: 3 }, { son: 'lam', co: [{ x: 6, y: 4 }] })],
+      lapRap: lapR2(['hai-banh', 'gai', 'drone'], ['kep', 'nam-cham'], [], 8, [
+        cach('gai', 'kep', null, [['wait_n(7)', 'forward(6)'],
+          ['forward(3)', 'turn_right()', 'pick()', 'turn_right()', 'turn_right()', 'drop()', 'turn_right()', 'move()', 'turn_left()', 'forward(2)', 'turn_left()', 'forward(4)']]),
+        cach('drone', 'nam-cham', null, [['wait_n(6)', 'forward(6)'],
+          ['for i in range(3):', '    go_left()', 'go_up()', 'magnet_n()', 'wait()', 'go_down()', 'go_down()', 'magnet_off()', 'go_down()', 'fly_right(3)']])
+      ]),
+      maMau: doiBai([['wait_n(7)', 'forward(6)'], []]),
+      sao: { o: 42, nhip: 23 },
+      goiY: ['Bánh gai dừng được giữa dải bùn.', 'Drone đắt hơn mà nhanh hơn.'],
+      cauDo: { doi: null, lap: 'gai+kep', coChe: ['bun', 'ho', 'nut-de', 'cua', 'sat'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manCK('lap-kho-hang', 10, 'trum', {
-      ten: 'Hợp tấu hàm play_part: Đoạn 1 Kìa con bướm vàng',
-      r1: R1_KHO_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '1 1 5 5 6 6 5 5', r2: '1 3 5 3 4 4 1 1' },
-      hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Màn kết Gói 1: Hãy dùng hàm play_part(notes) vừa chế tạo để R1 và R2 cùng biểu diễn Đoạn 1 bài "Kìa con bướm vàng" với 2 bè hòa âm 8 nhịp: R1 gọi play_part([1, 1, 5, 5, 6, 6, 5, 5]), còn R2 gọi play_part([1, 3, 5, 3, 4, 4, 1, 1])!',
-      veMaMau: 'Gọi hàm play_part([1, 3, 5, 3, 4, 4, 1, 1]) cho R2.',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 5, 3])']),
-      loiGiai: baiDoi(['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 5, 3, 4, 4, 1, 1])']),
+    // 20 · song ca đoạn 1 "Kìa con bướm vàng" (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 1 3 5 3 4 4 1 1): mỗi bạn vừa hát vừa đi một ô một nốt (hàm walk_sing).
+    //      Đá chuông nốt 4 chắn lối xe chở hàng: Luna hát nốt 4 khi tới gần thì đá vỡ. Bánh gai hát trên bùn đúng nhịp; hai bánh vào bùn trượt một mạch rơi hố,
+    //      nên hai bánh phải vòng lối dưới (rẻ hơn, chậm hơn, xe chở hàng chờ thêm).
+    man9('lap-kho-hang', 10, 'trum', {
+      ten: 'Song ca qua bùn',
+      hamCuaEmCan: HAM_EM.concat(['play_note']),
+      deBai: 'Mừng kho sạch bùn! Hai bạn vừa hát vừa đi. Luna hát nốt 4 làm vỡ đá chuông cho xe chở hàng.',
+      veMaMau: 'Hàm walk_sing: mỗi nốt đi một ô.',
+      san: ['############', '#........F##', '#.IIIIIIIIu#', '#........F##', '############'],
+      them: { daChuong: [{ x: 7, y: 1, not: 4, ben: 1 }] },
+      doi: [may('CH', { x: 1, y: 1, huong: 1 }, { co: [{ x: 9, y: 1 }], tay: 'loa', boHam: ['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'], themHam: ['note', 'beat'], phatNot: true }),
+        khe({ x: 1, y: 2, huong: 1 }, { son: 'lam', co: [{ x: 9, y: 3 }] })],
+      lapRap: lapR2(['hai-banh', 'gai'], ['loa'], [], 7, [
+        cach('gai', 'loa', null, [['walk_sing([1, 1, 5, 5, 6, 6, 5, 5])'], ['walk_sing([1, 3, 5, 3, 4, 4, 1, 1])', 'turn_right()', 'move()']], [H_WALK_SING]),
+        cach('hai-banh', 'loa', null, [['wait_n(4)', 'walk_sing([1, 1, 5, 5, 6, 6, 5, 5])'], ['turn_right()', 'move()', 'turn_left()', 'walk_sing([1, 3, 5, 3, 4, 4, 1, 1])']], [H_WALK_SING])
+      ]),
+      maMau: { doi: [{ chinh: ['walk_sing([1, 1, 5, 5, 6, 6, 5, 5])'] }, { chinh: [] }], hamCuaMan: [], hamCuaEmMoi: [clone(H_WALK_SING)] },
       loiSai: [
-        { moTa: 'R2 truyền thiếu 4 nốt cuối trong play_part(...)', baiLam: baiDoi(['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 5, 3])']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 thiếu nốt 4: đá chuông còn, xe chở hàng kẹt', baiLam: doiBai([['walk_sing([1, 1, 5, 5, 6, 6, 5, 5])'], ['walk_sing([1, 3, 5, 3, 1, 1, 1, 1])', 'turn_right()', 'move()']]), hamCuaEmMoi: [clone(H_WALK_SING)], phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Ở chương trình R2, gọi play_part([1, 3, 5, 3, 4, 4, 1, 1]).']
-    })
+      sao: { o: 14, nhip: 12 },
+      goiY: ['Bè 2: [1, 3, 5, 3, 4, 4, 1, 1].', 'Hai bánh vào bùn là trượt tới hố.'],
+      cauDo: { doi: null, lap: 'gai+loa', coChe: ['loa', 'da-chuong', 'bun', 'ho'], cuu: null, meo: 'song-song' }
+    }),
+
   ];
 })();
