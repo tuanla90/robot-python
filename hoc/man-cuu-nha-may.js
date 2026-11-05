@@ -98,6 +98,11 @@
   function lapR2(than, tay, cam, nganSach, cachLap, them) {
     return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
   }
+  /** R2 đã lắp sẵn (màn show chương 2, lai L1): cần cẩu + nam châm trên đầu cần (cầu trục từ), như LapRap.apDung lắp ra; màn khai moLai ['L1']. */
+  var CAU_TU = {
+    loaiRobot: 'cau', robot: { than: 'cau', tay: 'nam-cham', camBien: [], son: 'lam' },
+    hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'magnet_n', 'magnet_s', 'magnet_off']
+  };
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -425,19 +430,21 @@
     /* ========================================================================
        CHƯƠNG 2: lap-nha-may (10 màn)
        ======================================================================== */
-    manNM('lap-nha-may', 1, 'lam-quen', {
-      ten: 'Quan sát hàm valve_step mở van tiến bước',
-      chiChay: true, r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'lob', 'slide_r', 'squirt'],
-      deBai: 'Sang chương Lập trình cứu Nhà máy, em sẽ chế tạo các hàm phối hợp cho đội cứu hộ! Trong màn làm quen này, R2 gọi lob() lấp hố u(2, 1) trước cho R1 rồi trượt sang F(3, 3), trong khi R1 chờ 2 nhịp rồi tiến 2 ô qua ô hố đã lấp (2, 1) vào F(3, 1). Nhấn Chạy để xem!',
-      veMaMau: 'Quan sát R1 tiến qua hố nhờ lệnh lob() của R2.',
-      san: ['######', '#.uFF#', '##o###', '##.F##', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      co: [[{ x: 3, y: 1 }], [{ x: 3, y: 3 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(2)'], ['lob()', 'slide_r(1)']),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(2)'], ['lob()', 'slide_r(1)']),
-      sao: { o: 18, nhip: 5 },
-      goiY: ['Nhấn Chạy để xem R2 lấp hố cho R1 tiến về cờ.']
+    // 11 · show (lai L1): Luna lắp sẵn cẩu + nam châm (cầu trục từ, khoá). Thanh sắt vụn rơi chắn lối xe cứu hỏa; cầu trục hút sắt, vươn cần thả vào khe máy;
+    //      xe cứu hỏa ủi thùng nặng vào ô đích. Bấm Chạy là thấy. Cẩu không tới cờ nên mục tiêu day-thung.
+    man9('lap-nha-may', 1, 'lam-quen', {
+      ten: 'Cầu trục từ',
+      chiChay: true, mucTieu: 'day-thung',
+      deBai: 'Luna lắp cẩu với nam châm: cầu trục từ. Cầu trục hút sắt vụn khỏi lối. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem cầu trục làm gì.',
+      san: ['###.###', '#..o.HD', '###.###', '###.###', '#######'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), Object.assign({ batDau: { x: 3, y: 3, nac: 0, tam: 2 } }, clone(CAU_TU))],
+      them: { moLai: ['L1'], vatChat: ['.......', '...s...', '.......', '.......', '.......'] },
+      maMau: doiBai([['wait()', 'forward(4)'], ['magnet_n()', 'extend()', 'magnet_off()']]),
+      loiGiai: doiBai([['wait()', 'forward(4)'], ['magnet_n()', 'extend()', 'magnet_off()']]),
+      sao: { o: 12, nhip: 6 },
+      goiY: ['Nam châm trên đầu cần hút sắt ở ô dưới đầu cần.'],
+      cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'thung-nang', 'qua-tuong'], cuu: 'hang', meo: 'don-loi' }
     }),
 
     manNM('lap-nha-may', 2, 'lam-quen', {
