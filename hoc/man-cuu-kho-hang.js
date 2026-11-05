@@ -43,6 +43,7 @@
     hamGoc: BANH.concat(['retract_spikes', 'extend_spikes', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'front_clear', 'left_clear', 'right_clear'])
   };
   /** Hàm của em ở màn song ca chương 2: mỗi nốt đi một ô (ôn def + for). */
+  var H_PLAY_PART = { ten: 'play_part', thamSo: ['notes'], than: ['for n in notes:', '    play_note(n)'] };   // các gói sau (đoạn 2–10 song ca) gọi play_part: tạo ở cuu-kho-hang.10
   var H_WALK_SING = { ten: 'walk_sing', thamSo: ['notes'], than: ['for n in notes:', '    note(n)', '    move()'] };
   /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
   function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
@@ -291,20 +292,22 @@
     man9('cuu-kho-hang', 10, 'trum', {
       ten: 'Song ca nhà kho',
       mucTieu: 'choi-dieu',
-      deBai: 'Mừng kho sạch bùn! Sola bè 1, Luna bè 2. Hát đúng nốt, đá chuông vỡ.',
-      veMaMau: 'Bè 2 mới có 4 nốt.',
+      deBai: 'Mừng kho sạch bùn! Viết hàm play_part(notes): hát lần lượt từng nốt. Hát đúng nốt, đá chuông vỡ.',
+      veMaMau: 'Hàm play_part chưa có.',
       hamCuaEmCan: ['play_note'],
+      taoHam: ['play_part'],
       san: ['#######', '#.....#', '#.....#', '#######'],
       doi: [may('CH', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'], themHam: ['note', 'beat'], phatNot: true }),
         may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam' })],
       them: { dieu: { r1: '1 1 5 5 6 6 5 5', r2: '1 3 5 3 4 4 1 1' }, daChuong: [{ x: 5, y: 1, not: 5, ben: 1 }, { x: 5, y: 2, not: 4, ben: 1 }] },
-      maMau: doiBai([['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'], ['for n in [1, 3, 5, 3]:', '    play_note(n)']]),
-      loiGiai: doiBai([['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'], ['for n in [1, 3, 5, 3, 4, 4, 1, 1]:', '    play_note(n)']]),
+      maMau: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 5, 3, 4, 4, 1, 1])']]),
+      loiGiai: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 5, 3, 4, 4, 1, 1])']], [], [H_PLAY_PART]),
       loiSai: [
-        { moTa: 'Bè 2 thiếu 4 nốt cuối', baiLam: doiBai([['for n in [1, 1, 5, 5, 6, 6, 5, 5]:', '    play_note(n)'], ['for n in [1, 3, 5, 3]:', '    play_note(n)']]), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Thân for trong play_part để trống', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 5, 3, 4, 4, 1, 1])']]), hamCuaEmMoi: [{ ten: 'play_part', thamSo: ['notes'], than: ['for n in notes:'] }], phaiCoMa: ['loi-cu-phap'] },
+        { moTa: 'Bè 2 thiếu 4 nốt cuối', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 5, 3])']]), hamCuaEmMoi: [clone(H_PLAY_PART)], phaiCoMa: ['lo-nhip'] }
       ],
       sao: { o: 7, nhip: 9 },
-      goiY: ['Bè 2: [1, 3, 5, 3, 4, 4, 1, 1].'],
+      goiY: ['Trong for n in notes:, gọi play_note(n).'],
       cauDo: { doi: ['CH', 'HD'], lap: null, coChe: ['loa', 'da-chuong'], cuu: null, meo: 'song-song' }
     }),
 
