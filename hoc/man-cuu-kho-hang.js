@@ -260,40 +260,55 @@
       cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'ho'], cuu: 'hang', meo: 'song-song' }
     }),
 
-    manCK('cuu-kho-hang', 5, 'cung-co', {
-      ten: 'Tay xoay chuyền kiện hàng qua vách',
-      r2: R1_KHO, mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'pick', 'drop_right'],
-      deBai: 'Kiện hàng o nằm ở (1, 1) phía trước R1, còn ô đích D nằm ở (3, 3) bên phải R2. R1 ở (1, 2) hướng lên đã gọi pick(), wait(), drop_right() thả kiện hàng sang ô trung chuyển (2, 2). Hãy viết lệnh cho R2 ở (2, 3) hướng lên: chờ 5 nhịp bằng wait_n(5), gọi pick(), wait() rồi gọi drop_right() thả vào D(3, 3).',
-      veMaMau: 'R2 chưa gọi wait() và drop_right() để thả kiện hàng vào ô đích D(3, 3).',
-      san: ['#####', '#o###', '#...#', '##.D#', '#####'],
-      bd: [{ x: 1, y: 2, huong: 0 }, { x: 2, y: 3, huong: 0 }],
-      maMau: baiDoi(['pick()', 'wait()', 'drop_right()'], ['wait_n(5)', 'pick()']),
-      loiGiai: baiDoi(['pick()', 'wait()', 'drop_right()'], ['wait_n(5)', 'pick()', 'wait()', 'drop_right()']),
+    // 5 · cứu người: thùng đổ chắn lối tới nút; xe chở hàng nhấc thùng (dọn lối), bánh gai qua ô đó, dừng giữa dải bùn, rẽ xuống nút M giữ cửa cho thủ kho ra trạm cứu.
+    man9('cuu-kho-hang', 5, 'cung-co', {
+      ten: 'Thủ kho kẹt',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Thủ kho kẹt sau cửa C. Thùng chắn lối tới nút M. Mở cửa cho bác ra trạm cứu.',
+      veMaMau: 'Xe chở hàng chưa làm gì.',
+      san: ['##########', '#..oIIIu##', '###.#M####', '#..C....##', '##########'],
+      noi: [{ nut: { x: 5, y: 2 }, cua: [{ x: 3, y: 3 }] }],
+      doi: [khe({ x: 3, y: 2, huong: 0 }), khe({ x: 1, y: 1, huong: 1 })],
+      them: { nguoi: [{ x: 1, y: 3 }], tramCuu: [{ x: 7, y: 3 }] },
+      chonDoi: {
+        menu: ['CH', 'HD', 'DR'],
+        cachMau: [{ chon: ['CH', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['pick()'],
+          ['forward(4)', 'turn_right()', 'move()', 'wait_n(5)']]) }]
+      },
+      maMau: doiBai([[], ['forward(4)', 'turn_right()', 'move()', 'wait_n(5)']]),
       loiSai: [
-        { moTa: 'R2 chỉ gắp mà chưa gọi wait(), drop_right() thả sang ô đích D(3, 3)', baiLam: baiDoi(['pick()', 'wait()', 'drop_right()'], ['wait_n(5)', 'pick()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không ai nhấc thùng: bánh gai đụng thùng', baiLam: doiBai([[], ['forward(4)', 'turn_right()', 'move()', 'wait_n(5)']]), phaiCoMa: ['dam-tuong', 'chua-cuu-nguoi'] }
       ],
-      sao: { o: 21, nhip: 9 },
-      goiY: ['Sau khi gọi pick() gắp kiện hàng ở (2, 2), R2 gọi wait() rồi drop_right() để xoay tay sang phải và thả vào D(3, 3).']
+      sao: { o: 23, nhip: 13 },
+      goiY: ['Xe chở hàng nhấc thùng: pick().'],
+      cauDo: { doi: ['CH', 'HD'], lap: null, coChe: ['bun', 'nut-de', 'cua', 'thung'], cuu: 'nguoi', meo: 'don-loi' }
     }),
 
-    manCK('cuu-kho-hang', 6, 'cung-co', {
-      ten: 'Bánh gai phá đá chuông mở hành lang kho',
-      r2: R_GAI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'play_note'],
-      deBai: 'Một tảng đá chuông nốt 4 chắn hành lang kho ở (3, 1). R2 (xe bánh gai gắn loa Mùa 8) đứng ở (3, 2) hướng lên ngay sát tảng đá chuông: hãy cho R2 gọi play_note(listen()) phá đá chuông giúp R1 rồi gọi turn_right(), move() sang cờ F(4, 2); R1 chờ 1 nhịp rồi tiến 3 ô vào cờ F(4, 1).',
-      veMaMau: 'R2 chưa gọi play_note(listen()) nên đá chuông vẫn chắn đường R1.',
-      san: ['######', '#...F#', '###.F#', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 2, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 4, y: 2 }]],
-      daChuong: [{ x: 3, y: 1, not: 4, ben: 1 }],
-      maMau: baiDoi(['wait()', 'forward(3)'], ['turn_right()', 'move()']),
-      loiGiai: baiDoi(['wait()', 'forward(3)'], ['play_note(listen())', 'turn_right()', 'move()']),
+    // 6 · cứu người, hai khách: drone rắc cát ô rẽ (10, 1); bánh gai THU GAI trượt cả dải trong một nhịp, dừng ở ô cát, rẽ xuống nút M, hát nốt 3 phá đá chuông chắn lối người.
+    //     Đi bộ bung gai từng ô cũng tới nhưng quá trần nhịp; xe chở hàng (bẫy) trượt tới được nhưng không có loa.
+    man9('cuu-kho-hang', 6, 'cung-co', {
+      ten: 'Trượt cho nhanh',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Cứu người thật nhanh. Bánh gai thu gai thì trượt cả dải. Cát giúp dừng đúng ô.',
+      veMaMau: 'Bánh gai đi từng ô: chậm quá.',
+      san: ['#############', '#.IIIIIIIIIu#', '##########M##', '#######.C..##', '#############'],
+      noi: [{ nut: { x: 10, y: 2 }, cua: [{ x: 8, y: 3 }] }],
+      doi: [khe({ x: 1, y: 1, huong: 1 }), khe({ x: 10, y: 1, huong: 3 })],
+      them: { nguoi: [{ x: 7, y: 3 }], tramCuu: [{ x: 10, y: 3 }], daChuong: [{ x: 9, y: 3, not: 3, ben: 1 }] },
+      chonDoi: {
+        menu: ['CH', 'DR', 'HD'],
+        cachMau: [{ chon: ['HD', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['wait()', 'retract_spikes()', 'move()', 'turn_right()', 'move()', 'note(3)', 'wait()'],
+          ['dot()', 'go_right()']]) }]
+      },
+      maMau: doiBai([['forward(9)', 'turn_right()', 'move()', 'note(3)', 'wait()'], []]),
       loiSai: [
-        { moTa: 'R2 không phát nốt phá đá chuông: R1 đâm vào đá chuông ở (3, 1)', baiLam: baiDoi(['wait()', 'forward(3)'], ['turn_right()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Thu gai mà chưa có cát: trượt rơi hố', baiLam: doiBai([['retract_spikes()', 'move()', 'turn_right()', 'move()', 'note(3)', 'wait()'], []]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 13, nhip: 4 },
-      goiY: ['R2 gọi play_note(listen()) để đọc tần số và phá đá chuông (3, 1), rồi gọi turn_right(), move() sang F(4, 2).']
+      sao: { o: 17, nhip: 8 },
+      goiY: ['retract_spikes() rồi move(): trượt tới ô có cát.'],
+      cauDo: { doi: ['DR', 'HD'], lap: null, coChe: ['bun', 'rac-cat', 'nut-de', 'da-chuong'], cuu: 'nguoi', meo: 'lam-cau' }
     }),
 
     manCK('cuu-kho-hang', 7, 'van-dung', {
