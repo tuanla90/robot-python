@@ -626,42 +626,55 @@
       cauDo: { doi: null, lap: 'drone+son', coChe: ['dau-tron', 'rac-cat', 'ho', 'thung-nang', 'nguoi'], cuu: 'nguoi', meo: 'lam-cau' }
     }),
 
-    manNM('lap-nha-may', 9, 'bien-the', {
-      ten: 'Tổng duyệt liên quân Nhà máy - Hang động',
-      r2: R_GAI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'play_note', 'echo_glide', 'valve_step'],
-      deBai: 'Tổng duyệt trước màn hợp tấu! R2 (bánh gai) đứng ở (2, 2) hướng lên gọi play_note(listen()) phá đá chuông (2, 1) cho R1, rồi quay đầu u_turn(), tiến xuống (2, 3), rẽ trái và tiến 2 ô qua cửa C(3, 3) vào F(4, 3). Còn R1 chờ 1 nhịp, tiến lên (2, 1) rồi gọi valve_step(1) phun van N(4, 1) mở cửa C(3, 3) cho R2 và tiến vào F(3, 1)!',
-      veMaMau: 'Phối hợp play_note(listen()) của R2 và valve_step(1) của R1.',
-      san: ['######', '#..FN#', '##.###', '##.CF#', '######'],
-      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 3, y: 3 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 0 }],
-      co: [[{ x: 3, y: 1 }], [{ x: 4, y: 3 }]],
-      daChuong: [{ x: 2, y: 1, not: 6, ben: 1 }],
-      maMau: baiDoi(['wait()', 'move()'], ['play_note(listen())', 'u_turn()', 'move()', 'turn_left()']),
-      loiGiai: baiDoi(['wait()', 'move()', 'valve_step(1)'], ['play_note(listen())', 'u_turn()', 'move()', 'turn_left()', 'forward(2)']),
+    // 19 · ⟨nhện, cẩu⟩ + nam châm, đọc rồi chọn: thanh sắt chắn lối xe cứu hỏa, giữa khe và sắt là hố, trên sắt là hốc trống.
+    //      Nhện (rẻ): bật nam châm bụng, nhảy qua hố đáp lên sắt, leo lên hốc. Cẩu (nhanh, đắt): vươn cần hút sắt, vươn tiếp thả vào hốc.
+    //      (Bảng ghi cẩu rẻ, nhện nhanh; giá part thật ngược lại: cẩu 6, nhện 4.)
+    man9('lap-nha-may', 9, 'bien-the', {
+      ten: 'Nhện hay cẩu',
+      mucTieu: 'day-thung',
+      deBai: 'Thanh sắt chắn lối, trước nó là hố. Nhện nhảy hố hay cẩu vươn cần? Xem giá, xem nhịp rồi chọn.',
+      veMaMau: 'Robot chưa làm gì.',
+      san: ['####.####', '#...o.HD#', '####u####', '####.####', '#########'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam' })],
+      them: { vatChat: ['.........', '....s....', '.........', '.........', '.........'] },
+      lapRap: lapR2(['nhen', 'cau'], ['nam-cham', 'kep'], [], 9, [
+        cach('nhen', 'nam-cham', null, [['wait_n(3)', 'forward(5)'], ['magnet_n()', 'jump("U")', 'go_up()']]),
+        cach('cau', 'nam-cham', null, [['forward(5)'], ['extend()', 'magnet_n()', 'extend()', 'magnet_off()']])
+      ], { moLai: ['L1'] }),
+      maMau: doiBai([['wait_n(3)', 'forward(5)'], []]),
       loiSai: [
-        { moTa: 'R1 chưa gọi valve_step(1) mở cửa C(3, 3) và R2 chưa đi qua cửa C vào F(4, 3)', baiLam: baiDoi(['wait()', 'move()'], ['play_note(listen())']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Nhện nhảy mà quên bật nam châm: đáp lên sắt rồi đi, sắt còn trên lối', baiLam: doiBai([['wait_n(3)', 'forward(5)'], ['jump("U")', 'go_up()']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 25, nhip: 6 },
-      goiY: ['R1 gọi wait(), move(), valve_step(1); R2 gọi play_note(listen()), u_turn(), move(), turn_left(), forward(2).']
+      sao: { o: 29, nhip: 10 },
+      goiY: ['Nam châm bụng nhện hút sắt ở ô nhện đứng.', 'Cẩu: extend() tới ô sắt, magnet_n(), extend() thêm rồi thả.'],
+      cauDo: { doi: null, lap: 'nhen+nam-cham', coChe: ['sat', 'ho', 'nhay', 'thung-nang'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manNM('lap-nha-may', 10, 'trum', {
-      ten: 'Hợp tấu hàm play_part: Đoạn 2 Kìa con bướm vàng',
-      r1: R1_XICH_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '4 4 3 3 2 2 1 1', r2: '2 4 1 3 5 5 1 1' },
-      hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Màn kết Gói 2: Hãy dùng hàm play_part(notes) cho cả R1 và R2 để biểu diễn trọn vẹn Đoạn 2 bài "Kìa con bướm vàng" ("Em ngồi xem, em ngồi xem"): R1 gọi play_part([4, 4, 3, 3, 2, 2, 1, 1]), còn R2 gọi play_part([2, 4, 1, 3, 5, 5, 1, 1])!',
-      veMaMau: 'Gọi play_part([2, 4, 1, 3, 5, 5, 1, 1]) cho R2 để hoàn thành bản hợp tấu.',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([2, 4, 1, 3])']),
-      loiGiai: baiDoi(['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([2, 4, 1, 3, 5, 5, 1, 1])']),
+    // 20 · ⟨omni, xích⟩ + loa, song ca đoạn 2 "Kìa con bướm vàng" (play_part, cuu-kho-hang.10 tạo): đá chuông nốt 5 chắn lối xe cứu hỏa; chỉ bè 2
+    //      có nốt 5 (ben 1: ben 2 không dùng được vì bè 1 hát nốt 2 cùng nhịp, xe cứu hỏa nhìn thẳng vào đá, nốt khác làm đá về 0). Luna đứng xa đá; omni trượt ngang ba ô vào tầm (nhanh), xích phải quay rồi mới đi (rẻ hơn, chậm hơn).
+    //      Xe cứu hỏa chờ bằng đúng số nhịp Luna di chuyển để hai bè vào cùng lúc, hát xong thì đi qua chỗ đá vỡ về cờ.
+    //      (Bảng: "omni hát đi ngang theo nhịp giữa hai hàng máy". Đội choi-dieu có cờ thì lõi chưa cho thắng — xeToiCo chỉ ghi ở mục tiêu toi-co — nên dùng toi-co như G1.)
+    man9('lap-nha-may', 10, 'trum', {
+      ten: 'Song ca giữa hai hàng máy',
+      hamCuaEmCan: HAM_EM.concat(['play_note', 'play_part', 'slide_r']),
+      deBai: 'Nhà máy chạy lại rồi! Song ca đoạn 2. Đá chuông nốt 5 chắn lối: phải hát nốt 5 ở gần đá.',
+      veMaMau: 'Xe cứu hỏa đã có bè 1.',
+      san: ['##########', '#......F##', '#####.####', '#....F####', '##########'],
+      them: { daChuong: [{ x: 5, y: 1, not: 5, ben: 1 }] },
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }, { co: [{ x: 7, y: 1 }], tay: 'loa', boHam: ['spray', 'spray_back'], themHam: ['note', 'beat'], phatNot: true }),
+        khe({ x: 1, y: 3, huong: 0 }, { son: 'lam', co: [{ x: 5, y: 3 }] })],
+      lapRap: lapR2(['omni', 'xich'], ['loa'], [], 7, [
+        cach('omni', 'loa', null, [['wait_n(3)', 'play_part([4, 4, 3, 3, 2, 2, 1, 1])', 'forward(6)'], ['slide_r(3)', 'play_part([2, 4, 1, 3, 5, 5, 1, 1])', 'slide_r(1)']]),
+        cach('xich', 'loa', null, [['wait_n(5)', 'play_part([4, 4, 3, 3, 2, 2, 1, 1])', 'forward(6)'], ['tr_right()', 'forward(3)', 'play_part([2, 4, 1, 3, 5, 5, 1, 1])', 'move()']])
+      ]),
+      maMau: doiBai([['wait_n(3)', 'play_part([4, 4, 3, 3, 2, 2, 1, 1])', 'forward(6)'], ['slide_r(3)']]),
       loiSai: [
-        { moTa: 'Danh sách nốt của R2 mới có 4 nốt, thiếu 4 nốt cuối [5, 5, 1, 1]', baiLam: baiDoi(['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([2, 4, 1, 3])']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 hát ngay tại khe: đá chuông xa quá, không vỡ', baiLam: doiBai([['wait_n(3)', 'play_part([4, 4, 3, 3, 2, 2, 1, 1])', 'forward(6)'], ['play_part([2, 4, 1, 3, 5, 5, 1, 1])', 'slide_r(4)']]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Bè 2 hát nhầm bè 1 (không có nốt 5): đá chuông còn', baiLam: doiBai([['wait_n(3)', 'play_part([4, 4, 3, 3, 2, 2, 1, 1])', 'forward(6)'], ['slide_r(3)', 'play_part([4, 4, 3, 3, 2, 2, 1, 1])', 'slide_r(1)']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Điền đủ 8 nốt [2, 4, 1, 3, 5, 5, 1, 1] vào lệnh play_part(...) của R2.']
-    })
+      sao: { o: 24, nhip: 20 },
+      goiY: ['Bè 2: play_part([2, 4, 1, 3, 5, 5, 1, 1]).', 'Đá chuông vỡ khi nghe nốt 5 từ gần (tối đa 3 ô).'],
+      cauDo: { doi: null, lap: 'omni+loa', coChe: ['loa', 'da-chuong', 'truot-ngang'], cuu: null, meo: 'song-song' }
+    }),
   ];
 })();
