@@ -547,41 +547,55 @@
       cauDo: { doi: null, lap: 'omni+hoi+hong-ngoai', coChe: ['nut-ban', 'cua', 'thung-nang', 'cam-bien'], cuu: 'hang', meo: 'giu-cua' }
     }),
 
-    manNM('lap-nha-may', 6, 'cung-co', {
-      ten: 'Chế tạo hàm lob_clear lấp hố theo tầm',
-      r2: R_OMNI,
-      taoHam: ['lob_clear'],
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'aim_lob', 'slide_r', 'valve_step'],
-      deBai: 'Hãy chế tạo hàm lob_clear(d) cho R2 (robot omni) gồm 2 lệnh: aim_lob(d) để nạp đá phía trước và hất đúng tầm d lấp hố cho R1, rồi slide_r(1) để trượt sang cờ F! Ở chương trình chính, R2 gọi lob_clear(2) lấp hố u(2, 1) và về F(3, 3); R1 chờ 2 nhịp rồi tiến 3 ô qua ô hố đã lấp về F(4, 1).',
-      veMaMau: 'Hoàn thiện hàm lob_clear(d) và gọi lob_clear(2) cho R2.',
-      san: ['######', '#.u.F#', '##o###', '##.F##', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 3, y: 3 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(3)'], ['lob_clear(2)']),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(3)'], ['lob_clear(2)'], [H_LOB_CLEAR]),
+    // 16 · bánh gai + vòi phun: vệt dầu dài (ô I) dẫn tới chỗ đứng phun nút N; cuối vệt là hố. Bánh gai bung gai bám dầu, dừng đúng ô, quay lên phun nhẹ:
+    //      nút bật, cửa C mở và giữ mở cho xe cứu hỏa. Xe hai bánh vào dầu là trượt xuống hố. Cách hai rẻ hơn: hai bánh vòng hành lang khô bên dưới,
+    //      đi lên ô dầu dưới nút thì trượt một ô tới sát nút rồi phun (chậm, dài).
+    man9('lap-nha-may', 6, 'cung-co', {
+      ten: 'Bám vệt dầu',
+      mucTieu: 'day-thung',
+      hamCuaEmCan: HAM_EM.concat(['turn_left', 'turn_right']),
+      deBai: 'Cửa C đóng. Nút N ở cuối vệt dầu trơn, cạnh hố. Lắp robot tới tầm phun nút cho xe cứu hỏa qua cửa.',
+      veMaMau: 'Robot mới tới đầu vệt dầu.',
+      san: ['#########', '#.C...HD#', '###N#####', '###.#####', '#uIIIIII.', '###......', '#########'].map(function (h) { return (h + '#').slice(0, 9); }),
+      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 2, y: 1 }] }],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 8, y: 4, huong: 3 }, { son: 'lam' })],
+      them: { lucBan: true },
+      lapRap: lapR2(['gai', 'hai-banh'], ['hoi', 'kep'], [], 7, [
+        cach('gai', 'hoi', null, [['wait_n(7)', 'forward(5)'], ['forward(5)', 'turn_right()', 'squirt("low")']]),
+        cach('hai-banh', 'hoi', null, [['wait_n(11)', 'forward(5)'], ['turn_left()', 'move()', 'turn_right()', 'forward(5)', 'turn_right()', 'move()', 'squirt("low")']])
+      ]),
+      maMau: doiBai([['wait_n(7)', 'forward(5)'], ['move()']]),
       loiSai: [
-        { moTa: 'Hàm lob_clear(d) thiếu aim_lob(d) nên hố u(2, 1) chưa được lấp', baiLam: baiDoi(['wait_n(2)', 'forward(3)'], ['lob_clear(2)']), hamCuaEmMoi: [{ ten: 'lob_clear', thamSo: ['d'], than: ['slide_r(1)'] }], phaiCoMa: ['roi-ho'] }
+        { moTa: 'Đi quá một ô trên dầu: đứng lệch, phun trúng tường', baiLam: doiBai([['wait_n(7)', 'forward(5)'], ['forward(6)', 'turn_right()', 'squirt("low")']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 21, nhip: 5 },
-      goiY: ['Trong hàm lob_clear(d), gọi aim_lob(d) trước rồi gọi slide_r(1).']
+      sao: { o: 19, nhip: 14 },
+      goiY: ['Bánh gai đang bung gai: đi trên dầu không trượt.', 'Đứng ngay dưới nút, quay lên rồi phun.'],
+      cauDo: { doi: null, lap: 'gai+hoi', coChe: ['dau-tron', 'ho', 'nut-ban', 'cua', 'thung-nang'], cuu: 'hang', meo: 'giu-cua' }
     }),
 
-    manNM('lap-nha-may', 7, 'van-dung', {
-      ten: 'Hất đá qua rào sắt kết hợp valve_step',
-      r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'aim_lob', 'slide_r', 'valve_step', 'lob_clear'],
-      deBai: 'Hố sâu u(2, 1) trên hành lang của R1 nằm cách R2 3 ô qua hàng rào sắt =(2, 2). Hãy cho R2 gọi lob_clear(3) để hất viên đá o(2, 3) bay 3 ô qua rào sắt lấp hố u(2, 1) rồi trượt sang F(3, 4); R1 chờ 2 nhịp, tiến 1 ô lên (2, 1) rồi gọi valve_step(1) phun van N(4, 1) và tiến vào F(3, 1)!',
-      veMaMau: 'Gọi lob_clear(3) cho R2 và valve_step(1) cho R1.',
-      san: ['######', '#.uFN#', '##=###', '##o###', '##.F##', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      co: [[{ x: 3, y: 1 }], [{ x: 3, y: 4 }]],
-      maMau: baiDoi(['wait_n(2)', 'move()'], ['lob_clear(2)']),
-      loiGiai: baiDoi(['wait_n(2)', 'move()', 'valve_step(1)'], ['lob_clear(3)']),
+    // 17 · hai bánh + nam châm + cảm biến từ, chờ tín hiệu: thanh sắt rơi trên lối xe cứu hỏa. Xe đứng trên băng chuyền, băng chở xe dọc hàng phế liệu.
+    //      Trước sắt có một khối nam châm cực S (không phải sắt): bật nam châm sớm là hút nhầm khối đó (bật cực S thì đẩy nó lên lối). Đọc front_metal() mỗi nhịp,
+    //      thấy sắt mới bật nam châm. Cách hai rẻ hơn: xe hai bánh + tay kẹp để băng chở tới, lên một ô rồi gắp (chậm hơn).
+    //      (Bảng: "sắt rơi trên băng chuyền tới" — lõi không cho băng chở vật nhẹ, nên băng chở xe qua sắt.)
+    man9('lap-nha-may', 7, 'van-dung', {
+      ten: 'Chờ sắt trên băng',
+      mucTieu: 'day-thung',
+      deBai: 'Băng chuyền chở xe dọc hàng phế liệu. Một thanh sắt chắn lối xe cứu hỏa. Khối đỏ xanh là nam châm, không phải sắt.',
+      veMaMau: 'Xe mới chờ một nhịp.',
+      san: ['##########', '#...o..HD#', '##o..#####', '#>>>.#####', '##########'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 0 }, { son: 'lam' })],
+      them: { vatChat: ['..........', '....s.....', '..S.......', '..........', '..........'] },
+      lapRap: lapR2(['hai-banh', 'omni'], ['nam-cham', 'kep'], ['tu'], 7, [
+        cach('hai-banh', 'nam-cham', 'tu', [['wait_n(5)', 'forward(6)'], ['while not front_metal():', '    wait()', 'magnet_n()', 'wait()']]),
+        cach('hai-banh', 'kep', null, [['wait_n(6)', 'forward(6)'], ['wait_n(6)', 'move()', 'pick()']])
+      ]),
+      maMau: doiBai([['wait_n(5)', 'forward(6)'], ['wait()']]),
       loiSai: [
-        { moTa: 'Dùng lob_clear(2) nên đá rơi trúng hàng rào =(2, 2), hố u(2, 1) chưa lấp', baiLam: baiDoi(['wait_n(2)', 'move()', 'valve_step(1)'], ['lob_clear(2)']), phaiCoMa: ['nem-vo', 'roi-ho'] }
+        { moTa: 'Bật nam châm ngay: hút nhầm khối nam châm, sắt còn trên lối', baiLam: doiBai([['wait_n(5)', 'forward(6)'], ['magnet_n()', 'wait()']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 28, nhip: 5 },
-      goiY: ['Sửa lob_clear(2) thành lob_clear(3) ở R2, và thêm valve_step(1) ở cuối R1.']
+      sao: { o: 16, nhip: 13 },
+      goiY: ['front_metal(): vật đầu tiên trước mũi là sắt.', 'while not front_metal(): wait() — chờ tới khi thấy sắt.'],
+      cauDo: { doi: null, lap: 'hai-banh+nam-cham+tu', coChe: ['bang-chuyen', 'sat', 'nam-cham', 'thung-nang'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
 
     manNM('lap-nha-may', 8, 'van-dung', {
