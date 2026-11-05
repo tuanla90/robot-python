@@ -521,43 +521,54 @@
       cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['ho', 'luoi', 'bun'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manCK('lap-kho-hang', 6, 'cung-co', {
-      ten: 'Chế tạo hàm echo_glide cho bánh gai',
-      r2: R_GAI,
-      taoHam: ['echo_glide'],
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'play_note', 'slide_stop'],
-      deBai: 'Hãy định nghĩa hàm echo_glide() cho R2 (robot bánh gai Mùa 8) gồm 2 lệnh: play_note(listen()) để đọc tần số và phá cặp đá chuông ở cả hai làn, sau đó gọi slide_stop() để thu gai trượt qua dải đá ướt I(3, 2) vào cờ F(4, 2)! Ở chương trình chính, R2 gọi echo_glide(), còn R1 chờ 1 nhịp rồi tiến 3 ô vào cờ F(4, 1).',
-      veMaMau: 'Hoàn thiện hàm echo_glide() gồm play_note(listen()) và slide_stop().',
-      san: ['######', '#...F#', '##.IF#', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 4, y: 2 }]],
-      daChuong: [{ x: 3, y: 1, not: 2, ben: 1 }, { x: 3, y: 2, not: 2, ben: 1 }],
-      maMau: baiDoi(['wait()', 'forward(3)'], ['echo_glide()']),
-      loiGiai: baiDoi(['wait()', 'forward(3)'], ['echo_glide()'], [H_ECHO_GLIDE]),
-      loiSai: [
-        { moTa: 'Hàm echo_glide() thiếu slide_stop() nên R2 chưa trượt qua băng I(3, 2) tới F(4, 2)', baiLam: baiDoi(['wait()', 'forward(3)'], ['echo_glide()']), hamCuaEmMoi: [{ ten: 'echo_glide', thamSo: [], than: ['play_note(listen())'] }], phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 24, nhip: 4 },
-      goiY: ['Trong hàm echo_glide(), thêm slide_stop() ngay dưới play_note(listen()).']
+    // 16 · nhện + kẹp: thùng sắt bên kia hố; nhện nhảy hố, gắp (kẹp nhện gắp ô phía trước cố định), nhảy về, đặt trước mũi xe chở hàng; xe chở hàng đưa thùng vào đích.
+    //      Drone + nam châm bay qua hố, hút thùng, thả trước xe: nhanh mà đắt. Tay lưới kéo không được (ô trước mũi là hố).
+    man9('lap-kho-hang', 6, 'cung-co', {
+      ten: 'Nhảy qua hố',
+      mucTieu: 'dua-vat',
+      hamCuaEmCan: HAM_EM.concat(['jump']),
+      deBai: 'Thùng sắt nằm bên kia hố. Lắp xe cho Luna lấy thùng, đặt trước mũi xe chở hàng.',
+      veMaMau: 'Xe chở hàng chờ thùng tới.',
+      san: ['#########', '##.u.o###', '##.######', '##....D##', '#########'],
+      them: { vatChat: ['.........', '.....s...', '.........', '.........', '.........'] },
+      doi: [may('CH', { x: 4, y: 3, huong: 3 }), khe({ x: 2, y: 1, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['nhen', 'drone'], ['kep', 'nam-cham'], [], 8, [
+        cach('nhen', 'kep', null, [['wait_n(13)', 'pick()', 'turn_right()', 'turn_right()', 'move()', 'drop()'],
+          ['jump("R")', 'pick()', 'jump("L")', 'go_down()', 'go_down()', 'drop()']]),
+        cach('drone', 'nam-cham', null, [['wait_n(11)', 'pick()', 'turn_right()', 'turn_right()', 'move()', 'drop()'],
+          ['fly_right(3)', 'magnet_n()', 'wait()', 'for i in range(3):', '    go_left()', 'go_down()', 'go_down()', 'go_right()', 'magnet_off()', 'wait()']])
+      ]),
+      maMau: doiBai([['wait_n(13)', 'pick()', 'turn_right()', 'turn_right()', 'move()', 'drop()'], []]),
+      sao: { o: 48, nhip: 22 },
+      goiY: ['Nhện nhảy qua hố: jump("R").', 'Kẹp của nhện gắp ô bên phải.'],
+      cauDo: { doi: null, lap: 'nhen+kep', coChe: ['ho', 'nhay', 'thung'], cuu: 'hang', meo: 'tiep-suc' }
     }),
 
-    manCK('lap-kho-hang', 7, 'van-dung', {
-      ten: 'Kết hợp echo_glide trên dải đá ướt dài',
-      r2: R_GAI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'play_note', 'slide_stop', 'echo_glide'],
-      deBai: 'Cặp đá chuông nốt 6 ở cột 3 chắn cả hai làn. Hãy cho R2 gọi echo_glide() để phá cả 2 tảng đá chuông và trượt qua dải băng I(3, 2)..I(4, 2) vào cờ F(5, 2); còn R1 chờ 1 nhịp rồi gọi forward(4) tiến thẳng về cờ F(5, 1)!',
-      veMaMau: 'Gọi echo_glide() cho R2 và hoàn thiện lệnh tiến cho R1.',
-      san: ['#######', '#....F#', '##.IIF#', '#######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      co: [[{ x: 5, y: 1 }], [{ x: 5, y: 2 }]],
-      daChuong: [{ x: 3, y: 1, not: 6, ben: 1 }, { x: 3, y: 2, not: 6, ben: 1 }],
-      maMau: baiDoi(['wait()'], ['echo_glide()']),
-      loiGiai: baiDoi(['wait()', 'forward(4)'], ['echo_glide()']),
+    // 17 · drone + nam châm: hòm sắt trên kệ sau hố; drone hút hòm, thả lên nút M, cửa mở cho CẢ HAI xe qua (không ai đứng lại giữ cửa được).
+    //      Nhện + nam châm nhảy hố lấy hòm: rẻ hơn, chậm hơn. Xe đứng lên nút M giữ cửa thì không về được cờ.
+    man9('lap-kho-hang', 7, 'van-dung', {
+      ten: 'Hòm sắt giữ cửa',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['jump']),
+      deBai: 'Hai xe phải qua cửa C. Hòm sắt nằm trên kệ sau hố. Đặt hòm lên nút M giữ cửa.',
+      veMaMau: 'Xe chở hàng chờ cửa mở.',
+      san: ['##########', '#o.u..####', '#####M####', '#.....CFF#', '##########'],
+      noi: [{ nut: { x: 5, y: 2 }, cua: [{ x: 6, y: 3 }] }],
+      them: { vatChat: ['..........', '.s........', '..........', '..........', '..........'] },
+      doi: [may('CH', { x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] }), khe({ x: 5, y: 1, huong: 3 }, { son: 'lam', co: [{ x: 8, y: 3 }] })],
+      lapRap: lapR2(['hai-banh', 'nhen', 'drone'], ['kep', 'nam-cham'], [], 8, [
+        cach('drone', 'nam-cham', null, [['wait_n(7)', 'forward(6)'],
+          ['for i in range(4):', '    go_left()', 'magnet_n()', 'wait()', 'fly_right(4)', 'go_down()', 'magnet_off()', 'go_down()', 'fly_right(3)']]),
+        cach('nhen', 'nam-cham', null, [['wait_n(20)', 'forward(6)'],
+          ['go_left()', 'jump("L")', 'go_left()', 'magnet_n()', 'wait()', 'go_right()', 'jump("R")', 'go_right()', 'go_down()', 'magnet_off()', 'go_down()', 'for i in range(3):', '    go_right()']])
+      ]),
+      maMau: doiBai([['wait_n(7)', 'forward(6)'], []]),
       loiSai: [
-        { moTa: 'R1 chỉ chờ mà chưa gọi forward(4) tới F(5, 1)', baiLam: baiDoi(['wait()'], ['echo_glide()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không đặt hòm lên nút: cửa đóng', baiLam: doiBai([['wait_n(7)', 'forward(6)'], ['go_down()', 'go_down()', 'fly_right(3)']]), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 24, nhip: 5 },
-      goiY: ['Sau wait(), R1 gọi forward(4) để đi tới F(5, 1).']
+      sao: { o: 24, nhip: 17 },
+      goiY: ['Drone bay qua hố. magnet_n() hút hòm, magnet_off() thả.'],
+      cauDo: { doi: null, lap: 'drone+nam-cham', coChe: ['nut-de', 'cua', 'sat', 'ho'], cuu: 'hang', meo: 'giu-cua' }
     }),
 
     manCK('lap-kho-hang', 8, 'van-dung', {
