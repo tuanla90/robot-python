@@ -70,6 +70,11 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨cẩu, nhện⟩ + nam châm | hai cách: cẩu đứng yên (rẻ) hay nhện nhảy hố (nhanh) | hàng | đọc rồi chọn |
 | 20 | ⟨xích, omni⟩ + loa | song ca: omni hát đi ngang theo nhịp giữa hai hàng máy | — | song ca |
 
+> **M9M2 5/11, dừng ở #5 (WIP, hoc/man-cuu-nha-may.js):** đã dựng #1–#5 có `cauDo`; #6–#20 còn bản cũ. Chặn: lõi `san-hoc.js` chưa cho **chồng container chặn** xe / thùng nặng / tia phun
+> (mục 5b ghi "chồng container như tường" nhưng lõi coi ô chồng là sàn). Câu đố dựa vào "container chắn": #1, #2, #3, #5, #6, #7, #8 (7 câu, quá ngưỡng 3 của brief) → chờ user quyết.
+> Lệch đã có: #1 cẩu nhấc container rồi giữ trên móc (khác chuỗi #2); #2 cảm biến `distance()` làm tín hiệu; #3 "chồng giữa" đọc thành "chồng nào còn chỗ" (tối đa 4); #4 `fly_right(3)` là tham số số ô;
+> #5 tạo hàm `valve_step(n)` (squirt("low"), forward(n)) cho các gói sau gọi.
+
 ## G3 Bãi tái chế sau bão (ôn chuỗi, `and` / `or`) · bão: phế liệu gỗ lẫn sắt, khe mới, đệm từ
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |

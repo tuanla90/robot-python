@@ -6,6 +6,9 @@
    - Chương 2 lap-nha-may: R1 xe cứu hỏa đặt sẵn, Luna TỰ LẮP R2 (man.lapRap.robot = 1). Lai ra mắt: L1 cẩu + nam châm, L8 cẩu + gầu, L13 cẩu + cảm biến từ.
    - Mỗi màn khai man.cauDo (máy kiểm hoc/kiem-cau-do-mua-9.mjs). Ôn Python G2: BIẾN (giữ số đọc được, số ô), THAM SỐ (hàm có n).
    - Hàm của em do gói này tạo mà gói sau gọi: valve_step(n) [squirt("low"), forward(n)], push_valve(n) [forward(n), back()] (man-cuu-clb.js, man-cuu-hang-dong.js).
+   - WIP 5/11 (M9M2 dừng chờ user): mới dựng cuu-nha-may.1–5; .6–10 và lap-nha-may.1–10 còn bản CŨ (manNM bên dưới).
+     LÕI CHƯA CHO CONTAINER CHẮN: chồng container (cfg.chong) không chặn xe, thùng nặng hay tia phun (san-hoc.js), nên ở #1, #2, #3, #5 việc cẩu nhấc container
+     chưa thật sự cần (bẫy drone ở #3 vẫn thắng). Chờ user quyết (xem báo cáo M9M2) rồi dựng tiếp.
    - Màn 10 mỗi chương: song ca đoạn 2 "Kìa con bướm vàng" (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 2 4 1 3 5 5 1 1), giữ để gói 10 ghép bài.
    ========================================================================== */
 (function () {
@@ -218,61 +221,79 @@
       cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['bang-chuyen', 'container', 'thung-nang'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
 
-    manNM('cuu-nha-may', 3, 'luyen', {
-      ten: 'Tay hất lấp hố cho xe xích qua băng chuyền',
-      r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'lob', 'slide_r'],
-      deBai: 'Đường của R1 có hố sâu u(2, 1) và dải băng chuyền ngược <(3, 1). R2 (robot omni gắn tay hất) đứng ở (2, 3) trước viên đá o(2, 2): hãy cho R2 gọi lob() lấp hố u(2, 1) rồi trượt phải sang F(3, 3), để R1 chờ 2 nhịp rồi tiến 3 ô vượt qua hố đã lấp và băng chuyền ngược (thân xích không bị băng chuyền đẩy!) vào F(4, 1).',
-      veMaMau: 'R2 chưa gọi lob() lấp hố u(2, 1) cho R1.',
-      san: ['######', '#.u<F#', '##o###', '##.F##', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 3, y: 3 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(3)'], ['slide_r(1)']),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(3)'], ['lob()', 'slide_r(1)']),
+    // 3 · đọc rồi chọn: chồng giữa (2 container) chắn lối thùng; chồng trên đã đầy 4, chồng dưới còn chỗ. Cẩu vươn / thu cần chuyển container sang chồng còn chỗ (biến n = số container).
+    //     Bẫy: drone (bay qua được nhưng không nhấc container, không ủi thùng).
+    man9('cuu-nha-may', 3, 'luyen', {
+      ten: 'Chồng nào còn chỗ',
+      mucTieu: 'day-thung',
+      deBai: 'Chồng giữa chắn lối thùng. Một chồng tối đa 4 container. Chuyển sang chồng còn chỗ.',
+      veMaMau: 'Cẩu mới vươn tới chồng giữa.',
+      san: ['#########', '#####.###', '#..H...D#', '#.###.###', '#RRRRR###', '#########'],
+      doi: [khe({ x: 1, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0 })],
+      them: { chong: [{ x: 5, y: 1, cont: [{ so: 11 }, { so: 12 }, { so: 13 }, { so: 14 }] }, { x: 5, y: 2, cont: [{ so: 21 }, { so: 22 }] }, { x: 5, y: 3, cont: [{ so: 31 }] }] },
+      chonDoi: {
+        menu: ['CU', 'CC', 'DR'],
+        cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['forward(2)', 'tr_right()', 'forward(5)'],
+          ['n = 2', 'for i in range(n):', '    extend()', '    pick_up()', '    retract()', '    set_down()']]) }]
+      },
+      maMau: doiBai([['forward(2)', 'tr_right()', 'forward(5)'], ['extend()']]),
       loiSai: [
-        { moTa: 'R2 quên gọi lob() nên R1 lao xuống hố u(2, 1)', baiLam: baiDoi(['wait_n(2)', 'forward(3)'], ['slide_r(1)']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Hạ container lên chồng trên đã đầy', baiLam: doiBai([['forward(2)', 'tr_right()', 'forward(5)'], ['n = 2', 'for i in range(n):', '    extend()', '    pick_up()', '    extend()', '    set_down()', '    retract()', '    retract()']]), phaiCoMa: ['ha-bi-chan'] }
       ],
-      sao: { o: 18, nhip: 5 },
-      goiY: ['R2 gọi lob() để nạp đá ở (2, 2) và hất tầm 2 ô lấp hố u(2, 1), sau đó gọi slide_r(1) sang F(3, 3).']
+      sao: { o: 22, nhip: 11 },
+      goiY: ['extend() vươn lên, retract() thu về.', 'Đếm container mỗi chồng.'],
+      cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['container', 'chong-day', 'thung-nang'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manNM('cuu-nha-may', 4, 'luyen', {
-      ten: 'Xe kho gắp kiện gỗ mở đường tia hơi',
-      r2: R_BANH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'pick', 'drop_right', 'squirt'],
-      deBai: 'R1 cần phun tia hơi vào van N(5, 1) để mở cửa C(2, 2) cho R2, nhưng kiện gỗ o(3, 1) đang chắn trước van N! R2 ở (3, 2) hướng lên hãy gọi pick(), wait(), drop_right() để gắp kiện gỗ o(3, 1) cất sang (4, 2). R1 chờ 3 nhịp cho kiện gỗ được nhấc lên, tiến 1 ô, gọi squirt("low") phun van N(5, 1) mở cửa C(2, 2), rồi tiến 1 ô vào F(4, 1); sau đó R2 rẽ trái tiến 2 ô qua cửa C(2, 2) tới F(1, 2)!',
-      veMaMau: 'R2 chưa rẽ trái và tiến 2 ô qua cửa C(2, 2) về cờ F(1, 2).',
-      san: ['#######', '#..oFN#', '#FC...#', '#######'],
-      noi: [{ nut: { x: 5, y: 1 }, cua: [{ x: 2, y: 2 }] }],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 3, y: 2, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 1, y: 2 }]],
-      maMau: baiDoi(['wait_n(3)', 'move()', 'squirt("low")', 'move()'], ['pick()', 'wait()', 'drop_right()']),
-      loiGiai: baiDoi(['wait_n(3)', 'move()', 'squirt("low")', 'move()'], ['pick()', 'wait()', 'drop_right()', 'turn_left()', 'forward(2)']),
+    // 4 · làm cầu: vệt dầu trơn trước thùng nặng; xích vào dầu là trượt tới hố. Drone bay fly_right(n) tới ô rẽ, rắc cát; xích dừng ở ô cát, quay, ủi thùng vào đích.
+    man9('cuu-nha-may', 4, 'luyen', {
+      ten: 'Cát trên vệt dầu',
+      mucTieu: 'day-thung',
+      deBai: 'Vệt dầu trơn: xích vào là trượt tới hố. Rắc cát ô nằm dưới thùng để xích dừng lại.',
+      veMaMau: 'Drone chưa tới ô rẽ.',
+      san: ['########', '####D###', '####H###', '#.IIIIu#', '#......#', '########'],
+      doi: [khe({ x: 1, y: 3, huong: 1 }), khe({ x: 1, y: 4, huong: 1 })],
+      chonDoi: {
+        menu: ['CU', 'DR'],
+        cachMau: [{ chon: ['CU', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['wait_n(5)', 'move()', 'tr_left()', 'move()'],
+          ['fly_right(3)', 'go_up()', 'dot()', 'go_down()']]) }]
+      },
+      maMau: doiBai([['wait_n(5)', 'move()', 'tr_left()', 'move()'], []]),
       loiSai: [
-        { moTa: 'R2 gắp cất kiện gỗ xong nhưng chưa rẽ trái đi qua cửa C(2, 2) tới F(1, 2)', baiLam: baiDoi(['wait_n(3)', 'move()', 'squirt("low")', 'move()'], ['pick()', 'wait()', 'drop_right()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không rắc cát: xích trượt rơi hố', baiLam: doiBai([['wait_n(5)', 'move()', 'tr_left()', 'move()'], ['fly_right(3)']]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 25, nhip: 8 },
-      goiY: ['Sau drop_right(), R2 gọi turn_left() rồi forward(2) để đi qua cửa C(2, 2) vào cờ F(1, 2).']
+      sao: { o: 18, nhip: 11 },
+      goiY: ['fly_right(3): bay 3 ô sang phải.'],
+      cauDo: { doi: ['CU', 'DR'], lap: null, coChe: ['dau-tron', 'rac-cat', 'ho', 'thung-nang'], cuu: 'hang', meo: 'lam-cau' }
     }),
 
-    manNM('cuu-nha-may', 5, 'cung-co', {
-      ten: 'Nhện hút sắt trên đường đẩy thùng nặng',
-      r2: R_NHEN,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'pull_s', 'go', 'walk'],
-      deBai: 'R1 ở (2, 1) cần tiến 1 ô đẩy thùng nặng H(3, 1) đè lên nút M(4, 1) để mở cửa C(5, 2) cho R2 rồi lùi 2 ô về cờ F(1, 1), nhưng trên ô nút M(4, 1) đang có mẩu sắt vụn chắn thùng! R2 (robot nhện) đứng ngay trên mẩu sắt tại (4, 1): hãy cho R2 gọi pull_s() hút sắt vào bụng, gọi go("R") bước sang (5, 1), chờ 1 nhịp cho R1 đẩy thùng H đè nút M(4, 1) mở cửa C(5, 2), rồi gọi walk("DD") xuống cờ F(5, 3)!',
-      veMaMau: 'R2 chưa hút sắt ở (4, 1) và bước xuống hành lang dưới qua cửa C(5, 2).',
-      san: ['#######', '#F.HM.#', '#####C#', '#####F#', '#######'],
-      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 5, y: 2 }] }],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 4, y: 1, huong: 1 }],
-      co: [[{ x: 1, y: 1 }], [{ x: 5, y: 3 }]],
-      vatThem: [{ x: 4, y: 1, chat: 'sat' }],
-      maMau: baiDoi(['wait_n(3)', 'move()', 'back()', 'back()'], ['pull_s()']),
-      loiGiai: baiDoi(['wait_n(3)', 'move()', 'back()', 'back()'], ['pull_s()', 'go("R")', 'wait()', 'walk("DD")']),
+    // 5 · cứu người + tạo hàm valve_step(n): công nhân kẹt trong phòng điều khiển sau cửa C. Container chắn ngách van; cẩu nhấc container,
+    //     xích vào ngách, valve_step(1): phun nhẹ trúng van N mở cửa C rồi tiến 1 ô. Bẫy: máy khai thác (không nhấc container, không phun).
+    man9('cuu-nha-may', 5, 'cung-co', {
+      ten: 'Phòng điều khiển',
+      mucTieu: 'cuu-nguoi',
+      taoHam: ['valve_step'],
+      deBai: 'Công nhân kẹt sau cửa C. Van N mở cửa. Viết hàm valve_step(n): phun nhẹ, rồi tiến n ô.',
+      veMaMau: 'Hàm valve_step chưa có.',
+      san: ['#########', '#..C...N#', '#######.#', '######..#', '#####RRR#', '#########'],
+      noi: [{ nut: { x: 7, y: 1 }, cua: [{ x: 3, y: 1 }] }],
+      doi: [khe({ x: 7, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0 })],
+      them: { chong: [{ x: 7, y: 2, cont: [{ so: 5 }] }], nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 5, y: 1 }] },
+      chonDoi: {
+        menu: ['CU', 'CC', 'KT'],
+        cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['move()', 'wait_n(2)', 'valve_step(1)'],
+          ['swing_right()', 'extend()', 'pick_up()', 'retract()', 'set_down()']], [], [H_VALVE_STEP9]) }]
+      },
+      maMau: doiBai([['move()', 'wait_n(2)', 'valve_step(1)'], ['swing_right()', 'extend()', 'pick_up()', 'retract()', 'set_down()']]),
       loiSai: [
-        { moTa: 'R2 chỉ hút sắt mà chưa bước sang phải nhường ô M(4, 1) cho R1 đẩy thùng H', baiLam: baiDoi(['wait_n(3)', 'move()', 'back()', 'back()'], ['pull_s()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thân valve_step thiếu lệnh phun', baiLam: doiBai([['move()', 'wait_n(2)', 'valve_step(1)'], ['swing_right()', 'extend()', 'pick_up()', 'retract()', 'set_down()']]), hamCuaEmMoi: [{ ten: 'valve_step', thamSo: ['n'], than: ['forward(n)'] }], phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Sau pull_s(), R2 gọi go("R") sang (5, 1), gọi wait() chờ R1 đẩy thùng H lên M(4, 1), rồi gọi walk("DD") xuống cờ F(5, 3).']
+      sao: { o: 23, nhip: 9 },
+      goiY: ['Trong valve_step(n): squirt("low") rồi forward(n).'],
+      cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['container', 'van', 'cua'], cuu: 'nguoi', meo: 'don-loi' }
     }),
 
     manNM('cuu-nha-may', 6, 'cung-co', {
