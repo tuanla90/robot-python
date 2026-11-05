@@ -25,7 +25,7 @@
 
   var API = {
     thuTu: ['m1-than', 'm1-che-than', 'm1-tay', 'm1-che-tay', 'm1-cam-bien', 'm1-che-cam-bien',
-      'm1-san', 'm1-che-san', 'm1-nangcap', 'm1-trum',
+      'm1-san', 'm1-che-san', 'm1-trum',
       'demo-nha-may', 'demo-bai-tai-che', 'demo-nong-trai'],
     dot2: [],
     congDot2: null,
@@ -40,8 +40,7 @@
       { ma: 'm1-g2-tay', ten: 'Tay kẹp', sao: 0, mua: 'mua-1', chuong: ['m1-tay', 'm1-che-tay'] },
       { ma: 'm1-g3-camb', ten: 'Cảm biến khoảng cách', sao: 0, mua: 'mua-1', chuong: ['m1-cam-bien', 'm1-che-cam-bien'] },
       { ma: 'm1-g4-san', ten: 'Nút đè', sao: 0, mua: 'mua-1', chuong: ['m1-san', 'm1-che-san'] },
-      { ma: 'm1-g5-nangcap', ten: 'Nâng cấp: đi lùi, cảm biến bên', sao: 0, mua: 'mua-1', chuong: ['m1-nangcap'] },
-      { ma: 'm1-g6-trum', ten: 'Kho hàng xuất xưởng', sao: 0, mua: 'mua-1', chuong: ['m1-trum'] },
+      { ma: 'm1-g5-trum', ten: 'Kho hàng xuất xưởng', sao: 0, mua: 'mua-1', chuong: ['m1-trum'] },
       { ma: 'demo-nha-may', ten: 'Nhà máy (demo)', sao: 0, mua: 'mua-2', chuong: ['demo-nha-may'] },
       { ma: 'demo-bai-tai-che', ten: 'Bãi tái chế (demo)', sao: 0, mua: 'mua-3', chuong: ['demo-bai-tai-che'] },
       { ma: 'demo-nong-trai', ten: 'Nông trại (demo)', sao: 0, mua: 'mua-4', chuong: ['demo-nong-trai'] }
@@ -51,7 +50,6 @@
       'm1-tay': 'Tay kẹp', 'm1-che-tay': 'Hàm cho tay',
       'm1-cam-bien': 'Cảm biến khoảng cách', 'm1-che-cam-bien': 'Hàm cho cảm biến',
       'm1-san': 'Nút đè', 'm1-che-san': 'Hàm cho sân',
-      'm1-nangcap': 'Nâng cấp thân & cảm biến',
       'm1-trum': 'Trùm mùa',
       'demo-nha-may': 'Nhà máy (demo)',
       'demo-bai-tai-che': 'Bãi tái chế (demo)',

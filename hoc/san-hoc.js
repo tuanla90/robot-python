@@ -516,7 +516,7 @@
   var CONG_KY = { '1': '1', '2': '2' };               // ký hiệu cổng dịch chuyển đôi (mỗi số trên sân phải có đúng 2 ô)
 
   var HAM_GOC = {
-    banh: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'],
+    banh: ['up', 'down', 'turn_left', 'turn_right', 'wait'],   // diem10code-python: 4 lệnh gốc mới, mỗi lệnh 1 nhịp
     nhen: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand'],     // crouch / stand: co / duỗi chân (xem phần CHÂN NHỆN)
     xich: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'],      // cùng bộ lệnh với xe bánh
     omni: ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait'],   // bộ lệnh xe bánh + hai lệnh trượt ngang
@@ -605,6 +605,12 @@
     left_move: ['trai', 1], left_back: ['trai', -1],
     right_move: ['phai', 1], right_back: ['phai', -1]
   };
+  // diem10code-python: LỆNH GỐC MỚI cho 'banh' và 'xuong' — up()/down()/turn_left()/turn_right() mỗi lệnh
+  // tự chiếm 1 nhịp (không cần wait() riêng), thay cho mô hình hai bánh độc lập + wait() cũ.
+  // Giá trị {trai, phai} tái dùng ĐÚNG luật quay/đi cũ (xem motNhip, kieu 'banh'): (1,1) tiến, (-1,-1) lùi,
+  // (1,0) quay phải 90°, (0,1) quay trái 90° — tất cả vốn đã là MỘT nhịp cho xe bánh thường (không áp dụng
+  // luật quay chậm 2 nhịp của xích).
+  var GOC_MOI_BANH = { up: { trai: 1, phai: 1 }, down: { trai: -1, phai: -1 }, turn_right: { trai: 1, phai: 0 }, turn_left: { trai: 0, phai: 1 } };
   // LỆNH NGƯỢC (kế hoạch "Chế lệnh" 14/10): mỗi lệnh gốc CHUYỂN ĐỘNG có một lệnh ngược. wait() và lệnh cảm biến không có; bắn / ném không hoàn tác được.
   // Dùng cho màn "Đường về" (chế hàm đi ngược), màn đấu dây ngược (daoChieu) và Sổ lệnh.
   var LENH_NGUOC = {
@@ -614,6 +620,7 @@
     grab: 'release', release: 'grab',
     go_up: 'go_down', go_down: 'go_up',
     go_left: 'go_right', go_right: 'go_left',
+    up: 'down', down: 'up', turn_left: 'turn_right', turn_right: 'turn_left',
     land: 'take_off', take_off: 'land',                    // drone nâng cấp đáp đất (mùa 4)
     magnet_n: 'magnet_s', magnet_s: 'magnet_n',
     slide_left: 'slide_right', slide_right: 'slide_left',
@@ -676,7 +683,7 @@
   var MA_CAM_DONG = 'dong-chay';
   var TAM_KEO = 3;                                // độ dài dây lưới tối đa (set_length 1..3; gạt van V tối đa 3 ô)
   var HUONG_TUONG_DOI = ['front', 'right', 'back', 'left'];   // (hướng dòng − hướng mũi) mod 4 → lời chong chóng
-  HAM_GOC.xuong = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];   // XUỒNG: hai chân vịt = hai bánh, dùng lại trọn luật xe bánh
+  HAM_GOC.xuong = ['up', 'down', 'turn_left', 'turn_right', 'wait'];   // diem10code-python: XUỒNG dùng 4 lệnh gốc mới như Hai bánh
   LENH_NGUOC.anchor = 'unanchor'; LENH_NGUOC.unanchor = 'anchor';
   LENH_NGUOC.cast_net = 'drop_net'; LENH_NGUOC.drop_net = 'cast_net';
   // CẢNG SÔNG (mùa 4, 31/10; xem phần CẢNG SÔNG): cần cẩu container. Ký hiệu T (boong tàu, trên nước), R (ray cẩu, sàn); lớp cfg.chong, cfg.tau, cfg.giao, cfg.taiToiDa, cfg.luatThap, bongMo.chong
@@ -4615,6 +4622,12 @@
         phaoCho = { ten: 'set_length', dongPy: yc.dong, doDai: nl, huongTuongDoi: htLen };
         lenhTon.push({ ten: 'set_length', dongPy: yc.dong });
         return false;
+      }
+      if ((loai === 'banh' || loai === 'xuong') && GOC_MOI_BANH[yc.ten]) {
+        var gm = GOC_MOI_BANH[yc.ten];
+        var hMoi = { kieu: 'banh', trai: gm.trai, phai: gm.phai, lenhBanh: { ten: yc.ten, dongPy: yc.dong }, tay: rutTay(), truot: null, nc: ncCho, nem: nemCho, hoi: hoiCho, son: sonCho, loa: loaCho, gai: gaiCho, neo: neoCho, phao: phaoCho, lenhWait: null };
+        ncCho = null; nemCho = null; hoiCho = null; sonCho = null; loaCho = null; gaiCho = null; neoCho = null; phaoCho = null; lenhTon = [];
+        return motNhip(hMoi);
       }
       if (laBanh) {
         var bl = BANH_LENH[yc.ten];

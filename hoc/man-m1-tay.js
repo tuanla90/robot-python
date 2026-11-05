@@ -9,7 +9,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['left_move', 'right_move', 'wait', 'arm_down', 'arm_up', 'grab', 'release'];
+  var HAM_GOC = ['up', 'down', 'turn_left', 'turn_right', 'wait', 'arm_down', 'arm_up', 'grab', 'release'];
   function H(ten, thamSo, than) { return { ten: ten, thamSo: (thamSo || []).slice(), than: than.slice() }; }
   function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
 
@@ -18,7 +18,6 @@
     m.loaiRobot = 'banh'; m.robot = { than: 'hai-banh', tay: 'kep' };
     m.hamGoc = HAM_GOC.slice(); m.khung = { chinh: 16, moiHam: 10 };
     m.moXuong = true; m.camHamCuaEm = false;
-    m.hamCuaEmCan = ['move', 'turn_right', 'turn_left', 'u_turn'];
     m.mucTieu = 'dua-vat';
     return ManHoc.chuanHoa(m);
   }
@@ -32,29 +31,29 @@
       batDau: { x: 2, y: 3, huong: 0 },
       maMau: { chinh: T_PICK.slice() },
       sao: { o: 12, nhip: 12 },
-      loiGiai: { chinh: nhieu(T_PICK, ['move()', 'move()'], T_DROP) } }),
+      loiGiai: { chinh: nhieu(T_PICK, ['up()', 'up()'], T_DROP) } }),
     man({ so: 2, ten: 'Mang xa hơn', hang: 'lam-quen',
       deBai: 'Nhặt thùng, đi tiếp ba ô nữa, đặt xuống đích D.',
       san: ['..D..', '.....', '.....', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 5, huong: 0 },
       maMau: { chinh: T_PICK.slice() },
       sao: { o: 14, nhip: 14 },
-      loiGiai: { chinh: nhieu(T_PICK, ['move()', 'move()', 'move()', 'move()'], T_DROP) } }),
+      loiGiai: { chinh: nhieu(T_PICK, ['up()', 'up()', 'up()', 'up()'], T_DROP) } }),
     man({ so: 3, ten: 'Tay bận thì không đi', hang: 'luyen',
       deBai: 'Nhớ nâng tay (arm_up) trước khi di chuyển, không thì xe không đi được.',
       san: ['..D..', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: nhieu(['arm_down()', 'grab()', 'wait()'], ['move()']) },
+      maMau: { chinh: nhieu(['arm_down()', 'grab()', 'wait()'], ['up()']) },
       sao: { o: 12, nhip: 12 },
-      loiGiai: { chinh: nhieu(T_PICK, ['move()', 'move()'], T_DROP) },
-      loiSai: [{ moTa: 'Quên arm_up() trước khi đi', baiLam: { chinh: nhieu(['arm_down()', 'grab()', 'wait()'], ['move()']) }, phaiCoMa: ['tay-ban'] }] }),
+      loiGiai: { chinh: nhieu(T_PICK, ['up()', 'up()'], T_DROP) },
+      loiSai: [{ moTa: 'Quên arm_up() trước khi đi', baiLam: { chinh: nhieu(['arm_down()', 'grab()', 'wait()'], ['up()']) }, phaiCoMa: ['tay-ban'] }] }),
     man({ so: 4, ten: 'Trùm: quay phải rồi mang', hang: 'trum',
       deBai: 'Nhặt thùng, quay phải, đi hai ô, đặt xuống đích (đứng sát D, quay mặt về nó).',
       san: ['.......', '..o....', '.....D.'],
       batDau: { x: 2, y: 2, huong: 0 },
       maMau: { chinh: T_PICK.slice() },
       sao: { o: 13, nhip: 13 },
-      loiGiai: { chinh: nhieu(T_PICK, ['turn_right()', 'move()', 'move()'], T_DROP) },
+      loiGiai: { chinh: nhieu(T_PICK, ['turn_right()', 'up()', 'up()'], T_DROP) },
       huyHieu: 'm1-tay' })
   ]);
 
@@ -63,7 +62,6 @@
     m.loaiRobot = 'banh'; m.robot = { than: 'hai-banh', tay: 'kep' };
     m.hamGoc = HAM_GOC.slice(); m.khung = { chinh: 10, moiHam: 10 };
     m.moXuong = true; m.camHamCuaEm = false;
-    m.hamCuaEmCan = ['move', 'turn_right', 'turn_left', 'u_turn'];
     m.mucTieu = 'dua-vat';
     return ManHoc.chuanHoa(m);
   }
@@ -75,30 +73,30 @@
       deBai: 'Tạo hàm pick() (arm_down, grab, wait, arm_up, wait) rồi nhặt thùng, mang tới đích.',
       san: ['..D..', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: ['move()'], hamCuaMan: [] },
+      maMau: { chinh: ['up()'], hamCuaMan: [] },
       sao: { o: 5, nhip: 12 },
-      loiGiai: { chinh: ['pick()', 'move()', 'move()', 'arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'], hamCuaEmMoi: [hPick()] } }),
+      loiGiai: { chinh: ['pick()', 'up()', 'up()', 'arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'], hamCuaEmMoi: [hPick()] } }),
     manChe({ so: 2, ten: 'Chế lệnh: drop()', hang: 'lam-quen', hamCuaEmCan: ['pick'], taoHam: ['drop'],
       deBai: 'Tạo hàm drop() rồi nhặt, đi hai ô, thả xuống đích.',
       san: ['..D..', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 3, huong: 0 },
       maMau: { chinh: ['pick()'], hamCuaMan: [] },
       sao: { o: 4, nhip: 12 },
-      loiGiai: { chinh: ['pick()', 'move()', 'move()', 'drop()'], hamCuaEmMoi: [hDrop()] } }),
+      loiGiai: { chinh: ['pick()', 'up()', 'up()', 'drop()'], hamCuaEmMoi: [hDrop()] } }),
     manChe({ so: 3, ten: 'Chế lệnh: carry()', hang: 'luyen', hamCuaEmCan: ['pick', 'drop', 'turn_right'], taoHam: ['carry'],
-      deBai: 'Tạo hàm carry() = pick(), move(), turn_right(), drop() (mang vật trước mặt rồi đặt sang ô bên phải).',
+      deBai: 'Tạo hàm carry() = pick(), up(), turn_right(), drop() (mang vật trước mặt rồi đặt sang ô bên phải).',
       san: ['..oD...', '.......'],
       batDau: { x: 2, y: 1, huong: 0 },
       maMau: { chinh: ['pick()'], hamCuaMan: [] },
       sao: { o: 1, nhip: 9 },
-      loiGiai: { chinh: ['carry()'], hamCuaEmMoi: [H('carry', [], ['pick()', 'move()', 'turn_right()', 'drop()'])] } }),
+      loiGiai: { chinh: ['carry()'], hamCuaEmMoi: [H('carry', [], ['pick()', 'up()', 'turn_right()', 'drop()'])] } }),
     manChe({ so: 4, ten: 'Trùm: dùng carry() hai lần', hang: 'trum', hamCuaEmCan: ['pick', 'drop', 'carry'],
       deBai: 'Hai thùng giống hệt cách lấy. Gọi carry() hai lần.',
       san: ['..oD...', '.......', '.Do....', '.......'],
       batDau: { x: 2, y: 1, huong: 0 },
       maMau: { chinh: ['carry()'], hamCuaMan: [] },
       sao: { o: 4, nhip: 20 },
-      loiGiai: { chinh: ['carry()', 'turn_right()', 'move()', 'carry()'] },
+      loiGiai: { chinh: ['carry()', 'turn_right()', 'up()', 'carry()'] },
       huyHieu: 'm1-che-tay' })
   ]);
 
