@@ -5,10 +5,10 @@
      cần cẩu của CoMay có rail() nên phải xuất phát trên R, và không nhận huong khác 0 — đặt cỗ máy nào vào khe nào cũng không vỡ màn.
    - Chương 2 lap-nha-may: R1 xe cứu hỏa đặt sẵn, Luna TỰ LẮP R2 (man.lapRap.robot = 1). Lai ra mắt: L1 cẩu + nam châm, L8 cẩu + gầu, L13 cẩu + cảm biến từ.
    - Mỗi màn khai man.cauDo (máy kiểm hoc/kiem-cau-do-mua-9.mjs). Ôn Python G2: BIẾN (giữ số đọc được, số ô), THAM SỐ (hàm có n).
-   - Hàm của em do gói này tạo mà gói sau gọi: valve_step(n) [squirt("low"), forward(n)], push_valve(n) [forward(n), back()] (man-cuu-clb.js, man-cuu-hang-dong.js).
-   - WIP 5/11 (M9M2 dừng chờ user): mới dựng cuu-nha-may.1–5; .6–10 và lap-nha-may.1–10 còn bản CŨ (manNM bên dưới).
-     LÕI CHƯA CHO CONTAINER CHẮN: chồng container (cfg.chong) không chặn xe, thùng nặng hay tia phun (san-hoc.js), nên ở #1, #2, #3, #5 việc cẩu nhấc container
-     chưa thật sự cần (bẫy drone ở #3 vẫn thắng). Chờ user quyết (xem báo cáo M9M2) rồi dựng tiếp.
+   - Hàm của em do gói này tạo mà gói sau gọi: valve_step(n) [squirt("low"), forward(n)] (cuu-nha-may.5), push_valve(n) [forward(n), back()] (lap-nha-may.8;
+     man-cuu-clb.js, man-cuu-hang-dong.js gọi). lob_clear(d) [aim_lob(d), slide_r(1)] của bản cũ KHÔNG còn (G2 không có màn omni + máy ném):
+     lap-bai-tai-che.7, lap-ben-song.6 gọi nó nên đỏ ở kiem-loi-giai (xem báo cáo M9M2b).
+   - Chồng container chặn thật (màn khai contChan: true, lõi M9T5): #1, #2, #3, #5, #6, #7, #8. Màn có cần cẩu không dùng 'toi-co' (cẩu không tới cờ).
    - Màn 10 mỗi chương: song ca đoạn 2 "Kìa con bướm vàng" (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 2 4 1 3 5 5 1 1), giữ để gói 10 ghép bài.
    ========================================================================== */
 (function () {
@@ -16,58 +16,6 @@
 
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
-
-  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var HAM_XICH = BANH.concat(['spray', 'spray_back', 'distance', 'warm']);
-  var HAM_XICH_LOA = BANH.concat(['beat', 'note', 'distance', 'warm']);
-  var HAM_BANH = BANH.concat(['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear']);
-  var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
-  var HAM_OMNI = BANH.concat(['slide_left', 'slide_right', 'load', 'throw', 'radar', 'diag_left', 'diag_right', 'aim', 'shape']);
-  var HAM_GAI = BANH.concat(['retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen']);
-
-  var R1_XICH = {
-    loaiRobot: 'xich', xichDay: true, lucBan: true,
-    robot: { than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] },
-    hamGoc: HAM_XICH
-  };
-  var R1_XICH_LOA = {
-    loaiRobot: 'xich', phatNot: true,
-    robot: { than: 'xich', tay: 'loa', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] },
-    hamGoc: HAM_XICH_LOA
-  };
-  var R_BANH = {
-    loaiRobot: 'banh',
-    robot: { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_BANH
-  };
-  var R_NHEN = {
-    loaiRobot: 'nhen',
-    robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_NHEN
-  };
-  var R_OMNI = {
-    loaiRobot: 'omni', omniCheo: true, chinhLuc: true, nhanDang: true, tamNemMacDinh: 2, daLapHo: true,
-    robot: { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
-    hamGoc: HAM_OMNI
-  };
-  var R_GAI = {
-    loaiRobot: 'gai', thuGai: true, phatNot: true, phanAm: true,
-    robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }], son: 'lam' },
-    hamGoc: HAM_GAI
-  };
-
-  var H_VALVE_STEP = {
-    ten: 'valve_step', thamSo: ['n'],
-    than: ['squirt("low")', 'forward(n)']
-  };
-  var H_PUSH_VALVE = {
-    ten: 'push_valve', thamSo: ['n'],
-    than: ['forward(n)', 'back()']
-  };
-  var H_LOB_CLEAR = {
-    ten: 'lob_clear', thamSo: ['d'],
-    than: ['aim_lob(d)', 'slide_r(1)']
-  };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
@@ -120,64 +68,6 @@
     if (cfg.noi) m.noi = cfg.noi;
     if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
     Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
-    return ManHoc.chuanHoa(m);
-  }
-
-  function baiDoi(r1Chinh, r2Chinh, hamEm, hamMan) {
-    return {
-      doi: [{ chinh: r1Chinh.slice() }, { chinh: r2Chinh.slice() }],
-      hamCuaMan: hamMan ? clone(hamMan) : [],
-      hamCuaEmMoi: hamEm ? clone(hamEm) : []
-    };
-  }
-
-  function manNM(chuong, so, hang, cfg) {
-    var r1 = clone(cfg.r1 || R1_XICH);
-    var r2 = clone(cfg.r2 || R_BANH);
-    r1.batDau = cfg.bd[0];
-    r2.batDau = cfg.bd[1];
-    if (cfg.coDinhR1) r1.coDinh = true;
-    if (cfg.coDinhR2) r2.coDinh = true;
-    if (cfg.co) {
-      r1.co = cfg.co[0];
-      r2.co = cfg.co[1];
-    }
-    var m = {
-      chuong: chuong,
-      so: so,
-      ten: cfg.ten,
-      hang: hang,
-      vo: 'nha-may',
-      loaiRobot: r1.loaiRobot,
-      daLapHo: true,
-      robot: clone(r1.robot),
-      hamGoc: r1.hamGoc.slice(),
-      cauTruc: cfg.cauTruc || ['for', 'if', 'while', 'list'],
-      vaHoac: true,
-      moXuong: true,
-      camHamCuaEm: false,
-      hamCuaEmCan: cfg.hamCuaEmCan || ['move', 'forward', 'wait_n'],
-      taoHam: cfg.taoHam || [],
-      khung: cfg.khung || { chinh: 10, moiHam: 8 },
-      mucTieu: cfg.mucTieu || 'toi-co',
-      deBai: cfg.deBai,
-      veMaMau: cfg.veMaMau || '',
-      san: cfg.san,
-      batDau: cfg.bd[0],
-      doi: [r1, r2],
-      maMau: cfg.maMau,
-      loiGiai: cfg.loiGiai,
-      loiSai: cfg.loiSai || [],
-      sao: cfg.sao || { o: 16, nhip: 10 },
-      goiY: cfg.goiY || []
-    };
-    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
-    if (cfg.noi) m.noi = cfg.noi;
-    if (cfg.dieu) m.dieu = cfg.dieu;
-    if (cfg.vatChat) m.vatChat = cfg.vatChat;
-    if (cfg.vatThem) m.vatThem = cfg.vatThem;
-    if (cfg.chuongDa) m.chuongDa = cfg.chuongDa;
-    if (cfg.daChuong) m.daChuong = cfg.daChuong;
     return ManHoc.chuanHoa(m);
   }
 
