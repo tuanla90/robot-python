@@ -398,22 +398,28 @@
       cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'be', 'container', 'thung-nang', 'r3'], cuu: 'may', meo: 'lam-cau' }
     }),
 
-    manNM('cuu-nha-may', 10, 'trum', {
-      ten: 'Hợp tấu phân xưởng: Đoạn 2 Kìa con bướm vàng',
-      r1: R1_XICH_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '4 4 3 3 2 2 1 1', r2: '2 4 1 3 5 5 1 1' },
+    // 10 · song ca đoạn 2 "Kìa con bướm vàng" (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 2 4 1 3 5 5 1 1), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Xe cứu hỏa lắp loa thay vòi phun hát bè 1; bè 2 do xe hang động hát (cẩu không gắn được loa, mà song ca cần đủ hai bè: lệch bảng "cẩu quay cần theo nhịp").
+    //      Hát đúng nốt làm vỡ đá chuông chắn cửa xưởng (nốt 1 cuối mỗi bè). Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-nha-may', 10, 'trum', {
+      ten: 'Song ca nhà máy',
+      mucTieu: 'choi-dieu',
+      deBai: 'Nhà máy chạy lại rồi! Hai xe song ca đoạn 2. Mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
       hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Khép lại chương Cứu hộ Nhà máy, R1 và R2 cùng hòa tấu Đoạn 2 bài "Kìa con bướm vàng" ("Em ngồi xem, em ngồi xem") với 2 bè 8 nhịp: Bè 1 (R1) chơi chuỗi nốt [4, 4, 3, 3, 2, 2, 1, 1], còn Bè 2 (R2) chơi bè trầm [2, 4, 1, 3, 5, 5, 1, 1]. Hãy gọi play_part([2, 4, 1, 3, 5, 5, 1, 1]) cho R2!',
-      veMaMau: 'R2 chưa gọi play_part([2, 4, 1, 3, 5, 5, 1, 1]) để hòa âm cùng R1.',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(2)']),
-      loiGiai: baiDoi(['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([2, 4, 1, 3, 5, 5, 1, 1])']),
+      san: ['#######', '#.....#', '#.....#', '#######'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['spray', 'spray_back'], themHam: ['note', 'beat'], phatNot: true }),
+        may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      them: { dieu: { r1: '4 4 3 3 2 2 1 1', r2: '2 4 1 3 5 5 1 1' }, daChuong: [{ x: 2, y: 1, not: 1, ben: 1 }, { x: 2, y: 2, not: 1, ben: 1 }] },
+      maMau: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(2)']]),
+      loiGiai: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([2, 4, 1, 3, 5, 5, 1, 1])']]),
       loiSai: [
-        { moTa: 'R2 mới phát 1 nốt thay vì chơi trọn bè 2 dài 8 nhịp', baiLam: baiDoi(['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(2)']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(2)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 thiếu 4 nốt cuối', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([2, 4, 1, 3])']]), phaiCoMa: ['lo-nhip'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Ở chương trình R2, gọi play_part([2, 4, 1, 3, 5, 5, 1, 1]).']
+      sao: { o: 7, nhip: 9 },
+      goiY: ['Bè 2: play_part([2, 4, 1, 3, 5, 5, 1, 1]).'],
+      cauDo: { doi: ['CU', 'HD'], lap: null, coChe: ['loa', 'da-chuong'], cuu: null, meo: 'song-song' }
     }),
 
     /* ========================================================================
