@@ -598,22 +598,32 @@
       cauDo: { doi: null, lap: 'hai-banh+nam-cham+tu', coChe: ['bang-chuyen', 'sat', 'nam-cham', 'thung-nang'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
 
-    manNM('lap-nha-may', 8, 'van-dung', {
-      ten: 'Đội cứu hộ đưa kiện hàng qua cửa nút đè',
-      r2: R_BANH, mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'forward', 'back', 'pick', 'drop', 'push_valve'],
-      deBai: 'Nhà máy cần đưa kiện hàng o(2, 2) qua cánh cửa C(3, 2) vào ô đích D(4, 2). R1 ở (1, 1) gọi push_valve(1) để đẩy thùng nặng H(2, 1) đè nút M(3, 1) mở cửa C(3, 2) rồi lùi về! Hãy viết lệnh cho R2 ở (1, 2): gắp kiện o(2, 2), tiến 2 ô bằng forward(2) lên C(3, 2) rồi thả vào D(4, 2).',
-      veMaMau: 'R2 chưa tiến 2 ô và thả kiện hàng o vào D(4, 2).',
-      san: ['######', '#.HM.#', '#.oCD#', '######'],
-      noi: [{ nut: { x: 3, y: 1 }, cua: [{ x: 3, y: 2 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 1 }],
-      maMau: baiDoi(['push_valve(1)'], ['pick()', 'forward(2)']),
-      loiGiai: baiDoi(['push_valve(1)'], ['pick()', 'forward(2)', 'drop()']),
+    // 18 · drone + ⟨gieo hạt, nam châm⟩, cứu người + làm cầu + tạo lại hàm push_valve(n) [forward(n), back()] (gói sau còn gọi: man-cuu-clb.js, man-cuu-hang-dong.js):
+    //      công nhân kẹt, thùng nặng H chắn lối ra. Xe cứu hỏa phải tới dưới thùng, đẩy thùng lên hốc rồi lùi xuống cho người qua: push_valve(1).
+    //      Đường xe qua vệt dầu, cuối vệt là hố: drone rắc cát hai ô dầu (dot), xe dừng được đúng ô. Cách hai rẻ hơn: bánh gai bám dầu rắc từng ô (chậm hơn).
+    //      Nam châm là bẫy: không rắc cát được. (Bảng: "rắc cát lối cho người tự đi ra" — lõi cho người đi qua dầu không trượt, nên cát là lối của xe.)
+    man9('lap-nha-may', 8, 'van-dung', {
+      ten: 'Cát cho xe cứu hỏa',
+      mucTieu: 'cuu-nguoi',
+      taoHam: ['push_valve'],
+      hamCuaEmCan: HAM_EM.concat(['turn_left', 'turn_right', 'push_valve']),
+      deBai: 'Công nhân kẹt, thùng H chắn lối ra trạm cứu. Xe cứu hỏa phải qua vệt dầu để đẩy thùng. Viết push_valve(n): tiến n ô rồi lùi một ô.',
+      veMaMau: 'Hàm push_valve chưa có.',
+      san: ['##########', '####.#####', '#.......##', '#..IIu####', '###..#####', '##########'],
+      doi: [may('CU', { x: 1, y: 3, huong: 1 }), khe({ x: 3, y: 4, huong: 0 }, { son: 'lam' })],
+      them: { thungThem: [{ x: 4, y: 2 }], nguoi: [{ x: 1, y: 2, duong: [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }, { x: 6, y: 2 }, { x: 7, y: 2 }] }], tramCuu: [{ x: 7, y: 2 }] },
+      lapRap: lapR2(['drone', 'gai'], ['son', 'nam-cham'], [], 8, [
+        cach('drone', 'son', null, [['wait()', 'forward(3)', 'tr_left()', 'push_valve(1)'], ['go_up()', 'dot()', 'go_right()', 'dot()', 'go_down()']], [H_PUSH_VALVE9]),
+        cach('gai', 'son', null, [['wait_n(3)', 'forward(3)', 'tr_left()', 'push_valve(1)'], ['move()', 'dot()', 'turn_right()', 'move()', 'dot()', 'turn_right()', 'move()']], [H_PUSH_VALVE9])
+      ]),
+      maMau: doiBai([['wait()', 'forward(3)', 'tr_left()', 'push_valve(1)'], ['go_up()', 'dot()']]),
       loiSai: [
-        { moTa: 'R2 mới tiến 2 ô và chưa thả kiện o vào D(4, 2)', baiLam: baiDoi(['push_valve(1)'], ['pick()', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Thân push_valve thiếu back(): xe đứng chắn lối người', baiLam: doiBai([['wait()', 'forward(3)', 'tr_left()', 'push_valve(1)'], ['go_up()', 'dot()', 'go_right()', 'dot()', 'go_down()']]), hamCuaEmMoi: [{ ten: 'push_valve', thamSo: ['n'], than: ['forward(n)'] }], phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Rắc thiếu ô dầu thứ hai: xe trượt xuống hố', baiLam: doiBai([['wait()', 'forward(3)', 'tr_left()', 'push_valve(1)'], ['go_up()', 'dot()', 'go_right()', 'go_down()']], [], [H_PUSH_VALVE9]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 22, nhip: 6 },
-      goiY: ['Sau khi pick() kiện hàng o(2, 2) và forward(2) lên (3, 2), R2 gọi drop() để đặt kiện hàng vào D(4, 2).']
+      sao: { o: 27, nhip: 13 },
+      goiY: ['dot() rắc cát ô dầu dưới drone: ô thành sàn thường.', 'push_valve(n): forward(n) rồi back().'],
+      cauDo: { doi: null, lap: 'drone+son', coChe: ['dau-tron', 'rac-cat', 'ho', 'thung-nang', 'nguoi'], cuu: 'nguoi', meo: 'lam-cau' }
     }),
 
     manNM('lap-nha-may', 9, 'bien-the', {
