@@ -349,42 +349,53 @@
       cauDo: { doi: ['CC', 'PL'], lap: null, coChe: ['container', 'nut-de', 'cua', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
 
-    manNM('cuu-nha-may', 8, 'van-dung', {
-      ten: 'Hồng ngoại đợi đồng đội đi qua ngã tư',
-      r2: R_BANH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n'],
-      deBai: 'R2 (xe hai bánh) đang đi ngang qua trước mũi R1 ở (2, 1) hướng xuống cờ F(2, 2). Khi đồng đội đứng ngay trước mũi, cảm biến hồng ngoại warm() của R1 trả về True! Hãy cho R1 dùng while warm(): wait() để chờ R2 đi khỏi rồi tiến 2 ô tới cờ F(3, 1); còn R2 tiến 1 ô xuống cờ F(2, 2).',
-      veMaMau: 'Viết lệnh move() cho R2 để R2 tiến xuống cờ F(2, 2) và nhường đường cho R1.',
-      san: ['#####', '#..F#', '##F##', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 1, huong: 2 }],
-      co: [[{ x: 3, y: 1 }], [{ x: 2, y: 2 }]],
-      maMau: baiDoi(['while warm():', '    wait()', 'forward(2)'], ['wait()']),
-      loiGiai: baiDoi(['while warm():', '    wait()', 'forward(2)'], ['move()']),
+    // 8 · cứu máy, song song: xe cứu hỏa khách (R3, khoá) đã nổ máy, tiến ngay 4 ô ủi kệ về kho. Trên lối: thùng gỗ (ô ray) rồi chồng container.
+    //     Nhịp 1 xe chở hàng gắp thùng bên phải (kẹp xoay, không quay); nhịp 2 cẩu quay cần nhấc chồng. Chậm một nhịp là R3 đâm.
+    //     Bẫy: máy khai thác (phải quay rồi mới nạp được thùng: R3 đâm thùng).
+    man9('cuu-nha-may', 8, 'van-dung', {
+      ten: 'Dọn cùng lúc',
+      mucTieu: 'day-thung',
+      deBai: 'Xe cứu hỏa đã nổ máy, tiến ngay 4 ô. Thùng gỗ và chồng container chắn lối. Hai bạn dọn cùng lúc.',
+      veMaMau: 'Đọc chương trình của xe khoá.',
+      san: ['#######', '###D###', '###H###', '###.###', '###..##', '##RRR##', '###.###', '#######'],
+      doi: [khe({ x: 4, y: 5, huong: 0 }), khe({ x: 2, y: 5, huong: 0 }),
+        may('CU', { x: 3, y: 6, huong: 0 }, { son: 'tim', coDinh: true })],
+      them: { contChan: true, chong: [{ x: 3, y: 4, cont: [{ so: 9 }] }], vatThem: [{ x: 3, y: 5 }] },
+      chonDoi: {
+        menu: ['CC', 'CH', 'KT'],
+        cachMau: [{ chon: ['CC', 'CH'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()'],
+          ['pick_right()']]) }]
+      },
+      maMau: doiBai([[], [], ['forward(4)']]),
       loiSai: [
-        { moTa: 'R2 đứng yên trước mũi R1 khiến R1 chờ mãi', baiLam: baiDoi(['while warm():', '    wait()', 'forward(2)'], ['wait()']), phaiCoMa: ['vong-vo-han'] }
-      ],
-      sao: { o: 10, nhip: 3 },
-      goiY: ['Ở chương trình R2, thay wait() bằng move() để R2 tiến vào cờ F(2, 2).']
-    }),
-
-    manNM('cuu-nha-may', 9, 'bien-the', {
-      ten: 'Phá đá chuông và trượt băng tiếp ứng lò cao',
-      r2: R_GAI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'play_note', 'slide_stop', 'squirt'],
-      deBai: 'Thử thách phối hợp Nhà máy và Hang động! R2 (bánh gai) đứng ở (2, 2) hướng lên trước tảng đá chuông nốt 3 ở (2, 1): hãy cho R2 gọi play_note(listen()) phá đá chuông cho R1, rồi rẽ phải, chờ 1 nhịp cho cửa C(3, 2) mở, tiến 1 ô qua cửa C(3, 2) và gọi slide_stop() trượt qua dải đá ướt I(4, 2) dừng tại F(5, 2). R1 chờ 1 nhịp, tiến lên (2, 1), gọi squirt("low") phun van N(4, 1) mở cửa C(3, 2) rồi tiến 1 ô vào F(3, 1).',
-      veMaMau: 'Hoàn thiện lệnh cho cả R1 và R2 để phá đá chuông, phun van mở cửa và trượt băng về cờ.',
-      san: ['#######', '#..FN.#', '##.CIF#', '#######'],
-      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 3, y: 2 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 0 }],
-      co: [[{ x: 3, y: 1 }], [{ x: 5, y: 2 }]],
-      daChuong: [{ x: 2, y: 1, not: 3, ben: 1 }],
-      maMau: baiDoi(['wait()', 'move()', 'squirt("low")'], ['play_note(listen())', 'turn_right()', 'wait()']),
-      loiGiai: baiDoi(['wait()', 'move()', 'squirt("low")', 'move()'], ['play_note(listen())', 'turn_right()', 'wait()', 'move()', 'slide_stop()']),
-      loiSai: [
-        { moTa: 'R1 quên tiến vào cờ sau khi phun van và R2 quên bước qua cửa C rồi gọi slide_stop()', baiLam: baiDoi(['wait()', 'move()', 'squirt("low")'], ['play_note(listen())', 'turn_right()', 'wait()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Cẩu chậm một nhịp: xe khoá đâm chồng', baiLam: doiBai([['wait()', 'swing_left()', 'pick_up()', 'swing_right()', 'set_down()'], ['pick_right()'], ['forward(4)']]), phaiCoMa: ['dam-tuong'] }
       ],
       sao: { o: 22, nhip: 5 },
-      goiY: ['R1 thêm move() ở cuối để vào F(3, 1); R2 thêm move() và slide_stop() ở cuối để bước qua C(3, 2) rồi trượt qua I(4, 2) vào F(5, 2).']
+      goiY: ['pick_right(): gắp thùng bên phải.', 'Xe khoá không chờ ai.'],
+      cauDo: { doi: ['CC', 'CH'], lap: null, coChe: ['container', 'thung', 'r3'], cuu: 'may', meo: 'song-song' }
+    }),
+
+    // 9 · cứu máy, phong phú (nước, bè, chồng container, thùng nặng, R3): xưởng ngập. Xe cứu hỏa khách (R3, khoá) chờ 3 nhịp rồi tiến (cảm biến không thấy cầu phao: nước như tường) ủi kệ về kho.
+    //     Xuồng kéo bè làm cầu phao qua rãnh nước; cẩu nhấc chồng container chắn sau cầu. Đội cố định: xuồng cần khe nước, cẩu cần khe ray, nên không chung một bảng chọn.
+    man9('cuu-nha-may', 9, 'bien-the', {
+      ten: 'Xưởng ngập',
+      mucTieu: 'day-thung',
+      deBai: 'Xưởng ngập nước. Xe cứu hỏa chờ 3 nhịp rồi tiến 3 ô. Kịp kéo bè làm cầu, nhấc chồng container.',
+      veMaMau: 'Đọc chương trình của xe khoá.',
+      hamCuaEmCan: HAM_EM.concat(['bridge_lay', 'pull_back', 'tow_grab', 'tow_drop']),
+      san: ['#######', '###.###', '#~~qB~#', '#R....#', '#R.H..#', '###D###', '#######'],
+      doi: [may('XU', { x: 2, y: 2, huong: 1 }), may('CC', { x: 1, y: 3, nac: 2, tam: 2 }, { son: 'lam' }),
+        may('CU', { x: 3, y: 1, huong: 2 }, { son: 'tim', coDinh: true })],
+      them: { contChan: true, chong: [{ x: 3, y: 3, cont: [{ so: 2 }] }] },
+      maMau: doiBai([['bridge_lay(1)'], [], ['wait_n(3)', 'forward(3)']]),
+      loiGiai: doiBai([['bridge_lay(1)'], ['pick_up()', 'retract()', 'set_down()'], ['wait_n(3)', 'forward(3)']]),
+      loiSai: [
+        { moTa: 'Cẩu không nhấc chồng: xe khoá đâm container', baiLam: doiBai([['bridge_lay(1)'], [], ['wait_n(3)', 'forward(3)']]), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 30, nhip: 7 },
+      goiY: ['bridge_lay(1): kéo bè về ô q.', 'Cẩu: pick_up(), retract(), set_down().'],
+      cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'be', 'container', 'thung-nang', 'r3'], cuu: 'may', meo: 'lam-cau' }
     }),
 
     manNM('cuu-nha-may', 10, 'trum', {
