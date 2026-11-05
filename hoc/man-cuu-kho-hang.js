@@ -480,44 +480,45 @@
       cauDo: { doi: null, lap: 'gai+xoay', coChe: ['bun', 'thung', 'tay-ben'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manCK('lap-kho-hang', 4, 'luyen', {
-      ten: 'Chế tạo hàm spray_push cho xe xích tiếp viện',
-      r2: R_XICH,
-      taoHam: ['spray_push'],
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'squirt'],
-      deBai: 'Hãy định nghĩa hàm spray_push(n) cho R2 (robot bánh xích): gọi squirt("low") để phun van hơi N mở cửa C, rồi gọi forward(n) để tiến n ô về cờ! Ở chương trình chính, R2 ở (2, 2) hướng phải gọi spray_push(1) phun van N(4, 2) mở cửa C(2, 1), rồi tiến 1 ô vào cờ F(3, 2); R1 chờ 1 nhịp rồi tiến 3 ô vào F(4, 1).',
-      veMaMau: 'Hoàn thiện hàm spray_push(n) gồm squirt("low") và forward(n).',
-      san: ['######', '#.C.F#', '#..FN#', '######'],
-      noi: [{ nut: { x: 4, y: 2 }, cua: [{ x: 2, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 3, y: 2 }]],
-      maMau: baiDoi(['wait()', 'forward(3)'], ['spray_push(1)']),
-      loiGiai: baiDoi(['wait()', 'forward(3)'], ['spray_push(1)'], [H_SPRAY_PUSH]),
-      loiSai: [
-        { moTa: 'Hàm spray_push(n) thiếu forward(n) nên R2 chưa tiến vào cờ F(3, 2)', baiLam: baiDoi(['wait()', 'forward(3)'], ['spray_push(1)']), hamCuaEmMoi: [{ ten: 'spray_push', thamSo: ['n'], than: ['squirt("low")'] }], phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 19, nhip: 4 },
-      goiY: ['Trong hàm spray_push(n), thêm lệnh forward(n) sau squirt("low").']
+    // 14 · omni trượt ngang: hai thùng chắn hai ô kề nhau trên lối; omni gắp thùng, trượt sang bên, đặt, trượt về (không quay). Bánh gai + kẹp xoay nhanh hơn mà đắt hơn;
+    //      bánh gai + kẹp thường (cùng giá omni) phải quay đi quay lại.
+    man9('lap-kho-hang', 4, 'luyen', {
+      ten: 'Trượt ngang dọn lối',
+      hamCuaEmCan: HAM_EM.concat(['slide_l', 'slide_r', 'drop_left']),
+      deBai: 'Hai thùng chắn lối xe chở hàng. Lắp xe cho Luna dọn cả hai rồi về cờ.',
+      veMaMau: 'Xe chở hàng chờ lối trống.',
+      san: ['#########', '##....###', '#..oo.FF#', '##....###', '#########'],
+      doi: [may('CH', { x: 1, y: 2, huong: 1 }, { co: [{ x: 6, y: 2 }] }), khe({ x: 2, y: 1, huong: 1 }, { son: 'lam', co: [{ x: 7, y: 2 }] })],
+      lapRap: lapR2(['gai', 'omni'], ['kep', 'xoay'], [], 7, [
+        cach('omni', 'kep', null, [['wait_n(14)', 'forward(5)'],
+          ['slide_r(1)', 'pick()', 'slide_l(1)', 'drop()', 'slide_r(1)', 'move()', 'pick()', 'slide_r(1)', 'drop()', 'slide_l(1)', 'forward(4)']]),
+        cach('gai', 'xoay', null, [['wait_n(12)', 'forward(5)'],
+          ['turn_right()', 'move()', 'turn_left()', 'for i in range(2):', '    pick()', '    drop_left()', '    move()', 'forward(3)']])
+      ]),
+      maMau: doiBai([['wait_n(14)', 'forward(5)'], []]),
+      sao: { o: 42, nhip: 22 },
+      goiY: ['Omni trượt ngang: slide_l(1), slide_r(1).'],
+      cauDo: { doi: null, lap: 'omni+kep', coChe: ['thung', 'truot-ngang'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manCK('lap-kho-hang', 5, 'cung-co', {
-      ten: 'Sửa lỗi hàm spray_push mở đường giao hàng',
-      r2: R_XICH, mucTieu: 'dua-vat',
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'pick', 'drop', 'squirt'],
-      deBai: 'Hàm spray_push(n) trong màn này đang bị lỗi thứ tự: gọi forward(n) trước squirt("low") khiến R2 tiến quá tầm van N(4, 2) và đâm vào van! Hãy sửa lại thân hàm spray_push(n) cho đúng thứ tự squirt("low") rồi forward(n), đồng thời viết tiếp lệnh drop() cho R1 để đặt kiện hàng o vào ô đích D(4, 1).',
-      veMaMau: 'Sửa thứ tự lệnh trong spray_push(n) và thêm drop() cho R1.',
-      san: ['######', '#.oCD#', '#..FN#', '######'],
-      noi: [{ nut: { x: 4, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      maMau: baiDoi(['pick()', 'forward(2)'], ['spray_push(1)'], [], [
-        { ten: 'spray_push', thamSo: ['n'], than: ['forward(n)', 'squirt("low")'] }
-      ]),
-      loiGiai: baiDoi(['pick()', 'forward(2)', 'drop()'], ['spray_push(1)'], [], [H_SPRAY_PUSH]),
-      loiSai: [
-        { moTa: 'Chưa thêm drop() cho R1 nên kiện hàng chưa được đặt xuống ô đích D(4, 1)', baiLam: baiDoi(['pick()', 'forward(2)'], ['spray_push(1)'], [], [H_SPRAY_PUSH]), phaiCoMa: ['chua-dua-vat'] }
-      ],
-      sao: { o: 24, nhip: 6 },
-      goiY: ['Trong spray_push(n), đặt squirt("low") trước forward(n); ở chương trình R1 thêm drop() ở cuối.']
+    // 15 · lai L3 xe hai bánh + tay lưới: thùng sau hố, sát tường, kẹp không tới; set_length(3) + cast_net() kéo thùng qua hố ra khỏi lối.
+    //      Ô tung lưới (2, 3) là bùn: hai bánh vào từ trên (tường chặn nên dừng), bánh gai vào từ trái (gần hơn, đắt hơn). Hai bánh vào từ trái thì trượt quá ô.
+    man9('lap-kho-hang', 5, 'cung-co', {
+      ten: 'Lưới qua hố',
+      deBai: 'Thùng nằm sau hố, sát tường, chắn lối xe chở hàng. Kẹp không với tới. Kéo thùng ra.',
+      veMaMau: 'Xe chở hàng chờ lối trống.',
+      san: ['#######', '#..F#F#', '#..##.#', '#.I.uo#', '#####.#', '#####.#', '#######'],
+      doi: [may('CH', { x: 5, y: 5, huong: 0 }, { co: [{ x: 5, y: 1 }] }), khe({ x: 1, y: 1, huong: 2 }, { son: 'lam', co: [{ x: 3, y: 1 }] })],
+      lapRap: lapR2(['hai-banh', 'gai'], ['kep', 'day-keo'], [], 7, [
+        cach('hai-banh', 'day-keo', null, [['wait_n(6)', 'forward(4)'],
+          ['turn_left()', 'move()', 'turn_right()', 'forward(2)', 'turn_left()', 'set_length(3)', 'cast_net()', 'wait()', 'turn_left()', 'forward(2)', 'turn_right()', 'move()']]),
+        cach('gai', 'day-keo', null, [['wait_n(4)', 'forward(4)'],
+          ['forward(2)', 'turn_left()', 'move()', 'set_length(3)', 'cast_net()', 'wait()', 'turn_left()', 'forward(2)', 'turn_right()', 'move()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([['wait_n(6)', 'forward(4)'], []]),
+      sao: { o: 30, nhip: 14 },
+      goiY: ['set_length(3) rồi cast_net(): lưới dài 3 ô.'],
+      cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['ho', 'luoi', 'bun'], cuu: 'hang', meo: 'don-loi' }
     }),
 
     manCK('lap-kho-hang', 6, 'cung-co', {
