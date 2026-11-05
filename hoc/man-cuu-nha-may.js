@@ -498,46 +498,53 @@
       cauDo: { doi: null, lap: 'cau+nam-cham+tu', coChe: ['sat', 'go', 'cam-bien', 'thung-nang'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manNM('lap-nha-may', 4, 'luyen', {
-      ten: 'Chế tạo hàm push_valve đẩy thùng giữ nút rồi lùi về',
-      r2: R_OMNI,
-      taoHam: ['push_valve'],
-      hamCuaEmCan: ['move', 'forward', 'back', 'wait_n', 'slide_r'],
-      deBai: 'Hãy chế tạo hàm push_valve(n) cho R1 gồm 2 lệnh: forward(n) để tiến n ô đẩy thùng nặng H đè lên nút M(3, 1), rồi back() để lùi về cờ F(1, 1)! Ở chương trình chính, R1 gọi push_valve(1) đẩy thùng H giữ cửa C(3, 2) mở cho R2 (robot omni) chờ 1 nhịp rồi trượt phải 3 ô vào F(4, 2).',
-      veMaMau: 'Hoàn thiện hàm push_valve(n) gồm forward(n) và back().',
-      san: ['######', '#FHM.#', '#..CF#', '######'],
-      noi: [{ nut: { x: 3, y: 1 }, cua: [{ x: 3, y: 2 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 0 }],
-      co: [[{ x: 1, y: 1 }], [{ x: 4, y: 2 }]],
-      maMau: baiDoi(['push_valve(1)'], ['wait()', 'slide_r(3)']),
-      loiGiai: baiDoi(['push_valve(1)'], ['wait()', 'slide_r(3)'], [H_PUSH_VALVE]),
+    // 14 · lai L8 cẩu + gầu ngoạm: thùng gỗ kẹt trên lối xe cứu hỏa, ngay sau bức tường khe máy. Gầu thả từ đầu cần xuống, ngoạm qua tường: extend() rồi grab().
+    //      Cách hai rẻ hơn: xe hai bánh + tay kẹp vòng qua lối hẹp bên phải, gắp thùng rồi lùi ra khỏi lối (chậm, dài).
+    man9('lap-nha-may', 4, 'luyen', {
+      ten: 'Gầu ngoạm qua tường',
+      mucTieu: 'day-thung',
+      hamCuaEmCan: HAM_EM.concat(['turn_left', 'turn_right']),
+      deBai: 'Thùng gỗ kẹt trên lối, sau bức tường khe máy. Lắp robot gắp thùng ra cho xe cứu hỏa đẩy thùng nặng vào ô D.',
+      veMaMau: 'Xe cứu hỏa chờ lối trống.',
+      san: ['#########', '#..o..HD#', '####.####', '###..####', '#########'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 3, y: 3, huong: 0 }, { son: 'lam' })],
+      lapRap: lapR2(['cau', 'hai-banh'], ['moc-cau', 'kep'], [], 8, [
+        cach('cau', 'kep', null, [['wait()', 'forward(5)'], ['extend()', 'grab()']]),
+        cach('hai-banh', 'kep', null, [['wait_n(8)', 'forward(5)'], ['turn_right()', 'move()', 'turn_left()', 'forward(2)', 'turn_left()', 'pick()', 'turn_left()', 'move()']])
+      ], { moLai: ['L8'] }),
+      maMau: doiBai([['wait()', 'forward(5)'], ['extend()']]),
       loiSai: [
-        { moTa: 'Hàm push_valve(n) thiếu lệnh back() nên R1 chưa lùi về cờ F(1, 1)', baiLam: baiDoi(['push_valve(1)'], ['wait()', 'slide_r(3)']), hamCuaEmMoi: [{ ten: 'push_valve', thamSo: ['n'], than: ['forward(n)'] }], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Ngoạm rồi thả lại ngay chỗ cũ: thùng vẫn chắn lối', baiLam: doiBai([['wait_n(3)', 'forward(5)'], ['extend()', 'grab()', 'release()']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 19, nhip: 5 },
-      goiY: ['Trong hàm push_valve(n), thêm lệnh back() ngay sau forward(n).']
+      sao: { o: 11, nhip: 7 },
+      goiY: ['Gầu thả từ đầu cần xuống: extend() rồi grab().', 'Ngoạm xong cứ cầm thùng, đừng thả lại xuống lối.'],
+      cauDo: { doi: null, lap: 'cau+kep', coChe: ['go', 'qua-tuong', 'thung-nang'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manNM('lap-nha-may', 5, 'cung-co', {
-      ten: 'Sửa lỗi hàm push_valve phối hợp bánh gai phá đá',
-      r2: R_GAI,
-      hamCuaEmCan: ['move', 'forward', 'back', 'play_note'],
-      deBai: 'Trong màn này hàm push_valve(n) của R1 bị viết ngược thứ tự (gọi back() trước khi gọi forward(n) nên R1 lùi đâm tường rồi mới đẩy thùng và không về lại cờ F(1, 1)). Hãy sửa lại hàm push_valve(n) cho đúng thứ tự forward(n) rồi back(), đồng thời cho R2 (bánh gai) ở (2, 2) hướng phải gọi play_note(listen()) phá đá chuông ở (3, 2) rồi tiến 3 ô qua cửa C(4, 2) vào F(5, 2)!',
-      veMaMau: 'Sửa lại thứ tự lệnh trong push_valve(n) và thêm play_note(listen()) cho R2.',
-      san: ['#######', '#FHM..#', '##..CF#', '#######'],
-      noi: [{ nut: { x: 3, y: 1 }, cua: [{ x: 4, y: 2 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      co: [[{ x: 1, y: 1 }], [{ x: 5, y: 2 }]],
-      daChuong: [{ x: 3, y: 2, not: 2, ben: 1 }],
-      maMau: baiDoi(['push_valve(1)'], ['forward(3)'], [], [
-        { ten: 'push_valve', thamSo: ['n'], than: ['back()', 'forward(n)'] }
+    // 15 · omni + vòi phun + hồng ngoại: bốn cửa C trên lối xe cứu hỏa, mỗi cửa mở bằng một nút N trong bức tường máy. Nút nằm lệch nhau; ô trước nút trống,
+    //      ô trước tường thì không. Omni trượt dọc hàng, distance() > 0 là có nút trước mặt cách 2 ô: phun nhẹ (không giật). Cửa mở và giữ mở cho xe cứu hỏa qua.
+    //      Cách hai rẻ hơn: không lắp hồng ngoại, đếm cột trên sân rồi viết từng lần trượt (dài hơn).
+    man9('lap-nha-may', 5, 'cung-co', {
+      ten: 'Hàng nút trong tường',
+      mucTieu: 'day-thung',
+      hamCuaEmCan: HAM_EM.concat(['slide_r']),
+      deBai: 'Bốn cửa chắn lối xe cứu hỏa. Mỗi cửa có một nút N trong tường máy. Lắp robot trượt dọc hàng, phun trúng từng nút.',
+      veMaMau: 'Omni mới phun nút đầu.',
+      san: ['############', '#.C.C.C.CHD#', '##NN##N#N###', '##..##.#.###', '#..........#', '############'],
+      noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 2, y: 1 }] }, { nut: { x: 3, y: 2 }, cua: [{ x: 4, y: 1 }] }, { nut: { x: 6, y: 2 }, cua: [{ x: 6, y: 1 }] }, { nut: { x: 8, y: 2 }, cua: [{ x: 8, y: 1 }] }],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 2, y: 4, huong: 0 }, { son: 'lam' })],
+      them: { lucBan: true },
+      lapRap: lapR2(['omni', 'hai-banh'], ['hoi', 'kep'], ['hong-ngoai'], 9, [
+        cach('omni', 'hoi', 'hong-ngoai', [['wait_n(4)', 'forward(9)'], ['for i in range(7):', '    if distance() > 0:', '        squirt("low")', '    slide_r(1)']]),
+        cach('omni', 'hoi', null, [['wait_n(4)', 'forward(9)'], ['squirt("low")', 'slide_r(1)', 'squirt("low")', 'slide_r(3)', 'squirt("low")', 'slide_r(2)', 'squirt("low")']])
       ]),
-      loiGiai: baiDoi(['push_valve(1)'], ['play_note(listen())', 'forward(3)'], [], [H_PUSH_VALVE]),
+      maMau: doiBai([['wait_n(4)', 'forward(9)'], ['squirt("low")']]),
       loiSai: [
-        { moTa: 'Chưa sửa thứ tự lệnh trong push_valve(n) và chưa phá đá chuông', baiLam: baiDoi(['push_valve(1)'], ['forward(3)'], [], [{ ten: 'push_valve', thamSo: ['n'], than: ['back()', 'forward(n)'] }]), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Đọc ngược: phun khi distance() == 0 (trúng tường), nút không bật, cửa còn đóng', baiLam: doiBai([['wait_n(4)', 'forward(9)'], ['for i in range(7):', '    if distance() == 0:', '        squirt("low")', '    slide_r(1)']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 21, nhip: 4 },
-      goiY: ['Đổi thứ tự trong push_valve(n) thành forward(n) rồi back(); ở R2 thêm play_note(listen()) trước forward(3).']
+      sao: { o: 22, nhip: 14 },
+      goiY: ['distance() > 0: trước mặt có ô trống, nút nằm sau ô đó.', 'squirt("low") phun nhẹ, không giật.'],
+      cauDo: { doi: null, lap: 'omni+hoi+hong-ngoai', coChe: ['nut-ban', 'cua', 'thung-nang', 'cam-bien'], cuu: 'hang', meo: 'giu-cua' }
     }),
 
     manNM('lap-nha-may', 6, 'cung-co', {

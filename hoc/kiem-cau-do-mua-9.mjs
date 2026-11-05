@@ -171,6 +171,13 @@ export function kiemMeo(meo, suKien, viTri, man) {
       const den = nha ? nha.nhip : Infinity;
       for (let b = 0; b < n; b++) { if (b === a) continue; for (const [t, p] of viTri[b]) if (t >= e.nhip && t <= den && oCua.some((c) => c.x === p.x && c.y === p.y)) return { ok: true, lyDo: 'R' + (a + 1) + ' đè nút nhịp ' + e.nhip + ', R' + (b + 1) + ' qua cửa nhịp ' + t }; }
     }
+    // M9M2b 5/11: giữ cửa bằng vòi phun — robot A phun trúng nút N trong tường (nut-doi bật) ở nhịp t; tới lúc nút đó tắt lại, robot B (≠ A) đứng trên một ô cửa
+    for (let a = 0; a < n; a++) for (const e of suKien[a].ds) {
+      if (e.ma !== 'nut-doi' || e.bat !== true || !e.o) continue;
+      const tat = suKien[a].ds.find((x) => x.ma === 'nut-doi' && x.bat === false && x.nhip > e.nhip && x.o && x.o.x === e.o.x && x.o.y === e.o.y);
+      const den = tat ? tat.nhip : Infinity;
+      for (let b = 0; b < n; b++) { if (b === a) continue; for (const [t, p] of viTri[b]) if (t >= e.nhip && t <= den && oCua.some((c) => c.x === p.x && c.y === p.y)) return { ok: true, lyDo: 'R' + (a + 1) + ' phun bật nút nhịp ' + e.nhip + ', R' + (b + 1) + ' qua cửa nhịp ' + t }; }
+    }
     return { ok: false, lyDo: 'khai giữ cửa mà không thấy robot nào đè nút (nut-de) trong lúc robot khác đứng trên ô cửa.' };
   }
   if (meo === 'lam-cau' || meo === 'don-loi') {
@@ -304,6 +311,10 @@ if (mainModule) {
   kiem('(d) don-loi: nhặt ở ô không ai đi qua → không đạt', kiemMeo('don-loi', [skA('nhat-vat', 3, { x: 2, y: 2 }), trong], [vt([[1, 1, 1]]), vt([[6, 4, 2]])], { san: SAN3 }).ok === false);
   kiem('(d) cuu-kip: có nguoi-toi-tram / xong-giao-tau / tau-roi / sac-pin → đạt; không có → kêu', CUU_KIP.every((ma) => kiemMeo('cuu-kip', [skA(ma, 9, null)], [vt([])], { san: SAN3 }).ok === true) && kiemMeo('cuu-kip', [skA('nhat-vat', 9, null)], [vt([])], { san: SAN3 }).ok === false);
   kiem('(d) giu-cua: đè nút mà robot kia không đứng ô cửa trong lúc đè → không đạt', kiemMeo('giu-cua', [{ than: 'hai-banh', ds: [{ nhip: 2, ma: 'nut-de', bat: true, o: { x: 1, y: 2 } }, { nhip: 4, ma: 'nut-de', bat: false, o: { x: 1, y: 2 } }] }, trong], [vt([[2, 1, 2], [4, 2, 2]]), vt([[2, 1, 3], [6, 3, 3]])], { san: SAN3, noi: [{ nut: { x: 1, y: 2 }, cua: [{ x: 3, y: 3 }] }] }).ok === false);
+  // M9M2b: giữ cửa bằng vòi phun (nut-doi bật ở nút N trong tường)
+  const NOI_N = { san: SAN3, noi: [{ nut: { x: 1, y: 2 }, cua: [{ x: 3, y: 3 }] }] };
+  kiem('(d) giu-cua: R1 phun bật nút N nhịp 2, R2 đứng ô cửa nhịp 5 → đạt', kiemMeo('giu-cua', [{ than: 'omni', ds: [{ nhip: 2, ma: 'nut-doi', bat: true, o: { x: 1, y: 2 } }] }, trong], [vt([[2, 1, 3]]), vt([[5, 3, 3]])], NOI_N).ok === true);
+  kiem('(d) giu-cua: phun bật rồi phun tắt (nhịp 4) trước khi R2 tới cửa (nhịp 6) → không đạt', kiemMeo('giu-cua', [{ than: 'omni', ds: [{ nhip: 2, ma: 'nut-doi', bat: true, o: { x: 1, y: 2 } }, { nhip: 4, ma: 'nut-doi', bat: false, o: { x: 1, y: 2 } }] }, trong], [vt([[2, 1, 3]]), vt([[6, 3, 3]])], NOI_N).ok === false);
   // sự kiện sân gắn đúng robot: nut-de ghi ở vết R1 (pha D) nhưng R2 đứng trên nút → thuộc R2
   kiem('sự kiện sân (nut-de ở vết R1) gắn cho robot đang đứng ở ô nút (R2)', p1.suKien[1].ds.some((e) => e.ma === 'nut-de') && !p1.suKien[0].ds.some((e) => e.ma === 'nut-de'), J(p1.suKien.map((r) => r.ds.map((e) => e.ma))));
   // màn chọn đội: phanTich chạy cách mẫu đầu (macDinh) — dùng màn giả của kiem-chon-doi dạng chonDoi
