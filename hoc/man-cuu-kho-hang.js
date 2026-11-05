@@ -148,6 +148,17 @@
   function doiBai(ds, hamMan, hamEm) {
     return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
   }
+  /** R2 đã lắp sẵn (màn show chương 2): bánh gai + kẹp xoay + khoảng cách, như LapRap.apDung lắp ra. */
+  var GAI_XOAY = {
+    loaiRobot: 'gai', robot: { than: 'gai', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }], son: 'lam' },
+    hamGoc: BANH.concat(['retract_spikes', 'extend_spikes', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'front_clear', 'left_clear', 'right_clear'])
+  };
+  /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
+  function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
+  /** lapRap của chương 2: Luna lắp R2; lời giải mẫu chạy trên kho hàm của em (dungKho). */
+  function lapR2(than, tay, cam, nganSach, cachLap, them) {
+    return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
+  }
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -409,59 +420,64 @@
     /* ========================================================================
        CHƯƠNG 2: lap-kho-hang (10 màn)
        ======================================================================== */
-    manCK('lap-kho-hang', 1, 'lam-quen', {
-      ten: 'Quan sát hàm side_unlock mở cửa nhanh',
-      chiChay: true, r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'lob', 'slide_r'],
-      deBai: 'Trong chương Lập trình cứu Kho hàng, em sẽ viết các hàm phối hợp cho đội robot liên mùa! Hãy nhấn Chạy để xem R2 (robot omni) gọi hàm side_unlock(1) vừa hất viên đá o(2, 3) lên nút M(2, 2) mở cửa C(3, 1), vừa trượt ngang sang phải vào cờ F(3, 4), giúp R1 tiến thẳng về cờ F(4, 1).',
-      veMaMau: 'Quan sát hàm side_unlock(n) giúp R2 hất đá lên nút M và trượt ngang về cờ.',
-      san: ['######', '#..CF#', '##M###', '##o###', '##.F##', '######'],
-      noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 3, y: 4 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(3)'], ['side_unlock(1)'], [], [H_SIDE_UNLOCK]),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(3)'], ['side_unlock(1)'], [], [H_SIDE_UNLOCK]),
-      sao: { o: 19, nhip: 5 },
-      goiY: ['Nhấn Chạy để xem R2 gọi side_unlock(1) hất đá đè nút M(2, 2) mở cửa C(3, 1) cho R1.']
+    // 11 · show: R2 đã lắp sẵn bánh gai + kẹp xoay + khoảng cách (chạy sẵn, khoá). Gắp thùng ở hốc bên, chạy qua bùn tới khi gặp tường, đặt thùng sang phải cho xe chở hàng.
+    man9('lap-kho-hang', 1, 'lam-quen', {
+      ten: 'Xe gai chở hàng',
+      chiChay: true, mucTieu: 'dua-vat',
+      hamCuaEmCan: HAM_EM.concat(['pick_left', 'drop_right']),
+      deBai: 'Luna lắp xe: bánh gai, kẹp xoay, mắt khoảng cách. Xe gai đưa thùng qua bùn cho xe chở hàng. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem xe gai làm gì.',
+      san: ['########', '#o######', '#.IIII.#', '######.#', '######.#', '######D#'],
+      doi: [may('CH', { x: 6, y: 4, huong: 0 }), Object.assign({ batDau: { x: 1, y: 2, huong: 1 } }, clone(GAI_XOAY))],
+      maMau: doiBai([
+        ['wait_n(8)', 'pick()', 'turn_right()', 'turn_right()', 'drop()'],
+        ['pick_left()', 'while front_clear():', '    move()', 'drop_right()']]),
+      loiGiai: doiBai([
+        ['wait_n(8)', 'pick()', 'turn_right()', 'turn_right()', 'drop()'],
+        ['pick_left()', 'while front_clear():', '    move()', 'drop_right()']]),
+      sao: { o: 47, nhip: 15 },
+      goiY: ['Kẹp xoay gắp thùng bên trái: pick_left().'],
+      cauDo: { doi: null, lap: 'gai+xoay+khoang-cach', coChe: ['bun', 'tay-ben', 'cam-bien'], cuu: 'hang', meo: 'tiep-suc' }
     }),
 
-    manCK('lap-kho-hang', 2, 'lam-quen', {
-      ten: 'Chế tạo hàm side_unlock cho R2',
-      r2: R_OMNI,
-      taoHam: ['side_unlock'],
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'lob', 'slide_r'],
-      deBai: 'Hãy định nghĩa hàm side_unlock(n) gồm 2 lệnh: lob() để nạp và hất viên đá phía trước lên nút M (hoặc hố sâu), rồi slide_r(n) để trượt ngang sang phải n ô về cờ! Sau đó gọi side_unlock(1) cho R2 để mở cửa C(3, 1) cho R1 chờ 2 nhịp rồi tiến 3 ô tới cờ F(4, 1).',
-      veMaMau: 'Hoàn thiện thân hàm side_unlock(n) gồm lob() và slide_r(n).',
-      san: ['######', '#..CF#', '##M###', '##o###', '##.F##', '######'],
-      noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 3, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      co: [[{ x: 4, y: 1 }], [{ x: 3, y: 4 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(3)'], ['side_unlock(1)']),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(3)'], ['side_unlock(1)'], [H_SIDE_UNLOCK]),
+    // 12 · ép đổi thân: R2 phải dừng giữa dải bùn rẽ xuống; hai bánh trượt rơi hố, chỉ bánh gai dừng được. Nhấc thùng chắn lối, đặt sang bên, đi tiếp về cờ.
+    //      Kẹp xoay đặt sang bên không cần quay (nhanh); kẹp thường rẻ hơn mà phải quay đi quay lại.
+    man9('lap-kho-hang', 2, 'lam-quen', {
+      ten: 'Bánh nào qua bùn',
+      hamCuaEmCan: HAM_EM.concat(['drop_left']),
+      deBai: 'Thùng chắn lối xe chở hàng. Lắp xe cho Luna: rẽ giữa dải bùn, dọn thùng, về cờ.',
+      veMaMau: 'Xe của Luna chưa có lệnh.',
+      san: ['##########', '#.IIIIIu##', '####..####', '#...o..F##', '####F#####', '##########'],
+      doi: [may('CH', { x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] }), khe({ x: 1, y: 1, huong: 1 }, { son: 'lam', co: [{ x: 4, y: 4 }] })],
+      lapRap: lapR2(['hai-banh', 'gai'], ['kep', 'xoay'], [], 7, [
+        cach('gai', 'xoay', null, [['wait_n(4)', 'forward(6)'], ['forward(3)', 'turn_right()', 'move()', 'pick()', 'drop_left()', 'forward(2)']]),
+        cach('gai', 'kep', null, [['wait_n(5)', 'forward(6)'], ['forward(3)', 'turn_right()', 'move()', 'pick()', 'turn_left()', 'drop()', 'turn_right()', 'forward(2)']])
+      ]),
+      maMau: doiBai([['wait_n(4)', 'forward(6)'], []]),
       loiSai: [
-        { moTa: 'Hàm side_unlock(n) thiếu lệnh lob() nên chưa hất đá lên nút M(2, 2)', baiLam: baiDoi(['wait_n(2)', 'forward(3)'], ['side_unlock(1)']), hamCuaEmMoi: [{ ten: 'side_unlock', thamSo: ['n'], than: ['slide_r(n)'] }], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Xe của Luna không nhấc thùng: xe chở hàng đụng thùng', baiLam: doiBai([['wait_n(4)', 'forward(6)'], ['forward(3)', 'turn_right()']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 19, nhip: 5 },
-      goiY: ['Trong hàm side_unlock(n), thêm lob() ở dòng đầu tiên trước slide_r(n).']
+      sao: { o: 34, nhip: 13 },
+      goiY: ['Hai bánh vào bùn là trượt tới hố. Thử thân khác.'],
+      cauDo: { doi: null, lap: 'gai+xoay', coChe: ['bun', 'ho', 'thung', 'doi-than'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manCK('lap-kho-hang', 3, 'luyen', {
-      ten: 'Tái sử dụng side_unlock mở cửa kho xa',
-      r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'lob', 'slide_r', 'side_unlock'],
-      deBai: 'Cờ của R2 nay nằm ở (4, 4), cách cột xuất phát của R2 2 ô sang phải. Hãy dùng lại hàm side_unlock(2) cho R2 để hất đá lên nút M(2, 2) rồi trượt phải 2 ô vào cờ F(4, 4), giúp R1 chờ 2 nhịp rồi tiến 4 ô qua cửa C(4, 1) vào cờ F(5, 1)!',
-      veMaMau: 'Gọi side_unlock(2) cho R2.',
-      san: ['#######', '#...CF#', '##M####', '##o####', '##..F##', '#######'],
-      noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 4, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      co: [[{ x: 5, y: 1 }], [{ x: 4, y: 4 }]],
-      maMau: baiDoi(['wait_n(2)', 'forward(4)'], ['side_unlock(1)']),
-      loiGiai: baiDoi(['wait_n(2)', 'forward(4)'], ['side_unlock(2)']),
-      loiSai: [
-        { moTa: 'Truyền nhầm side_unlock(1) nên R2 dừng ở (3, 4), chưa tới cờ F(4, 4)', baiLam: baiDoi(['wait_n(2)', 'forward(4)'], ['side_unlock(1)']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 19, nhip: 6 },
-      goiY: ['Sửa side_unlock(1) thành side_unlock(2) ở chương trình của R2.']
+    // 13 · kẹp xoay gắp bên: R2 dừng trên bùn ngay trên thùng chắn lối, gắp sang phải không cần quay rồi lên cờ; kẹp thường phải quay xuống, quay về (chậm hơn, rẻ hơn).
+    man9('lap-kho-hang', 3, 'luyen', {
+      ten: 'Gắp bên hông',
+      hamCuaEmCan: HAM_EM.concat(['pick_right']),
+      deBai: 'Thùng nằm ngay dưới dải bùn, chắn lối xe chở hàng. Gắp thùng rồi lên cờ.',
+      veMaMau: 'Xe của Luna chưa có lệnh.',
+      san: ['###F####', '#.IIIIu#', '#..o..F#', '########'],
+      doi: [may('CH', { x: 1, y: 2, huong: 1 }, { co: [{ x: 6, y: 2 }] }), khe({ x: 1, y: 1, huong: 1 }, { son: 'lam', co: [{ x: 3, y: 0 }] })],
+      lapRap: lapR2(['gai'], ['kep', 'xoay'], [], 7, [
+        cach('gai', 'xoay', null, [['wait_n(2)', 'forward(5)'], ['forward(2)', 'pick_right()', 'turn_left()', 'move()']]),
+        cach('gai', 'kep', null, [['wait_n(3)', 'forward(5)'], ['forward(2)', 'turn_right()', 'pick()', 'turn_left()', 'turn_left()', 'move()']])
+      ]),
+      maMau: doiBai([['wait_n(2)', 'forward(5)'], ['forward(2)']]),
+      sao: { o: 26, nhip: 8 },
+      goiY: ['Kẹp xoay gắp bên phải: pick_right().'],
+      cauDo: { doi: null, lap: 'gai+xoay', coChe: ['bun', 'thung', 'tay-ben'], cuu: 'hang', meo: 'don-loi' }
     }),
 
     manCK('lap-kho-hang', 4, 'luyen', {
