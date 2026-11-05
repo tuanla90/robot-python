@@ -75,6 +75,14 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 > Lệch đã có: #1 cẩu nhấc container rồi giữ trên móc (khác chuỗi #2); #2 cảm biến `distance()` làm tín hiệu; #3 "chồng giữa" đọc thành "chồng nào còn chỗ" (tối đa 4); #4 `fly_right(3)` là tham số số ô;
 > #5 tạo hàm `valve_step(n)` (squirt("low"), forward(n)) cho các gói sau gọi.
 
+> **M9M2b 5/11, ĐÃ DỰNG đủ 20 màn G2** (ghi chú WIP trên đã cũ: lõi M9T5 có `contChan`, #1–#3, #5–#8 bật `contChan: true`, container chắn thật). Lệch so với bảng:
+> #6 băng chuyền không chở vật nhẹ → sắt nằm trên băng, nhện đi lên băng hút sắt; #7 / #8 / #9 "cứu máy" = R3 (xe cứu hỏa khách, khoá) tự ủi kệ vào ô đích (mục tiêu day-thung, vì đội có cẩu);
+> #8 R3 tiến ngay 4 ô (song song ép làm cùng lúc); #9 đội cố định xuồng + cẩu (xuồng cần khe nước, cẩu cần khe ray: không chọn đội được); #10 bè 2 do xe hang động hát (cẩu không gắn loa);
+> #12 thêm cách rẻ drone + nam châm; #13 cách hai không cảm biến; #14 cách rẻ hai bánh + kẹp vòng; #15 nút N trong tường bật bằng vòi phun (kiem-cau-do: giữ cửa nhận `nut-doi`);
+> #17 băng chở XE qua sắt (không chở sắt), khối nam châm S làm mồi nhử, cách rẻ hai bánh + kẹp; #18 người đi qua dầu không trượt → cát là lối của xe cứu hỏa, tạo lại `push_valve(n)`;
+> #19 giá thật ngược bảng (nhện 4 rẻ, cẩu 6 nhanh); #20 mục tiêu toi-co (đội choi-dieu có cờ lõi chưa cho thắng), đá chuông nốt 5 chỉ bè 2 phá được.
+> Hàm `lob_clear(d)` (bản cũ lap-nha-may.6) không còn: lap-bai-tai-che.7, lap-ben-song.6 đỏ ở kiem-loi-giai.
+
 ## G3 Bãi tái chế sau bão (ôn chuỗi, `and` / `or`) · bão: phế liệu gỗ lẫn sắt, khe mới, đệm từ
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |
