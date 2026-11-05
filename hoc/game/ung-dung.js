@@ -1,0 +1,326 @@
+/* ============================================================================
+   ung-dung.js — "Robot Chấn Hưng": KHỞI ĐỘNG, CO GIÃN KHUNG 360×640, ĐỊNH TUYẾN, MỞ KHÓA (window.App).
+   Bốn màn hình (kiểu Cut the Rope, 15/10): 'dau' khởi đầu (man-dau.js) → 'goi' chọn gói (man-goi.js) → 'chon' lưới màn của gói (man-chon.js) → 'choi' màn chơi.
+   Thêm màn 'doi' (M9D2 4/11, man-chon-doi.js): màn có man.chonDoi thì App.vaoMan mở màn Chọn đội TRƯỚC (rồi Lắp robot nếu màn còn lapRap), "Vào màn" mới chơi bản LapRap.apDungDoi; App.doiDoi quay về đó.
+   Thêm màn 'lap' (17/10, chế độ lắp ráp, man-lap.js): màn có man.lapRap thì App.vaoMan mở màn Lắp robot TRƯỚC, "Lắp xong" mới vào 'choi' (Choi.vao(m, cachLap)); trong màn chơi App.lapLai quay về đó đổi part.
+   Luật mở khóa (gói mở bằng tổng sao, chương / hàng / thử thách trong gói) ở game/mo-goi.js; App chỉ gọi qua.
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var App = {
+    goi: null,           // mã gói đang xem (ThuTuChuong.goi, xem MoGoi.dsGoi())
+    mua: null,           // mã mùa đang xem ở màn chọn gói (ThuTuChuong.mua, xem MoGoi.dsMua())
+    chuong: null,        // mã chương đang xem / vừa chơi (xem ManHoc.chuong())
+    moHet: !!(window.GoLoi && GoLoi.docMoHet()),   // chế độ thử: mở hết (bật / tắt trong bảng Gỡ lỗi, go-loi.js; giữ ở localStorage nên tải lại vẫn còn)
+    man: null            // màn đang chơi
+  };
+
+  /* ---------------------------------------------------------------- dữ liệu */
+  // Chương và thứ tự chương do lõi giữ (thu-tu-chuong.js → ManHoc.chuong()). Tiến độ lưu theo m.ma, không theo m.id.
+  function chuongCua(m) { return m.chuong; }
+  function sttCua(m) { return m.so; }
+  App.chuongCua = chuongCua; App.sttCua = sttCua;
+  App.dsChuong = function () { return ManHoc.chuong(); };
+  App.chiSoChuong = function (ma) {
+    var ds = ManHoc.chuong();
+    for (var i = 0; i < ds.length; i++) if (ds[i].ma === ma) return i;
+    return -1;
+  };
+  App.dsMan = function (ma) { return ManHoc.danhSach.filter(function (m) { return m.chuong === ma; }); };
+  App.trum = function (ma) { return App.dsMan(ma).filter(function (m) { return m.hang === 'trum'; })[0] || null; };
+  App.dsHang = function (ma, hang) { return App.dsMan(ma).filter(function (m) { return m.hang === hang; }); };
+
+  /** Tên chương (cho lời nhắc): theo danh sách chương của lõi, rồi bảng tên của thu-tu-chuong.js. */
+  App.tenChuong = function (ma) {
+    var ds = App.dsChuong();
+    for (var i = 0; i < ds.length; i++) if (ds[i].ma === ma) return ds[i].ten;
+    return (window.ThuTuChuong && ThuTuChuong.ten && ThuTuChuong.ten[ma]) || ma;
+  };
+  /** Chương thuộc ĐỢT 2 (bộ phận mới, mở cùng lúc khi thắng trùm của chương cổng)? Lõi chưa khai ThuTuChuong.dot2 thì không chương nào là đợt 2. */
+  App.laDot2 = function (ma) {
+    var d = window.ThuTuChuong && ThuTuChuong.dot2;
+    return !!(d && d.indexOf(ma) >= 0);
+  };
+  App.congDot2 = function () { return (window.ThuTuChuong && ThuTuChuong.congDot2) || null; };
+
+  /** Hàm cốt truyện màn m cho SỬA (m.taoHam + hàm có trong hamCuaEmMoi của lời giải); xem ManHoc.hamSuaDuoc. Bảng Gỡ lỗi "Mở hết" không mở khóa cái này. */
+  App.hamSuaDuoc = function (m) { return ManHoc.hamSuaDuoc(m); };
+  /** Tên các hàm của em đang BỊ KHÓA ở màn m (hàm cốt truyện mà màn không cho sửa: mở ở Xưởng chỉ xem, khay có ổ khóa). Mặc định xét mọi hàm trong kho. */
+  App.hamEmKhoa = function (m, ds) {
+    var coTruyen = ManHoc.hamCotTruyen(), sua = ManHoc.hamSuaDuoc(m);
+    return (ds || KhoHam.ds()).map(function (f) { return f.ten; }).filter(function (n) { return coTruyen.indexOf(n) >= 0 && sua.indexOf(n) < 0; });
+  };
+
+  /* ---------------------------------------------------------------- gói + mở khóa (game/mo-goi.js) */
+  App.dsGoi = function () { return MoGoi.dsGoi(); };
+  /** Mùa (ThuTuChuong.mua): danh sách, mùa đã mở chưa, sao trong mùa. Một mùa thì màn chọn gói không hiện hàng chọn mùa. */
+  App.dsMua = function () { return MoGoi.dsMua(); };
+  App.muaMo = function (mu) { return MoGoi.muaMo(mu, Luu, App.moHet); };
+  App.saoMua = function (ma) { return MoGoi.saoMua(ma, Luu); };
+  App.goiCua = function (maChuong) { return MoGoi.goiCua(maChuong); };
+  App.goiTheoMa = function (ma) { return MoGoi.goiTheoMa(ma); };
+  App.tongSao = function () { return MoGoi.tongSao(Luu); };
+  App.saoGoi = function (g) { return MoGoi.saoGoi(g, Luu); };
+  App.soQua = function (g) { return MoGoi.soQua(g, Luu); };
+  App.goiMo = function (g) { return MoGoi.goiMo(g, Luu, App.moHet); };
+  /** Mùa bán riêng chưa mua (thu-tu-chuong.js, mùa có `ban`). */
+  App.chuaMua = function (mu) { return MoGoi.chuaMua(mu, Luu, App.moHet); };
+  /** MUA THỬ một mùa: chưa nối thanh toán, chỉ ghi cờ đã mua trên máy này (Luu.datDaMua) rồi vẽ lại màn chọn gói ở gói đầu mùa. */
+  App.muaThu = function (maMua) {
+    Luu.datDaMua(maMua);
+    var mu = MoGoi.muaTheoMa(maMua), dau = mu && mu.goi.filter(function (g) { return !g.sapCo; })[0];
+    if (dau) { Luu.datDaXem('goi-mo:' + dau.ma); Luu.datDaXem('mua-mo:' + maMua); }
+    if (window.AmThanh) AmThanh.phat('moKhoa');
+    if (App.manHinh === 'goi' && window.ChonGoi) ChonGoi.ve(dau ? dau.ma : null);
+    else if (App.manHinh === 'mua' && window.ChonMua) ChonMua.ve();
+  };
+  /** Vào màn của mùa sau: thêm vào kho các hàm cốt truyện của MỌI MÙA TRƯỚC mà kho còn thiếu (người mua thẳng mùa sau, chưa chơi mùa trước).
+   *  Chỉ thêm, không thay hàm em đã có. Hàm chế trong chính mùa này vẫn phải tự chế (mo-goi.js, luật 'can-ham'). */
+  function napMuaTruoc(m) {
+    var g = MoGoi.goiCua(m.chuong), mu = g && MoGoi.muaTheoMa(g.mua);
+    if (!mu || mu.so <= 1) return;
+    var dau = mu.goi.filter(function (x) { return !x.sapCo; })[0], doi = false;
+    if (!dau || !dau.man.length) return;
+    ManHoc.khoThamChieu(dau.man[0]).forEach(function (f) {
+      if (KhoHam.tim(f.ten)) return;
+      if (!KhoHam.tao(f.ten, f.thamSo, { taoHam: [f.ten] }).ok) return;
+      if (KhoHam.sua(f.ten, f.than, f.thamSo).ok) doi = true;
+    });
+    if (doi) Luu.ghiKho();
+  }
+  /** Hàm em chương ma cần mà chế ở chương khác: [{ chuong, ham }] (giữ dạng cũ cho chỗ khác gọi). */
+  App.chuongCanTruoc = function (ma) { return MoGoi.canHam(ma).map(function (x) { return { chuong: x.man.chuong, ham: x.ham }; }); };
+  /** { mo } hoặc { mo: false, lyDo: 'chua-mua' | 'mua' | 'sao' | 'chuoi' | 'can-ham' | 'hang1' | 'hang23' | 'trum', … } — xem mo-goi.js. */
+  App.trangThai = function (m) { return MoGoi.trangThai(m, Luu, App.moHet); };
+  /** Màn nên chơi tiếp (màn mở đầu tiên chưa qua), hoặc null. */
+  App.manTiepTheo = function () { return MoGoi.manTiepTheo(Luu, App.moHet); };
+  /** Chương đã mở chưa (màn đầu chương mở)? Chương chưa có màn nào thì chưa mở. */
+  App.chuongMo = function (ma) {
+    var ds = App.dsMan(ma);
+    if (!ds.length) return false;
+    var dau = App.dsHang(ma, 'lam-quen')[0] || ds[0];
+    return !!App.trangThai(dau).mo;
+  };
+  /**
+   * Gói vừa đủ sao để mở (chưa báo lần nào: cờ 'goi-mo:<mã>' trong Luu): hiện bảng "Mở gói mới!" (bang-mo-khoa.js) rồi gọi khiXong.
+   * Không có gì để báo thì gọi khiXong ngay. Trả về true nếu đã mở bảng. Gọi sau khi thắng một màn và khi về màn chọn gói / lưới màn.
+   */
+  App.baoGoiMoi = function (khiXong) {
+    var moi = App.dsGoi().filter(function (g) { return !g.sapCo && g.saoCan > 0 && MoGoi.goiMo(g, Luu) && !Luu.daXem('goi-mo:' + g.ma); });
+    if (!moi.length || !window.MoKhoa) { if (khiXong) khiXong(); return false; }
+    moi.forEach(function (g) { Luu.datDaXem('goi-mo:' + g.ma); Luu.datDaXem('mua-mo:' + g.mua); });       // gói / mùa đã mở thì không bao giờ khóa lại (mo-goi.js)
+    MoKhoa.mo(moi, function () { if (App.manHinh === 'goi' && window.ChonGoi) ChonGoi.ve(moi[0].ma); if (khiXong) khiXong(); });
+    return true;
+  };
+  App.moKhoaDot2 = App.baoGoiMoi;                                     // tên cũ (man-choi.js gọi sau khi thắng màn)
+  /** Lần đầu chạy bản có gói: các gói đã mở sẵn (tiến độ cũ) coi như đã báo, khỏi bảng "Mở gói mới!" dài một lần. */
+  function ghiGoiDaMo() {
+    if (Luu.daXem('goi-khoi-tao')) return;
+    App.dsGoi().forEach(function (g) { if (!g.sapCo && MoGoi.goiMo(g, Luu)) { Luu.datDaXem('goi-mo:' + g.ma); Luu.datDaXem('mua-mo:' + g.mua); } });
+    Luu.datDaXem('goi-khoi-tao');
+  }
+  /** Màn kế tiếp đã mở (theo thứ tự trong danh sách; hết chương thì sang màn đầu chương kế), hoặc null. */
+  App.manTiep = function (m) {
+    m = (m && m.manGoc) || m;                          // màn lắp ráp đang chơi là bản đã gắn robot: tìm theo màn gốc
+    var ds = ManHoc.danhSach, i = ds.indexOf(m);
+    if (i < 0 || i + 1 >= ds.length) return null;
+    var k = ds[i + 1];
+    return App.trangThai(k).mo ? k : null;
+  };
+
+  /* ---------------------------------------------------------------- màn hình */
+  var MAN_HINH = { dau: 'sc-dau', mua: 'sc-mua', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi', lap: 'sc-lap', doi: 'sc-doi' };
+  App.manHinh = null;
+  /** Hiện một màn hình: 'dau' (khởi đầu) | 'mua' (bản đồ chọn mùa) | 'goi' (chọn gói của App.mua) | 'chon' (lưới màn của gói App.goi) | 'choi' | 'lap' (Lắp robot, màn lắp ráp) | 'doi' (Chọn đội, màn chọn đội M9D2). */
+  App.hien = function (ten) {
+    TP.Chan.giu(400);                                  // cú bấm đến muộn không rơi xuống màn mới
+    Object.keys(MAN_HINH).forEach(function (k) { var e = document.getElementById(MAN_HINH[k]); if (e) e.classList.toggle('hidden', k !== ten); });
+    App.manHinh = ten;
+    if (window.Dau) Dau.chay(ten === 'dau');           // robot ở màn khởi đầu chỉ chạy hoạt hình khi đang thấy
+    if (ten === 'dau') Dau.ve();
+    else if (ten === 'mua') ChonMua.ve();
+    else if (ten === 'goi') { ChonGoi.ve(); App.baoGoiMoi(); }
+    else if (ten === 'chon') { Chon.ve(); App.baoGoiMoi(); }   // an toàn: bảng "Mở gói mới!" chưa kịp hiện (vd mở lại game) thì hiện ở đây
+    if (window.VeIcon && VeIcon.thay) Promise.resolve().then(function () { VeIcon.thay(document.getElementById(MAN_HINH[ten]) || document.getElementById('stage')); });   // V7b: nút chỉ icon có title (sau khi màn dựng xong)
+  };
+  /** Vẽ lại màn hình đang thấy (sau khi bảng Gỡ lỗi đổi tiến độ / "Mở hết"). */
+  App.veLai = function () {
+    if (App.manHinh === 'dau') Dau.ve();
+    else if (App.manHinh === 'mua') ChonMua.ve();
+    else if (App.manHinh === 'goi') ChonGoi.ve();
+    else if (App.manHinh === 'chon') Chon.ve();
+  };
+  /** Báo nhanh (dải vàng) trên màn hình đang thấy. */
+  App.thongBao = function (chu) {
+    var m = App.manHinh === 'dau' ? window.Dau : App.manHinh === 'mua' ? window.ChonMua : App.manHinh === 'goi' ? window.ChonGoi : window.Chon;
+    if (m && m.thongBao) m.thongBao(chu);
+  };
+  /** Vào màn theo mã cố định (vd 'vong-lap.4'); nhận cả id hiển thị ('3.4') cho tiện thử. */
+  App.vaoMan = function (ma) {
+    var m = ManHoc.timMa(ma) || ManHoc.tim(ma); if (!m) return;
+    App.vaoManDuLieu(m);
+  };
+  /** Vào màn theo dữ liệu màn (App.vaoMan sau khi tìm mã; thu-mua-9.js gọi thẳng với màn giả khi gỡ lỗi).
+   *  Màn chọn đội (man.chonDoi, M9D2) → màn Chọn đội trước; màn lắp ráp (man.lapRap) → màn Lắp robot; còn lại vào thẳng màn chơi. */
+  App.vaoManDuLieu = function (m) {
+    if (!m) return;
+    if (App.moHet && window.GoLoi && GoLoi.napKhiMoHet) GoLoi.napKhiMoHet(m);   // "Mở hết" (gỡ lỗi): nhảy cóc vẫn có hàm cốt truyện các màn trước
+    napMuaTruoc(m);
+    App.man = m; App.chuong = m.chuong;
+    var g = App.goiCua(m.chuong); if (g) { App.goi = g.ma; App.mua = g.mua; }
+    if (m.chonDoi && window.ChonDoi) {                 // M9D2 màn chọn đội: chọn cỗ máy cho Sola / Luna trước, "Vào màn" mới chơi (hay sang Lắp robot nếu màn còn lapRap); ◀ về lưới màn
+      App.hien('doi');
+      ChonDoi.vao(m, { chon: Luu.docDoi(m.ma), khiVe: function () { App.veChon(); }, khiXong: function (chon) { sauChonDoi(m, chon, function () { App.vaoManDuLieu(m); }); } });
+      return;
+    }
+    if (m.lapRap && window.LapRobot) {                 // màn lắp ráp (lap-rap.js): chọn part trước, "Lắp xong" mới vào màn chơi; ◀ về lưới màn
+      App.hien('lap');
+      LapRobot.vao(m, { cach: Luu.docLap(m.ma), khiVe: function () { App.veChon(); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(m, cach); } });
+      return;
+    }
+    App.hien('choi');
+    Choi.vao(m);
+  };
+  /** Đã chọn đội `chon` cho màn gốc goc: bản màn đội (LapRap.apDungDoi); màn còn lapRap thì sang màn Lắp robot (◀ ở đó gọi veLai: quay về bước chọn đội), không thì vào màn chơi. */
+  function sauChonDoi(goc, chon, veLai) {
+    var a = LapRap.apDungDoi(goc, chon);
+    if (goc.lapRap && window.LapRobot) {
+      App.hien('lap');
+      LapRobot.vao(a, { cach: Luu.docLap(goc.ma), khiVe: veLai, khiXong: function (cach) { App.hien('choi'); Choi.vao(a, cach); } });
+      return;
+    }
+    App.hien('choi');
+    Choi.vao(a);
+  }
+  /** Màn lắp ráp đang chơi: quay về màn Lắp robot để đổi part. "Lắp xong" → vào lại màn chơi với robot mới (chương trình đang viết được giữ, dòng gọi lệnh part đã tháo bị tô đỏ);
+   *  ◀ → về màn chơi, không đổi gì. Màn vừa chọn đội vừa lắp: Lắp robot dựng trên đội đang chơi (m.chonDaChon). */
+  App.lapLai = function () {
+    var c = window.Choi && Choi.trangThai(), m = c && c.man;
+    if (!m || !m.lapRap || !window.LapRobot) return;
+    var goc = m.manGoc || m, nen = goc.chonDoi && m.chonDaChon ? LapRap.apDungDoi(goc, m.chonDaChon) : goc;
+    TP.Hop.dong(); Choi.roi && Choi.roi();
+    App.hien('lap');
+    LapRobot.vao(nen, { cach: m.cachLapDaChon, khiVe: function () { App.hien('choi'); }, khiXong: function (cach) { App.hien('choi'); Choi.vao(nen, cach); } });
+  };
+  /** M9D2 màn chọn đội đang chơi: quay về màn Chọn đội (đội đang chơi được chọn sẵn). "Vào màn" → chơi lại với đội mới (chương trình đang viết được giữ); ◀ → về màn chơi, không đổi gì. */
+  App.doiDoi = function () {
+    var c = window.Choi && Choi.trangThai(), m = c && c.man;
+    var goc = m && (m.manGoc || m);
+    if (!goc || !goc.chonDoi || !window.ChonDoi) return;
+    TP.Hop.dong(); Choi.roi && Choi.roi();
+    App.hien('doi');
+    ChonDoi.vao(goc, { chon: m.chonDaChon, khiVe: function () { App.hien('choi'); }, khiXong: function (chon) { sauChonDoi(goc, chon, function () { App.hien('doi'); }); } });
+  };
+  /** Mở lưới màn của gói ma (chương xem = chương đầu của gói, trừ khi chương đang xem nằm trong gói). */
+  App.vaoGoi = function (ma) {
+    var g = App.goiTheoMa(ma); if (!g || g.sapCo) return;
+    App.goi = g.ma;
+    if (g.chuong.indexOf(App.chuong) < 0) App.chuong = g.chuong[0];
+    App.hien('chon');
+  };
+  /** Từ màn chơi về lưới màn của gói đang chơi. */
+  App.veChon = function () {
+    TP.Hop.dong();
+    Choi.roi && Choi.roi();
+    App.hien('chon');
+  };
+  App.veGoi = function () { App.hien('goi'); };
+  App.veMua = function () { App.hien('mua'); };
+  App.veDau = function () { App.hien('dau'); };
+
+  /* --------------------------------------------------------- co giãn khung */
+  function vua() {
+    var st = document.getElementById('stage');
+    var vv = window.visualViewport;
+    var w = vv ? vv.width : window.innerWidth, hh = vv ? vv.height : window.innerHeight;
+    var doc = w <= 520 && hh > w;                      // điện thoại cầm dọc: lấp đầy màn hình
+    var sh = 640, s = Math.min(w / 360, hh / 640);
+    if (doc) { s = w / 360; sh = Math.max(640, Math.min(900, hh / s)); s = Math.min(s, hh / sh); }
+    st.style.setProperty('--sh', sh + 'px');
+    st.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+    document.body.classList.toggle('dien-thoai', doc);
+  }
+
+  /** Dọn khỏi Xưởng hàm của em những hàm demo-một-lần (ManHoc.hamDemoMotLan) mà kho CŨ (chơi từ trước khi có
+   *  danh sách này) còn giữ lại: không ai cần lại nên không khóa tên nữa (xem hamCotTruyen), ở đây xóa luôn
+   *  cho khay gọn, trừ khi em đã tự viết hàm khác GỌI nó (coAiGoi) — lúc đó để nguyên, không phá code của em. */
+  function donHamDemoMotLan() {
+    if (!window.ManHoc || typeof ManHoc.hamDemoMotLan !== 'function') return;
+    var doi = false;
+    ManHoc.hamDemoMotLan().forEach(function (ten) {
+      if (!KhoHam.tim(ten)) return;
+      if (KhoHam.coAiGoi(ten).length) return;
+      if (KhoHam.xoa(ten).ok) doi = true;
+    });
+    if (doi) Luu.ghiKho();
+  }
+
+  /* ------------------------------------------------------------------ khởi động */
+  function boot() {
+    document.title = t('chung.tenGame');
+    // hàm theo cốt truyện (tên nằm trong taoHam của một màn nào đó, trừ hàm demo-một-lần): kho khóa tên, không cho đổi tên / xóa
+    KhoHam.datTenCoDinh(ManHoc.hamCotTruyen());
+    var r = Luu.docKho();
+    donHamDemoMotLan();
+    var kd = document.getElementById('sc-dau'), km = document.getElementById('sc-mua'), kg = document.getElementById('sc-goi'), kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi'), kl = document.getElementById('sc-lap');
+    Dau.dung(kd);
+    if (window.ChonMua) ChonMua.dung(km);
+    ChonGoi.dung(kg);
+    Chon.dung(kb);
+    Choi.dung(kc);
+    if (kl && window.LapRobot) LapRobot.dung(kl);
+    var kdoi = document.getElementById('sc-doi'); if (kdoi && window.ChonDoi) ChonDoi.dung(kdoi);
+    ghiGoiDaMo();
+    // gói / chương mở ban đầu: của màn tiếp theo cần chơi
+    var dau = App.manTiepTheo(), dsc = App.dsChuong();
+    App.chuong = dau ? dau.chuong : dsc[dsc.length - 1].ma;
+    App.goi = (App.goiCua(App.chuong) || App.dsGoi()[0]).ma;
+    App.mua = App.goiTheoMa(App.goi).mua;
+    App.hien('dau');
+    if (!r.ok) App.baoKho = r;
+    vua();
+    window.addEventListener('resize', vua);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', vua);
+    document.body.classList.add('san-sang');
+    chanNhanGiu();
+    if (App.baoKho) App.thongBao(t('tb.khoDoc', { loi: App.baoKho.loi }));
+    else if (Luu.laBoNho) App.thongBao(t('choi.loiLuu'));
+    phongDuPhong();
+    if (window.AmThanh) AmThanh.ganNut(document);
+    if (window.MoDau && !Luu.daXem(MoDau.CO)) MoDau.mo(function () { if (window.GioiThieu) GioiThieu.mo(); });   // lần đầu chơi: phim mở đầu (mo-dau.js) rồi ba trang mẹo (gioi-thieu.js)
+    dangKySW();
+  }
+
+  /** Chơi không cần mạng: đăng ký sw.js (chỉ khi trang có manifest, tức là chạy từ máy chủ; bản gói Artifact không có). */
+  function dangKySW() {
+    if (!('serviceWorker' in navigator) || !document.querySelector('link[rel="manifest"]') || !/^https?:$/.test(location.protocol)) return;
+    var dk = function () { navigator.serviceWorker.register('sw.js').catch(function () { /* không đăng ký được thì chơi có mạng như cũ */ }); };
+    if (document.readyState === 'complete') dk(); else window.addEventListener('load', dk);
+  }
+
+  /** Nhấn giữ trên điện thoại / chuột phải: không hiện menu của trình duyệt, không bôi đen chữ, không kéo ảnh ra ngoài (trừ ô gõ chữ). */
+  function chanNhanGiu() {
+    function oGo(ev) { return ev.target && ev.target.closest && ev.target.closest('input, textarea'); }
+    ['contextmenu', 'selectstart', 'dragstart'].forEach(function (su) {
+      document.addEventListener(su, function (ev) { if (!oGo(ev)) ev.preventDefault(); });
+    });
+  }
+
+  /** Không tải được phông (font/font.css; bản Artifact vẫn lấy từ Google): đánh dấu body.fb để CSS thu nhỏ chữ cho vừa khung. Kiểm Google Sans Flex / Code (V7c2: hết Handjet / VT323). */
+  function phongDuPhong() {
+    var fb = function () { document.body.classList.add('fb'); };
+    try {
+      if (!document.fonts || !document.fonts.load) { fb(); return; }
+      var hen = setTimeout(fb, 3000);
+      var pGd = '"Google Sans Flex"', pMa = '"Google Sans Code"';     // giao diện vector (gói V5a): phông diem10code
+      Promise.all([document.fonts.load('600 16px ' + pGd, t('choi.chay') + ' ạịợữỳĐ'), document.fonts.load('400 16px ' + pMa, 'turn_right()')]).then(function (r) {
+        clearTimeout(hen);
+        if (!r[0].length || !r[1].length) fb(); else document.body.classList.remove('fb');
+      }).catch(function () { clearTimeout(hen); fb(); });
+    } catch (e) { fb(); }
+  }
+
+  window.App = App;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();

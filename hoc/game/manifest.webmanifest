@@ -1,0 +1,18 @@
+{
+  "name": "Mật Lệnh Robot",
+  "short_name": "Mật Lệnh Robot",
+  "description": "Học Python bằng cách ra lệnh cho robot: lắp robot, vượt từng màn.",
+  "lang": "vi",
+  "start_url": "choi.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e8e6f6",
+  "theme_color": "#e8e6f6",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    { "src": "icon/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

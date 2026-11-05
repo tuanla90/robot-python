@@ -1,0 +1,11 @@
+{
+  "name": "diem10code-python",
+  "private": true,
+  "description": "diem10code-python: game dạy Python ôn thi đại học lớp 12 (tách từ doi-robot-chan-hung, chỉ giữ phần không cần tuple/dict/mảng 2 chiều). Trang tĩnh, không cần build.",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}
