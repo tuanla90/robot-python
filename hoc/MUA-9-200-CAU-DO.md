@@ -35,6 +35,15 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨gai, drone⟩ + ⟨kẹp, nam châm⟩ | hai cách đều thắng: gai + kẹp (nhanh) hay drone + nam châm (rẻ); chọn theo sao | hàng | đọc rồi chọn |
 | 20 | ⟨hai bánh, gai⟩ + loa | song ca: tự lắp robot hát; hai bánh trượt lệch nhịp trên bùn, gai giữ đúng nhịp | — | song ca |
 
+> **Đã dựng 5/11 (M9M1, hoc/man-cuu-kho-hang.js, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt a/b/c).** Lệch so với bảng:
+> - #1, #10, #11 đội / robot cố định (màn chạy sẵn và màn loa không qua bảng chọn). #10 song ca giữ đoạn 1 "Kìa con bướm vàng"; thêm đá chuông vỡ khi hát đúng nốt.
+> - #2 giới hạn "3 bao cát" làm bằng pin drone (lõi không có đếm bao cát).
+> - #6 bánh gai THU GAI trượt nhanh tới ô cát rồi giữ nút, hát nốt phá đá chuông chắn lối người (giữ "làm cầu", hai khách tự lo).
+> - Chương 2: lap-rap bắt ≥ 2 cách lắp cùng thắng, nên đôi "ép" không phải cách duy nhất: cách thứ hai là cách rẻ hơn / nhanh hơn; đôi sai (bẫy) nằm ngoài cachLap.
+>   #12 thêm kẹp thường làm lựa chọn tay · #14 thêm kẹp xoay (gai + kẹp xoay nhanh mà đắt) · #15 thêm bùn + bánh gai · #16 cách hai drone + nam châm ·
+>   #17 cách hai nhện + nam châm, cả hai xe phải qua cửa · #18 thùng nặng không nằm trên lối người được (người không đi ô H): người kẹt sau thùng gỗ, H chắn lối tới thùng gỗ; cách hai xích một mình, xe chở hàng gắp thùng gỗ ·
+>   #19 bảng ghi ngược giá: gai + kẹp là cách RẺ, drone + nam châm là cách NHANH · #20 chơi điệu theo đội không có cờ nên đổi thành tới cờ + hàm `walk_sing` + đá chuông; cách hai hai bánh đi làn dưới (không trượt).
+
 ## G2 Nhà máy sau bão (ôn biến, tham số) · bão: container văng chắn cửa xưởng, sắt vụn rơi vào khe máy, vệt dầu trơn
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |
