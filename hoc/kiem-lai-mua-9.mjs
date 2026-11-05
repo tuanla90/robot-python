@@ -468,6 +468,13 @@ const T5 = {};
   const mNg5 = { ma: 't5n', san: ['....', '....', '....'], batDau: { x: 1, y: 2, nac: 0, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU5, mucTieu: 'cuu-nguoi', contChan: true, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }], nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }], cauTruc: ['for'] };
   const cn5 = thu(() => ChamHoc.cham(mNg5, { chinh: ['for i in range(4):', '    wait()'] }, []));
   kiem('T5 (lời Việt): người chờ vì chồng → lời "chua-cuu-nguoi" nói ô (1, 0) "có chồng container"', cn5 && !cn5.thang && cn5.chanDoan.some((d) => d.ma === 'chua-cuu-nguoi' && /\(1, 0\) trên đường về trạm có chồng container/.test(d.loi)), cn5 && J(cn5.chanDoan));
+  // màn giả soát trên trình duyệt: ThuMua9.vao('cont-chan') (hoc/game/thu-mua-9.js manContChan) qua cham.js — xích đâm chồng 2 lần, cẩu nhấc, xích ủi thùng vào đích
+  const T9 = thu(() => require(path.join(day, 'game', 'thu-mua-9.js')));
+  const mcc = T9 && thu(() => T9.manContChan()), rcc = mcc && thu(() => ChamHoc.cham(mcc, mcc.maMau, []));
+  const dtc = rcc && rcc.chanDoan.filter((d) => d.ma === 'dam-tuong')[0];
+  kiem("T5 (màn giả 'cont-chan'): lời giải nạp sẵn qua cham.js thắng ở nhịp 5, chẩn đoán đâm chồng container 2 lần (soát trên trình duyệt)", rcc && rcc.thang && rcc.soNhip === 5 && dtc && dtc.soLan === 2 && /chồng container ở ô \(1, 2\)/.test(dtc.loi), rcc && J([rcc.thang, rcc.soNhip, rcc.chanDoan]));
+  const rcc0 = mcc && thu(() => ChamHoc.cham(Object.assign({}, mcc, { contChan: false }), mcc.maMau, []));
+  kiem("T5 d (màn giả 'cont-chan'): bỏ contChan → xích ủi thẳng qua ô chồng, thắng ở nhịp 3, không đâm (phép trên đỏ)", rcc0 && rcc0.thang && rcc0.soNhip === 3 && !rcc0.chanDoan.some((d) => d.ma === 'dam-tuong'), rcc0 && J([rcc0.soNhip, rcc0.chanDoan]));
 }
 
 /* ============================================================ M9C1 (4/11): L3 xe tời bờ, P người cần cứu */

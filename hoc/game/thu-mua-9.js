@@ -7,6 +7,7 @@
      ThuMua9.manBaRobot()   → màn đội thường ba robot (đội đã ghép sẵn, không chọn), R3 khoá
      ThuMua9.vao('chon-doi' | 'lap-r2' | 'ba-robot')   (trình duyệt) vào thẳng màn giả qua App.vaoManDuLieu (cùng đường với App.vaoMan)
      ThuMua9.vao('cuu-nguoi' | 'thac' | 'rac-cat' | 'phao' | 'gio' | 'nam-cham' | 'gau' | 'xe-toi' | 'phun-van' | 'cont-troi' | 'be-sac' | 'lap-ho' | 'binh-xit')   (M9H1; binh-xit M9L15) màn giả một robot soát hình sân mùa 9; ThuMua9.dsSan9 = danh sách
+     ThuMua9.vao('cont-chan')   (M9T5; ThuMua9.manContChan(), màn ĐỘI nên không nằm trong dsSan9) màn giả hai robot: xe cứu hỏa đâm chồng container (contChan), cần cẩu nhấc đi rồi xe qua ủi thùng vào đích
    Node: máy kiểm hoc/kiem-giao-dien-chon-doi.mjs require tệp này (cần co-may.js, man-chuoi-1.js).
    ========================================================================== */
 (function () {
@@ -148,12 +149,28 @@
       ['go_right()', 'go_right()', 'spray()', 'go_right()', 'go_down()', 'go_right()', 'go_right()', 'spray()', 'go_down()', 'go_right()']); }
   };
 
-  var API = { manChonDoi: manChonDoi, manLapRobot2: manLapRobot2, manBaRobot: manBaRobot };
+  // M9T5 (5/11): chồng container chặn như tường (cfg.contChan). Đội hai robot, mục tiêu đẩy thùng: xe cứu hỏa (Sola, xích) tiến vào chồng ở (1, 2) → đâm hai lần (nhịp 1, 2);
+  //   cần cẩu (Luna, bệ trên ray hàng trên) đầu cần trên chồng, nhấc đi ở nhịp 2 rồi hạ sang (3, 0) → nhịp 3 xích đi qua ô chồng cũ, ủi thùng H vào ô đích D (nhịp 5).
+  function manContChan() {
+    var xe = CoMay().dung('CU', { batDau: { x: 0, y: 2, huong: 1 } });
+    var cau = CoMay().dung('CC', { batDau: { x: 1, y: 0, nac: 4, tam: 2 }, son: 'lam' });
+    var bai = { doi: [{ chinh: ['for i in range(5):', '    left_move()', '    right_move()', '    wait()'] }, { chinh: ['wait()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()'] }] };
+    var tho = Object.assign({
+      ma: 'thu.cont-chan', id: 'T9.cont-chan', chuong: chuongThu(), so: 9, ten: 'Thử chồng chặn', hang: 'lam-quen', deBai: 'Xe đâm chồng container. Cẩu nhấc đi, xe qua ủi thùng.',
+      san: ['RRR..', '.....', '..H.D'], batDau: clone(xe.batDau), robot: clone(xe.robot), hamGoc: xe.hamGoc.slice(),
+      doi: [xe, cau], contChan: true, chong: [{ x: 1, y: 2, cont: [{ so: 3 }] }],
+      mucTieu: 'day-thung', khung: { chinh: 12, moiHam: 8 }, cauTruc: ['for'], hamCuaEmCan: [], camHamCuaEm: false,
+      maMau: clone(bai), loiGiai: clone(bai), loiSai: [], sao: { o: 20, nhip: 40 }
+    }, { loaiRobot: xe.loaiRobot, xichDay: true, lucBan: true });
+    return chuan(tho);
+  }
+
+  var API = { manChonDoi: manChonDoi, manLapRobot2: manLapRobot2, manBaRobot: manBaRobot, manContChan: manContChan };
   API.san9 = function (ten) { var f = SAN9[ten]; return f ? f() : null; };
   API.dsSan9 = Object.keys(SAN9);
   /** Trình duyệt: vào thẳng màn giả (App.vaoManDuLieu cùng đường với App.vaoMan). */
   API.vao = function (ten) {
-    var tao = { 'chon-doi': manChonDoi, 'lap-r2': manLapRobot2, 'ba-robot': manBaRobot }[ten || 'chon-doi'] || SAN9[ten];
+    var tao = { 'chon-doi': manChonDoi, 'lap-r2': manLapRobot2, 'ba-robot': manBaRobot, 'cont-chan': manContChan }[ten || 'chon-doi'] || SAN9[ten];
     if (!tao || laNode || !window.App || !App.vaoManDuLieu) return null;
     var m = tao();
     App.vaoManDuLieu(m);
