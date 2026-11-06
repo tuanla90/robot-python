@@ -174,5 +174,5 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return b;
   }
 
-  window.Chon = { dung: dung, ve: ve, thongBao: thongBao };
+  window.Chon = { dung: dung, ve: ve, thongBao: thongBao, lyDo: lyDoChu };
 })();
