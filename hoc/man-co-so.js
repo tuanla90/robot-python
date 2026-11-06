@@ -77,6 +77,34 @@
   };
   ManHoc.chuanHoa = chuanHoaMan;
 
+  /** KHUÔN 8 HÀNG (hoc/KE-HOACH-4-MUA-COT-LOI.md): mọi cột của mọi mùa dùng cùng 8 dạng bài, theo đúng thứ tự này (màn số `so` = hàng `so`). */
+  ManHoc.DANG_BAI = ['chi-xem', 'du-doan', 'dien', 'sap-xep', 'sua-loi', 'viet', 'viet-ham', 'tu-luc'];
+  /** Điền phần riêng của dạng bài cho màn ở hàng `so` (1..8). Các hàng 1–7 mở lần lượt; hàng 8 là thử thách của cột (`trum`, mở khi qua đủ 7 hàng trên).
+   *  Cờ riêng: chiChay (hàng 1, 2: chạy đúng code mẫu), chiSapXep (hàng 4: chỉ kéo đổi chỗ dòng), canHamTuDat (hàng 7: phải gọi hàm của em, tên tự đặt),
+   *  hamTuDat (hàng 7, 8: tên hàm trong lời giải chỉ là ví dụ, không đưa vào kho tham chiếu). Hàng 6–8 mặc định màn trống. */
+  ManHoc.khuon = function (so, m) {
+    m.so = so;
+    m.dangBai = ManHoc.DANG_BAI[so - 1];
+    m.hang = so === 8 ? 'trum' : 'lam-quen';
+    var lg = m.loiGiai, hamMan = lg.hamCuaMan || [];
+    function banSao(ds) { return ds.map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; }); }
+    if (so <= 2) {
+      m.chiChay = true;
+      m.maMau = { chinh: lg.chinh.slice(), hamCuaMan: banSao(hamMan) };
+    }
+    if (so === 4) m.chiSapXep = true;
+    if (so <= 2 || so === 4) {
+      m.moXuong = false;
+      m.khoaHamMan = hamMan.map(function (f) { return f.ten; });
+    }
+    if (so >= 6 && !m.maMau) m.maMau = { chinh: [], hamCuaMan: banSao(hamMan) };
+    if (so >= 3 && m.maMau && !m.maMau.hamCuaMan) m.maMau.hamCuaMan = banSao(hamMan);
+    if (so === 7 && !m.canHamTuDat) m.canHamTuDat = 1;
+    if (so >= 7) { m.moXuong = true; m.hamTuDat = true; }
+    if (so === 8) m.goiY = [];
+    return m;
+  };
+
   /** Hàm tự đặt chỉ DEMO một ý tưởng ở đúng màn tạo ra nó (xem bản gốc man-chuoi-1.js):
    *  dự án này đang bắt đầu lại nên danh sách rỗng, điền dần khi viết màn mới. */
   var HAM_DEMO_MOT_LAN = [];
@@ -105,6 +133,7 @@
     for (var i = 0; i < ManHoc.danhSach.length; i++) {
       var x = ManHoc.danhSach[i];
       if (x.ma === ma) break;
+      if (x.hamTuDat) continue;                                  // hàm tên tự đặt: bản trong lời giải chỉ là ví dụ, người chơi không có hàm mang tên đó
       ((x.loiGiai && x.loiGiai.hamCuaEmMoi) || []).forEach(function (f) {
         var h = { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: (f.than || []).slice() }, k = chi[f.ten];
         if (k === undefined) { chi[f.ten] = ds.length; ds.push(h); }

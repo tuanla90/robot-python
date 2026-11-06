@@ -1636,6 +1636,7 @@
     dienO(ketQua, daDung);
     var thieu = thangHet ? thieuTaoHam(man, dung) : [];
     if (thieu.length) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiTaoHam(thieu)); }
+    if (thangHet && thieuHamTuDat(man, dung)) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiHamTuDat(man)); }
     if (thangHet) {
       var sao = man.sao || {}, re = sao.re;
       var laRe = !!(re && typeof man.giaLap === 'number' && man.giaLap <= re.gia);                   // màn lắp ráp: robot lắp rẻ (≤ sao.re.gia xu)
@@ -1812,6 +1813,16 @@
   function loiTaoHam(thieu) {
     var ds = thieu.map(function (t) { return t + '()'; }).join(', ');
     return { muc: 'loi', ma: 'chua-tao-ham', ham: thieu.slice(), loi: 'Robot làm xong việc rồi, nhưng màn này dạy tạo hàm ' + ds + '. Chương trình của em chưa gọi ' + ds + ': tạo hàm đó ở Xưởng hàm rồi dùng nó trong chương trình nhé.' };
+  }
+
+  /** man.canHamTuDat = n: màn dạy viết hàm, TÊN DO EM TỰ ĐẶT (khác taoHam là tên cố định): robot làm xong mà chương trình chạy chưa tới n hàm của em thì CHƯA thắng. */
+  function thieuHamTuDat(man, dung) {
+    if (!man.canHamTuDat || man.camHamCuaEm) return false;
+    return Object.keys(dung).filter(function (k) { return k.indexOf('hamEm:') === 0; }).length < man.canHamTuDat;
+  }
+  function loiHamTuDat(man) {
+    var n = man.canHamTuDat;
+    return { muc: 'loi', ma: 'chua-tu-dat-ham', can: n, loi: 'Robot làm xong việc rồi, nhưng màn này dạy viết hàm: hãy gom thao tác lặp lại vào ' + (n > 1 ? n + ' hàm' : 'một hàm') + ' tự đặt tên ở Xưởng hàm rồi gọi trong chương trình nhé.' };
   }
 
   /** Hàm của em đã bị SỬA HỎNG cho màn `man` (23/10: sửa nhầm hàm cũ ở màn cho sửa, sang màn sau hàm đó bị khóa chỉ xem nên không giải được).

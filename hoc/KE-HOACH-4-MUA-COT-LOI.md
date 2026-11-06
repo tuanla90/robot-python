@@ -56,8 +56,18 @@ bài, không phải đoán lại mỗi chương):**
 
 Tổng mỗi mùa: 4 × 8 = **32 màn**. Tổng 4 mùa: **128 màn**.
 
-**Mùa 1 phải DỰNG LẠI theo đúng khuôn 4×8 này** (bản đã xây trước đó — 45 màn, 9 chương kiểu
-"làm quen + chế lệnh" — không đủ các dạng bài 1,2,4,5,6,8 ở trên, không đồng bộ với mùa 2–4).
+**Mùa 1 đã DỰNG LẠI theo khuôn 4×8 này** (thay bản 45 màn, 9 chương trước đó). Mùa 2–4 dựng theo cùng cách:
+
+- Dùng `ManHoc.khuon(so, m)` (`hoc/man-co-so.js`): truyền số hàng 1–8, hàm tự đặt dạng bài và các cờ của hàng đó.
+- Mỗi cột là một chương + một gói (`m1-c1-than`, `m1-c2-tay`, `m1-c3-cam-bien`, `m1-c4-san` trong `hoc/thu-tu-chuong.js`).
+- Kiểm bằng `node hoc/kiem-m1-nhanh.mjs`: mỗi màn thắng 3 sao bằng hàm của chính nó, code mẫu đúng dạng bài của hàng.
+
+Quyết định khi dựng (có thể đổi nếu muốn):
+
+- Hàng 2: đoán sai vẫn qua màn nhưng bị trừ 1 sao, chơi lại để đoán lại được.
+- Hàng 7: tên hàm do em tự đặt (`hamTuDat`, `canHamTuDat`), không viết hàm thì chưa thắng. Hàm tự đặt không chuyển sang màn sau bắt buộc: mỗi màn thắng được với hàm của chính nó.
+- Khung chính vẽ tối đa 10 dòng mà nhặt + đặt đủ lệnh gốc đã hết 10, nên hàng 1–6 ở cột có tay cho sẵn hàm của màn `pick()`/`drop()`.
+- Gói sau mở theo luật sao có sẵn (½ số sao tối đa của các gói trước, làm tròn xuống bội 5), nên chưa cần xong hết 8 hàng của cột trước.
 
 ## Quy tắc engine (đã áp dụng một phần khi dựng mùa 1 lần đầu, giữ nguyên khi dựng lại)
 
@@ -79,8 +89,7 @@ Tổng mỗi mùa: 4 × 8 = **32 màn**. Tổng 4 mùa: **128 màn**.
 
 ## Việc còn lại
 
-1. Dựng lại Mùa 1 theo khuôn 4×8 (32 màn, 8 dạng bài).
-2. Dựng Mùa 2, 3, 4 theo đúng khuôn 4×8 + chuỗi chuyển part ở trên (chưa làm).
-3. Mùa Tổ hợp (mùa 5): chưa thiết kế, làm sau khi xong 4 mùa cốt lõi.
-4. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua up/down/turn_left/turn_right;
+1. Dựng Mùa 2, 3, 4 theo đúng khuôn 4×8 + chuỗi chuyển part ở trên (chưa làm).
+2. Mùa Tổ hợp (mùa 5): chưa thiết kế, làm sau khi xong 4 mùa cốt lõi.
+3. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua up/down/turn_left/turn_right;
    chưa xem lại toàn bộ UI nhập lệnh — vẫn là việc treo từ đầu buổi.

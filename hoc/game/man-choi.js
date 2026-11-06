@@ -87,6 +87,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
       chiDoc: khungCoDinh,                                                                      // chương trình chính cố định (màn chế lệnh) hay robot tự động khóa (doi[i].coDinh): chỉ đọc
       khiChiDoc: baoChinhCoDinh,
+      chiSapXep: function () { return !!(S.man && S.man.chiSapXep); },                          // màn sắp xếp lại: chỉ kéo đổi chỗ dòng có sẵn
+      khiChiSapXep: baoChiSapXep,
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); },
       khiCamNhip: function (ly) { toast(ly, 'bad', 3400); },                                  // mỗi bộ phận một lệnh mỗi nhịp: chèn bị từ chối
       khiNhip: function (cam) { if (S.pal) S.pal.datCamNhip(cam); }                          // khay làm mờ khối của bộ phận đã có lệnh trong nhịp đang soạn
@@ -94,7 +96,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     S.pal = new TP.Palette(q('.pal'), {
       khiChen: function (txt) {
         if (khungCoDinh()) { baoChinhCoDinh(); return; }
-        if (S.ed.chen(txt) === false) toast(t('choi.dayKhung'), 'bad');           // null = bộ phận đã có lệnh trong nhịp (khiCamNhip đã báo)
+        if (S.man && S.man.chiSapXep) { baoChiSapXep(); return; }
+        if (S.ed.chen(txt) === false) toast(t('choi.dayKhung'), 'bad');        // null = bộ phận đã có lệnh trong nhịp (khiCamNhip đã báo)
       },
       khiSua: function (loai, ten) { Xuong.mo(loai, ten); },
       khiMoi: function (the) { Xuong.moiHam(function (ten) { if (!S.theTao[ten]) S.theTao[ten] = the; Xuong.mo('em', ten, the); }); },          // hàm mới (còn trống) mở ở Xưởng với khay đúng thẻ em đang xem
@@ -242,7 +245,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       try { m = LapRap.apDung(nen, c); } catch (e) { m = LapRap.apDung(nen, LapRap.cachMacDinh(goc)); }
     }
     roi(); anBongD();
-    S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0; S.theTao = {};
+    S.man = m; S.bai = nhanBan(m); S.ket = null; S.goiYi = 0; S.theTao = {}; S.duDoanChon = null;
+    E.host.classList.toggle('chi-sap-xep', !!m.chiSapXep);
     S.xe = 0;                                                                           // nhiều robot: khung code đang xem robot 1
     dungTabXe();
     E.lapLai.style.display = goc.lapRap ? '' : 'none';
@@ -420,6 +424,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var xeKhoa = S.man && S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh;
     toast(xeKhoa ? t('choi.xeCoDinh', { n: S.xe + 1 }) : S.man && S.man.chiChay ? t('choi.chiChay') : t('choi.chinhCoDinh'), '', 3200);
   }
+  function baoChiSapXep() { toast(t('choi.chiSapXep'), '', 3200); }
   /** Khung chương trình đang xem chỉ đọc: chương trình chính cố định (màn chế lệnh), màn trình diễn chỉ bấm Chạy (man.chiChay, HD1) hay robot tự động khóa
    *  của màn nhiều robot (man.doi[i].coDinh). */
   function khungCoDinh() { return !!(S.man && (S.man.chinhCoDinh || S.man.chiChay || (S.man.doi && S.man.doi[S.xe] && S.man.doi[S.xe].coDinh))); }
@@ -446,7 +451,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Đề bài = mục tiêu (luôn đúng). Câu nói về code mẫu (veMaMau) chỉ hiện khi bài làm còn là code mẫu. */
   function hienDeBai() {
     var m = S.man;
-    bong({ kieu: 'de', tieuDe: m.id + ' · ' + m.ten, chu: m.deBai + (m.damLaThua ? ' ' + t('choi.damLaThuaDe') : ''), phu: m.veMaMau && trungMaMau() ? m.veMaMau : null });   // HD2: luật đâm là thua nói trong đề bài
+    bong({ kieu: 'de', tieuDe: m.id + ' · ' + (m.dangBai ? t('dang.' + m.dangBai) + ': ' : '') + m.ten, chu: m.deBai + (m.damLaThua ? ' ' + t('choi.damLaThuaDe') : ''), phu: m.veMaMau && trungMaMau() ? m.veMaMau : null });   // HD2: luật đâm là thua nói trong đề bài
   }
   /** Menu ☰: về màn chọn / làm lại từ đầu (nạp lại code mẫu, bỏ bản nháp; không đụng kho hàm của em và sao). */
   function moMenu() {
@@ -615,8 +620,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     chuoi.forEach(function (c) { if (c && c.cot === 'chinh') dong = c.dong - 1; });
     return dong;
   }
+  /** Màn dự đoán (man.duDoan = { hoi, luaChon: [chữ], dung: chỉ số }): bấm Chạy lần đầu thì hỏi trước, chọn xong mới chạy. Câu hỏi nằm ở bong bóng để sân và code vẫn nhìn thấy khi đoán. */
+  function hoiDuDoan(tiep) {
+    var dd = S.man.duDoan;
+    bong({ kieu: 'de', tieuDe: t('choi.duDoanTd'), chu: dd.hoi });
+    var w = h('div', 'bg-doan');
+    dd.luaChon.forEach(function (chu, i) {
+      var b = h('button', 'bt g-wd doan-nut', chu); b.setAttribute('data-nut', 'doan-' + (i + 1));
+      b.addEventListener('click', function (ev) { ev.stopPropagation(); S.duDoanChon = i; anBong(); tiep(); });
+      w.appendChild(b);
+    });
+    E.bongD.appendChild(w);
+  }
   async function chay(tungNhip) {
     if (S.busy) return;
+    if (S.man.duDoan && S.duDoanChon === null) { hoiDuDoan(function () { chay(tungNhip); }); return; }
     if (window.HuongDan) HuongDan.bao('chay', { tungNhip: !!tungNhip });
     if (!S.ket) chuanBi();
     else if (S.idx >= S.vet.length) { datLaiChay(); chuanBi(); }
@@ -725,6 +743,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (window.HuongDan) HuongDan.xongMan(S.man);                                    // thắng rồi: hướng dẫn từng bước của màn (huong-dan-man.js) thôi, lưu cờ
       S.field.mungThang();
       if (window.AmThanh) AmThanh.phat('thang');
+      if (S.man.duDoan && S.duDoanChon !== S.man.duDoan.dung && !k.doanSai) { k.doanSai = true; k.sao = Math.max(1, k.sao - 1); }      // đoán sai vẫn qua màn, mất một sao (Chơi lại để đoán lại)
       var tot = Luu.ghiSao(S.man.ma, k.sao);
       sao3(tot);
       var my = S.rid;
@@ -766,7 +785,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (re && k.re) hop.than.appendChild(dong(true, t('thang.re', { x: m.giaLap, y: re.gia })));
     else if (ss.nhip !== undefined) hop.than.appendChild(dong(okN, (tong ? t('thang.nhipTong', { x: k.soNhip, n: nSan, y: ss.nhip }) : t('thang.nhip', { x: k.soNhip, y: ss.nhip })) + (re ? t('thang.hoacRe', { y: re.gia }) : '')));
     if (nSan > 1) hop.than.appendChild(h('div', 'th-theo', t('thang.theoSan', { ds: k.theoSan.map(function (x) { return x.soNhip; }).join(' + ') })));
-    if (!okO) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuO')));
+    var dd = m.duDoan;
+    if (dd) hop.than.appendChild(dong(!k.doanSai, k.doanSai ? t('thang.doanSai', { em: dd.luaChon[S.duDoanChon], dung: dd.luaChon[dd.dung] }) : t('thang.doanDung', { chu: dd.luaChon[dd.dung] })));
+    if (k.doanSai) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuDoan')));
+    else if (!okO) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuO')));
     else if (!okN) hop.than.appendChild(h('div', 'th-ghi', t(re ? 'thang.thieuNhipRe' : tong ? 'thang.thieuNhipTong' : duaVat ? 'thang.thieuNhipVat' : 'thang.thieuNhip')));
     else hop.than.appendChild(h('div', 'th-ghi tot', t('thang.duSao')));
     if (m.lapRap) { var cl = khoiCachLap(m); if (cl) hop.than.appendChild(cl); }        // màn lắp ráp: các cách lắp mẫu (part, giá, nhịp, ô) để thấy đánh đổi
@@ -790,7 +812,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var hang = h('div', 'hop-hang' + (m.lapRap || coDoi ? ' ba' : ''));
     if (coDoi && !m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('doi.doi'), function () { TP.Hop.dong(); if (window.App && App.doiDoi) App.doiDoi(); }, 'doi-doi'));   // M9D2 màn chọn đội: đổi đội rồi chơi lại
     if (m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('thang.lapLai'), function () { TP.Hop.dong(); if (window.App && App.lapLai) App.lapLai(); }, 'lap-lai'));
-    hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); datLaiChay(); }, 'choi-lai'));
+    hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); S.duDoanChon = null; datLaiChay(); }, 'choi-lai'));
     hang.appendChild(TP.Hop.nut('g-gr', tiep ? t('thang.manTiep') : t('thang.hetChuoi'), function () {
       TP.Hop.dong();
       var di = function () { if (tiep) App.vaoMan(tiep.ma); else { roi(); App.veChon(); } };

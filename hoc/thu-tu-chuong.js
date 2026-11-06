@@ -3,8 +3,8 @@
 
    Dự án tách từ doi-robot-chan-hung (31/10 → 5/11): CHỈ GIỮ các mùa "cốt lõi" khớp
    chương trình Tin học lớp 12 ôn thi đại học (không cần tuple, dict/set, mảng 2
-   chiều). Mỗi mùa hiện mới có MỘT chương demo (để chứng minh khung game chạy
-   được); màn thật sẽ viết dần, xem README.md.
+   chiều). Mùa 1 đã dựng theo khuôn 4 cột × 8 hàng (man-m1-*.js); các mùa còn lại
+   mới có MỘT chương demo, xem hoc/KE-HOACH-4-MUA-COT-LOI.md.
 
    - mua-1 Kho hàng    (hai bánh) — def, for, if/while
    - mua-2 Nhà máy     (xích)     — biến, tham số
@@ -24,8 +24,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
 
   var API = {
-    thuTu: ['m1-than', 'm1-che-than', 'm1-tay', 'm1-che-tay', 'm1-cam-bien', 'm1-che-cam-bien',
-      'm1-san', 'm1-che-san', 'm1-trum',
+    thuTu: ['m1-c1-than', 'm1-c2-tay', 'm1-c3-cam-bien', 'm1-c4-san',                 // mùa 1: lưới 4 cột × 8 hàng (KE-HOACH-4-MUA-COT-LOI.md), mỗi cột một chương, một gói
       'demo-nha-may', 'demo-bai-tai-che', 'demo-nong-trai'],
     dot2: [],
     congDot2: null,
@@ -36,21 +35,20 @@
       { ma: 'mua-4', ten: 'Nông trại' }
     ],
     goi: [
-      { ma: 'm1-g1-than', ten: 'Hai bánh', sao: 0, mua: 'mua-1', chuong: ['m1-than', 'm1-che-than'] },
-      { ma: 'm1-g2-tay', ten: 'Tay kẹp', sao: 0, mua: 'mua-1', chuong: ['m1-tay', 'm1-che-tay'] },
-      { ma: 'm1-g3-camb', ten: 'Cảm biến khoảng cách', sao: 0, mua: 'mua-1', chuong: ['m1-cam-bien', 'm1-che-cam-bien'] },
-      { ma: 'm1-g4-san', ten: 'Nút đè', sao: 0, mua: 'mua-1', chuong: ['m1-san', 'm1-che-san'] },
-      { ma: 'm1-g5-trum', ten: 'Kho hàng xuất xưởng', sao: 0, mua: 'mua-1', chuong: ['m1-trum'] },
+      // không khai `sao`: gói sau mở khi đủ một nửa số sao tối đa của các gói trước (mo-goi.js), nên 4 cột mở lần lượt: thân → +tay → +cảm biến → +sân
+      { ma: 'm1-c1-than', ten: 'Hai bánh', hinh: 'hai-banh', loai: 'bo-phan', mua: 'mua-1', chuong: ['m1-c1-than'] },
+      { ma: 'm1-c2-tay', ten: 'Tay kẹp', hinh: 'tay-gap', loai: 'bo-phan', mua: 'mua-1', chuong: ['m1-c2-tay'] },
+      { ma: 'm1-c3-cam-bien', ten: 'Cảm biến khoảng cách', hinh: 'khoang-cach', loai: 'bo-phan', mua: 'mua-1', chuong: ['m1-c3-cam-bien'] },
+      { ma: 'm1-c4-san', ten: 'Kho hàng: nút đè', hinh: 'nut-de', loai: 'bo-phan', mua: 'mua-1', chuong: ['m1-c4-san'] },
       { ma: 'demo-nha-may', ten: 'Nhà máy (demo)', sao: 0, mua: 'mua-2', chuong: ['demo-nha-may'] },
       { ma: 'demo-bai-tai-che', ten: 'Bãi tái chế (demo)', sao: 0, mua: 'mua-3', chuong: ['demo-bai-tai-che'] },
       { ma: 'demo-nong-trai', ten: 'Nông trại (demo)', sao: 0, mua: 'mua-4', chuong: ['demo-nong-trai'] }
     ],
     ten: {
-      'm1-than': 'Hai bánh', 'm1-che-than': 'Hàm cho thân',
-      'm1-tay': 'Tay kẹp', 'm1-che-tay': 'Hàm cho tay',
-      'm1-cam-bien': 'Cảm biến khoảng cách', 'm1-che-cam-bien': 'Hàm cho cảm biến',
-      'm1-san': 'Nút đè', 'm1-che-san': 'Hàm cho sân',
-      'm1-trum': 'Trùm mùa',
+      'm1-c1-than': 'Hai bánh',
+      'm1-c2-tay': 'Tay kẹp',
+      'm1-c3-cam-bien': 'Cảm biến khoảng cách',
+      'm1-c4-san': 'Kho hàng: nút đè',
       'demo-nha-may': 'Nhà máy (demo)',
       'demo-bai-tai-che': 'Bãi tái chế (demo)',
       'demo-nong-trai': 'Nông trại (demo)'

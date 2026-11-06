@@ -918,3 +918,15 @@ body.ve-vector .pg-lan{animation-timing-function:cubic-bezier(.3,0,.6,1)}
 body.ve-vector .pg-mo-cua{animation-timing-function:cubic-bezier(.45,0,.55,1)}
 body.ve-vector .pg-sao-quay{animation-timing-function:linear}
 body.ve-vector .pg-sang,body.ve-vector .pg-nhay,body.ve-vector .pg-bay,body.ve-vector .pg-lac-xe{animation-timing-function:ease-in-out}
+
+/* ---------- khuôn 8 hàng (hoc/KE-HOACH-4-MUA-COT-LOI.md): lưới màn 4 × 2 có nhãn dạng bài; ô trống cần điền; câu hỏi dự đoán; màn chỉ sắp xếp ---------- */
+body.ve-vector .c-l5.khuon{grid-template-columns:repeat(4,1fr)}
+body.ve-vector .c-l5.khuon .c-man{height:92px}
+body.ve-vector .c-l5.khuon .c-man .dang{position:absolute;left:0;right:0;bottom:5px;text-align:center;font:500 11px/14px var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .c-l5.khuon .c-man.cur .dang{color:var(--g-vecThe)}
+body.ve-vector .c-l5.khuon .c-man .stars,body.ve-vector .c-l5.khuon .c-man .lk,body.ve-vector .c-l5.khuon .c-man .go{bottom:23px}
+body.ve-vector .strip.o-trong{background:var(--g-vecBrandNhat);box-shadow:none;border:1.5px dashed var(--g-vecBrand)}
+body.ve-vector .bong .bg-doan{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+body.ve-vector .bong .doan-nut{min-height:30px;padding:4px 6px;font:600 12px/1.25 var(--px);white-space:normal;text-align:center}
+body.ve-vector .chi-sap-xep .p-pal .pal{opacity:.45}
+body.ve-vector .chi-sap-xep [data-nut="xoa-het"]{display:none}

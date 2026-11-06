@@ -137,7 +137,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var voRow = h('div', 'c-ch-vo-row');
       voRow.appendChild(h('span', 'c-ch-vo', t(voC === 'lab' ? 'chon.voLab' : 'chon.voHienTruong')));
       khoi.appendChild(voRow);
-      var luoi = h('div', 'c-l5');
+      var luoi = h('div', 'c-l5' + (ds.some(function (m) { return m.dangBai; }) ? ' khuon' : ''));   // cột theo khuôn 8 hàng: lưới 4 × 2, mỗi ô ghi dạng bài
       ds.forEach(function (m) { luoi.appendChild(oMan(m, m === cur)); });
       khoi.appendChild(luoi);
       el.than.appendChild(khoi);
@@ -161,6 +161,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       else if (sao > 0 || !laCur) b.appendChild(saoHang(sao, 1.5));
       else b.appendChild(h('div', 'go', t('chon.choi')));
     }
+    if (m.dangBai) b.appendChild(h('div', 'dang', t('dang.' + m.dangBai)));
     b.addEventListener('click', function () {
       if (!tt.mo) {
         b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope');

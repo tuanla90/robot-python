@@ -106,7 +106,7 @@
       d.appendChild(code(l.ten)); d.appendChild(chuCode('tp-chu', l.moTa));
       return d;
     }), 'lenh');
-    muc(cuon, t('part.ghep'), nd.ghep.map(function (g) {
+    muc(cuon, nd.tieuDeGhep || t('part.ghep'), nd.ghep.map(function (g) {
       var d = h('div', 'tp-ghep');
       var c = h('div', 'tp-ghep-code'); g.lenh.forEach(function (l) { c.appendChild(code(l)); }); d.appendChild(c);
       d.appendChild(chuCode('tp-ghep-ra', '→ ' + g.ra));

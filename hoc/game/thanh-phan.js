@@ -996,7 +996,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function chiDoc() { return !!(tuyChon.chiDoc && tuyChon.chiDoc()); }
     function baoChiDoc() { if (tuyChon.khiChiDoc) tuyChon.khiChiDoc(); }
     this.chiDoc = chiDoc;
-    function choXoa() { return !xt && !dangChay() && !Chan.dang() && !chiDoc(); }
+    /** Màn sắp xếp lại (man.chiSapXep): chỉ được kéo đổi chỗ / đổi bậc thụt các dòng có sẵn, không chèn, xóa, sửa số. */
+    function chiSapXep() { return !!(tuyChon.chiSapXep && tuyChon.chiSapXep()); }
+    function baoSapXep() { if (tuyChon.khiChiSapXep) tuyChon.khiChiSapXep(); }
+    this.chiSapXep = chiSapXep;
+    /** Ô trống cần điền đầu tiên từ dòng `tu` trở đi (dòng rỗng có sẵn trong code mẫu, màn "điền chỗ trống"); không có thì -1. */
+    function oTrongTu(arr, tu) { for (var k = tu; k < arr.length; k++) if (!boThut(arr[k]).trim()) return k; return -1; }
+    function choXoa() { return !xt && !dangChay() && !Chan.dang() && !chiDoc() && !chiSapXep(); }
     function thutLe() { return !!(tuyChon.thutLe && tuyChon.thutLe()); }
     function soToiDa(ten, k) { return tuyChon.soToiDa ? (tuyChon.soToiDa(ten, k) || SO_TOI_DA) : SO_TOI_DA; }      // đối số số lớn nhất chọn được (aim: 3); mặc định SO_TOI_DA
     function camDuoc() { return (tuyChon.camBien && tuyChon.camBien()) || []; }                  // hàm cảm biến của màn (front_clear…): điều kiện chạm đổi được
@@ -1409,6 +1415,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           var arr = lay(), kieu = kieuCuoi;          // kiểu lấy từ pointerdown: Safari iOS báo click của cú chạm là 'mouse', không tin ev.pointerType của click
           if (chiDoc()) { cham = null; tuyChon.khiBam && tuyChon.khiBam(i); baoChiDoc(); return; }       // chương trình chính cố định: chạm chỉ báo, không chọn ô / mở bộ chọn số / xóa
           var so = ev.target.closest && ev.target.closest('.num');
+          if (so && chiSapXep()) { cham = null; baoSapXep(); return; }
           if (so && !xt && i < dung && i < arr.length && !dangChay() && !Chan.dang()) {      // chạm con số trong range(n) / lời gọi hàm: bộ chọn 1–9 (+ biến của hàm)
             cham = null; tuyChon.khiBam && tuyChon.khiBam(i);          // không đổi ô đang chọn: khối kế tiếp vẫn chèn vào chỗ cũ
             moBoChon(so, i, +so.getAttribute('data-k') || 0);
@@ -1472,7 +1479,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (i = 0; i < tong; i++) {
         var khoa = i >= dung, t = tx[i], slot = sl[i];
         var laFor = !slot && t !== undefined && /^\s*for\s/.test(t), laIf = !slot && t !== undefined && laRe(t), laWh = !slot && t !== undefined && /^\s*while\s/.test(t);
-        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : ''))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && cheDkm() && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
+        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : (boThut(t).trim() ? '' : ' o-trong')))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && cheDkm() && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
           (!xt && runIdx === i ? ' on' : '') + (!xt && loiSet[i] ? ' err' : '');
         strips[i].innerHTML = '';
         var bac = lv[i];
@@ -1595,15 +1602,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.chenTai = function (txt, at, bac) {
       var arr = lay();
       if (chiDoc()) { baoChiDoc(); return false; }
-      if (arr.length >= dung) { this.nhay(); return false; }
-      this.anHoan(); hienX = -1;
+      if (chiSapXep()) { baoSapXep(); return false; }
       at = Math.max(0, Math.min(at, arr.length));
+      var dien = at < arr.length && !boThut(arr[at]).trim();     // chèn vào ô trống có sẵn: điền luôn ô đó, không đẩy dòng xuống
+      if (!dien && arr.length >= dung) { this.nhay(); return false; }
+      this.anHoan(); hienX = -1;
       var b = bac === undefined || bac === null ? this.bacMacDinh(at, txt) : Math.max(0, Math.min(bac, toiDaBac(arr, at)));
       var lyCam = lyDoCamNhip(tenDon(txt), lenhCungNhip(arr, at, b));         // bộ phận đã có lệnh trong nhịp này (hay khác kiểu đi): không chèn, báo lý do
       if (lyCam) { if (tuyChon.khiCamNhip) tuyChon.khiCamNhip(lyCam); baoHd('cam-nhip', { dong: at }); return null; }
-      arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));
+      arr.splice(at, dien ? 1 : 0, datBac(thichNghi(txt, at, b), b));
       chuanHoaBac(arr);
-      sel = Math.min(at + 1, dung - 1); daChon = false;
+      var oSau = dien ? oTrongTu(arr, at + 1) : -1;                // còn ô trống phía sau: khối kế tiếp điền vào đó
+      sel = oSau >= 0 ? oSau : Math.min(at + 1, dung - 1); daChon = false;
       this.render(); this.hieuUng(at); tuyChon.khiDoi && tuyChon.khiDoi();
       baoHd('chen-khoi', { dong: at });
       meoXoaLanDau(at);                                            // lần đầu chèn một khối: hướng dẫn xóa (sau khiDoi vì khay vẽ lại)
@@ -1625,6 +1635,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     };
     this.xoaTai = function (i) {
       var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return;
+      if (chiSapXep()) { baoSapXep(); return; }
       hienX = -1;
       luuHoan(arr, i);
       arr.splice(i, 1); chuanHoaBac(arr); sel = Math.min(i, dung - 1); daChon = false;
@@ -1772,6 +1783,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.chonHienTai = function () { return sel; };
     this.xoaHet = function () {
       var arr = lay(); if (chiDoc() || !arr.length) return;
+      if (chiSapXep()) { baoSapXep(); return; }
       hienX = -1; anMeo();
       luuHoan(arr, 0);
       arr.length = 0; sel = 0; daChon = false; this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
@@ -1787,7 +1799,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.nap = function (layMoi, dungMoi) {
       this.anHoan(); dongChonSo(); hienX = -1; anMeo();
       lay = layMoi; if (dungMoi !== undefined) dung = dungMoi;
-      runIdx = -1; loiSet = {}; lapSet = {}; xt = null; viTri = null; sel = Math.min(lay().length, Math.max(0, dung - 1)); daChon = false; this.render();
+      var oDau = oTrongTu(lay(), 0);                                // code mẫu còn ô trống: chọn sẵn ô trống đầu tiên
+      runIdx = -1; loiSet = {}; lapSet = {}; xt = null; viTri = null; sel = oDau >= 0 ? oDau : Math.min(lay().length, Math.max(0, dung - 1)); daChon = false; this.render();
       this.vuaTieuDe();
     };
     this.dung = function () { return dung; };
@@ -3197,7 +3210,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       });
       function batKhay(ev) {
         var b = ev.target.closest && ev.target.closest('.brick');
-        if (!b || ev.target.closest('.ed')) {                                                        // chỗ trống / nhãn nhóm / nút sửa: cảm ứng vuốt dọc ở đây cũng cuộn khay (chạm vẫn là chạm)
+        if (b && ed.chiSapXep && ed.chiSapXep()) return;                                              // màn sắp xếp lại: khối ở khay không kéo ra được (chạm thì khiChen báo)
+        if (!b || ev.target.closest('.ed')) {                                                     // chỗ trống / nhãn nhóm / nút sửa: cảm ứng vuốt dọc ở đây cũng cuộn khay (chạm vẫn là chạm)
           if (ev.pointerType && ev.pointerType !== 'mouse' && pal.cuonDuoc && pal.cuonDuoc()) {
             pal.dungQuanTinh();
             bat(ev, 'cuon', -1, pal.host, '');
@@ -3245,7 +3259,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       datGhost(); viTriGhost();
       document.body.classList.add('dang-keo');
       c.panP.classList.add('keo-dich');
-      if (c.loai === 'doi') { if (c.cfg.khiKeoDong) c.cfg.khiKeoDong(); c.panK.classList.add('keo-thung'); }
+      if (c.loai === 'doi') { if (c.cfg.khiKeoDong) c.cfg.khiKeoDong(); if (!c.ed.chiSapXep()) c.panK.classList.add('keo-thung'); }
       capNhat(true);
     }
     /** Tính chỗ thả theo vị trí con trỏ rồi vẽ xem trước. */
@@ -3254,7 +3268,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var rp = c.panP.getBoundingClientRect(), rk = c.panK.getBoundingClientRect();
       var vung = null, slot = null, loi = null, xem;
       c.bac = null;
-      if (c.loai === 'doi' && trong(rk, c.x, c.y)) vung = 'thung';
+      if (c.loai === 'doi' && trong(rk, c.x, c.y) && !ed.chiSapXep()) vung = 'thung';
       else if (trong(rp, c.x, c.y)) vung = 'khung';
       var dich = -1;
       if (vung === 'thung') xem = lap(arr, c.tu, null);

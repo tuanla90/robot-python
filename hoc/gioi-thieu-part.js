@@ -30,19 +30,18 @@
     /* ------------------------------------------------------------ THÂN */
     'hai-banh': {
       khe: 'than', ten: 'Thân hai bánh',
-      moTa: 'Xe có hai bánh, mỗi bánh nghe một lệnh riêng. Xe này KHÔNG có lệnh move(): muốn xe đi thì ra lệnh cho từng bánh, rồi gọi wait().',
-      lenh: BANH.concat(['wait']),
+      moTa: 'Xe có hai bánh, đi bằng 4 lệnh: up() tiến, down() lùi, turn_left() và turn_right() quay tại chỗ.',
+      lenh: ['up', 'down', 'turn_left', 'turn_right'],
+      tieuDeGhep: 'Mỗi lệnh làm gì',
       ghep: [
-        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
-        { lenh: ['left_move', 'wait'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
-        { lenh: ['right_move', 'wait'], ra: 'Quay trái tại chỗ', ket: { x: 2, y: 2, huong: 3 } },
-        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô', ket: { x: 2, y: 3, huong: 0 } },
-        { lenh: ['left_move', 'right_back', 'wait'], ra: 'Quay đầu', ket: { x: 2, y: 2, huong: 2 } }
+        { lenh: ['up'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
+        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ', ket: { x: 2, y: 2, huong: 3 } },
+        { lenh: ['down'], ra: 'Lùi 1 ô', ket: { x: 2, y: 3, huong: 0 } }
       ],
       gioi: ['Rẻ, dễ điều khiển', 'Quay 90° chỉ trong một nhịp'],
       khong: ['Không leo được bậc thang', 'Không đi ngang được', 'Đứng trên băng chuyền đủ 2 nhịp thì bị đẩy đi 1 ô'],
-      luuY: ['Lệnh bánh chỉ là RA LỆNH. Xe đứng yên cho tới khi gặp wait().', 'Một nhịp = các lệnh bánh + một wait(). Hết nhịp thì bánh dừng.',
-        { chu: 'Chương sau em sẽ tự chế move() từ các lệnh này.', can: ['left_move', 'right_move'] }]
+      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp, không cần gọi wait().', 'Xe có hướng mặt: up() đi theo hướng mũi xe đang quay.']
     },
     'xich': {
       khe: 'than', ten: 'Thân bánh xích',

@@ -1,8 +1,9 @@
 /* ============================================================================
-   man-m1-tay.js — diem10code-python: MÙA 1 Kho hàng, GÓI 2 "Tay kẹp".
-   Chương `m1-tay` (gốc, khung lớn hơn vì chưa có hàm pick/drop), `m1-che-tay`
-   (tạo pick/drop/carry, khung về lại 10). LUẬT: grab()/release() tác động vào
-   Ô TRƯỚC MẶT — robot phải đứng CẠNH vật/đích, KHÔNG đứng lên vật.
+   man-m1-tay.js — diem10code-python: MÙA 1 Kho hàng, CỘT 2 "+Tay" (hai bánh + tay kẹp, chưa cảm biến).
+   grab()/release() tác động Ô PHÍA TRƯỚC MŨI: xe đứng CẠNH vật / đích, quay mặt vào nó.
+   Khung chương trình trên giao diện tối đa 10 dòng, mà nhặt + đặt đủ lệnh gốc đã hết 10 dòng,
+   nên từ hàng 1 tới hàng 6 màn cho sẵn một phần bằng HÀM CỦA MÀN (pick / drop); hàng 7–8 em tự viết.
+   8 hàng theo khuôn ManHoc.khuon (hoc/KE-HOACH-4-MUA-COT-LOI.md).
    ========================================================================== */
 (function () {
   'use strict';
@@ -10,94 +11,99 @@
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
   var HAM_GOC = ['up', 'down', 'turn_left', 'turn_right', 'wait', 'arm_down', 'arm_up', 'grab', 'release'];
-  function H(ten, thamSo, than) { return { ten: ten, thamSo: (thamSo || []).slice(), than: than.slice() }; }
-  function nhieu() { var kq = []; for (var i = 0; i < arguments.length; i++) kq = kq.concat(arguments[i]); return kq; }
-
-  function man(m) {
-    m.chuong = 'm1-tay';
-    m.loaiRobot = 'banh'; m.robot = { than: 'hai-banh', tay: 'kep' };
-    m.hamGoc = HAM_GOC.slice(); m.khung = { chinh: 16, moiHam: 10 };
-    m.moXuong = true; m.camHamCuaEm = false;
-    m.mucTieu = 'dua-vat';
-    return ManHoc.chuanHoa(m);
-  }
   var T_PICK = ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()'];
   var T_DROP = ['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'];
+  function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
+  function hPick() { return H('pick', T_PICK); }
+  function hDrop() { return H('drop', T_DROP); }
+  function FOR(n, than) { return ['for i in range(' + n + '):'].concat(than.map(function (s) { return '    ' + s; })); }
 
-  ManHoc.them([
-    man({ so: 1, ten: 'Nhặt thùng', hang: 'lam-quen',
-      deBai: 'Thùng gỗ o nằm ngay trước mặt xe. Đứng sát, hạ tay, kẹp, nâng tay rồi mang tới ô đích D (cũng đứng sát, quay mặt về D).',
-      san: ['..D..', '.....', '..o..', '.....'],
-      batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: T_PICK.slice() },
-      sao: { o: 12, nhip: 12 },
-      loiGiai: { chinh: nhieu(T_PICK, ['up()', 'up()'], T_DROP) } }),
-    man({ so: 2, ten: 'Mang xa hơn', hang: 'lam-quen',
-      deBai: 'Nhặt thùng, đi tiếp ba ô nữa, đặt xuống đích D.',
-      san: ['..D..', '.....', '.....', '.....', '..o..', '.....'],
-      batDau: { x: 2, y: 5, huong: 0 },
-      maMau: { chinh: T_PICK.slice() },
-      sao: { o: 14, nhip: 14 },
-      loiGiai: { chinh: nhieu(T_PICK, ['up()', 'up()', 'up()', 'up()'], T_DROP) } }),
-    man({ so: 3, ten: 'Tay bận thì không đi', hang: 'luyen',
-      deBai: 'Nhớ nâng tay (arm_up) trước khi di chuyển, không thì xe không đi được.',
-      san: ['..D..', '.....', '..o..', '.....'],
-      batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: nhieu(['arm_down()', 'grab()', 'wait()'], ['up()']) },
-      sao: { o: 12, nhip: 12 },
-      loiGiai: { chinh: nhieu(T_PICK, ['up()', 'up()'], T_DROP) },
-      loiSai: [{ moTa: 'Quên arm_up() trước khi đi', baiLam: { chinh: nhieu(['arm_down()', 'grab()', 'wait()'], ['up()']) }, phaiCoMa: ['tay-ban'] }] }),
-    man({ so: 4, ten: 'Trùm: quay phải rồi mang', hang: 'trum',
-      deBai: 'Nhặt thùng, quay phải, đi hai ô, đặt xuống đích (đứng sát D, quay mặt về nó).',
-      san: ['.......', '..o....', '.....D.'],
-      batDau: { x: 2, y: 2, huong: 0 },
-      maMau: { chinh: T_PICK.slice() },
-      sao: { o: 13, nhip: 13 },
-      loiGiai: { chinh: nhieu(T_PICK, ['turn_right()', 'up()', 'up()'], T_DROP) },
-      huyHieu: 'm1-tay' })
-  ]);
-
-  function manChe(m) {
-    m.chuong = 'm1-che-tay';
+  function man(so, m) {
+    m.chuong = 'm1-c2-tay';
     m.loaiRobot = 'banh'; m.robot = { than: 'hai-banh', tay: 'kep' };
-    m.hamGoc = HAM_GOC.slice(); m.khung = { chinh: 10, moiHam: 10 };
-    m.moXuong = true; m.camHamCuaEm = false;
+    m.hamGoc = HAM_GOC.slice(); m.khung = Object.assign({ chinh: 10, moiHam: 10 }, m.khung);
+    m.cauTruc = ['for'];
     m.mucTieu = 'dua-vat';
+    m.moXuong = true;
+    ManHoc.khuon(so, m);
+    m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
   }
-  function hPick() { return H('pick', [], T_PICK); }
-  function hDrop() { return H('drop', [], T_DROP); }
 
   ManHoc.them([
-    manChe({ so: 1, ten: 'Chế lệnh: pick()', hang: 'lam-quen', taoHam: ['pick'],
-      deBai: 'Tạo hàm pick() (arm_down, grab, wait, arm_up, wait) rồi nhặt thùng, mang tới đích.',
+    man(1, { ten: 'Nhặt thùng',
+      deBai: 'Bấm Chạy và xem: hạ tay, kẹp, nâng tay rồi mới đi được. Lệnh tay cần wait() để làm. Hàm drop() của màn gói sẵn việc đặt thùng.',
       san: ['..D..', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: ['up()'], hamCuaMan: [] },
-      sao: { o: 5, nhip: 12 },
-      loiGiai: { chinh: ['pick()', 'up()', 'up()', 'arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'], hamCuaEmMoi: [hPick()] } }),
-    manChe({ so: 2, ten: 'Chế lệnh: drop()', hang: 'lam-quen', hamCuaEmCan: ['pick'], taoHam: ['drop'],
-      deBai: 'Tạo hàm drop() rồi nhặt, đi hai ô, thả xuống đích.',
+      sao: { o: 13, nhip: 5 },
+      loiGiai: { chinh: T_PICK.concat(['up()', 'up()', 'drop()']), hamCuaMan: [hDrop()] } }),
+
+    man(2, { ten: 'Thùng rơi vào đâu',
+      deBai: 'Lần này pick() gói sẵn việc nhặt thùng, còn phần đặt thùng viết đủ lệnh. Đọc code, đoán rồi bấm Chạy.',
+      san: ['.......', '..o....', '.....D.'],
+      batDau: { x: 2, y: 2, huong: 0 },
+      duDoan: { hoi: 'Khi release() chạy, thùng được đặt xuống ô nào?', luaChon: ['Ngay dưới xe', 'Ô trước mũi xe', 'Ô sau đuôi xe'], dung: 1, xacMinh: { vat: [{ x: 5, y: 2 }] } },
+      sao: { o: 14, nhip: 6 },
+      loiGiai: { chinh: ['pick()', 'turn_right()', 'up()', 'up()'].concat(T_DROP), hamCuaMan: [hPick()] } }),
+
+    man(3, { ten: 'Điền lệnh tay',
+      deBai: 'Đoạn nhặt thùng thiếu 2 lệnh. Chạm ô trống rồi chọn lệnh để điền: một lệnh kẹp thùng, một lệnh nâng tay.',
+      san: ['..D..', '.....', '.....', '..o..', '.....'],
+      batDau: { x: 2, y: 4, huong: 0 },
+      maMau: { chinh: ['arm_down()', '', 'wait()', '', 'wait()', 'up()', 'up()', 'up()', 'drop()'] },
+      goiY: ['Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.', 'Tay còn hạ thì xe không đi được.'],
+      sao: { o: 14, nhip: 6 },
+      loiGiai: { chinh: T_PICK.concat(['up()', 'up()', 'up()', 'drop()']), hamCuaMan: [hDrop()] } }),
+
+    man(4, { ten: 'Sắp lại việc nhặt',
+      deBai: 'Đủ lệnh nhưng sai thứ tự: tay được nâng trước khi hạ xuống kẹp. Giữ một dòng rồi kéo sang chỗ đúng.',
       san: ['..D..', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 3, huong: 0 },
-      maMau: { chinh: ['pick()'], hamCuaMan: [] },
-      sao: { o: 4, nhip: 12 },
-      loiGiai: { chinh: ['pick()', 'up()', 'up()', 'drop()'], hamCuaEmMoi: [hDrop()] } }),
-    manChe({ so: 3, ten: 'Chế lệnh: carry()', hang: 'luyen', hamCuaEmCan: ['pick', 'drop', 'turn_right'], taoHam: ['carry'],
-      deBai: 'Tạo hàm carry() = pick(), up(), turn_right(), drop() (mang vật trước mặt rồi đặt sang ô bên phải).',
-      san: ['..oD...', '.......'],
-      batDau: { x: 2, y: 1, huong: 0 },
-      maMau: { chinh: ['pick()'], hamCuaMan: [] },
-      sao: { o: 1, nhip: 9 },
-      loiGiai: { chinh: ['carry()'], hamCuaEmMoi: [H('carry', [], ['pick()', 'up()', 'turn_right()', 'drop()'])] } }),
-    manChe({ so: 4, ten: 'Trùm: dùng carry() hai lần', hang: 'trum', hamCuaEmCan: ['pick', 'drop', 'carry'],
-      deBai: 'Hai thùng giống hệt cách lấy. Gọi carry() hai lần.',
-      san: ['..oD...', '.......', '.Do....', '.......'],
-      batDau: { x: 2, y: 1, huong: 0 },
-      maMau: { chinh: ['carry()'], hamCuaMan: [] },
-      sao: { o: 4, nhip: 20 },
-      loiGiai: { chinh: ['carry()', 'turn_right()', 'up()', 'carry()'] },
-      huyHieu: 'm1-che-tay' })
+      maMau: { chinh: ['arm_up()', 'wait()', 'arm_down()', 'grab()', 'wait()', 'up()', 'up()', 'drop()'] },
+      goiY: ['Muốn kẹp thì tay phải đang hạ. Tay đã nâng thì xe mới đi được.'],
+      sao: { o: 13, nhip: 5 },
+      loiGiai: { chinh: T_PICK.concat(['up()', 'up()', 'drop()']), hamCuaMan: [hDrop()] } }),
+
+    man(5, { ten: 'Xe đứng yên',
+      deBai: 'Code này sai đúng 1 chỗ: thùng đã kẹp mà xe không chịu đi. Bấm Chạy xem lỗi, rồi sửa dòng sai.',
+      san: ['.....', '.....', '.o.D.', '.....'],
+      batDau: { x: 1, y: 3, huong: 0 },
+      maMau: { chinh: ['arm_down()', 'grab()', 'wait()', 'arm_down()', 'wait()', 'up()', 'turn_right()', 'up()', 'drop()'] },
+      goiY: ['Tay đang hạ thì xe không đi được.'],
+      loiMa: 'tay-vuong',
+      sao: { o: 14, nhip: 6 },
+      loiGiai: { chinh: T_PICK.concat(['up()', 'turn_right()', 'up()', 'drop()']), hamCuaMan: [hDrop()] } }),
+
+    man(6, { ten: 'Thùng nằm bên phải',
+      deBai: 'Màn trống, em tự viết: mang thùng tới ô đích D. Hàm pick() và drop() của màn đã có sẵn trong khay.',
+      san: ['.....', '...D.', '..o..', '.....'],
+      batDau: { x: 1, y: 2, huong: 0 },
+      goiY: ['Tay chỉ tác động ô trước mũi xe, nên phải quay mặt vào thùng trước khi pick().', 'Tới cạnh ô đích, quay mặt vào nó rồi mới drop().'],
+      sao: { o: 17, nhip: 8 },
+      loiGiai: { chinh: ['turn_right()', 'pick()', 'up()', 'turn_left()', 'up()', 'turn_right()', 'drop()'], hamCuaMan: [hPick(), hDrop()] } }),
+
+    man(7, { ten: 'Hai thùng: tự viết hàm',
+      deBai: 'Có hai thùng, việc nhặt và đặt lặp lại mà chương trình chính chỉ có 10 ô. Tự tạo hàm ở Xưởng hàm, đặt tên tùy em.',
+      san: ['.....', '.D...', '.o..D', '...o.'],
+      batDau: { x: 1, y: 3, huong: 0 },
+      goiY: ['Thử gom 5 lệnh nhặt thùng vào một hàm, 5 lệnh đặt thùng vào một hàm khác.', 'Lệnh tay trong hàm vẫn cần wait() như ở chương trình chính.'],
+      sao: { o: 20, nhip: 13 },
+      loiGiai: {
+        chinh: ['nhat()', 'up()', 'dat()', 'turn_right()', 'up()', 'up()', 'turn_right()', 'nhat()', 'turn_left()', 'dat()'],
+        hamCuaEmMoi: [H('nhat', T_PICK), H('dat', T_DROP)]
+      } }),
+
+    man(8, { ten: 'Ba thùng một hàng',
+      deBai: 'Chuyển cả ba thùng vào ba ô đích. Chương trình chính chỉ có 3 ô.',
+      san: ['D.D.D..', '.......', 'o.o.o..', '.......'],
+      batDau: { x: 0, y: 3, huong: 0 },
+      khung: { chinh: 3 },
+      sao: { o: 22, nhip: 29 },
+      loiGiai: {
+        chinh: FOR(3, ['chuyen()']),
+        hamCuaEmMoi: [H('nhat', T_PICK), H('dat', T_DROP), H('chuyen', ['nhat()', 'up()', 'up()', 'dat()', 'down()', 'down()', 'turn_right()', 'up()', 'up()', 'turn_left()'])]
+      },
+      huyHieu: { ma: 'tay-gap', ten: 'Thợ kẹp hàng' } })
   ]);
 
   if (laNode) module.exports = ManHoc;
