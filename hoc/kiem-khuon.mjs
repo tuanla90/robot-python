@@ -12,6 +12,7 @@ const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));
 const O_TOI_DA = 10;                     // khung chương trình trên giao diện vẽ đúng 10 hàng (man-choi.js, TP.Editor tong: 10)
 const NHEN = ['go_up', 'go_down', 'go_left', 'go_right'];
 const BANH = ['up', 'down', 'turn_left', 'turn_right'];
+const DRONE = ['go_up', 'go_down', 'go_left', 'go_right'];
 const MUA = [
   { ten: 'Mùa 1', tien: 'm1-', than: 'hai-banh', loai: 'banh', di: BANH, cot: [
     { ma: 'm1-c1-than', tay: null, cam: null, wait: false },
@@ -30,9 +31,15 @@ const MUA = [
     { ma: 'm3-c2-tay', tay: 'day-keo', cam: 'tu', wait: true },
     { ma: 'm3-c3-cam-bien', tay: 'day-keo', cam: 'camera', wait: true },
     { ma: 'm3-c4-san', tay: 'day-keo', cam: 'camera', wait: true }
+  ] },
+  { ten: 'Mùa 4', tien: 'm4-', than: 'drone', loai: 'drone', di: DRONE, cot: [
+    { ma: 'm4-c1-than', tay: 'day-keo', cam: 'camera', wait: true },
+    { ma: 'm4-c2-tay', tay: 'hoi', cam: 'camera', wait: true },
+    { ma: 'm4-c3-cam-bien', tay: 'hoi', cam: 'hong-ngoai', wait: true },
+    { ma: 'm4-c4-san', tay: 'hoi', cam: 'hong-ngoai,camera', wait: true }
   ] }
 ];
-const HAM_CAM = { 'khoang-cach': 'front_clear', tu: 'front_metal', camera: 'color' };
+const HAM_CAM = { 'khoang-cach': 'front_clear', tu: 'front_metal', camera: 'color', 'hong-ngoai': 'warm' };
 
 const loi = [];
 const trong = (s) => !String(s).trim();
@@ -48,7 +55,7 @@ function traiHam(dong, ham) {
   return dong.flatMap((d) => {
     const k = /^(\s*)(\w+)\((.*)\)$/.exec(d), f = k && ham.find((x) => x.ten === k[2]);
     if (!f) return [d];
-    const doiSo = k[3].split(',').map((x) => x.trim());
+    const doiSo = f.thamSo && f.thamSo.length === 1 ? [k[3].trim()] : k[3].split(',').map((x) => x.trim());      // một tham số: đối số có thể là danh sách [2, 1]
     const gan = (s) => (f.thamSo || []).reduce((t, p, i) => t.replace(new RegExp('\\b' + p + '\\b', 'g'), doiSo[i]), s);
     return traiHam(f.than.map(gan), ham).map((s) => k[1] + s);
   });
@@ -100,7 +107,7 @@ function kiemDang(m, kq, bao) {
       const chinh = lg.map((d) => {
         const k = /^(\s*)(\w+)\((.*)\)$/.exec(d), f = k && hamLg.find((x) => x.ten === k[2]);
         if (!f || !(f.thamSo || []).length) return d;
-        const doiSo = k[3].split(',').map((x) => x.trim());
+        const doiSo = f.thamSo.length === 1 ? [k[3].trim()] : k[3].split(',').map((x) => x.trim());
         const gan = (s) => f.thamSo.reduce((t, p, i) => t.replace(new RegExp('\\b' + p + '\\b', 'g'), doiSo[i]), s);
         rieng.push({ ten: f.ten + '_' + rieng.length, thamSo: [], than: f.than.map(gan) });
         return k[1] + rieng[rieng.length - 1].ten + '()';
@@ -124,12 +131,12 @@ function kiemCot(mua, c) {
     if (m.robot.tay !== c.tay) bao(`tay phải là ${c.tay}`);
     const cam = (m.robot.camBien || []).map((x) => x.ma);
     if (cam.join() !== (c.cam || '')) bao(`cảm biến phải là ${c.cam}, đang là ${cam.join()}`);
-    Object.entries(HAM_CAM).forEach(([ma, ham]) => { if (m.hamGoc.includes(ham) !== (c.cam === ma)) bao(`${ham}() ${c.cam === ma ? 'phải có' : 'không được có'} trên khay`); });
+    Object.entries(HAM_CAM).forEach(([ma, ham]) => { const can = (c.cam || '').split(',').includes(ma); if (m.hamGoc.includes(ham) !== can) bao(`${ham}() ${can ? 'phải có' : 'không được có'} trên khay`); });
     if (m.hamGoc.includes('wait') !== c.wait) bao(`wait() ${c.wait ? 'phải có' : 'không được có'} trên khay`);
     if (mua.di.some((n) => !m.hamGoc.includes(n))) bao(`khay thiếu lệnh đi: ${mua.di.join(', ')}`);
     if (m.khung.chinh > O_TOI_DA || m.khung.moiHam > O_TOI_DA) bao(`khung quá ${O_TOI_DA} ô, giao diện không vẽ hết`);
     if (m.hamGoc.some((n) => /left_move|right_move|left_back|right_back/.test(n))) bao('còn lệnh hai bánh độc lập cũ');
-    moiDong(m).forEach((d) => { if (/[\[\]{}]|\btuple\b|\bdict\b|\bset\(/.test(d)) bao(`cú pháp bị cấm: ${d}`); });
+    moiDong(m).forEach((d) => { if ((m.cauTruc.includes('list') ? /\[\s*\[|\]\s*\[|[{}]|\btuple\b|\bdict\b|\bset\(/ : /[\[\]{}]|\btuple\b|\bdict\b|\bset\(/).test(d)) bao(`cú pháp bị cấm: ${d}`); });
     let kq;
     try { kq = ChamHoc.cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi || []); }
     catch (e) { return bao('ném lỗi: ' + e.message); }
@@ -165,6 +172,26 @@ function kiemLapHo() {
   if (nhipDau(k2).filter((s) => s.nua).length !== 3) loi.push('hoạt cảnh: bước bị thùng giữ thì nhịp đầu phải đứng tại chỗ');
 }
 
+/** Luật đất của mùa 4: tưới đất không khô thì úng, ô phủ rơm warm() không đọc được, gieo ngoài luống hỏng, không dùng danh sách thì chưa qua, lưới bắt đúng tầm 2 ô. */
+function kiemNongTrai() {
+  const tim = (ma) => ManHoc.danhSach.find((m) => m.ma === ma);
+  const chay = (man, chinh) => ChamHoc.cham({ ...man, chiChay: false, chiSapXep: false }, { chinh, hamCuaMan: man.loiGiai.hamCuaMan || [] }, []);
+  const ma = (kq) => kq.chanDoan.map((c) => c.ma);
+  const m2 = tim('m4-c3-cam-bien.2'), m6 = tim('m4-c3-cam-bien.6'), g1 = tim('m4-c2-tay.1'), g6 = tim('m4-c2-tay.6'), l3 = tim('m4-c1-than.3');
+  if (chay(m2, ['spray()', 'wait()', 'spray()', 'wait()', 'spray()', 'wait()']).thang !== true) loi.push('nông trại: tưới đủ số lần phải thắng');
+  if (!ma(chay({ ...m2, datKho: ['...', '1..', '...'] }, ['go_right()', 'spray()', 'wait()'])).includes('ung-dat')) loi.push('nông trại: tưới đất không khô phải úng');
+  if (chay(m6, ['for i in range(4):', '    if warm():', '        spray()', '    go_right()']).thang) loi.push('nông trại: không được tưới được cả hai sân mà không dùng luống đo');
+  const quaRom = chay(m6, ['go_down()', 'for i in range(4):', '    if warm():', '        spray()', '    go_right()']);
+  if (quaRom.thang) loi.push('nông trại: warm() không được đọc xuyên rơm');
+  if (!ma(chay(g1, ['seed("red")', 'go_right()', 'go_right()', 'go_right()', 'seed("red")', 'wait()'])).includes('to-thua')) loi.push('nông trại: gieo ngoài luống phải dừng');
+  if (chay(g6, ['for i in range(3):', '    go_right()']).thang) loi.push('nông trại: không gieo thì không thắng');
+  const khongList = chay({ ...g1, canList: true, chiChay: false }, ['seed("red")', 'go_right()', 'seed("blue")', 'go_right()', 'seed("yellow")', 'wait()']);
+  if (khongList.thang || !ma(khongList).includes('chua-dung-list')) loi.push('nông trại: canList phải bắt dùng danh sách');
+  if (chay(l3, ['go_left()', 'cast_net("right")', 'wait()']).thang) loi.push('nông trại: lưới không được thắng khi chưa đưa bao tới đích');
+  const xa = chay(l3, ['go_left()', 'cast_net("right")', 'wait()', 'go_left()', 'go_left()', 'go_down()', 'drop_net()', 'wait()']);
+  if (xa.thang || !ma(xa).length) loi.push('nông trại: bao ngoài tầm 2 ô thì lưới phải hụt');
+}
+
 let tong = 0;
 MUA.forEach((mua) => {
   mua.cot.forEach((c) => kiemCot(mua, c));
@@ -173,6 +200,7 @@ MUA.forEach((mua) => {
   tong += n;
 });
 kiemLapHo();
+kiemNongTrai();
 loi.forEach((s) => console.log('HỎNG:', s));
 console.log('---');
 console.log(`${MUA.map((x) => x.ten).join(', ')}: ${tong} màn, ${loi.length} lỗi.`);

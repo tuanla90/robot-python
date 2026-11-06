@@ -94,7 +94,7 @@
       moTaLenh: { go_up: 'Bay lên một ô, 1 nhịp', go_down: 'Bay xuống một ô, 1 nhịp', go_left: 'Bay sang trái một ô, 1 nhịp', go_right: 'Bay sang phải một ô, 1 nhịp',
         wait: 'Lơ lửng một nhịp', battery: 'Hỏi: pin còn bao nhiêu', land: 'Hạ cánh xuống ô đang ở, 1 nhịp', take_off: 'Cất cánh, 1 nhịp' },
       gioi: ['Nhanh: mỗi lệnh go_…() là 1 nhịp, 1 ô', 'Bay qua hàng rào thấp, băng chuyền, vật, bậc thang'],
-      khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném, vòi phun',
+      khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném',
         { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }, { chu: 'Đang đậu thì không bay được: take_off() trước đã', can: ['land'] }],
       luuY: [{ chu: 'Dừng ở ô sạc P thì pin sạc đầy ở cuối nhịp.', can: ['battery'], khongCan: ['land'] },
         { chu: 'Bản nâng cấp: chỉ khi land() xuống ô sạc P thì pin mới đầy, bay ngang qua P không sạc. Đậu không tốn pin.', can: ['land'] }]
@@ -173,10 +173,14 @@
     'hoi': {
       khe: 'tay', ten: 'Vòi phun',
       moTa: 'Hai đầu phun: spray() phun ra trước, spray_back() phun ra sau.',
-      lenh: ['spray', 'spray_back'],
-      gioi: ['Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền chạy / dừng', 'Phun nhẹ bay xa nhất 2 ô, xe đứng yên', 'Tia nước bay qua hàng rào thấp và băng chuyền'],
-      khong: ['Một nhịp chỉ phun một lần', 'Nhịp phun thì bánh nghỉ', 'Tia nước không đẩy được thùng nặng'],
-      luuY: ['Lệnh phun cũng chỉ là ra lệnh, wait() mới phun.', 'Từ gói Lực phun, lệnh phun nhận một lực: "high" phun mạnh, bay xa nhưng xe giật một ô, giật vào thùng nặng thì thùng nhích một ô; "low" hay không viết gì là phun nhẹ.']
+      moTaThan: { drone: 'Vòi treo dưới bụng drone, tưới và gieo ở ô ngay dưới.' },
+      moTaLenhThan: { drone: { spray: 'Tưới ô đất dưới bụng', seed: 'Gieo hạt màu c xuống ô dưới bụng' } },
+      lenh: ['spray', 'spray_back', 'seed'],
+      gioi: [{ chu: 'Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền chạy / dừng', khongThan: 'drone' }, { chu: 'Phun nhẹ bay xa nhất 2 ô, xe đứng yên', khongThan: 'drone' }, { chu: 'Tia nước bay qua hàng rào thấp và băng chuyền', khongThan: 'drone' },
+        { chu: 'Ô đất khô hiện số lần còn phải tưới', than: 'drone' }, { chu: 'Làm trước khi bay: spray() rồi go_right() chỉ tốn 1 nhịp', than: 'drone' }],
+      khong: ['Một nhịp chỉ phun một lần', { chu: 'Nhịp phun thì bánh nghỉ', khongThan: 'drone' }, { chu: 'Tia nước không đẩy được thùng nặng', khongThan: 'drone' },
+        { chu: 'Tưới ô đất không khô thì úng, phải chơi lại', than: 'drone' }, { chu: 'Gieo ngoài ô cần gieo thì hỏng, phải chơi lại', can: ['seed'] }],
+      luuY: [{ chu: 'Lệnh phun cũng chỉ là ra lệnh, wait() mới phun.', khongThan: 'drone' }, { chu: 'Lệnh tưới và gieo chỉ là ra lệnh, wait() hay go_...() kế đó mới làm.', than: 'drone' }, { chu: 'Gieo sai màu thì gieo lại đúng màu lên ô đó.', can: ['seed'] }, { chu: 'Từ gói Lực phun, lệnh phun nhận một lực: "high" phun mạnh, bay xa nhưng xe giật một ô, giật vào thùng nặng thì thùng nhích một ô; "low" hay không viết gì là phun nhẹ.', khongThan: 'drone' }]
     },
 
     /* ------------------------------------------------------------ CẢM BIẾN */
@@ -203,11 +207,15 @@
     'hong-ngoai': {
       khe: 'camBien', ten: 'Cảm biến hồng ngoại',
       moTa: 'Mắt đỏ ở mũi xe, đo xem phía trước còn mấy ô trống.',
+      moTaThan: { drone: 'Mắt đỏ nhìn xuống, đo đất ở ô dưới bụng drone.' },
+      moTaLenhThan: { drone: { warm: 'Hỏi: đất ở ô dưới bụng còn khô không' } },
       lenh: ['distance', 'warm'],
       gioi: ['Hỏi không tốn nhịp', { chu: 'distance() trả một SỐ: số ô trống tới vật cản; sát vật cản là 0. Dùng được trong phép so sánh, như if distance() > 2:', can: ['distance'] },
-        { chu: 'warm() trả True khi vật cản trước mặt NÓNG: robot khác, hay van hơi đang mở', can: ['warm'] }],
-      khong: ['Chỉ nhìn thẳng phía trước, không nhìn hai bên', 'Không biết vật cản là gì, chỉ biết cách bao xa', { chu: 'Van đang đóng, cửa, thùng, tường thì warm() là False', can: ['warm'] }],
-      luuY: [{ chu: 'Tường, mép sân, cửa đóng, thùng nặng, vật nằm đất, robot khác đều chắn tia.', can: ['distance'] }, { chu: 'Cùng một tia với distance(): warm() chỉ xét vật cản đầu tiên.', can: ['warm'] }]
+        { chu: 'warm() trả True khi vật cản trước mặt NÓNG: robot khác, hay van hơi đang mở', can: ['warm'], khongThan: 'drone' },
+        { chu: 'warm() trả True khi đất ở ô dưới bụng còn khô', can: ['warm'], than: 'drone' }],
+      khong: [{ chu: 'Chỉ nhìn thẳng phía trước, không nhìn hai bên', khongThan: 'drone' }, { chu: 'Không biết vật cản là gì, chỉ biết cách bao xa', khongThan: 'drone' }, { chu: 'Van đang đóng, cửa, thùng, tường thì warm() là False', can: ['warm'], khongThan: 'drone' },
+        { chu: 'Không đọc xuyên rơm: ô phủ rơm luôn là False', than: 'drone' }, { chu: 'Không biết còn phải tưới mấy lần, chỉ biết còn khô hay không', than: 'drone' }],
+      luuY: [{ chu: 'Tường, mép sân, cửa đóng, thùng nặng, vật nằm đất, robot khác đều chắn tia.', can: ['distance'] }, { chu: 'Cùng một tia với distance(): warm() chỉ xét vật cản đầu tiên.', can: ['warm'], khongThan: 'drone' }]
     },
     'mau': {
       khe: 'camBien', ten: 'Cảm biến màu ở bụng',
@@ -221,10 +229,12 @@
     'camera': {
       khe: 'camBien', ten: 'Camera trước',
       moTa: 'Hai mắt trên thân xe, nhìn ô ngay trước mặt.',
+      moTaThan: { drone: 'Mắt nhìn xuống, đọc ô dưới bụng drone.' },
       lenh: ['color'],
       moTaLenh: { color: 'Đọc màu ở ô trước mặt' },
-      gioi: ['Có vật trước mặt thì color() cho màu của vật, không có thì màu sàn ô đó', 'Đọc không tốn nhịp'],
-      khong: ['Tường, rào, thùng, cửa đóng, mép sân: color() trả "none"', 'Không gắn chung với cảm biến màu ở bụng'],
+      moTaLenhThan: { drone: { color: 'Đọc màu ở ô dưới bụng' } },
+      gioi: [{ chu: 'Có vật trước mặt thì color() cho màu của vật, không có thì màu sàn ô đó', khongThan: 'drone' }, { chu: 'Có vật dưới bụng thì color() cho màu của vật, không có thì màu đất ô đó', than: 'drone' }, 'Đọc không tốn nhịp'],
+      khong: [{ chu: 'Tường, rào, thùng, cửa đóng, mép sân: color() trả "none"', khongThan: 'drone' }, { chu: 'Đất không màu: color() trả "none"', than: 'drone' }, 'Không gắn chung với cảm biến màu ở bụng'],
       luuY: ['Cùng tên color() với cảm biến màu, nhưng đọc chỗ khác. Kết quả của hàm tùy vào bộ phận gắn trên xe.']
     },
     'camera-4': {
@@ -338,6 +348,8 @@
     'day-keo': {
       khe: 'tay', ten: 'Tay lưới thủy lợi',
       moTa: 'Vòng lưới phao gắn trên xuồng để tung lưới ra 4 phía bắt vật nổi hoặc giật van cống.',
+      moTaThan: { drone: 'Vòng lưới treo dưới bụng drone, tung ra 4 phía bắt vật trên mặt đất.' },
+      moTaLenhThan: { drone: { cast_net: 'Tung lưới theo hướng d, bắt vật cách drone đúng 2 ô', drop_net: 'Thả vật trong lưới xuống ô nó đang nằm' } },
       lenh: ['cast_net', 'drop_net', 'set_length'],
       moTaLenh: {
         cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van V',
@@ -345,22 +357,28 @@
         set_length: 'Đặt độ dài dây lưới từ 0 đến 3, với 0 là kéo vật về khoang tàu và 1 đến 3 là số ô dây dưới nước'
       },
       ghep: [
-        { lenh: ['cast_net', 'wait'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van V trên bờ' },
-        { lenh: ['drop_net', 'wait'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng q' },
+        { lenh: ['cast_net', 'wait'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van V trên bờ', khongThan: 'drone' },
+        { lenh: ['drop_net', 'wait'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng q', khongThan: 'drone' },
+        { lenh: ['cast_net', 'wait'], ra: 'Tung lưới bắt vật cách drone 2 ô', than: 'drone' },
+        { lenh: ['drop_net', 'wait'], ra: 'Mở lưới thả vật xuống ô nó đang nằm', than: 'drone' },
         { lenh: ['set_length', 'wait'], ra: 'Thu dây kéo vật về khoang tàu hoặc thả dây ra độ dài mới' }
       ],
       gioi: [
-        'cast_net(d) tung lưới theo bốn hướng quanh xuồng là front, back, left, right, mặc định là front cách xuồng 2 ô',
-        'Khi xuồng di chuyển, dây lưới và vật nổi trong lưới lướt theo sau đúng quỹ đạo của xuồng; khi xuồng xoay tại chỗ thì lưới dưới nước đứng yên',
-        'cast_net(d) trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van',
+        { chu: 'cast_net(d) tung lưới theo bốn hướng quanh xuồng là front, back, left, right, mặc định là front cách xuồng 2 ô', khongThan: 'drone' },
+        { chu: 'Khi xuồng di chuyển, dây lưới và vật nổi trong lưới lướt theo sau đúng quỹ đạo của xuồng; khi xuồng xoay tại chỗ thì lưới dưới nước đứng yên', khongThan: 'drone' },
+        { chu: 'cast_net(d) trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van', khongThan: 'drone' },
+        { chu: 'cast_net(d) tung lưới theo màn hình: front lên trên, back xuống dưới, left, right', than: 'drone' },
+        { chu: 'Drone bay tới đâu, vật trong lưới đi theo đường bay, luôn sau drone 2 ô', than: 'drone' },
         { can: ['set_length'], chu: 'set_length(n) chỉnh độ dài dây lưới từ 0 đến 3: gọi 0 để kéo vật gọn vào khoang tàu, gọi 1 đến 3 để thu ngắn hay thả dài dây dưới nước' }
       ],
       khong: [
-        'Không gọi cast_net(d) bắt thêm được khi trong lưới đang giữ một vật nổi',
-        'Xuồng không đi đè lên chính ô dây lưới hay túi lưới đang căng dưới nước',
+        { chu: 'Không gọi cast_net(d) bắt thêm được khi trong lưới đang giữ một vật nổi', khongThan: 'drone' },
+        { chu: 'Xuồng không đi đè lên chính ô dây lưới hay túi lưới đang căng dưới nước', khongThan: 'drone' },
+        { chu: 'Trong lưới chỉ giữ được một vật', than: 'drone' },
+        { chu: 'Không bay được về phía vật trong lưới', than: 'drone' },
         { can: ['set_length'], chu: 'Khi vật đang nằm trong khoang tàu ở độ dài 0 thì phải gọi set_length(n) thả ra mặt nước trước khi gọi drop_net()' }
       ],
-      luuY: ['Gọi drop_net() rồi wait() khi vật trong lưới đang nằm ngay trên ô bến hàng q để giao hàng.']
+      luuY: [{ chu: 'Gọi drop_net() rồi wait() khi vật trong lưới đang nằm ngay trên ô bến hàng q để giao hàng.', khongThan: 'drone' }, { chu: 'Gọi drop_net() rồi wait() khi vật trong lưới đang nằm trên ô đích.', than: 'drone' }]
     },
     'dong-chay': {
       khe: 'camBien', ten: 'Chong chóng dòng chảy',
@@ -488,10 +506,11 @@
     lenh = lenh || [];
     var moi = chiMoi && chiMoi.length ? chiMoi : null;
     var dsLenh = d.lenh.filter(function (x) { return co(lenh, x) && (!moi || co(moi, x)); }).map(function (x) {
-      return { ten: x, moTa: (d.moTaLenh && d.moTaLenh[x]) || (moTaGoc && moTaGoc[x]) || '' };
+      return { ten: x, moTa: (d.moTaLenhThan && d.moTaLenhThan[than] && d.moTaLenhThan[than][x]) || (d.moTaLenh && d.moTaLenh[x]) || (moTaGoc && moTaGoc[x]) || '' };
     });
     var ghep = (d.ghep || []).filter(function (g) {
       var can = g.lenh.filter(function (x) { return x !== 'wait'; });
+      if ((g.than && g.than !== than) || (g.khongThan && g.khongThan === than)) return false;
       if (!can.every(function (x) { return co(lenh, x); })) return false;
       if (co(g.lenh, 'wait') && co(d.lenh, 'wait') && !co(lenh, 'wait')) return false;
       return !moi || can.some(function (x) { return co(moi, x); });

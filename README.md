@@ -27,21 +27,19 @@ npm start   # http://localhost:4180
 | 3 Bến sông | Xuồng | biến, tham số |
 | 4 Nông trại | Drone | `list`, `for x in a`, `append` |
 
-**Mùa 1, Mùa 2 và Mùa 3 đã có đủ 32 màn mỗi mùa** theo khuôn 4 cột × 8 hàng (`hoc/KE-HOACH-4-MUA-COT-LOI.md`, `hoc/man-m1-*.js`, `hoc/man-m2-*.js`, `hoc/man-m3-*.js`; kiểm bằng
-`node hoc/kiem-khuon.mjs`). Mùa 4 hiện mới có **1 gói demo, 1 màn** (`hoc/man-demo.js`) — màn thật **chưa viết**.
+**Cả 4 mùa đã có đủ 32 màn mỗi mùa, tổng 128 màn,** theo khuôn 4 cột × 8 hàng (`hoc/KE-HOACH-4-MUA-COT-LOI.md`, `hoc/man-m1-*.js` … `hoc/man-m4-*.js`; kiểm bằng
+`node hoc/kiem-khuon.mjs`).
 
 ## Việc còn lại (xem KE-HOACH-7-MUA.md ở bản gốc để tra cứu cơ chế mùa cũ)
 
-1. **Dựng Mùa 4 theo khuôn 4×8** (`hoc/KE-HOACH-4-MUA-COT-LOI.md`), bám đúng chương trình Tin học 12 ôn thi đại học
-   (không chỉ cắt bớt — dựng lại theo đúng mức độ khó của đề thi, xem mục kế tiếp).
-2. **Cảng sông (cần cẩu)**: chưa đưa vào — cần cẩu dùng toạ độ cực (`batDau.nac`, `tam`) khác hẳn
+1. **Cảng sông (cần cẩu)**: chưa đưa vào — cần cẩu dùng toạ độ cực (`batDau.nac`, `tam`) khác hẳn
    lưới `x,y` của các thân khác (xem `hoc/san-hoc.js` phần CẢNG SÔNG) và màn gốc dùng luật
    "bóng mờ" (`mucTieu: 'bong-mo'`) + xếp container — cần thiết kế lại luật thắng trước khi viết
    màn, không copy máy móc từ bản gốc. Số âm/`abs()`/`%`/`//` quan trọng cho đề thi nên mùa này nên
    làm sớm.
-3. **Mùa Tổng kết**: chưa thiết kế (bản gốc gộp cả 8 nơi + lắp robot tổ hợp — quá rộng so với 4–5
+2. **Mùa Tổng kết**: chưa thiết kế (bản gốc gộp cả 8 nơi + lắp robot tổ hợp — quá rộng so với 4–5
    mùa cốt lõi ở đây; cần làm lại bố cục).
-4. **Độ khó thao tác nhập lệnh** (user phản ánh 5/11): đây là lý do chính khiến game "khó" hiện
+3. **Độ khó thao tác nhập lệnh** (user phản ánh 5/11): đây là lý do chính khiến game "khó" hiện
    nay, nhiều hơn tư duy giải màn. Trước khi viết màn mới, nên khảo sát lại UI nhập lệnh
    (`hoc/game/man-choi.js`, `hoc/game/man-so-lenh.js`, khay lệnh kéo-thả/gõ tay) — sửa thao tác
    trước, rồi thiết kế màn mới sẽ đỡ phải vá lại nhiều lần.

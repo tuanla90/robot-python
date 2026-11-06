@@ -341,6 +341,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       cuaNhip: lm.cuaNhip || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, danToiDa: m.danToiDa, noi: lm.noi || undefined, demTu: lm.demTu || undefined,   // gói V7a: noi (nút ↔ cửa) cho dây nối vector   // súng bóng: chu kỳ cửa nhịp của sân này, nút bật sẵn (nóng từ đầu), số đạn tối đa (không khai = vô hạn)
       pin: Array.isArray(m.pin) ? m.pin[i] : m.pin,                                // drone: pin đầy của sân này (không khai = pin vô hạn, ẩn thanh pin)
       bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo,                    // mục tiêu 'bong-mo': xe mờ (+ vật mờ, ô ◆) của sân này; màn nhiều sân thì mảng song song với san
+      datKho: lm.datKho || undefined, datRom: lm.datRom || undefined,                    // NÔNG TRẠI: đất khô, phủ rơm của sân này
       hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: m.mucBanDau,                          // máy sơn: hình mờ cần tô của sân này, màu sơn lúc đầu
       vo: m.vo,                                                                                  // vỏ hình của mùa (30/10: 'nong-trai' ở mùa 4)
       dong: lm.dong || undefined,                                                                // BẾN SÔNG (31/10): lớp dòng chảy của sân này
@@ -372,7 +373,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       cam: TP.camBienCua(m),                                                                    // hàm cảm biến: thành khối ĐIỀU KIỆN (while / if), không phải lệnh GỐC
       mau: TP.coMauCua(m),                                                                      // cảm biến màu: khối so màu + gán c = color()
       pin: TP.coPinCua(m),                                                                      // drone đo pin: khối so sánh battery() < 3
-      chuoi: TP.coCauTruc(m, 'for') && TP.coMauCua(m) !== 'look' && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R": (flycam dùng danh sách màu, không dùng chuỗi chữ)
+      chuoi: TP.coCauTruc(m, 'for') && TP.coMauCua(m) !== 'look' && (!!m.chuoi || (m.loaiRobot !== 'drone' && (m.hamGoc || []).some(function (n) { return /^go_/.test(n); }))),     // chương có chuỗi chữ (nhện): khối for c in "R": (flycam dùng danh sách màu, không dùng chuỗi chữ)
       vaHoac: m.vaHoac === true,                                                                // mùa 2: khối mẫu có and / or, khối so chữ của vòng for chuỗi
       dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
       bt: TP.khayBTCua(m),                                                                     // mùa 4–7: nhóm BIỂU THỨC (n = 1, return n, if n == 1:, while n > 0:…) ở thẻ Logic
@@ -770,7 +771,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var nguongO = k.nguongO !== undefined ? k.nguongO : ss.o;
     var okO = nguongO === undefined || k.soO <= nguongO, okN = ss.nhip === undefined || k.soNhip <= ss.nhip || !!(re && k.re);
     var duaVat = m.mucTieu === 'dua-vat' || m.mucTieu === 'day-thung';
-    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : m.mucTieu === 'to-hinh' ? 'thang.tieuDe.toHinh' : m.mucTieu === 'dap-lua' ? 'thang.tieuDe.dapLua' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
+    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : m.mucTieu === 'to-hinh' ? 'thang.tieuDe.toHinh' : m.mucTieu === 'cham-dat' ? 'thang.tieuDe.chamDat' : m.mucTieu === 'dap-lua' ? 'thang.tieuDe.dapLua' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
     hop.hop.setAttribute('data-sao', k.sao);
     var st = h('div', 'th-sao');
     for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }

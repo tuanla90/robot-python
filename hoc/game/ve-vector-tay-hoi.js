@@ -25,7 +25,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.elip(g, 50, yDau + 1.1 * huong, 3.2, 1.3); H.to(g, ban ? (lucCao ? BM.vecVo : BM.vecNuocSang) : BM.vecLoi); H.vien(g, BM.vecVien, 1.1);
   }
   function giot(g, H, x, y, r) { H.tron(g, x, y, r); H.to(g, BM.vecNuoc); H.vien(g, BM.vecNuocToi, 1); H.tron(g, x - r * 0.3, y - r * 0.3, r * 0.35); H.to(g, BM.vecNuocSang); }
-  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['spray',  'spray_back'], ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['spray',  'spray_back', 'seed'], ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
     s = s || {};
     var tr = !!s.dangBanTruoc, sa = !!s.dangBanSau, lucCao = s.lucBan !== 'low', tu = !!s.tuLuc;
     /* đầu sau (vẽ trước: nằm dưới bình nước nếu thân ngắn) */

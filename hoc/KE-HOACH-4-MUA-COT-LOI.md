@@ -56,7 +56,7 @@ bài, không phải đoán lại mỗi chương):**
 
 Tổng mỗi mùa: 4 × 8 = **32 màn**. Tổng 4 mùa: **128 màn**.
 
-**Mùa 1 đã DỰNG LẠI theo khuôn 4×8 này** (thay bản 45 màn, 9 chương trước đó), **Mùa 2, Mùa 3 đã dựng** cùng khuôn. Mùa 4 dựng theo cùng cách:
+**Mùa 1 đã DỰNG LẠI theo khuôn 4×8 này** (thay bản 45 màn, 9 chương trước đó), **Mùa 2, Mùa 3, Mùa 4 đã dựng** cùng khuôn, theo cùng cách:
 
 - Dùng `ManHoc.khuon(so, m)` (`hoc/man-co-so.js`): truyền số hàng 1–8, hàm tự đặt dạng bài và các cờ của hàng đó.
 - Mỗi cột là một chương + một gói (`m1-c1-than`, `m1-c2-tay`, `m1-c3-cam-bien`, `m1-c4-san` trong `hoc/thu-tu-chuong.js`).
@@ -92,8 +92,19 @@ Quyết định riêng của Mùa 3 (có thể đổi nếu muốn):
 - **Van không khai `noi`** thì điều khiển mọi cống, mọi dòng của sân: tung lưới trúng van thì cống mở, dòng tắt (`cast_net("left")`, van cách 1 hay 2 ô đều được).
 - **Hàng 7 cột 2–4 có `canThamSo`**: hàm của em phải có tham số mới thắng. Màn khai `khaiDoiSo` thì hộp Hàm mới có ô đối số.
 - **Nhập lệnh**: tham số so với tên màu thì lời gọi có bảng chọn màu kèm biến (`giao(c)`); `cast_net("left")` có bảng chọn bốn hướng.
-- **Bỏ màn demo Bến sông** trong `hoc/man-demo.js`, Mùa 4 vẫn còn demo.
+- **Bỏ màn demo Bến sông** trong `hoc/man-demo.js`.
 - **Thẻ part của xuồng** đổi sang bộ lệnh `up`/`down`/`turn_left`/`turn_right`.
+
+Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
+
+- **Cột dạy gì**: cột 1 danh sách số (`a = [2, 3, 1]`, `for n in a`, `a[0]`), cột 2 danh sách chữ (`a[i]`, `len(a)`, `a.append(color())`, hàm nhận danh sách `gieo(a)`), cột 3 nhớ kết quả đo (`a.append(warm())`, `for k in a: if k:`), cột 4 phối hợp với hai cảm biến. Hàng 8 cột 4 là trùm cả 4 mùa.
+- **Mục tiêu mới `cham-dat`**: thắng khi hết đất khô và mọi ô cần gieo đúng màu. Lớp sân `datKho` (số 1..3 là số lần tưới cần, `m` là luống đo), `datRom` (`x` là ô phủ rơm), `hinh` (ô cần gieo, vẽ hoa mờ).
+- **Vòi phun trên drone làm ở ô dưới bụng**: `spray()` tưới, `seed(c)` gieo. Lệnh làm ở nhịp `wait()`/`go_*()` kế, trước khi bay, nên `spray()` rồi `go_right()` là 1 nhịp. Tưới đất không khô thì úng, gieo ngoài ô cần gieo thì hỏng, đều dừng ngay. Gieo sai màu thì gieo lại được.
+- **Hồng ngoại trên drone**: `warm()` đo ô dưới bụng, không tốn nhịp. Không đọc xuyên rơm. Luống đo (`m`) báo nóng nhưng không cần tưới, nên muốn tưới luống phủ rơm phải đo luống đo, nhớ vào danh sách rồi mới bay xuống: đây là lý do cần danh sách.
+- **Camera trên drone** đọc ô dưới bụng: vật trước, rồi tới màu đất. Lớp `hinh` là ô cần gieo, không phải màu đất, nên camera đọc ra `"none"`.
+- **Lưới trên drone** (`luoiBay: true`): `cast_net(d)` theo màn hình (`front` lên trên), bắt vật đất cách đúng 2 ô, vật đi theo đường bay. Bay về phía vật trong lưới thì bị chặn.
+- **Danh sách**: khung nhập đã có sẵn, hàng 6, 8 khai `canList: true` (không dùng danh sách thì chưa thắng). Vẫn không dùng gán `a[0] = x`, tuple, dict, set, list lồng list.
+- **Bỏ màn demo Nông trại**: `hoc/man-demo.js` không còn màn nào.
 
 ## Quy tắc engine (đã áp dụng một phần khi dựng mùa 1 lần đầu, giữ nguyên khi dựng lại)
 
@@ -115,7 +126,6 @@ Quyết định riêng của Mùa 3 (có thể đổi nếu muốn):
 
 ## Việc còn lại
 
-1. Dựng Mùa 4 theo đúng khuôn 4×8 + chuỗi chuyển part ở trên (chưa làm; Nông trại đang có 1 màn demo).
-2. Mùa Tổ hợp (mùa 5): chưa thiết kế, làm sau khi xong 4 mùa cốt lõi.
-3. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua up/down/turn_left/turn_right;
+1. Mùa Tổ hợp (mùa 5): chưa thiết kế, làm sau khi xong 4 mùa cốt lõi.
+2. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua up/down/turn_left/turn_right;
    chưa xem lại toàn bộ UI nhập lệnh — vẫn là việc treo từ đầu buổi.

@@ -99,10 +99,10 @@
     drone: {
       kep: { tt: 'cam', lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn tay kẹp.' },        // câu cũ
       xoay: { tt: 'cam', lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn tay kẹp xoay.' },  // câu cũ
-      hoi: { tt: 'cam', lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn vòi phun.' },       // câu cũ
+      hoi: 'duoc',                                                                              // Nông trại: vòi phun xuống ô dưới bụng
       'nam-cham': 'duoc',
       'moc-cau': { tt: 'cam', lyDo: 'Drone chở nhẹ, không mang nổi móc cẩu.' },
-      'day-keo': { tt: 'lai', lai: 'L10' },
+      'day-keo': 'duoc',                                                                        // cột 1 Nông trại: lưới bắt vật cách 2 ô
       son: 'goc',
       nem: { tt: 'cam', lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn máy ném.' },        // câu cũ
       loa: { tt: 'cam', lyDo: 'Drone chở nhẹ, không mang nổi loa.' }
@@ -165,11 +165,11 @@
     },
     drone: {
       'khoang-cach': { tt: 'cam', lyDo: 'Drone không có mặt trước để đo hay nhìn phía trước, không gắn "khoảng cách".' },   // câu cũ
-      'hong-ngoai': { tt: 'cam', lyDo: 'Drone không có mặt trước để đo phía trước, không gắn cảm biến hồng ngoại.' },
+      'hong-ngoai': 'duoc',                                                                     // Nông trại: warm() đo đất dưới bụng
       tu: { tt: 'cam', lyDo: 'Drone không có mặt trước để đo hay nhìn phía trước, không gắn "cảm biến từ".' },           // câu cũ
       'quet-ma': 'khong-mo',
       'dong-chay': { tt: 'cam', lyDo: C.chongChong },
-      camera: { tt: 'cam', lyDo: 'Drone không có mặt trước để đo hay nhìn phía trước, không gắn "camera trước".' },      // câu cũ
+      camera: 'duoc',                                                                           // Nông trại: color() đọc ô dưới bụng
       'camera-4': 'goc',
       'camera-bay': 'duoc',
       radar: { tt: 'lai', lai: 'L11' },
