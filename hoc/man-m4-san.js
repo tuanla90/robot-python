@@ -38,7 +38,7 @@
       deBai: 'Mỗi ô: đất khô thì tưới tới khi hết khô, đất có màu thì gieo hạt đúng màu đó. Hai cảm biến cùng làm việc. Ô đầu vừa khô vừa có màu. Đọc code, đoán rồi bấm Chạy.',
       san: HANG('.....'), datKho: HANG('2....'), mau: HANG('y.b..'), hinh: HANG('y.b..'), batDau: BD,
       duDoan: { hoi: 'Ở ô đầu, drone làm gì trước?', luaChon: ['Gieo hạt rồi mới tưới', 'Tưới hết khô rồi mới gieo', 'Chỉ gieo, không tưới'], dung: 1, xacMinh: { lenh: { spray: 2, seed: 2 } } },
-      sao: { o: 7, nhip: 6 },
+      sao: { o: 7, nhip: 8 },
       loiGiai: { chinh: CHAM.slice() } }),
 
     man(2, { ten: 'Lặp qua cả luống',
@@ -46,7 +46,7 @@
       san: [HANG('.....'), HANG('.....')], datKho: [HANG('.2.1.'), HANG('1..2.')], mau: [HANG('r..y.'), HANG('.b.g.')], hinh: [HANG('r..y.'), HANG('.b.g.')], batDau: [BD, BD],
       maMau: { chinh: [''].concat(CHAM.slice(1)) },
       goiY: ['Có bốn ô cần đi qua, mỗi ô làm giống nhau.'],
-      sao: { o: 7, nhip: 8 },
+      sao: { o: 7, nhip: 9 },
       loiGiai: { chinh: CHAM.slice() } }),
 
     man(3, { ten: 'Gieo nhầm chỗ',
@@ -54,7 +54,7 @@
       san: [HANG('.....'), HANG('.....')], datKho: [HANG('.1...'), HANG('..2..')], mau: [HANG('r.y..'), HANG('.b...')], hinh: [HANG('r.y..'), HANG('.b...')], batDau: [BD, BD],
       maMau: { chinh: CHAM.map(function (d) { return d === '    if c != "none":' ? '    if c == "none":' : d; }) },
       goiY: ['Đất không màu đọc ra "none", không gieo. Chỉ gieo khi c khác "none".'],
-      sao: { o: 7, nhip: 5 },
+      sao: { o: 7, nhip: 7 },
       loiGiai: { chinh: CHAM.slice() } }),
 
     man(4, { ten: 'Hai luống dài ngắn',
@@ -62,14 +62,14 @@
       san: ['.....', '.....', '.....'], datKho: ['1.2..', '.1...', '.....'], mau: ['.r.b.', 'y....', '.....'], hinh: ['.r.b.', 'y....', '.....'], batDau: { x: 0, y: 0, huong: 0 },
       canList: true,
       goiY: ['for n in a:, bên trong for i in range(n): lam_o(), go_right().', 'Hết luống: lùi n ô bằng go_left(), rồi go_down().'],
-      sao: { o: 13, nhip: 17 },
+      sao: { o: 13, nhip: 23 },
       loiGiai: { chinh: BA_LUONG.slice(), hamCuaMan: LAM_O() } }),
 
     man(5, { ten: 'Quét hết hay đi theo bậc',
       deBai: 'Ba ô cần chăm nằm theo bậc thang trên ba luống. Quét hết từng luống thì không sót, nhưng bay rất nhiều. Danh sách giữ được số ô phải bay ở mỗi bậc. Hàm lam_o() có sẵn. Tìm bài vừa gọn vừa nhanh.',
-      san: ['......', '......', '......'], datKho: ['.1....', '......', '....2.'], mau: ['.r....', '...b..', '......'], hinh: ['.r....', '...b..', '......'], batDau: { x: 0, y: 0, huong: 0 },
+      san: ['......', '......', '......', '......'], datKho: ['.1....', '......', '....2.', '......'], mau: ['.r....', '...b..', '......', '......'], hinh: ['.r....', '...b..', '......', '......'], batDau: { x: 0, y: 0, huong: 0 },
       goiY: ['Danh sách a = [1, 2, 1]: bậc đầu bay 1 ô, bậc sau 2 ô, bậc cuối 1 ô.', 'Mỗi bậc: bay sang phải n ô, lam_o(), rồi xuống một ô.'],
-      sao: { o: 11, nhip: 11 },
+      sao: { o: 11, nhip: 12 },
       loiGiai: { chinh: ['a = [1, 2, 1]', 'for n in a:', '    for i in range(n):', '        go_right()', '    lam_o()', '    go_down()'], hamCuaMan: LAM_O() },
       cachKhac: [{ chinh: ['for k in range(3):', '    for i in range(5):', '        lam_o()', '        go_right()', '    for i in range(5):', '        go_left()', '    go_down()'] }] }),
 
@@ -78,7 +78,7 @@
       san: ['.....', '.....', '.....', '.....'], datKho: ['1....', '..2..', '.1.1.', '.....'], mau: ['.r...', 'b....', '...y.', '.....'], hinh: ['.r...', 'b....', '...y.', '.....'], batDau: { x: 0, y: 0, huong: 0 },
       canThamSo: true, canList: true,
       goiY: ['Trong hàm: for i in range(n): lam_o(), go_right(). Rồi lùi n ô, go_down().', 'Chương trình chính: a = [3, 4, 4], for n in a:, luong(n).'],
-      sao: { o: 14, nhip: 27 },
+      sao: { o: 14, nhip: 33 },
       loiGiai: {
         chinh: ['a = [3, 4, 4]', 'for n in a:', '    luong(n)'],
         hamCuaMan: LAM_O(),
@@ -87,9 +87,9 @@
 
     man(7, { ten: 'Về đầu luống hay ngoằn ngoèo',
       deBai: 'Ba luống cùng dài. Một hàm chăm luống rồi về đầu luống: gọn. Hay đi ngoằn ngoèo, hết luống thì xuống và đi ngược: nhanh. Hàm lam_o() có sẵn, hàm khác tên tùy em. Một sao cho bài gọn, một sao cho bài nhanh.',
-      san: ['.....', '.....', '.....'], datKho: ['1.2..', '.1...', '.1.1.'], mau: ['.r...', 'y..b.', '..b..'], hinh: ['.r...', 'y..b.', '..b..'], batDau: { x: 0, y: 0, huong: 0 },
+      san: ['.....', '.....', '.....', '.....'], datKho: ['1.2..', '.1...', '.1.1.', '.....'], mau: ['.r...', 'y..b.', '..b..', '.....'], hinh: ['.r...', 'y..b.', '..b..', '.....'], batDau: { x: 0, y: 0, huong: 0 },
       goiY: ['Về đầu luống là 4 ô bay không làm gì, mỗi ô một nhịp.', 'Đi ngược thì bay trước rồi mới lam_o(), vì lúc xuống drone đang ở ngoài luống.'],
-      sao: { o: 13, nhip: 23 },
+      sao: { o: 13, nhip: 24 },
       doiCho: true,
       loiGiai: {
         chinh: ['for i in range(3):', '    luong()'],
@@ -112,7 +112,7 @@
       datKho: [['.....', '2....'], ['.....', '.12..'], ['.....', '1.2..']],
       batDau: [{ x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }],
       canList: true,
-      sao: { o: 14, nhip: 19 },
+      sao: { o: 14, nhip: 20 },
       loiGiai: {
         chinh: ['a = []', 'while color() != "none":', '    a.append(color())', '    go_right()', 've(len(a))', 'for c in a:', '    lam(c)', '    go_right()'],
         hamCuaEmMoi: [H('ve', ['n'], ['go_down()', 'for i in range(n):', '    go_left()']), H('lam', ['c'], ['while warm():', '    spray()', 'seed(c)'])]

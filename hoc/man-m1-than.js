@@ -26,7 +26,7 @@
 
   ManHoc.them([
     man(1, { ten: 'Mũi xe quay về đâu',
-      deBai: 'forward() cho xe tiến 1 ô theo hướng mũi xe, turn_left() và turn_right() quay xe tại chỗ. Tiến mất 1 nhịp, quay mất 2 nhịp. Đọc code, đoán trước rồi bấm Chạy để kiểm tra.',
+      deBai: 'forward() cho xe tiến 1 ô theo hướng mũi xe, turn_left() và turn_right() quay xe tại chỗ. Tiến mất 1 nhịp, quay mất 2 nhịp. Đâm tường là thua, và chạy hết code xe phải đứng đúng trên cờ. Đọc code, đoán trước rồi bấm Chạy để kiểm tra.',
       san: ['.....', '..F..', '.....', '.....', '.....'],
       batDau: { x: 3, y: 4, huong: 0 },
       duDoan: { hoi: 'Khi tới cờ, mũi xe quay về hướng nào?', luaChon: ['Lên trên', 'Sang trái', 'Sang phải'], dung: 1, xacMinh: { x: 2, y: 1, huong: 3 } },

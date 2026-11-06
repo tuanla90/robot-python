@@ -111,8 +111,6 @@
       'dang.tu-luc': 'Tự lực',
       'dang.xem-doan': 'Xem, đoán',
       'dang.viet-mo': 'Viết mở',
-      'choi.damLaThua': 'Đâm tường là thua',
-      'choi.damLaThuaDe': 'Màn này đâm tường là thua: xe dừng ngay tại cú đâm.',
       'choi.canhBao': 'Lưu ý trên sân',
       'choi.nhom.goc': 'LỆNH CÓ SẴN',
       'choi.nhom.tay': 'TAY',

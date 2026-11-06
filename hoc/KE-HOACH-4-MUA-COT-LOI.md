@@ -104,7 +104,9 @@ Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
 
 Quyết định riêng của Mùa 3 (có thể đổi nếu muốn):
 
-- **Cột dạy gì**: cột 1 biến (`n = 4`, `n = n + 1`), cột 2 tham số số (`lui(n)`), cột 3 biến ghi màu và tham số chữ (`c = color()`, `giao(c)`), cột 4 biến đếm và hàm hai tham số (`bac(a, b)`).
+- **Biến phải có ích**: giá trị của biến lấy từ lúc chạy (đếm quãng đường, `c = color()`) hoặc đổi trong lúc chạy, để viết thẳng số không qua được; máy kiểm có luật này.
+- **Số phải đúng, cả 4 mùa** (`ManHoc.khuonMoi` bật cho mọi màn): đâm là thua (`damLaThua`), và chạy xong mới chấm (`thangKhiXong`): đạt đích giữa chừng chương trình vẫn chạy tiếp, chạy hết mà vẫn đạt đích mới thắng. Nên `range` hay `n` chọn thật cao không qua được. Lời giải vòng lặp có bước đi cuối thì sân phải chừa chỗ cho bước đó. Máy kiểm đổi từng số trong lời giải thành 9 và 12, vẫn thắng thì báo lỗi.
+- **Cột dạy gì**: cột 1 biến đếm quãng đường (`n = 0`, `n = n + 1` trong `while`, rồi `range(n)`), cột 2 tham số số (`lui(n)`), cột 3 biến ghi màu và tham số chữ (`c = color()`, `giao(c)`), cột 4 biến đếm và hàm hai tham số (`bac(a, b)`).
 - **"Dây phao kéo" chính là tay lưới có sẵn** (`day-keo`): `cast_net()` / `drop_net()`, trong lời đề bài gọi là lưới phao cho khớp tên lệnh. Lưới bắt vật cách ĐÚNG 2 ô, vật đi theo đường xuồng và luôn cách xuồng 2 ô. Không dùng `set_length`.
 - **Phải thả mới tính giao**: vật còn trong lưới nằm trên bến thì chưa thắng, phải `drop_net()`.
 - **Thùng sắt nổi**: cột 1, 2 dùng `B` + lớp `vatChat` (`s` sắt, `N`/`S` nam châm, `g` gỗ). Xuồng gắn được nam châm (thả xuống ô nước trước mũi) hay tay lưới, không cả hai.

@@ -35,7 +35,7 @@
       san: ['.......', '..o....', '......D'],
       batDau: { x: 2, y: 2, huong: 0 },
       duDoan: { hoi: 'Chạy xong, forward() đã chạy tổng cộng mấy lần?', luaChon: ['2 lần', '3 lần', '4 lần'], dung: 1, xacMinh: { lenh: { forward: 3 }, vat: [{ x: 6, y: 2 }] } },
-      sao: { o: 6, nhip: 8 },
+      sao: { o: 6, nhip: 9 },
       loiGiai: { chinh: ['pick()', 'turn_right()'].concat(FOR(2, ['forward()']), ['forward()', 'drop()']) } }),
 
     man(2, { ten: 'Điền lệnh tay',
@@ -44,7 +44,7 @@
       batDau: { x: 2, y: 4, huong: 0 },
       maMau: { chinh: [''].concat(FOR(3, ['forward()']), ['turn_left()', '']) },
       goiY: ['Thùng đang ở ngay trước mũi xe. Phải cầm thùng rồi mới đi.', 'Quay mặt vào ô đích rồi thì đặt thùng xuống.'],
-      sao: { o: 5, nhip: 8 },
+      sao: { o: 5, nhip: 9 },
       loiGiai: { chinh: ['pick()'].concat(FOR(3, ['forward()']), ['turn_left()', 'drop()']) } }),
 
     man(3, { ten: 'Mang nhầm hướng',
@@ -53,7 +53,7 @@
       batDau: { x: 1, y: 3, huong: 0 },
       maMau: { chinh: ['pick()', 'forward()', 'turn_left()', 'forward()', 'drop()'] },
       goiY: ['Ô đích nằm bên nào của xe sau khi xe tiến lên?'],
-      sao: { o: 5, nhip: 7 },
+      sao: { o: 5, nhip: 8 },
       loiGiai: { chinh: ['pick()', 'forward()', 'turn_right()', 'forward()', 'drop()'] } }),
 
     man(4, { ten: 'Thùng nằm bên phải',
@@ -61,7 +61,7 @@
       san: ['...D.', '.....', '.....', '.....', '..o..'],
       batDau: { x: 1, y: 4, huong: 0 },
       goiY: ['Tay chỉ làm ở ô trước mũi xe, nên phải quay mặt vào thùng trước khi pick().', 'Đi thẳng nhiều ô thì dùng for cho ngắn: for i in range(n). Chạm con số trong range(...) là đổi được số.', 'Tới cạnh ô đích, quay mặt vào nó rồi mới drop().'],
-      sao: { o: 8, nhip: 14 },
+      sao: { o: 8, nhip: 15 },
       loiGiai: { chinh: ['turn_right()', 'pick()', 'turn_left()'].concat(FOR(4, ['forward()']), ['turn_right()', 'forward()', 'drop()']) } }),
 
     man(5, { ten: 'Bậc thang hay đường thẳng',
@@ -69,7 +69,7 @@
       san: ['......', '...D..', '......', '......', 'o.....', '......'],
       batDau: { x: 0, y: 5, huong: 0 },
       goiY: ['Đặt các bước lặp lại vào một vòng for thì bài rất gọn, nhưng xe có thể đi chậm hơn.', 'Muốn nhanh thì rẽ ít lần thôi.'],
-      sao: { o: 7, nhip: 13 },
+      sao: { o: 7, nhip: 14 },
       doiCho: true,
       loiGiai: { chinh: ['pick()'].concat(FOR(3, ['turn_right()', 'forward()', 'turn_left()', 'forward()']), ['drop()']) },
       cachKhac: [
@@ -79,11 +79,11 @@
 
     man(6, { ten: 'Hai thùng: tự viết hàm',
       deBai: 'Hai thùng, việc mang mỗi thùng giống hệt nhau mà chương trình chính chỉ có 3 ô. Tự tạo một hàm ở Xưởng hàm cho một lượt, đặt tên tùy em.',
-      san: ['.D.D.', '.....', '.o.o.', '.....'],
+      san: ['.D.D..', '......', '.o.o..', '......'],
       batDau: { x: 1, y: 3, huong: 0 },
       khung: { chinh: 3 },
       goiY: ['Một lượt: nhặt thùng, tiến tới, đặt, lùi về, rồi sang đứng dưới thùng kế tiếp.', 'Hàm xong thì chương trình chính chỉ cần gọi hàm 2 lần.'],
-      sao: { o: 12, nhip: 19 },
+      sao: { o: 12, nhip: 28 },
       loiGiai: {
         chinh: ['chuyen()', 'chuyen()'],
         hamCuaEmMoi: [H('chuyen', CHUYEN)]
@@ -94,7 +94,7 @@
       san: ['.....', 'D...D', 'o...o', '.....'],
       batDau: { x: 1, y: 3, huong: 0 },
       goiY: ['Việc mang mỗi thùng giống nhau, viết thành hàm cho gọn.', 'Thùng nào gần xe hơn?'],
-      sao: { o: 14, nhip: 23 },
+      sao: { o: 14, nhip: 25 },
       loiGiai: {
         chinh: ['turn_left()', 'forward()', 'turn_right()', 'mang()', 'turn_right()'].concat(FOR(4, ['forward()']), ['turn_left()', 'mang()']),
         hamCuaEmMoi: [H('mang', MANG)]
@@ -109,7 +109,7 @@
       san: ['D.D.D..', '.......', 'o.o.o..', '.......'],
       batDau: { x: 0, y: 3, huong: 0 },
       khung: { chinh: 3 },
-      sao: { o: 12, nhip: 33 },
+      sao: { o: 12, nhip: 42 },
       loiGiai: {
         chinh: FOR(3, ['chuyen()']),
         hamCuaEmMoi: [H('chuyen', CHUYEN)]

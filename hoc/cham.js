@@ -684,7 +684,7 @@
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
           (man.loaiRobot === 'drone' ? ' Kiểm tra lại hướng của lệnh go_* (drone không quay, bay thẳng theo hướng em chọn). Drone bay qua được hàng rào thấp, băng chuyền, vật và bậc thang, nhưng không qua được tường cao hay mép sân.' : man.loaiRobot === 'nhen' ? ' Kiểm tra lại hướng của lệnh go_* (nhện không quay, đi thẳng theo hướng em chọn).' : man.loaiRobot === 'omni' ? ' Kiểm tra lại robot đang quay mặt hướng nào: slide_left() và slide_right() tính theo hướng mặt của xe.' : ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.');
       }
-      if (res.dungSom === 'dam-tuong') s2 += ' Màn này đâm tường là thua: chương trình dừng ngay tại cú đâm, robot không chạy tiếp. Sửa dòng gây ra cú đâm rồi chạy lại.';   // HD2
+      if (res.dungSom === 'dam-tuong') s2 += ' Đâm là thua: chương trình dừng ngay tại cú đâm, robot không chạy tiếp. Sửa dòng gây ra cú đâm rồi chạy lại.';
       them('dam-tuong', s2, { nhip: e0.nhip, den: e0.den, soLan: tuong.length, cho: cho(e0.lenh ? (g.anhXa[e0.lenh.dongPy] || null) : null), damLaThua: res.dungSom === 'dam-tuong' || undefined });
     }
     var thungChan = res.suKien.filter(function (e) { return e.ma === 'thung-chan'; });
@@ -1428,7 +1428,7 @@
       var r = res.robot;
       them('chua-toi-co', 'Chương trình chạy xong mà robot chưa tới cờ: robot đang ở ô (' + r.x + ', ' + r.y + ')' +
         (man.loaiRobot === 'nhen' || man.loaiRobot === 'drone' || man.loaiRobot === 'cau' ? '' : ', quay mặt hướng ' + SanHoc.TEN_HUONG[r.huong]) +
-        '. Thử chạy lại và theo dõi từng nhịp xem robot đi lệch ở đâu.', { robot: { x: r.x, y: r.y, huong: r.huong } });
+        '. ' + (res.quaDich ? 'Robot đã đi qua cờ nhưng không dừng lại: chương trình chạy xong mà robot đứng đúng trên cờ mới tính.' : 'Thử chạy lại và theo dõi từng nhịp xem robot đi lệch ở đâu.'), { robot: { x: r.x, y: r.y, huong: r.huong } });
     }
     // nhện chạy xong mà chưa có bước go_* nào: thường do hàm đi nhận chữ không khớp nhánh nào (viết thường thay vì hoa…)
     if (man.loaiRobot === 'nhen' && !sanThu && !res.thang && !res.loi && !res.dungSom &&
@@ -1611,7 +1611,8 @@
         dong: lm.dong || undefined,                                         // BẾN SÔNG: lớp dòng chảy (san-hoc.js phần BẾN SÔNG)
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1 người cần cứu, trạm cứu, thác
-        damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
+        damLaThua: man.damLaThua === true,                                  // đâm là thua (san-hoc.js)
+        thangKhiXong: man.thangKhiXong === true,                            // chạy xong mới chấm (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
         bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, datKho: lm.datKho || undefined, datRom: lm.datRom || undefined, luoiBay: !!man.luoiBay, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)

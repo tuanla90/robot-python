@@ -110,6 +110,8 @@
   ManHoc.DANG_BAI_MOI = ['xem-doan', 'dien', 'sua-loi', 'viet', 'viet-mo', 'viet-ham', 'viet-mo', 'tu-luc'];
   ManHoc.khuonMoi = function (so, m) {
     m.so = so;
+    m.damLaThua = true;                        // đâm là thua: chọn số lớn cho chắc thì đâm bờ
+    m.thangKhiXong = true;                     // chạy xong mới chấm: vòng lặp chạy thừa không được bỏ qua
     m.dangBai = so === 2 && m.dangBai === 'sap-xep' ? 'sap-xep' : ManHoc.DANG_BAI_MOI[so - 1];
     m.hang = so === 8 ? 'trum' : 'lam-quen';
     var lg = m.loiGiai, hamMan = lg.hamCuaMan || [];

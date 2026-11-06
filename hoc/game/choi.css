@@ -361,7 +361,7 @@ body.ve-vector .t-mua.on{background:var(--g-vecBrand);color:var(--g-vecThe)}
 /* bản đồ chọn mùa (man-mua.js, 5/11): khung phủ hết màn, KHÔNG cuộn — .g-bd là ảnh the-gioi.webp (bản đồ phim mở đầu),
    man-mua.js tính cỡ/vị trí kiểu "background-size: cover" (luôn phủ kín, có thể dư hai bên) rồi đặt qua style trực tiếp. */
 .g-khung{position:absolute;left:0;top:0;right:0;bottom:0;z-index:1;overflow:hidden;background:var(--g-xanhLaToi)}
-.g-bd{position:absolute;background:url(phim-clb/a/nen-doc/the-gioi.webp) 0 0/100% 100% no-repeat}
+.g-bd{position:absolute}      /* ảnh nền phim-clb/a/nen-doc/the-gioi.webp chưa có trong repo: có ảnh thì thêm lại, 0 0/100% 100% no-repeat */
 /* gói: huy hiệu tròn 52px, tâm đặt bằng left/top; nhãn treo bên phải (.phai) hay trái (.trai) */
 .g-nut{position:absolute;width:0;height:0;z-index:1;cursor:pointer}
 .g-tron{position:absolute;left:-28px;top:-28px;width:56px;height:56px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--g-moToiSangV6);box-shadow:0 0 0 3px var(--ink),0 0 0 6px var(--mau-mua,transparent)}
@@ -414,7 +414,7 @@ body.ve-vector .t-mua.on{background:var(--g-vecBrand);color:var(--g-vecThe)}
 /* ---------- chọn gói (man-goi.js, 5/11): 10 gói của một mùa gọn trong 1 màn hình, không cuộn ---------- */
 /* nền: đúng khúc ảnh dài 9 nơi chốn (dai-9.webp) của mùa đang xem, cắt bằng background-position (đặt trong man-goi.js); cùng ảnh, cùng tỉ lệ 0,8 với man-mua.js */
 .gg-than{flex:1 1 auto;min-height:0;position:relative;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
-  background:var(--g-xanhLaToi) url(phim-clb/a/ban-do/dai-9.webp) -120px 0/576px auto no-repeat}      /* 10 gói luôn vừa khít, không cần cuộn; chỉ cứu lưới "Kho lưu trữ" (mua-an, debug) có hơn chục gói */
+  background:var(--g-xanhLaToi)}      /* ảnh phim-clb/a/ban-do/dai-9.webp chưa có trong repo: có ảnh thì thêm lại, -120px 0/576px auto no-repeat. 10 gói luôn vừa khít, không cần cuộn; chỉ cứu lưới "Kho lưu trữ" (mua-an, debug) có hơn chục gói */
 .gg-than::-webkit-scrollbar{display:none}
 .gg-than .g-nh-ten{display:block;white-space:nowrap;text-overflow:ellipsis}      /* tên gói một dòng (ellipsis): 2 dòng sẽ cao hơn bước giữa hai nút, đè nhãn nút kế */
 

@@ -29,7 +29,7 @@
     m.khaiDoiSo = true;
     m.moXuong = true;
     m.vo = 'song';
-    m.phienBanNoiDung = 2;                     // khuôn mới: đánh số lại các màn, bản nháp cũ không dùng nữa
+    m.phienBanNoiDung = m.phienBanNoiDung || 2;                     // khuôn mới: đánh số lại các màn, bản nháp cũ không dùng nữa
     ManHoc.khuonMoi(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -46,15 +46,16 @@
       sao: { o: 5, nhip: 8 },
       loiGiai: { chinh: ['for i in range(2):', '    forward()', 'cast_net("left")', 'for i in range(4):', '    forward()'] } }),
 
-    man(2, { ten: 'Mở cống',
-      deBai: 'Cống đóng chặn đường như tường. Van nằm ngay bên trái mũi xuồng. Thiếu một dòng ở ô trống: điền lệnh tung lưới trúng van để mở cống.',
-      san: ['.V....', '~~K~~Q', '......'],
+    man(2, { phienBanNoiDung: 3, ten: 'Mỗi quãng dài hơn một ô',
+      deBai: 'Cống đóng chặn đường như tường, mỗi cống một van trên bờ. Ba quãng sông dài 1, 2, 3 ô, nên biến n tăng dần sau mỗi lượt. Đầu mỗi quãng phải tung lưới trúng van bên trái mũi xuồng để mở cống: điền dòng còn thiếu.',
+      san: ['.VV.V...', '~~K~K~KQ', '........'],
+      noi: [{ nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 1 }], dong: [] }, { nut: { x: 2, y: 0 }, cong: [{ x: 4, y: 1 }], dong: [] }, { nut: { x: 4, y: 0 }, cong: [{ x: 6, y: 1 }], dong: [] }],
       batDau: { x: 1, y: 1, huong: 1 },
       mucTieu: 'toi-co',
-      maMau: { chinh: ['', 'n = 4', 'for i in range(n):', '    forward()'] },
-      goiY: ['Chạm vào khối cast_net("left") trên khay. Tung lưới mất 2 nhịp, xong thì cống đã mở.'],
-      sao: { o: 4, nhip: 6 },
-      loiGiai: { chinh: ['cast_net("left")', 'n = 4', 'for i in range(n):', '    forward()'] } }),
+      maMau: { chinh: ['n = 1', 'for i in range(3):', '', '    for i in range(n):', '        forward()', '    n = n + 1'] },
+      goiY: ['Chạm vào khối cast_net("left") trên khay. Tung lưới mất 2 nhịp, xong thì cống phía trước đã mở.', 'Dòng ấy nằm trong vòng for ngoài, đứng trước vòng for trong.'],
+      sao: { o: 6, nhip: 12 },
+      loiGiai: { chinh: ['n = 1', 'for i in range(3):', '    cast_net("left")', '    for i in range(n):', '        forward()', '    n = n + 1'] } }),
 
     man(3, { ten: 'Tung nhầm phía',
       deBai: 'Code này sai đúng 1 chỗ: lưới bay sang bờ không có van nên cống vẫn đóng. Bấm Chạy xem lỗi, rồi sửa.',
@@ -66,11 +67,11 @@
       sao: { o: 3, nhip: 7 },
       loiGiai: { chinh: ['cast_net("left")', 'for i in range(5):', '    forward()'] } }),
 
-    man(4, { ten: 'Đếm đường về',
+    man(4, { phienBanNoiDung: 3, ten: 'Đếm đường về',
       deBai: 'Màn trống, em tự viết. Hai sân, bè sau cống, xa gần khác nhau, về đúng một bến. Mở cống, tới sát bè, vừa đi vừa ĐẾM bằng biến để biết phải lùi mấy ô. Hàm lui(n), bat() và tha() có sẵn.',
-      san: [['..V....', '~~qK~~B', '.......'], ['..V.....', '~~qK~~~B', '........']],
-      vatMau: [[HANG('..V....'), '......r', HANG('.......')], [HANG('..V.....'), '.......r', HANG('........')]],
-      batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
+      san: [['...V....', '~~~qK~~B', '........'], ['...V.....', '~~~qK~~~B', '.........']],       // bến cách bờ trái 3 ô: lùi quá đà tới sát bờ thì bè trật bến, không lách được biến đếm
+      vatMau: [[HANG('...V....'), '.......r', HANG('........')], [HANG('...V.....'), '........r', HANG('.........')]],
+      batDau: [{ x: 3, y: 1, huong: 1 }, { x: 3, y: 1, huong: 1 }],
       mucTieu: 'dua-vat',
       goiY: ['Đi thêm một ô thì đường về dài thêm một ô: n = 1 rồi mỗi vòng n = n + 1.', 'Tới sát bè thì bat(), lui(n), tha().'],
       sao: { o: 13, nhip: 15 },
@@ -96,7 +97,7 @@
       khung: { chinh: 4 },
       canThamSo: true,
       goiY: ['Mở cống bằng van trước. Một bậc: đi thẳng a ô, quay trái, đi b ô, quay phải.', 'Ba bậc: đi 2 lên 1, đi 3 lên 1, đi 1 lên 2.'],
-      sao: { o: 10, nhip: 17 },
+      sao: { o: 10, nhip: 18 },
       loiGiai: {
         chinh: ['cast_net("left")', 'bac(2, 1)', 'bac(3, 1)', 'bac(1, 2)'],
         hamCuaEmMoi: [H('bac', ['a', 'b'], ['for i in range(a):', '    forward()', 'turn_left()', 'for i in range(b):', '    forward()', 'turn_right()'])]

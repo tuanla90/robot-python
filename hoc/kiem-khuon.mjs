@@ -147,6 +147,35 @@ function kiemDang(m, kq, bao) {
   }
 }
 
+/** Màn dạy biến: bỏ biến n, viết thẳng một số vào chỗ đọc n mà vẫn qua thì biến chỉ để trang trí. */
+function kiemBoBien(m, bao) {
+  const hamEm = m.loiGiai.hamCuaEmMoi || [];
+  const coN = (ds) => ds.some((d) => /^\s*n = \d+\s*$/.test(d));
+  if (m.chiChay || !(coN(m.loiGiai.chinh) || hamEm.some((f) => coN(f.than)))) return;
+  const bo = (ds, k) => ds.filter((d) => !/^\s*n = (\d+|n \+ \d+)\s*$/.test(d)).map((d) => d.replace(/\bn\b/g, String(k)));
+  for (let k = 1; k <= 12; k++) {
+    const ham = hamEm.map((f) => ({ ...f, than: bo(f.than, k) }));
+    if (ChamHoc.cham(m, ban(m, bo(m.loiGiai.chinh, k)), ham).thang) return bao(`biến n chỉ để trang trí: bỏ biến, viết thẳng số ${k} vẫn qua`);
+  }
+}
+
+/** Chọn số thật cao không được qua: đổi từng số trong lời giải (range, n = ..., n = n + ..., đối số của lời gọi) thành 9 hoặc 12, rồi đổi tất cả cùng lúc. */
+function kiemSoCao(m, bao) {
+  if (m.chiChay) return;
+  const RE = /^(.*\brange\(\s*|\s*n\s*=\s*n\s*\+\s*|\s*n\s*=\s*|\s*\w+\()(\d+)(\s*\)?:?\s*)$/;
+  const hamEm = m.loiGiai.hamCuaEmMoi || [], hamMan = m.loiGiai.hamCuaMan || [];
+  const coSo = (d, v) => { const k = RE.exec(d); return k && Number(k[2]) < v ? k : null; };
+  const doi = (ds, v, chiSo) => ds.map((d, i) => { const k = (chiSo === undefined || chiSo === i) && coSo(d, v); return k ? k[1] + v + k[3] : d; });
+  const thang = (chinh, em, man) => ChamHoc.cham(m, { chinh, hamCuaMan: man }, em).thang;
+  [9, 12].forEach((v) => {
+    const baoNeu = (qua, moTa) => { if (qua) bao(`chọn số cao vẫn qua: ${moTa} thành ${v}`); };
+    m.loiGiai.chinh.forEach((d, i) => { if (coSo(d, v)) baoNeu(thang(doi(m.loiGiai.chinh, v, i), hamEm, hamMan), d.trim()); });
+    hamEm.forEach((f, j) => f.than.forEach((d, i) => { if (coSo(d, v)) baoNeu(thang(m.loiGiai.chinh, hamEm.map((x, q) => (q === j ? { ...x, than: doi(x.than, v, i) } : x)), hamMan), f.ten + ': ' + d.trim()); }));
+    hamMan.forEach((f, j) => f.than.forEach((d, i) => { if (coSo(d, v) && moiDong(m).some((x) => new RegExp('\\b' + f.ten + '\\(').test(x))) baoNeu(thang(m.loiGiai.chinh, hamEm, hamMan.map((x, q) => (q === j ? { ...x, than: doi(x.than, v, i) } : x))), f.ten + ': ' + d.trim()); }));
+    baoNeu(thang(doi(m.loiGiai.chinh, v), hamEm.map((x) => ({ ...x, than: doi(x.than, v) })), hamMan.map((x) => ({ ...x, than: doi(x.than, v) }))) && moiDong(m).some((d) => coSo(d, v)), 'mọi số');
+  });
+}
+
 function kiemCot(mua, c) {
   const ds = ManHoc.danhSach.filter((m) => m.chuong === c.ma);
   if (ds.length !== 8) loi.push(`${c.ma}: có ${ds.length} màn, phải đúng 8`);
@@ -170,6 +199,8 @@ function kiemCot(mua, c) {
     if (m.dangBai !== 'viet-mo' && (kq.sao !== 3 || m.sao.o !== kq.soO || m.sao.nhip !== kq.soNhip)) bao(`sao ${kq.sao}; thực tế o=${kq.soO} nhip=${kq.soNhip}, đang khai o=${m.sao.o} nhip=${m.sao.nhip}`);
     if (kq.chanDoan.some((x) => x.muc === 'loi')) bao('lời giải còn lỗi: ' + kq.chanDoan.map((x) => x.ma).join(','));
     kiemDang(m, kq, bao);
+    kiemBoBien(m, bao);
+    kiemSoCao(m, bao);
   });
 }
 

@@ -82,13 +82,13 @@
 
     man(6, { ten: 'Ba thùng: tự viết hàm',
       deBai: 'Ba cột giống nhau, mỗi cột một thùng sắt phải lên ô đích trên đầu cột. Tự viết hàm tên tùy em cho một lượt rồi gọi trong for. Chương trình chính chỉ có 3 ô.',
-      san: ['D.D.D', '.....', 'o.o.o'],
-      vatChat: ['.....', '.....', 's.s.s'],
+      san: ['D.D.D..', '.......', 'o.o.o..'],
+      vatChat: ['.......', '.......', 's.s.s..'],
       batDau: { x: 0, y: 2, huong: 0 },
       mucTieu: 'dua-vat', vatCan: 'sat',
       khung: { chinh: 3 },
       goiY: ['magnet_off() mất 1 nhịp: thùng rơi ngay, rồi nhện mới bước tiếp.'],
-      sao: { o: 10, nhip: 34 },
+      sao: { o: 10, nhip: 42 },
       loiGiai: {
         chinh: FOR(3, ['mang_thung()']),
         hamCuaEmMoi: [H('mang_thung', ['magnet_n()', 'go_up()', 'go_up()', 'magnet_off()', 'go_right()', 'go_right()', 'go_down()', 'go_down()'])]

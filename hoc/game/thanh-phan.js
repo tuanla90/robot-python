@@ -845,6 +845,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (m) return { loai: 'dk', ten: '', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
     m = /^(\s*[A-Za-z_]\w*\s*=\s*color\()("[a-z]+")(\)\s*(?:#.*)?)$/.exec(dong);             // c = color("up"): hướng của camera bốn hướng chạm để đổi (mùa 4)
     if (m) return { loai: 'goi', ten: 'color', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
+    m = /^(\s*[A-Za-z_]\w*\s*=\s*)(\d+)(\s*(?:#.*)?)$/.exec(dong);                             // biến đếm: số của n = 0 chạm để đổi
+    if (m) return { loai: 'ganDem', ten: '', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
+    m = /^(\s*([A-Za-z_]\w*)\s*=\s*\2\s*\+\s*)(\d+)(\s*(?:#.*)?)$/.exec(dong);                 // biến đếm: số của n = n + 1 chạm để đổi
+    if (m) return { loai: 'tangDem', ten: '', tien: m[1], ds: [m[3]], noi: ', ', hau: m[4], laFor: false };
     m = RE_GOI_DS.exec(dong);
     if (!m) return null;
     return { loai: 'goi', ten: m[2], tien: m[1], ds: m[3].trim() === '' ? [] : m[3].split(',').map(function (x) { return x.trim(); }), noi: ', ', hau: m[4], laFor: false };
@@ -924,9 +928,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (cheDkm()) {
       var dkm = tachDKM(text);
       if (dkm) {
-        var kw = /^\s*(\w+)/.exec(dkm.tien)[1], haiVe = dkm.cl.length === 2, ht = '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span><span class="ngat ngat-kw"></span>' + (haiVe ? '<span class="dk-hang">' : '');
-        dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '</span><span class="ngat"></span><span class="dk-hang">' : ''); });       // điều kiện hai vế: xuống dòng sau and / or; mỗi vế gói một cụm để vế dài báo tràn (vuaDong co chữ) chứ không tự rớt dòng
-        return ht + '<span class="pu">:</span>' + (haiVe ? '</span>' : '');
+        var kw = /^\s*(\w+)/.exec(dkm.tien)[1], ht = '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span><span class="ngat ngat-kw"></span><span class="dk-hang">';
+        dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '</span><span class="ngat"></span><span class="dk-hang">' : ''); });       // xuống dòng sau and / or; mỗi vế gói một cụm (dấu : đi cùng vế cuối) để vế dài báo tràn (vuaDong co chữ) chứ không tự rớt dòng
+        return ht + '<span class="pu">:</span></span>';
       }
       var gm = RE_GAN_MAU.exec(text);
       if (gm) return '<span class="vr">' + esc(gm[1]) + '</span><span class="pu"> = </span><span class="fn">' + gm[2] + '</span><span class="pu">(</span>' + (gm[3] ? oDoiSo(gm[3], 0) : '') + '<span class="pu">)</span>';
@@ -948,9 +952,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (dk) return '<span class="kw ' + (dk[1] === 'while' ? 'wh' : 'if') + '">' + dk[1] + ' </span>' + oDieuKien(dk[2]) + '<span class="pu">:</span>';
     if (/^else\s*:\s*$/.test(text)) return '<span class="kw if">else</span><span class="pu">:</span>';
     var gd = RE_GAN_DEM.exec(text);                                                  // n = 0
-    if (gd) return '<span class="vr dem">' + esc(gd[1]) + '</span><span class="pu"> = </span><span class="lit">' + gd[2] + '</span>';
+    if (gd) return '<span class="vr dem">' + esc(gd[1]) + '</span><span class="pu"> = </span>' + oDoiSo(gd[2], 0);
     var td = RE_TANG_DEM.exec(text);                                                 // n = n + 1
-    if (td && td[1] === td[2]) return '<span class="vr dem">' + esc(td[1]) + '</span><span class="pu"> = </span><span class="vr dem">' + esc(td[2]) + '</span><span class="pu"> + </span><span class="lit">' + td[3] + '</span>';
+    if (td && td[1] === td[2]) return '<span class="vr dem">' + esc(td[1]) + '</span><span class="pu"> = </span><span class="vr dem">' + esc(td[2]) + '</span><span class="pu"> + </span>' + oDoiSo(td[3], 0);
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = lopHamDong(m[1]);
@@ -1038,7 +1042,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var ka = tuyChon.kieuDoiSo && sg ? tuyChon.kieuDoiSo(d.ten, sg.i) : 'so';
         return ka === 'don' || ka === 'ghep' || ka === 'list' || ka === 'mau' ? ka : 'so';
       }
-      if (!d || d.loai === 'range') return 'so';
+      if (!d || d.loai === 'range' || d.loai === 'ganDem' || d.loai === 'tangDem') return 'so';
       if (d.loai === 'forChuoi') return 'ghep';
       if (d.loai === 'dk') return 'dk';
       if (d.loai === 'dkm') return 'dkm';
@@ -1226,7 +1230,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
             khiChon: function (v) { ed.datSo(i, v, kk); }, khiPhep: function (p) { ed.datSo(i, phepBT(p, cur), kk); } });
           return;
         }
-        chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), toiDa: tdA, coKhong: !!d && d.loai === 'goi' && tdA > 3, bien: bienTam('so', i, null, d && d.ten), khiChon: function (v) { ed.datSo(i, v, kk); } });      // đối số của lời gọi hàm chọn được 0 (go_safe(0): đi tới sát tường); range thì không
+        chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), toiDa: tdA, coKhong: !!d && (d.loai === 'ganDem' || (d.loai === 'goi' && tdA > 3)), bien: d && (d.loai === 'ganDem' || d.loai === 'tangDem') ? [] : bienTam('so', i, null, d && d.ten), khiChon: function (v) { ed.datSo(i, v, kk); } });      // đối số của lời gọi hàm và dòng gán n = 0 chọn được 0 (go_safe(0): đi tới sát tường); range thì không
         return;
       }
       var gia = d && d.ds[kk] !== undefined ? d.ds[kk] : '', laChu = RE_CHUOI.test(gia);
@@ -1791,7 +1795,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Thay một đối số của dòng i bằng biến `ten`: ưu tiên đối số còn là số cụ thể, rồi đến đối số biến khác tên. Trả về có đổi được không. */
     this.datBienTai = function (i, ten, kieu) {
       var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length || i >= dung || dangChay() || Chan.dang() || xt) return false;
-      var d = tachDoiSo(arr[i]); if (!d || !d.ds.length) return false;
+      var d = tachDoiSo(arr[i]); if (!d || !d.ds.length || d.loai === 'ganDem' || d.loai === 'tangDem') return false;       // số của n = 0, n = n + 1 chỉ đổi bằng bảng số
       var kb = kieu || 'so';
       function hop(j) { return hopKieu(kieuArg(d, j), kb); }                       // ô cùng kiểu với biến
       var k = -1, j;

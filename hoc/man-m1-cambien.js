@@ -42,7 +42,7 @@
       mucTieu: 'dua-vat',
       maMau: { chinh: ['while front_clear():', '    ', 'pick()', 'forward()', 'forward()', 'drop()'] },
       goiY: ['Trong khi trước mặt còn trống thì xe làm gì?'],
-      sao: { o: 6, nhip: 7 },
+      sao: { o: 6, nhip: 8 },
       loiGiai: { chinh: DO.concat(['pick()', 'forward()', 'forward()', 'drop()']) } }),
 
     man(3, { ten: 'Chỉ đi được một ô',
@@ -84,17 +84,17 @@
       sao: { o: 7, nhip: 14 },
       loiGiai: { chinh: ['do_tuong()', 'turn_right()', 'do_tuong()', 'turn_right()', 'do_tuong()'], hamCuaEmMoi: [H('do_tuong', DO)] } }),
 
-    man(7, { ten: 'Bám tường hay nhìn đường',
-      deBai: 'Hai sân khác hướng rẽ, mỗi sân có một hốc cụt bên phải. Quy tắc nào cũng được, miễn xe tới cờ ở cả hai sân. Một sao cho bài gọn, một sao cho bài nhanh.',
+    man(7, { ten: 'Lặp cho gọn hay viết đủ',
+      deBai: 'Hai sân khác hướng rẽ, mỗi sân có một hốc bên phải. Cách nào cũng được, miễn chạy xong xe đứng trên cờ ở cả hai sân. Một sao cho bài gọn, một sao cho bài nhanh.',
       san: [
-        ['#####', 'F..##', '##.##', '##.##', '##..#', '##.##'],
-        ['#####', '##..F', '##.##', '##.##', '##..#', '##.##']
+        ['.####', 'F..##', '.#.##', '##.##', '##..#', '##.##'],
+        ['####.', '##..F', '##.#.', '##.##', '##..#', '##.##']
       ],
       batDau: [{ x: 2, y: 5, huong: 0 }, { x: 2, y: 5, huong: 0 }],
-      goiY: ['Luôn bám tường bên phải thì viết gọn, nhưng xe sẽ chui vào hốc cụt.', 'Dò thẳng tới tường rồi mới hỏi nên rẽ bên nào thì nhanh hơn.'],
+      goiY: ['Dò thẳng tới tường rồi mới hỏi nên rẽ bên nào, xe khỏi chui vào hốc.', 'Hai đoạn giống nhau thì lặp được cho gọn, nhưng lần lặp cuối xe vẫn xoay thêm một nhịp trên cờ.'],
       sao: { o: 7, nhip: 8 },
       doiCho: true,
-      loiGiai: { chinh: FOR(20, ['if right_clear():', '    turn_right()', 'if front_clear():', '    forward()', 'else:', '    turn_left()']) },
+      loiGiai: { chinh: FOR(2, DO.concat(['if right_clear():', '    turn_right()', 'else:', '    turn_left()'])) },
       cachKhac: [{ chinh: DO.concat(['if right_clear():', '    turn_right()', 'else:', '    turn_left()'], DO) }] }),
 
     man(8, { ten: 'Xưởng tối',
@@ -105,7 +105,7 @@
       ],
       batDau: [{ x: 0, y: 5, huong: 0 }, { x: 0, y: 5, huong: 0 }],
       mucTieu: 'dua-vat',
-      sao: { o: 8, nhip: 13 },
+      sao: { o: 8, nhip: 14 },
       loiGiai: {
         chinh: DO.concat(['pick()', 'turn_right()'], DO, ['turn_left()', 'drop()'])
       },

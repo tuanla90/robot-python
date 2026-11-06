@@ -99,6 +99,8 @@
         - ĐÂM LÀ THUA (HD2, 29/10; màn ÉP khối mới của mùa 1 khai cfg.damLaThua = true; mặc định tắt, không khai thì luật cũ y nguyên): nhịp nào có sự kiện
           'dam-tuong' (tường, mép sân, cửa đóng, thùng nặng, vật nằm đất... mọi loại) mà chưa thắng thì chương trình DỪNG NGAY cuối nhịp đó (dungSom = 'dam-tuong'),
           robot đứng lại ở cú đâm, không chạy tiếp các nhịp sau; sân đó không thắng. Lời chẩn đoán dam-tuong của cham.js nói rõ luật. Chỉ màn một robot.
+        - CHẠY XONG MỚI CHẤM (cfg.thangKhiXong = true; mặc định tắt): đạt đích giữa chừng không dừng chương trình, các lệnh còn lại vẫn chạy; thắng khi chương trình hết mà cuối nhịp sau cùng vẫn đạt đích.
+          Vòng lặp chạy thừa thì đi quá cờ, đâm bờ hay làm hỏng việc đã xong. Sự kiện xong (toi-co, xong-dua-vat...) chỉ ghi ở nhịp cuối. Kết quả có quaDich: đã từng đạt đích giữa chừng. Chỉ màn một robot.
 
    'omni' (xe BÁNH OMNI): có MỌI lệnh bánh của xe hai bánh (left_move / right_move / left_back / right_back, wait và tay gắp
         nếu có) với đúng luật cũ (tiến / lùi 1 ô, quay 90° trong 1 nhịp), nên move(), turn_right(), turn_left() cũ chạy ĐÚNG. Thêm HAI
@@ -1109,6 +1111,7 @@
       lai9;                                                                 // M9C2: { gio: id vật trong giỏ cứu hộ của cẩu (L9) | null, phao: phao drone đã thả (L10) | null, conPhao, beDau: id bè sạc drone đang đậu (T4) | null }
     var nhip = 0, thang = false, dungSom = null;
     function dsCamBienCo(rc, ma) { return Array.isArray(rc.camBien) && rc.camBien.some(function (c) { return c && c.ma === ma; }); }
+    var thangKhiXong = !!cfg.thangKhiXong, mocDich = null, quaDich = false;   // chạy xong mới chấm: mocDich là sự kiện xong của nhịp vừa rồi (null nếu nhịp đó chưa đạt đích)
     var damLaThua = !!cfg.damLaThua;                                       // HD2: màn ép, đâm tường (mọi loại vật cản) là thua, dừng ngay cuối nhịp đó
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
     function khoiRobot(rc) {
@@ -4056,6 +4059,7 @@
           if (!thang && moiNguoiToiTram()) { thang = true; sk.push({ ma: 'xong-cuu-nguoi' }); }   // M9C1 luật P: mọi người tới trạm cứu
         } else if (duaVatXong()) { thang = true; sk.push({ ma: 'xong-dua-vat' }); }
         if (nguois.length && mucTieu !== 'cuu-nguoi' && mucTieu !== 'toi-co' && thang && !moiNguoiToiTram()) thang = false;   // M9C1 kết hợp: mục tiêu khác chỉ thắng khi mọi người đã tới trạm
+        if (thangKhiXong && !laDoi) { mocDich = null; if (thang) { thang = false; mocDich = sk.pop(); quaDich = true; } }   // đạt đích chưa tính thắng, chương trình chạy tiếp
         var daThang = thang || (laDoi && xeToiCo);                           // nhiều robot: robot đã tới cờ thì như đã thắng phần của nó
         if (!daThang && coVo && mucTieu === 'dua-vat') dungSom = 'vat-vo';       // vật vỡ: không thể thắng nữa
         if (!daThang && !dungSom && pin !== null && pin <= 0) {                   // hết pin giữa chừng: hạ cánh khẩn, dừng
@@ -5032,6 +5036,11 @@
 
     while (nguoiConDi()) { if (motNhip(nghi())) break; }                       // M9C1: chương trình hết mà người còn đi → nhịp rỗng cho người đi tiếp
 
+    if (mocDich && !loi && !dungSom) {                                         // chạy xong mới chấm: nhịp cuối vẫn đạt đích thì thắng
+      thang = true;
+      for (var ic = vet.length - 1; ic >= 0; ic--) if (vet[ic].loai === 'nhip') { vet[ic].suKien.push(mocDich); break; }
+    }
+
     // xích: chương trình hết khi còn quay dở (chưa thắng) → ghi lại, để chẩn đoán nói rõ
     if (loai === 'xich' && quayDo && !thang && !loi && !dungSom) {
       suKienChan.push({ ma: 'xich-quay-do', nhip: nhip, nhipNua: quayDo.nhip, huong: quayDo.huong, lenh: quayDo.lenh, cuoi: true });
@@ -5049,7 +5058,7 @@
     }
 
     return {
-      thang: thang, nhip: nhip, robot: chup(), loi: loi, vet: vet,
+      thang: thang, quaDich: quaDich, nhip: nhip, robot: chup(), loi: loi, vet: vet,
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
       tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coHoi ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
       son: coSon ? { ha: son.ha, mau: son.mau } : null, daSon: chupSon(), racCat: chupRacCat(), lapHo: lapHoDs.slice(), hinh: hinh, sonBanDau: sonBanDau,

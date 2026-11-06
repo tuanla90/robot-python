@@ -33,7 +33,7 @@
       batDau: { x: 0, y: 1, huong: 0 },
       mucTieu: 'dua-vat',
       duDoan: { hoi: 'Khi drop() chạy, thùng được đặt xuống ô nào?', luaChon: ['Ô nhện đang đứng', 'Ô bên phải nhện', 'Ô phía trên nhện'], dung: 0, xacMinh: { x: 4, y: 1, vat: [{ x: 4, y: 1 }] } },
-      sao: { o: 5, nhip: 11 },
+      sao: { o: 5, nhip: 12 },
       loiGiai: { chinh: ['go_right()', 'pick()'].concat(FOR(3, ['go_right()']), ['drop()']) } }),
 
     man(2, { ten: 'Ba ngả', dangBai: 'sap-xep',
@@ -63,7 +63,7 @@
       batDau: [{ x: 1, y: 5, huong: 0 }, { x: 1, y: 5, huong: 0 }],
       mucTieu: 'dua-vat',
       goiY: ['Còn đi tiếp được khi phía trên HOẶC bên phải trống: chạm vào điều kiện của while để ghép or.', 'Trong vòng: phía trên trống thì lên, không thì sang phải.'],
-      sao: { o: 7, nhip: 17 },
+      sao: { o: 7, nhip: 18 },
       loiGiai: { chinh: ['pick()', 'while front_clear() or right_clear():', '    if front_clear():', '        go_up()', '    else:', '        go_right()', 'drop()'] } }),
 
     man(5, { ten: 'Đường vòng hay đường tắt',
@@ -78,12 +78,12 @@
 
     man(6, { ten: 'Hai cột hàng: tự viết hàm',
       deBai: 'Hai cột giống nhau, mỗi cột một thùng phải lên ô đích trên đầu cột. Tự viết hàm tên tùy em cho một lượt rồi gọi trong for. Chương trình chính chỉ có 3 ô.',
-      san: ['D.D', '.#.', 'o.o'],
+      san: ['D.D..', '.#...', 'o.o..'],
       batDau: { x: 0, y: 2, huong: 0 },
       mucTieu: 'dua-vat',
       khung: { chinh: 3 },
       goiY: ['Một lượt: nhặt thùng, lên hai ô, đặt, sang phải hai ô, xuống hai ô.'],
-      sao: { o: 10, nhip: 23 },
+      sao: { o: 10, nhip: 32 },
       loiGiai: {
         chinh: FOR(2, ['mang_cot()']),
         hamCuaEmMoi: [H('mang_cot', ['pick()', 'go_up()', 'go_up()', 'drop()', 'go_right()', 'go_right()', 'go_down()', 'go_down()'])]
@@ -95,7 +95,7 @@
       batDau: { x: 6, y: 4, huong: 0 },
       mucTieu: 'dua-vat',
       goiY: ['Sang trái hết đường, lên hết đường, sang phải hết đường: ba vòng while là tới.', 'Đường qua khe có hai đoạn lên giống nhau: viết thành hàm thì bớt được vài ô.'],
-      sao: { o: 8, nhip: 23 },
+      sao: { o: 8, nhip: 24 },
       doiCho: true,
       loiGiai: { chinh: ['pick()', 'while left_clear():', '    go_left()', 'while front_clear():', '    go_up()', 'while right_clear():', '    go_right()', 'drop()'] },
       cachKhac: [{ chinh: ['pick()'].concat(FOR(3, ['go_left()']), ['len_hai()'], FOR(2, ['go_right()']), ['len_hai()', 'go_right()', 'drop()']), hamCuaEmMoi: [H('len_hai', FOR(2, ['go_up()']))] }] }),
@@ -108,7 +108,7 @@
       ],
       batDau: [{ x: 1, y: 6, huong: 0 }, { x: 2, y: 5, huong: 0 }],
       mucTieu: 'dua-vat',
-      sao: { o: 9, nhip: 17 },
+      sao: { o: 9, nhip: 18 },
       loiGiai: {
         chinh: ['pick()'].concat(FOR(7, ['if front_clear():', '    go_up()', 'elif right_clear():', '    go_right()', 'else:', '    go_left()']), ['drop()'])
       },

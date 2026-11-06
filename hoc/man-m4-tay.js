@@ -38,7 +38,7 @@
       deBai: 'Danh sách cũng đựng được chữ. for c in a lấy lần lượt từng màu, seed(c) gieo hạt màu đó xuống ô dưới bụng drone. Ô cần gieo hiện bông hoa mờ. Đọc code, đoán rồi bấm Chạy.',
       san: SAN4, hinh: HANG('rby.'), batDau: BD,
       duDoan: { hoi: 'Vòng lặp lần thứ hai, c là màu gì?', luaChon: ['red', 'blue', 'yellow'], dung: 1, xacMinh: { lenh: { seed: 3 } } },
-      sao: { o: 4, nhip: 5 },
+      sao: { o: 4, nhip: 6 },
       loiGiai: { chinh: GIEO('"red", "blue", "yellow"') } }),
 
     man(2, { ten: 'Ô thứ mấy',
@@ -46,7 +46,7 @@
       san: SAN4, hinh: HANG('rbr.'), batDau: BD,
       maMau: { chinh: ['', 'for i in range(len(a)):', '    seed(a[i])', '    go_right()'] },
       goiY: ['Ba ô là đỏ, xanh dương, đỏ: a = ["red", "blue", "red"].'],
-      sao: { o: 4, nhip: 5 },
+      sao: { o: 4, nhip: 6 },
       loiGiai: { chinh: ['a = ["red", "blue", "red"]', 'for i in range(len(a)):', '    seed(a[i])', '    go_right()'] } }),
 
     man(3, { ten: 'Sai thứ tự màu',
@@ -54,7 +54,7 @@
       san: SAN4, mau: HANG('rby.'), hinh: HANG('rby.'), batDau: BD,
       maMau: { chinh: GIEO('"red", "yellow", "blue"') },
       goiY: ['Danh sách giữ đúng thứ tự: phần tử đầu tiên là ô bên trái nhất.'],
-      sao: { o: 4, nhip: 5 },
+      sao: { o: 4, nhip: 6 },
       loiGiai: { chinh: GIEO('"red", "blue", "yellow"') } }),
 
     man(4, { ten: 'Chép luống mẫu',
@@ -65,14 +65,14 @@
       batDau: [{ x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }],
       canList: true,
       goiY: ['Tạo danh sách rỗng a = [] rồi a.append(color()) ở mỗi ô của luống trên.', 'Bay xuống, về đầu luống, rồi for c in a: seed(c), go_right().'],
-      sao: { o: 10, nhip: 12 },
+      sao: { o: 10, nhip: 13 },
       loiGiai: { chinh: CHEP.slice() } }),
 
     man(5, { ten: 'Một lượt hay hai lượt',
       deBai: 'Ba ô vừa khô vừa cần gieo. Số chấm trên ô đất khô là số lần còn phải tưới, spray() tưới ô dưới bụng, tưới ô không khô thì úng. Bay hai lượt, hay làm hết trong một lượt? Tìm bài vừa gọn vừa nhanh.',
       san: SAN4, datKho: HANG('111.'), hinh: HANG('rby.'), batDau: BD,
       goiY: ['Mỗi lệnh tưới, gieo mất 1 nhịp, mỗi ô bay cũng mất 1 nhịp.', 'Bay lại từ đầu là mất thêm nhịp. Trong một vòng lặp có thể làm hai việc.'],
-      sao: { o: 5, nhip: 8 },
+      sao: { o: 5, nhip: 9 },
       loiGiai: { chinh: ['a = ["red", "blue", "yellow"]', 'for c in a:', '    spray()', '    seed(c)', '    go_right()'] },
       cachKhac: [{ chinh: ['for i in range(3):', '    spray()', '    go_right()', 'for i in range(3):', '    go_left()', 'a = ["red", "blue", "yellow"]', 'for c in a:', '    seed(c)', '    go_right()'] }] }),
 
@@ -81,7 +81,7 @@
       san: ['...', '...'], hinh: ['rb.', 'yr.'], batDau: { x: 0, y: 0, huong: 0 },
       canThamSo: true,
       goiY: ['Trong hàm: for c in a:, seed(c), go_right().', 'Chương trình chính: gieo(["red", "blue"]), bay xuống, về đầu luống, gieo(["yellow", "red"]).'],
-      sao: { o: 8, nhip: 10 },
+      sao: { o: 8, nhip: 11 },
       loiGiai: {
         chinh: ['gieo(["red", "blue"])', 'go_down()', 'go_left()', 'go_left()', 'gieo(["yellow", "red"])'],
         hamCuaEmMoi: [H('gieo', ['a'], ['for c in a:', '    seed(c)', '    go_right()'])]
@@ -105,7 +105,7 @@
       hinh: [['.....', 'rb...'], ['.....', 'ybr..'], ['.....', 'bbyr.']],
       batDau: [{ x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }],
       canList: true,
-      sao: { o: 10, nhip: 16 },
+      sao: { o: 10, nhip: 17 },
       loiGiai: { chinh: ['a = []', 'while color() != "none":', '    a.append(color())', '    go_right()', 'go_down()', 'for i in range(len(a)):', '    go_left()', 'for c in a:', '    seed(c)', '    go_right()'] },
       huyHieu: { ma: 'gieo-hat', ten: 'Tay gieo hạt' } })
   ]);
