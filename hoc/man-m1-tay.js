@@ -1,6 +1,6 @@
 /* ============================================================================
    man-m1-tay.js — diem10code-python: MÙA 1 Kho hàng, CỘT 2 "+Tay" (hai bánh + tay kẹp, chưa cảm biến).
-   grab()/release() tác động Ô PHÍA TRƯỚC MŨI: xe đứng CẠNH vật / đích, quay mặt vào nó.
+   grab()/release() tác động Ô PHÍA TRƯỚC MŨI: xe đứng CẠNH vật / đích, quay mặt vào nó. Cột này giới thiệu for: hàng 1 xem, hàng 2 đoán, hàng 3 thấy lại, hàng 6 tự viết.
    Khung chương trình trên giao diện tối đa 10 dòng, mà nhặt + đặt đủ lệnh gốc đã hết 10 dòng,
    nên từ hàng 1 tới hàng 6 màn cho sẵn một phần bằng HÀM CỦA MÀN (pick / drop); hàng 7–8 em tự viết.
    8 hàng theo khuôn ManHoc.khuon (hoc/KE-HOACH-4-MUA-COT-LOI.md).
@@ -31,29 +31,29 @@
   }
 
   ManHoc.them([
-    man(1, { ten: 'Nhặt thùng',
-      deBai: 'Bấm Chạy và xem: hạ tay, kẹp, nâng tay rồi mới đi được. Lệnh tay cần wait() để làm. Hàm drop() của màn gói sẵn việc đặt thùng.',
-      san: ['..D..', '.....', '..o..', '.....'],
-      batDau: { x: 2, y: 3, huong: 0 },
-      sao: { o: 13, nhip: 5 },
-      loiGiai: { chinh: T_PICK.concat(['up()', 'up()', 'drop()']), hamCuaMan: [hDrop()] } }),
+    man(1, { ten: 'Nhặt thùng, đi nhiều ô',
+      deBai: 'Bấm Chạy và xem: hạ tay, kẹp, nâng tay rồi mới đi được. Lệnh tay cần wait() để làm. Khối for mới: nó lặp lại dòng thụt vào bên trong, ở đây xe tiến 3 lần. Hàm drop() của màn gói sẵn việc đặt thùng.',
+      san: ['..D..', '.....', '.....', '..o..', '.....'],
+      batDau: { x: 2, y: 4, huong: 0 },
+      sao: { o: 13, nhip: 6 },
+      loiGiai: { chinh: T_PICK.concat(FOR(3, ['up()']), ['drop()']), hamCuaMan: [hDrop()] } }),
 
-    man(2, { ten: 'Thùng rơi vào đâu',
-      deBai: 'Lần này pick() gói sẵn việc nhặt thùng, còn phần đặt thùng viết đủ lệnh. Đọc code, đoán rồi bấm Chạy.',
-      san: ['.......', '..o....', '.....D.'],
+    man(2, { ten: 'Vòng for chạy mấy lần',
+      deBai: 'Lần này pick() gói sẵn việc nhặt thùng, còn phần đặt thùng viết đủ lệnh: release() đặt thùng xuống ô trước mũi xe. Dòng không thụt vào thì không nằm trong for. Đọc code, đoán rồi bấm Chạy.',
+      san: ['.......', '..o....', '......D'],
       batDau: { x: 2, y: 2, huong: 0 },
-      duDoan: { hoi: 'Khi release() chạy, thùng được đặt xuống ô nào?', luaChon: ['Ngay dưới xe', 'Ô trước mũi xe', 'Ô sau đuôi xe'], dung: 1, xacMinh: { vat: [{ x: 5, y: 2 }] } },
-      sao: { o: 14, nhip: 6 },
-      loiGiai: { chinh: ['pick()', 'turn_right()', 'up()', 'up()'].concat(T_DROP), hamCuaMan: [hPick()] } }),
+      duDoan: { hoi: 'Chạy xong, up() đã chạy tổng cộng mấy lần?', luaChon: ['2 lần', '3 lần', '4 lần'], dung: 1, xacMinh: { lenh: { up: 3 }, vat: [{ x: 6, y: 2 }] } },
+      sao: { o: 15, nhip: 7 },
+      loiGiai: { chinh: ['pick()', 'turn_right()'].concat(FOR(2, ['up()']), ['up()'], T_DROP), hamCuaMan: [hPick()] } }),
 
     man(3, { ten: 'Điền lệnh tay',
       deBai: 'Đoạn nhặt thùng thiếu 2 lệnh. Chạm ô trống rồi chọn lệnh để điền: một lệnh kẹp thùng, một lệnh nâng tay.',
       san: ['..D..', '.....', '.....', '..o..', '.....'],
       batDau: { x: 2, y: 4, huong: 0 },
-      maMau: { chinh: ['arm_down()', '', 'wait()', '', 'wait()', 'up()', 'up()', 'up()', 'drop()'] },
+      maMau: { chinh: ['arm_down()', '', 'wait()', '', 'wait()'].concat(FOR(3, ['up()']), ['drop()']) },
       goiY: ['Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.', 'Tay còn hạ thì xe không đi được.'],
-      sao: { o: 14, nhip: 6 },
-      loiGiai: { chinh: T_PICK.concat(['up()', 'up()', 'up()', 'drop()']), hamCuaMan: [hDrop()] } }),
+      sao: { o: 13, nhip: 6 },
+      loiGiai: { chinh: T_PICK.concat(FOR(3, ['up()']), ['drop()']), hamCuaMan: [hDrop()] } }),
 
     man(4, { ten: 'Sắp lại việc nhặt',
       deBai: 'Đủ lệnh nhưng sai thứ tự: tay được nâng trước khi hạ xuống kẹp. Giữ một dòng rồi kéo sang chỗ đúng.',
@@ -76,11 +76,11 @@
 
     man(6, { ten: 'Thùng nằm bên phải',
       deBai: 'Màn trống, em tự viết: mang thùng tới ô đích D. Hàm pick() và drop() của màn đã có sẵn trong khay.',
-      san: ['.....', '...D.', '..o..', '.....'],
-      batDau: { x: 1, y: 2, huong: 0 },
-      goiY: ['Tay chỉ tác động ô trước mũi xe, nên phải quay mặt vào thùng trước khi pick().', 'Tới cạnh ô đích, quay mặt vào nó rồi mới drop().'],
-      sao: { o: 17, nhip: 8 },
-      loiGiai: { chinh: ['turn_right()', 'pick()', 'up()', 'turn_left()', 'up()', 'turn_right()', 'drop()'], hamCuaMan: [hPick(), hDrop()] } }),
+      san: ['...D.', '.....', '.....', '.....', '..o..'],
+      batDau: { x: 1, y: 4, huong: 0 },
+      goiY: ['Tay chỉ tác động ô trước mũi xe, nên phải quay mặt vào thùng trước khi pick().', 'Đi thẳng nhiều ô thì dùng for cho ngắn: for i in range(n). Chạm con số trong range(...) là đổi được số.', 'Tới cạnh ô đích, quay mặt vào nó rồi mới drop().'],
+      sao: { o: 18, nhip: 11 },
+      loiGiai: { chinh: ['turn_right()', 'pick()', 'turn_left()'].concat(FOR(4, ['up()']), ['turn_right()', 'up()', 'drop()']), hamCuaMan: [hPick(), hDrop()] } }),
 
     man(7, { ten: 'Hai thùng: tự viết hàm',
       deBai: 'Có hai thùng, việc nhặt và đặt lặp lại mà chương trình chính chỉ có 10 ô. Tự tạo hàm ở Xưởng hàm, đặt tên tùy em.',

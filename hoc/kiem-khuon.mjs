@@ -192,6 +192,15 @@ function kiemNongTrai() {
   if (xa.thang || !ma(xa).length) loi.push('nông trại: bao ngoài tầm 2 ô thì lưới phải hụt');
 }
 
+/** Mùa 1: cột 1 chỉ dùng lệnh thường, for bắt đầu từ hàng 1 của cột 2. */
+function kiemThuTuFor() {
+  const coFor = (m) => moiDong(m).some((d) => /^\s*for\b/.test(d));
+  ManHoc.danhSach.filter((m) => m.chuong === 'm1-c1-than').forEach((m) => {
+    if (m.cauTruc.includes('for') || coFor(m)) loi.push(`${m.ma}: cột 1 Mùa 1 chưa được dùng for`);
+  });
+  ['m1-c2-tay.1', 'm1-c2-tay.2'].forEach((ma) => { const m = ManHoc.danhSach.find((x) => x.ma === ma); if (!m || !coFor(m)) loi.push(`${ma}: phải giới thiệu for`); });
+}
+
 let tong = 0;
 MUA.forEach((mua) => {
   mua.cot.forEach((c) => kiemCot(mua, c));
@@ -201,6 +210,7 @@ MUA.forEach((mua) => {
 });
 kiemLapHo();
 kiemNongTrai();
+kiemThuTuFor();
 loi.forEach((s) => console.log('HỎNG:', s));
 console.log('---');
 console.log(`${MUA.map((x) => x.ten).join(', ')}: ${tong} màn, ${loi.length} lỗi.`);

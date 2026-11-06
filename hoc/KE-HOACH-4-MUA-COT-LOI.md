@@ -69,6 +69,10 @@ Quyết định khi dựng (có thể đổi nếu muốn):
 - Khung chính vẽ tối đa 10 dòng mà nhặt + đặt đủ lệnh gốc đã hết 10, nên hàng 1–6 ở cột có tay cho sẵn hàm của màn `pick()`/`drop()`.
 - Gói sau mở theo luật sao có sẵn (½ số sao tối đa của các gói trước, làm tròn xuống bội 5), nên chưa cần xong hết 8 hàng của cột trước.
 
+Quyết định riêng của Mùa 1 (có thể đổi nếu muốn):
+
+- **Chưa có `for` ở cột 1**: cột 1 chỉ dùng lệnh thường để em quen lệnh, nhịp và hướng xe; hàng 7 vẫn dạy hàm, gọi hàm 3 lần thay vì đặt trong `for`. `for` giới thiệu ở cột 2: hàng 1 xem, hàng 2 đoán, hàng 3 thấy lại, hàng 6 tự viết (dùng `for` mới đạt đủ sao).
+
 Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
 
 - **Lấp hố**: nhện đang dính thùng sắt bước vào hố thì không rơi; `magnet_off()` thả thùng lấp hố, ô thành sàn. Không mang gì, hay mang vật nam châm, thì rơi.
@@ -104,6 +108,7 @@ Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
 - **Camera trên drone** đọc ô dưới bụng: vật trước, rồi tới màu đất. Lớp `hinh` là ô cần gieo, không phải màu đất, nên camera đọc ra `"none"`.
 - **Lưới trên drone** (`luoiBay: true`): `cast_net(d)` theo màn hình (`front` lên trên), bắt vật đất cách đúng 2 ô, vật đi theo đường bay. Bay về phía vật trong lưới thì bị chặn.
 - **Danh sách**: khung nhập đã có sẵn, hàng 6, 8 khai `canList: true` (không dùng danh sách thì chưa thắng). Vẫn không dùng gán `a[0] = x`, tuple, dict, set, list lồng list.
+- **Hoa phân biệt bằng số cánh, không dùng dấu hình**: xanh lá 3, xanh dương 4, đỏ 5, vàng 8 (`SO_CANH` trong `hoc/game/ve-vector-nong-trai.js`), để người mù màu đếm cánh là biết màu. Áp dụng cho luống hoa, hoa vừa gieo, hoa mờ cần gieo và bao hạt. Các mùa khác vẫn giữ dấu hình.
 - **Bỏ màn demo Nông trại**: `hoc/man-demo.js` không còn màn nào.
 
 ## Quy tắc engine (đã áp dụng một phần khi dựng mùa 1 lần đầu, giữ nguyên khi dựng lại)
