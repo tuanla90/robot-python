@@ -768,10 +768,17 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 #sc-choi .side.xu.co-mau .cbtn,#sc-choi .side.xu.co-mau .thu-hang{height:31px}
 #sc-choi .side.xu.co-mau .cbtn{padding-top:1px}
 /* điều kiện hai vế (front_clear() and color() != "yellow"): hai dòng nhỏ trong một ô code */
-.strip.hai{flex-wrap:wrap;align-content:center;justify-content:flex-start;row-gap:1px;font-size:9px!important;line-height:12px}
+.strip.hai{flex-wrap:wrap;align-content:center;justify-content:flex-start;row-gap:1px;font-size:9px;line-height:12px}
 .strip.hai .ngat{flex-basis:100%;height:0;margin:0}
 .strip.hai .num{line-height:11px;margin-top:0;margin-bottom:0}
 .strip.hai .kw{margin-right:1px}
+/* hàng cao gấp đôi cho dòng điều kiện dài (vẫn tính một ô): ba dòng chữ to trong ô, while / vế 1 + and, or / vế 2 + dấu hai chấm */
+.row.cao{flex-grow:2;min-height:52px;max-height:92px}                                         /* min-height = đủ ba dòng chữ (14 + 18 + 18 + khe) ở màn thấp 360x640; các hàng khác nhường chỗ */
+.strip .ngat-kw{display:none}
+.strip .dk-hang{display:inline-flex;align-items:center;white-space:pre}
+.row.cao .strip.hai{font-size:calc(12px*var(--km));line-height:14px;row-gap:0}                /* row-gap 0: .ngat cũng là một dòng flex nên mỗi khe bị tính hai lần */
+.row.cao .strip.hai .ngat-kw{display:block}
+.row.cao .strip.hai .num{line-height:18px}
 
 /* Chương máy ném: bộ chọn số của aim(n) chỉ có 1 / 2 / 3 (một hàng); biểu thức tầm (i, i + 1, 3 - i) xếp thành hàng dọc cho vừa bảng */
 .chon-so.hep{grid-template-columns:repeat(3,24px)}

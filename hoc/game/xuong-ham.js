@@ -879,13 +879,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return !!man.khaiDoiSo;
   }
-  /** Tên gợi ý cho hàm mới: tên hàm trong lời giải của màn, rồi vài tên chung, bỏ tên đã có. [{ ten, thamSo }], tối đa 4. */
+  /** Tên gợi ý cho hàm mới, CHỈ MỘT tên: hàm trong lời giải của màn, rồi hàm trong các cách khác (màn viết mở), rồi tên chung; bỏ tên đã có. [{ ten, thamSo }]. Tạo xong một hàm thì lần sau gợi ý tên tiếp theo. */
   function goiYTenHam(man, hamMan) {
-    var lg = (man.loiGiai && man.loiGiai.hamCuaEmMoi) || [];
+    var lg = [man.loiGiai || {}].concat(man.cachKhac || []).reduce(function (ds, c) { return ds.concat(c.hamCuaEmMoi || []); }, []);
     var ds = lg.map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice() }; })
       .concat(TEN_HAM_GOI_Y.map(function (n) { return { ten: n, thamSo: [] }; }));
     function daCo(n) { return !!KhoHam.tim(n) || (hamMan || []).some(function (f) { return f.ten === n; }); }
-    return ds.filter(function (x, i) { return !daCo(x.ten) && ds.map(function (y) { return y.ten; }).indexOf(x.ten) === i; }).slice(0, 4);
+    return ds.filter(function (x, i) { return !daCo(x.ten) && ds.map(function (y) { return y.ten; }).indexOf(x.ten) === i; }).slice(0, 1);
   }
 
   /** Thân hàm chưa có dòng lệnh nào (chỉ dòng trống / chú thích). */

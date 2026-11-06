@@ -924,9 +924,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (cheDkm()) {
       var dkm = tachDKM(text);
       if (dkm) {
-        var kw = /^\s*(\w+)/.exec(dkm.tien)[1], ht = '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span>';
-        dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '<span class="ngat"></span>' : ''); });       // điều kiện hai vế: xuống dòng sau and / or (hai dòng nhỏ trong một ô)
-        return ht + '<span class="pu">:</span>';
+        var kw = /^\s*(\w+)/.exec(dkm.tien)[1], haiVe = dkm.cl.length === 2, ht = '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span><span class="ngat ngat-kw"></span>' + (haiVe ? '<span class="dk-hang">' : '');
+        dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '</span><span class="ngat"></span><span class="dk-hang">' : ''); });       // điều kiện hai vế: xuống dòng sau and / or; mỗi vế gói một cụm để vế dài báo tràn (vuaDong co chữ) chứ không tự rớt dòng
+        return ht + '<span class="pu">:</span>' + (haiVe ? '</span>' : '');
       }
       var gm = RE_GAN_MAU.exec(text);
       if (gm) return '<span class="vr">' + esc(gm[1]) + '</span><span class="pu"> = </span><span class="fn">' + gm[2] + '</span><span class="pu">(</span>' + (gm[3] ? oDoiSo(gm[3], 0) : '') + '<span class="pu">)</span>';
@@ -959,9 +959,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`, biểu thức distance()): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi dài tự rút gọn bằng "…" (CSS .num.chuoi), chuỗi ngắn giữ nguyên và dòng xuống hai dòng. */
-  function vuaDong(el) {
+  function vuaDong(el, choCao) {
+    var hang = el.parentNode, cao = !!choCao && el.classList.contains('hai');      // choCao: dòng điều kiện hai vế được hàng cao gấp đôi (.row.cao), vẫn tính một ô; đang kéo thì không, để các hàng cao đều và chỗ thả không nhảy
+    hang.classList.toggle('cao', cao);
     el.style.fontSize = '';
-    if (!el.clientWidth || !el.querySelector('.chuoi, .dkc, .ptu, .lsten, .bth, .bt')) return;       // .bth: biểu thức dài (range(distance()), forward(distance() + n))
+    if (!el.clientWidth || !(cao || el.querySelector('.chuoi, .dkc, .ptu, .lsten, .bth, .bt'))) return;       // .bth: biểu thức dài (range(distance()), forward(distance() + n))
     // chuỗi ngắn ("R", "back", "left") không bao giờ rút gọn: dòng chỉ thiếu 1 px ở cỡ 9px cũng đủ làm "R" thành "…" (2/11, màn dong-chay.3)
     el.querySelectorAll('.chuoi').forEach(function (c) { c.classList.toggle('ngan', (c.textContent || '').length <= 14); });  // ≤ 12 ký tự, gồm 2 dấu nháy
     el.classList.add('ko-cat');                                                    // đo với chuỗi chưa bị cắt
@@ -971,7 +973,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.classList.remove('chat');
     if (tran && el.querySelector('.chuoi.ngan')) { el.classList.add('chat'); tran = el.scrollWidth > el.clientWidth + 1; if (tran) el.classList.remove('chat'); }   // thiếu vài px: bóp đệm các chip trước khi xuống hai dòng
     el.classList.remove('ko-cat');
-    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan, .dkm') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
+    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan, .dkm') && !el.classList.contains('hai')) {
+      el.classList.add('hai'); el.style.fontSize = '';
+      if (choCao && el.querySelector('.dkm')) {                                    // một vế mà vẫn quá dài (front_pole() == "N" trong khối lồng): cũng được hàng cao, chữ to thì co lại cho vừa
+        hang.classList.add('cao'); fs = parseFloat(getComputedStyle(el).fontSize) || 12;
+        while (el.scrollWidth > el.clientWidth + 1 && fs > 9) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
+      }
+    }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
   }
 
   /* ------------------------------------------------------------- Editor */
@@ -1511,11 +1519,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : (boThut(t).trim() ? '' : ' o-trong')))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && cheDkm() && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
           (!xt && runIdx === i ? ' on' : '') + (!xt && loiSet[i] ? ' err' : '');
         strips[i].innerHTML = '';
+        rows[i].classList.remove('cao');
         var bac = lv[i];
         if (!khoa && !xt && t === undefined && i === sel && i >= cuoiDong && thutLe()) bac = ed.bacMacDinh(cuoiDong);
         strips[i].style.marginLeft = (!khoa && bac && (t !== undefined || slot || i === sel)) ? Math.min(bac, 3) * BUOC_PX + 'px' : '';
         if (khoa) strips[i].appendChild(Ve.khoa(2, true));
-        else if (t !== undefined && !slot) { strips[i].innerHTML = mauDong(t); vuaDong(strips[i]); }
+        else if (t !== undefined && !slot) { strips[i].innerHTML = mauDong(t); vuaDong(strips[i], !xt); }
         if (!khoa && !xt && lapSet[i]) strips[i].appendChild(h('span', 'lap', lapSet[i]));
         rows[i].classList.toggle('sel', !xt && i === sel && !khoa && !chiDoc());
         rows[i].classList.toggle('run', !xt && runIdx === i);

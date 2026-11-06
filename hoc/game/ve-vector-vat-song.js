@@ -7,14 +7,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function bot(g, H, keo) { H.elip(g, 50, 52, 45, 43); H.vien(g, keo ? BM.vecVanNongSang : H.rgba(BM.vecMatSangRgb, 0.75), 3); }
 
   var MAU_BE = { red: 'luatVatDo', green: 'luatVatXanhLa', blue: 'luatVatXanhDuong', yellow: 'luatVatVang' };
-  /* BÈ HÀNG: bốn thân gỗ dọc, hai thanh buộc vàng, kiện hàng gỗ 3D buộc bạt xanh ở giữa. */
-  V.dangKy({ loai: 'vat', ma: 'be-go', ten: 'Bè hàng nổi', ky: ['B'], cacTrangThai: [{}, { keo: true }, { mau: 'red' }, { mau: 'blue' }, { mau: 'yellow' }, { mau: 'green' }], ve: function (g, s, H) {
+  /* BÈ HÀNG: bốn thân gỗ dọc, hai thanh buộc vàng, kiện hàng gỗ 3D buộc bạt xanh ở giữa. s.sat: chở thùng sắt thay kiện hàng; s.cuc ('N' | 'S'): chở khối nam châm. */
+  V.dangKy({ loai: 'vat', ma: 'be-go', ten: 'Bè hàng nổi', ky: ['B'], cacTrangThai: [{}, { keo: true }, { mau: 'red' }, { mau: 'blue' }, { mau: 'yellow' }, { mau: 'green' }, { sat: true }, { sat: true, mau: 'red' }, { cuc: 'N' }, { cuc: 'S' }], ve: function (g, s, H) {
     bot(g, H, !!(s && s.keo));
     [14, 31, 48, 65].forEach(function (x) {
       H.bo(g, x, 12, 16, 78, 7); g.fillStyle = H.gradDoc(g, x, 0, x + 16, 0, [[0, BM.vecDatSang], [1, BM.vecDat]]); g.fill(); H.vien(g, BM.vecDatToi, 2.4);
     });
     H.bo(g, 11, 22, 72, 8, 3); H.to(g, BM.vecBao); H.vien(g, BM.vecBaoVien, 2);
     H.bo(g, 11, 72, 72, 8, 3); H.to(g, BM.vecBao); H.vien(g, BM.vecBaoVien, 2);
+    if (s && (s.sat || s.cuc)) {                                                               // hàng là sắt / nam châm: đặt đúng hình vật ấy lên bè, thu nhỏ cho lọt lòng bè
+      g.save(); g.translate(47.5, 50); g.scale(0.78, 0.78); g.translate(-50, -50);
+      if (s.cuc) V.lay('vat', 'nam-cham').ve(g, { cuc: s.cuc }, H);
+      else V.lay('vat', 'khoi-sat').ve(g, s.mau ? { mau: s.mau } : {}, H);
+      g.restore();
+      return;
+    }
     // Kiện hàng gỗ 3D đặt trên bè
     H.bo(g, 23, 28, 48, 42, 8);
     g.fillStyle = H.gradDoc(g, 0, 28, 0, 70, [[0, BM.vecCarton], [0.6, BM.vecCartonGiua], [1, BM.vecCartonToi]]);

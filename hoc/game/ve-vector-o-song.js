@@ -100,20 +100,29 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.duong(g, 'M51 16 L72 23 L51 30 Z'); H.to(g, BM.vecXanhLa); H.vien(g, BM.vecVien, 2.2);
   } });
 
-  /* BẾN NHẬN BÈ 'q': ô nước có cầu gỗ chữ U (ba phía), khung đích nét đứt màu đích; s.xong: đã có bè, khung xanh lá liền nét. */
-  V.dangKy({ loai: 'o', ma: 'ben-nhan', ten: 'Bến nhận bè', ky: ['q'], cacTrangThai: [{}, { xong: true }, { mau: 'red' }, { mau: 'blue' }, { mau: 'yellow' }, { mau: 'green' }], ve: function (g, s, H) {
-    var xong = !!(s && s.xong), i;
+  /* BẾN NHẬN BÈ 'q': ô nước có cầu gỗ ở các phía KHÔNG có nước, khung đích nét đứt màu đích; s.mo: các phía có nước, chuỗi con của 'NESW' (bè vào từ đó, cầu không chắn); s.xong: đã có bè, khung xanh lá liền nét. */
+  V.dangKy({ loai: 'o', ma: 'ben-nhan', ten: 'Bến nhận bè', ky: ['q'], cacTrangThai: [{}, { mo: 'W' }, { mo: 'EW' }, { mo: 'ESW' }, { xong: true }, { mau: 'red' }, { mau: 'blue' }, { mau: 'yellow' }, { mau: 'green' }], ve: function (g, s, H) {
+    var xong = !!(s && s.xong), mo = (s && s.mo) || 'S', i;
+    function ho(p) { return mo.indexOf(p) >= 0; }
     nenNuoc(g, H, true);
-    H.bo(g, 2, 2, 96, 14, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5);
-    H.bo(g, 2, 2, 14, 96, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5);
-    H.bo(g, 84, 2, 14, 96, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5);
-    g.beginPath(); for (i = 1; i < 4; i++) { g.moveTo(2 + i * 24, 4); g.lineTo(2 + i * 24, 14); g.moveTo(4, 2 + i * 24); g.lineTo(14, 2 + i * 24); g.moveTo(86, 2 + i * 24); g.lineTo(96, 2 + i * 24); }
+    if (!ho('N')) { H.bo(g, 2, 2, 96, 14, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5); }
+    if (!ho('S')) { H.bo(g, 2, 84, 96, 14, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5); }
+    if (!ho('W')) { H.bo(g, 2, 2, 14, 96, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5); }
+    if (!ho('E')) { H.bo(g, 84, 2, 14, 96, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5); }
+    g.beginPath();
+    for (i = 1; i < 4; i++) {
+      if (!ho('N')) { g.moveTo(2 + i * 24, 4); g.lineTo(2 + i * 24, 14); }
+      if (!ho('S')) { g.moveTo(2 + i * 24, 86); g.lineTo(2 + i * 24, 96); }
+      if (!ho('W')) { g.moveTo(4, 2 + i * 24); g.lineTo(14, 2 + i * 24); }
+      if (!ho('E')) { g.moveTo(86, 2 + i * 24); g.lineTo(96, 2 + i * 24); }
+    }
     H.vien(g, BM.vecDatToi, 2);
-    [[9, 9], [91, 9], [9, 91], [91, 91]].forEach(function (p) { H.tron(g, p[0], p[1], 4.5); H.to(g, BM.vecDatSang); H.vien(g, BM.vecVien, 1.8); });   // cọc buộc
-    H.bo(g, 22, 22, 56, 70, 8);
+    [[9, 9, 'N', 'W'], [91, 9, 'N', 'E'], [9, 91, 'S', 'W'], [91, 91, 'S', 'E']].forEach(function (p) { if (ho(p[2]) && ho(p[3])) return; H.tron(g, p[0], p[1], 4.5); H.to(g, BM.vecDatSang); H.vien(g, BM.vecVien, 1.8); });   // cọc buộc: chỉ ở góc có cầu
+    var kx0 = ho('W') ? 8 : 22, kx1 = ho('E') ? 92 : 78, ky0 = ho('N') ? 8 : 22, ky1 = ho('S') ? 92 : 78;   // khung đích mở rộng về phía có nước
+    H.bo(g, kx0, ky0, kx1 - kx0, ky1 - ky0, 8);
     var mauBen = s && s.mau && { red: 'luatVatDo', green: 'luatVatXanhLa', blue: 'luatVatXanhDuong', yellow: 'luatVatVang' }[s.mau];     // bến có màu: khung và dấu hình theo màu, chỉ nhận bè cùng màu
     if (xong) { H.vien(g, BM.vecXanhLa, 4); } else { g.setLineDash([7, 6]); H.vien(g, mauBen ? BM[mauBen] : BM.vecDich, mauBen ? 6 : 4); g.setLineDash([]); }
-    if (mauBen && !xong) V.dauHinhMau(g, H, s.mau, 50, 57, 13);
+    if (mauBen && !xong) V.dauHinhMau(g, H, s.mau, 50, (ky0 + ky1) / 2, 13);
   } });
 
   /* SÀN BẾN SÔNG '.' (san-ben-song): sàn đá lát bến sông ghép ván gỗ ấm áp. */

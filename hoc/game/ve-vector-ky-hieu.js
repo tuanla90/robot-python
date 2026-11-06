@@ -54,8 +54,8 @@
   /** Vật của lõi (o: { chat 'go' | 'sat' | 'nam-cham', mau, cuc }) → [mã vật, trạng thái]. Nam châm thiếu cực vẽ như thùng gỗ (như bộ pixel makeVatNho). */
   function vatCua(o, vo) {
     o = o || {};
-    if (o.noi === 'be' && o.chat === 'sat') return ['khoi-sat', o.mau ? { mau: o.mau } : {}];        // thùng sắt nổi, cột 1, 2 của Bến sông
-    if (o.noi === 'be' && o.chat === 'nam-cham' && (o.cuc === 'N' || o.cuc === 'S')) return ['nam-cham', { cuc: o.cuc }];
+    if (o.noi === 'be' && o.chat === 'sat') return ['be-go', o.mau ? { sat: true, mau: o.mau } : { sat: true }];        // sắt không tự nổi: thùng sắt chở trên bè, cột 1, 2 của Bến sông
+    if (o.noi === 'be' && o.chat === 'nam-cham' && (o.cuc === 'N' || o.cuc === 'S')) return ['be-go', { cuc: o.cuc }];
     if (o.noi === 'be' || o.noi === 'luc-binh') return [o.noi === 'be' ? 'be-go' : 'luc-binh', o.noi === 'be' && o.mau ? { mau: o.mau } : {}];   // vật nổi Bến sông (lõi ghi noi); bè có màu
     if (vo === 'nong-trai' && o.chat !== 'nam-cham') return ['bao-hat', o.mau ? (o.chat === 'sat' ? { mau: o.mau, sat: true } : { mau: o.mau }) : (o.chat === 'sat' ? { mau: 'yellow', sat: true } : {})];
     if (o.chat === 'nam-cham' && (o.cuc === 'N' || o.cuc === 'S')) return ['nam-cham', { cuc: o.cuc }];

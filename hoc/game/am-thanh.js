@@ -411,7 +411,7 @@
     nhac.hen = setInterval(function () { if (!document.hidden) xepNhac(); else nhac.luc = ctx.currentTime + 0.1; }, 80);
   }
   function nhacDung() { clearInterval(nhac.hen); nhac.hen = null; }
-  /** Đổi chế độ nhạc nền: 'soan' (đang xếp lệnh / ngoài màn), 'chay' (robot đang chạy), 'trum' (màn Trùm), 'khaiHoan' (nhạc chiến thắng mùa cuối), 'im' (tắt nhạc nền khi loa hát). */
+  /** Đổi chế độ nhạc nền. Game chỉ dùng một bản 'soan' suốt màn, bấm Chạy không đổi nhạc (mô phỏng ngắn, đổi nhạc thì nghe vụn và lẫn), và 'im' (tắt nhạc khi loa hát). 'chay', 'trum', 'khaiHoan' còn trong bảng nhưng không nơi nào gọi. */
   function datCheDo(ten) {
     var m = CHE_DO_NHAC[ten] ? ten : 'soan';
     if (nhac.cheDo === m) return;

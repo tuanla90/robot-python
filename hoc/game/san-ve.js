@@ -78,6 +78,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   };
   var GOC_XOAY = { trai: -90, truoc: 0, phai: 90 };                       // tay xoay: nấc khớp → góc (độ, 0 = phía trước, âm = sang trái)
   function HU() { return VeVector.HU; }                                 // hiệu ứng vector (ve-vector-hieu-ung.js, gói V4)
+  /** Các phía có nước của bến q ở ô (x, y), chuỗi con của 'NESW': cầu gỗ chỉ dựng ở phía còn lại để bè đi vào được. */
+  function phiaNuocBen(rows, x, y) {
+    function nuoc(a, b) { var c = rows[b] && rows[b][a]; return !!c && '~QqKkBLT'.indexOf(c) >= 0; }
+    return (nuoc(x, y - 1) ? 'N' : '') + (nuoc(x + 1, y) ? 'E' : '') + (nuoc(x, y + 1) ? 'S' : '') + (nuoc(x - 1, y) ? 'W' : '');
+  }
   function laTayKep(t) { return t === 'kep' || t === 'xoay'; }            // tay kẹp thường và tay xoay đều kẹp vật ở ô tay chỉ
   var MAU_VIEN = { red: BM.luatKhungDo, green: BM.luatKhungXanhLa, blue: BM.luatKhungXanhDuong, yellow: BM.luatKhungVang };         // màu khung của vật mờ có màu (bóng mờ che-tay)
   function chuanMau(m) { return typeof m === 'string' ? (MAU_KY[m] || (MAU_RA[m] ? m : null)) : null; }
@@ -315,7 +320,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         this.veBo(g, x, y); return true;
       }
       if (ch === 'Q') { ve('phao-dich'); this.veBo(g, x, y); return true; }
-      if (ch === 'q') { ve('ben-nhan', { xong: !!this.vatTaiO(x, y), mau: this.mauNen(x, y) || undefined }); return true; }
+      if (ch === 'q') { ve('ben-nhan', { xong: !!this.vatTaiO(x, y), mau: this.mauNen(x, y) || undefined, mo: phiaNuocBen(this.cfg.rows, x, y) }); return true; }
       if (ch === 'K' || ch === 'k') {
         var cg = this.congT && this.congT[kO], k = cg ? cg.k : (ch === 'k' ? 1 : 0), rg = cg && cg.rung > now ? Math.sin(now / 24) * 0.8 : 0;
         if (rg) { g.save(); g.translate(rg, 0); }
@@ -1107,7 +1112,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Hình của vật o: thùng gỗ / khối sắt / nam châm (ve-vector-ky-hieu.js vatCua), có dải màu nếu vật mang màu, canvas đệm đúng px pixel thiết bị. (n giữ cho chữ ký cũ, không dùng.) */
     hinhVat: function (o, n, px) {
       var hv = VeVector.vatCua(o, this.cfg && this.cfg.vo);
-      if (o.noi && o.keo) hv = [hv[0], { keo: true }];                                   // BẾN SÔNG: vật đang bị dây phao kéo / buộc: vòng bọt cam
+      if (o.noi && o.keo) hv = [hv[0], Object.assign({}, hv[1], { keo: true })];         // BẾN SÔNG: vật đang bị dây phao kéo / buộc: vòng bọt cam
       var v = VeVector.vat(hv[0], px, hv[1]);
       return v || VeVector.vat('thung-go', px, {});                                     // chất lạ: thùng gỗ (V7c2: trước rơi về hình pixel Ve.makeVatNho)
     },
@@ -2999,6 +3004,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         else if (ma === 'nut-ban') { if (nutBat[x + ',' + y]) st.bat = true; if (vMap) st.tuong = vMap.tuong; }
         else if (ma === 'cua') { if (vMap) st.vo = vo; if (cuaNhip[x + ',' + y]) { var cn = cuaNhip[x + ',' + y], chu = cn.mo + cn.dong; st.k = (cn.pha % chu) < cn.mo ? 1 : 0; st.nhip = { n: Math.min(chu, 6), mo: cn.mo, p: cn.pha % chu }; } }
         else if (ma === 'rao') { st.mask = (x > 0 && rows[y][x - 1] === '=' ? 1 : 0) | (x < w - 1 && rows[y][x + 1] === '=' ? 2 : 0) | (y > 0 && rows[y - 1][x] === '=' ? 4 : 0) | (y < h - 1 && rows[y + 1][x] === '=' ? 8 : 0); if (vMap) st.vo = vo; }
+        else if (ma === 'ben-nhan') st = { mo: phiaNuocBen(rows, x, y) };
         else if (vMap && (ma === 'bac-thang' || ma === 'ho' || ma === 'gam')) {
           if (ma === 'ho' || ma === 'gam') g.drawImage(VeVector.o(vMap.san, s, (x + y) & 1 ? { le: 1 } : undefined), px, py, s, s);
           st = Object.assign(st || {}, { vo: vo });

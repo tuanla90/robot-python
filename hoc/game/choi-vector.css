@@ -178,7 +178,8 @@ body.ve-vector .strip.for .num,body.ve-vector .strip.if .num,body.ve-vector .str
 body.ve-vector .strip.hai .num.dkm{padding:0 2px;margin:0 1px 0 0}                /* điều kiện hai dòng (and / or, front_pole() == "N"): chip sát nhau để vừa ô */
 body.ve-vector .strip.hai .kw{margin-right:0}
 body.ve-vector .strip.lock{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe);color:var(--g-vecChuMo)}
-body.ve-vector .strip.hai{font-size:9.5px!important;line-height:12px}
+body.ve-vector .strip.hai{font-size:9.5px;line-height:12px}
+body.ve-vector .row.cao .strip.hai{font-size:12px;line-height:14px}
 /* xoá nhanh: ô số thành nút X đỏ (rê chuột / chạm chọn); cảm ứng: đỏ thở nhẹ */
 body.ve-vector .row.xx .tab{background:var(--g-vecLoi);color:var(--g-vecThe);box-shadow:none}
 body.ve-vector .row.xc .tab{animation:vec-xc 1.2s ease-in-out infinite alternate}

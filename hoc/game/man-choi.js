@@ -643,7 +643,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     anBong(); anToast(); S.ed.anHoan();
     S.ed.datLoi([]); S.pal.datLoi([]);
     var my = ++S.rid; S.busy = true; E.side.classList.add('busy');
-    if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo(S.man && S.man.hang === 'trum' ? 'trum' : 'chay');
     var vet = S.vet, cap = S.cap, lenhDem = 0, capDung = false, lenhNhip = [];      // lenhNhip: các lệnh chạy trong nhịp sắp phát (để đèn bộ phận sáng đúng)
     while (S.idx < vet.length) {
       var e = vet[S.idx++];
@@ -675,7 +674,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (tungNhip) {
           if (S.idx >= vet.length) break;
           S.busy = false; E.side.classList.remove('busy');
-          if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo('soan');
           return;
         }
       }
@@ -683,7 +681,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     sang(null);
     if (capDung) S.idx = vet.length;                                  // đã dừng giữa chừng: Chạy lần sau chạy lại từ đầu
     S.busy = false; E.side.classList.remove('busy');
-    if (window.AmThanh && AmThanh.datCheDo) AmThanh.datCheDo('soan');
     ketThuc(capDung);
   }
 
