@@ -623,6 +623,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.sacO = null;                                                                                         // ô sạc đang lóe: { x, y }
       this.bong = null;                                                                                         // quả bóng đang bay: { x, y, r, a } (pixel sân)
       this.datLaiCua();
+      this.hoLap = {};                                                                                          // ô hố đã lấp bằng vật nam châm mang tới (mùa 2): vẽ như sàn, tới khi chạy lại
       this.canhBao = null;
       this.daSon = {}; this.sonLoe = {};                                                                       // máy sơn: ô đã tô ('x,y' → màu), ô vừa tô (khóa → lúc tô, để lóe)
       var sbd = this.cfg.sonBanDau, self0 = this;                                                              // ô sơn sẵn từ lúc xuất phát (màn đọc sơn bằng color())
@@ -2220,7 +2221,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, this.cv.width, this.cv.height);
       if (this.sv !== 1) g.setTransform(this.sv, 0, 0, this.sv, 0, 0);          // canvas theo pixel thiết bị, vẽ theo pixel sân qua phép phóng
       g.save(); g.translate(-c.ox * T, -c.oy * T);                // canvas chỉ là cửa sổ vẽ (ox, oy, vw, vh): từ đây tới veLop vẽ theo tọa độ ô đầy đủ của lõi
-      for (var y = c.oy; y < c.oy + c.vh; y++) for (var x = c.ox; x < c.ox + c.vw; x++) this.veOVec(g, x, y, c.rows[y][x], x + ',' + y, now, cf, ff);     // gói V2: mọi ô vẽ bằng hình vector đúng cỡ
+      for (var y = c.oy; y < c.oy + c.vh; y++) for (var x = c.ox; x < c.ox + c.vw; x++) this.veOVec(g, x, y, this.hoLap[x + ',' + y] ? '.' : c.rows[y][x], x + ',' + y, now, cf, ff);     // gói V2: mọi ô vẽ bằng hình vector đúng cỡ
       this.veDayNoi(g, now);                                   // gói V7a: dây nối nút ↔ cửa mờ trên sàn, sáng khi nút bật (dưới vật và xe)
       this.veDemSong(g, now);                                  // ĐỆM TỪ: vệt sóng giữa đệm và xe trong lúc xe bị kéo / đẩy (trên sàn, dưới xe)
       this.veSon(g, now);                                      // máy sơn: hình mờ cần tô + ô đã tô (trên sàn, dưới vật và xe)
@@ -2602,6 +2603,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (evs.some(function (s) { return s.ma === 'toi-co'; })) this.coManh = performance.now() + 900;
       if (this.xe) this.camXucDoi(evs);                                                                  // nhiều robot: cảm xúc khi tương tác (gói V4, chỉ đọc vết)          // cờ phất mạnh một nhịp khi robot tới (gói V4, chỉ vector vẽ)
       if (evs.some(function (s) { return s.ma === 'toi-co' || s.ma === 'xong-dua-vat' || s.ma === 'xong-day-thung' || s.ma === 'xong-to-hinh' || s.ma === 'xong-dieu' || s.ma === 'nut-doi' || s.ma === 'xong-giao-tau' || s.ma === 'keo-vat' || s.ma === 'van-doi' || (s.ma === 'dat-vat' && s.o && self.dichTaiO(s.o.x, s.o.y)); })) this.matSuKien('vui', 1000);   // mắt cười (gói V4)
+      for (var ilh = 0; ilh < evs.length; ilh++) if (evs[ilh].ma === 'lap-ho') { this.hoLap[evs[ilh].o.x + ',' + evs[ilh].o.y] = true; this.burst(evs[ilh].o.x * T + T / 2, evs[ilh].o.y * T + T / 2, 8, [BM.sanTrang, BM.sanXanhLa], 0.6); }      // lấp hố: ô thành sàn, bụi bay lên
       this.dongBoMuaMoi(e);                                                                              // BẾN SÔNG / CẢNG SÔNG: neo, kéo, cống, van, dòng tắt, vật nổi; nấc, tầm, treo, chồng, tàu đúng vết
       if (evs.some(function (s) { return s.ma === 'doi-thu-thang'; })) { this.baoHieu('!', 1800); v.choang = performance.now() + 1400; }
       // đồng bộ với vết (an toàn nếu có sự kiện lạ)
@@ -2906,7 +2908,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         for (var j = 0; j < this.objs.length; j++) if (this.objs[j].id === it.id) { o = this.objs[j]; break; }
         if (!o) continue;
         var cu = o.tt;
-        o.x = it.x; o.y = it.y; o.tt = it.trangThai === 'vo' ? 'vo' : it.trangThai === 'cam' ? 'cam' : it.trangThai === 'ro' ? 'ro' : 'dat';
+        o.x = it.x; o.y = it.y; o.tt = it.trangThai === 'vo' ? 'vo' : it.trangThai === 'cam' ? 'cam' : it.trangThai === 'ro' ? 'ro' : it.trangThai === 'lap-ho' ? 'lap-ho' : 'dat';
         if (o.tt === 'vo' && cu !== 'vo') o.voLuc = now;
       }
     },

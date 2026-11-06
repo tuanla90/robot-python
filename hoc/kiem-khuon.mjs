@@ -1,6 +1,6 @@
-// kiem-m1-nhanh.mjs — kiểm Mùa 1 theo khuôn 4×8 của hoc/KE-HOACH-4-MUA-COT-LOI.md (chạy: node hoc/kiem-m1-nhanh.mjs).
+// kiem-khuon.mjs — kiểm các mùa đã dựng theo khuôn 4×8 của hoc/KE-HOACH-4-MUA-COT-LOI.md (chạy: node hoc/kiem-khuon.mjs).
 // Mỗi màn: lời giải mẫu thắng đủ 3 sao, CHỈ với hàm của chính nó (tên hàm tự đặt nên không màn nào dựa vào màn trước).
-// Mỗi dạng bài: code mẫu đúng kiểu của hàng đó. Mỗi cột: đúng bộ part theo chuỗi xây dần. Không tuple / dict / set / list lồng.
+// Mỗi dạng bài: code mẫu đúng kiểu của hàng đó. Mỗi cột: đúng bộ part theo chuỗi chuyển part của kế hoạch. Không tuple / dict / set / list lồng.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -10,12 +10,23 @@ const ChamHoc = require(path.join(day, 'cham.js'));
 const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));
 
 const O_TOI_DA = 10;                     // khung chương trình trên giao diện vẽ đúng 10 hàng (man-choi.js, TP.Editor tong: 10)
-const COT = [
-  { ma: 'm1-c1-than', tay: null, cam: false, wait: false },
-  { ma: 'm1-c2-tay', tay: 'kep', cam: false, wait: true },
-  { ma: 'm1-c3-cam-bien', tay: 'kep', cam: true, wait: true },
-  { ma: 'm1-c4-san', tay: 'kep', cam: true, wait: true }
+const NHEN = ['go_up', 'go_down', 'go_left', 'go_right'];
+const BANH = ['up', 'down', 'turn_left', 'turn_right'];
+const MUA = [
+  { ten: 'Mùa 1', tien: 'm1-', than: 'hai-banh', loai: 'banh', di: BANH, cot: [
+    { ma: 'm1-c1-than', tay: null, cam: null, wait: false },
+    { ma: 'm1-c2-tay', tay: 'kep', cam: null, wait: true },
+    { ma: 'm1-c3-cam-bien', tay: 'kep', cam: 'khoang-cach', wait: true },
+    { ma: 'm1-c4-san', tay: 'kep', cam: 'khoang-cach', wait: true }
+  ] },
+  { ten: 'Mùa 2', tien: 'm2-', than: 'nhen', loai: 'nhen', di: NHEN, cot: [
+    { ma: 'm2-c1-than', tay: 'kep', cam: 'khoang-cach', wait: true },
+    { ma: 'm2-c2-tay', tay: 'nam-cham', cam: 'khoang-cach', wait: true },
+    { ma: 'm2-c3-cam-bien', tay: 'nam-cham', cam: 'tu', wait: true },
+    { ma: 'm2-c4-san', tay: 'nam-cham', cam: 'tu', wait: true }
+  ] }
 ];
+const HAM_CAM = { 'khoang-cach': 'front_clear', tu: 'front_metal' };
 
 const loi = [];
 const trong = (s) => !String(s).trim();
@@ -82,15 +93,18 @@ function kiemDang(m, kq, bao) {
   }
 }
 
-COT.forEach((c) => {
+function kiemCot(mua, c) {
   const ds = ManHoc.danhSach.filter((m) => m.chuong === c.ma);
   if (ds.length !== 8) loi.push(`${c.ma}: có ${ds.length} màn, phải đúng 8`);
   ds.forEach((m) => {
     const bao = (s) => loi.push(`${m.ma} (${m.dangBai}) ${m.ten}: ${s}`);
-    if (m.robot.than !== 'hai-banh' || m.loaiRobot !== 'banh') bao('thân phải là hai bánh');
+    if (m.robot.than !== mua.than || m.loaiRobot !== mua.loai) bao(`thân phải là ${mua.than}`);
     if (m.robot.tay !== c.tay) bao(`tay phải là ${c.tay}`);
-    if (!!(m.robot.camBien || []).length !== c.cam || m.hamGoc.includes('front_clear') !== c.cam) bao(`cảm biến phải ${c.cam ? 'có' : 'chưa có'}`);
+    const cam = (m.robot.camBien || []).map((x) => x.ma);
+    if (cam.join() !== (c.cam || '')) bao(`cảm biến phải là ${c.cam}, đang là ${cam.join()}`);
+    Object.entries(HAM_CAM).forEach(([ma, ham]) => { if (m.hamGoc.includes(ham) !== (c.cam === ma)) bao(`${ham}() ${c.cam === ma ? 'phải có' : 'không được có'} trên khay`); });
     if (m.hamGoc.includes('wait') !== c.wait) bao(`wait() ${c.wait ? 'phải có' : 'không được có'} trên khay`);
+    if (mua.di.some((n) => !m.hamGoc.includes(n))) bao(`khay thiếu lệnh đi: ${mua.di.join(', ')}`);
     if (m.khung.chinh > O_TOI_DA || m.khung.moiHam > O_TOI_DA) bao(`khung quá ${O_TOI_DA} ô, giao diện không vẽ hết`);
     if (m.hamGoc.some((n) => /left_move|right_move|left_back|right_back/.test(n))) bao('còn lệnh hai bánh độc lập cũ');
     moiDong(m).forEach((d) => { if (/[\[\]{}]|\btuple\b|\bdict\b|\bset\(/.test(d)) bao(`cú pháp bị cấm: ${d}`); });
@@ -102,11 +116,33 @@ COT.forEach((c) => {
     if (kq.chanDoan.some((x) => x.muc === 'loi')) bao('lời giải còn lỗi: ' + kq.chanDoan.map((x) => x.ma).join(','));
     kiemDang(m, kq, bao);
   });
-});
+}
 
-const tong = ManHoc.danhSach.filter((m) => m.chuong.startsWith('m1-')).length;
-if (tong !== 32) loi.push(`Mùa 1 có ${tong} màn, phải đúng 32`);
+/** Luật lấp hố của mùa 2: chỉ thùng sắt mang tới rồi magnet_off() mới lấp được, không có cách đi xuyên qua hố. */
+function kiemLapHo() {
+  const man = ManHoc.danhSach.find((m) => m.ma === 'm2-c4-san.1');
+  if (!man) return loi.push('thiếu màn m2-c4-san.1');
+  const chay = (chinh, them = {}) => ChamHoc.cham({ ...man, chiChay: false, ...them }, { chinh, hamCuaMan: [] }, []);
+  const ma = (kq) => kq.chanDoan.map((c) => c.ma);
+  const qua = ['go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()'];
+  if (!ma(chay(qua)).includes('roi-ho')) loi.push('lấp hố: không mang thùng mà bước vào hố phải rơi');
+  const mang = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()'];
+  const k1 = chay(mang);
+  if (k1.thang || ma(k1).includes('roi-ho')) loi.push('lấp hố: mang thùng nhưng chưa thả thì không rơi và không đi xuyên qua được');
+  const dungDan = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()'];
+  if (!chay(dungDan).thang) loi.push('lấp hố: thả thùng ở hố rồi đi tiếp phải thắng');
+  if (chay(dungDan, { vatChat: man.vatChat.map((h) => h.replace('s', 'N')) }).thang) loi.push('lấp hố: vật nam châm không lấp được hố');
+}
+
+let tong = 0;
+MUA.forEach((mua) => {
+  mua.cot.forEach((c) => kiemCot(mua, c));
+  const n = ManHoc.danhSach.filter((m) => m.chuong.startsWith(mua.tien)).length;
+  if (n !== 32) loi.push(`${mua.ten} có ${n} màn, phải đúng 32`);
+  tong += n;
+});
+kiemLapHo();
 loi.forEach((s) => console.log('HỎNG:', s));
 console.log('---');
-console.log(`Mùa 1: ${tong} màn, ${loi.length} lỗi.`);
+console.log(`${MUA.map((x) => x.ten).join(', ')}: ${tong} màn, ${loi.length} lỗi.`);
 process.exit(loi.length ? 1 : 0);

@@ -104,6 +104,7 @@
     'kep': {
       khe: 'tay', ten: 'Tay kẹp',
       moTa: 'Tay gắn trước mũi xe, nhặt vật ở ô ngay trước mặt.',
+      moTaThan: { nhen: 'Tay kẹp của nhện gắp và thả ngay ở ô nhện đang đứng.' },
       lenh: ['arm_down', 'arm_up', 'grab', 'release'],
       ghep: [
         { lenh: ['arm_down', 'grab', 'wait'], ra: 'Hạ tay rồi kẹp vật, trong một nhịp' },
@@ -112,7 +113,8 @@
       ],
       gioi: ['Nhặt vật lên, mang đi, đặt xuống'],
       khong: ['Vật nằm đất: phải hạ tay rồi mới kẹp được', 'Tay đang hạ thì xe không đi được', 'Thả vật lúc tay đang nâng thì vật rơi vỡ'],
-      luuY: ['Lệnh tay cũng chỉ là ra lệnh, wait() mới làm.', 'Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.']
+      luuY: ['Lệnh tay cũng chỉ là ra lệnh, wait() mới làm.', 'Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.',
+        { chu: 'Trên nhện, tay gắp và thả ngay ở ô nhện đang đứng. Nhện đứng trùm lên vật được, không cần đứng cạnh.', than: 'nhen' }]
     },
     /* Gói V8c: 'xoay' là CÙNG cái tay kẹp, được mở thêm arm_left / arm_right (nangCapCua: 'kep'), như bánh lùi mở thêm cho cùng hai bánh. Tên hiển thị vẫn "Tay kẹp".
        Đã gặp tay kẹp thì thẻ của 'xoay' chỉ là thẻ "lệnh mới": các mục dưới đây có `can: XOAY` để vào được thẻ đó; mục chuỗi chỉ hiện ở thẻ đầy đủ. */
@@ -139,12 +141,15 @@
     'nam-cham': {
       khe: 'tay', ten: 'Nam châm',
       moTa: 'Nam châm chữ U trước mũi xe. Bật cực N hoặc S để hút vật từ xa.',
+      moTaThan: { nhen: 'Nam châm treo dưới bụng nhện. Bật cực N hoặc S để hút vật ở ô đang đứng.' },
       lenh: ['magnet_n', 'magnet_s', 'magnet_off'],
       moTaLenh: { magnet_n: 'Bật nam châm cực N, màu đỏ', magnet_s: 'Bật nam châm cực S, màu xanh dương' },
-      gioi: ['Hút vật sắt cách tới 2 ô về dính ở mũi xe', 'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô'],
+      gioi: [{ chu: 'Hút vật sắt cách tới 2 ô về dính ở mũi xe', khongThan: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô', khongThan: 'nhen' },
+        { chu: 'Cực nào cũng hút vật sắt ở ô đang đứng', than: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì nằm yên', than: 'nhen' }],
       khong: ['Không hút được vật gỗ', 'Không đẩy được vật sắt', 'Mỗi lần chỉ dính một vật'],
-      luuY: ['magnet_off() ngắt điện, thả vật xuống ô trước mũi.', { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
-        { chu: 'Trên nhện, nam châm treo dưới bụng: hút và thả vật sắt ở ô ngay dưới, mang theo khi đi và khi nhảy qua hố.', than: 'nhen' }]
+      luuY: [{ chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
+        { chu: 'Trên nhện, nam châm treo dưới bụng: hút và thả vật sắt ở ô ngay dưới, mang theo khi đi và khi nhảy qua hố.', than: 'nhen' },
+        { chu: 'Mang thùng sắt bước vào hố: thùng đỡ chân, nhện không rơi. Gọi magnet_off() để thả thùng lấp hố, ô đó thành sàn.', than: 'nhen' }]
     },
     'nem': {
       khe: 'tay', ten: 'Máy ném',
@@ -177,19 +182,22 @@
     'khoang-cach': {
       khe: 'camBien', ten: 'Cảm biến khoảng cách',
       moTa: 'Gắn ở hông xe, cho biết ô ngay cạnh xe có trống không.',
+      moTaThan: { nhen: 'Gắn trên thân nhện, cho biết ô ngay cạnh nhện có trống không.' },
       lenh: ['front_clear', 'left_clear', 'right_clear'],
       gioi: ['Hỏi không tốn nhịp', 'Dùng trong if, while để xe tự quyết định'],
       khong: ['Chỉ thấy ô sát bên, không thấy xa hơn', 'Không biết màu, không biết vật gì'],
-      luuY: [{ chu: 'front_clear() trả True khi ô trước mặt trống; tường, mép sân, vật, thùng nặng thì trả False.', can: ['front_clear'] }]
+      luuY: [{ chu: 'front_clear() trả True khi ô trước mặt trống; tường, mép sân, vật, thùng nặng thì trả False.', can: ['front_clear'] },
+        { chu: 'Nhện không quay nên cảm biến cố định: front_clear() luôn nhìn lên phía trên sân, left_clear() bên trái, right_clear() bên phải.', than: 'nhen' }]
     },
     'tu': {
       khe: 'camBien', ten: 'Cảm biến từ',
       moTa: 'Đầu dò chữ U ở hông xe, cho biết vật phía trước là sắt hay nam châm cực N, cực S.',
+      moTaThan: { nhen: 'Đầu dò chữ U trên thân nhện, cho biết vật phía trước là sắt hay nam châm cực N, cực S.' },
       lenh: ['front_metal', 'front_pole'],
       gioi: ['Hỏi không tốn nhịp', { chu: 'front_metal() trả True khi vật gần nhất phía trước là sắt và cách xe tới 2 ô', can: ['front_metal'] },
         { chu: 'front_pole() trả "N" hoặc "S" khi vật gần nhất trong 3 ô là nam châm', can: ['front_pole'] }],
       khong: ['Vật gỗ, tường, không có gì: front_metal() là False, front_pole() là "none"'],
-      luuY: []
+      luuY: [{ chu: 'Nhện không quay nên đầu dò nhìn cố định về một phía của sân, trong Bãi tái chế là sang phải.', than: 'nhen' }]
     },
     'hong-ngoai': {
       khe: 'camBien', ten: 'Cảm biến hồng ngoại',
@@ -476,6 +484,7 @@
     if (m.can && !m.can.every(function (x) { return co(lenh, x); })) return false;
     if (m.khongCan && m.khongCan.some(function (x) { return co(lenh, x); })) return false;      // câu chỉ đúng khi robot CHƯA có lệnh đó (vd sạc tự động trên P: drone nâng cấp land() thì không)
     if (m.than && m.than !== than) return false;
+    if (m.khongThan && m.khongThan === than) return false;                                      // câu đúng với xe có mũi, không đúng trên thân này
     return true;
   }
   function chuMuc(m) { return typeof m === 'string' ? m : m.chu; }
@@ -498,7 +507,7 @@
     function loc(ds) {
       return (ds || []).filter(function (m) { return hienMuc(m, lenh, than) && (!moi || dungMoi(m, moi)); }).map(chuMuc);
     }
-    return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : d.moTa, lenh: dsLenh, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
+    return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : (d.moTaThan && d.moTaThan[than]) || d.moTa, lenh: dsLenh, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
   }
 
   /* ---------------------------------------------------------- MỘT BỘ PHẬN, NHIỀU MÃ (gói V8c)

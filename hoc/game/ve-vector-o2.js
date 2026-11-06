@@ -49,11 +49,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.dangKy({ loai: 'o', ma: 'ho', ten: 'Hố', ky: ['u'], cacTrangThai: [{}], ve: function (g, s, H) {
     var vo = s && s.vo, go = laGoDa(vo);
     if (!vo) sanDuoi(g, H);
-    H.tron(g, 50, 50, 38);
+    g.beginPath(); g.rect(11, 11, 78, 78);                                                      // hố VUÔNG (kế hoạch 4 mùa): vừa khít thùng sắt
     g.fillStyle = H.gradDoc(g, 0, 12, 0, 88, !vo ? [[0, BM.vecDinh], [1, BM.vecSatToi]] : go ? [[0, BM.vecGoMatToi], [1, BM.vecGoToi]] : [[0, BM.vecThepSang], [1, BM.vecThepToi]]);
     g.fill(); H.vien(g, BM.vecVien, 3);
-    H.tron(g, 51, 52, 30); g.fillStyle = H.gradToa(g, 54, 60, 32, [[0, BM.vecHoToi], [0.65, BM.vecHoToi], [1, BM.vecHo]]); g.fill(); H.vien(g, BM.vecVien, 2.5);
-    g.beginPath(); g.arc(50, 50, 34, Math.PI * 1.05, Math.PI * 1.45); H.vien(g, !vo ? BM.vecVo : go ? BM.vecGoSang : BM.vecCanhBao, 3.5);
+    g.beginPath(); g.rect(20, 21, 61, 60); g.fillStyle = H.gradToa(g, 54, 60, 32, [[0, BM.vecHoToi], [0.65, BM.vecHoToi], [1, BM.vecHo]]); g.fill(); H.vien(g, BM.vecVien, 2.5);
+    g.beginPath(); g.moveTo(16, 62); g.lineTo(16, 16); g.lineTo(62, 16); H.vien(g, !vo ? BM.vecVo : go ? BM.vecGoSang : BM.vecCanhBao, 3.5);
   } });
 
   /* GẦM THẤP (n): mái gầm/cầu vượt thấp phủ gần kín ô, hai mép có sọc cảnh báo vàng – chàm ("thấp, cúi xuống"), bốn đinh tán.

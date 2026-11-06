@@ -23,16 +23,16 @@ npm start   # http://localhost:4180
 | Mùa | Thân | Ý Python |
 |---|---|---|
 | 1 Kho hàng | Hai bánh | `def`, `for`, `if`/`while` |
-| 2 Nhà máy | Xích | biến, tham số |
-| 3 Bãi tái chế | Nhện | chuỗi, logic `and`/`or`/`elif` |
+| 2 Bãi tái chế | Nhện | chuỗi, logic `and`/`or`/`elif` |
+| 3 Bến sông | Xuồng | biến, tham số |
 | 4 Nông trại | Drone | `list`, `for x in a`, `append` |
 
-**Mùa 1 đã có đủ 32 màn** theo khuôn 4 cột × 8 hàng (`hoc/KE-HOACH-4-MUA-COT-LOI.md`, `hoc/man-m1-*.js`; kiểm bằng
-`node hoc/kiem-m1-nhanh.mjs`). Mùa 2–4 hiện mới có **1 gói demo, 1 màn** (`hoc/man-demo.js`) — màn thật **chưa viết**.
+**Mùa 1 và Mùa 2 đã có đủ 32 màn mỗi mùa** theo khuôn 4 cột × 8 hàng (`hoc/KE-HOACH-4-MUA-COT-LOI.md`, `hoc/man-m1-*.js`, `hoc/man-m2-*.js`; kiểm bằng
+`node hoc/kiem-khuon.mjs`). Mùa 3–4 hiện mới có **1 gói demo, 1 màn** (`hoc/man-demo.js`) — màn thật **chưa viết**.
 
 ## Việc còn lại (xem KE-HOACH-7-MUA.md ở bản gốc để tra cứu cơ chế mùa cũ)
 
-1. **Dựng Mùa 2–4 theo khuôn 4×8** (`hoc/KE-HOACH-4-MUA-COT-LOI.md`), bám đúng chương trình Tin học 12 ôn thi đại học
+1. **Dựng Mùa 3–4 theo khuôn 4×8** (`hoc/KE-HOACH-4-MUA-COT-LOI.md`), bám đúng chương trình Tin học 12 ôn thi đại học
    (không chỉ cắt bớt — dựng lại theo đúng mức độ khó của đề thi, xem mục kế tiếp).
 2. **Cảng sông (cần cẩu)**: chưa đưa vào — cần cẩu dùng toạ độ cực (`batDau.nac`, `tam`) khác hẳn
    lưới `x,y` của các thân khác (xem `hoc/san-hoc.js` phần CẢNG SÔNG) và màn gốc dùng luật

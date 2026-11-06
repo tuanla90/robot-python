@@ -373,6 +373,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       mau: TP.coMauCua(m),                                                                      // cảm biến màu: khối so màu + gán c = color()
       pin: TP.coPinCua(m),                                                                      // drone đo pin: khối so sánh battery() < 3
       chuoi: TP.coCauTruc(m, 'for') && TP.coMauCua(m) !== 'look' && (!!m.chuoi || (m.hamGoc || []).some(function (n) { return /^go_/.test(n); })),     // chương có chuỗi chữ (nhện): khối for c in "R": (flycam dùng danh sách màu, không dùng chuỗi chữ)
+      vaHoac: m.vaHoac === true,                                                                // mùa 2: khối mẫu có and / or, khối so chữ của vòng for chuỗi
       dieuKien: TP.coCauTruc(m, 'if') && TP.coDieuKienCua(m),
       bt: TP.khayBTCua(m),                                                                     // mùa 4–7: nhóm BIỂU THỨC (n = 1, return n, if n == 1:, while n > 0:…) ở thẻ Logic
       em: em ? em.chinh : null,                                                                 // nhện: bỏ hàm dùng lệnh bánh; hàm màn không dùng tới → emKhac

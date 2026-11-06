@@ -257,6 +257,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       mau: TP.coMauCua(man),
       pin: TP.coPinCua(man),
       chuoi: TP.coCauTruc(man, 'for') && TP.coMauCua(man) !== 'look' && (!!man.chuoi || (man.hamGoc || []).some(function (n) { return /^go_/.test(n); })),
+      vaHoac: man.vaHoac === true,
       dieuKien: (TP.coCauTruc(man, 'if') && TP.coDieuKienCua(man)) || chuoiDr,
       bt: TP.khayBTCua(man),                             // mùa 4–7: nhóm BIỂU THỨC
       thamSoChuoi: chuoiDr,                              // khối mẫu `if d == "U":` thay cho khối battery()

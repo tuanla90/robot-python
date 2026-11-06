@@ -175,6 +175,8 @@ body.ve-vector .strip.wh:not(.on):not(.err){background:var(--g-vecTroiNhat);box-
 /* dòng điều kiện dài (if distance() <= 0:) ở sân lớn: Google Sans Code rộng hơn phông pixel cũ, khít lại một chút cho lọt ô (vùng 11) */
 body.ve-vector .strip.for,body.ve-vector .strip.if,body.ve-vector .strip.wh{padding:0 3px 0 6px;font-size:10.5px;letter-spacing:-.25px}
 body.ve-vector .strip.for .num,body.ve-vector .strip.if .num,body.ve-vector .strip.wh .num{padding:1px 4px}
+body.ve-vector .strip.hai .num.dkm{padding:0 2px;margin:0 1px 0 0}                /* điều kiện hai dòng (and / or, front_pole() == "N"): chip sát nhau để vừa ô */
+body.ve-vector .strip.hai .kw{margin-right:0}
 body.ve-vector .strip.lock{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe);color:var(--g-vecChuMo)}
 body.ve-vector .strip.hai{font-size:9.5px!important;line-height:12px}
 /* xoá nhanh: ô số thành nút X đỏ (rê chuột / chạm chọn); cảm ứng: đỏ thở nhẹ */

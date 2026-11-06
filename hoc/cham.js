@@ -634,6 +634,9 @@
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ở đó đang cháy nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
           ' Đám cháy chặn xe như tường: phun nước cho tới khi lửa tắt hẳn rồi mới đi qua. Lửa to phải trúng nhiều lần; warm() còn True là phía trước vẫn còn lửa.';
+      } else if (e0.vat === 'ho-chua-lap') {
+        s2 = 'Ở nhịp ' + e0.nhip + ', nhện đang đứng ở ô hố (' + e0.tu.x + ', ' + e0.tu.y + ') nhờ thùng sắt đỡ chân nên chưa bước ra được (vẫn mất hai nhịp).' +
+          ' Gọi magnet_off() ở đây để thả thùng xuống lấp hố, rồi mới bước tiếp.';
       } else if (e0.vat === 'gam-thap') {
         s2 = 'Ở nhịp ' + e0.nhip + ', ' + (man.loaiRobot === 'nhen' ? 'nhện' : 'robot') + ' định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là gầm thấp' +
           (man.loaiRobot === 'nhen' ? ': chân đang duỗi nên đầu nhện đụng trần, nhện đứng yên (vẫn mất hai nhịp).' : ' (chỉ nhện đang co chân mới chui qua được) nên nó đứng yên (vẫn mất một nhịp).') +
@@ -856,7 +859,7 @@
       var tb0 = thaChan[0], mtb = tb0.lenh ? (g.anhXa[tb0.lenh.dongPy] || null) : null;
       if (tb0.kieu === 'kep') {
         var tbTrai = tb0.huongTay !== undefined && tb0.huongTay !== 'truoc';       // tay xoay đang chỉ sang bên
-        them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', release() không thả được vật: ô ' + (tbTrai ? oTayNgan(tb0.huongTay) : 'ngay trước mặt xe') + ', (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
+        them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', release() không thả được vật: ô ' + (tbTrai ? oTayNgan(tb0.huongTay) : man.loaiRobot === 'nhen' ? 'nhện đang đứng' : 'ngay trước mặt xe') + ', (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
           ' nên vật vẫn nằm trong kẹp.' + (thaChan.length > 1 ? ' Chuyện này xảy ra ' + thaChan.length + ' lần.' : '') +
           (tbTrai ? ' Vật chỉ đặt xuống được ô sàn trống mà tay đang chỉ: xoay tay sang hướng khác hay đi tới chỗ khác rồi thả.' : ' Vật chỉ đặt xuống được ô sàn trống ngay trước mặt: xoay hay đi tới chỗ khác rồi thả.'), { nhip: tb0.nhip, soLan: thaChan.length, o: tb0.o, vat: tb0.vat, kieu: 'kep', huongTay: tb0.huongTay, cho: cho(mtb) });
       } else if (man.loaiRobot === 'drone' || man.loaiRobot === 'nhen') {      // nam châm treo dưới bụng: drone, nhện (mùa 3)
@@ -1027,6 +1030,7 @@
       them('roi-ho', 'Ở nhịp ' + rh0.nhip + ', ' + (laNhenRh ? 'nhện' : laXeRh ? 'xe' : 'robot') + ' rơi xuống hố ở ô (' + rh0.o.x + ', ' + rh0.o.y + ')' + (rh0.lenh ? ' (lệnh ' + rh0.lenh.ten + '() ở ' + viTri(mrh) + ')' : '') +
         (bangRh ? ' (băng chuyền đẩy xe vào ô hố)' : '') + (sanThu ? '.' : ' nên chương trình dừng ở đó.') +
         (laXeRh ? ' Bánh xe lăn vào ô hố là rơi, xe không nhảy qua hố được: đi đường khác tránh ô hố' + (man.doi ? ', hay để nhện trong đội nhảy qua' : '') + '.'
+          : (man.hamGoc || []).indexOf('crouch') < 0 ? ' Đặt chân vào ô hố là rơi. Muốn qua hố, mang một thùng sắt tới, bước vào hố rồi gọi magnet_off() để thả thùng lấp hố.'
           : ' Đặt chân vào ô hố là rơi. Muốn qua hố, nhện phải nhảy: co chân (crouch()), rồi duỗi chân (stand()) cùng một bước go_*() để bật qua ô hố.'), { nhip: rh0.nhip, o: rh0.o, cho: cho(mrh) });
     }
     var omniCheo = res.suKien.filter(function (e) { return e.ma === 'omni-khong-cheo'; });

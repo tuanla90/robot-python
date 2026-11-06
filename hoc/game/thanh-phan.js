@@ -739,7 +739,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var MAU_DS = ['red', 'green', 'blue', 'yellow', 'none'];                                   // các giá trị color() có thể trả về
   var MAU_LOP = { red: 'g-rd', green: 'g-gr', blue: 'g-bl', yellow: 'g-yl', none: 'g-gy' };
   var RE_DKM = /^(\s*(?:while|if|elif)\s+)([^:]+?)(\s*:.*)$/;
-  var RE_CL_SS = /^((?:color|look)\((?:"[a-z]+")?\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;      // color("front"): camera bốn hướng (mùa 4)
+  var RE_CL_SS = /^((?:color|look)\((?:"[a-z]+")?\)|front_pole\(\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;      // color("front"): camera bốn hướng (mùa 4)
   var RE_CL_CAM = /^(?:not\s+)?[A-Za-z_]\w*\(\)$|^(?:True|False)$/;
   var RE_GAN_MAU = /^\s*([A-Za-z_]\w*)\s*=\s*(color|look)\(("[a-z]+")?\)\s*(#.*)?$/;      // nhóm 3: hướng của camera bốn hướng (c = color("right"), mùa 4)                    // c = color() / c = look() (drone có camera nhìn xuống)
   var HAM_MAU = 'color';                                                                      // hàm đọc màu của màn đang mở: 'color' (cảm biến màu, camera ở xe) hay 'look' (camera nhìn xuống của drone); khối mẫu và bảng chọn điều kiện dùng tên này
@@ -788,7 +788,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       else if (RE_CL_CAM.test(cl[i])) tok.push({ vt: 'cam', ci: i, t: cl[i] });
       else return null;
     }
-    var chiCam = tok.every(function (x) { return x.vt === 'cam' || x.vt === 'noi'; });
+    var chiCam = cl.every(function (c) { return RE_CL_CAM.test(c) || /^(?:front_pole\(\)|[A-Za-z_]\w*)\s*(?:==|!=)\s*"[^"]*"$/.test(c); });      // màn vaHoac: cảm biến, front_pole() == "N", c == "R" đều tách ô để ghép and / or
     if (!CHE_MAU && !coVePin && !(CHE_VH && chiCam)) return null;          // chỉ màn drone có pin: chỉ điều kiện có battery() mới tách ô (các `if d == "U":` giữ cách cũ); màn vaHoac (mùa 3): điều kiện toàn cảm biến cũng tách
     return { loai: 'dkm', ten: '', tien: m[1], ds: tok.map(function (x) { return x.t; }), noi: ' ', hau: m[3], laFor: false, tok: tok, cl: cl, nx: nx };
   }
@@ -811,6 +811,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function boVe(dong, ci) {
     var d = tachDKM(dong); if (!d || d.cl.length < 2) return dong;
     d.cl.splice(ci, 1); d.nx.splice(ci === 0 ? 0 : ci - 1, 1); return ghepDKM(d, d.cl, d.nx);
+  }
+  /** Các chữ mà biến vòng trong vế cl nhận được, đọc từ dòng for c in "…" ở trên (không có thì U D L R); mỗi chữ kèm dấu nháy. */
+  function chuCuaVong(arr, i, cl) {
+    var ten = /^\w+/.exec(cl), kq = [];
+    for (var j = i - 1; j >= 0 && ten; j--) {
+      var m = /^\s*for\s+(\w+)\s+in\s+"([^"]*)"\s*:/.exec(chuoi(arr[j]));
+      if (m && m[1] === ten[0]) { m[2].split('').forEach(function (c) { if (kq.indexOf('"' + c + '"') < 0) kq.push('"' + c + '"'); }); break; }
+    }
+    return kq.length ? kq : ['"U"', '"D"', '"L"', '"R"'];
   }
   /** Tên biến đã gán bằng color() ở các dòng phía trên dòng i (hoặc mọi dòng nếu i âm). */
   function bienGanMau(arr, i) {
@@ -961,7 +970,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.classList.remove('chat');
     if (tran && el.querySelector('.chuoi.ngan')) { el.classList.add('chat'); tran = el.scrollWidth > el.clientWidth + 1; if (tran) el.classList.remove('chat'); }   // thiếu vài px: bóp đệm các chip trước khi xuống hai dòng
     el.classList.remove('ko-cat');
-    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
+    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan, .dkm') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
   }
 
   /* ------------------------------------------------------------- Editor */
@@ -1336,8 +1345,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (o.vt === 'op') { ed.datSo(i, o.t === '==' ? '!=' : '==', kk); return; }
       if (o.vt === 'noi') { ed.datSo(i, o.t === 'and' ? 'or' : 'and', kk); return; }
+      if (o.vt === 'rhs' && CHE_VH && !CHE_MAU) {                                                // màn vaHoac (mùa 2): chữ so sánh đổi vòng; front_pole() thì "N" "S" "none", biến chuỗi thì U D L R
+        var dsChu = /^front_pole/.test(d.cl[o.ci]) ? ['"N"', '"S"', '"none"'] : chuCuaVong(lay(), i, d.cl[o.ci]);
+        ed.datSo(i, dsChu[(dsChu.indexOf(o.t) + 1) % dsChu.length], kk); return;
+      }
       var bien = bienGanMau(lay(), i);
-      if (CHE_LIST) bienTam('bien', i).forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });          // biến vòng for c in seen: (danh sách màu) cũng so được với màu: if c == "red":
+      if (CHE_LIST || CHE_VH) bienTam('bien', i).forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });          // biến vòng for c in seen: (danh sách màu) cũng so được với màu: if c == "red":
       if (o.vt === 'rhs') {
         chonMau({ neo: so, gia: o.t, bien: bien, khiChon: function (v) { ed.datSo(i, v, kk); } });
         return;
@@ -2198,19 +2211,25 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     dongChonSo();
     var el = h('div', 'chon-so chon-chuoi dkb dkm-bang'); el.setAttribute('data-nut', 'chon-dk');
     el.setAttribute('aria-label', t('choi.chonDieuKien'));
-    var ss = RE_CL_SS.exec(o.gia || ''), mauDang = ss && RE_CHUOI.test(ss[3]) ? ss[3] : '"red"';
+    var ss = RE_CL_SS.exec(o.gia || ''), mauDang = ss && RE_CHUOI.test(ss[3]) ? ss[3] : CHE_VH && !CHE_MAU ? '"R"' : '"red"';
     function nut(v, cls) {
       var b = h('button', 'bt ' + (cls || 'g-cy') + ' cs dk-nut' + (v === o.gia ? ' on' : ''), v); b.setAttribute('data-dk', v);
       b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(v); });
       el.appendChild(b);
     }
-    (o.cam || []).forEach(function (ten) { nut(ten + '()'); nut('not ' + ten + '()'); });
+    var chiChu = CHE_VH && !CHE_MAU;                                                             // màn vaHoac không có camera: chỉ cảm biến và so chuỗi, không có nút màu
+    (o.cam || []).forEach(function (ten) {
+      if (ten === 'front_pole') { nut('front_pole() == "N"'); nut('front_pole() == "S"'); nut('front_pole() == "none"'); return; }      // trả chuỗi: viết if front_pole(): thì luôn đúng
+      nut(ten + '()'); nut('not ' + ten + '()');
+    });
+    if (chiChu) (o.bien || []).forEach(function (v) { nut(v + ' == ' + (ss && ss[1] === v ? mauDang : '"R"'), 'g-pu'); });      // biến vòng for c in "…": chạm chữ bên phải để đổi chữ
     var hcs = huongCam(), lhs = ss && /^color\(/.test(ss[1]) ? ss[1] : GOI_MAU;
-    if (hcs.length) hcs.forEach(function (x) { var g = 'color("' + x + '")'; nut(g + ' == ' + mauDang, g === lhs ? 'g-pk' : 'g-pu'); });      // camera bốn hướng: chọn hướng nhìn
+    if (chiChu) { /* không có nút màu */ }
+    else if (hcs.length) hcs.forEach(function (x) { var g = 'color("' + x + '")'; nut(g + ' == ' + mauDang, g === lhs ? 'g-pk' : 'g-pu'); });      // camera bốn hướng: chọn hướng nhìn
     else { nut(GOI_MAU + ' == ' + mauDang, 'g-pk'); }
-    nut(lhs + ' != ' + mauDang, 'g-pk');
+    if (!chiChu) nut(lhs + ' != ' + mauDang, 'g-pk');
     if (o.pin) { nut('battery() < 3', 'g-or'); nut('battery() > 2', 'g-or'); }                  // drone vừa có camera look() vừa có pin: vế trái cũng chọn được điều kiện pin (while battery() > 2:)
-    (o.bien || []).forEach(function (v) {
+    if (!chiChu) (o.bien || []).forEach(function (v) {
       nut(v + ' == ' + mauDang, 'g-pu'); nut(v + ' != ' + mauDang, 'g-pu');
       nut(GOI_MAU + ' == ' + v, 'g-pu'); nut(GOI_MAU + ' != ' + v, 'g-pu');
     });
@@ -2803,6 +2822,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (camCuc && dsDk.length) {                                                              // cảm biến cực: ba khối if / elif so với "N", "S"; khối else: dùng chung
         dsDk = ['if front_pole() == "N":', 'elif front_pole() == "S":'].concat(dsDk.filter(function (s) { return s !== 'if front_pole():'; }));
         if (dsDk.indexOf('else:') < 0) dsDk.push('else:');
+      }
+      if (spec.vaHoac && dsDk.length) {                                                         // màn vaHoac (mùa 2): khối mẫu có and / or và, nếu màn có vòng for chuỗi, khối so chữ
+        var camTrai = cam.filter(function (n) { return n !== 'front_pole'; });
+        var cauVa = camCuc ? 'if ' + camDau + '() or front_pole() == "N":' : camTrai.length > 1 ? 'if ' + camTrai[0] + '() and ' + camTrai[1] + '():' : null;
+        if (cauVa) dsDk.unshift(cauVa);
+        if (spec.chuoi) dsDk = ['if c == "R":', 'elif c == "U":'].concat(dsDk);
       }
       var chiAm = amSpec.length > 0 && !cam.length && !spec.mau && !spec.pin;                   // mùa 8 chỉ có cảm biến âm thanh: khối điều kiện ở nhóm ÂM THANH (nhomTD), không dùng khối mẫu cũ
       if (chiAm) dsDk = [];

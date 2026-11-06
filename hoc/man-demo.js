@@ -1,5 +1,5 @@
 /* ============================================================================
-   man-demo.js — diem10code-python: MÀN DEMO cho 4 mùa cốt lõi đang chạy được.
+   man-demo.js — diem10code-python: MÀN DEMO cho các mùa cốt lõi chưa dựng.
 
    Chỉ để CHỨNG MINH khung game (bảng mẫu, chấm bài, vẽ robot) hoạt động đúng
    với mỗi loại thân đã giữ lại. KHÔNG phải màn thật của lộ trình ôn thi — xem
@@ -16,52 +16,28 @@
 
   function lap(ds, n) { var kq = []; for (var i = 0; i < n; i++) kq = kq.concat(ds); return kq; }
 
-  /* mùa 1 Kho hàng: nội dung thật đã viết ở man-m1-*.js (xem thu-tu-chuong.js). */
+  /* mùa 1 Kho hàng, mùa 2 Bãi tái chế: nội dung thật đã viết ở man-m1-*.js, man-m2-*.js (xem thu-tu-chuong.js). */
 
-  /* ---------------------------------------------------------- mùa 2 Nhà máy (xích) */
+  /* ---------------------------------------------------------- mùa 3 Bến sông (xuồng) */
   (function () {
-    var HAM_XICH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
     function man(m) {
-      m.chuong = 'demo-nha-may';
+      m.chuong = 'demo-ben-song';
       m.cauTruc = ['for'];
-      m.loaiRobot = 'xich'; m.robot = { than: 'xich', tay: null }; m.hamGoc = HAM_XICH;
+      m.loaiRobot = 'xuong'; m.robot = { than: 'xuong', tay: null }; m.hamGoc = ['up', 'down', 'turn_left', 'turn_right'];
+      m.mucTieu = 'toi-co';
       m.moXuong = true; m.camHamCuaEm = false;
       m.khung = { chinh: 10, moiHam: 10 };
       return ManHoc.chuanHoa(m);
     }
     ManHoc.them([
       man({
-        so: 1, ten: 'Xích lăn bánh', hang: 'lam-quen',
-        deBai: 'Xe bánh xích đứng trước lá cờ ba ô. Đưa xe tới cờ.',
-        san: ['.....', '..F..', '.....', '.....', '.....'],
+        so: 1, ten: 'Xuồng rời bến', hang: 'lam-quen',
+        deBai: 'Xuồng đứng dưới lá cờ ba ô, trên mặt sông. Chạy xuồng tới cờ.',
+        san: ['#####', '#~Q~#', '#~~~#', '#~~~#', '#~~~#'],
         batDau: { x: 2, y: 4, huong: 0 },
-        maMau: { chinh: ['left_move()', 'right_move()', 'wait()'] },
-        sao: { o: 9, nhip: 3 },
-        loiGiai: { chinh: lap(['left_move()', 'right_move()', 'wait()'], 3) }
-      })
-    ]);
-  })();
-
-  /* ---------------------------------------------------------- mùa 3 Bãi tái chế (nhện) */
-  (function () {
-    var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
-    function man(m) {
-      m.chuong = 'demo-bai-tai-che';
-      m.cauTruc = ['for'];
-      m.loaiRobot = 'nhen'; m.robot = { than: 'nhen', tay: null }; m.hamGoc = HAM_NHEN;
-      m.moXuong = true; m.camHamCuaEm = false;
-      m.khung = { chinh: 10, moiHam: 10 };
-      return ManHoc.chuanHoa(m);
-    }
-    ManHoc.them([
-      man({
-        so: 1, ten: 'Bước chân nhện', hang: 'lam-quen',
-        deBai: 'Nhện không cần quay: go_right() sang phải, go_down() xuống, mỗi bước mất 2 nhịp. Đưa nhện tới cờ.',
-        san: ['....', '###.', '###.', '###F'],
-        batDau: { x: 0, y: 0, huong: 0 },
-        maMau: { chinh: ['go_right()', 'go_right()'] },
-        sao: { o: 4, nhip: 12 },
-        loiGiai: { chinh: lap(['go_right()'], 3).concat(lap(['go_down()'], 3)) }
+        maMau: { chinh: ['up()'] },
+        sao: { o: 3, nhip: 3 },
+        loiGiai: { chinh: lap(['up()'], 3) }
       })
     ]);
   })();

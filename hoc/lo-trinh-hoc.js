@@ -11,7 +11,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   if (laNode) {
     require('./man-co-so.js');
-    ['than', 'tay', 'cambien', 'san'].forEach(function (n) { require('./man-m1-' + n + '.js'); });
+    ['than', 'tay', 'cambien', 'san'].forEach(function (n) { require('./man-m1-' + n + '.js'); require('./man-m2-' + n + '.js'); });
   }
   var M = laNode ? require('./man-demo.js') : window.ManHoc;
   if (laNode) module.exports = M;
