@@ -10,7 +10,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'wait', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
+  var HAM_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
   function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
   /** Sân một khúc sông thẳng: bờ trên, mặt nước `s`, bờ dưới. */
   function SONG(s) { var r = s.replace(/./g, '.'); return [r, s, r]; }
@@ -24,6 +24,7 @@
     m.bienDem = true;
     m.moXuong = true;
     m.vo = 'song';
+    m.phienBanNoiDung = 1;                     // wait() không còn chốt lệnh: bản nháp cũ không dùng nữa
     ManHoc.khuon(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -53,10 +54,10 @@
       vatChat: SONG('..s...'),
       batDau: { x: 0, y: 1, huong: 1 },
       mucTieu: 'dua-vat',
-      maMau: { chinh: ['magnet_n()', '', 'for i in range(n):', '    forward()', 'magnet_off()', 'wait()'] },
+      maMau: { chinh: ['magnet_n()', '', 'for i in range(n):', '    forward()', 'magnet_off()'] },
       goiY: ['Thùng dính ở mũi nên luôn đi trước xuồng một ô: bến ở ô 5 thì xuồng dừng ở ô 4.'],
-      sao: { o: 6, nhip: 5 },
-      loiGiai: { chinh: ['magnet_n()', 'n = 4', 'for i in range(n):', '    forward()', 'magnet_off()', 'wait()'] } }),
+      sao: { o: 5, nhip: 6 },
+      loiGiai: { chinh: ['magnet_n()', 'n = 4', 'for i in range(n):', '    forward()', 'magnet_off()'] } }),
 
     man(4, { ten: 'Đi rồi cộng thêm',
       deBai: 'Đủ dòng nhưng sai thứ tự. Xuồng phải đi 2 ô tới gần thùng, bật nam châm, cộng n thêm 1, đi tiếp rồi thả. Giữ một dòng rồi kéo sang chỗ đúng.',
@@ -64,10 +65,10 @@
       vatChat: SONG('....s..'),
       batDau: { x: 0, y: 1, huong: 1 },
       mucTieu: 'dua-vat',
-      maMau: { chinh: ['magnet_n()', 'n = 2', 'for i in range(n):', '    forward()', 'n = n + 1', 'for i in range(n):', '    forward()', 'wait()', 'magnet_off()'] },
-      goiY: ['magnet_off() cần một nhịp sau nó mới thả được vật: wait() phải đứng sau.', 'Bật nam châm khi đã còn cách thùng 2 ô, đừng bật từ đầu.'],
-      sao: { o: 9, nhip: 6 },
-      loiGiai: { chinh: ['n = 2', 'for i in range(n):', '    forward()', 'magnet_n()', 'n = n + 1', 'for i in range(n):', '    forward()', 'magnet_off()', 'wait()'] } }),
+      maMau: { chinh: ['n = 2', 'magnet_off()', 'for i in range(n):', '    forward()', 'magnet_n()', 'n = n + 1', 'for i in range(n):', '    forward()'] },
+      goiY: ['magnet_off() phải đứng sau cùng: thùng tới nơi rồi mới thả.', 'Nam châm cần bật trước khi xuồng đi qua thùng.'],
+      sao: { o: 8, nhip: 7 },
+      loiGiai: { chinh: ['n = 2', 'for i in range(n):', '    forward()', 'magnet_n()', 'n = n + 1', 'for i in range(n):', '    forward()', 'magnet_off()'] } }),
 
     man(5, { ten: 'Xoáy trôn ốc',
       deBai: 'Code này sai đúng 1 chỗ: xuồng quay tại chỗ mà không rời được khúc đầu. Mỗi vòng xuồng phải đi xa hơn vòng trước một ô. Bấm Chạy xem lỗi, rồi sửa.',
@@ -86,8 +87,8 @@
       batDau: [{ x: 0, y: 1, huong: 1 }, { x: 0, y: 1, huong: 1 }],
       mucTieu: 'dua-vat',
       goiY: ['front_metal() đúng khi thùng sắt còn cách 2 ô, tức đúng tầm hút.', 'Từ chỗ dừng, xuồng đi thêm 3 ô thì thùng ở mũi tới bến. Cất số 3 vào biến n cũng được.'],
-      sao: { o: 8, nhip: 8 },
-      loiGiai: { chinh: ['while not front_metal():', '    forward()', 'magnet_n()', 'n = 3', 'for i in range(n):', '    forward()', 'magnet_off()', 'wait()'] } }),
+      sao: { o: 7, nhip: 9 },
+      loiGiai: { chinh: ['while not front_metal():', '    forward()', 'magnet_n()', 'n = 3', 'for i in range(n):', '    forward()', 'magnet_off()'] } }),
 
     man(7, { ten: 'Hai làn: tự viết hàm',
       deBai: 'Hai làn sông giống nhau, mỗi làn một thùng sắt, một bến. Tự viết hàm tên tùy em cho một làn, dùng biến trong hàm, rồi gọi trong for. Chương trình chính chỉ có 6 ô.',
@@ -97,10 +98,10 @@
       mucTieu: 'dua-vat',
       khung: { chinh: 6 },
       goiY: ['Một lượt: bật nam châm, đi 2 ô, thả, rồi lùi về 2 ô bằng backward().', 'Sau mỗi lượt: quay phải, đi 2 ô sang làn dưới, quay trái.'],
-      sao: { o: 14, nhip: 12 },
+      sao: { o: 13, nhip: 14 },
       loiGiai: {
         chinh: ['for i in range(2):', '    cho_thung()', '    turn_right()', '    forward()', '    forward()', '    turn_left()'],
-        hamCuaEmMoi: [H('cho_thung', ['magnet_n()', 'n = 2', 'for i in range(n):', '    forward()', 'magnet_off()', 'wait()', 'for i in range(n):', '    backward()'])]
+        hamCuaEmMoi: [H('cho_thung', ['magnet_n()', 'n = 2', 'for i in range(n):', '    forward()', 'magnet_off()', 'for i in range(n):', '    backward()'])]
       } }),
 
     man(8, { ten: 'Thùng có cực',
@@ -109,8 +110,8 @@
       vatChat: [SONG('....N...'), SONG('......S..')],
       batDau: [{ x: 0, y: 1, huong: 1 }, { x: 0, y: 1, huong: 1 }],
       mucTieu: 'dua-vat',
-      sao: { o: 10, nhip: 8 },
-      loiGiai: { chinh: ['while front_pole() == "none":', '    forward()', 'if front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()', 'for i in range(4):', '    forward()', 'magnet_off()', 'wait()'] },
+      sao: { o: 9, nhip: 9 },
+      loiGiai: { chinh: ['while front_pole() == "none":', '    forward()', 'if front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()', 'for i in range(4):', '    forward()', 'magnet_off()'] },
       huyHieu: { ma: 'xuong', ten: 'Thợ lái xuồng' } })
   ]);
 

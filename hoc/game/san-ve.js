@@ -2549,7 +2549,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           await ngu(per);
         } else if (s.ma === 'quay-phai' || s.ma === 'quay-trai' || s.ma === 'quay-dau') {
           var d1 = (d + (s.ma === 'quay-phai' ? 1 : s.ma === 'quay-trai' ? 3 : 2)) % 4, lt = s.ma === 'quay-trai' ? 'L' : 'R';
-          var h0 = v.goc, h1 = (s.ma === 'quay-trai' ? -1 : 1) * Math.PI / 2, xoayDan = laXich && s.ma !== 'quay-dau';
+          var h0 = v.goc, h1 = (s.ma === 'quay-trai' ? -1 : 1) * Math.PI / 2, xoayDan = (laXich || v.goc) && s.ma !== 'quay-dau';      // v.goc khác 0: nhịp trước đã xoay nửa đường, giờ xoay nốt
           var dq = s.ma === 'quay-phai' ? 1 : s.ma === 'quay-trai' ? -1 : 2, mem = this.xoayMem();
           await this.tween(per, my, function (k) {
             v.hop = Math.sin(k * Math.PI) * 2;
@@ -2652,7 +2652,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (laNhen && e.robot && e.robot.chan !== undefined) v.co = e.robot.chan === 'co';            // nhện: chân co / duỗi đúng vết
       v.x = e.robot.x; v.y = e.robot.y; v.d = laNhen ? (this.cfg.bd.huong || 0) : e.robot.huong; v.hop = 0; v.dx = 0; v.dy = 0; v.chan = 0; v.gocMem = 0;
       for (var inu = 0; inu < evs.length; inu++) if (evs[inu].ma === 'chuan-bi' && evs[inu].nua) { v.x += evs[inu].nua.x * NUA_O; v.y += evs[inu].nua.y * NUA_O; }   // logic còn ở ô cũ, nhện vẽ đang ở nửa đường
-      v.goc = laXich && e.robot.quayDo ? (e.robot.quayDo > 0 ? 1 : -1) * Math.PI / 4 : 0;       // xích còn quay dở: nghiêng 45° chờ nhịp kế   // nhện không quay: mặt trước (cạnh gắn tay) cố định theo batDau.huong
+      v.goc = e.robot.quayDo ? (e.robot.quayDo > 0 ? 1 : -1) * Math.PI / 4 : 0;       // xích còn quay dở: nghiêng 45° chờ nhịp kế   // nhện không quay: mặt trước (cạnh gắn tay) cố định theo batDau.huong
       if (e.thung) this.dongBoThung(e.thung);
       if (v.nc) {                                                       // nam châm: đưa vật (dính / nằm) và trạng thái bật về đúng vết
         v.nc.ang = null; if (e.robot.namCham) { v.nc.bat = !!e.robot.namCham.bat; v.nc.cuc = e.robot.namCham.cuc || null; }

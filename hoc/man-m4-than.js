@@ -9,13 +9,13 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'cast_net', 'drop_net', 'color'];
+  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'cast_net', 'drop_net', 'color'];
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than.slice() }; }
   function TRAI() { return [H('trai', ['n'], ['for i in range(n):', '    go_left()'])]; }
-  function HAI_HAM() { return TRAI().concat([H('tha', [], ['drop_net()', 'wait()'])]); }
+  function HAI_HAM() { return TRAI().concat([H('tha', [], ['drop_net()'])]); }
   var SAN_BAY = ['......F', '.......', '.......', '.......'], BD_BAY = { x: 0, y: 3, huong: 0 };
   var SAN_BAO = ['......o', '.D.....', '.......'], BD_BAO = { x: 4, y: 0, huong: 0 };
-  function KEO(a) { return ['a = [' + a + ']', 'cast_net("right")', 'wait()', 'for n in a:', '    for i in range(n):', '        go_left()', '    go_down()', 'drop_net()', 'wait()']; }
+  function KEO(a) { return ['a = [' + a + ']', 'cast_net("right")', 'for n in a:', '    for i in range(n):', '        go_left()', '    go_down()', 'drop_net()']; }
   function HANG(s) { var r = s.replace(/./g, '.'); return [r, s, r]; }
 
   function man(so, m) {
@@ -30,6 +30,7 @@
     m.vo = 'nong-trai';
     m.luoiBay = true;
     m.mucTieu = m.mucTieu || 'dua-vat';
+    m.phienBanNoiDung = 1;                     // wait() không còn chốt lệnh: bản nháp cũ không dùng nữa
     ManHoc.khuon(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -53,16 +54,16 @@
       deBai: 'Bao hạt nằm cách drone 2 ô bên phải: lưới bắt đúng ở khoảng đó. Vật đi theo đường bay, luôn sau drone 2 ô. Code thiếu dòng tung lưới, điền vào.',
       san: SAN_BAO, batDau: BD_BAO,
       maMau: { chinh: KEO('2, 2').map(function (d) { return d === 'cast_net("right")' ? '' : d; }) },
-      goiY: ['cast_net("right") tung lưới sang phải. Lệnh chỉ ra lệnh, wait() mới làm.'],
-      sao: { o: 9, nhip: 8 },
+      goiY: ['cast_net("right") tung lưới sang phải, mất 2 nhịp.'],
+      sao: { o: 7, nhip: 9 },
       loiGiai: { chinh: KEO('2, 2') } }),
 
     man(4, { ten: 'Bắt trước, bay sau',
       deBai: 'Đủ dòng nhưng sai thứ tự: drone bay đi rồi mới tung lưới nên bao hạt đã ngoài tầm. Giữ một dòng rồi kéo sang chỗ đúng.',
       san: SAN_BAO, batDau: BD_BAO,
-      maMau: { chinh: ['a = [1, 3]', 'for n in a:', '    for i in range(n):', '        go_left()', '    go_down()', 'cast_net("right")', 'wait()', 'drop_net()', 'wait()'] },
+      maMau: { chinh: ['a = [1, 3]', 'for n in a:', '    for i in range(n):', '        go_left()', '    go_down()', 'cast_net("right")', 'drop_net()'] },
       goiY: ['Lưới chỉ bắt vật cách đúng 2 ô: phải tung khi drone còn ở chỗ xuất phát.'],
-      sao: { o: 9, nhip: 8 },
+      sao: { o: 7, nhip: 9 },
       loiGiai: { chinh: KEO('1, 3') } }),
 
     man(5, { ten: 'Sai một số',
@@ -70,7 +71,7 @@
       san: SAN_BAO, batDau: BD_BAO,
       maMau: { chinh: KEO('1, 2') },
       goiY: ['Từ chỗ xuất phát tới mép trái là 4 ô, hai số cộng lại phải bằng 4.'],
-      sao: { o: 9, nhip: 8 },
+      sao: { o: 7, nhip: 9 },
       loiGiai: { chinh: KEO('3, 1') } }),
 
     man(6, { ten: 'Số thứ mấy',
@@ -81,8 +82,8 @@
       batDau: [{ x: 8, y: 1, huong: 0 }, { x: 8, y: 1, huong: 0 }],
       canList: true,
       goiY: ['Đọc c = color() khi còn đứng trên bao, rồi trai(2).', 'Sau khi tung lưới: if c == "red": trai(a[0]), còn lại trai(a[1]), cuối cùng tha().'],
-      sao: { o: 14, nhip: 9 },
-      loiGiai: { chinh: ['a = [5, 3]', 'c = color()', 'trai(2)', 'cast_net("right")', 'wait()', 'if c == "red":', '    trai(a[0])', 'else:', '    trai(a[1])', 'tha()'], hamCuaMan: HAI_HAM() } }),
+      sao: { o: 12, nhip: 10 },
+      loiGiai: { chinh: ['a = [5, 3]', 'c = color()', 'trai(2)', 'cast_net("right")', 'if c == "red":', '    trai(a[0])', 'else:', '    trai(a[1])', 'tha()'], hamCuaMan: HAI_HAM() } }),
 
     man(7, { ten: 'Hàm nhận danh sách',
       deBai: 'Bay bậc thang tới cờ. Tự viết hàm tên tùy em nhận một danh sách, ví dụ bay(a): với mỗi n trong a, bay phải n ô rồi xuống một ô. Khi đặt tên hàm, thêm một đối số. Chương trình gọi hàm hai lần với hai danh sách.',
@@ -100,10 +101,10 @@
       vatMau: [HANG('.........r'), HANG('.........y'), HANG('.........b')],
       batDau: [{ x: 9, y: 1, huong: 0 }, { x: 9, y: 1, huong: 0 }, { x: 9, y: 1, huong: 0 }],
       canList: true,
-      sao: { o: 16, nhip: 10 },
+      sao: { o: 14, nhip: 11 },
       loiGiai: {
         chinh: ['a = [6, 4, 2]', 'c = color()', 'if c == "red":', '    thu(a[0])', 'elif c == "blue":', '    thu(a[1])', 'else:', '    thu(a[2])'],
-        hamCuaEmMoi: [H('thu', ['n'], ['for i in range(2):', '    go_left()', 'cast_net("right")', 'wait()', 'for i in range(n):', '    go_left()', 'drop_net()', 'wait()'])]
+        hamCuaEmMoi: [H('thu', ['n'], ['for i in range(2):', '    go_left()', 'cast_net("right")', 'for i in range(n):', '    go_left()', 'drop_net()'])]
       },
       huyHieu: { ma: 'duong-bay', ten: 'Đường bay' } })
   ]);

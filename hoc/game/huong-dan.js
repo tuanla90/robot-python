@@ -235,8 +235,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var rn;
     if (neo && neo.getBoundingClientRect && thay(neo)) rn = neo.getBoundingClientRect();
     else if (ds.length > 1) {                                          // nhiều đích mà không chỉ rõ neo: bong bóng đặt theo khung bao quanh tất cả (không đè lên đích nào)
-      var dsBao = ds.filter(function (e) { return !(e.closest && e.closest('.pal-ghim')); });      // khối ở hàng ghim (wait) nằm tận đáy khay: không tính vào khung bao, kẻo bong bóng "dưới" rơi ra ngoài màn
-      if (!dsBao.length) dsBao = ds;
+      var dsBao = ds;
       var rs = dsBao.map(function (e) { return e.getBoundingClientRect(); });
       var l = Math.min.apply(null, rs.map(function (r) { return r.left; })), tp = Math.min.apply(null, rs.map(function (r) { return r.top; }));
       var rr = Math.max.apply(null, rs.map(function (r) { return r.right; })), bt = Math.max.apply(null, rs.map(function (r) { return r.bottom; }));
@@ -258,7 +257,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     bo.el.className = 'hd-bong'; bo.el.style.width = bw + 'px';
     function quyDoi(r) { return { left: (r.left - rg.left) / k, top: (r.top - rg.top) / k, right: (r.right - rg.left) / k, bottom: (r.bottom - rg.top) / k }; }
     var tranh = [];
-    var cacNut = man.querySelectorAll('button,input,.pal .brick,.pal-ghim .brick,.p-prog .strip:not(.empty),.p-prog .bh,.pal-the,.chon-so');
+    var cacNut = man.querySelectorAll('button,input,.pal .brick,.p-prog .strip:not(.empty),.p-prog .bh,.pal-the,.chon-so');
     Array.prototype.forEach.call(cacNut, function (e) { if (thay(e)) tranh.push(quyDoi(e.getBoundingClientRect())); });
     var vung = xuongMo(man) ? man.querySelector('.ws-ov.open .low') : man.querySelector('.low');
     if (vung && thay(vung)) { var rv = quyDoi(vung.getBoundingClientRect()); rv.trongSo = 5; tranh.push(rv); }

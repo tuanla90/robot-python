@@ -105,6 +105,33 @@
     return m;
   };
 
+  /** KHUÔN 8 HÀNG MỚI (hoc/KE-HOACH-4-MUA-COT-LOI.md): ít màn dẫn dắt hơn, thêm hai màn viết mở. Mùa nào đã chuyển thì gọi hàm này thay cho ManHoc.khuon.
+   *  m.dangBai của hàng 2 do màn khai: 'dien' (mặc định) hoặc 'sap-xep', chọn dạng hợp với bài. Màn viết mở (hàng 5, 7): m.cachKhac = [{ chinh, hamCuaEmMoi }], ít nhất một cách khác lời giải. */
+  ManHoc.DANG_BAI_MOI = ['xem-doan', 'dien', 'sua-loi', 'viet', 'viet-mo', 'viet-ham', 'viet-mo', 'tu-luc'];
+  ManHoc.khuonMoi = function (so, m) {
+    m.so = so;
+    m.dangBai = so === 2 && m.dangBai === 'sap-xep' ? 'sap-xep' : ManHoc.DANG_BAI_MOI[so - 1];
+    m.hang = so === 8 ? 'trum' : 'lam-quen';
+    var lg = m.loiGiai, hamMan = lg.hamCuaMan || [];
+    function banSao(ds) { return ds.map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; }); }
+    if (so === 1) {
+      m.chiChay = true;
+      m.maMau = { chinh: lg.chinh.slice(), hamCuaMan: banSao(hamMan) };
+    }
+    if (m.dangBai === 'sap-xep') m.chiSapXep = true;
+    if (so === 1 || m.dangBai === 'sap-xep') {
+      m.moXuong = false;
+      m.khoaHamMan = hamMan.map(function (f) { return f.ten; });
+    }
+    if (so >= 4 && !m.maMau) m.maMau = { chinh: [], hamCuaMan: banSao(hamMan) };
+    if (so >= 2 && m.maMau && !m.maMau.hamCuaMan) m.maMau.hamCuaMan = banSao(hamMan);
+    if (so === 6 && !m.canHamTuDat) m.canHamTuDat = 1;
+    if (so >= 6) m.moXuong = true;
+    if (so >= 5) m.hamTuDat = true;
+    if (so === 8) m.goiY = [];
+    return m;
+  };
+
   /** Hàm tự đặt chỉ DEMO một ý tưởng ở đúng màn tạo ra nó (xem bản gốc man-chuoi-1.js):
    *  dự án này đang bắt đầu lại nên danh sách rỗng, điền dần khi viết màn mới. */
   var HAM_DEMO_MOT_LAN = [];

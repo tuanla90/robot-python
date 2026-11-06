@@ -10,13 +10,13 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'wait', 'cast_net', 'drop_net', 'color'];
+  var HAM_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'cast_net', 'drop_net', 'color'];
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than.slice() }; }
   function LUI() { return [H('lui', ['n'], ['for i in range(n):', '    backward()'])]; }
-  function BA_HAM() { return LUI().concat([H('bat', [], ['backward()', 'cast_net()', 'wait()']), H('tha', [], ['drop_net()', 'wait()'])]); }
+  function BA_HAM() { return LUI().concat([H('bat', [], ['backward()', 'cast_net()']), H('tha', [], ['drop_net()'])]); }
   function SONG(s) { var r = s.replace(/./g, '.'); return [r, s, r]; }
   /** Lời giải chung của hàng 1–5: ghi màu, lùi ra, tung lưới, chọn bến theo màu, thả. */
-  var GIAO = ['c = color()', 'backward()', 'cast_net()', 'wait()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()', 'wait()'];
+  var GIAO = ['c = color()', 'backward()', 'cast_net()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()'];
   var SAN = SONG('~~q~qB'), MAU = SONG('..r.b.'), BD = { x: 4, y: 1, huong: 1 };
 
   function man(so, m) {
@@ -30,6 +30,7 @@
     m.moXuong = true;
     m.vo = 'song';
     m.mucTieu = 'dua-vat';
+    m.phienBanNoiDung = 1;                     // wait() không còn chốt lệnh: bản nháp cũ không dùng nữa
     ManHoc.khuon(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -39,14 +40,14 @@
     man(1, { ten: 'Camera thấy màu',
       deBai: 'Bấm Chạy và xem. Camera đọc màu ô ngay trước mũi, lưới phao bắt ở cách 2 ô. Nên xuồng ghi màu vào biến c trước, rồi mới lùi ra tung lưới. Bến màu nào nhận bè màu đó.',
       san: SAN, mau: MAU, vatMau: SONG('.....r'), batDau: BD,
-      sao: { o: 12, nhip: 6 },
+      sao: { o: 10, nhip: 7 },
       loiGiai: { chinh: GIAO.slice(), hamCuaMan: LUI() } }),
 
     man(2, { ten: 'Biến còn nhớ',
       deBai: 'Bè lần này màu xanh dương. Đọc code, đoán rồi bấm Chạy.',
       san: SAN, mau: MAU, vatMau: SONG('.....b'), batDau: BD,
       duDoan: { hoi: 'Xuồng đã lùi ra xa bè rồi mới hỏi c. Bè về đâu?', luaChon: ['Bến đỏ', 'Bến xanh dương', 'Không về đâu, vì lùi ra rồi không thấy màu nữa'], dung: 1, xacMinh: { x: 2, y: 1, vat: [{ x: 4, y: 1 }] } },
-      sao: { o: 12, nhip: 4 },
+      sao: { o: 10, nhip: 5 },
       loiGiai: { chinh: GIAO.slice(), hamCuaMan: LUI() } }),
 
     man(3, { ten: 'Ghi màu',
@@ -54,7 +55,7 @@
       san: [SAN, SAN], mau: [MAU, MAU], vatMau: [SONG('.....r'), SONG('.....b')], batDau: [BD, BD],
       maMau: { chinh: [''].concat(GIAO.slice(1)), hamCuaMan: LUI() },
       goiY: ['Phải đọc màu khi bè còn ngay trước mũi, trước khi lùi.'],
-      sao: { o: 12, nhip: 6 },
+      sao: { o: 10, nhip: 7 },
       loiGiai: { chinh: GIAO.slice(), hamCuaMan: LUI() } }),
 
     man(4, { ten: 'Đọc trước, lùi sau',
@@ -62,7 +63,7 @@
       san: [SAN, SAN], mau: [MAU, MAU], vatMau: [SONG('.....r'), SONG('.....b')], batDau: [BD, BD],
       maMau: { chinh: ['backward()', 'c = color()'].concat(GIAO.slice(2)), hamCuaMan: LUI() },
       goiY: ['color() chỉ thấy ô ngay trước mũi: lùi ra thì trước mũi là nước, color() trả "none".'],
-      sao: { o: 12, nhip: 6 },
+      sao: { o: 10, nhip: 7 },
       loiGiai: { chinh: GIAO.slice(), hamCuaMan: LUI() } }),
 
     man(5, { ten: 'Nhầm màu',
@@ -70,7 +71,7 @@
       san: [SAN, SAN], mau: [MAU, MAU], vatMau: [SONG('.....r'), SONG('.....b')], batDau: [BD, BD],
       maMau: { chinh: GIAO.map(function (d) { return d === 'if c == "red":' ? 'if c == "blue":' : d; }), hamCuaMan: LUI() },
       goiY: ['Bến đỏ ở xa hơn, phải lùi 3 ô. Bến xanh dương ở gần, lùi 1 ô.'],
-      sao: { o: 12, nhip: 6 },
+      sao: { o: 10, nhip: 7 },
       loiGiai: { chinh: GIAO.slice(), hamCuaMan: LUI() } }),
 
     man(6, { ten: 'Bè ở xa',
@@ -80,7 +81,7 @@
       vatMau: [SONG('........r'), SONG('.........b')],
       batDau: [{ x: 6, y: 1, huong: 1 }, { x: 6, y: 1, huong: 1 }],
       goiY: ['Mặt nước đọc ra "none": lặp forward() khi color() còn là "none".', 'Dừng rồi thì ghi c = color(), gọi bat() để lùi một ô và tung lưới, chọn số ô cần lùi theo c, cuối cùng tha().'],
-      sao: { o: 16, nhip: 10 },
+      sao: { o: 14, nhip: 11 },
       loiGiai: { chinh: ['while color() == "none":', '    forward()', 'c = color()', 'bat()', 'if c == "red":', '    lui(6)', 'else:', '    lui(4)', 'tha()'], hamCuaMan: BA_HAM() } }),
 
     man(7, { ten: 'Tham số là màu',
@@ -91,11 +92,11 @@
       batDau: BD,
       canThamSo: true,
       goiY: ['Trong hàm viết y như các màn trước, chỉ khác là c do nơi gọi truyền vào.', 'Chương trình chính: c = color(), giao(c), sang làn dưới, tới sát bè, c = color(), giao(c).'],
-      sao: { o: 21, nhip: 18 },
+      sao: { o: 19, nhip: 20 },
       loiGiai: {
         chinh: ['c = color()', 'giao(c)', 'turn_right()', 'forward()', 'forward()', 'turn_left()', 'for i in range(4):', '    forward()', 'c = color()', 'giao(c)'],
         hamCuaMan: LUI(),
-        hamCuaEmMoi: [H('giao', ['c'], ['backward()', 'cast_net()', 'wait()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()', 'wait()'])]
+        hamCuaEmMoi: [H('giao', ['c'], ['backward()', 'cast_net()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()'])]
       } }),
 
     man(8, { ten: 'Ba bến ba màu',
@@ -104,10 +105,10 @@
       mau: [SONG('..r.b.y..'), SONG('...r.b.y..'), SONG('..r.b.y..')],
       vatMau: [SONG('........r'), SONG('.........y'), SONG('........b')],
       batDau: [{ x: 7, y: 1, huong: 1 }, { x: 7, y: 1, huong: 1 }, { x: 7, y: 1, huong: 1 }],
-      sao: { o: 16, nhip: 9 },
+      sao: { o: 14, nhip: 10 },
       loiGiai: {
         chinh: ['while color() == "none":', '    forward()', 'c = color()', 'if c == "red":', '    giao(6)', 'elif c == "blue":', '    giao(4)', 'else:', '    giao(2)'],
-        hamCuaEmMoi: [H('giao', ['n'], ['backward()', 'cast_net()', 'wait()', 'for i in range(n):', '    backward()', 'drop_net()', 'wait()'])]
+        hamCuaEmMoi: [H('giao', ['n'], ['backward()', 'cast_net()', 'for i in range(n):', '    backward()', 'drop_net()'])]
       },
       huyHieu: { ma: 'mau', ten: 'Mắt sông' } })
   ]);

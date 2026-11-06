@@ -35,13 +35,13 @@
       tieuDeGhep: 'Mỗi lệnh làm gì',
       ghep: [
         { lenh: ['forward'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
-        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
-        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ', ket: { x: 2, y: 2, huong: 3 } },
+        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ, mất 2 nhịp', ket: { x: 2, y: 2, huong: 1 } },
+        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ, mất 2 nhịp', ket: { x: 2, y: 2, huong: 3 } },
         { lenh: ['backward'], ra: 'Lùi 1 ô', ket: { x: 2, y: 3, huong: 0 } }
       ],
-      gioi: ['Rẻ, dễ điều khiển', 'Quay 90° chỉ trong một nhịp'],
-      khong: ['Không leo được bậc thang', 'Không đi ngang được', 'Đứng trên băng chuyền đủ 2 nhịp thì bị đẩy đi 1 ô'],
-      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp, không cần gọi wait().', 'Xe có hướng mặt: forward() đi theo hướng mũi xe đang quay.']
+      gioi: ['Rẻ, dễ điều khiển', 'Đi thẳng nhanh: mỗi ô 1 nhịp'],
+      khong: ['Rẽ chậm: mỗi lần quay mất 2 nhịp', 'Không leo được bậc thang', 'Không đi ngang được', 'Đứng trên băng chuyền đủ 2 nhịp thì bị đẩy đi 1 ô'],
+      luuY: ['Tiến, lùi mất 1 nhịp, quay mất 2 nhịp. Lệnh tự chạy đủ số nhịp của nó.', 'Xe có hướng mặt: forward() đi theo hướng mũi xe đang quay.']
     },
     'xich': {
       khe: 'than', ten: 'Thân bánh xích',
@@ -85,7 +85,7 @@
       ],
       gioi: ['Đi 4 hướng mà không phải quay', 'Leo được bậc thang', { chu: 'Co chân chui qua gầm thấp', can: ['crouch'] }, { chu: 'Nhảy qua hố', can: ['crouch', 'stand'] }],
       khong: ['Chậm: mỗi bước mất 2 nhịp', { chu: 'Đứng thẳng thì không chui được gầm thấp', can: ['crouch'] }, 'Bước vào hố là rơi', 'Đi ngược băng chuyền thì bị đẩy về, đứng im'],
-      luuY: ['Mỗi lệnh go_…() tự chạy đủ 2 nhịp, không cần wait().']
+      luuY: ['Mỗi lệnh go_…() tự chạy đủ 2 nhịp.']
     },
     'drone': {
       khe: 'than', ten: 'Thân drone',
@@ -105,19 +105,12 @@
       khe: 'tay', ten: 'Tay kẹp',
       moTa: 'Tay gắn trước mũi xe, nhặt vật ở ô ngay trước mặt.',
       moTaThan: { nhen: 'Tay kẹp của nhện gắp và thả ngay ở ô nhện đang đứng.' },
-      lenh: ['arm_down', 'arm_up', 'grab', 'release'],
-      tieuDeGhepThan: { 'hai-banh': 'Nhặt và đặt vật' },
-      ghep: [
-        { than: 'hai-banh', lenh: ['arm_down', 'grab', 'arm_up'], ra: 'Nhặt vật: hạ tay, kẹp, nâng tay' },
-        { than: 'hai-banh', lenh: ['arm_down', 'release', 'arm_up'], ra: 'Đặt vật: hạ tay, thả, nâng tay' },
-        { khongThan: 'hai-banh', lenh: ['arm_down', 'grab', 'wait'], ra: 'Hạ tay rồi kẹp vật, trong một nhịp' },
-        { khongThan: 'hai-banh', lenh: ['arm_up', 'wait'], ra: 'Nâng vật lên, đi được' },
-        { khongThan: 'hai-banh', lenh: ['arm_down', 'release', 'wait'], ra: 'Hạ tay rồi đặt vật xuống' }
-      ],
+      lenh: ['pick', 'drop'],
+      moTaLenh: { pick: 'Nhặt vật ở ô trước mũi: tự hạ tay, kẹp rồi nâng tay', drop: 'Đặt vật xuống ô trước mũi: tự hạ tay, thả rồi nâng tay' },
+      moTaLenhThan: { nhen: { pick: 'Nhặt vật ở ô đang đứng: tự hạ tay, kẹp rồi nâng tay', drop: 'Đặt vật xuống ô đang đứng: tự hạ tay, thả rồi nâng tay' } },
       gioi: ['Nhặt vật lên, mang đi, đặt xuống'],
-      khong: ['Vật nằm đất: phải hạ tay rồi mới kẹp được', 'Tay đang hạ thì xe không đi được', 'Thả vật lúc tay đang nâng thì vật rơi vỡ'],
-      luuY: [{ chu: 'Mỗi lệnh tay tự chiếm đúng 1 nhịp, không cần gọi wait().', than: 'hai-banh' },
-        { chu: 'Lệnh tay chỉ là ra lệnh, wait() mới làm.', khongThan: 'hai-banh' }, { chu: 'Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.', khongThan: 'hai-banh' },
+      khong: ['Mỗi lần chỉ mang được một vật'],
+      luuY: ['Mỗi lệnh tự chạy đủ 2 nhịp.',
         { chu: 'Trên nhện, tay gắp và thả ngay ở ô nhện đang đứng. Nhện đứng trùm lên vật được, không cần đứng cạnh.', than: 'nhen' }]
     },
     /* Gói V8c: 'xoay' là CÙNG cái tay kẹp, được mở thêm arm_left / arm_right (nangCapCua: 'kep'), như bánh lùi mở thêm cho cùng hai bánh. Tên hiển thị vẫn "Tay kẹp".
@@ -151,7 +144,7 @@
       gioi: [{ chu: 'Hút vật sắt cách tới 2 ô về dính ở mũi xe', khongThan: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô', khongThan: 'nhen' },
         { chu: 'Cực nào cũng hút vật sắt ở ô đang đứng', than: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì nằm yên', than: 'nhen' }],
       khong: ['Không hút được vật gỗ', 'Không đẩy được vật sắt', 'Mỗi lần chỉ dính một vật'],
-      luuY: [{ chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên xuồng, ô trước mũi phải là nước thì mới thả được.', than: 'xuong' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
+      luuY: ['Mỗi lệnh nam châm tự chạy 1 nhịp, robot đứng yên trong nhịp đó.', { chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên xuồng, ô trước mũi phải là nước thì mới thả được.', than: 'xuong' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
         { chu: 'Trên nhện, nam châm treo dưới bụng: hút và thả vật sắt ở ô ngay dưới, mang theo khi đi và khi nhảy qua hố.', than: 'nhen' },
         { chu: 'Mang thùng sắt bước vào hố: thùng đỡ chân, nhện không rơi. Gọi magnet_off() để thả thùng lấp hố, ô đó thành sàn.', than: 'nhen' },
         { chu: 'Còn bật nam châm thì thùng sắt dưới hố giữ nhện lại, không bước đi được.', than: 'nhen' }]
@@ -181,10 +174,10 @@
       moTaLenhThan: { drone: { spray: 'Tưới ô đất dưới bụng', seed: 'Gieo hạt màu c xuống ô dưới bụng' } },
       lenh: ['spray', 'spray_back', 'seed'],
       gioi: [{ chu: 'Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền chạy / dừng', khongThan: 'drone' }, { chu: 'Phun nhẹ bay xa nhất 2 ô, xe đứng yên', khongThan: 'drone' }, { chu: 'Tia nước bay qua hàng rào thấp và băng chuyền', khongThan: 'drone' },
-        { chu: 'Ô đất khô hiện số lần còn phải tưới', than: 'drone' }, { chu: 'Làm trước khi bay: spray() rồi go_right() chỉ tốn 1 nhịp', than: 'drone' }],
+        { chu: 'Ô đất khô hiện số lần còn phải tưới', than: 'drone' }, { chu: 'Tưới, gieo nhanh: mỗi lệnh 1 nhịp', than: 'drone' }],
       khong: ['Một nhịp chỉ phun một lần', { chu: 'Nhịp phun thì bánh nghỉ', khongThan: 'drone' }, { chu: 'Tia nước không đẩy được thùng nặng', khongThan: 'drone' },
         { chu: 'Tưới ô đất không khô thì úng, phải chơi lại', than: 'drone' }, { chu: 'Gieo ngoài ô cần gieo thì hỏng, phải chơi lại', can: ['seed'] }],
-      luuY: [{ chu: 'Lệnh phun cũng chỉ là ra lệnh, wait() mới phun.', khongThan: 'drone' }, { chu: 'Lệnh tưới và gieo chỉ là ra lệnh, wait() hay go_...() kế đó mới làm.', than: 'drone' }, { chu: 'Gieo sai màu thì gieo lại đúng màu lên ô đó.', can: ['seed'] }, { chu: 'Từ gói Lực phun, lệnh phun nhận một lực: "high" phun mạnh, bay xa nhưng xe giật một ô, giật vào thùng nặng thì thùng nhích một ô; "low" hay không viết gì là phun nhẹ.', khongThan: 'drone' }]
+      luuY: [{ chu: 'Lệnh phun cũng chỉ là ra lệnh, wait() mới phun.', khongThan: 'drone' }, { chu: 'Lệnh tưới, gieo tự chạy 1 nhịp, drone đứng yên trong nhịp đó.', than: 'drone' }, { chu: 'Gieo sai màu thì gieo lại đúng màu lên ô đó.', can: ['seed'] }, { chu: 'Từ gói Lực phun, lệnh phun nhận một lực: "high" phun mạnh, bay xa nhưng xe giật một ô, giật vào thùng nặng thì thùng nhích một ô; "low" hay không viết gì là phun nhẹ.', khongThan: 'drone' }]
     },
 
     /* ------------------------------------------------------------ CẢM BIẾN */
@@ -335,36 +328,37 @@
       tieuDeGhep: 'Mỗi lệnh làm gì',
       ghep: [
         { lenh: ['forward'], ra: 'Tiến 1 ô nước', ket: { x: 2, y: 1, huong: 0 } },
-        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
-        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ', ket: { x: 2, y: 2, huong: 3 } },
+        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ, 1 nhịp', ket: { x: 2, y: 2, huong: 1 } },
+        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ, 1 nhịp', ket: { x: 2, y: 2, huong: 3 } },
         { lenh: ['backward'], ra: 'Lùi 1 ô nước', ket: { x: 2, y: 3, huong: 0 } }
       ],
       gioi: [
         'Lướt trên các ô nước ~, bến phao Q, bến hàng q và cống mở k',
+        'Quay nhanh: đi hay quay đều 1 nhịp',
         { can: ['anchor'], chu: 'anchor() thả neo giữ xuồng không bị dòng nước cuốn trôi khi đứng chờ' }
       ],
       khong: [
         'Không lên được bờ đất . hay bờ kè # và không đi xuyên qua cống đóng K',
         { can: ['anchor'], chu: 'Đang thả neo thì không tiến, lùi hay quay được cho tới khi gọi unanchor()' }
       ],
-      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp.', 'Trên ô có dòng nước chảy, mỗi nhịp xuồng bị đẩy theo chiều dòng, kể cả khi wait().']
+      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp.', 'Trên ô có dòng nước chảy, mỗi nhịp xuồng bị đẩy theo chiều dòng, kể cả nhịp đang tung lưới hay đứng yên.']
     },
     'day-keo': {
       khe: 'tay', ten: 'Tay lưới thủy lợi',
       moTa: 'Vòng lưới phao gắn trên xuồng để tung lưới ra 4 phía bắt vật nổi hoặc giật van cống.',
       moTaThan: { drone: 'Vòng lưới treo dưới bụng drone, tung ra 4 phía bắt vật trên mặt đất.' },
-      moTaLenhThan: { drone: { cast_net: 'Tung lưới theo hướng d, bắt vật cách drone đúng 2 ô', drop_net: 'Thả vật trong lưới xuống ô nó đang nằm' } },
+      moTaLenhThan: { drone: { cast_net: 'Tung lưới theo hướng d, bắt vật cách drone đúng 2 ô, mất 2 nhịp', drop_net: 'Thả vật trong lưới xuống ô nó đang nằm, 1 nhịp' } },
       lenh: ['cast_net', 'drop_net', 'set_length'],
       moTaLenh: {
-        cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van V',
-        drop_net: 'Mở lưới thả vật đang giữ xuống đúng ô nước hiện tại của nó',
+        cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van V, mất 2 nhịp',
+        drop_net: 'Mở lưới thả vật đang giữ xuống đúng ô nước hiện tại của nó, 1 nhịp',
         set_length: 'Đặt độ dài dây lưới từ 0 đến 3, với 0 là kéo vật về khoang tàu và 1 đến 3 là số ô dây dưới nước'
       },
       ghep: [
-        { lenh: ['cast_net', 'wait'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van V trên bờ', khongThan: 'drone' },
-        { lenh: ['drop_net', 'wait'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng q', khongThan: 'drone' },
-        { lenh: ['cast_net', 'wait'], ra: 'Tung lưới bắt vật cách drone 2 ô', than: 'drone' },
-        { lenh: ['drop_net', 'wait'], ra: 'Mở lưới thả vật xuống ô nó đang nằm', than: 'drone' },
+        { lenh: ['cast_net'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van V trên bờ', khongThan: 'drone' },
+        { lenh: ['drop_net'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng q', khongThan: 'drone' },
+        { lenh: ['cast_net'], ra: 'Tung lưới bắt vật cách drone 2 ô', than: 'drone' },
+        { lenh: ['drop_net'], ra: 'Mở lưới thả vật xuống ô nó đang nằm', than: 'drone' },
         { lenh: ['set_length', 'wait'], ra: 'Thu dây kéo vật về khoang tàu hoặc thả dây ra độ dài mới' }
       ],
       gioi: [
@@ -382,7 +376,7 @@
         { chu: 'Không bay được về phía vật trong lưới', than: 'drone' },
         { can: ['set_length'], chu: 'Khi vật đang nằm trong khoang tàu ở độ dài 0 thì phải gọi set_length(n) thả ra mặt nước trước khi gọi drop_net()' }
       ],
-      luuY: [{ chu: 'Gọi drop_net() rồi wait() khi vật trong lưới đang nằm ngay trên ô bến hàng q để giao hàng.', khongThan: 'drone' }, { chu: 'Gọi drop_net() rồi wait() khi vật trong lưới đang nằm trên ô đích.', than: 'drone' }]
+      luuY: [{ chu: 'Gọi drop_net() khi vật trong lưới đang nằm ngay trên ô bến hàng q để giao hàng.', khongThan: 'drone' }, { chu: 'Gọi drop_net() khi vật trong lưới đang nằm trên ô đích.', than: 'drone' }]
     },
     'dong-chay': {
       khe: 'camBien', ten: 'Chong chóng dòng chảy',
@@ -522,7 +516,7 @@
     function loc(ds) {
       return (ds || []).filter(function (m) { return hienMuc(m, lenh, than) && (!moi || dungMoi(m, moi)); }).map(chuMuc);
     }
-    return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : (d.moTaThan && d.moTaThan[than]) || d.moTa, lenh: dsLenh, tieuDeGhep: (d.tieuDeGhepThan && d.tieuDeGhepThan[than]) || d.tieuDeGhep, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
+    return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : (d.moTaThan && d.moTaThan[than]) || d.moTa, lenh: dsLenh, tieuDeGhep: d.tieuDeGhep, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
   }
 
   /* ---------------------------------------------------------- MỘT BỘ PHẬN, NHIỀU MÃ (gói V8c)

@@ -51,10 +51,7 @@
    */
   function khoiTheo(ds, chuKhoi, chuThe, o) {
     o = o || {};
-    // wait được ghim ở mọi thẻ: nó không chứng minh các khối tay/cảm biến đã hiện.
-    var chinh = ds.filter(function (s) { return !/^khoi:(?:goc:)?wait$/.test(s); });
-    if (!chinh.length) chinh = ds;
-    function dungThe() { return chinh.some(thay); }
+    function dungThe() { return ds.some(thay); }
     var b = {
       dich: function () {
         if (o.xuong && !xuongMo()) return [];

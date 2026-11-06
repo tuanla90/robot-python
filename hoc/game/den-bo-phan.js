@@ -19,7 +19,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   'use strict';
 
   var CAM_BIEN = ['front_clear', 'left_clear', 'right_clear', 'front_metal', 'front_pole', 'color', 'look', 'battery', 'distance', 'warm', 'radar', 'shape', 'hear', 'listen'];     // distance / warm: cảm biến hồng ngoại (mùa 2); radar / shape: mùa 7; hear / listen: mùa 8
-  var TAY_LEN = ['arm_up', 'arm_down'], KEP_LEN = ['grab', 'release'], NC_LEN = ['magnet_n', 'magnet_s', 'magnet_off'], NEM_LEN = ['load', 'throw'];
+  var TAY_LEN = ['arm_up', 'arm_down', 'pick', 'drop'], KEP_LEN = ['grab', 'release', 'pick', 'drop'], NC_LEN = ['magnet_n', 'magnet_s', 'magnet_off'], NEM_LEN = ['load', 'throw'];
   // khóa → { hinh: [tên hình khi trạng thái A, B], mau: màu khi sáng, nhan: khóa chữ }
   var BP = {
     banhT: { hinh: ['denBanh'], mau: BM.ngocToi, nhan: 'choi.den.banhT' },
@@ -68,7 +68,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     kq.banhT = banh.trai !== 0 || truot;
     kq.banhP = banh.phai !== 0 || truot;
     kq.truot = truot;
-    kq.tay = coTrong(lenhTruoc, TAY_LEN);
+    kq.tay = coTrong(lenhTruoc, TAY_LEN) || !!(e && e.tayDoi);
     kq.xoay = coTrong(lenhTruoc, ['arm_left', 'arm_right']);
     kq.kep = coTrong(lenhTruoc, KEP_LEN);
     kq.namCham = coTrong(lenhTruoc, NC_LEN) || !!(rb.namCham && rb.namCham.bat);

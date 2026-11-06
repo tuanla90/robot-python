@@ -667,7 +667,7 @@
       } else if (e0.vat === 'vat') {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ô đó có một vật nằm đất: vật chiếm ô nên xe vướng vật và đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          ' Muốn đi qua ô đó phải gắp vật lên trước (hạ tay, grab()), hoặc đi đường vòng.';
+          ' Muốn đi qua ô đó phải nhặt vật lên trước bằng pick(), hoặc đi đường vòng.';
       } else if (e0.vat === 'thung-nang' && e0.xichDay) {                    // xích đẩy thùng (mùa 2, cfg.xichDay): ô sau thùng bị chặn nên không đẩy được
         s2 = 'Ở nhịp ' + e0.nhip + ', xích tiến vào thùng nặng ở ô (' + e0.den.x + ', ' + e0.den.y + ') để đẩy nó đi, nhưng ô sau thùng, (' + e0.sau.x + ', ' + e0.sau.y + '), là ' +
           (LY_DO_THUNG[e0.chan] || e0.chan) + ' nên thùng không nhúc nhích, xích đứng yên (vẫn mất một nhịp).' +
@@ -865,7 +865,7 @@
       var tb0 = thaChan[0], mtb = tb0.lenh ? (g.anhXa[tb0.lenh.dongPy] || null) : null;
       if (tb0.kieu === 'kep') {
         var tbTrai = tb0.huongTay !== undefined && tb0.huongTay !== 'truoc';       // tay xoay đang chỉ sang bên
-        them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', release() không thả được vật: ô ' + (tbTrai ? oTayNgan(tb0.huongTay) : man.loaiRobot === 'nhen' ? 'nhện đang đứng' : 'ngay trước mặt xe') + ', (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
+        them('tha-bi-chan', 'Ở nhịp ' + tb0.nhip + ', không thả được vật: ô ' + (tbTrai ? oTayNgan(tb0.huongTay) : man.loaiRobot === 'nhen' ? 'nhện đang đứng' : 'ngay trước mặt xe') + ', (' + tb0.o.x + ', ' + tb0.o.y + '), là ' + (LY_THA[tb0.vat] || tb0.vat) +
           ' nên vật vẫn nằm trong kẹp.' + (thaChan.length > 1 ? ' Chuyện này xảy ra ' + thaChan.length + ' lần.' : '') +
           (tbTrai ? ' Vật chỉ đặt xuống được ô sàn trống mà tay đang chỉ: xoay tay sang hướng khác hay đi tới chỗ khác rồi thả.' : ' Vật chỉ đặt xuống được ô sàn trống ngay trước mặt: xoay hay đi tới chỗ khác rồi thả.'), { nhip: tb0.nhip, soLan: thaChan.length, o: tb0.o, vat: tb0.vat, kieu: 'kep', huongTay: tb0.huongTay, cho: cho(mtb) });
       } else if (man.loaiRobot === 'drone' || man.loaiRobot === 'nhen') {      // nam châm treo dưới bụng: drone, nhện (mùa 3)
@@ -1673,7 +1673,9 @@
       var laRe = !!(re && typeof man.giaLap === 'number' && man.giaLap <= re.gia);                   // màn lắp ráp: robot lắp rẻ (≤ sao.re.gia xu)
       var nguongO = laRe && re.o !== undefined ? Math.max(sao.o === undefined ? re.o : sao.o, re.o) : sao.o;
       ketQua.re = laRe; ketQua.nguongO = nguongO;
-      ketQua.sao = 1 + (nguongO !== undefined && ketQua.soO <= nguongO ? 1 : 0) + ((sao.nhip !== undefined && ketQua.soNhip <= sao.nhip) || laRe ? 1 : 0);
+      ketQua.datO = nguongO !== undefined && ketQua.soO <= nguongO;                                  // hai mốc riêng: game cộng dồn qua các lần chạy (luu.js ghiMoc)
+      ketQua.datNhip = (sao.nhip !== undefined && ketQua.soNhip <= sao.nhip) || laRe;
+      ketQua.sao = 1 + (ketQua.datO ? 1 : 0) + (ketQua.datNhip ? 1 : 0);
     } else {
       var khongQua = lyDoKhongQua(man);
       if (khongQua) ketQua.chanDoan.unshift({ muc: 'loi', ma: 'lap-khong-qua', loi: 'Robot lắp thế này không qua được màn, viết code nào cũng vậy. ' + khongQua + ' Bấm Lắp lại để đổi bộ phận.' });
@@ -1829,7 +1831,9 @@
     if (thangHet) {
       var sao = man.sao || {};
       ketQua.re = false; ketQua.nguongO = sao.o;
-      ketQua.sao = 1 + (sao.o !== undefined && ketQua.soO <= sao.o ? 1 : 0) + (sao.nhip !== undefined && ketQua.soNhip <= sao.nhip ? 1 : 0);
+      ketQua.datO = sao.o !== undefined && ketQua.soO <= sao.o;
+      ketQua.datNhip = sao.nhip !== undefined && ketQua.soNhip <= sao.nhip;
+      ketQua.sao = 1 + (ketQua.datO ? 1 : 0) + (ketQua.datNhip ? 1 : 0);
     }
     return xong();
   }

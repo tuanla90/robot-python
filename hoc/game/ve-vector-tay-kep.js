@@ -27,7 +27,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function mauDen(ha) { return ha ? BM.robotCam : BM.vecDen; }
   /* khớp tròn tâm (x, y): vành bạc r 7, đèn báo nâng / hạ r 3 ở giữa (gói V8c: tay kẹp và tay xoay cùng một khớp; tay xoay quay cánh tay quanh đúng tâm này) */
   function khop(g, H, x, y, ha) { H.tron(g, x, y, 7); H.to(g, BM.vecBac); H.vien(g, BM.vecVien, 2.5); H.tron(g, x, y, 3); H.to(g, mauDen(ha)); }
-  V.dangKy({ loai: 'tay', ma: 'kep', hamGoc: ['arm_down',  'arm_up',  'grab',  'release'], ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: Y_VAT, canh: V.VAT_SAN / V.CO_THAN, ha: HA },
+  V.dangKy({ loai: 'tay', ma: 'kep', hamGoc: ['pick',  'drop',  'arm_down',  'arm_up',  'grab',  'release'], ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: Y_VAT, canh: V.VAT_SAN / V.CO_THAN, ha: HA },
     dungChung: { cang: cang, cum: cum, khop: khop, mauDen: mauDen, MO: MO, HA: HA },   // gói V8b / V8c: tay xoay (ve-vector-tay-xoay.js) vẽ bằng đúng các hàm này
     ve: function (g, s, M, H) {
     s = s || {};

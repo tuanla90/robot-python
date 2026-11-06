@@ -46,6 +46,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function mauKeTiep(m) { return MAU_VONG[(MAU_VONG.indexOf(m || null) + 1) % MAU_VONG.length]; }
   var DS_LIST_MAC_DINH = [2, 3, 1], DS_LIST_MAU_MAC_DINH = ['red', 'blue', 'red'], DS_LIST_TOI_DA = 5;                      // danh sách thử mặc định của đối số kiểu list, số ô tối đa trên thanh tên hàm
   var DS_GOI_Y = ['n', 'k', 'a', 'b', 'd', 'x'], DS_TOI_DA = 2, DS_THU_MAC_DINH = 2;     // gợi ý tên đối số, số đối số tối đa của hàm mới, giá trị thử mặc định
+  var TEN_HAM_GOI_Y = ['di_thang', 'quay_lai', 'lam_viec', 'mot_luot'];                  // tên chung gợi ý cho hàm mới (hộp đặt tên)
 
   /* -------------------------------------------------------------- dựng DOM */
   function dung(host, app) {
@@ -869,11 +870,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var f = ((man.loiGiai && man.loiGiai.hamCuaEmMoi) || []).filter(function (x) { return x.ten === ten; })[0];
     return f && f.thamSo ? f.thamSo.slice() : [];
   }
-  /** Từ chương "Hàm có tham số" trở đi, hộp hàm mới có chỗ khai đối số (trước đó chưa học nên không hiện). */
+  /** Từ màn đầu tiên dạy tham số (man.khaiDoiSo) trở đi, hộp hàm mới có chỗ khai đối số (trước đó chưa học nên không hiện). */
   function coChoKhaiDoiSo(man) {
-    if (man.khaiDoiSo) return true;                                                             // mùa 3 trở đi: màn dạy tham số tự khai cờ này
-    var th = (window.ThuTuChuong && ThuTuChuong.thuTu) || [], a = th.indexOf('tham-so');
-    return a >= 0 && th.indexOf(man.chuong) >= a;
+    var ds = (window.ManHoc && ManHoc.danhSach) || [], g = man.manGoc || man, i;
+    for (i = 0; i < ds.length; i++) {
+      if (ds[i].ma === g.ma) return !!man.khaiDoiSo;
+      if (ds[i].khaiDoiSo) return true;
+    }
+    return !!man.khaiDoiSo;
+  }
+  /** Tên gợi ý cho hàm mới: tên hàm trong lời giải của màn, rồi vài tên chung, bỏ tên đã có. [{ ten, thamSo }], tối đa 4. */
+  function goiYTenHam(man, hamMan) {
+    var lg = (man.loiGiai && man.loiGiai.hamCuaEmMoi) || [];
+    var ds = lg.map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice() }; })
+      .concat(TEN_HAM_GOI_Y.map(function (n) { return { ten: n, thamSo: [] }; }));
+    function daCo(n) { return !!KhoHam.tim(n) || (hamMan || []).some(function (f) { return f.ten === n; }); }
+    return ds.filter(function (x, i) { return !daCo(x.ten) && ds.map(function (y) { return y.ten; }).indexOf(x.ten) === i; }).slice(0, 4);
   }
 
   /** Thân hàm chưa có dòng lệnh nào (chỉ dòng trống / chú thích). */
@@ -910,6 +922,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var kt = KhoHam.kiemTen(ten, undefined, tc);
       if (!kt.ok && kt.ma === 'ten-da-co') { xoaLoi(); loi.classList.add('co'); loi.appendChild(hangMo(kt.loi, ten)); return; }
       if (!kt.ok) return baoLoi(kt.loi);
+      if ((A.bai().hamCuaMan || []).some(function (f) { return f.ten === ten; })) return baoLoi(t('ten.trungHamMan', { ten: ten }));
       var thamSo = dsTen.map(function (x) { return String(x).trim(); });
       if (thamSo.some(function (x) { return !x; })) return baoLoi(t('ten.doiSoTrong'));
       var r = KhoHam.tao(ten, thamSo, tc);
@@ -928,6 +941,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (dangTrong) m.than.appendChild(hangMo(t('ten.dangTrong', { ten: dangTrong }), dangTrong));
     m.than.appendChild(inp);
 
+    // ---- chip tên hàm gợi ý: chạm là điền tên; hàm mẫu có tham số thì điền luôn đối số nếu em chưa khai
+    var veDs = null, chipTen = h('div', 'ten-chips');
+    function veChipTen() {
+      Array.prototype.forEach.call(chipTen.children, function (c) { c.classList.toggle('on', c.getAttribute('data-ten') === inp.value.trim()); });
+    }
+    if (!coDinh) {
+      goiYTenHam(man, A.bai().hamCuaMan).forEach(function (g) {
+        var c = h('button', 'bt g-wd ds-chip ten-chip', g.ten); c.setAttribute('data-ten', g.ten); c.setAttribute('data-nut', 'chip-ten-ham');
+        c.addEventListener('click', function () {
+          inp.value = g.ten; xoaLoi(); veChipTen();
+          if (hienDs && !dsTen.length && g.thamSo.length) { dsTen = g.thamSo.slice(0, DS_TOI_DA); chon = 0; veDs(); }
+        });
+        chipTen.appendChild(c);
+      });
+      if (chipTen.children.length) m.than.appendChild(chipTen);
+    }
+
     // ---- khai đối số: ten( [n] [k] )  [+ đối số]  và hàng chip tên gợi ý
     if (hienDs) {
       var dsEl = h('span', 'ds-ds'), them = h('button', 'bt g-gr ds-them', t('ten.themDoiSo')), chips = h('div', 'ds-chips');
@@ -944,7 +974,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         });
       };
       var danhDau = function () { Array.prototype.forEach.call(dsEl.children, function (o, k) { o.classList.toggle('on', k === chon); }); veChip(); };
-      var veDs = function () {
+      veDs = function () {
         dsEl.innerHTML = '';
         dsTen.forEach(function (n, k) {
           var o = h('span', 'ds-o' + (k === chon ? ' on' : ''));
@@ -992,7 +1022,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (!coDinh) hang.appendChild(TP.Hop.nut('g-wd', t('chung.huy'), function () { TP.Hop.dong(); }, 'huy'));
     hang.appendChild(TP.Hop.nut('g-gr', t('ten.tao'), function () { tao(inp.value); }, 'tao'));
     m.than.appendChild(hang);
-    inp.addEventListener('input', xoaLoi);
+    inp.addEventListener('input', function () { xoaLoi(); veChipTen(); });
     inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tao(inp.value); });
   }
 

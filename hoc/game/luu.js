@@ -55,6 +55,7 @@
         var n = d.sao[id];
         if (typeof n === 'number' && n >= 0 && n <= 3) tienDo.sao[id] = Math.floor(n);
       });
+      if (d.moc && typeof d.moc === 'object') tienDo.moc = d.moc;
     }
     if (window.ManHoc && window.ManHoc.phienBanLoTrinh === 2) {
       tienDo.phienBanLoTrinh = 2;
@@ -71,6 +72,18 @@
   /** Ghi sao nếu tốt hơn bản cũ. Trả về sao tốt nhất mới. */
   function ghiSao(id, sao) {
     if (sao > saoTot(id)) { tienDo.sao[id] = sao; ghiJson(KHOA_TIEN_DO, tienDo); }
+    return saoTot(id);
+  }
+  /** Hai mốc của màn đã đạt qua mọi lần chạy: { o: gọn, nhip: nhanh }. */
+  function mocTot(id) { var m = tienDo.moc && tienDo.moc[id]; return { o: !!(m && m.o), nhip: !!(m && m.nhip) }; }
+  /** Thắng một lần chạy: cộng dồn mốc đạt được (một bài gọn, một bài nhanh vẫn đủ 3 sao), ghi sao theo tổng. Trả về sao tốt nhất mới. */
+  function ghiMoc(id, datO, datNhip) {
+    var m = mocTot(id);
+    m.o = m.o || !!datO; m.nhip = m.nhip || !!datNhip;
+    tienDo.moc = tienDo.moc || {};
+    tienDo.moc[id] = m;
+    tienDo.sao[id] = Math.max(saoTot(id), 1 + (m.o ? 1 : 0) + (m.nhip ? 1 : 0));
+    ghiJson(KHOA_TIEN_DO, tienDo);
     return saoTot(id);
   }
 
@@ -286,7 +299,7 @@
   var Luu = {
     chuyenCu: chuyenCu, docTienDo: docTienDo, doiTenPhun: doiTenPhun, TEN_PHUN: TEN_PHUN,
     kho: kho, laBoNho: laBoNho,
-    saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
+    saoTot: saoTot, daQua: daQua, ghiSao: ghiSao, ghiMoc: ghiMoc, mocTot: mocTot,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docSanThu: docSanThu, ghiSanThu: ghiSanThu, xoaSanThu: xoaSanThu,
     docLap: docLap, ghiLap: ghiLap, xoaLap: xoaLap,

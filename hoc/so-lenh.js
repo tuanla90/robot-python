@@ -268,7 +268,7 @@
     g('left_back', 'left_move', 'Bánh trái quay lùi'),
     g('right_move', 'right_back', 'Bánh phải quay tới'),
     g('right_back', 'right_move', 'Bánh phải quay lùi'),
-    g('wait', null, 'Hết một nhịp: xe làm theo các lệnh đã ra'),
+    g('wait', null, 'Đứng đợi một nhịp, không làm gì'),
     g('arm_down', 'arm_up', 'Hạ tay xuống sát đất'),
     g('arm_up', 'arm_down', 'Nâng tay lên'),
     g('arm_left', 'arm_right', 'Tay kẹp: xoay một nấc sang trái'),

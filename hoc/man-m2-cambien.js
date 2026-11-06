@@ -9,9 +9,9 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
+  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
   var CHON_CUC = ['if front_pole() == "N":', '    magnet_s()', 'elif front_pole() == "S":', '    magnet_n()'];
-  var CUOI = ['magnet_off()', 'wait()'];
+  var CUOI = ['magnet_off()'];
   function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
   function FOR(n, than) { return ['for i in range(' + n + '):'].concat(than.map(function (s) { return '    ' + s; })); }
   /** Sân một hàng đường đi: hàng rỗng trên, dưới. */
@@ -25,6 +25,7 @@
     m.vaHoac = true;
     m.mucTieu = 'dua-vat';
     m.moXuong = true;
+    m.phienBanNoiDung = 1;                     // wait() không còn chốt lệnh: bản nháp cũ không dùng nữa
     ManHoc.khuon(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -37,7 +38,7 @@
       san: HANG('.....o.D'),
       vatChat: HANG('.....s..'),
       batDau: BD, vatCan: 'sat',
-      sao: { o: 9, nhip: 15 },
+      sao: { o: 8, nhip: 16 },
       loiGiai: { chinh: ['while not front_metal():', '    go_right()', 'go_right()', 'go_right()', 'magnet_n()', 'go_right()', 'go_right()'].concat(CUOI) } }),
 
     man(2, { ten: 'Khác cực mới hút',
@@ -46,7 +47,7 @@
       vatChat: HANG('..N..'),
       batDau: BD, vatCan: 'nam-cham',
       duDoan: { hoi: 'Vật cực N ở phía trước. Nhện chạy lệnh nam châm nào?', luaChon: ['magnet_n()', 'magnet_s()', 'Cả hai lệnh'], dung: 1, xacMinh: { lenh: { magnet_s: 1, magnet_n: 0 } } },
-      sao: { o: 8, nhip: 9 },
+      sao: { o: 7, nhip: 10 },
       loiGiai: { chinh: CHON_CUC.concat(FOR(4, ['go_right()']), CUOI) } }),
 
     man(3, { ten: 'Nhánh còn thiếu',
@@ -56,7 +57,7 @@
       batDau: [BD, BD], vatCan: 'nam-cham',
       maMau: { chinh: ['if front_pole() == "N":', '    magnet_s()', 'elif front_pole() == "S":', '    '].concat(FOR(4, ['go_right()']), CUOI) },
       goiY: ['Vật cực S thì phải bật cực nào mới hút?'],
-      sao: { o: 8, nhip: 9 },
+      sao: { o: 7, nhip: 10 },
       loiGiai: { chinh: CHON_CUC.concat(FOR(4, ['go_right()']), CUOI) } }),
 
     man(4, { ten: 'Sắt hoặc cực N',
@@ -64,9 +65,9 @@
       san: [HANG('..o.D'), HANG('..o.D'), HANG('..o.D')],
       vatChat: [HANG('..s..'), HANG('..N..'), HANG('..S..')],
       batDau: [BD, BD, BD], vatCan: 'tu',
-      maMau: { chinh: ['for i in range(4):', '    go_right()', 'if front_metal() or front_pole() == "N":', '    magnet_n()', 'else:', '    magnet_s()', 'magnet_off()', 'wait()'] },
+      maMau: { chinh: ['for i in range(4):', '    go_right()', 'if front_metal() or front_pole() == "N":', '    magnet_n()', 'else:', '    magnet_s()', 'magnet_off()'] },
       goiY: ['Phải bật nam châm TRƯỚC khi đi, vì đi qua rồi đầu dò không còn thấy vật.', 'Cực nào cũng hút sắt, nên sắt và cực N dùng chung một nhánh.'],
-      sao: { o: 8, nhip: 9 },
+      sao: { o: 7, nhip: 10 },
       loiGiai: { chinh: ['if front_metal() or front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()'].concat(FOR(4, ['go_right()']), CUOI) } }),
 
     man(5, { ten: 'Bật nhầm cực',
@@ -76,7 +77,7 @@
       batDau: [BD, BD], vatCan: 'nam-cham',
       maMau: { chinh: ['while front_pole() == "none":', '    go_right()', 'if front_pole() == "N":', '    magnet_n()', 'elif front_pole() == "S":', '    magnet_n()'].concat(FOR(4, ['go_right()']), CUOI) },
       goiY: ['Cùng cực thì nam châm không hút.'],
-      sao: { o: 10, nhip: 13 },
+      sao: { o: 9, nhip: 14 },
       loiGiai: { chinh: ['while front_pole() == "none":', '    go_right()'].concat(CHON_CUC, FOR(4, ['go_right()']), CUOI) } }),
 
     man(6, { ten: 'Bỏ qua gỗ',
@@ -85,7 +86,7 @@
       vatChat: [HANG('..g..s...'), HANG('.g....s...')],
       batDau: [BD, BD], vatCan: 'sat',
       goiY: ['Thùng gỗ là vật đầu tiên thì front_metal() vẫn là False. Nhện đứng trùm lên gỗ được nên cứ đi tiếp.', 'Khi front_metal() đúng, thùng sắt còn cách 2 ô.'],
-      sao: { o: 7, nhip: 19 },
+      sao: { o: 6, nhip: 20 },
       loiGiai: { chinh: ['while not front_metal():', '    go_right()', 'magnet_n()'].concat(FOR(5, ['go_right()']), CUOI) } }),
 
     man(7, { ten: 'Hai vật: tự viết hàm',
@@ -94,8 +95,8 @@
       vatChat: [HANG('..N..S.'), HANG('..S..N.')],
       batDau: [BD, BD], vatCan: 'nam-cham',
       khung: { chinh: 3 },
-      goiY: ['Một lượt: đọc cực, bật cực ngược lại, đi 3 bước, tắt nam châm, wait().'],
-      sao: { o: 10, nhip: 14 },
+      goiY: ['Một lượt: đọc cực, bật cực ngược lại, đi 3 bước, tắt nam châm.'],
+      sao: { o: 9, nhip: 16 },
       loiGiai: {
         chinh: FOR(2, ['lay_vat()']),
         hamCuaEmMoi: [H('lay_vat', CHON_CUC.concat(FOR(3, ['go_right()']), CUOI))]
@@ -106,7 +107,7 @@
       san: [HANG('..oD.oD.oD'), HANG('..oD.oD.oD')],
       vatChat: [HANG('..s..N..S.'), HANG('..S..g..N.')],
       batDau: [BD, BD], vatCan: 'tu',
-      sao: { o: 10, nhip: 21 },
+      sao: { o: 9, nhip: 24 },
       loiGiai: { chinh: FOR(3, ['go_right()', 'if front_metal() or front_pole() == "N":', '    magnet_s()', 'elif front_pole() == "S":', '    magnet_n()', 'go_right()', 'go_right()'].concat(CUOI)) },
       huyHieu: { ma: 'che-nam-cham', ten: 'Thợ dò từ' } })
   ]);

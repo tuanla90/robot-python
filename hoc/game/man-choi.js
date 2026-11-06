@@ -78,7 +78,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     S.ed = new TP.Editor(q('.p-prog .rows'), {
       tong: 10, dung: 10, lay: function () { return S.bai ? S.bai.chinh : []; }, bang: q('#pan-main'), dem: q('.p-prog .ct'),
       nutXoaHet: q('[data-nut="xoa-het"]'), dangChay: function () { return S.busy; },
-      veNhip: function () { return !!S.man && S.man.loaiRobot !== 'nhen' && S.man.loaiRobot !== 'drone'; },        // ngoặc nhịp bên phải các dòng lệnh gốc + wait() cùng một nhịp (nhện / drone: go_* tự trôi nhịp, không vẽ)
+      veNhip: function () { return !!S.man && !SanHoc.SO_NHIP[S.man.loaiRobot]; },        // ngoặc nhịp bên phải các dòng lệnh gốc + wait() cùng một nhịp (nhện / drone: go_* tự trôi nhịp, không vẽ)
       thutLe: function () { return TP.coCauTruc(S.man, 'for') || TP.coCauTruc(S.man, 'if') || TP.coCauTruc(S.man, 'while'); },
       camBien: function () { return TP.camBienCua(manXe()); },                                    // điều kiện while / if chạm đổi được: front_clear() …
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
@@ -746,7 +746,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       S.field.mungThang();
       if (window.AmThanh) AmThanh.phat('thang');
       if (S.man.duDoan && S.duDoanChon !== S.man.duDoan.dung && !k.doanSai) { k.doanSai = true; k.sao = Math.max(1, k.sao - 1); }      // đoán sai vẫn qua màn, mất một sao (Chơi lại để đoán lại)
-      var tot = Luu.ghiSao(S.man.ma, k.sao);
+      var tot = S.man.duDoan ? Luu.ghiSao(S.man.ma, k.sao) : Luu.ghiMoc(S.man.ma, k.datO, k.datNhip);      // màn đoán: sao theo lượt đoán; màn khác: cộng dồn hai mốc qua các lần chạy
       sao3(tot);
       var my = S.rid;
       setTimeout(function () { if (my === S.rid) bangThang(); }, 750);
@@ -771,27 +771,31 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var nguongO = k.nguongO !== undefined ? k.nguongO : ss.o;
     var okO = nguongO === undefined || k.soO <= nguongO, okN = ss.nhip === undefined || k.soNhip <= ss.nhip || !!(re && k.re);
     var duaVat = m.mucTieu === 'dua-vat' || m.mucTieu === 'day-thung';
+    var mocCu = m.duDoan ? { o: false, nhip: false } : Luu.mocTot(m.ma);                 // mốc đã đạt ở lần chạy trước vẫn được tính
+    var daO = okO || mocCu.o, daN = okN || mocCu.nhip, soSao = m.duDoan ? k.sao : Math.max(k.sao, Luu.saoTot(m.ma));
     var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : m.mucTieu === 'to-hinh' ? 'thang.tieuDe.toHinh' : m.mucTieu === 'cham-dat' ? 'thang.tieuDe.chamDat' : m.mucTieu === 'dap-lua' ? 'thang.tieuDe.dapLua' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
-    hop.hop.setAttribute('data-sao', k.sao);
+    hop.hop.setAttribute('data-sao', soSao);
     var st = h('div', 'th-sao');
-    for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }
-    if (window.AmThanh) for (var si = 0; si < k.sao; si++) setTimeout(AmThanh.sao.bind(null, si), 150 + si * 220);      // tiếng sao khớp lúc từng sao hiện
+    for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < soSao ? ' on' : '')); w.appendChild(Ve.sao(i < soSao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }
+    if (window.AmThanh) for (var si = 0; si < soSao; si++) setTimeout(AmThanh.sao.bind(null, si), 150 + si * 220);      // tiếng sao khớp lúc từng sao hiện
     hop.than.appendChild(st);
     function dong(ok, chu) {
       var d = h('div', 'th-dong ' + (ok ? 'ok' : 'chua'));
       var ic = h('span', 'ic'); ic.appendChild(Ve.ico(ok ? 'check' : 'cross', 2, { fill: ok ? BM.xanhLaSangV1 : BM.doSangV5, shade: ok ? BM.xanhLaToiV1 : BM.doV16, line: BM.bangV3 }));
       d.appendChild(ic); d.appendChild(TP.vanBan(h('span'), chu)); return d;
     }
-    if (nguongO !== undefined) hop.than.appendChild(dong(okO, t('thang.o', { x: k.soO, y: nguongO })));
+    var ghiCu = function (ok, da) { return !ok && da ? t('thang.daDatTruoc') : ''; };
+    if (nguongO !== undefined) hop.than.appendChild(dong(daO, t('thang.o', { x: k.soO, y: nguongO }) + ghiCu(okO, daO)));
     var nSan = (k.theoSan || []).length, tong = nSan > 1 && m.nhipTheo === 'tong';        // nhiều sân tính sao theo TỔNG nhịp các sân
     if (re && k.re) hop.than.appendChild(dong(true, t('thang.re', { x: m.giaLap, y: re.gia })));
-    else if (ss.nhip !== undefined) hop.than.appendChild(dong(okN, (tong ? t('thang.nhipTong', { x: k.soNhip, n: nSan, y: ss.nhip }) : t('thang.nhip', { x: k.soNhip, y: ss.nhip })) + (re ? t('thang.hoacRe', { y: re.gia }) : '')));
+    else if (ss.nhip !== undefined) hop.than.appendChild(dong(daN, (tong ? t('thang.nhipTong', { x: k.soNhip, n: nSan, y: ss.nhip }) : t('thang.nhip', { x: k.soNhip, y: ss.nhip })) + (re ? t('thang.hoacRe', { y: re.gia }) : '') + ghiCu(okN, daN)));
     if (nSan > 1) hop.than.appendChild(h('div', 'th-theo', t('thang.theoSan', { ds: k.theoSan.map(function (x) { return x.soNhip; }).join(' + ') })));
     var dd = m.duDoan;
     if (dd) hop.than.appendChild(dong(!k.doanSai, k.doanSai ? t('thang.doanSai', { em: dd.luaChon[S.duDoanChon], dung: dd.luaChon[dd.dung] }) : t('thang.doanDung', { chu: dd.luaChon[dd.dung] })));
     if (k.doanSai) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuDoan')));
-    else if (!okO) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuO')));
-    else if (!okN) hop.than.appendChild(h('div', 'th-ghi', t(re ? 'thang.thieuNhipRe' : tong ? 'thang.thieuNhipTong' : duaVat ? 'thang.thieuNhipVat' : 'thang.thieuNhip')));
+    else if (m.dangBai === 'viet-mo' && (!daO || !daN)) hop.than.appendChild(h('div', 'th-ghi', t(!daO ? 'thang.moThieuO' : 'thang.moThieuNhip')));
+    else if (!daO) hop.than.appendChild(h('div', 'th-ghi', t('thang.thieuO')));
+    else if (!daN) hop.than.appendChild(h('div', 'th-ghi', t(re ? 'thang.thieuNhipRe' : tong ? 'thang.thieuNhipTong' : duaVat ? 'thang.thieuNhipVat' : 'thang.thieuNhip')));
     else hop.than.appendChild(h('div', 'th-ghi tot', t('thang.duSao')));
     if (m.lapRap) { var cl = khoiCachLap(m); if (cl) hop.than.appendChild(cl); }        // màn lắp ráp: các cách lắp mẫu (part, giá, nhịp, ô) để thấy đánh đổi
     // thắng mà vẫn có lưu ý (vd. bánh bị gọi lại, hàm của màn che hàm của em): cho học sinh thấy

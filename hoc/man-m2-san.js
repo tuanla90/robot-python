@@ -9,7 +9,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
+  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
   function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
   function FOR(n, than) { return ['for i in range(' + n + '):'].concat(than.map(function (s) { return '    ' + s; })); }
   /** Hành lang một hàng, trên dưới là tường. */
@@ -23,6 +23,7 @@
     m.cauTruc = ['for', 'if', 'while'];
     m.vaHoac = true;
     m.moXuong = true;
+    m.phienBanNoiDung = 1;                     // wait() không còn chốt lệnh: bản nháp cũ không dùng nữa
     ManHoc.khuon(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -36,7 +37,7 @@
       san: HL('.o.u..F'),
       vatChat: CHAT('.s.....'),
       batDau: BD,
-      sao: { o: 8, nhip: 12 },
+      sao: { o: 8, nhip: 14 },
       loiGiai: { chinh: ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()'] } }),
 
     man(2, { ten: 'Đệm từ kéo',
@@ -55,7 +56,7 @@
       batDau: BD,
       maMau: { chinh: ['while not front_metal():', '    go_right()', 'magnet_n()', 'for i in range(4):', '    go_right()', '', 'for i in range(2):', '    go_right()'] },
       goiY: ['Nam châm còn bật thì thùng sắt dưới hố giữ nhện lại, không bước ra được.'],
-      sao: { o: 8, nhip: 14 },
+      sao: { o: 8, nhip: 16 },
       loiGiai: { chinh: ['while not front_metal():', '    go_right()', 'magnet_n()', 'for i in range(4):', '    go_right()', 'magnet_off()', 'for i in range(2):', '    go_right()'] } }),
 
     man(4, { ten: 'Thả sớm quá',
@@ -65,7 +66,7 @@
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: { chinh: ['go_up()', 'magnet_n()', 'go_down()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()', 'go_right()'] },
       goiY: ['Thùng phải còn dính khi nhện bước vào hố.'],
-      sao: { o: 8, nhip: 12 },
+      sao: { o: 8, nhip: 14 },
       loiGiai: { chinh: ['go_up()', 'magnet_n()', 'go_down()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()'] } }),
 
     man(5, { ten: 'Đệm bên đường',
@@ -75,7 +76,7 @@
       batDau: { x: 0, y: 3, huong: 1 },
       maMau: { chinh: ['magnet_s()', 'for i in range(5):', '    go_right()'] },
       goiY: ['Cùng cực thì đệm đẩy ra xa; phía dưới đường là tường nên nhện đứng vững.'],
-      sao: { o: 3, nhip: 10 },
+      sao: { o: 3, nhip: 11 },
       loiGiai: { chinh: ['magnet_n()', 'for i in range(5):', '    go_right()'] } }),
 
     man(6, { ten: 'Dò thùng, lấp hố',
@@ -83,8 +84,8 @@
       san: [HL('...o.u.F'), HL('.....o.u.F')],
       vatChat: [CHAT('...s....'), CHAT('.....s....')],
       batDau: [BD, BD],
-      goiY: ['Khi front_metal() đúng, thùng còn cách 2 ô, hố còn cách 4 ô.', 'magnet_off() rồi bước luôn: lệnh tắt làm ở nhịp đầu của bước đó.'],
-      sao: { o: 8, nhip: 18 },
+      goiY: ['Khi front_metal() đúng, thùng còn cách 2 ô, hố còn cách 4 ô.', 'magnet_off() mất 1 nhịp: thùng rơi ngay, rồi nhện mới bước tiếp.'],
+      sao: { o: 8, nhip: 20 },
       loiGiai: { chinh: ['while not front_metal():', '    go_right()', 'magnet_n()', 'for i in range(4):', '    go_right()', 'magnet_off()', 'for i in range(2):', '    go_right()'] } }),
 
     man(7, { ten: 'Hai hố: tự viết hàm',
@@ -94,7 +95,7 @@
       batDau: BD,
       khung: { chinh: 3 },
       goiY: ['Một đoạn: bước lên thùng, bật nam châm, bước tới hố, tắt nam châm, bước qua.'],
-      sao: { o: 8, nhip: 16 },
+      sao: { o: 8, nhip: 20 },
       loiGiai: {
         chinh: FOR(2, ['lap_ho()']),
         hamCuaEmMoi: [H('lap_ho', ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()'])]
@@ -112,9 +113,9 @@
       batDau: [BD3, BD3, BD3],
       vatCan: 'tu',
       mucTieu: 'dua-vat',
-      sao: { o: 19, nhip: 19 },
+      sao: { o: 18, nhip: 23 },
       loiGiai: {
-        chinh: ['lap_ho()', 'magnet_n()', 'go_right()', 'go_right()', 'chon_cuc()', 'for i in range(3):', '    go_right()', 'magnet_off()', 'wait()'],
+        chinh: ['lap_ho()', 'magnet_n()', 'go_right()', 'go_right()', 'chon_cuc()', 'for i in range(3):', '    go_right()', 'magnet_off()'],
         hamCuaEmMoi: [
           H('lap_ho', ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()']),
           H('chon_cuc', ['if front_metal() or front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()'])

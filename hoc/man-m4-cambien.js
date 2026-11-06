@@ -9,12 +9,12 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'spray', 'warm'];
+  var HAM_GOC = ['go_up', 'go_down', 'go_left', 'go_right', 'spray', 'warm'];
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than.slice() }; }
   function HANG(s) { var r = s.replace(/./g, '.'); return [r, s, r]; }
   function VE(n) { return [H('ve', [], ['go_down()', 'for i in range(' + n + '):', '    go_left()'])]; }
   var BD = { x: 0, y: 1, huong: 0 };
-  var TUOI = ['for i in range(3):', '    while warm():', '        spray()', '        wait()', '    go_right()'];
+  var TUOI = ['for i in range(3):', '    while warm():', '        spray()', '    go_right()'];
   var DO4 = ['a = []', 'for i in range(4):', '    a.append(warm())', '    go_right()', 've()', 'for k in a:', '    if k:', '        spray()', '    go_right()'];
 
   function man(so, m) {
@@ -28,6 +28,7 @@
     m.moXuong = true;
     m.vo = 'nong-trai';
     m.mucTieu = 'cham-dat';
+    m.phienBanNoiDung = 1;                     // wait() không còn chốt lệnh: bản nháp cũ không dùng nữa
     ManHoc.khuon(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -37,30 +38,30 @@
     man(1, { ten: 'Đo đất',
       deBai: 'Bấm Chạy và xem. warm() đo ô dưới bụng drone: đất còn khô thì True. Có khô mới tưới, nên không ô nào bị úng.',
       san: HANG('.....'), datKho: HANG('.1.1.'), batDau: BD,
-      sao: { o: 4, nhip: 4 },
+      sao: { o: 4, nhip: 5 },
       loiGiai: { chinh: ['for i in range(4):', '    if warm():', '        spray()', '    go_right()'] } }),
 
     man(2, { ten: 'Khô bao lâu',
       deBai: 'while warm() tưới tới khi hết khô. Đọc code, đoán rồi bấm Chạy.',
       san: HANG('...'), datKho: HANG('3..'), batDau: BD,
       duDoan: { hoi: 'Ô đất cần tưới 3 lần. spray() chạy mấy lần?', luaChon: ['1 lần', '3 lần', 'Lặp mãi không dừng'], dung: 1, xacMinh: { x: 0, y: 1, lenh: { spray: 3 } } },
-      sao: { o: 4, nhip: 3 },
-      loiGiai: { chinh: ['while warm():', '    spray()', '    wait()', 'go_right()'] } }),
+      sao: { o: 3, nhip: 3 },
+      loiGiai: { chinh: ['while warm():', '    spray()', 'go_right()'] } }),
 
     man(3, { ten: 'Đo từng ô',
       deBai: 'Hai sân, đất khô ở chỗ khác nhau. Code thiếu dòng lặp qua ba ô. Điền vào.',
       san: [HANG('....'), HANG('....')], datKho: [HANG('12..'), HANG('.31.')], batDau: [BD, BD],
       maMau: { chinh: [''].concat(TUOI.slice(1)) },
       goiY: ['Có ba ô cần đi qua, mỗi ô làm giống nhau.'],
-      sao: { o: 5, nhip: 6 },
+      sao: { o: 4, nhip: 6 },
       loiGiai: { chinh: TUOI.slice() } }),
 
     man(4, { ten: 'Tưới rồi mới đi',
       deBai: 'Hai sân. Đủ dòng nhưng sai thứ tự: drone bay trước khi đo nên bỏ sót ô đầu. Giữ một dòng rồi kéo sang chỗ đúng.',
       san: [HANG('....'), HANG('....')], datKho: [HANG('2.1.'), HANG('11..')], batDau: [BD, BD],
-      maMau: { chinh: ['for i in range(3):', '    go_right()', '    while warm():', '        spray()', '        wait()'] },
+      maMau: { chinh: ['for i in range(3):', '    go_right()', '    while warm():', '        spray()'] },
       goiY: ['Mỗi ô: đo và tưới xong rồi mới bay sang ô sau.'],
-      sao: { o: 5, nhip: 5 },
+      sao: { o: 4, nhip: 5 },
       loiGiai: { chinh: TUOI.slice() } }),
 
     man(5, { ten: 'Tưới chưa đủ',
@@ -68,7 +69,7 @@
       san: [HANG('....'), HANG('....')], datKho: [HANG('2.3.'), HANG('.12.')], batDau: [BD, BD],
       maMau: { chinh: TUOI.map(function (d) { return d === '    while warm():' ? '    if warm():' : d; }) },
       goiY: ['if chỉ hỏi một lần. Muốn tưới tới khi hết khô thì dùng while.'],
-      sao: { o: 5, nhip: 7 },
+      sao: { o: 4, nhip: 7 },
       loiGiai: { chinh: TUOI.slice() } }),
 
     man(6, { ten: 'Đo một nơi, tưới một nẻo',
@@ -79,18 +80,18 @@
       batDau: [{ x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }],
       canList: true,
       goiY: ['a = [] rồi a.append(warm()) ở mỗi ô: danh sách nhớ True hay False.', 'Sau ve(): for k in a:, if k: spray(), rồi go_right().'],
-      sao: { o: 12, nhip: 13 },
+      sao: { o: 12, nhip: 15 },
       loiGiai: { chinh: DO4.slice(), hamCuaMan: VE(4) } }),
 
     man(7, { ten: 'Hàm tưới luống',
       deBai: 'Hai luống dài ngắn khác nhau. Tự viết hàm tên tùy em nhận độ dài luống, ví dụ tuoi(n): đo và tưới n ô, về đầu luống, xuống luống sau. Danh sách a giữ độ dài các luống. Khi đặt tên hàm, thêm một đối số.',
       san: ['....', '....', '....'], datKho: ['213.', '12..', '....'], batDau: { x: 0, y: 0, huong: 0 },
       canThamSo: true, canList: true,
-      goiY: ['Trong hàm: for i in range(n):, while warm(): spray(), wait(), rồi go_right(). Xong thì lùi n ô và go_down().', 'Chương trình chính: a = [3, 2], for n in a:, tuoi(n).'],
-      sao: { o: 11, nhip: 17 },
+      goiY: ['Trong hàm: for i in range(n):, while warm(): spray(), rồi go_right(). Xong thì lùi n ô và go_down().', 'Chương trình chính: a = [3, 2], for n in a:, tuoi(n).'],
+      sao: { o: 10, nhip: 17 },
       loiGiai: {
         chinh: ['a = [3, 2]', 'for n in a:', '    tuoi(n)'],
-        hamCuaEmMoi: [H('tuoi', ['n'], ['for i in range(n):', '    while warm():', '        spray()', '        wait()', '    go_right()', 'for i in range(n):', '    go_left()', 'go_down()'])]
+        hamCuaEmMoi: [H('tuoi', ['n'], ['for i in range(n):', '    while warm():', '        spray()', '    go_right()', 'for i in range(n):', '    go_left()', 'go_down()'])]
       } }),
 
     man(8, { ten: 'Nhớ cả luống dài',
@@ -100,7 +101,7 @@
       datRom: [['......', 'xxxxx.'], ['......', 'xxxxx.'], ['......', 'xxxxx.']],
       batDau: [{ x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }],
       canList: true,
-      sao: { o: 12, nhip: 16 },
+      sao: { o: 12, nhip: 18 },
       loiGiai: {
         chinh: ['a = []', 'for i in range(5):', '    a.append(warm())', '    go_right()', 've()', 'for k in a:', '    if k:', '        spray()', '    go_right()'],
         hamCuaEmMoi: VE(5)

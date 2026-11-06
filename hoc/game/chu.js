@@ -109,6 +109,8 @@
       'dang.viet': 'Tự viết',
       'dang.viet-ham': 'Viết hàm',
       'dang.tu-luc': 'Tự lực',
+      'dang.xem-doan': 'Xem, đoán',
+      'dang.viet-mo': 'Viết mở',
       'choi.damLaThua': 'Đâm tường là thua',
       'choi.damLaThuaDe': 'Màn này đâm tường là thua: xe dừng ngay tại cú đâm.',
       'choi.canhBao': 'Lưu ý trên sân',
@@ -228,6 +230,9 @@
       'thang.hoacRe': ' hoặc robot ≤ {y} xu',
       'thang.thieuNhipRe': 'Còn thiếu sao này: đi ít nhịp hơn, hoặc lắp robot rẻ hơn.',
       'thang.duSao': 'Đủ 3 sao!',
+      'thang.daDatTruoc': ', đã đạt ở lần trước',
+      'thang.moThieuO': 'Màn này có nhiều cách. Thử một bài khác gọn hơn, sao đã có vẫn được giữ.',
+      'thang.moThieuNhip': 'Màn này có nhiều cách. Thử một bài khác nhanh hơn, sao đã có vẫn được giữ.',
       'thang.doanDung': 'Đoán đúng: {chu}',
       'thang.doanSai': 'Em đoán: {em}. Đáp án: {dung}',
       'thang.thieuDoan': 'Còn thiếu sao này: bấm Chơi lại và đoán lại nhé.',
@@ -339,6 +344,7 @@
       'ten.tao': 'Tạo hàm',
       'ten.moHam': 'Mở {ten}()',
       'ten.dangTrong': 'Hàm {ten}() em tạo rồi, thân còn trống.',
+      'ten.trungHamMan': 'Màn này đã có sẵn hàm {ten}(), hãy đặt tên khác.',
 
       /* ---- sổ lệnh */
       'so.tieuDe': 'SỔ LỆNH',
