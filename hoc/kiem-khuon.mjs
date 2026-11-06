@@ -24,9 +24,15 @@ const MUA = [
     { ma: 'm2-c2-tay', tay: 'nam-cham', cam: 'khoang-cach', wait: true },
     { ma: 'm2-c3-cam-bien', tay: 'nam-cham', cam: 'tu', wait: true },
     { ma: 'm2-c4-san', tay: 'nam-cham', cam: 'tu', wait: true }
+  ] },
+  { ten: 'Mùa 3', tien: 'm3-', than: 'xuong', loai: 'xuong', di: BANH, cot: [
+    { ma: 'm3-c1-than', tay: 'nam-cham', cam: 'tu', wait: true },
+    { ma: 'm3-c2-tay', tay: 'day-keo', cam: 'tu', wait: true },
+    { ma: 'm3-c3-cam-bien', tay: 'day-keo', cam: 'camera', wait: true },
+    { ma: 'm3-c4-san', tay: 'day-keo', cam: 'camera', wait: true }
   ] }
 ];
-const HAM_CAM = { 'khoang-cach': 'front_clear', tu: 'front_metal' };
+const HAM_CAM = { 'khoang-cach': 'front_clear', tu: 'front_metal', camera: 'color' };
 
 const loi = [];
 const trong = (s) => !String(s).trim();
@@ -37,11 +43,14 @@ function moiDong(m) {
   [...(m.loiGiai.hamCuaMan || []), ...(m.loiGiai.hamCuaEmMoi || [])].forEach((f) => ds.push(...f.than));
   return ds;
 }
-/** Thay lời gọi hàm của em bằng thân hàm (để thử: không dùng hàm thì có qua được không). */
+/** Thay lời gọi hàm của em bằng thân hàm, đối số thay vào tên tham số (để thử: không dùng hàm thì có qua được không). */
 function traiHam(dong, ham) {
   return dong.flatMap((d) => {
-    const k = /^(\s*)(\w+)\(\)$/.exec(d), f = k && ham.find((x) => x.ten === k[2]);
-    return f ? traiHam(f.than, ham).map((s) => k[1] + s) : [d];
+    const k = /^(\s*)(\w+)\((.*)\)$/.exec(d), f = k && ham.find((x) => x.ten === k[2]);
+    if (!f) return [d];
+    const doiSo = k[3].split(',').map((x) => x.trim());
+    const gan = (s) => (f.thamSo || []).reduce((t, p, i) => t.replace(new RegExp('\\b' + p + '\\b', 'g'), doiSo[i]), s);
+    return traiHam(f.than.map(gan), ham).map((s) => k[1] + s);
   });
 }
 function kiemDuDoan(m, kq, bao) {
@@ -86,6 +95,19 @@ function kiemDang(m, kq, bao) {
     if (!hamLg.length) bao('hàng 7 thiếu hàm mẫu');
     const phang = traiHam(lg, hamLg);
     if (ChamHoc.cham(m, ban(m, phang), []).thang) bao('hàng 7: không viết hàm mà vẫn qua được');
+    if (m.canThamSo) {                                                                          // màn dạy tham số: mỗi lời gọi chép thành một hàm riêng không tham số thì không được qua
+      const rieng = [];
+      const chinh = lg.map((d) => {
+        const k = /^(\s*)(\w+)\((.*)\)$/.exec(d), f = k && hamLg.find((x) => x.ten === k[2]);
+        if (!f || !(f.thamSo || []).length) return d;
+        const doiSo = k[3].split(',').map((x) => x.trim());
+        const gan = (s) => f.thamSo.reduce((t, p, i) => t.replace(new RegExp('\\b' + p + '\\b', 'g'), doiSo[i]), s);
+        rieng.push({ ten: f.ten + '_' + rieng.length, thamSo: [], than: f.than.map(gan) });
+        return k[1] + rieng[rieng.length - 1].ten + '()';
+      });
+      if (!(m.loiGiai.hamCuaEmMoi || []).some((h) => (h.thamSo || []).length)) bao('canThamSo mà hàm mẫu không có tham số');
+      if (ChamHoc.cham(m, ban(m, chinh), rieng).thang) bao('canThamSo: hàm không tham số mà vẫn qua được');
+    }
   }
   if (m.so === 8) {
     if (m.goiY.length) bao('hàng 8 không có gợi ý');

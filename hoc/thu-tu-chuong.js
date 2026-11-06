@@ -3,7 +3,7 @@
 
    Dự án tách từ doi-robot-chan-hung (31/10 → 5/11): CHỈ GIỮ các mùa "cốt lõi" khớp
    chương trình Tin học lớp 12 ôn thi đại học (không cần tuple, dict/set, mảng 2
-   chiều). Mùa 1, 2 đã dựng theo khuôn 4 cột × 8 hàng (man-m1-*.js, man-m2-*.js); các mùa còn lại
+   chiều). Mùa 1, 2, 3 đã dựng theo khuôn 4 cột × 8 hàng (man-m1-*.js, man-m2-*.js, man-m3-*.js); các mùa còn lại
    mới có MỘT chương demo, xem hoc/KE-HOACH-4-MUA-COT-LOI.md.
 
    - mua-1 Kho hàng    (hai bánh) — def, for, if/while
@@ -26,7 +26,8 @@
   var API = {
     thuTu: ['m1-c1-than', 'm1-c2-tay', 'm1-c3-cam-bien', 'm1-c4-san',                 // mùa 1: lưới 4 cột × 8 hàng (KE-HOACH-4-MUA-COT-LOI.md), mỗi cột một chương, một gói
       'm2-c1-than', 'm2-c2-tay', 'm2-c3-cam-bien', 'm2-c4-san',                       // mùa 2: chuỗi part Nhện + Kẹp + Khoảng cách → + Nam châm → + Cảm ứng từ → sân riêng
-      'demo-ben-song', 'demo-nong-trai'],
+      'm3-c1-than', 'm3-c2-tay', 'm3-c3-cam-bien', 'm3-c4-san',                       // mùa 3: chuỗi part Xuồng + Nam châm + Cảm ứng từ → + Lưới phao → + Camera màu → sân riêng
+      'demo-nong-trai'],
     dot2: [],
     congDot2: null,
     mua: [
@@ -45,7 +46,10 @@
       { ma: 'm2-c2-tay', ten: 'Nam châm', hinh: 'nam-cham', loai: 'bo-phan', mua: 'mua-2', chuong: ['m2-c2-tay'] },
       { ma: 'm2-c3-cam-bien', ten: 'Cảm ứng từ', hinh: 'che-nam-cham', loai: 'bo-phan', mua: 'mua-2', chuong: ['m2-c3-cam-bien'] },
       { ma: 'm2-c4-san', ten: 'Bãi tái chế: hố và đệm từ', hinh: 'tong-hop-2', loai: 'bo-phan', mua: 'mua-2', chuong: ['m2-c4-san'] },
-      { ma: 'demo-ben-song', ten: 'Bến sông (demo)', sao: 0, mua: 'mua-3', chuong: ['demo-ben-song'] },
+      { ma: 'm3-c1-than', ten: 'Thân xuồng', hinh: 'xuong', loai: 'bo-phan', mua: 'mua-3', chuong: ['m3-c1-than'] },
+      { ma: 'm3-c2-tay', ten: 'Lưới phao', hinh: 'day-keo', loai: 'bo-phan', mua: 'mua-3', chuong: ['m3-c2-tay'] },
+      { ma: 'm3-c3-cam-bien', ten: 'Camera màu', hinh: 'mau', loai: 'bo-phan', mua: 'mua-3', chuong: ['m3-c3-cam-bien'] },
+      { ma: 'm3-c4-san', ten: 'Bến sông: dòng nước và cống', hinh: 'dong-chay', loai: 'bo-phan', mua: 'mua-3', chuong: ['m3-c4-san'] },
       { ma: 'demo-nong-trai', ten: 'Nông trại (demo)', sao: 0, mua: 'mua-4', chuong: ['demo-nong-trai'] }
     ],
     ten: {
@@ -57,7 +61,10 @@
       'm2-c2-tay': 'Nam châm',
       'm2-c3-cam-bien': 'Cảm ứng từ',
       'm2-c4-san': 'Bãi tái chế: hố và đệm từ',
-      'demo-ben-song': 'Bến sông (demo)',
+      'm3-c1-than': 'Thân xuồng',
+      'm3-c2-tay': 'Lưới phao',
+      'm3-c3-cam-bien': 'Camera màu',
+      'm3-c4-san': 'Bến sông: dòng nước và cống',
       'demo-nong-trai': 'Nông trại (demo)'
     }
   };

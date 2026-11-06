@@ -27,12 +27,12 @@ npm start   # http://localhost:4180
 | 3 Bến sông | Xuồng | biến, tham số |
 | 4 Nông trại | Drone | `list`, `for x in a`, `append` |
 
-**Mùa 1 và Mùa 2 đã có đủ 32 màn mỗi mùa** theo khuôn 4 cột × 8 hàng (`hoc/KE-HOACH-4-MUA-COT-LOI.md`, `hoc/man-m1-*.js`, `hoc/man-m2-*.js`; kiểm bằng
-`node hoc/kiem-khuon.mjs`). Mùa 3–4 hiện mới có **1 gói demo, 1 màn** (`hoc/man-demo.js`) — màn thật **chưa viết**.
+**Mùa 1, Mùa 2 và Mùa 3 đã có đủ 32 màn mỗi mùa** theo khuôn 4 cột × 8 hàng (`hoc/KE-HOACH-4-MUA-COT-LOI.md`, `hoc/man-m1-*.js`, `hoc/man-m2-*.js`, `hoc/man-m3-*.js`; kiểm bằng
+`node hoc/kiem-khuon.mjs`). Mùa 4 hiện mới có **1 gói demo, 1 màn** (`hoc/man-demo.js`) — màn thật **chưa viết**.
 
 ## Việc còn lại (xem KE-HOACH-7-MUA.md ở bản gốc để tra cứu cơ chế mùa cũ)
 
-1. **Dựng Mùa 3–4 theo khuôn 4×8** (`hoc/KE-HOACH-4-MUA-COT-LOI.md`), bám đúng chương trình Tin học 12 ôn thi đại học
+1. **Dựng Mùa 4 theo khuôn 4×8** (`hoc/KE-HOACH-4-MUA-COT-LOI.md`), bám đúng chương trình Tin học 12 ôn thi đại học
    (không chỉ cắt bớt — dựng lại theo đúng mức độ khó của đề thi, xem mục kế tiếp).
 2. **Cảng sông (cần cẩu)**: chưa đưa vào — cần cẩu dùng toạ độ cực (`batDau.nac`, `tam`) khác hẳn
    lưới `x,y` của các thân khác (xem `hoc/san-hoc.js` phần CẢNG SÔNG) và màn gốc dùng luật

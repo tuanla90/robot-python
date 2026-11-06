@@ -215,7 +215,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (ch === 'B' || ch === 'L') vatNoi.push({ x: x, y: y, noi: ch === 'B' ? 'be' : 'luc-binh' });       // BẾN SÔNG: vật nổi, thêm SAU vật thường + cfg.vat (thứ tự id của SanHoc.chay)
       }
       (cfg.vat || []).forEach(function (o) { this.themVat(Math.floor(o.x), Math.floor(o.y), chuanMau(o.mau), o.chat === 'sat' ? 'sat' : o.chat === 'nam-cham' ? 'nam-cham' : null, o.cuc); }, this);   // cùng thứ tự với SanHoc.chay: id 1, 2, ...
-      vatNoi.forEach(function (o) { this.themVat(o.x, o.y, null, null, null, o.noi); }, this);
+      vatNoi.forEach(function (o) {                                                              // bè có màu (lớp vatMau), thùng nổi có chất (lớp vatChat), như lõi
+        var kn = this.cfg.vatChat && this.cfg.vatChat[o.y] ? this.cfg.vatChat[o.y][o.x] : null;
+        this.themVat(o.x, o.y, this.cfg.vatMau && this.cfg.vatMau[o.y] ? MAU_KY[this.cfg.vatMau[o.y][o.x]] : null, kn === 's' ? 'sat' : (kn === 'N' || kn === 'S') ? 'nam-cham' : null, (kn === 'N' || kn === 'S') ? kn : null, o.noi);
+      }, this);
       if (cfg.roBanDau && this.cfg.robot.tay === 'nem') {          // máy ném: rổ có sẵn một vật lúc xuất phát (id cuối cùng, như SanHoc.chay)
         var rb = typeof cfg.roBanDau === 'object' ? cfg.roBanDau : {};
         this.vat0.push({ id: this.vat0.length + 1, x: cfg.batDau.x, y: cfg.batDau.y, mau: chuanMau(rb.mau), chat: rb.chat === 'sat' ? 'sat' : 'go', ro: true });
@@ -312,7 +315,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         this.veBo(g, x, y); return true;
       }
       if (ch === 'Q') { ve('phao-dich'); this.veBo(g, x, y); return true; }
-      if (ch === 'q') { ve('ben-nhan', { xong: !!this.vatTaiO(x, y) }); return true; }
+      if (ch === 'q') { ve('ben-nhan', { xong: !!this.vatTaiO(x, y), mau: this.mauNen(x, y) || undefined }); return true; }
       if (ch === 'K' || ch === 'k') {
         var cg = this.congT && this.congT[kO], k = cg ? cg.k : (ch === 'k' ? 1 : 0), rg = cg && cg.rung > now ? Math.sin(now / 24) * 0.8 : 0;
         if (rg) { g.save(); g.translate(rg, 0); }

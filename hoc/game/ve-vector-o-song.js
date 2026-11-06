@@ -101,7 +101,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   } });
 
   /* BẾN NHẬN BÈ 'q': ô nước có cầu gỗ chữ U (ba phía), khung đích nét đứt màu đích; s.xong: đã có bè, khung xanh lá liền nét. */
-  V.dangKy({ loai: 'o', ma: 'ben-nhan', ten: 'Bến nhận bè', ky: ['q'], cacTrangThai: [{}, { xong: true }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'ben-nhan', ten: 'Bến nhận bè', ky: ['q'], cacTrangThai: [{}, { xong: true }, { mau: 'red' }, { mau: 'blue' }, { mau: 'yellow' }, { mau: 'green' }], ve: function (g, s, H) {
     var xong = !!(s && s.xong), i;
     nenNuoc(g, H, true);
     H.bo(g, 2, 2, 96, 14, 3); H.to(g, BM.vecDat); H.vien(g, BM.vecDatToi, 2.5);
@@ -111,7 +111,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.vien(g, BM.vecDatToi, 2);
     [[9, 9], [91, 9], [9, 91], [91, 91]].forEach(function (p) { H.tron(g, p[0], p[1], 4.5); H.to(g, BM.vecDatSang); H.vien(g, BM.vecVien, 1.8); });   // cọc buộc
     H.bo(g, 22, 22, 56, 70, 8);
-    if (xong) { H.vien(g, BM.vecXanhLa, 4); } else { g.setLineDash([7, 6]); H.vien(g, BM.vecDich, 4); g.setLineDash([]); }
+    var mauBen = s && s.mau && { red: 'luatVatDo', green: 'luatVatXanhLa', blue: 'luatVatXanhDuong', yellow: 'luatVatVang' }[s.mau];     // bến có màu: khung và dấu hình theo màu, chỉ nhận bè cùng màu
+    if (xong) { H.vien(g, BM.vecXanhLa, 4); } else { g.setLineDash([7, 6]); H.vien(g, mauBen ? BM[mauBen] : BM.vecDich, mauBen ? 6 : 4); g.setLineDash([]); }
+    if (mauBen && !xong) V.dauHinhMau(g, H, s.mau, 50, 57, 13);
   } });
 
   /* SÀN BẾN SÔNG '.' (san-ben-song): sàn đá lát bến sông ghép ván gỗ ấm áp. */

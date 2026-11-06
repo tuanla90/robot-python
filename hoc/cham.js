@@ -645,7 +645,7 @@
       } else if (e0.vat === 'bo') {                                           // BẾN SÔNG: xuồng húc bờ
         s2 = 'Ở nhịp ' + e0.nhip + ', xuồng định ' + (e0.kieu === 'lui' ? 'lùi' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là bờ nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          ' Xuồng chỉ đi được trên mặt nước: xem lại xuồng đang quay mũi hướng nào trước lệnh đi, hay nước có đẩy xuồng lệch đường không (flow_dir() cho biết dòng ở ô trước mũi).';
+          ' Xuồng chỉ đi được trên mặt nước: xem lại xuồng đang quay mũi hướng nào trước lệnh đi, hay nước có đẩy xuồng lệch đường không.';
       } else if (e0.vat === 'nuoc') {                                         // BẾN SÔNG: xe cạn / nhện đâm nước
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là mặt nước nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
@@ -653,11 +653,11 @@
       } else if (e0.vat === 'cong') {                                         // BẾN SÔNG: cống đóng
         s2 = 'Ở nhịp ' + e0.nhip + ', xuồng định ' + (e0.kieu === 'lui' ? 'lùi' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng cống ở đó đang đóng nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          ' Cống đóng chặn xuồng như cửa: quăng dây phao (tow()) trúng van cống V trên bờ thì cống mở ở cuối nhịp đó.';
+          ' Cống đóng chặn xuồng như cửa: tung lưới (cast_net) trúng van cống V trên bờ thì cống mở ở cuối nhịp đó.';
       } else if (e0.vat === 'vat' && man.loaiRobot === 'xuong') {             // BẾN SÔNG: xuồng vướng vật nổi
         s2 = 'Ở nhịp ' + e0.nhip + ', xuồng định ' + (e0.kieu === 'lui' ? 'lùi' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ở đó có một vật nổi (bè hay lục bình): vật chiếm ô nên xuồng đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          ' Muốn đưa nó đi thì quăng dây phao (tow()) kéo nó về trước mũi rồi mới chạy, hoặc đi đường vòng.';
+          ' Muốn đưa nó đi thì tung lưới (cast_net) bắt nó ở cách 2 ô rồi kéo theo, hoặc đi đường vòng.';
       } else if (e0.vat === 'vat') {
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ô đó có một vật nằm đất: vật chiếm ô nên xe vướng vật và đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
@@ -1304,9 +1304,11 @@
       if (!res.dungSom) {
         var vcan = man.vatCan, tenVatCan = vcan === 'sat' ? 'vật sắt' : vcan === 'nam-cham' ? 'vật nam châm' : vcan === 'tu' ? 'vật có từ (sắt và nam châm)' : 'vật';
         var canVat = vcan === 'sat' ? res.vat.filter(function (v) { return v.chat === 'sat'; }) : vcan === 'nam-cham' ? res.vat.filter(function (v) { return v.chat === 'nam-cham'; }) : vcan === 'tu' ? res.vat.filter(function (v) { return v.chat === 'sat' || v.chat === 'nam-cham'; }) : res.vat;
-        var chuaXong = canVat.filter(function (v) { return !(v.trangThai === 'dat' && res.dich.some(function (d) { return d.x === v.x && d.y === v.y && (!d.mau || d.mau === v.mau); })); }).length;
+        var nhipVet = (res.vet || []).filter(function (e) { return e.loai === 'nhip'; }), nhipCuoi = nhipVet[nhipVet.length - 1];
+        var idTrongLuoi = nhipCuoi && nhipCuoi.robot && nhipCuoi.robot.keo ? nhipCuoi.robot.keo.id : null;       // vật còn trong lưới chưa tính là giao
+        var chuaXong = canVat.filter(function (v) { return !(v.id !== idTrongLuoi && v.trangThai === 'dat' && res.dich.some(function (d) { return d.x === v.x && d.y === v.y && (!d.mau || d.mau === v.mau); })); }).length;
         them('chua-dua-vat', 'Chương trình chạy xong mà chưa đưa hết ' + tenVatCan + ' tới ô đích: còn ' + chuaXong + ' trong ' + canVat.length +
-          ' ' + tenVatCan + ' chưa nằm yên trên đích.' + (res.dich.some(function (d) { return d.mau; }) ? ' Đích có màu chỉ tính vật cùng màu.' : '') + ' Thử chạy lại và theo dõi tay cùng xe từng nhịp.', { conLai: chuaXong, tong: res.vat.length });
+          ' ' + tenVatCan + ' chưa nằm yên trên đích.' + (res.dich.some(function (d) { return d.mau; }) ? ' Đích có màu chỉ tính vật cùng màu.' : '') + (idTrongLuoi !== null ? ' Vật vẫn còn trong lưới: gọi drop_net() rồi wait() để thả.' : '') + ' Thử chạy lại và theo dõi tay cùng xe từng nhịp.', { conLai: chuaXong, tong: res.vat.length });
       }
     } else if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'to-hinh') {
       if (!res.dungSom && res.hinh) {
@@ -1641,6 +1643,10 @@
     var thieu = thangHet ? thieuTaoHam(man, dung) : [];
     if (thieu.length) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiTaoHam(thieu)); }
     if (thangHet && thieuHamTuDat(man, dung)) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiHamTuDat(man)); }
+    if (thangHet && man.canThamSo && !tap.em.some(function (h) { return dung['hamEm:' + h.ten] && h.thamSo && h.thamSo.length; })) {   // màn dạy tham số: phải gọi một hàm của em có tham số
+      thangHet = false; ketQua.thang = false;
+      ketQua.chanDoan.unshift({ muc: 'loi', ma: 'chua-dung-tham-so', loi: 'Robot làm xong việc rồi, nhưng màn này dạy tham số: hãy viết một hàm của em có tham số (thêm đối số khi đặt tên hàm) rồi gọi với giá trị khác nhau.' });
+    }
     if (thangHet) {
       var sao = man.sao || {}, re = sao.re;
       var laRe = !!(re && typeof man.giaLap === 'number' && man.giaLap <= re.gia);                   // màn lắp ráp: robot lắp rẻ (≤ sao.re.gia xu)

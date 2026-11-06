@@ -6,8 +6,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   function bot(g, H, keo) { H.elip(g, 50, 52, 45, 43); H.vien(g, keo ? BM.vecVanNongSang : H.rgba(BM.vecMatSangRgb, 0.75), 3); }
 
+  var MAU_BE = { red: 'luatVatDo', green: 'luatVatXanhLa', blue: 'luatVatXanhDuong', yellow: 'luatVatVang' };
   /* BÈ HÀNG: bốn thân gỗ dọc, hai thanh buộc vàng, kiện hàng gỗ 3D buộc bạt xanh ở giữa. */
-  V.dangKy({ loai: 'vat', ma: 'be-go', ten: 'Bè hàng nổi', ky: ['B'], cacTrangThai: [{}, { keo: true }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'vat', ma: 'be-go', ten: 'Bè hàng nổi', ky: ['B'], cacTrangThai: [{}, { keo: true }, { mau: 'red' }, { mau: 'blue' }, { mau: 'yellow' }, { mau: 'green' }], ve: function (g, s, H) {
     bot(g, H, !!(s && s.keo));
     [14, 31, 48, 65].forEach(function (x) {
       H.bo(g, x, 12, 16, 78, 7); g.fillStyle = H.gradDoc(g, x, 0, x + 16, 0, [[0, BM.vecDatSang], [1, BM.vecDat]]); g.fill(); H.vien(g, BM.vecDatToi, 2.4);
@@ -21,7 +22,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, 25, 30, 44, 24, 6);
     g.fillStyle = H.gradDoc(g, 0, 30, 0, 54, [[0, BM.vecCartonMat], [1, BM.vecCarton]]);
     g.fill(); H.vien(g, BM.vecCartonVien, 1.5);
-    H.bo(g, 23, 47, 48, 10, 2); H.to(g, BM.vecNuocToi); H.vien(g, BM.vecVien, 1.8);
+    var maiMau = s && s.mau && MAU_BE[s.mau];                                                  // bè có màu: đai bạt theo màu, thêm dấu hình để người mù màu vẫn phân biệt
+    H.bo(g, 23, 47, 48, 10, 2); H.to(g, maiMau ? BM[maiMau] : BM.vecNuocToi); H.vien(g, BM.vecVien, 1.8);
+    if (maiMau) V.dauHinhMau(g, H, s.mau, 47, 36, 13);
   } });
 
   /* ĐÁM LỤC BÌNH: năm cụm lá tròn xanh, ba bông tím nhụy vàng. */

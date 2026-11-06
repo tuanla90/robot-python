@@ -407,7 +407,7 @@
         Lớp cfg.dong = [{ x, y, huong, suc }] (màn nhiều sân: mảng song song với san như lua / noi): ô phải là mặt nước; huong 0–3 là chiều nước chảy; suc 1 (dòng thường) hay 2 (dòng xiết). Lỗi cấu hình tiếng Việt.
         - XUỒNG: hamGoc gốc = xe hai bánh (left_move / right_move / left_back / right_back / wait: hai chân vịt = hai bánh), laBanh = true nên MỌI luật bánh (tổ hợp quay, đấu dây ngược, xe mờ, xích…) dùng lại.
           Xuồng chỉ vào được ô mặt nước; mọi ô khác (sàn, tường, cờ cạn F, van V, mép sân…) là BỜ: 'dam-tuong' vat 'bo' (mép sân vẫn 'ngoai-san'). Cống đóng chặn như cửa ('cong'), vật nổi chặn ('vat', idVat), robot khác ('dong-doi').
-          Xuồng không gắn tay kẹp / nam châm / máy ném / vòi phun (lỗi cấu hình); xuất phát phải trên nước, không trong cống đóng, không trên vật nổi.
+          Xuồng không gắn tay kẹp / máy ném / vòi phun (lỗi cấu hình), gắn được nam châm (cột 1 Mùa 3, thùng sắt nổi: B + lớp vatChat 's', thả xuống nước) hay tay lưới, không cả hai; xuất phát phải trên nước, không trong cống đóng, không trên vật nổi.
           XE CẠN (bánh, xích, omni) và NHỆN đâm nước như tường: 'dam-tuong' vat 'nuoc', không chìm; front_clear() / distance() thấy nước là không trống (vat 'nuoc'). DRONE bay qua nước, nhưng land() không đáp xuống nước ('dap-bi-chan' vat 'nuoc', trừ cầu phao).
         - THỨ TỰ TRONG NHỊP của xuồng (pha a, so với xe bánh): (a) NEO: anchor / unanchor → (b) DÂY PHAO: tow / drop_tow / tether / untether → (c) chân vịt (tiến / lùi / quay; đang neo thì bỏ) → (d) DÒNG CHẢY (chỗ băng chuyền:
           vật nổi tự do trôi trước, rồi xuồng) → đệm từ, bàn xoay, cổng như cũ. Cuối nhịp (pha d) cống đổi theo van (sau cửa).
@@ -447,7 +447,7 @@
         - VẬT NỔI, CẦU PHAO, MỤC TIÊU: vật nổi là VẬT (vats, trangThai 'dat', chat 'go') có thêm noi: 'be' | 'luc-binh'; chiếm ô (xuồng không vào), chỉ nằm trên nước; chupVat ghi noi.
           CẦU PHAO: xe cạn (bánh, xích, omni, nhện) đi vào ô nước có vật nổi KHI ô đó không có dòng đang chạy thì đi được như sàn (lyDoChan 'nuoc' được bỏ, vật không chặn); đang có xe đứng trên thì tow() không kéo vật đó ('keo-hut' vat 'co-xe')
           và vật không trôi. (Ca biên tự chọn: tay kẹp của xe cạn vẫn gắp được vật nổi trước mặt như vật thường — màn không nên dựng như vậy.)
-          Mục tiêu 'dua-vat': thắng khi MỌI vật nổi (vật) nằm trên ô q (dichSet). 'toi-co': xuồng tới Q (F với xe cạn; sân có cả F và Q thì cờ là ký hiệu gặp trước khi đọc sân).
+          Mục tiêu 'dua-vat': thắng khi MỌI vật nổi (vật) nằm trên ô q (dichSet) và đã thả khỏi lưới (drop_net). 'toi-co': xuồng tới Q (F với xe cạn; sân có cả F và Q thì cờ là ký hiệu gặp trước khi đọc sân).
 
    CẢNG SÔNG (mùa 4, 31/10, hoc/KE-HOACH-MUA-CANG-SONG.md mục 3; loaiRobot 'cau' "Cần cẩu container R1"). Mọi luật dưới đây chỉ bật khi màn có cần cẩu / ký hiệu T R / lớp cfg.chong, nên màn cũ không đổi.
         - KÝ HIỆU: T ô BOONG TÀU (trên nước: laNuoc true; tàu có mặt thì hạ container được, tàu vắng là mặt nước), R ô RAY cẩu (sàn với xe khác; bệ cẩu chạy dọc ray). Bãi container là sàn '.' thường.
@@ -873,8 +873,9 @@
         if (!lopV[vy][vx]) continue;
         var vi = -1;
         for (var q = 0; q < vat.length; q++) if (vat[q].x === vx && vat[q].y === vy) vi = q;
-        if (vi < 0) throw new Error('Màu vật đặt ở ô (' + vx + ', ' + vy + ') nhưng ô đó không có vật (o / X).');
-        vat[vi].mau = lopV[vy][vx];
+        var noiM = vi < 0 ? vatNoi.filter(function (q) { return q.x === vx && q.y === vy; })[0] : null;       // BẾN SÔNG: bè có màu
+        if (vi < 0 && !noiM) throw new Error('Màu vật đặt ở ô (' + vx + ', ' + vy + ') nhưng ô đó không có vật (o / X, hay vật nổi B / L).');
+        (noiM || vat[vi]).mau = lopV[vy][vx];
       }
     }
     var lopC = docLopChat(lopVatChat, rong, rows.length);                      // chất từng vật: sắt hay gỗ (mặc định gỗ)
@@ -883,8 +884,10 @@
         if (!lopC[cy][cx]) continue;
         var ci = -1;
         for (var cq = 0; cq < vat.length; cq++) if (vat[cq].x === cx && vat[cq].y === cy) ci = cq;
-        if (ci < 0) throw new Error('Chất vật đặt ở ô (' + cx + ', ' + cy + ') nhưng ô đó không có vật (o / X).');
-        if (lopC[cy][cx] === 'N' || lopC[cy][cx] === 'S') { vat[ci].chat = 'nam-cham'; vat[ci].cuc = lopC[cy][cx]; } else vat[ci].chat = lopC[cy][cx];
+        var noiC = ci < 0 ? vatNoi.filter(function (q) { return q.x === cx && q.y === cy; })[0] : null;       // BẾN SÔNG: thùng sắt nổi (vật nổi B có chất sắt)
+        if (ci < 0 && !noiC) throw new Error('Chất vật đặt ở ô (' + cx + ', ' + cy + ') nhưng ô đó không có vật (o / X, hay vật nổi B / L).');
+        var dcC = noiC || vat[ci];
+        if (lopC[cy][cx] === 'N' || lopC[cy][cx] === 'S') { dcC.chat = 'nam-cham'; dcC.cuc = lopC[cy][cx]; } else dcC.chat = lopC[cy][cx];
       }
     }
     var lopD = docLopDang(lopVatDang, rong, rows.length);                      // hình dạng từng vật (mùa 6): round | square | ore
@@ -1193,7 +1196,8 @@
       coSetLength = coPhao && !!(rc.chinhLuoi || (rc.robot && rc.robot.chinhLuoi) || (phanCung.indexOf('set_length') >= 0 && rc.chinhLuoi !== false));
       if (coPhao && !rc.phanCung && !laDrone && !laCau) api.set_length = function () { return 0; };   // M9C2: giỏ (cẩu) / phao (drone) không có dây chỉnh độ dài
       coDongChay = hamGoc.some(function (t) { return CAM_DONG_HAM.indexOf(t) >= 0; });          // XUỒNG chong chóng dòng chảy (flow_dir / flow)
-      if (laXuong && (coTay || coNamCham || coNem || coHoi)) throw new Error('Xuồng chỉ gắn tay lưới thủy lợi (cast_net / drop_net / set_length), không gắn tay kẹp, nam châm, máy ném hay vòi phun.');
+      if (laXuong && (coTay || coNem || coHoi)) throw new Error('Xuồng chỉ gắn nam châm hay tay lưới thủy lợi (cast_net / drop_net / set_length), không gắn tay kẹp, máy ném hay vòi phun.');   // nam châm: cột 1 của Bến sông, thùng sắt nổi trên sông
+      if (laXuong && coPhao && coNamCham) throw new Error('Một robot chỉ có một tay: tay lưới không đi chung với nam châm.');
       if (coPhao && !laXuong && !laDrone && !laCau && (coTay || coNamCham || coNem || coHoi)) throw new Error('Một robot chỉ có một tay: tay lưới (xe tời bờ) không đi chung với tay kẹp, nam châm, máy ném hay vòi phun.');   // M9C1 (L3)
       if (coPhao && (phanCung.indexOf('cast_net') >= 0) !== (phanCung.indexOf('drop_net') >= 0)) throw new Error('cast_net() và drop_net() đi cùng nhau trên phần cứng của xuồng.');
       if (coSetLength && phanCung.indexOf('cast_net') < 0) throw new Error('set_length() là nâng cấp của tay lưới: phần cứng phải có cả cast_net() / drop_net().');
@@ -1660,7 +1664,7 @@
 
     san.vat.forEach(themVat); (cfg.vat || []).forEach(themVat);
     // BẾN SÔNG: vật nổi (B bè / L lục bình) cũng là VẬT chiếm ô (trangThai 'dat', chat 'go'), thêm noi; kéo bằng dây phao, trôi theo dòng, làm cầu phao cho xe cạn
-    san.vatNoi.forEach(function (o) { vats.push({ id: vats.length + 1, x: o.x, y: o.y, trangThai: 'dat', mau: null, chat: 'go', cuc: null, noi: o.noi }); });
+    san.vatNoi.forEach(function (o) { vats.push({ id: vats.length + 1, x: o.x, y: o.y, trangThai: 'dat', mau: o.mau || null, chat: o.chat || 'go', cuc: o.cuc || null, noi: o.noi }); });
     // M9B2 (lai L2): CONTAINER TRÔI — lớp cfg.contTroi = [{ x, y, so, tan? }]: mỗi mục biến vật nổi 'B' ở ô đó thành container trôi (noi 'container', số so 1–99, tấn tan 1–4 mặc định 1).
     // Cùng luật vật nổi (chiếm ô nước, tay lưới kéo được, làm cầu phao); đầu đọc mã của xuồng đọc so / tan ở ô trước mũi. Màn không khai lớp này thì không có container trôi.
     if (cfg.contTroi !== undefined && cfg.contTroi !== null) {
@@ -2301,13 +2305,14 @@
       var vatsCon = vats.filter(function (v) { return v.trangThai !== 'lap-ho' && !laNguoi(v); });   // M9C1: người không phải vật cần về đích
       var can = vatCan === null ? vatsCon : vatsCon.filter(function (v) { return vatCan === 'sat' ? v.chat === 'sat' : vatCan === 'nam-cham' ? v.chat === 'nam-cham' : v.chat !== 'go'; });       // vatCan: 'sat' chỉ vật sắt · 'nam-cham' chỉ vật nam châm · 'tu' sắt + nam châm (vật gỗ không cần về đích)
       if (!can.length) return vats.length > 0 && dsDich.length === 0 && vats.every(function (v) { return v.trangThai === 'lap-ho'; });
-      return can.every(function (v) { return v.trangThai === 'dat' && dichSet[v.x + ',' + v.y] && hopMauDich(v, v.x, v.y); });
+      return can.every(function (v) { return v.trangThai === 'dat' && !(keo && keo.id === v.id) && dichSet[v.x + ',' + v.y] && hopMauDich(v, v.x, v.y); });   // vật còn trong lưới chưa tính: drop_net() rồi mới là giao xong
     }
 
     /** NAM CHÂM. Ô (x, y) có nhận thêm một vật thả xuống không: null nếu được, hay lý do. */
     function oThaChan(x, y) {
       var c = oTai(san, x, y);
       if (c === null) return 'ngoai-san';
+      if (loai === 'xuong' && !laNuoc(san, x, y)) return 'bo';            // xuồng gắn nam châm: thùng nổi chỉ thả xuống nước
       if (c === '#' || c === 'N') return 'tuong';
       if (c === '=') return 'rao';
       if (c === 'S') return 'bac-thang';

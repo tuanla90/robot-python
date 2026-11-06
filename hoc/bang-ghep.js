@@ -78,7 +78,7 @@
       kep: { tt: 'cam', lyDo: 'Kẹp trên xuồng không với tới mặt nước.' },
       xoay: { tt: 'cam', lyDo: 'Kẹp xoay trên xuồng không với tới mặt nước.' },
       hoi: { tt: 'cam', lyDo: 'Vòi phun giật mạnh, làm xuồng trôi đi.' },
-      'nam-cham': { tt: 'cam', lyDo: 'Nam châm không với tới mặt nước, trên sông không có sắt để hút.' },
+      'nam-cham': 'duoc',                                                                       // cột 1 của Bến sông: xuồng hút thùng sắt nổi
       'moc-cau': { tt: 'cam', lyDo: 'Móc cẩu nặng, phải treo trên đầu cần cẩu, xuồng không mang được.' },
       'day-keo': 'goc',
       son: { tt: 'cam', lyDo: 'Bộ gieo hạt chấm xuống sàn, dưới xuồng chỉ có nước.' },
@@ -140,10 +140,10 @@
     gai: xeCam('am-thanh'),
     xuong: {
       'khoang-cach': 'duoc', 'hong-ngoai': 'duoc',
-      tu: 'khong-mo',
+      tu: 'duoc',                                                                               // cột 1, 2 của Bến sông
       'quet-ma': { tt: 'lai', lai: 'L2' },
       'dong-chay': 'goc',
-      camera: { tt: 'lai', lai: 'L14' },
+      camera: 'duoc',                                                                           // cột 3, 4 của Bến sông: đọc màu bè
       'camera-4': 'khong-mo',
       'camera-bay': { tt: 'cam', lyDo: C.camBay },
       radar: { tt: 'lai', lai: 'L14' },

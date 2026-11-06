@@ -141,13 +141,13 @@
     'nam-cham': {
       khe: 'tay', ten: 'Nam châm',
       moTa: 'Nam châm chữ U trước mũi xe. Bật cực N hoặc S để hút vật từ xa.',
-      moTaThan: { nhen: 'Nam châm treo dưới bụng nhện. Bật cực N hoặc S để hút vật ở ô đang đứng.' },
+      moTaThan: { nhen: 'Nam châm treo dưới bụng nhện. Bật cực N hoặc S để hút vật ở ô đang đứng.', xuong: 'Nam châm chữ U trước mũi xuồng. Bật cực N hoặc S để hút thùng trôi trên sông.' },
       lenh: ['magnet_n', 'magnet_s', 'magnet_off'],
       moTaLenh: { magnet_n: 'Bật nam châm cực N, màu đỏ', magnet_s: 'Bật nam châm cực S, màu xanh dương' },
       gioi: [{ chu: 'Hút vật sắt cách tới 2 ô về dính ở mũi xe', khongThan: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô', khongThan: 'nhen' },
         { chu: 'Cực nào cũng hút vật sắt ở ô đang đứng', than: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì nằm yên', than: 'nhen' }],
       khong: ['Không hút được vật gỗ', 'Không đẩy được vật sắt', 'Mỗi lần chỉ dính một vật'],
-      luuY: [{ chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
+      luuY: [{ chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên xuồng, ô trước mũi phải là nước thì mới thả được.', than: 'xuong' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
         { chu: 'Trên nhện, nam châm treo dưới bụng: hút và thả vật sắt ở ô ngay dưới, mang theo khi đi và khi nhảy qua hố.', than: 'nhen' },
         { chu: 'Mang thùng sắt bước vào hố: thùng đỡ chân, nhện không rơi. Gọi magnet_off() để thả thùng lấp hố, ô đó thành sàn.', than: 'nhen' },
         { chu: 'Còn bật nam châm thì thùng sắt dưới hố giữ nhện lại, không bước đi được.', than: 'nhen' }]
@@ -316,25 +316,16 @@
     },
     'xuong': {
       khe: 'than', ten: 'Xuồng chân vịt',
-      moTa: 'Thân tàu thủy lợi với hai chân vịt trái phải và mỏ neo chống trôi trên sông.',
-      lenh: ['left_move', 'right_move', 'left_back', 'right_back', 'anchor', 'unanchor', 'wait'],
-      moTaLenh: {
-        left_move: 'Chân vịt trái quay tiến trong nhịp này',
-        right_move: 'Chân vịt phải quay tiến trong nhịp này',
-        left_back: 'Chân vịt trái quay lùi trong nhịp này',
-        right_back: 'Chân vịt phải quay lùi trong nhịp này',
-        anchor: 'Thả neo giữ xuồng đứng yên trước dòng nước chảy',
-        unanchor: 'Kéo neo lên để xuồng lại chạy được trên sông'
-      },
+      moTa: 'Thân tàu thủy lợi với hai chân vịt, chỉ chạy trên nước. Đi bằng 4 lệnh như xe hai bánh: up() tiến, down() lùi, turn_left() và turn_right() quay tại chỗ.',
+      lenh: ['up', 'down', 'turn_left', 'turn_right', 'wait'],
+      tieuDeGhep: 'Mỗi lệnh làm gì',
       ghep: [
-        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô nước' },
-        { lenh: ['left_move', 'wait'], ra: 'Quay phải 90°' },
-        { lenh: ['left_back', 'wait'], ra: 'Quay trái 90°' },
-        { lenh: ['left_back', 'right_move', 'wait'], ra: 'Quay đầu 180°' },
-        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô nước' }
+        { lenh: ['up'], ra: 'Tiến 1 ô nước', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
+        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ', ket: { x: 2, y: 2, huong: 3 } },
+        { lenh: ['down'], ra: 'Lùi 1 ô nước', ket: { x: 2, y: 3, huong: 0 } }
       ],
       gioi: [
-        'Hai chân vịt nhận lệnh y hệt xe hai bánh nên các hàm move(), turn_left(), turn_right(), u_turn(), back() đều dùng lại ngay',
         'Lướt trên các ô nước ~, bến phao Q, bến hàng q và cống mở k',
         { can: ['anchor'], chu: 'anchor() thả neo giữ xuồng không bị dòng nước cuốn trôi khi đứng chờ' }
       ],
@@ -342,11 +333,11 @@
         'Không lên được bờ đất . hay bờ kè # và không đi xuyên qua cống đóng K',
         { can: ['anchor'], chu: 'Đang thả neo thì không tiến, lùi hay quay được cho tới khi gọi unanchor()' }
       ],
-      luuY: ['Trên ô có dòng nước chảy, cuối mỗi nhịp xuồng không thả neo sẽ trôi theo chiều dòng.']
+      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp.', 'Trên ô có dòng nước chảy, mỗi nhịp xuồng bị đẩy theo chiều dòng, kể cả khi wait().']
     },
     'day-keo': {
       khe: 'tay', ten: 'Tay lưới thủy lợi',
-      moTa: 'Vòng lưới phao gắn trên xuồng để tung lưới ra 4 phía bắt bè nổi, giật van cống hoặc cuộn dây chỉnh độ dài lưới.',
+      moTa: 'Vòng lưới phao gắn trên xuồng để tung lưới ra 4 phía bắt vật nổi hoặc giật van cống.',
       lenh: ['cast_net', 'drop_net', 'set_length'],
       moTaLenh: {
         cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van V',

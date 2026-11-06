@@ -1037,6 +1037,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (d.ten === 'ink') return 'mau';                                   // ink(c): bảng chọn bốn màu sơn
       if (d.ten === 'color' && huongCam().length) return 'huong';          // c = color("up"): bảng chọn hướng camera (mùa 4)
       if (d.ten === 'spray' || d.ten === 'spray_back') return 'luc';       // spray(p): bảng chọn lực "low" / "high"
+      if (d.ten === 'cast_net') return 'luoi';                             // cast_net("left"): bảng chọn hướng tung lưới theo mũi xuồng
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
       return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' || kd === 'luc' ? kd : 'so';
     }
@@ -1073,6 +1074,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (fr) [fr[1], fr[1] + ' + 1', '3 - ' + fr[1]].forEach(function (b) { if (kq.indexOf(b) < 0) kq.push(b); });
       }
       bienDuoc().forEach(function (ten) { if (hopKieu(slot, kieuBienCua(ten)) && kq.indexOf(ten) < 0) kq.push(ten); });
+      if (slot === 'mau') bienGanMau(arr, i).forEach(function (ten) { if (kq.indexOf(ten) < 0) kq.push(ten); });       // giao(c) với c = color() ở dòng trên
       if (slot === 'so') for (j = 0; j < i && j < arr.length; j++) { var gd = RE_GAN_DEM.exec(chuoi(arr[j])) || RE_GAN_DO.exec(chuoi(arr[j])); if (gd && kq.indexOf(gd[1]) < 0) kq.push(gd[1]); }       // biến đếm đã gán (n = 0) hay số đo (d = distance()) ở các dòng phía trên
       if (slot === 'so' && camDuoc().indexOf('distance') >= 0) {                          // màn có mắt hồng ngoại: số đo đặt thẳng vào ô số (range(distance()), forward(distance() + n))
         ['distance()'].concat(bienDuoc().filter(function (p) { return kieuBienCua(p) === 'so'; }).map(function (p) { return 'distance() + ' + p; })).forEach(function (b) { if (kq.indexOf(b) < 0) kq.push(b); });
@@ -1198,7 +1200,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }
-      if (kd === 'huong') { chonChuoi({ neo: so, kieu: 'huong', gia: String(d.ds[kk] || '').replace(/"/g, ''), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
+      if (kd === 'huong' || kd === 'luoi') { chonChuoi({ neo: so, kieu: kd, gia: String(d.ds[kk] || '').replace(/"/g, ''), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mau') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('mau', i).concat(CHE_BT ? BT.nguon.filter(function (x) { return /^color\(/.test(x); }) : []), khongNone: true, khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mauls') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('bien', i), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
@@ -1351,6 +1353,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       var bien = bienGanMau(lay(), i);
       if (CHE_LIST || CHE_VH) bienTam('bien', i).forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });          // biến vòng for c in seen: (danh sách màu) cũng so được với màu: if c == "red":
+      if (CHE_MAU && CHE_VH) bienDuoc().forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });                   // mùa 3: giao(c) thân còn trống, chưa suy được c là màu mà vẫn phải viết được if c == "red":
       if (o.vt === 'rhs') {
         chonMau({ neo: so, gia: o.t, bien: bien, khiChon: function (v) { ed.datSo(i, v, kk); } });
         return;
@@ -1991,6 +1994,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   var CHU_TOI_DA = 16;       // chuỗi ghép dài tối đa
   var CHU_HUONG = ['U', 'D', 'L', 'R'];
+  var HUONG_LUOI = ['front', 'left', 'right', 'back'];             // hướng tung lưới của cast_net(d), theo mũi xuồng
   var LUC_BAN = ['low', 'high'];                                   // lực bắn của súng hơi ở màn Lực bắn: spray("low") / spray("high")
   /**
    * Bộ chọn chuỗi chữ chỉ đường cạnh ô `neo`. o: { neo, kieu, gia, hien, bien: [tên biến], khiChon(v) }
@@ -2022,8 +2026,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       el.appendChild(hang0);
     }
     if (o.kieu !== 'bien') {
-      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' || o.kieu === 'huong' ? ' cc-luc' : ''));
-      (o.kieu === 'huong' ? huongCam() : o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {      // 'huong': hướng camera bốn hướng (mùa 4)           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
+      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' || o.kieu === 'huong' || o.kieu === 'luoi' ? ' cc-luc' : ''));
+      (o.kieu === 'huong' ? huongCam() : o.kieu === 'luoi' ? HUONG_LUOI : o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {      // 'huong': hướng camera bốn hướng (mùa 4)           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
         var b = h('button', 'bt g-pu cs' + (o.kieu !== 'ghep' && c === o.gia ? ' on' : ''), c); b.setAttribute('data-chu', c);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
@@ -2360,6 +2364,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var src = (f.than || []).map(boChuThich).join('\n'), P = escRe(p);
     if (CHE_TD && (new RegExp('(^|[^\\w"])' + P + '\\s*\\[').test(src) || new RegExp('(^|[^\\w"])' + P + '\\.add\\(').test(src) || (!CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) || (!CHE_LIST && new RegExp('\\blen\\(\\s*' + P + '\\s*\\)').test(src)))) return 'td';     // mùa 8: d["a"] · d[k] · s.add(x) · k in d · len(s): từ điển / tập hợp
     if (CHE_LIST && (new RegExp('(^|[^\\w"])' + P + '\\s*\\[').test(src) || new RegExp('\\blen\\(\\s*' + P + '\\s*\\)').test(src) || new RegExp('(^|[^\\w"])' + P + '\\.append\\(').test(src))) return 'list';     // p[i] · len(p) · p.append(x): danh sách
+    if (new RegExp('(^|[^\\w"])' + P + '\\s*[=!]=\\s*"(red|green|blue|yellow|none)"').test(src) || new RegExp('color\\([^)]*\\)\\s*[=!]=\\s*' + P + '(?![\\w"])').test(src)) return 'mau';   // if c == "red": / color() == c: đối số là tên MÀU (mùa 3, tham số chữ)
     if (new RegExp('(^|[^\\w"])' + P + '\\s*[=!]=').test(src) || new RegExp('[=!]=\\s*' + P + '(?![\\w"])').test(src)) return 'don';
     if (new RegExp('\\bin\\s+' + P + '\\s*:').test(src)) return CHE_LIST && !KIEU_TEN_GHEP.test(p) ? 'list' : 'ghep';                      // for c in path: (chuỗi chữ) · for n in steps: (danh sách, ở màn có list)
     if (CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) return 'list';                                       // x in steps

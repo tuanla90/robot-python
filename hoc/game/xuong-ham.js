@@ -871,6 +871,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Từ chương "Hàm có tham số" trở đi, hộp hàm mới có chỗ khai đối số (trước đó chưa học nên không hiện). */
   function coChoKhaiDoiSo(man) {
+    if (man.khaiDoiSo) return true;                                                             // mùa 3 trở đi: màn dạy tham số tự khai cờ này
     var th = (window.ThuTuChuong && ThuTuChuong.thuTu) || [], a = th.indexOf('tham-so');
     return a >= 0 && th.indexOf(man.chuong) >= a;
   }

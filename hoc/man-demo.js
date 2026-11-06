@@ -16,31 +16,7 @@
 
   function lap(ds, n) { var kq = []; for (var i = 0; i < n; i++) kq = kq.concat(ds); return kq; }
 
-  /* mùa 1 Kho hàng, mùa 2 Bãi tái chế: nội dung thật đã viết ở man-m1-*.js, man-m2-*.js (xem thu-tu-chuong.js). */
-
-  /* ---------------------------------------------------------- mùa 3 Bến sông (xuồng) */
-  (function () {
-    function man(m) {
-      m.chuong = 'demo-ben-song';
-      m.cauTruc = ['for'];
-      m.loaiRobot = 'xuong'; m.robot = { than: 'xuong', tay: null }; m.hamGoc = ['up', 'down', 'turn_left', 'turn_right'];
-      m.mucTieu = 'toi-co';
-      m.moXuong = true; m.camHamCuaEm = false;
-      m.khung = { chinh: 10, moiHam: 10 };
-      return ManHoc.chuanHoa(m);
-    }
-    ManHoc.them([
-      man({
-        so: 1, ten: 'Xuồng rời bến', hang: 'lam-quen',
-        deBai: 'Xuồng đứng dưới lá cờ ba ô, trên mặt sông. Chạy xuồng tới cờ.',
-        san: ['#####', '#~Q~#', '#~~~#', '#~~~#', '#~~~#'],
-        batDau: { x: 2, y: 4, huong: 0 },
-        maMau: { chinh: ['up()'] },
-        sao: { o: 3, nhip: 3 },
-        loiGiai: { chinh: lap(['up()'], 3) }
-      })
-    ]);
-  })();
+  /* mùa 1 Kho hàng, mùa 2 Bãi tái chế, mùa 3 Bến sông: nội dung thật đã viết ở man-m1-*.js, man-m2-*.js, man-m3-*.js (xem thu-tu-chuong.js). */
 
   /* ---------------------------------------------------------- mùa 4 Nông trại (drone) */
   (function () {

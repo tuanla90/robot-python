@@ -56,7 +56,7 @@ bài, không phải đoán lại mỗi chương):**
 
 Tổng mỗi mùa: 4 × 8 = **32 màn**. Tổng 4 mùa: **128 màn**.
 
-**Mùa 1 đã DỰNG LẠI theo khuôn 4×8 này** (thay bản 45 màn, 9 chương trước đó), **Mùa 2 đã dựng** cùng khuôn. Mùa 3–4 dựng theo cùng cách:
+**Mùa 1 đã DỰNG LẠI theo khuôn 4×8 này** (thay bản 45 màn, 9 chương trước đó), **Mùa 2, Mùa 3 đã dựng** cùng khuôn. Mùa 4 dựng theo cùng cách:
 
 - Dùng `ManHoc.khuon(so, m)` (`hoc/man-co-so.js`): truyền số hàng 1–8, hàm tự đặt dạng bài và các cờ của hàng đó.
 - Mỗi cột là một chương + một gói (`m1-c1-than`, `m1-c2-tay`, `m1-c3-cam-bien`, `m1-c4-san` trong `hoc/thu-tu-chuong.js`).
@@ -80,6 +80,21 @@ Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
 - **Nhập `and`/`or`**: màn khai `vaHoac: true`; chạm vào điều kiện rồi chọn `+ and`/`+ or`, tối đa hai vế. Chạm chữ bên phải của `c == "R"` hay `front_pole() == "N"` để đổi chữ.
 - **Biến chưa dạy ở Mùa 2**: chuỗi chỉ đi qua `for c in "..."`, chưa gán vào biến; biến và tham số để Mùa 3.
 
+Quyết định riêng của Mùa 3 (có thể đổi nếu muốn):
+
+- **Cột dạy gì**: cột 1 biến (`n = 4`, `n = n + 1`), cột 2 tham số số (`lui(n)`), cột 3 biến ghi màu và tham số chữ (`c = color()`, `giao(c)`), cột 4 biến đếm và hàm hai tham số (`bac(a, b)`).
+- **"Dây phao kéo" chính là tay lưới có sẵn** (`day-keo`): `cast_net()` / `drop_net()`, trong lời đề bài gọi là lưới phao cho khớp tên lệnh. Lưới bắt vật cách ĐÚNG 2 ô, vật đi theo đường xuồng và luôn cách xuồng 2 ô. Không dùng `set_length`.
+- **Phải thả mới tính giao**: vật còn trong lưới nằm trên bến thì chưa thắng, phải `drop_net()` rồi `wait()`.
+- **Thùng sắt nổi**: cột 1, 2 dùng `B` + lớp `vatChat` (`s` sắt, `N`/`S` nam châm, `g` gỗ). Xuồng gắn được nam châm (thả xuống ô nước trước mũi) hay tay lưới, không cả hai.
+- **Tầm nhìn**: thùng sắt thấy và hút trong 2 ô, thùng nam châm trong 3 ô. Vì lưới bắt ở 2 ô nên `while not front_metal(): up()` dừng đúng tầm lưới.
+- **Camera chỉ thấy ô kề trước mũi** và thấy cả màu bến, nên phải `c = color()` rồi mới lùi ra tung lưới: đây là lý do cần biến. Xuồng xuất phát sau các bến (phía bè) để `while color() == "none"` không dừng nhầm ở bến.
+- **Bến và bè có màu**: lớp `mau` cho bến, `vatMau` cho bè, có dấu hình như các vật màu khác để người mù màu vẫn phân biệt.
+- **Van không khai `noi`** thì điều khiển mọi cống, mọi dòng của sân: tung lưới trúng van thì cống mở, dòng tắt (`cast_net("left")`, van cách 1 hay 2 ô đều được).
+- **Hàng 7 cột 2–4 có `canThamSo`**: hàm của em phải có tham số mới thắng. Màn khai `khaiDoiSo` thì hộp Hàm mới có ô đối số.
+- **Nhập lệnh**: tham số so với tên màu thì lời gọi có bảng chọn màu kèm biến (`giao(c)`); `cast_net("left")` có bảng chọn bốn hướng.
+- **Bỏ màn demo Bến sông** trong `hoc/man-demo.js`, Mùa 4 vẫn còn demo.
+- **Thẻ part của xuồng** đổi sang bộ lệnh `up`/`down`/`turn_left`/`turn_right`.
+
 ## Quy tắc engine (đã áp dụng một phần khi dựng mùa 1 lần đầu, giữ nguyên khi dựng lại)
 
 - **Hai bánh (`banh`) và Xuồng (`xuong`)**: dùng `up()` / `down()` / `turn_left()` / `turn_right()`.
@@ -100,7 +115,7 @@ Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
 
 ## Việc còn lại
 
-1. Dựng Mùa 3, 4 theo đúng khuôn 4×8 + chuỗi chuyển part ở trên (chưa làm; Bến sông, Nông trại đang có 1 màn demo).
+1. Dựng Mùa 4 theo đúng khuôn 4×8 + chuỗi chuyển part ở trên (chưa làm; Nông trại đang có 1 màn demo).
 2. Mùa Tổ hợp (mùa 5): chưa thiết kế, làm sau khi xong 4 mùa cốt lõi.
 3. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua up/down/turn_left/turn_right;
    chưa xem lại toàn bộ UI nhập lệnh — vẫn là việc treo từ đầu buổi.
