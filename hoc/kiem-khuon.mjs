@@ -1,6 +1,6 @@
 // kiem-khuon.mjs — kiểm các mùa đã dựng theo khuôn 4×8 của hoc/KE-HOACH-4-MUA-COT-LOI.md (chạy: node hoc/kiem-khuon.mjs).
 // Mỗi màn: lời giải mẫu thắng đủ 3 sao, CHỈ với hàm của chính nó (tên hàm tự đặt nên không màn nào dựa vào màn trước).
-// Mỗi dạng bài: code mẫu đúng kiểu của dạng đó (Mùa 1 theo khuôn mới ManHoc.khuonMoi, Mùa 2-4 tạm giữ khuôn cũ). Màn viết mở thì lời giải và các cách khác đều thắng, đi khác đường.
+// Mỗi dạng bài: code mẫu đúng kiểu của dạng đó (cả 4 mùa theo khuôn mới ManHoc.khuonMoi). Màn viết mở thì lời giải và các cách khác đều thắng, đi khác đường.
 // Mỗi cột: đúng bộ part theo chuỗi chuyển part của kế hoạch. Không tuple / dict / set / list lồng.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -203,7 +203,7 @@ function kiemNongTrai() {
   const tim = (ma) => ManHoc.danhSach.find((m) => m.ma === ma);
   const chay = (man, chinh) => ChamHoc.cham({ ...man, chiChay: false, chiSapXep: false }, { chinh, hamCuaMan: man.loiGiai.hamCuaMan || [] }, []);
   const ma = (kq) => kq.chanDoan.map((c) => c.ma);
-  const m2 = tim('m4-c3-cam-bien.2'), m6 = tim('m4-c3-cam-bien.6'), g1 = tim('m4-c2-tay.1'), g6 = tim('m4-c2-tay.6'), l3 = tim('m4-c1-than.3');
+  const m2 = tim('m4-c3-cam-bien.1'), m6 = tim('m4-c3-cam-bien.4'), g1 = tim('m4-c2-tay.1'), g6 = tim('m4-c2-tay.4'), l3 = tim('m4-c1-than.2');
   if (chay(m2, ['spray()', 'spray()', 'spray()']).thang !== true) loi.push('nông trại: tưới đủ số lần phải thắng');
   if (!ma(chay({ ...m2, datKho: ['...', '1..', '...'] }, ['go_right()', 'spray()'])).includes('ung-dat')) loi.push('nông trại: tưới đất không khô phải úng');
   if (chay(m6, ['for i in range(4):', '    if warm():', '        spray()', '    go_right()']).thang) loi.push('nông trại: không được tưới được cả hai sân mà không dùng luống đo');

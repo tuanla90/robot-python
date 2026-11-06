@@ -2,7 +2,7 @@
    man-m4-cambien.js — diem10code-python: MÙA 4 Nông trại, CỘT 3 "Hồng ngoại" (Drone + Vòi phun + Hồng ngoại: combo nhà của mùa). NHỚ KẾT QUẢ ĐO VÀO DANH SÁCH.
    warm() đo ô dưới bụng, không tốn nhịp: True khi đất còn khô. Lớp datKho: số 1..3 là đất khô cần tưới từng ấy lần, m là luống đo (nóng nhưng không cần tưới, tưới là úng).
    Lớp datRom: x là ô phủ rơm, warm() không đọc xuyên rơm nên trả False dù đất dưới rơm vẫn khô: phải đo ở luống đo rồi nhớ vào danh sách.
-   8 hàng theo khuôn ManHoc.khuon (hoc/KE-HOACH-4-MUA-COT-LOI.md).
+   8 hàng theo khuôn mới ManHoc.khuonMoi (hoc/KE-HOACH-4-MUA-COT-LOI.md).
    ========================================================================== */
 (function () {
   'use strict';
@@ -28,27 +28,21 @@
     m.moXuong = true;
     m.vo = 'nong-trai';
     m.mucTieu = 'cham-dat';
-    m.phienBanNoiDung = 1;                     // wait() không còn chốt lệnh: bản nháp cũ không dùng nữa
-    ManHoc.khuon(so, m);
+    m.phienBanNoiDung = 2;                     // khuôn mới: đánh số lại các màn, bản nháp cũ không dùng nữa
+    ManHoc.khuonMoi(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
   }
 
   ManHoc.them([
-    man(1, { ten: 'Đo đất',
-      deBai: 'Bấm Chạy và xem. warm() đo ô dưới bụng drone: đất còn khô thì True. Có khô mới tưới, nên không ô nào bị úng.',
-      san: HANG('.....'), datKho: HANG('.1.1.'), batDau: BD,
-      sao: { o: 4, nhip: 5 },
-      loiGiai: { chinh: ['for i in range(4):', '    if warm():', '        spray()', '    go_right()'] } }),
-
-    man(2, { ten: 'Khô bao lâu',
-      deBai: 'while warm() tưới tới khi hết khô. Đọc code, đoán rồi bấm Chạy.',
+    man(1, { ten: 'Khô bao lâu',
+      deBai: 'warm() đo ô dưới bụng drone, không tốn nhịp: đất còn khô thì True. while warm() tưới tới khi hết khô, nên không ô nào bị úng. Đọc code, đoán rồi bấm Chạy.',
       san: HANG('...'), datKho: HANG('3..'), batDau: BD,
       duDoan: { hoi: 'Ô đất cần tưới 3 lần. spray() chạy mấy lần?', luaChon: ['1 lần', '3 lần', 'Lặp mãi không dừng'], dung: 1, xacMinh: { x: 0, y: 1, lenh: { spray: 3 } } },
       sao: { o: 3, nhip: 3 },
       loiGiai: { chinh: ['while warm():', '    spray()', 'go_right()'] } }),
 
-    man(3, { ten: 'Đo từng ô',
+    man(2, { ten: 'Đo từng ô',
       deBai: 'Hai sân, đất khô ở chỗ khác nhau. Code thiếu dòng lặp qua ba ô. Điền vào.',
       san: [HANG('....'), HANG('....')], datKho: [HANG('12..'), HANG('.31.')], batDau: [BD, BD],
       maMau: { chinh: [''].concat(TUOI.slice(1)) },
@@ -56,15 +50,7 @@
       sao: { o: 4, nhip: 6 },
       loiGiai: { chinh: TUOI.slice() } }),
 
-    man(4, { ten: 'Tưới rồi mới đi',
-      deBai: 'Hai sân. Đủ dòng nhưng sai thứ tự: drone bay trước khi đo nên bỏ sót ô đầu. Giữ một dòng rồi kéo sang chỗ đúng.',
-      san: [HANG('....'), HANG('....')], datKho: [HANG('2.1.'), HANG('11..')], batDau: [BD, BD],
-      maMau: { chinh: ['for i in range(3):', '    go_right()', '    while warm():', '        spray()'] },
-      goiY: ['Mỗi ô: đo và tưới xong rồi mới bay sang ô sau.'],
-      sao: { o: 4, nhip: 5 },
-      loiGiai: { chinh: TUOI.slice() } }),
-
-    man(5, { ten: 'Tưới chưa đủ',
+    man(3, { ten: 'Tưới chưa đủ',
       deBai: 'Code này sai đúng 1 chỗ: mỗi ô chỉ tưới một lần nên đất còn khô. Bấm Chạy xem lỗi, rồi sửa.',
       san: [HANG('....'), HANG('....')], datKho: [HANG('2.3.'), HANG('.12.')], batDau: [BD, BD],
       maMau: { chinh: TUOI.map(function (d) { return d === '    while warm():' ? '    if warm():' : d; }) },
@@ -72,7 +58,7 @@
       sao: { o: 4, nhip: 7 },
       loiGiai: { chinh: TUOI.slice() } }),
 
-    man(6, { ten: 'Đo một nơi, tưới một nẻo',
+    man(4, { ten: 'Đo một nơi, tưới một nẻo',
       deBai: 'Màn trống, em tự viết. Hai sân. Luống trên là luống đo, không tưới được. Luống dưới phủ rơm, warm() không đọc xuyên rơm, nhưng đất dưới rơm khô y như luống đo. Đo trước, nhớ vào danh sách, rồi xuống tưới. Hàm ve() đưa drone về đầu luống dưới.',
       san: [['.....', '.....'], ['.....', '.....']],
       datKho: [['m.mm.', '1.11.'], ['.mm..', '.11..']],
@@ -83,7 +69,19 @@
       sao: { o: 12, nhip: 15 },
       loiGiai: { chinh: DO4.slice(), hamCuaMan: VE(4) } }),
 
-    man(7, { ten: 'Hàm tưới luống',
+    man(5, { ten: 'Đi ngược cho khỏi về',
+      deBai: 'Hai sân, luống trên để đo, luống dưới phủ rơm, đất khô y như luống đo. Đo xong đừng về đầu luống: bay xuống rồi đi ngược từ cuối luống, đọc danh sách từ cuối về đầu. Hàm ve() vẫn có sẵn nếu muốn về. Tìm bài vừa gọn vừa nhanh.',
+      san: [['.....', '.....'], ['.....', '.....']],
+      datKho: [['mm.m.', '11.1.'], ['..mm.', '..11.']],
+      datRom: [['.....', 'xxxx.'], ['.....', 'xxxx.']],
+      batDau: [{ x: 0, y: 0, huong: 0 }, { x: 0, y: 0, huong: 0 }],
+      canList: true,
+      goiY: ['Lượt thứ i đi ngược đang đứng ở ô a[3 - i]: lượt đầu là phần tử cuối, a[3].', 'Mỗi lượt: go_left() trước, rồi hỏi a[3 - i] để tưới.'],
+      sao: { o: 9, nhip: 12 },
+      loiGiai: { chinh: ['a = []', 'for i in range(4):', '    a.append(warm())', '    go_right()', 'go_down()', 'for i in range(4):', '    go_left()', '    if a[3 - i]:', '        spray()'], hamCuaMan: VE(4) },
+      cachKhac: [{ chinh: DO4.slice() }] }),
+
+    man(6, { ten: 'Hàm tưới luống',
       deBai: 'Hai luống dài ngắn khác nhau. Tự viết hàm tên tùy em nhận độ dài luống, ví dụ tuoi(n): đo và tưới n ô, về đầu luống, xuống luống sau. Danh sách a giữ độ dài các luống. Khi đặt tên hàm, thêm một đối số.',
       san: ['....', '....', '....'], datKho: ['213.', '12..', '....'], batDau: { x: 0, y: 0, huong: 0 },
       canThamSo: true, canList: true,
@@ -93,6 +91,24 @@
         chinh: ['a = [3, 2]', 'for n in a:', '    tuoi(n)'],
         hamCuaEmMoi: [H('tuoi', ['n'], ['for i in range(n):', '    while warm():', '        spray()', '    go_right()', 'for i in range(n):', '    go_left()', 'go_down()'])]
       } }),
+
+    man(7, { ten: 'Một hàm hay đi ngoằn ngoèo',
+      deBai: 'Ba luống cùng dài. Một hàm tưới luống rồi về đầu luống, gọi ba lần: gọn. Hay đi ngoằn ngoèo, hết luống thì xuống và quay đầu đi ngược: nhanh. Hàm nào cũng được, tên tùy em. Một sao cho bài gọn, một sao cho bài nhanh.',
+      san: ['.....', '.....', '.....'], datKho: ['21.1.', '.12..', '1..2.'], batDau: { x: 0, y: 0, huong: 0 },
+      goiY: ['Về đầu luống là 4 ô bay không tưới gì, mỗi ô một nhịp.', 'Đi ngược thì bay trước rồi mới đo, vì lúc xuống drone đang ở ngoài luống.'],
+      sao: { o: 9, nhip: 23 },
+      doiCho: true,
+      loiGiai: {
+        chinh: ['for i in range(3):', '    tuoi()'],
+        hamCuaEmMoi: [H('tuoi', [], ['for i in range(4):', '    while warm():', '        spray()', '    go_right()', 'for i in range(4):', '    go_left()', 'go_down()'])]
+      },
+      cachKhac: [{
+        chinh: ['di_phai()', 'go_down()', 'di_trai()', 'go_down()', 'di_phai()'],
+        hamCuaEmMoi: [
+          H('di_phai', [], ['for i in range(4):', '    while warm():', '        spray()', '    go_right()']),
+          H('di_trai', [], ['for i in range(4):', '    go_left()', '    while warm():', '        spray()'])
+        ]
+      }] }),
 
     man(8, { ten: 'Nhớ cả luống dài',
       deBai: 'Ba sân. Luống trên để đo, luống dưới phủ rơm, đất khô y như luống đo. Tưới đúng những ô còn khô của luống dưới.',

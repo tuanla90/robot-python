@@ -56,7 +56,7 @@ bài, không phải đoán lại mỗi chương):**
 
 Tổng mỗi mùa: 4 × 8 = **32 màn**. Tổng 4 mùa: **128 màn**.
 
-**Khuôn 8 hàng MỚI (đang chuyển dần, Mùa 1 đã chuyển, Mùa 2–4 tạm giữ khuôn cũ ở trên).** Lý do: ở khuôn cũ 5/8 hàng chỉ cần nghĩ tối đa khoảng 1 dòng, còn mốc sao bằng đúng lời giải mẫu nên chơi giống trắc nghiệm.
+**Khuôn 8 hàng MỚI (cả 4 mùa đã chuyển, khuôn cũ ở trên không còn màn nào dùng).** Lý do: ở khuôn cũ 5/8 hàng chỉ cần nghĩ tối đa khoảng 1 dòng, còn mốc sao bằng đúng lời giải mẫu nên chơi giống trắc nghiệm.
 
 1. Xem rồi đoán — gộp hai hàng Chỉ xem và Dự đoán
 2. Điền hoặc Sắp xếp — mỗi cột chọn dạng hợp với bài (`dangBai: 'sap-xep'`, mặc định là điền)
@@ -69,18 +69,19 @@ Tổng mỗi mùa: 4 × 8 = **32 màn**. Tổng 4 mùa: **128 màn**.
 
 - **Sao cộng dồn qua các lần chạy** (mọi mùa): mốc Gọn và mốc Nhanh lưu riêng (`Luu.ghiMoc`), nên một bài gọn và một bài nhanh vẫn đủ 3 sao. Riêng màn đoán vẫn tính sao theo lượt đoán.
 - **Chọn part ở màn trùm**: làm từ Mùa 2, vì Mùa 1 chưa có part để chọn.
-- Dùng `ManHoc.khuonMoi(so, m)` khi chuyển một mùa sang khuôn mới. Máy kiểm tự kiểm theo `dangBai` của từng màn.
+- Dùng `ManHoc.khuonMoi(so, m)`. Máy kiểm tự kiểm theo `dangBai` của từng màn.
+- **Màn viết mở tận dụng điểm mạnh, yếu về nhịp của part**: nhện đi 2 nhịp nên đường ngắn đáng viết thêm, chuỗi chỉ đường dài bao nhiêu cũng chỉ 5 ô; xuồng quay 1 nhịp nên rẽ vào bến gần rất lời, xuôi dòng nhanh gấp đôi; drone và vòi phun 1 nhịp nên thứ tự đi luống quyết định số nhịp (về đầu luống hay đi ngoằn ngoèo). Ô đích nào nhận vật cũng được nên có màn chọn đích gần hay đích xa.
 
 **Mùa 1 đã DỰNG LẠI theo khuôn 4×8** (thay bản 45 màn, 9 chương trước đó), **Mùa 2, Mùa 3, Mùa 4 đã dựng** cùng khuôn, theo cùng cách:
 
-- Dùng `ManHoc.khuon(so, m)` (`hoc/man-co-so.js`, khuôn cũ): truyền số hàng 1–8, hàm tự đặt dạng bài và các cờ của hàng đó.
+- Dùng `ManHoc.khuonMoi(so, m)` (`hoc/man-co-so.js`): truyền số hàng 1–8, hàm tự đặt dạng bài và các cờ của hàng đó.
 - Mỗi cột là một chương + một gói (`m1-c1-than`, `m1-c2-tay`, `m1-c3-cam-bien`, `m1-c4-san` trong `hoc/thu-tu-chuong.js`).
 - Kiểm bằng `node hoc/kiem-khuon.mjs`: mỗi màn thắng 3 sao bằng hàm của chính nó, code mẫu đúng dạng bài của hàng, đúng bộ part của cột. Dựng mùa mới thì thêm mùa đó vào bảng `MUA` trong tệp này.
 
 Quyết định khi dựng (có thể đổi nếu muốn):
 
-- Hàng 2: đoán sai vẫn qua màn nhưng bị trừ 1 sao, chơi lại để đoán lại được.
-- Hàng 7: tên hàm do em tự đặt (`hamTuDat`, `canHamTuDat`), không viết hàm thì chưa thắng. Hàm tự đặt không chuyển sang màn sau bắt buộc: mỗi màn thắng được với hàm của chính nó.
+- Hàng 1: đoán sai vẫn qua màn nhưng bị trừ 1 sao, chơi lại để đoán lại được.
+- Hàng 6: tên hàm do em tự đặt (`hamTuDat`, `canHamTuDat`), không viết hàm thì chưa thắng. Hàm tự đặt không chuyển sang màn sau bắt buộc: mỗi màn thắng được với hàm của chính nó.
 - Khung chính vẽ tối đa 10 dòng mà nhặt + đặt đủ lệnh gốc đã hết 10, nên hàng 1–6 ở cột có tay cho sẵn hàm của màn `pick()`/`drop()`.
 - Gói sau mở theo luật sao có sẵn (½ số sao tối đa của các gói trước, làm tròn xuống bội 5), nên chưa cần xong hết 8 hàng của cột trước.
 
@@ -111,7 +112,7 @@ Quyết định riêng của Mùa 3 (có thể đổi nếu muốn):
 - **Camera chỉ thấy ô kề trước mũi** và thấy cả màu bến, nên phải `c = color()` rồi mới lùi ra tung lưới: đây là lý do cần biến. Xuồng xuất phát sau các bến (phía bè) để `while color() == "none"` không dừng nhầm ở bến.
 - **Bến và bè có màu**: lớp `mau` cho bến, `vatMau` cho bè, có dấu hình như các vật màu khác để người mù màu vẫn phân biệt.
 - **Van không khai `noi`** thì điều khiển mọi cống, mọi dòng của sân: tung lưới trúng van thì cống mở, dòng tắt (`cast_net("left")`, van cách 1 hay 2 ô đều được).
-- **Hàng 7 cột 2–4 có `canThamSo`**: hàm của em phải có tham số mới thắng. Màn khai `khaiDoiSo` thì hộp Hàm mới có ô đối số.
+- **Hàng 6 cột 2–4 có `canThamSo`**: hàm của em phải có tham số mới thắng. Màn khai `khaiDoiSo` thì hộp Hàm mới có ô đối số.
 - **Nhập lệnh**: tham số so với tên màu thì lời gọi có bảng chọn màu kèm biến (`giao(c)`); `cast_net("left")` có bảng chọn bốn hướng.
 - **Bỏ màn demo Bến sông** trong `hoc/man-demo.js`.
 - **Thẻ part của xuồng** đổi sang bộ lệnh `forward`/`backward`/`turn_left`/`turn_right`.
@@ -124,7 +125,7 @@ Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
 - **Hồng ngoại trên drone**: `warm()` đo ô dưới bụng, không tốn nhịp. Không đọc xuyên rơm. Luống đo (`m`) báo nóng nhưng không cần tưới, nên muốn tưới luống phủ rơm phải đo luống đo, nhớ vào danh sách rồi mới bay xuống: đây là lý do cần danh sách.
 - **Camera trên drone** đọc ô dưới bụng: vật trước, rồi tới màu đất. Lớp `hinh` là ô cần gieo, không phải màu đất, nên camera đọc ra `"none"`.
 - **Lưới trên drone** (`luoiBay: true`): `cast_net(d)` theo màn hình (`front` lên trên), bắt vật đất cách đúng 2 ô, vật đi theo đường bay. Bay về phía vật trong lưới thì bị chặn.
-- **Danh sách**: khung nhập đã có sẵn, hàng 6, 8 khai `canList: true` (không dùng danh sách thì chưa thắng). Vẫn không dùng gán `a[0] = x`, tuple, dict, set, list lồng list.
+- **Danh sách**: khung nhập đã có sẵn, hàng 4, 6, 8 khai `canList: true` khi màn cần (không dùng danh sách thì chưa thắng). Vẫn không dùng gán `a[0] = x`, tuple, dict, set, list lồng list.
 - **Hoa phân biệt bằng số cánh, không dùng dấu hình**: xanh lá 3, xanh dương 4, đỏ 5, vàng 8 (`SO_CANH` trong `hoc/game/ve-vector-nong-trai.js`), để người mù màu đếm cánh là biết màu. Áp dụng cho luống hoa, hoa vừa gieo, hoa mờ cần gieo và bao hạt. Các mùa khác vẫn giữ dấu hình.
 - **Bỏ màn demo Nông trại**: `hoc/man-demo.js` không còn màn nào.
 
