@@ -9,9 +9,9 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['up', 'down', 'turn_left', 'turn_right', 'wait', 'cast_net', 'drop_net', 'front_metal', 'front_pole'];
+  var HAM_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'wait', 'cast_net', 'drop_net', 'front_metal', 'front_pole'];
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than.slice() }; }
-  function LUI() { return [H('lui', ['n'], ['for i in range(n):', '    down()'])]; }
+  function LUI() { return [H('lui', ['n'], ['for i in range(n):', '    backward()'])]; }
   function SONG(s) { var r = s.replace(/./g, '.'); return [r, s, r]; }
 
   function man(so, m) {
@@ -60,20 +60,20 @@
       san: SONG('~~q~~~B'),
       vatChat: SONG('......s'),
       batDau: { x: 0, y: 1, huong: 1 },
-      maMau: { chinh: ['cast_net()', 'wait()', 'while not front_metal():', '    up()', 'lui(4)', 'drop_net()', 'wait()'], hamCuaMan: LUI() },
+      maMau: { chinh: ['cast_net()', 'wait()', 'while not front_metal():', '    forward()', 'lui(4)', 'drop_net()', 'wait()'], hamCuaMan: LUI() },
       goiY: ['front_metal() đúng khi thùng còn cách 2 ô: đúng tầm lưới phao.'],
       sao: { o: 9, nhip: 10 },
-      loiGiai: { chinh: ['while not front_metal():', '    up()', 'cast_net()', 'wait()', 'lui(4)', 'drop_net()', 'wait()'], hamCuaMan: LUI() } }),
+      loiGiai: { chinh: ['while not front_metal():', '    forward()', 'cast_net()', 'wait()', 'lui(4)', 'drop_net()', 'wait()'], hamCuaMan: LUI() } }),
 
     man(5, { ten: 'Lưới không tới',
       deBai: 'Code này sai đúng 1 chỗ: xuồng tung lưới khi còn cách thùng 3 ô nên hụt. Bấm Chạy xem lỗi, rồi sửa.',
       san: SONG('~~~q~~B'),
       vatChat: SONG('......s'),
       batDau: { x: 2, y: 1, huong: 1 },
-      maMau: { chinh: ['for i in range(1):', '    up()', 'cast_net()', 'wait()', 'lui(3)', 'drop_net()', 'wait()'], hamCuaMan: LUI() },
+      maMau: { chinh: ['for i in range(1):', '    forward()', 'cast_net()', 'wait()', 'lui(3)', 'drop_net()', 'wait()'], hamCuaMan: LUI() },
       goiY: ['Lưới phao chỉ bắt được vật cách xuồng đúng 2 ô.'],
       sao: { o: 9, nhip: 7 },
-      loiGiai: { chinh: ['for i in range(2):', '    up()', 'cast_net()', 'wait()', 'lui(3)', 'drop_net()', 'wait()'], hamCuaMan: LUI() } }),
+      loiGiai: { chinh: ['for i in range(2):', '    forward()', 'cast_net()', 'wait()', 'lui(3)', 'drop_net()', 'wait()'], hamCuaMan: LUI() } }),
 
     man(6, { ten: 'Thùng xa, thùng gần',
       deBai: 'Màn trống, em tự viết. Hai sân, thùng sắt ở xa gần khác nhau nhưng từ thùng tới bến luôn 3 ô. Dò ra thùng, tung lưới, kéo về bến rồi thả. Hàm lui(n) có sẵn trong khay.',
@@ -82,7 +82,7 @@
       batDau: [{ x: 0, y: 1, huong: 1 }, { x: 0, y: 1, huong: 1 }],
       goiY: ['Dò bằng while not front_metal(), tung lưới, lùi 3 ô, rồi thả.'],
       sao: { o: 9, nhip: 11 },
-      loiGiai: { chinh: ['while not front_metal():', '    up()', 'cast_net()', 'wait()', 'lui(3)', 'drop_net()', 'wait()'], hamCuaMan: LUI() } }),
+      loiGiai: { chinh: ['while not front_metal():', '    forward()', 'cast_net()', 'wait()', 'lui(3)', 'drop_net()', 'wait()'], hamCuaMan: LUI() } }),
 
     man(7, { ten: 'Hai làn: hàm có tham số',
       deBai: 'Làn trên phải kéo 2 ô, làn dưới phải kéo 3 ô. Tự viết MỘT hàm có tham số số ô, tên tùy em, rồi gọi hai lần với hai số khác nhau. Khi đặt tên hàm, thêm một đối số.',
@@ -94,8 +94,8 @@
       goiY: ['Trong hàm: tung lưới, lùi n ô, thả lưới. Thân vòng for dùng range(n).', 'Sang làn dưới rồi dò thùng bằng while, gọi hàm lần nữa với số khác.'],
       sao: { o: 14, nhip: 16 },
       loiGiai: {
-        chinh: ['keo_ve(2)', 'turn_right()', 'up()', 'up()', 'turn_left()', 'while not front_metal():', '    up()', 'keo_ve(3)'],
-        hamCuaEmMoi: [H('keo_ve', ['n'], ['cast_net()', 'wait()', 'for i in range(n):', '    down()', 'drop_net()', 'wait()'])]
+        chinh: ['keo_ve(2)', 'turn_right()', 'forward()', 'forward()', 'turn_left()', 'while not front_metal():', '    forward()', 'keo_ve(3)'],
+        hamCuaEmMoi: [H('keo_ve', ['n'], ['cast_net()', 'wait()', 'for i in range(n):', '    backward()', 'drop_net()', 'wait()'])]
       } }),
 
     man(8, { ten: 'Chỉ kéo thùng sắt',
@@ -106,8 +106,8 @@
       batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
       sao: { o: 12, nhip: 8 },
       loiGiai: {
-        chinh: ['if not front_metal():', '    turn_right()', '    up()', '    up()', '    turn_left()', 'keo_ve()'],
-        hamCuaEmMoi: [H('keo_ve', [], ['cast_net()', 'wait()', 'for i in range(2):', '    down()', 'drop_net()', 'wait()'])]
+        chinh: ['if not front_metal():', '    turn_right()', '    forward()', '    forward()', '    turn_left()', 'keo_ve()'],
+        hamCuaEmMoi: [H('keo_ve', [], ['cast_net()', 'wait()', 'for i in range(2):', '    backward()', 'drop_net()', 'wait()'])]
       },
       huyHieu: { ma: 'day-keo', ten: 'Thợ quăng lưới phao' } })
   ]);

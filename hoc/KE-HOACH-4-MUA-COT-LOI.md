@@ -73,6 +73,8 @@ Quyết định riêng của Mùa 1 (có thể đổi nếu muốn):
 
 - **Chưa có `for` ở cột 1**: cột 1 chỉ dùng lệnh thường để em quen lệnh, nhịp và hướng xe; hàng 7 vẫn dạy hàm, gọi hàm 3 lần thay vì đặt trong `for`. `for` giới thiệu ở cột 2: hàng 1 xem, hàng 2 đoán, hàng 3 thấy lại, hàng 6 tự viết (dùng `for` mới đạt đủ sao).
 
+- **Mùa 1 không có `wait()`**: mỗi lệnh tay trên xe tự chiếm 1 nhịp như lệnh bánh, nhặt thùng là `arm_down()`, `grab()`, `arm_up()`, 3 nhịp. Không nâng tay trong lúc đang đi được nữa. Nhện vẫn ra lệnh rồi `wait()`, nên màn 5.2 (Mùa 2, cột Nhện, hàng 2) là lần đầu em gặp `wait()`. Hàm em viết ở Mùa 1 không có `wait()`, sang nhện phải thêm vào; game báo rõ dòng nào bị bỏ qua.
+
 Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
 
 - **Lấp hố**: nhện đang dính thùng sắt bước vào hố thì không rơi; `magnet_off()` thả thùng lấp hố, ô thành sàn. Không mang gì, hay mang vật nam châm, thì rơi.
@@ -90,14 +92,14 @@ Quyết định riêng của Mùa 3 (có thể đổi nếu muốn):
 - **"Dây phao kéo" chính là tay lưới có sẵn** (`day-keo`): `cast_net()` / `drop_net()`, trong lời đề bài gọi là lưới phao cho khớp tên lệnh. Lưới bắt vật cách ĐÚNG 2 ô, vật đi theo đường xuồng và luôn cách xuồng 2 ô. Không dùng `set_length`.
 - **Phải thả mới tính giao**: vật còn trong lưới nằm trên bến thì chưa thắng, phải `drop_net()` rồi `wait()`.
 - **Thùng sắt nổi**: cột 1, 2 dùng `B` + lớp `vatChat` (`s` sắt, `N`/`S` nam châm, `g` gỗ). Xuồng gắn được nam châm (thả xuống ô nước trước mũi) hay tay lưới, không cả hai.
-- **Tầm nhìn**: thùng sắt thấy và hút trong 2 ô, thùng nam châm trong 3 ô. Vì lưới bắt ở 2 ô nên `while not front_metal(): up()` dừng đúng tầm lưới.
+- **Tầm nhìn**: thùng sắt thấy và hút trong 2 ô, thùng nam châm trong 3 ô. Vì lưới bắt ở 2 ô nên `while not front_metal(): forward()` dừng đúng tầm lưới.
 - **Camera chỉ thấy ô kề trước mũi** và thấy cả màu bến, nên phải `c = color()` rồi mới lùi ra tung lưới: đây là lý do cần biến. Xuồng xuất phát sau các bến (phía bè) để `while color() == "none"` không dừng nhầm ở bến.
 - **Bến và bè có màu**: lớp `mau` cho bến, `vatMau` cho bè, có dấu hình như các vật màu khác để người mù màu vẫn phân biệt.
 - **Van không khai `noi`** thì điều khiển mọi cống, mọi dòng của sân: tung lưới trúng van thì cống mở, dòng tắt (`cast_net("left")`, van cách 1 hay 2 ô đều được).
 - **Hàng 7 cột 2–4 có `canThamSo`**: hàm của em phải có tham số mới thắng. Màn khai `khaiDoiSo` thì hộp Hàm mới có ô đối số.
 - **Nhập lệnh**: tham số so với tên màu thì lời gọi có bảng chọn màu kèm biến (`giao(c)`); `cast_net("left")` có bảng chọn bốn hướng.
 - **Bỏ màn demo Bến sông** trong `hoc/man-demo.js`.
-- **Thẻ part của xuồng** đổi sang bộ lệnh `up`/`down`/`turn_left`/`turn_right`.
+- **Thẻ part của xuồng** đổi sang bộ lệnh `forward`/`backward`/`turn_left`/`turn_right`.
 
 Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
 
@@ -113,9 +115,9 @@ Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
 
 ## Quy tắc engine (đã áp dụng một phần khi dựng mùa 1 lần đầu, giữ nguyên khi dựng lại)
 
-- **Hai bánh (`banh`) và Xuồng (`xuong`)**: dùng `up()` / `down()` / `turn_left()` / `turn_right()`.
+- **Hai bánh (`banh`) và Xuồng (`xuong`)**: dùng `forward()` / `backward()` / `turn_left()` / `turn_right()`. Tên theo mũi xe, không theo màn hình; `go_up()` của nhện, drone và hướng `color("up")` mới theo màn hình.
   KHÔNG dùng `left_move()` / `right_move()` / `wait()` kiểu hai bánh độc lập cũ. Mỗi lệnh tự chiếm
-  đúng 1 nhịp, không cần gọi `wait()` riêng để chốt.
+  đúng 1 nhịp, không cần gọi `wait()` riêng để chốt. Lệnh tay kẹp trên hai thân này cũng vậy.
 - **Nhện (`nhen`) và Drone (`drone`)**: giữ nguyên `go_up()`/`go_down()`/`go_left()`/`go_right()`/`wait()`
   — không có hướng mặt, không quay.
 - **Mọi tổ hợp thân+tay đều được phép** (không giới hạn tay theo đúng thân "gốc" của nó nữa, vì chuỗi
@@ -132,5 +134,5 @@ Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
 ## Việc còn lại
 
 1. Mùa Tổ hợp (mùa 5): chưa thiết kế, làm sau khi xong 4 mùa cốt lõi.
-2. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua up/down/turn_left/turn_right;
+2. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua forward/backward/turn_left/turn_right;
    chưa xem lại toàn bộ UI nhập lệnh — vẫn là việc treo từ đầu buổi.

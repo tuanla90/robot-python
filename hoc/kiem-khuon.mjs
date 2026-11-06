@@ -11,14 +11,14 @@ const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));
 
 const O_TOI_DA = 10;                     // khung chương trình trên giao diện vẽ đúng 10 hàng (man-choi.js, TP.Editor tong: 10)
 const NHEN = ['go_up', 'go_down', 'go_left', 'go_right'];
-const BANH = ['up', 'down', 'turn_left', 'turn_right'];
+const BANH = ['forward', 'backward', 'turn_left', 'turn_right'];
 const DRONE = ['go_up', 'go_down', 'go_left', 'go_right'];
 const MUA = [
   { ten: 'Mùa 1', tien: 'm1-', than: 'hai-banh', loai: 'banh', di: BANH, cot: [
     { ma: 'm1-c1-than', tay: null, cam: null, wait: false },
-    { ma: 'm1-c2-tay', tay: 'kep', cam: null, wait: true },
-    { ma: 'm1-c3-cam-bien', tay: 'kep', cam: 'khoang-cach', wait: true },
-    { ma: 'm1-c4-san', tay: 'kep', cam: 'khoang-cach', wait: true }
+    { ma: 'm1-c2-tay', tay: 'kep', cam: null, wait: false },
+    { ma: 'm1-c3-cam-bien', tay: 'kep', cam: 'khoang-cach', wait: false },
+    { ma: 'm1-c4-san', tay: 'kep', cam: 'khoang-cach', wait: false }
   ] },
   { ten: 'Mùa 2', tien: 'm2-', than: 'nhen', loai: 'nhen', di: NHEN, cot: [
     { ma: 'm2-c1-than', tay: 'kep', cam: 'khoang-cach', wait: true },

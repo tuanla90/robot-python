@@ -254,28 +254,37 @@
     return String(s).replace(RE_TEN_PHUN, function (_, dau, ten) { return dau + TEN_PHUN[ten]; })
       .replace(/(\\?["'])(fast|charge)(\\?["'])/g, function (_, a, l, b) { return a + (l === 'fast' ? 'low' : 'high') + b; });
   }
-  function chuyenTenPhun() {
+  /** Chuyển MỘT LẦN mọi chuỗi đã lưu qua hàm doi (cả tên trong khóa sân thử), rồi đặt cờ. */
+  function chuyenMotLan(co, doi) {
     try {
-      if (kho.getItem(KHOA_DOI_TEN_PHUN) === '1' || typeof kho.length !== 'number') return;
+      if (kho.getItem(co) === '1' || typeof kho.length !== 'number') return;
       var khoa = [];
       for (var i = 0; i < kho.length; i++) { var k = kho.key(i); if (k && k.indexOf('duong-hoc:') === 0) khoa.push(k); }
       khoa.forEach(function (k) {
         var v = kho.getItem(k);
         if (typeof v !== 'string') return;
-        var v2 = doiTenPhun(v), k2 = k.indexOf(KHOA_SAN_THU) === 0 ? KHOA_SAN_THU + doiTenPhun(k.slice(KHOA_SAN_THU.length)) : k;
+        var v2 = doi(v), k2 = k.indexOf(KHOA_SAN_THU) === 0 ? KHOA_SAN_THU + doi(k.slice(KHOA_SAN_THU.length)) : k;
         if (k2 !== k) { if (kho.getItem(k2) === null) kho.setItem(k2, v2); kho.removeItem(k); }
         else if (v2 !== v) kho.setItem(k, v2);
       });
-      kho.setItem(KHOA_DOI_TEN_PHUN, '1');
+      kho.setItem(co, '1');
     } catch (e) { /* chạy không chuyển */ }
+  }
+
+  /** Xe và xuồng đổi tên lệnh up() → forward(), down() → backward(), vì up / down dễ hiểu nhầm là lên / xuống màn hình.
+   *  Chỉ đổi lời gọi (có dấu ngoặc): hướng "up" / "down" của camera và go_up() của nhện, drone giữ nguyên. */
+  var KHOA_DOI_TEN_BANH = 'duong-hoc:doi-ten-banh';
+  function doiTenBanh(s) {
+    return String(s).replace(/(^|[^A-Za-z0-9_])(up|down)(?=\s*\()/g, function (_, dau, ten) { return dau + (ten === 'up' ? 'forward' : 'backward'); });
   }
 
   docTienDo();
   chuyenCu();
-  chuyenTenPhun();
+  chuyenMotLan(KHOA_DOI_TEN_PHUN, doiTenPhun);
+  chuyenMotLan(KHOA_DOI_TEN_BANH, doiTenBanh);
 
   var Luu = {
-    chuyenCu: chuyenCu, docTienDo: docTienDo, doiTenPhun: doiTenPhun, chuyenTenPhun: chuyenTenPhun, TEN_PHUN: TEN_PHUN,
+    chuyenCu: chuyenCu, docTienDo: docTienDo, doiTenPhun: doiTenPhun, TEN_PHUN: TEN_PHUN,
     kho: kho, laBoNho: laBoNho,
     saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,

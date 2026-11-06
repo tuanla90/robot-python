@@ -30,18 +30,18 @@
     /* ------------------------------------------------------------ THÂN */
     'hai-banh': {
       khe: 'than', ten: 'Thân hai bánh',
-      moTa: 'Xe có hai bánh, đi bằng 4 lệnh: up() tiến, down() lùi, turn_left() và turn_right() quay tại chỗ.',
-      lenh: ['up', 'down', 'turn_left', 'turn_right'],
+      moTa: 'Xe có hai bánh, đi bằng 4 lệnh: forward() tiến, backward() lùi, turn_left() và turn_right() quay tại chỗ.',
+      lenh: ['forward', 'backward', 'turn_left', 'turn_right'],
       tieuDeGhep: 'Mỗi lệnh làm gì',
       ghep: [
-        { lenh: ['up'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['forward'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
         { lenh: ['turn_right'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
         { lenh: ['turn_left'], ra: 'Quay trái tại chỗ', ket: { x: 2, y: 2, huong: 3 } },
-        { lenh: ['down'], ra: 'Lùi 1 ô', ket: { x: 2, y: 3, huong: 0 } }
+        { lenh: ['backward'], ra: 'Lùi 1 ô', ket: { x: 2, y: 3, huong: 0 } }
       ],
       gioi: ['Rẻ, dễ điều khiển', 'Quay 90° chỉ trong một nhịp'],
       khong: ['Không leo được bậc thang', 'Không đi ngang được', 'Đứng trên băng chuyền đủ 2 nhịp thì bị đẩy đi 1 ô'],
-      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp, không cần gọi wait().', 'Xe có hướng mặt: up() đi theo hướng mũi xe đang quay.']
+      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp, không cần gọi wait().', 'Xe có hướng mặt: forward() đi theo hướng mũi xe đang quay.']
     },
     'xich': {
       khe: 'than', ten: 'Thân bánh xích',
@@ -106,14 +106,18 @@
       moTa: 'Tay gắn trước mũi xe, nhặt vật ở ô ngay trước mặt.',
       moTaThan: { nhen: 'Tay kẹp của nhện gắp và thả ngay ở ô nhện đang đứng.' },
       lenh: ['arm_down', 'arm_up', 'grab', 'release'],
+      tieuDeGhepThan: { 'hai-banh': 'Nhặt và đặt vật' },
       ghep: [
-        { lenh: ['arm_down', 'grab', 'wait'], ra: 'Hạ tay rồi kẹp vật, trong một nhịp' },
-        { lenh: ['arm_up', 'wait'], ra: 'Nâng vật lên, xe đi được' },
-        { lenh: ['arm_down', 'release', 'wait'], ra: 'Hạ tay rồi đặt vật xuống' }
+        { than: 'hai-banh', lenh: ['arm_down', 'grab', 'arm_up'], ra: 'Nhặt vật: hạ tay, kẹp, nâng tay' },
+        { than: 'hai-banh', lenh: ['arm_down', 'release', 'arm_up'], ra: 'Đặt vật: hạ tay, thả, nâng tay' },
+        { khongThan: 'hai-banh', lenh: ['arm_down', 'grab', 'wait'], ra: 'Hạ tay rồi kẹp vật, trong một nhịp' },
+        { khongThan: 'hai-banh', lenh: ['arm_up', 'wait'], ra: 'Nâng vật lên, đi được' },
+        { khongThan: 'hai-banh', lenh: ['arm_down', 'release', 'wait'], ra: 'Hạ tay rồi đặt vật xuống' }
       ],
       gioi: ['Nhặt vật lên, mang đi, đặt xuống'],
       khong: ['Vật nằm đất: phải hạ tay rồi mới kẹp được', 'Tay đang hạ thì xe không đi được', 'Thả vật lúc tay đang nâng thì vật rơi vỡ'],
-      luuY: ['Lệnh tay cũng chỉ là ra lệnh, wait() mới làm.', 'Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.',
+      luuY: [{ chu: 'Mỗi lệnh tay tự chiếm đúng 1 nhịp, không cần gọi wait().', than: 'hai-banh' },
+        { chu: 'Lệnh tay chỉ là ra lệnh, wait() mới làm.', khongThan: 'hai-banh' }, { chu: 'Trong một nhịp: tay nâng / hạ trước, rồi mới kẹp / thả.', khongThan: 'hai-banh' },
         { chu: 'Trên nhện, tay gắp và thả ngay ở ô nhện đang đứng. Nhện đứng trùm lên vật được, không cần đứng cạnh.', than: 'nhen' }]
     },
     /* Gói V8c: 'xoay' là CÙNG cái tay kẹp, được mở thêm arm_left / arm_right (nangCapCua: 'kep'), như bánh lùi mở thêm cho cùng hai bánh. Tên hiển thị vẫn "Tay kẹp".
@@ -326,14 +330,14 @@
     },
     'xuong': {
       khe: 'than', ten: 'Xuồng chân vịt',
-      moTa: 'Thân tàu thủy lợi với hai chân vịt, chỉ chạy trên nước. Đi bằng 4 lệnh như xe hai bánh: up() tiến, down() lùi, turn_left() và turn_right() quay tại chỗ.',
-      lenh: ['up', 'down', 'turn_left', 'turn_right', 'wait'],
+      moTa: 'Thân tàu thủy lợi với hai chân vịt, chỉ chạy trên nước. Đi bằng 4 lệnh như xe hai bánh: forward() tiến, backward() lùi, turn_left() và turn_right() quay tại chỗ.',
+      lenh: ['forward', 'backward', 'turn_left', 'turn_right', 'wait'],
       tieuDeGhep: 'Mỗi lệnh làm gì',
       ghep: [
-        { lenh: ['up'], ra: 'Tiến 1 ô nước', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['forward'], ra: 'Tiến 1 ô nước', ket: { x: 2, y: 1, huong: 0 } },
         { lenh: ['turn_right'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
         { lenh: ['turn_left'], ra: 'Quay trái tại chỗ', ket: { x: 2, y: 2, huong: 3 } },
-        { lenh: ['down'], ra: 'Lùi 1 ô nước', ket: { x: 2, y: 3, huong: 0 } }
+        { lenh: ['backward'], ra: 'Lùi 1 ô nước', ket: { x: 2, y: 3, huong: 0 } }
       ],
       gioi: [
         'Lướt trên các ô nước ~, bến phao Q, bến hàng q và cống mở k',
@@ -518,7 +522,7 @@
     function loc(ds) {
       return (ds || []).filter(function (m) { return hienMuc(m, lenh, than) && (!moi || dungMoi(m, moi)); }).map(chuMuc);
     }
-    return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : (d.moTaThan && d.moTaThan[than]) || d.moTa, lenh: dsLenh, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
+    return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : (d.moTaThan && d.moTaThan[than]) || d.moTa, lenh: dsLenh, tieuDeGhep: (d.tieuDeGhepThan && d.tieuDeGhepThan[than]) || d.tieuDeGhep, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
   }
 
   /* ---------------------------------------------------------- MỘT BỘ PHẬN, NHIỀU MÃ (gói V8c)

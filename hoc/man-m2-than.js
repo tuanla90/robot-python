@@ -37,7 +37,7 @@
       loiGiai: { chinh: FOR(2, ['go_up()']).concat(FOR(3, ['go_right()'])) } }),
 
     man(2, { ten: 'Kẹp ngay dưới chân',
-      deBai: 'Xe hai bánh kẹp ô trước mũi. Nhện thì khác. Đọc code, đoán rồi bấm Chạy.',
+      deBai: 'Xe hai bánh kẹp ô trước mũi. Nhện thì khác. Lệnh tay của nhện chỉ ra lệnh, wait() mới cho tay làm: mở hàm pick() và drop() để xem. Đọc code, đoán rồi bấm Chạy.',
       san: ['.....', '.o..D', '.....'],
       batDau: { x: 0, y: 1, huong: 0 },
       mucTieu: 'dua-vat',
@@ -93,7 +93,7 @@
       batDau: { x: 0, y: 2, huong: 0 },
       mucTieu: 'dua-vat',
       khung: { chinh: 3 },
-      goiY: ['Một lượt: nhặt thùng, lên hai ô, đặt, sang phải hai ô, xuống hai ô.', 'Hàm được gọi hàm khác: có thể tách riêng hàm nhặt và hàm đặt.'],
+      goiY: ['Một lượt: nhặt thùng, lên hai ô, đặt, sang phải hai ô, xuống hai ô.', 'Hàm được gọi hàm khác: có thể tách riêng hàm nhặt và hàm đặt.', 'Lệnh tay của nhện cần wait() để làm: hạ tay và kẹp cùng một nhịp, rồi wait(), rồi nâng tay, rồi wait().'],
       sao: { o: 20, nhip: 23 },
       loiGiai: {
         chinh: FOR(2, ['mang_cot()']),

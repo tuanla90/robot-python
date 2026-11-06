@@ -10,13 +10,13 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['up', 'down', 'turn_left', 'turn_right', 'wait', 'cast_net', 'drop_net', 'color'];
+  var HAM_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'wait', 'cast_net', 'drop_net', 'color'];
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than.slice() }; }
-  function LUI() { return [H('lui', ['n'], ['for i in range(n):', '    down()'])]; }
-  function BA_HAM() { return LUI().concat([H('bat', [], ['down()', 'cast_net()', 'wait()']), H('tha', [], ['drop_net()', 'wait()'])]); }
+  function LUI() { return [H('lui', ['n'], ['for i in range(n):', '    backward()'])]; }
+  function BA_HAM() { return LUI().concat([H('bat', [], ['backward()', 'cast_net()', 'wait()']), H('tha', [], ['drop_net()', 'wait()'])]); }
   function SONG(s) { var r = s.replace(/./g, '.'); return [r, s, r]; }
   /** Lời giải chung của hàng 1–5: ghi màu, lùi ra, tung lưới, chọn bến theo màu, thả. */
-  var GIAO = ['c = color()', 'down()', 'cast_net()', 'wait()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()', 'wait()'];
+  var GIAO = ['c = color()', 'backward()', 'cast_net()', 'wait()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()', 'wait()'];
   var SAN = SONG('~~q~qB'), MAU = SONG('..r.b.'), BD = { x: 4, y: 1, huong: 1 };
 
   function man(so, m) {
@@ -60,7 +60,7 @@
     man(4, { ten: 'Đọc trước, lùi sau',
       deBai: 'Hai sân. Đủ dòng nhưng sai thứ tự: xuồng lùi rồi mới đọc màu nên chỉ thấy mặt nước. Giữ một dòng rồi kéo sang chỗ đúng.',
       san: [SAN, SAN], mau: [MAU, MAU], vatMau: [SONG('.....r'), SONG('.....b')], batDau: [BD, BD],
-      maMau: { chinh: ['down()', 'c = color()'].concat(GIAO.slice(2)), hamCuaMan: LUI() },
+      maMau: { chinh: ['backward()', 'c = color()'].concat(GIAO.slice(2)), hamCuaMan: LUI() },
       goiY: ['color() chỉ thấy ô ngay trước mũi: lùi ra thì trước mũi là nước, color() trả "none".'],
       sao: { o: 12, nhip: 6 },
       loiGiai: { chinh: GIAO.slice(), hamCuaMan: LUI() } }),
@@ -79,9 +79,9 @@
       mau: [SONG('..r.b....'), SONG('...r.b....')],
       vatMau: [SONG('........r'), SONG('.........b')],
       batDau: [{ x: 6, y: 1, huong: 1 }, { x: 6, y: 1, huong: 1 }],
-      goiY: ['Mặt nước đọc ra "none": lặp up() khi color() còn là "none".', 'Dừng rồi thì ghi c = color(), gọi bat() để lùi một ô và tung lưới, chọn số ô cần lùi theo c, cuối cùng tha().'],
+      goiY: ['Mặt nước đọc ra "none": lặp forward() khi color() còn là "none".', 'Dừng rồi thì ghi c = color(), gọi bat() để lùi một ô và tung lưới, chọn số ô cần lùi theo c, cuối cùng tha().'],
       sao: { o: 16, nhip: 10 },
-      loiGiai: { chinh: ['while color() == "none":', '    up()', 'c = color()', 'bat()', 'if c == "red":', '    lui(6)', 'else:', '    lui(4)', 'tha()'], hamCuaMan: BA_HAM() } }),
+      loiGiai: { chinh: ['while color() == "none":', '    forward()', 'c = color()', 'bat()', 'if c == "red":', '    lui(6)', 'else:', '    lui(4)', 'tha()'], hamCuaMan: BA_HAM() } }),
 
     man(7, { ten: 'Tham số là màu',
       deBai: 'Hai làn, mỗi làn một bè. Tự viết hàm tên tùy em nhận tham số là màu, ví dụ giao(c): lùi ra, tung lưới, chọn bến theo c, thả. Khi đặt tên hàm, thêm một đối số. Hàm lui(n) có sẵn.',
@@ -93,9 +93,9 @@
       goiY: ['Trong hàm viết y như các màn trước, chỉ khác là c do nơi gọi truyền vào.', 'Chương trình chính: c = color(), giao(c), sang làn dưới, tới sát bè, c = color(), giao(c).'],
       sao: { o: 21, nhip: 18 },
       loiGiai: {
-        chinh: ['c = color()', 'giao(c)', 'turn_right()', 'up()', 'up()', 'turn_left()', 'for i in range(4):', '    up()', 'c = color()', 'giao(c)'],
+        chinh: ['c = color()', 'giao(c)', 'turn_right()', 'forward()', 'forward()', 'turn_left()', 'for i in range(4):', '    forward()', 'c = color()', 'giao(c)'],
         hamCuaMan: LUI(),
-        hamCuaEmMoi: [H('giao', ['c'], ['down()', 'cast_net()', 'wait()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()', 'wait()'])]
+        hamCuaEmMoi: [H('giao', ['c'], ['backward()', 'cast_net()', 'wait()', 'if c == "red":', '    lui(3)', 'else:', '    lui(1)', 'drop_net()', 'wait()'])]
       } }),
 
     man(8, { ten: 'Ba bến ba màu',
@@ -106,8 +106,8 @@
       batDau: [{ x: 7, y: 1, huong: 1 }, { x: 7, y: 1, huong: 1 }, { x: 7, y: 1, huong: 1 }],
       sao: { o: 16, nhip: 9 },
       loiGiai: {
-        chinh: ['while color() == "none":', '    up()', 'c = color()', 'if c == "red":', '    giao(6)', 'elif c == "blue":', '    giao(4)', 'else:', '    giao(2)'],
-        hamCuaEmMoi: [H('giao', ['n'], ['down()', 'cast_net()', 'wait()', 'for i in range(n):', '    down()', 'drop_net()', 'wait()'])]
+        chinh: ['while color() == "none":', '    forward()', 'c = color()', 'if c == "red":', '    giao(6)', 'elif c == "blue":', '    giao(4)', 'else:', '    giao(2)'],
+        hamCuaEmMoi: [H('giao', ['n'], ['backward()', 'cast_net()', 'wait()', 'for i in range(n):', '    backward()', 'drop_net()', 'wait()'])]
       },
       huyHieu: { ma: 'mau', ten: 'Mắt sông' } })
   ]);

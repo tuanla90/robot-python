@@ -9,10 +9,10 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
 
-  var HAM_GOC = ['up', 'down', 'turn_left', 'turn_right', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear'];
-  var T_PICK = ['arm_down()', 'grab()', 'wait()', 'arm_up()', 'wait()'];
-  var T_DROP = ['arm_down()', 'release()', 'wait()', 'arm_up()', 'wait()'];
-  var DO = ['while front_clear():', '    up()'];
+  var HAM_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'arm_down', 'arm_up', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear'];
+  var T_PICK = ['arm_down()', 'grab()', 'arm_up()'];
+  var T_DROP = ['arm_down()', 'release()', 'arm_up()'];
+  var DO = ['while front_clear():', '    forward()'];
   function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
 
   function man(so, m) {
@@ -21,6 +21,7 @@
     m.hamGoc = HAM_GOC.slice(); m.khung = Object.assign({ chinh: 10, moiHam: 10 }, m.khung);
     m.cauTruc = ['for', 'if', 'while'];
     m.moXuong = true;
+    m.phienBanNoiDung = 2;                     // lệnh tay tự chiếm nhịp, bỏ wait(): bản nháp cũ không dùng nữa
     ManHoc.khuon(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -40,17 +41,17 @@
       batDau: { x: 1, y: 4, huong: 0 },
       duDoan: { hoi: 'Khi xe đã sát tường, xe làm gì tiếp?', luaChon: ['Đứng yên', 'Rẽ phải, đi 1 ô', 'Rẽ trái, đi 1 ô'], dung: 1, xacMinh: { x: 2, y: 1, huong: 1 } },
       sao: { o: 5, nhip: 5 },
-      loiGiai: { chinh: DO.concat(['if right_clear():', '    turn_right()', '    up()']) } }),
+      loiGiai: { chinh: DO.concat(['if right_clear():', '    turn_right()', '    forward()']) } }),
 
     man(3, { ten: 'Dò tới sát thùng',
       deBai: 'Vật cũng chặn cảm biến. Thân vòng while đang trống: điền lệnh để xe dò tới sát thùng, rồi nhặt và mang tới ô đích.',
       san: ['.D..', '....', '.o..', '....', '....', '....'],
       batDau: { x: 1, y: 5, huong: 0 },
       mucTieu: 'dua-vat',
-      maMau: { chinh: ['while front_clear():', '    ', 'pick()', 'up()', 'up()', 'drop()'] },
+      maMau: { chinh: ['while front_clear():', '    ', 'pick()', 'forward()', 'forward()', 'drop()'] },
       goiY: ['Trong khi trước mặt còn trống thì xe làm gì?'],
-      sao: { o: 16, nhip: 7 },
-      loiGiai: { chinh: DO.concat(['pick()', 'up()', 'up()', 'drop()']), hamCuaMan: [H('pick', T_PICK), H('drop', T_DROP)] } }),
+      sao: { o: 12, nhip: 9 },
+      loiGiai: { chinh: DO.concat(['pick()', 'forward()', 'forward()', 'drop()']), hamCuaMan: [H('pick', T_PICK), H('drop', T_DROP)] } }),
 
     man(4, { ten: 'Hai lần rẽ đổi chỗ',
       deBai: 'Đủ lệnh nhưng hai lần rẽ đang đứng sai chỗ. Giữ một dòng rồi kéo sang chỗ đúng để xe tới cờ.',
@@ -65,7 +66,7 @@
       deBai: 'Code này sai đúng 1 chỗ: xe chỉ tiến 1 ô rồi rẽ luôn. Tìm rồi sửa để xe đi tới sát tường mới rẽ.',
       san: ['.#....', '....F#', '......', '......', '......'],
       batDau: { x: 1, y: 4, huong: 0 },
-      maMau: { chinh: ['if front_clear():', '    up()', 'turn_right()'].concat(DO) },
+      maMau: { chinh: ['if front_clear():', '    forward()', 'turn_right()'].concat(DO) },
       goiY: ['if chỉ hỏi một lần. Khối nào hỏi lại sau mỗi bước đi?'],
       sao: { o: 5, nhip: 7 },
       loiGiai: { chinh: DO.concat(['turn_right()'], DO) } }),
@@ -79,7 +80,7 @@
       batDau: [{ x: 1, y: 5, huong: 0 }, { x: 1, y: 5, huong: 0 }],
       goiY: ['Không đếm số ô được: mỗi sân đường dài khác nhau. Dò bằng while.', 'Sát tường rồi, hỏi bên phải có trống không. Nếu không thì rẽ bên kia: if ... else.', 'Rẽ xong còn phải tiến thêm 1 ô.'],
       sao: { o: 7, nhip: 6 },
-      loiGiai: { chinh: DO.concat(['if right_clear():', '    turn_right()', 'else:', '    turn_left()', 'up()']) } }),
+      loiGiai: { chinh: DO.concat(['if right_clear():', '    turn_right()', 'else:', '    turn_left()', 'forward()']) } }),
 
     man(7, { ten: 'Hành lang vuông: tự viết hàm',
       deBai: 'Vòng while dò tường cứ lặp lại mỗi đoạn hành lang. Tạo một hàm tên tùy em để gọi lại. Chương trình chính chỉ có 5 ô.',
@@ -98,7 +99,7 @@
       ],
       batDau: [{ x: 0, y: 5, huong: 0 }, { x: 0, y: 5, huong: 0 }],
       mucTieu: 'dua-vat',
-      sao: { o: 18, nhip: 11 },
+      sao: { o: 14, nhip: 13 },
       loiGiai: {
         chinh: DO.concat(['nhat()', 'turn_right()'], DO, ['turn_left()', 'dat()']),
         hamCuaEmMoi: [H('nhat', T_PICK), H('dat', T_DROP)]
