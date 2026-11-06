@@ -634,9 +634,9 @@
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ở đó đang cháy nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
           ' Đám cháy chặn xe như tường: phun nước cho tới khi lửa tắt hẳn rồi mới đi qua. Lửa to phải trúng nhiều lần; warm() còn True là phía trước vẫn còn lửa.';
-      } else if (e0.vat === 'ho-chua-lap') {
-        s2 = 'Ở nhịp ' + e0.nhip + ', nhện đang đứng ở ô hố (' + e0.tu.x + ', ' + e0.tu.y + ') nhờ thùng sắt đỡ chân nên chưa bước ra được (vẫn mất hai nhịp).' +
-          ' Gọi magnet_off() ở đây để thả thùng xuống lấp hố, rồi mới bước tiếp.';
+      } else if (e0.vat === 'thung-giu') {
+        s2 = 'Ở nhịp ' + e0.nhip + ', nhện ở ô hố (' + e0.tu.x + ', ' + e0.tu.y + ') còn bật nam châm nên bị thùng sắt dưới hố giữ lại, không bước đi được (vẫn mất hai nhịp).' +
+          (e0.mang ? ' Gọi magnet_off() ở đây để thả thùng xuống lấp hố, rồi mới bước tiếp.' : ' Gọi magnet_off() trước khi bước đi.');
       } else if (e0.vat === 'gam-thap') {
         s2 = 'Ở nhịp ' + e0.nhip + ', ' + (man.loaiRobot === 'nhen' ? 'nhện' : 'robot') + ' định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là gầm thấp' +
           (man.loaiRobot === 'nhen' ? ': chân đang duỗi nên đầu nhện đụng trần, nhện đứng yên (vẫn mất hai nhịp).' : ' (chỉ nhện đang co chân mới chui qua được) nên nó đứng yên (vẫn mất một nhịp).') +

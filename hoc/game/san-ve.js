@@ -112,6 +112,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return lop.map(function (hang) { var kq = []; for (var x = 0; x < String(hang).length; x++) kq.push(MAU_KY[hang[x]] || null); return kq; });
   }
   function ngu(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  var NUA_O = 0.49;   // nhện đi "nửa ô" ở nhịp đầu của bước: hụt 0,5 một chút để Math.round(v.x) vẫn là ô gốc khi đi về cả hai phía (vật hút, pha chân, ô dưới xe đều tính theo đó)
   var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
 
   /** Bóng mờ của lõi (man.bongMo, một sân) → { x, y, d, diQua: [{x,y}], vat: [{x,y}] } hoặc null. Ô sai dạng bị bỏ; huong theo quy ước của lõi (0 lên, 1 phải, 2 xuống, 3 trái). */
@@ -623,7 +624,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.sacO = null;                                                                                         // ô sạc đang lóe: { x, y }
       this.bong = null;                                                                                         // quả bóng đang bay: { x, y, r, a } (pixel sân)
       this.datLaiCua();
-      this.hoLap = {};                                                                                          // ô hố đã lấp bằng vật nam châm mang tới (mùa 2): vẽ như sàn, tới khi chạy lại
       this.canhBao = null;
       this.daSon = {}; this.sonLoe = {};                                                                       // máy sơn: ô đã tô ('x,y' → màu), ô vừa tô (khóa → lúc tô, để lóe)
       var sbd = this.cfg.sonBanDau, self0 = this;                                                              // ô sơn sẵn từ lúc xuất phát (màn đọc sơn bằng color())
@@ -1074,6 +1074,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           var cv = this.coVatCao(o.nang, 3);
           this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - o.nang + (this.vatTaiDich(o) ? nhun : 0), cv.sz, cv.sz * (VeVector.BONG_SAN + (VeVector.BONG_NANG - VeVector.BONG_SAN) * cv.k));
         } else if (o.tt === 'dat') this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - (o.nang || 0) + (this.vatTaiDich(o) ? nhun : 0), this.coVatDat(), 2);
+        else if (o.tt === 'lap-ho') this.veMotVat(g, o, 8, o.x * T + 7, o.y * T + 7, T * 0.78 / 0.76, 0);                  // thùng sắt nằm khít trong hố đã lấp (ô hố 78% cạnh ô, thân vật 76% hộp): vẫn thấy cái giữ nhện lại khi nam châm bật
         else if (o.tt === 'anim') this.veVatTruot(g, o, now);
         else if (o.tt === 'vo' && o.voLuc) {
           var k = (now - o.voLuc) / 800;
@@ -1388,9 +1389,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
     },
     /** V8a: DÁNG BÒ của nhện → ttR.lan (pha 0..1, bậc 1/16), ttR.di (hướng đi trong hệ thân, 0..3: 0 = phía mũi), ttR.nhac (nhịp chuẩn bị, 0..1).
-     *  Nhịp chuẩn bị (v.chan 1, chưa rời ô): pha v.nhacK (0..1) do tween 'chuan-bi' đặt, hai cặp chân nhấc luân phiên tại chỗ; thiếu (húc tường, tay vướng, đang bật nhảy)
-     *  = 0,25 (cặp A nhấc hẳn). Nhịp bước (v.chan 2): pha theo quãng đã trượt khỏi ô gốc, MỘT chu kỳ chéo đôi mỗi ô (hai bước chân vươn theo hướng đi), hết ô pha về 0 = tư thế
-     *  đứng; cộng nhịp chuẩn bị là bốn lần nhấc chân luân phiên mỗi ô. Hướng đi đổi từ hướng trên sân sang hệ thân bằng đúng góc vẽ (VeVector.gocXoay; nhện không tay vẽ
+     *  Nhấc tại chỗ (v.chan 1, bước không đi được hay sắp nhảy): pha v.nhacK (0..1) do tween 'chuan-bi' đặt, hai cặp chân nhấc luân phiên tại chỗ; thiếu (húc tường, tay vướng, đang bật nhảy)
+     *  = 0,25 (cặp A nhấc hẳn). Đang đi (v.chan 2): pha theo quãng đã đi khỏi ô gốc, HAI chu kỳ chéo đôi mỗi ô, tức mỗi nhịp một chu kỳ (nửa ô đầu, nửa ô sau), bốn lần nhấc chân
+     *  luân phiên mỗi ô; hết nửa ô hay hết ô pha về 0 = tư thế đứng. Hướng đi đổi từ hướng trên sân sang hệ thân bằng đúng góc vẽ (VeVector.gocXoay; nhện không tay vẽ
      *  ở hướng 0). Bậc pha 1/16; giảm chuyển động: bậc 1/4 (tối giản). */
     dangBo: function (v, ttR) {
       var bac = HU().giam() ? 4 : 16;
@@ -1404,7 +1405,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           var bx = Math.sign(sx), by = Math.sign(sy);                                     // thân nhện luôn đứng thẳng (thanDung, 3/11): hệ thân = hệ màn hình
           v._bo.di = by > 0 ? 0 : bx > 0 ? 1 : by < 0 ? 2 : 3;
         }
-        ttR.lan = (Math.round(tien * bac) / bac) % 1;
+        ttR.lan = (Math.round(tien * 2 * bac) / bac) % 1;
         ttR.di = v._bo.di || 0;
       } else if (v.chan === 1) {
         ttR.nhac = v.nhacK === undefined ? 0.25 : (Math.round(v.nhacK * bac) / bac) % 1;
@@ -2221,7 +2222,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, this.cv.width, this.cv.height);
       if (this.sv !== 1) g.setTransform(this.sv, 0, 0, this.sv, 0, 0);          // canvas theo pixel thiết bị, vẽ theo pixel sân qua phép phóng
       g.save(); g.translate(-c.ox * T, -c.oy * T);                // canvas chỉ là cửa sổ vẽ (ox, oy, vw, vh): từ đây tới veLop vẽ theo tọa độ ô đầy đủ của lõi
-      for (var y = c.oy; y < c.oy + c.vh; y++) for (var x = c.ox; x < c.ox + c.vw; x++) this.veOVec(g, x, y, this.hoLap[x + ',' + y] ? '.' : c.rows[y][x], x + ',' + y, now, cf, ff);     // gói V2: mọi ô vẽ bằng hình vector đúng cỡ
+      for (var y = c.oy; y < c.oy + c.vh; y++) for (var x = c.ox; x < c.ox + c.vw; x++) this.veOVec(g, x, y, c.rows[y][x], x + ',' + y, now, cf, ff);     // gói V2: mọi ô vẽ bằng hình vector đúng cỡ
       this.veDayNoi(g, now);                                   // gói V7a: dây nối nút ↔ cửa mờ trên sàn, sáng khi nút bật (dưới vật và xe)
       this.veDemSong(g, now);                                  // ĐỆM TỪ: vệt sóng giữa đệm và xe trong lúc xe bị kéo / đẩy (trên sàn, dưới xe)
       this.veSon(g, now);                                      // máy sơn: hình mờ cần tô + ô đã tô (trên sàn, dưới vật và xe)
@@ -2581,7 +2582,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           this.baoHieu('!', 1500); v.choang = performance.now() + per + 1100;
           await this.tween(per, my, function (k) { v.hop = Math.sin(k * Math.PI * 2) * (k < 0.5 ? 2 : 0.7) * (1 - k); if (k > 0.2 && k < 0.45) self.flash = performance.now() + 80; });
           v.hop = 0;
-        } else if (s.ma === 'chuan-bi') {                            // nhện: nhịp 1 của bước, nhấc chân (đổi khung `buoc`), chưa rời ô; s.nhay: ngồi thụp xuống lấy đà trước cú nhảy
+        } else if (s.ma === 'chuan-bi' && s.nua) {                   // nhện: nhịp 1 của bước đi được: đi nửa ô theo hướng s.nua, nhịp 2 (nhánh 'di') đi nốt từ chỗ đang đứng
+          var nx0 = v.x, ny0 = v.y;
+          if (laNhen) v.chan = 2;
+          await this.tween(per, my, function (k) { var kn = ease(k) * NUA_O; v.x = nx0 + s.nua.x * kn; v.y = ny0 + s.nua.y * kn; });
+          if (laNhen) v.chan = 0;
+        } else if (s.ma === 'chuan-bi') {                            // nhện: nhịp 1 của bước không đi được (bị chặn, tay vướng) hay sắp nhảy: nhấc chân tại chỗ (đổi khung `buoc`); s.nhay: ngồi thụp xuống lấy đà trước cú nhảy
           if (laNhen) v.chan = 1;
           await this.tween(per, my, function (k) { v.hop = s.nhay ? -Math.sin(k * Math.PI) * 1.8 : Math.sin(k * Math.PI) * 1; if (laNhen) { v.nhacK = k; if (s.nhay) v.nhayK = -Math.sin(k * Math.PI); } });   // V8a: hai cặp chân nhấc luân phiên tại chỗ (dangBo)
           v.hop = 0; if (laNhen) { v.nhacK = 0; v.nhayK = 0; }
@@ -2603,12 +2609,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (evs.some(function (s) { return s.ma === 'toi-co'; })) this.coManh = performance.now() + 900;
       if (this.xe) this.camXucDoi(evs);                                                                  // nhiều robot: cảm xúc khi tương tác (gói V4, chỉ đọc vết)          // cờ phất mạnh một nhịp khi robot tới (gói V4, chỉ vector vẽ)
       if (evs.some(function (s) { return s.ma === 'toi-co' || s.ma === 'xong-dua-vat' || s.ma === 'xong-day-thung' || s.ma === 'xong-to-hinh' || s.ma === 'xong-dieu' || s.ma === 'nut-doi' || s.ma === 'xong-giao-tau' || s.ma === 'keo-vat' || s.ma === 'van-doi' || (s.ma === 'dat-vat' && s.o && self.dichTaiO(s.o.x, s.o.y)); })) this.matSuKien('vui', 1000);   // mắt cười (gói V4)
-      for (var ilh = 0; ilh < evs.length; ilh++) if (evs[ilh].ma === 'lap-ho') { this.hoLap[evs[ilh].o.x + ',' + evs[ilh].o.y] = true; this.burst(evs[ilh].o.x * T + T / 2, evs[ilh].o.y * T + T / 2, 8, [BM.sanTrang, BM.sanXanhLa], 0.6); }      // lấp hố: ô thành sàn, bụi bay lên
+      for (var ilh = 0; ilh < evs.length; ilh++) if (evs[ilh].ma === 'lap-ho') this.burst(evs[ilh].o.x * T + T / 2, evs[ilh].o.y * T + T / 2, 8, [BM.sanTrang, BM.sanXanhLa], 0.6);      // lấp hố: thùng nằm xuống hố, bụi bay lên
       this.dongBoMuaMoi(e);                                                                              // BẾN SÔNG / CẢNG SÔNG: neo, kéo, cống, van, dòng tắt, vật nổi; nấc, tầm, treo, chồng, tàu đúng vết
       if (evs.some(function (s) { return s.ma === 'doi-thu-thang'; })) { this.baoHieu('!', 1800); v.choang = performance.now() + 1400; }
       // đồng bộ với vết (an toàn nếu có sự kiện lạ)
       if (laNhen && e.robot && e.robot.chan !== undefined) v.co = e.robot.chan === 'co';            // nhện: chân co / duỗi đúng vết
       v.x = e.robot.x; v.y = e.robot.y; v.d = laNhen ? (this.cfg.bd.huong || 0) : e.robot.huong; v.hop = 0; v.dx = 0; v.dy = 0; v.chan = 0; v.gocMem = 0;
+      for (var inu = 0; inu < evs.length; inu++) if (evs[inu].ma === 'chuan-bi' && evs[inu].nua) { v.x += evs[inu].nua.x * NUA_O; v.y += evs[inu].nua.y * NUA_O; }   // logic còn ở ô cũ, nhện vẽ đang ở nửa đường
       v.goc = laXich && e.robot.quayDo ? (e.robot.quayDo > 0 ? 1 : -1) * Math.PI / 4 : 0;       // xích còn quay dở: nghiêng 45° chờ nhịp kế   // nhện không quay: mặt trước (cạnh gắn tay) cố định theo batDau.huong
       if (e.thung) this.dongBoThung(e.thung);
       if (v.nc) {                                                       // nam châm: đưa vật (dính / nằm) và trạng thái bật về đúng vết

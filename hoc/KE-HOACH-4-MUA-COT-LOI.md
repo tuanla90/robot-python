@@ -71,7 +71,9 @@ Quyết định khi dựng (có thể đổi nếu muốn):
 
 Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
 
-- **Lấp hố**: nhện đang dính thùng sắt bước vào hố thì không rơi nhưng chưa bước ra được; `magnet_off()` thả thùng lấp hố, ô thành sàn. Không mang gì, hay mang vật nam châm, thì rơi. Nhờ vậy mang thùng không phải cách đi xuyên qua hố.
+- **Lấp hố**: nhện đang dính thùng sắt bước vào hố thì không rơi; `magnet_off()` thả thùng lấp hố, ô thành sàn. Không mang gì, hay mang vật nam châm, thì rơi.
+- **Thùng dưới hố giữ nhện**: nam châm còn bật mà thùng sắt ở dưới hố ngay chân nhện (đang mang tới hay đã lấp từ trước) thì nhện không bước đi được, vẫn mất 2 nhịp; tắt nam châm mới đi. Thùng không bị hút lên. Nhờ vậy mang thùng không phải cách đi xuyên qua hố.
+- **Hoạt cảnh bước của nhện**: mỗi nhịp đi nửa ô, nhịp 1 nửa đầu, nhịp 2 nửa sau. Bước không đi được thì nhịp 1 đứng tại chỗ nhấc chân, nhịp 2 rung. Luật vẫn tính nhện đổi ô ở nhịp 2 (`front_clear()` đọc ở nhịp 1 vẫn theo ô cũ).
 - **Hố vẽ vuông** để khớp thùng sắt (hình `ho` trong `hoc/game/ve-vector-o2.js`).
 - **Cảm biến trên nhện nhìn cố định**: khoảng cách thì `front` là phía trên sân, `left` trái, `right` phải; cảm ứng từ của Bãi tái chế nhìn sang phải (`batDau.huong = 1`). Vật nằm đất làm `front_clear()` thành False dù nhện đứng trùm lên được.
 - **Nhện gắn kẹp đứng trùm lên vật được**, như nhện gắn nam châm, vì tay làm ở ô đang đứng.

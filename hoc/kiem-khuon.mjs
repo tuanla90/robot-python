@@ -132,6 +132,15 @@ function kiemLapHo() {
   const dungDan = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()'];
   if (!chay(dungDan).thang) loi.push('lấp hố: thả thùng ở hố rồi đi tiếp phải thắng');
   if (chay(dungDan, { vatChat: man.vatChat.map((h) => h.replace('s', 'N')) }).thang) loi.push('lấp hố: vật nam châm không lấp được hố');
+  const batLai = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()', 'magnet_n()', 'go_right()', 'go_right()', 'go_right()'];
+  const k2 = chay(batLai);
+  if (k2.thang || !ma(k2).includes('dam-tuong')) loi.push('lấp hố: bật lại nam châm trên ô đã lấp thì thùng phải giữ nhện lại');
+  const moLai = ['magnet_n()', 'for i in range(3):', '    go_right()', 'magnet_off()', 'wait()', 'magnet_n()', 'wait()', 'magnet_off()', 'for i in range(3):', '    go_right()'];
+  if (!chay(moLai).thang) loi.push('lấp hố: tắt nam châm rồi phải bước đi được');
+  // hoạt cảnh: nhịp đầu của bước đi được mang .nua (đi nửa ô), nhịp đầu của bước bị chặn thì không
+  const nhipDau = (kq) => kq.vet.filter((e) => e.loai === 'nhip').flatMap((e) => e.suKien.filter((s) => s.ma === 'chuan-bi'));
+  if (!nhipDau(chay(dungDan)).every((s) => s.nua && s.nua.x === 1 && s.nua.y === 0)) loi.push('hoạt cảnh: mọi bước đi được phải đi nửa ô ở nhịp đầu');
+  if (nhipDau(k2).filter((s) => s.nua).length !== 3) loi.push('hoạt cảnh: bước bị thùng giữ thì nhịp đầu phải đứng tại chỗ');
 }
 
 let tong = 0;

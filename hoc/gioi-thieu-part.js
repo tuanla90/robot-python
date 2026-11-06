@@ -149,7 +149,8 @@
       khong: ['Không hút được vật gỗ', 'Không đẩy được vật sắt', 'Mỗi lần chỉ dính một vật'],
       luuY: [{ chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
         { chu: 'Trên nhện, nam châm treo dưới bụng: hút và thả vật sắt ở ô ngay dưới, mang theo khi đi và khi nhảy qua hố.', than: 'nhen' },
-        { chu: 'Mang thùng sắt bước vào hố: thùng đỡ chân, nhện không rơi. Gọi magnet_off() để thả thùng lấp hố, ô đó thành sàn.', than: 'nhen' }]
+        { chu: 'Mang thùng sắt bước vào hố: thùng đỡ chân, nhện không rơi. Gọi magnet_off() để thả thùng lấp hố, ô đó thành sàn.', than: 'nhen' },
+        { chu: 'Còn bật nam châm thì thùng sắt dưới hố giữ nhện lại, không bước đi được.', than: 'nhen' }]
     },
     'nem': {
       khe: 'tay', ten: 'Máy ném',

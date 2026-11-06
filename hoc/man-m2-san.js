@@ -1,6 +1,6 @@
 /* ============================================================================
    man-m2-san.js — diem10code-python: MÙA 2 Bãi tái chế, CỘT 4 "+Sân" (combo đầy đủ + môi trường bãi tái chế). Hàng 8 là TRÙM CỦA MÙA.
-   u = hố. Mang thùng sắt bước vào hố: thùng đỡ chân, chưa bước ra được; magnet_off() thả thùng lấp hố, ô thành sàn. Không mang gì mà bước vào là rơi.
+   u = hố. Mang thùng sắt bước vào hố: thùng đỡ chân; còn bật nam châm thì thùng giữ nhện lại, không bước ra được. magnet_off() thả thùng lấp hố, ô thành sàn. Không mang gì mà bước vào là rơi.
    Đệm từ (demTu, ô ghi '.'): khối, kéo / đẩy robot đứng cùng hàng, cùng cột trong 2 ô. Tắt nam châm hay khác cực thì bị hút, cùng cực thì bị đẩy.
    8 hàng theo khuôn ManHoc.khuon (hoc/KE-HOACH-4-MUA-COT-LOI.md).
    ========================================================================== */
@@ -54,7 +54,7 @@
       vatChat: CHAT('...s....'),
       batDau: BD,
       maMau: { chinh: ['while not front_metal():', '    go_right()', 'magnet_n()', 'for i in range(4):', '    go_right()', '', 'for i in range(2):', '    go_right()'] },
-      goiY: ['Thùng còn dính dưới bụng thì chưa lấp được hố, nhện cũng chưa bước ra được.'],
+      goiY: ['Nam châm còn bật thì thùng sắt dưới hố giữ nhện lại, không bước ra được.'],
       sao: { o: 8, nhip: 14 },
       loiGiai: { chinh: ['while not front_metal():', '    go_right()', 'magnet_n()', 'for i in range(4):', '    go_right()', 'magnet_off()', 'for i in range(2):', '    go_right()'] } }),
 
