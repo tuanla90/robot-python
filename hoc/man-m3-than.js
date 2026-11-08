@@ -127,7 +127,7 @@
       mucTieu: 'dua-vat',
       sao: { o: 9, nhip: 9 },
       loiGiai: { chinh: ['while front_pole() == "none":', '    forward()', 'if front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()', 'for i in range(4):', '    forward()', 'magnet_off()'] },
-      huyHieu: { ma: 'xuong', ten: 'Thợ lái xuồng' } })
+      huyHieu: { ma: 'm3-c1-than', ten: 'Thợ lái xuồng' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

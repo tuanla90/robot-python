@@ -124,7 +124,7 @@
         chinh: ['if not front_metal():', '    turn_right()', '    forward()', '    forward()', '    turn_left()', 'keo_ve()'],
         hamCuaEmMoi: [H('keo_ve', [], ['cast_net()', 'for i in range(2):', '    backward()', 'drop_net()'])]
       },
-      huyHieu: { ma: 'day-keo', ten: 'Thợ quăng lưới phao' } })
+      huyHieu: { ma: 'm3-c2-tay', ten: 'Thợ quăng lưới phao' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

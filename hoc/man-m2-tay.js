@@ -114,7 +114,7 @@
       mucTieu: 'dua-vat', vatCan: 'sat',
       sao: { o: 9, nhip: 18 },
       loiGiai: { chinh: ['for c in "NRRUOURNRUO":', '    if c == "U":', '        go_up()', '    elif c == "R":', '        go_right()', '    elif c == "N":', '        magnet_n()', '    else:', '        magnet_off()'] },
-      huyHieu: { ma: 'nam-cham', ten: 'Thợ nam châm' } })
+      huyHieu: { ma: 'm2-c2-tay', ten: 'Thợ nam châm' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

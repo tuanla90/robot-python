@@ -114,7 +114,7 @@
         chinh: FOR(3, ['chuyen()']),
         hamCuaEmMoi: [H('chuyen', CHUYEN)]
       },
-      huyHieu: { ma: 'tay-gap', ten: 'Thợ kẹp hàng' } })
+      huyHieu: { ma: 'm1-c2-tay', ten: 'Thợ kẹp hàng' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

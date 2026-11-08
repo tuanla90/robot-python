@@ -116,22 +116,39 @@
     m.hang = so === 8 ? 'trum' : 'lam-quen';
     var lg = m.loiGiai, hamMan = lg.hamCuaMan || [];
     function banSao(ds) { return ds.map(function (f) { return { ten: f.ten, thamSo: (f.thamSo || []).slice(), than: f.than.slice() }; }); }
+    /** Màn hai xe (m.doi): code mẫu từng xe. Xe khóa (doi[i].coDinh) luôn chạy đúng lời giải; xe của em lấy từ layXe(i). */
+    function maMauDoi(layXe) { return { doi: m.doi.map(function (r, i) { return { chinh: (r.coDinh ? lg.doi[i].chinh : layXe(i)).slice() }; }), hamCuaMan: banSao(hamMan) }; }
     if (so === 1) {
       m.chiChay = true;
-      m.maMau = { chinh: lg.chinh.slice(), hamCuaMan: banSao(hamMan) };
+      m.maMau = m.doi ? maMauDoi(function (i) { return lg.doi[i].chinh; }) : { chinh: lg.chinh.slice(), hamCuaMan: banSao(hamMan) };
     }
+    if (m.doi && m.maMau && so > 1) m.maMau = Object.assign(maMauDoi(function (i) { return m.maMau.doi[i].chinh; }), m.maMau.hamCuaMan ? { hamCuaMan: m.maMau.hamCuaMan } : {});
     if (m.dangBai === 'sap-xep') m.chiSapXep = true;
     if (so === 1 || m.dangBai === 'sap-xep') {
       m.moXuong = false;
       m.khoaHamMan = hamMan.map(function (f) { return f.ten; });
     }
-    if (so >= 4 && !m.maMau) m.maMau = { chinh: [], hamCuaMan: banSao(hamMan) };
+    if (so >= 4 && !m.maMau) m.maMau = m.doi ? maMauDoi(function () { return []; }) : { chinh: [], hamCuaMan: banSao(hamMan) };
     if (so >= 2 && m.maMau && !m.maMau.hamCuaMan) m.maMau.hamCuaMan = banSao(hamMan);
     if (so === 6 && !m.canHamTuDat) m.canHamTuDat = 1;
     if (so >= 6) m.moXuong = true;
     if (so >= 5) m.hamTuDat = true;
     if (so === 8) m.goiY = [];
     return m;
+  };
+
+  /** Cỗ máy "nhà" của các mùa, dùng cho màn hai xe (Mùa 5): đủ thân, tay, cảm biến, khay lệnh (kèm wait). */
+  ManHoc.CO_MAY = {
+    XE: { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+      hamGoc: ['forward', 'backward', 'turn_left', 'turn_right', 'pick', 'drop', 'front_clear', 'left_clear', 'right_clear', 'wait'] },
+    NHEN: { loaiRobot: 'nhen', robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
+      hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'wait'] }
+  };
+  /** Phần riêng một xe của màn hai xe: cỗ máy may + { batDau, co, ... }. */
+  ManHoc.xeDoi = function (may, them) {
+    var o = Object.assign({ loaiRobot: may.loaiRobot, robot: may.robot, hamGoc: may.hamGoc.slice() }, them);
+    delete o.may;
+    return o;
   };
 
   /** Hàm tự đặt chỉ DEMO một ý tưởng ở đúng màn tạo ra nó (xem bản gốc man-chuoi-1.js):

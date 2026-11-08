@@ -107,7 +107,7 @@
       canList: true,
       sao: { o: 10, nhip: 17 },
       loiGiai: { chinh: ['a = []', 'while color() != "none":', '    a.append(color())', '    go_right()', 'go_down()', 'for i in range(len(a)):', '    go_left()', 'for c in a:', '    seed(c)', '    go_right()'] },
-      huyHieu: { ma: 'gieo-hat', ten: 'Tay gieo hạt' } })
+      huyHieu: { ma: 'm4-c2-tay', ten: 'Tay gieo hạt' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

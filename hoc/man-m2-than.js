@@ -112,7 +112,7 @@
       loiGiai: {
         chinh: ['pick()'].concat(FOR(7, ['if front_clear():', '    go_up()', 'elif right_clear():', '    go_right()', 'else:', '    go_left()']), ['drop()'])
       },
-      huyHieu: { ma: 'che-nhen', ten: 'Thợ nhện bãi xe' } })
+      huyHieu: { ma: 'm2-c1-than', ten: 'Thợ nhện bãi xe' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

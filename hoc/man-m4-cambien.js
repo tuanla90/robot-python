@@ -122,7 +122,7 @@
         chinh: ['a = []', 'for i in range(5):', '    a.append(warm())', '    go_right()', 've()', 'for k in a:', '    if k:', '        spray()', '    go_right()'],
         hamCuaEmMoi: VE(5)
       },
-      huyHieu: { ma: 'do-dat', ten: 'Mắt đo đất' } })
+      huyHieu: { ma: 'm4-c3-cam-bien', ten: 'Mắt đo đất' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

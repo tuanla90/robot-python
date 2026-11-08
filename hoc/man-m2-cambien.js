@@ -119,7 +119,7 @@
       batDau: [BD, BD], vatCan: 'tu',
       sao: { o: 9, nhip: 24 },
       loiGiai: { chinh: FOR(3, ['go_right()', 'if front_metal() or front_pole() == "N":', '    magnet_s()', 'elif front_pole() == "S":', '    magnet_n()', 'go_right()', 'go_right()'].concat(CUOI)) },
-      huyHieu: { ma: 'che-nam-cham', ten: 'Thợ dò từ' } })
+      huyHieu: { ma: 'm2-c3-cam-bien', ten: 'Thợ dò từ' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

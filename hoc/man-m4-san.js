@@ -117,7 +117,7 @@
         chinh: ['a = []', 'while color() != "none":', '    a.append(color())', '    go_right()', 've(len(a))', 'for c in a:', '    lam(c)', '    go_right()'],
         hamCuaEmMoi: [H('ve', ['n'], ['go_down()', 'for i in range(n):', '    go_left()']), H('lam', ['c'], ['while warm():', '    spray()', 'seed(c)'])]
       },
-      huyHieu: { ma: 'chu-nong-trai', ten: 'Chủ nông trại' } })
+      huyHieu: { ma: 'm4-c4-san', ten: 'Chủ nông trại' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

@@ -99,7 +99,7 @@
         chinh: ['hop()', 'turn_right()', 'forward()', 'forward()', 'turn_left()', 'forward()', 'forward()', 'turn_left()', 'hop()'],
         hamCuaEmMoi: [H('hop', ['forward()', 'forward()', 'turn_right()', 'forward()', 'forward()'])]
       },
-      huyHieu: { ma: 'hai-banh', ten: 'Tay lái hai bánh' } })
+      huyHieu: { ma: 'm1-c1-than', ten: 'Tay lái hai bánh' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

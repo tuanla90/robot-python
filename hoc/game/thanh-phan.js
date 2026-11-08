@@ -158,6 +158,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function datCheList(b) { CHE_LIST = !!b; }
   function coListCua(man) { return coCauTruc(man, 'list'); }
   var LIST_TEN_GOI_Y = ['a', 'b', 'c', 'steps', 'route'], LIST_TOI_DA = 6;                                // tên gợi ý · số phần tử tối đa của một danh sách vẽ trên khung ("thêm ô" mờ khi đủ)
+  var RE_GAN_GIA_TRI = /=\s*(?:color|look|warm|distance|weight|read_code)\(/;                              // cảm biến trả một giá trị, gán vào biến vẫn không thành danh sách
   var RE_GAN_LS = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)\[([^\]]*)\]\s*$/;                                         // a = [2, 3, 1]
   var RE_FOR_LSLIT = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+)\[([^\]]*)\](\s*:.*)$/;                               // for n in [2, 3]:
   var RE_FOR_LS = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+)([A-Za-z_]\w*)(\s*:.*)$/;                               // for n in a:
@@ -1095,7 +1096,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (CHE_LIST && slot === 'so') {                                                    // số lấy từ danh sách: a[i] (i = biến vòng range), a[0], len(a)
         tenListTai(i).forEach(function (ds) {
           vongSo.forEach(function (v) { kq.push(ds + '[' + v + ']'); });
-          kq.push(ds + '[0]', 'len(' + ds + ')');
+          for (var k = 0, nPtu = soPtuTai(ds, i); k < nPtu; k++) kq.push(ds + '[' + k + ']');
+          kq.push('len(' + ds + ')');
         });
       }
       if (CHE_TD && slot === 'so') {                                                      // mùa 8: số lấy từ biến gán n = listen(), cảm biến âm thanh, từ điển (d["a"], d[k]), độ dài len(s)
@@ -1110,12 +1112,27 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       return kq;
     }
+    /** Tên x ở dòng i chắc chắn không phải số: tên danh sách, hay biến gán từ color() / look(). */
+    function khongPhaiSo(x, i) {
+      if (tenListTai(i).indexOf(x) >= 0) return true;
+      var arr = lay(), re = new RegExp('^\\s*' + escRe(x) + '\\s*=\\s*(?:color|look)\\(');
+      for (var j = 0; j < i && j < arr.length; j++) if (re.test(chuoi(arr[j]))) return true;
+      return false;
+    }
+    /** Số chip a[k] của danh sách `ten` ở dòng i: đúng số phần tử của dòng gán gần nhất phía trên; danh sách rỗng hay đối số của hàm (chưa biết dài bao nhiêu) thì 2. */
+    function soPtuTai(ten, i) {
+      var arr = lay(), j, m;
+      for (j = Math.min(i, arr.length) - 1; j >= 0; j--) {
+        if ((m = RE_GAN_LS.exec(chuoi(arr[j]))) && m[2] === ten) return m[4].trim() ? catTop(m[4]).length : 2;
+      }
+      return 2;
+    }
     /** Tên các danh sách dùng được ở dòng i: gán `a = [...]` ở các dòng phía trên, rồi đối số kiểu danh sách của hàm đang sửa. */
     function tenListTai(i) {
       var arr = lay(), kq = [], j, m;
       for (j = 0; j < i && j < arr.length; j++) if ((m = RE_GAN_LS.exec(chuoi(arr[j]))) && kq.indexOf(m[2]) < 0) kq.push(m[2]);
       bienDuoc().forEach(function (p) { if (kieuBienCua(p) === 'list' && kq.indexOf(p) < 0) kq.push(p); });
-      if (CHE_BT) for (j = 0; j < i && j < arr.length; j++) if ((m = /^\s*([A-Za-z_]\w*)\s*=\s*(\[|[A-Za-z_]\w*\()/.exec(chuoi(arr[j]))) && kq.indexOf(m[1]) < 0) kq.push(m[1]);       // mùa 7: g = [[2, 1], [3, 2]] · g = radar()
+      if (CHE_BT) for (j = 0; j < i && j < arr.length; j++) if ((m = /^\s*([A-Za-z_]\w*)\s*=\s*(\[|[A-Za-z_]\w*\()/.exec(chuoi(arr[j]))) && kq.indexOf(m[1]) < 0 && !RE_GAN_GIA_TRI.test(chuoi(arr[j]))) kq.push(m[1]);       // mùa 7: g = [[2, 1], [3, 2]] · g = radar(); c = color() là một giá trị, không phải danh sách
       return kq;
     }
     /** Kiểu phần tử của danh sách `ten` ở dòng i: 'so' (toàn số) hay 'chu' (có chuỗi / màu). Danh sách là đối số của hàm thì hỏi tuyChon.kieuPtuList (theo giá trị thử). */
@@ -1225,6 +1242,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (CHE_BT && tdA === SO_TOI_DA) {                               // mùa 4–7: bảng số có thêm phép tính (số âm, // 2, % 2, abs…) và nguồn số của màn
           var cur = d ? String(d.ds[kk]) : '1', bs = bienTam('so', i, null, d && d.ten);
           bienBT(i).forEach(function (x) { if (bs.indexOf(x) < 0) bs.push(x); });
+          bs = bs.filter(function (x) { return !khongPhaiSo(x, i); });      // ô số không nhận cả danh sách (a) hay biến màu (c = color())
           var doiSo = !!d && d.loai === 'goi';                            // đối số lời gọi: chỉ giá trị (B chặt, 3/11), phép tính / cảm biến viết ở dòng gán trước
           chonBT({ neo: so, v: cur, so: true, bien: doiSo ? giaTriBT(bs) : bs, chu: [], phep: doiSo ? phepDuoc().filter(function (p) { return p === 'am'; }) : phepDuoc(['not', 'ss']),
             khiChon: function (v) { ed.datSo(i, v, kk); }, khiPhep: function (p) { ed.datSo(i, phepBT(p, cur), kk); } });

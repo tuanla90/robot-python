@@ -98,7 +98,7 @@
           Thân khác (hai bánh, omni) có beSung vẫn giật như thường; không khai cờ thì xích cũng giật như hiện nay.
         - ĐÂM LÀ THUA (HD2, 29/10; màn ÉP khối mới của mùa 1 khai cfg.damLaThua = true; mặc định tắt, không khai thì luật cũ y nguyên): nhịp nào có sự kiện
           'dam-tuong' (tường, mép sân, cửa đóng, thùng nặng, vật nằm đất... mọi loại) mà chưa thắng thì chương trình DỪNG NGAY cuối nhịp đó (dungSom = 'dam-tuong'),
-          robot đứng lại ở cú đâm, không chạy tiếp các nhịp sau; sân đó không thắng. Lời chẩn đoán dam-tuong của cham.js nói rõ luật. Chỉ màn một robot.
+          robot đứng lại ở cú đâm, không chạy tiếp các nhịp sau; sân đó không thắng. Lời chẩn đoán dam-tuong của cham.js nói rõ luật. Hai xe đụng nhau cũng tính là đâm.
         - CHẠY XONG MỚI CHẤM (cfg.thangKhiXong = true; mặc định tắt): đạt đích giữa chừng không dừng chương trình, các lệnh còn lại vẫn chạy; thắng khi chương trình hết mà cuối nhịp sau cùng vẫn đạt đích.
           Vòng lặp chạy thừa thì đi quá cờ, đâm bờ hay làm hỏng việc đã xong. Sự kiện xong (toi-co, xong-dua-vat...) chỉ ghi ở nhịp cuối. Kết quả có quaDich: đã từng đạt đích giữa chừng. Chỉ màn một robot.
 
@@ -4018,7 +4018,9 @@
           if (dq && !dq.da) { dq.da = true; sk.push({ ma: 'qua-diem', nhip: nhip, o: { x: dq.x, y: dq.y } }); }
         }
         if (laDoi && (mucTieu === 'toi-co' || (doiKhang && !laR1))) {       // nhiều robot: mỗi robot tới một cờ; tới rồi thì dừng chương trình, đứng yên (thắng: chayDoi). Đối kháng giao hàng: cờ F là đích của R2, R1 đi qua F không dừng
-          if (!xeToiCo && oTai(san, rb.x, rb.y) === 'F' && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }))) { xeToiCo = true; sk.push({ ma: 'toi-co' }); }
+          var tronCo = oTai(san, rb.x, rb.y) === 'F' && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }));
+          if (thangKhiXong && !doiKhang) { if (xeToiCo && !tronCo) rb.quaCo = true; xeToiCo = tronCo; }   // chạy xong mới chấm: xe đi tiếp, xét ô đang đứng; sự kiện toi-co ghi ở nhịp cuối (chayDoi)
+          else if (!xeToiCo && tronCo) { xeToiCo = true; sk.push({ ma: 'toi-co' }); }
         }
         if (mucTieu === 'toi-co') {
           if (!laDoi && san.co && rb.x === san.co.x && rb.y === san.co.y && (!nguois.length || moiNguoiToiTram())) { thang = true; sk.push({ ma: 'toi-co' }); }   // M9C1: có người thì chờ mọi người tới trạm
@@ -4059,8 +4061,8 @@
           if (!thang && moiNguoiToiTram()) { thang = true; sk.push({ ma: 'xong-cuu-nguoi' }); }   // M9C1 luật P: mọi người tới trạm cứu
         } else if (duaVatXong()) { thang = true; sk.push({ ma: 'xong-dua-vat' }); }
         if (nguois.length && mucTieu !== 'cuu-nguoi' && mucTieu !== 'toi-co' && thang && !moiNguoiToiTram()) thang = false;   // M9C1 kết hợp: mục tiêu khác chỉ thắng khi mọi người đã tới trạm
-        if (thangKhiXong && !laDoi) { mocDich = null; if (thang) { thang = false; mocDich = sk.pop(); quaDich = true; } }   // đạt đích chưa tính thắng, chương trình chạy tiếp
-        var daThang = thang || (laDoi && xeToiCo);                           // nhiều robot: robot đã tới cờ thì như đã thắng phần của nó
+        if (thangKhiXong && !doiKhang && (!laDoi || mucTieu !== 'toi-co')) { mocDich = null; if (thang) { thang = false; mocDich = sk.pop(); quaDich = true; } }   // đạt đích chưa tính thắng, chương trình chạy tiếp
+        var daThang = thang || (laDoi && xeToiCo && !(thangKhiXong && !doiKhang));                           // nhiều robot: robot đã tới cờ thì như đã thắng phần của nó
         if (!daThang && coVo && mucTieu === 'dua-vat') dungSom = 'vat-vo';       // vật vỡ: không thể thắng nữa
         if (!daThang && !dungSom && pin !== null && pin <= 0) {                   // hết pin giữa chừng: hạ cánh khẩn, dừng
           dungSom = 'het-pin';
@@ -4966,7 +4968,7 @@
           }
         }
         X.forEach(function (x) {                                           // tới cờ: dừng chương trình, các nhịp sau đứng yên
-          if (x.ctx.xeToiCo && !x.xong) { try { x.g.return(); } catch (e) { /* bỏ qua */ } x.xong = true; x.ctx.hangNhip.length = 0; }
+          if (x.ctx.xeToiCo && !x.xong && !(thangKhiXong && !doiKhang)) { try { x.g.return(); } catch (e) { /* bỏ qua */ } x.xong = true; x.ctx.hangNhip.length = 0; }
         });
         if (doiKhang) {
           var x0 = X[0], x1 = X[1];
@@ -4983,12 +4985,21 @@
           } else if (!dungSom && mucTieu === 'toi-co' && x0 && x0.ctx.xeToiCo) {
             thang = true;
           }
-        } else if (mucTieu === 'toi-co' && X.every(function (x) { return x.ctx.xeToiCo; }) && (!nguois.length || moiNguoiToiTram())) {   // M9C1: có người thì chờ mọi người tới trạm
+        } else if (!thangKhiXong && mucTieu === 'toi-co' && X.every(function (x) { return x.ctx.xeToiCo; }) && (!nguois.length || moiNguoiToiTram())) {   // M9C1: có người thì chờ mọi người tới trạm
           thang = true;
         }
         if (thang || dungSom) break;
       }
       xeKhac = []; oDinhToi = [];
+      if (thangKhiXong && !doiKhang && !thang && !loiDoi && !dungSom) {        // chạy xong mới chấm: mọi chương trình đã hết, xét lúc này
+        var cuoiVet = function (x) { var v = x.ctx.vet; for (var k = v.length - 1; k >= 0; k--) if (v[k].loai === 'nhip') return v[k]; return null; };
+        if (mucTieu === 'toi-co') {
+          if (X.every(function (x) { return x.ctx.xeToiCo; }) && (!nguois.length || moiNguoiToiTram())) {
+            thang = true;
+            X.forEach(function (x) { var c = cuoiVet(x); if (c) c.suKien.push({ ma: 'toi-co' }); });
+          }
+        } else if (mocDich) { thang = true; var c0 = cuoiVet(X[0]); if (c0) c0.suKien.push(mocDich); }
+      }
       var dsKq = X.map(function (x, i) {
         napRobot(x.ctx);
         var hetBinhThuong = !thang && !loi && !loiDoi && (!dungSom || (dungSom === 'doi-thu-thang' && i === 0 && x.xong)) && !xeToiCo;
@@ -5001,7 +5012,7 @@
           chan: loai === 'nhen' ? chan : undefined, quayDo: loai === 'xich' ? (quayDo ? quayDo.huong : 0) : undefined, gai: laGai ? gai : undefined,
           neo: laXuong ? neo : undefined, keo: laXuong ? chupKeo() : undefined,     // (chayDoi có hàm nội bộ tên keo nên đọc qua chupKeo)
           nac: laCau ? nac : undefined, tam: laCau ? tam : undefined, dau: laCau ? oDauCan() : undefined, treo: laCau ? chupTreo() : undefined,   // CẢNG SÔNG
-          toiCo: xeToiCo, xong: x.xong
+          toiCo: xeToiCo, xong: x.xong, quaDich: !!rb.quaCo || quaDich
         };
         x.ctx = catRobot();
         return o;

@@ -337,7 +337,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .d-so>span[data-i]{margin-bottom:2px}
 
 /* ---------- màn chọn màn tạm (man-chon-tam.js): tab mùa + lưới cột gói × hàng dạng bài ---------- */
-.t-tab{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 2px 10px}
+.t-tab{flex:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:8px 2px 10px}
 .t-mua{height:40px;padding:3px 1px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);white-space:nowrap;overflow:hidden}
 .t-mua-so{font:700 calc(12px*var(--kp))/1 var(--px)}
 .t-mua-ten{font:600 calc(11px*var(--kp))/1 var(--px)}

@@ -125,7 +125,7 @@
           H('chon_cuc', ['if front_metal() or front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()'])
         ]
       },
-      huyHieu: { ma: 'tong-hop-2', ten: 'Bãi tái chế sạch bong' } })
+      huyHieu: { ma: 'm2-c4-san', ten: 'Bãi tái chế sạch bong' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

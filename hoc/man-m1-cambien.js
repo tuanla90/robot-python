@@ -75,14 +75,14 @@
       loiGiai: { chinh: DO.concat(['turn_right()'], DO, ['turn_right()'], DO) },
       cachKhac: [{ chinh: ['forward()', 'turn_right()'].concat(DO, ['turn_left()'], DO, ['turn_right()'], DO) }] }),
 
-    man(6, { ten: 'Hành lang vuông: tự viết hàm',
-      deBai: 'Vòng while dò tường cứ lặp lại mỗi đoạn hành lang. Tạo một hàm tên tùy em để gọi lại. Chương trình chính chỉ có 5 ô.',
-      san: ['.....', '.###.', '.###F', '.####', '.####'],
-      batDau: { x: 0, y: 4, huong: 0 },
+    man(6, { ten: 'Hành lang gấp khúc: tự viết hàm',
+      deBai: 'Vòng while dò tường cứ lặp lại mỗi đoạn hành lang, nhưng lúc rẽ phải, lúc rẽ trái, lại có hốc cụt hai bên nên không lặp bằng for được. Tạo một hàm tên tùy em để gọi lại. Chương trình chính chỉ có 5 ô.',
+      san: ['#######F', '#######.', '#.#####.', '........', '.####.##', '.#######', '.#######'],
+      batDau: { x: 0, y: 6, huong: 0 },
       khung: { chinh: 5 },
-      goiY: ['Một đoạn hành lang: dò tới sát tường. Gom hai dòng đó vào hàm.', 'Chương trình chính: gọi hàm, rẽ phải, gọi hàm, rẽ phải, gọi hàm.'],
-      sao: { o: 7, nhip: 14 },
-      loiGiai: { chinh: ['do_tuong()', 'turn_right()', 'do_tuong()', 'turn_right()', 'do_tuong()'], hamCuaEmMoi: [H('do_tuong', DO)] } }),
+      goiY: ['Một đoạn hành lang: dò tới sát tường. Gom hai dòng đó vào hàm.', 'Chương trình chính: gọi hàm, rẽ phải, gọi hàm, rẽ trái, gọi hàm.'],
+      sao: { o: 7, nhip: 17 },
+      loiGiai: { chinh: ['do_tuong()', 'turn_right()', 'do_tuong()', 'turn_left()', 'do_tuong()'], hamCuaEmMoi: [H('do_tuong', DO)] } }),
 
     man(7, { ten: 'Lặp cho gọn hay viết đủ',
       deBai: 'Hai sân khác hướng rẽ, mỗi sân có một hốc bên phải. Cách nào cũng được, miễn chạy xong xe đứng trên cờ ở cả hai sân. Một sao cho bài gọn, một sao cho bài nhanh.',
@@ -109,7 +109,7 @@
       loiGiai: {
         chinh: DO.concat(['pick()', 'turn_right()'], DO, ['turn_left()', 'drop()'])
       },
-      huyHieu: { ma: 'khoang-cach', ten: 'Thợ dò đường' } })
+      huyHieu: { ma: 'm1-c3-cam-bien', ten: 'Thợ dò đường' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

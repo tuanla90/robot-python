@@ -187,11 +187,29 @@
     return null;
   }
 
-  /** Bài làm có dùng danh sách không (dòng có [ ] ngoài chuỗi chữ hay .append), xét chương trình, hàm của màn, hàm của em. */
-  function coDungList(baiLam, tap) {
+  /** Các dòng của bài làm (chương trình, hàm của màn, hàm của em), đã bỏ chuỗi chữ. */
+  function dongCuaBai(baiLam, tap) {
     var ds = (baiLam.chinh || []).slice();
     (baiLam.hamCuaMan || []).concat(tap.em || []).forEach(function (f) { ds = ds.concat(f.than || []); });
-    return ds.some(function (d) { return /[\[\]]|\.\s*append\s*\(/.test(String(d).replace(/"[^"]*"|'[^']*'/g, '""')); });
+    return ds.map(function (d) { return String(d).replace(/"[^"]*"|'[^']*'/g, '""'); });
+  }
+  /** Bài làm có thật sự dùng danh sách không: danh sách gán vào một tên thì phải có dòng khác đọc tên đó (for x in a, a[0], len(a), ham(a)), chỉ gán hay append mà không đọc thì chưa tính. Danh sách viết thẳng (ham([1, 2]), for n in [1, 2]) hay a[i] của đối số thì tính ngay. */
+  function coDungList(baiLam, tap) {
+    var ds = dongCuaBai(baiLam, tap);
+    return ds.some(function (d, i) {
+      var m = /^\s*([A-Za-z_]\w*)\s*=\s*\[/.exec(d);
+      if (!m) return /[\[\]]/.test(d);
+      var doc = new RegExp('\\b' + m[1] + '\\b(?!\\s*\\.\\s*append\\b)'), gan = new RegExp('^\\s*' + m[1] + '\\s*=(?!=)');
+      return ds.some(function (x, j) { return j !== i && doc.test(x.replace(gan, '')); });
+    });
+  }
+  /** Màn dạy chỉ số (man.canChiSo = n): bài phải lấy số bằng n vị trí khác nhau (a[0], a[1]), hay bằng chỉ số là biến (a[k]). */
+  function coDungChiSo(man, baiLam, tap) {
+    var chiSo = {}, coBien = false;
+    dongCuaBai(baiLam, tap).forEach(function (d) {
+      d.replace(/[A-Za-z_]\w*\[([^\]]+)\]/g, function (_, k) { if (/^\s*\d+\s*$/.test(k)) chiSo[+k] = true; else coBien = true; return ''; });
+    });
+    return coBien || Object.keys(chiSo).length >= man.canChiSo;
   }
   var LOAI_VAT = { 'lua': 'đám cháy (còn cháy thì chặn như tường, dập tắt rồi mới đi qua)', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'rao': 'hàng rào thấp (xe không đi qua được, chỉ vật ném mới bay qua)', 'tuong': 'tường', 'ngoai-san': 'ngoài sân', 'bac-thang': 'bậc thang (xe bánh không leo được)', 'thung-nang': 'thùng nặng', 'vat': 'vật nằm đất (vật chiếm ô, xe không đi vào được)', 'cua': 'cửa đang đóng', 'nut': 'van hơi (gắn trên tường: xe không đi vào được, chỉ tia nước phun trúng mới đổi van)', 'gam-thap': 'gầm thấp (nhện phải co chân mới chui vào được)', 'dem-tu': 'ô đệm từ (đệm là khối, xe không đi vào được; đứng cạnh thì bị nó hút hay đẩy)', 'da-chuong': 'khối đá chuông (phát đúng nốt cộng hưởng bằng loa thì đá nứt vỡ mở đường)', 'nguoi': 'người cần cứu (robot không đi vào ô có người; người tự đi về trạm cứu khi lối trống)' };   // M9C1
   // tên ngắn của thứ robot đâm vào (sự kiện 'dam-tuong'), cho câu mở đầu của vong-vo-han khi vòng chạy mãi mà robot cứ đâm
@@ -682,7 +700,7 @@
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định đi vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng đó là ' +
           (LOAI_VAT[e0.vat] || e0.vat) + ' nên nó đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
-          (man.loaiRobot === 'drone' ? ' Kiểm tra lại hướng của lệnh go_* (drone không quay, bay thẳng theo hướng em chọn). Drone bay qua được hàng rào thấp, băng chuyền, vật và bậc thang, nhưng không qua được tường cao hay mép sân.' : man.loaiRobot === 'nhen' ? ' Kiểm tra lại hướng của lệnh go_* (nhện không quay, đi thẳng theo hướng em chọn).' : man.loaiRobot === 'omni' ? ' Kiểm tra lại robot đang quay mặt hướng nào: slide_left() và slide_right() tính theo hướng mặt của xe.' : ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.');
+          (e0.vat === 'dong-doi' ? ' Xe kia phải đi khỏi hẳn ô đó thì xe này mới vào được: đọc code xe kia rồi cho xe này đợi thêm, hoặc đi đường khác.' : man.loaiRobot === 'drone' ? ' Kiểm tra lại hướng của lệnh go_* (drone không quay, bay thẳng theo hướng em chọn). Drone bay qua được hàng rào thấp, băng chuyền, vật và bậc thang, nhưng không qua được tường cao hay mép sân.' : man.loaiRobot === 'nhen' ? ' Kiểm tra lại hướng của lệnh go_* (nhện không quay, đi thẳng theo hướng em chọn).' : man.loaiRobot === 'omni' ? ' Kiểm tra lại robot đang quay mặt hướng nào: slide_left() và slide_right() tính theo hướng mặt của xe.' : ' Kiểm tra lại robot đang quay mặt hướng nào trước lệnh đi.');
       }
       if (res.dungSom === 'dam-tuong') s2 += ' Đâm là thua: chương trình dừng ngay tại cú đâm, robot không chạy tiếp. Sửa dòng gây ra cú đâm rồi chạy lại.';
       them('dam-tuong', s2, { nhip: e0.nhip, den: e0.den, soLan: tuong.length, cho: cho(e0.lenh ? (g.anhXa[e0.lenh.dongPy] || null) : null), damLaThua: res.dungSom === 'dam-tuong' || undefined });
@@ -1663,7 +1681,11 @@
     if (thangHet && thieuHamTuDat(man, dung)) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiHamTuDat(man)); }
     if (thangHet && man.canList && !coDungList(baiLam, tap)) {                                       // màn dạy danh sách: phải có một danh sách trong bài (mùa 4)
       thangHet = false; ketQua.thang = false;
-      ketQua.chanDoan.unshift({ muc: 'loi', ma: 'chua-dung-list', loi: 'Robot làm xong việc rồi, nhưng màn này dạy danh sách: hãy lưu dữ liệu vào một danh sách, ví dụ a = [2, 3], rồi duyệt nó bằng for x in a:.' });
+      ketQua.chanDoan.unshift({ muc: 'loi', ma: 'chua-dung-list', loi: 'Robot làm xong việc rồi, nhưng màn này dạy danh sách: hãy lưu dữ liệu vào một danh sách, ví dụ a = [2, 3], rồi lấy số từ nó bằng for x in a: hay a[0]. Chỉ gán danh sách mà không lấy gì ra thì chưa tính.' });
+    }
+    if (thangHet && man.canChiSo && !coDungChiSo(man, baiLam, tap)) {                                // màn dạy chỉ số: viết thẳng số thì danh sách thành thừa
+      thangHet = false; ketQua.thang = false;
+      ketQua.chanDoan.unshift({ muc: 'loi', ma: 'chua-dung-chi-so', loi: 'Robot làm xong việc rồi, nhưng màn này dạy lấy số theo vị trí: mỗi số phải lấy từ danh sách bằng ' + [0, 1, 2].slice(0, man.canChiSo).map(function (k) { return 'a[' + k + ']'; }).join(', ') + ', không viết thẳng số. Chạm ô số trong lời gọi hàm để chọn.' });
     }
     if (thangHet && man.canThamSo && !tap.em.some(function (h) { return dung['hamEm:' + h.ten] && h.thamSo && h.thamSo.length; })) {   // màn dạy tham số: phải gọi một hàm của em có tham số
       thangHet = false; ketQua.thang = false;
@@ -1735,7 +1757,7 @@
     function hop(dsDs) { var kq = []; dsDs.forEach(function (d) { d.forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); return kq; }
     function dienO(kq, dsHam) {
       var o = 0, thay = {};
-      bais.forEach(function (b) { o += KhungCode.soDong(b.chinh); });
+      bais.forEach(function (b, i) { if (!man.doi[i].coDinh) o += KhungCode.soDong(b.chinh); });   // xe khóa không do em viết, không tính vào mốc Gọn
       dsHam.forEach(function (h) { if (!thay[h.ten]) { thay[h.ten] = true; o += KhungCode.soOHam(h); } });
       kq.soO = o;
       kq.hamDaDung = tenCua(dsHam);
@@ -1769,6 +1791,8 @@
         dong: lm.dong || undefined,                                         // BẾN SÔNG
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1
+        damLaThua: man.damLaThua === true, thangKhiXong: man.thangKhiXong === true,   // luật "số phải đúng" như một xe (san-hoc.js)
+        datKho: lm.datKho || undefined, datRom: lm.datRom || undefined, luoiBay: !!man.luoiBay,
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
         ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         doi: mans.map(function (mi, i) {
@@ -1829,6 +1853,15 @@
     dienO(ketQua, daDung);
     var thieuDoi = thangHet ? thieuTaoHam(man, dung) : [];
     if (thieuDoi.length) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiTaoHam(thieuDoi)); }
+    if (thangHet && thieuHamTuDat(man, dung)) { thangHet = false; ketQua.thang = false; ketQua.chanDoan.unshift(loiHamTuDat(man)); }
+    if (thangHet && man.canList && !bais.some(function (b, i) { return coDungList(b, taps[i]); })) {
+      thangHet = false; ketQua.thang = false;
+      ketQua.chanDoan.unshift({ muc: 'loi', ma: 'chua-dung-list', loi: 'Hai xe làm xong việc rồi, nhưng màn này dạy danh sách: hãy lưu dữ liệu vào một danh sách, ví dụ a = [2, 3], rồi duyệt nó bằng for x in a:.' });
+    }
+    if (thangHet && man.canThamSo && !taps.some(function (t) { return t.em.some(function (h) { return dung['hamEm:' + h.ten] && h.thamSo && h.thamSo.length; }); })) {
+      thangHet = false; ketQua.thang = false;
+      ketQua.chanDoan.unshift({ muc: 'loi', ma: 'chua-dung-tham-so', loi: 'Hai xe làm xong việc rồi, nhưng màn này dạy tham số: hãy viết một hàm của em có tham số (thêm đối số khi đặt tên hàm) rồi gọi với giá trị khác nhau.' });
+    }
     if (thangHet) {
       var sao = man.sao || {};
       ketQua.re = false; ketQua.nguongO = sao.o;

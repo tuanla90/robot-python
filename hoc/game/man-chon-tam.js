@@ -109,7 +109,7 @@
   function dauCot(g) {
     var d = h('div', 't-cot'); d.setAttribute('data-goi', g.ma);
     var mo = App.goiMo(g);
-    if (window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0) d.appendChild(HuyHieu.mk(g.hinh, !mo ? 'khoa' : App.soQua(g) === g.man.length ? 'xong' : 'mo', 1));
+    if (window.HuyHieu && HuyHieu.DS.indexOf(g.hinh) >= 0) d.appendChild(HuyHieu.mk(g.hinh, !mo ? 'khoa' : App.soQua(g) === g.man.length ? 'xong' : 'mo', 1.5));
     d.appendChild(h('div', 't-cot-ten', g.ten));
     return d;
   }

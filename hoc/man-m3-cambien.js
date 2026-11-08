@@ -128,7 +128,7 @@
         chinh: ['while color() == "none":', '    forward()', 'c = color()', 'if c == "red":', '    giao(6)', 'elif c == "blue":', '    giao(4)', 'else:', '    giao(2)'],
         hamCuaEmMoi: [H('giao', ['n'], ['backward()', 'cast_net()', 'for i in range(n):', '    backward()', 'drop_net()'])]
       },
-      huyHieu: { ma: 'mau', ten: 'Mắt sông' } })
+      huyHieu: { ma: 'm3-c3-cam-bien', ten: 'Mắt sông' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

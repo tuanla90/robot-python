@@ -61,12 +61,12 @@
       loiGiai: { chinh: KEO('3, 1') } }),
 
     man(4, { ten: 'Số thứ mấy',
-      deBai: 'Màn trống, em tự viết. Hai sân, drone đang đứng trên bao hạt. Lùi 2 ô để bao vào tầm lưới, tung lưới, rồi bay tiếp: bao đỏ a[0] ô, bao xanh dương a[1] ô, với a = [5, 3]. a[0] là số đầu tiên. Hàm trai(n) và tha() có sẵn.',
+      deBai: 'Màn trống, em tự viết. Hai sân, drone đang đứng trên bao hạt. Lùi 2 ô để bao vào tầm lưới, tung lưới, rồi bay tiếp: bao đỏ a[0] ô, bao xanh dương a[1] ô, với a = [5, 3]. a[0] là số đầu tiên, a[1] là số thứ hai. Lấy số từ danh sách, không viết thẳng số. Hàm trai(n) và tha() có sẵn.',
       san: [HANG('...D.D..o'), HANG('...D.D..o')],
       mau: [HANG('...r.b...'), HANG('...r.b...')],
       vatMau: [HANG('........r'), HANG('........b')],
       batDau: [{ x: 8, y: 1, huong: 0 }, { x: 8, y: 1, huong: 0 }],
-      canList: true,
+      canList: true, canChiSo: 2,
       goiY: ['Đọc c = color() khi còn đứng trên bao, rồi trai(2).', 'Sau khi tung lưới: if c == "red": trai(a[0]), còn lại trai(a[1]), cuối cùng tha().'],
       sao: { o: 12, nhip: 10 },
       loiGiai: { chinh: ['a = [5, 3]', 'c = color()', 'trai(2)', 'cast_net("right")', 'if c == "red":', '    trai(a[0])', 'else:', '    trai(a[1])', 'tha()'], hamCuaMan: HAI_HAM() } }),
@@ -104,18 +104,18 @@
       }] }),
 
     man(8, { ten: 'Ba bao ba màu',
-      deBai: 'Ba sân, drone đứng trên bao hạt, ba màu. Lùi 2 ô, tung lưới, rồi bay tiếp: bao đỏ 6 ô, xanh dương 4 ô, vàng 2 ô. Đưa bao về đúng ô cùng màu.',
+      deBai: 'Ba sân, drone đứng trên bao hạt, ba màu. Lùi 2 ô, tung lưới, rồi bay tiếp: bao đỏ 6 ô, xanh dương 4 ô, vàng 2 ô. Giữ ba số trong danh sách a rồi lấy ra bằng a[0], a[1], a[2]. Đưa bao về đúng ô cùng màu.',
       san: [HANG('...D.D.D.o'), HANG('...D.D.D.o'), HANG('...D.D.D.o')],
       mau: [HANG('...r.b.y..'), HANG('...r.b.y..'), HANG('...r.b.y..')],
       vatMau: [HANG('.........r'), HANG('.........y'), HANG('.........b')],
       batDau: [{ x: 9, y: 1, huong: 0 }, { x: 9, y: 1, huong: 0 }, { x: 9, y: 1, huong: 0 }],
-      canList: true,
+      canList: true, canChiSo: 3,
       sao: { o: 14, nhip: 11 },
       loiGiai: {
         chinh: ['a = [6, 4, 2]', 'c = color()', 'if c == "red":', '    thu(a[0])', 'elif c == "blue":', '    thu(a[1])', 'else:', '    thu(a[2])'],
         hamCuaEmMoi: [H('thu', ['n'], ['for i in range(2):', '    go_left()', 'cast_net("right")', 'for i in range(n):', '    go_left()', 'drop_net()'])]
       },
-      huyHieu: { ma: 'duong-bay', ten: 'Đường bay' } })
+      huyHieu: { ma: 'm4-c1-than', ten: 'Đường bay' } })
   ]);
 
   if (laNode) module.exports = ManHoc;

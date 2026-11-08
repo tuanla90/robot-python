@@ -113,7 +113,7 @@
         chinh: ['do_tuong()', 'de_nut()', 'do_tuong()', 'if right_clear():', '    turn_right()', 'else:', '    turn_left()', 'do_tuong()'],
         hamCuaEmMoi: [H('do_tuong', DO), H('de_nut', ['pick()', 'forward()', 'turn_left()', 'drop()', 'turn_right()'])]
       },
-      huyHieu: { ma: 'kho-cu', ten: 'Kho hàng xuất xưởng' } })
+      huyHieu: { ma: 'm1-c4-san', ten: 'Kho hàng xuất xưởng' } })
   ]);
 
   if (laNode) module.exports = ManHoc;
