@@ -9,7 +9,8 @@
   var ManHoc = laNode ? require('./man-co-so.js') : window.ManHoc;
   var CoMay = laNode ? require('./co-may.js') : window.CoMay;
 
-  var NHEN = ManHoc.CO_MAY.NHEN, DRONE = ManHoc.CO_MAY.DRONE;
+  var NHEN = ManHoc.CO_MAY.NHEN_KEP;   // nhện gắn kẹp: chân cao trèo qua thùng (co-may.js, MAY_NHA.NHEN)
+  var DRONE = ManHoc.CO_MAY.DRONE;
   function H(ten, than) { return { ten: ten, thamSo: [], than: than.slice() }; }
   function FOR(n, than) { return ['for i in range(' + n + '):'].concat(than.map(function (s) { return '    ' + s; })); }
   function UP(n) { return FOR(n, ['go_up()']); }
@@ -33,7 +34,7 @@
     m.khung = Object.assign({ chinh: 10, moiHam: 10 }, m.khung);
     m.cauTruc = ['for', 'if', 'while'];
     m.moXuong = true;
-    m.phienBanNoiDung = 1;
+    m.phienBanNoiDung = 2;
     ManHoc.khuonMoi(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -73,7 +74,7 @@
       sao: { o: 5, nhip: 6 } }),
 
     man(4, { ten: 'Ai giữ nút',
-      deBai: 'R1 phải qua hố rồi qua cửa C. Cửa chỉ mở khi có xe đứng trên nút M, mà R2 còn phải đi tiếp tới cờ, qua một thùng gỗ. Chọn hai cỗ máy rồi viết code.',
+      deBai: 'R1 phải qua hố rồi qua cửa. Cửa chỉ mở khi có xe đứng trên nút, mà R2 còn phải đi tiếp tới cờ, qua một thùng gỗ. Chọn hai cỗ máy rồi viết code.',
       san: NUT,
       doi: [{ batDau: { x: 0, y: 4, huong: 0 }, co: [{ x: 0, y: 0 }] }, { batDau: { x: 3, y: 4, huong: 0 }, co: [{ x: 3, y: 0 }] }],
       chonDoi: { menu: ['XE', 'NHEN', 'DRONE'], cachMau: [CACH(['DRONE', 'NHEN'], ['go_up()', 'go_up()'].concat(FOR(3, ['wait()']), ['go_up()', 'go_up()']), UP(4))] },
@@ -102,7 +103,7 @@
       sao: { o: 9, nhip: 14 } }),
 
     man(7, { ten: 'Người giữ cửa',
-      deBai: 'Drone bay qua hố tới cửa C. Xe thứ hai đi đường dài tới nút M, đứng giữ cửa rồi đi nốt tới cờ. Người giữ cửa là xe thì nhanh, là nhện thì gọn. Một sao cho bài gọn, một sao cho bài nhanh.',
+      deBai: 'Drone bay qua hố tới cửa. Xe thứ hai đi đường dài tới nút, đứng giữ cửa rồi đi nốt tới cờ. Người giữ cửa là xe thì nhanh, là nhện thì gọn. Một sao cho bài gọn, một sao cho bài nhanh.',
       san: GIU,
       doi: [{ batDau: { x: 0, y: 6, huong: 0 }, co: [{ x: 0, y: 0 }] }, { batDau: { x: 2, y: 6, huong: 0 }, co: [{ x: 8, y: 0 }] }],
       chonDoi: { menu: ['XE', 'NHEN', 'DRONE'], cachMau: [

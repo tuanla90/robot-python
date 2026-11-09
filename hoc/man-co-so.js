@@ -143,6 +143,8 @@
       hamGoc: ['forward', 'backward', 'turn_left', 'turn_right', 'pick', 'drop', 'front_clear', 'left_clear', 'right_clear', 'wait'] },
     NHEN: { loaiRobot: 'nhen', robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
       hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'wait'] },
+    NHEN_KEP: { loaiRobot: 'nhen', robot: { than: 'nhen', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+      hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'pick', 'drop', 'front_clear', 'left_clear', 'right_clear', 'wait'] },
     DRONE: { loaiRobot: 'drone', luoiBay: true, robot: { than: 'drone', tay: 'day-keo', camBien: [{ ma: 'camera', o: 'tren' }] },
       hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'cast_net', 'drop_net', 'color', 'wait'] }
   };

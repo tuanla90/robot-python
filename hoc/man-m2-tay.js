@@ -1,6 +1,6 @@
 /* ============================================================================
    man-m2-tay.js — diem10code-python: MÙA 2 Bãi tái chế, CỘT 2 "Nam châm" (Nhện + Nam châm + Khoảng cách: đổi đúng tay, cảm biến còn quen).
-   Nam châm treo dưới bụng: hút, thả ở ô đang đứng; cực nào cũng hút sắt, không hút gỗ. Mỗi lệnh nam châm tự chạy 1 nhịp, nhện đứng yên trong nhịp đó.
+   Nam châm bật theo hướng em chọn, magnet_n("up"): hút sắt cách tới 2 ô về dính sát nhện phía đó, magnet_off() thả xuống ô đó; cực nào cũng hút sắt, không hút gỗ. Thùng chắn đường nhện. Mỗi lệnh nam châm tự chạy 1 nhịp, nhện đứng yên trong nhịp đó.
    Dạy chuỗi: for c in "RRU": đọc từng chữ, if c == "R": ... elif ...; và or với cảm biến.
    8 hàng theo khuôn mới ManHoc.khuonMoi (hoc/KE-HOACH-4-MUA-COT-LOI.md).
    ========================================================================== */
@@ -20,7 +20,7 @@
     m.cauTruc = ['for', 'if', 'while'];
     m.vaHoac = true;
     m.moXuong = true;
-    m.phienBanNoiDung = 2;                     // khuôn mới: đánh số lại các màn, bản nháp cũ không dùng nữa
+    m.phienBanNoiDung = 3;                     // khuôn mới: đánh số lại các màn, bản nháp cũ không dùng nữa
     ManHoc.khuonMoi(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -28,14 +28,14 @@
 
   ManHoc.them([
     man(1, { ten: 'Sắt hay gỗ',
-      deBai: 'Nam châm treo dưới bụng nhện: bật rồi đi qua thùng sắt là hút, magnet_off() thả xuống ô đang đứng. Mỗi lệnh nam châm mất 1 nhịp, nhện đứng yên trong nhịp đó. Lần này nam châm bật sẵn từ đầu, nhện đi qua hai thùng: một gỗ, một sắt. Đọc code, đoán rồi bấm Chạy.',
-      san: ['.....', '.oo.D', '.....'],
-      vatChat: ['.....', '.gs..', '.....'],
+      deBai: 'Nam châm của nhện bật theo hướng em chọn: magnet_n("up") hút thùng sắt ở phía trên, cách nhện tối đa 2 ô, rồi mang theo. magnet_off() thả thùng xuống ô phía đó. Thùng chắn đường nhện nên nhện đi bên dưới. Mỗi lệnh nam châm mất 1 nhịp. Hai thùng: một gỗ, một sắt. Đọc code, đoán rồi bấm Chạy.',
+      san: ['.oo.D', '.....'],
+      vatChat: ['.gs..', '.....'],
       batDau: { x: 0, y: 1, huong: 0 },
       mucTieu: 'dua-vat', vatCan: 'sat',
-      duDoan: { hoi: 'Khi tới ô đích, nhện mang theo thùng nào?', luaChon: ['Thùng gỗ', 'Thùng sắt', 'Cả hai thùng'], dung: 1, xacMinh: { vat: [{ x: 1, y: 1 }, { x: 4, y: 1 }] } },
+      duDoan: { hoi: 'Khi tới cuối đường, nhện mang theo thùng nào?', luaChon: ['Thùng gỗ', 'Thùng sắt', 'Cả hai thùng'], dung: 1, xacMinh: { vat: [{ x: 1, y: 0 }, { x: 4, y: 0 }] } },
       sao: { o: 4, nhip: 10 },
-      loiGiai: { chinh: ['magnet_n()'].concat(FOR(4, ['go_right()']), ['magnet_off()']) } }),
+      loiGiai: { chinh: ['magnet_n("up")'].concat(FOR(4, ['go_right()']), ['magnet_off()']) } }),
 
     man(2, { ten: 'Chuỗi chỉ đường',
       deBai: 'Vòng for đọc từng chữ trong chuỗi "URRUR": U đi lên, R sang phải. Nhánh R đang thiếu lệnh. Điền vào để nhện tới cờ.',
@@ -56,20 +56,20 @@
       loiGiai: { chinh: ['for c in "RRUR":', '    if c == "R":', '        go_right()', '    else:', '        go_up()'] } }),
 
     man(4, { ten: 'Hết đường thì thả',
-      deBai: 'Màn trống, em tự viết. Hai sân khác đường: đang đứng trên thùng sắt, mang nó đi tới khi phía trên lẫn bên phải đều hết đường rồi thả.',
+      deBai: 'Màn trống, em tự viết. Hai sân khác đường: thùng sắt ở ngay bên trái nhện. Hút thùng rồi mang đi tới khi phía trên lẫn bên phải đều hết đường, thả thùng sang trái vào ô đích.',
       san: [
-        ['######', '#...D#', '#.####', '#.####', '#o####'],
-        ['#####', '###D#', '#...#', '#o###']
+        ['######', '#..D.#', '#.####', '#.####', 'o.####'],
+        ['#####', '##D.#', '##.##', 'o..##']
       ],
       vatChat: [
-        ['......', '......', '......', '......', '.s....'],
-        ['.....', '.....', '.....', '.s...']
+        ['......', '......', '......', '......', 's.....'],
+        ['.....', '.....', '.....', 's....']
       ],
       batDau: [{ x: 1, y: 4, huong: 0 }, { x: 1, y: 3, huong: 0 }],
       mucTieu: 'dua-vat', vatCan: 'sat',
-      goiY: ['Bật nam châm ngay từ đầu, trước vòng lặp.', 'Tới ô đích mới magnet_off() để thả thùng.'],
+      goiY: ['Bật nam châm sang trái ngay từ đầu, trước vòng lặp.', 'Thùng dính bên trái nhện nên magnet_off() thả xuống ô bên trái.'],
       sao: { o: 7, nhip: 14 },
-      loiGiai: { chinh: ['magnet_n()', 'while front_clear() or right_clear():', '    if front_clear():', '        go_up()', '    else:', '        go_right()', 'magnet_off()'] } }),
+      loiGiai: { chinh: ['magnet_n("left")', 'while front_clear() or right_clear():', '    if front_clear():', '        go_up()', '    else:', '        go_right()', 'magnet_off()'] } }),
 
     man(5, { ten: 'Một chuỗi chỉ đường',
       deBai: 'Tới cờ. Đường vòng dò tới hết đường thì dễ viết nhưng xa. Đường tắt ngoằn ngoèo thì ngắn, và chỉ cần một chuỗi là đi hết. Tìm bài vừa gọn vừa nhanh.',
@@ -81,39 +81,39 @@
       cachKhac: [{ chinh: ['while left_clear():', '    go_left()', 'while front_clear():', '    go_up()', 'while right_clear():', '    go_right()'] }] }),
 
     man(6, { ten: 'Ba thùng: tự viết hàm',
-      deBai: 'Ba cột giống nhau, mỗi cột một thùng sắt phải lên ô đích trên đầu cột. Tự viết hàm tên tùy em cho một lượt rồi gọi trong for. Chương trình chính chỉ có 3 ô.',
-      san: ['D.D.D..', '.......', 'o.o.o..'],
-      vatChat: ['.......', '.......', 's.s.s..'],
-      batDau: { x: 0, y: 2, huong: 0 },
+      deBai: 'Ba cột giống nhau, mỗi cột một thùng sắt phải lên ô đích trên đầu cột. Nhện đi ở hàng dưới cùng. Tự viết hàm tên tùy em cho một lượt rồi gọi trong for. Chương trình chính chỉ có 3 ô.',
+      san: ['D.D.D..', '.......', 'o.o.o..', '.......'],
+      vatChat: ['.......', '.......', 's.s.s..', '.......'],
+      batDau: { x: 0, y: 3, huong: 0 },
       mucTieu: 'dua-vat', vatCan: 'sat',
       khung: { chinh: 3 },
-      goiY: ['magnet_off() mất 1 nhịp: thùng rơi ngay, rồi nhện mới bước tiếp.'],
+      goiY: ['Một lượt: hút thùng phía trên, lên hai ô, thả, xuống hai ô, sang phải hai ô.'],
       sao: { o: 10, nhip: 42 },
       loiGiai: {
         chinh: FOR(3, ['mang_thung()']),
-        hamCuaEmMoi: [H('mang_thung', ['magnet_n()', 'go_up()', 'go_up()', 'magnet_off()', 'go_right()', 'go_right()', 'go_down()', 'go_down()'])]
+        hamCuaEmMoi: [H('mang_thung', ['magnet_n("up")', 'go_up()', 'go_up()', 'magnet_off()', 'go_down()', 'go_down()', 'go_right()', 'go_right()'])]
       } }),
 
     man(7, { ten: 'Chuỗi ba chữ hay ba vòng while',
-      deBai: 'Mang thùng sắt tới ô đích. Đường sát mép sân chỉ cần ba vòng while. Đường qua hai khe ngắn hơn nhưng phải đi cả ba hướng. Hàm nào cũng được, tên tùy em. Một sao cho bài gọn, một sao cho bài nhanh.',
-      san: ['D......', '#.####.', '.......', '###.##.', 'o......'],
-      vatChat: ['.......', '.......', '.......', '.......', 's......'],
+      deBai: 'Mang thùng sắt tới ô đích. Thùng nằm ngay dưới nhện. Đường sát mép sân chỉ cần ba vòng while. Đường qua hai khe ngắn hơn nhưng phải đi cả ba hướng. Hàm nào cũng được, tên tùy em. Một sao cho bài gọn, một sao cho bài nhanh.',
+      san: ['.......', 'D.####.', '#......', '###.##.', '.......', 'o######'],
+      vatChat: ['.......', '.......', '.......', '.......', '.......', 's......'],
       batDau: { x: 0, y: 4, huong: 0 },
       mucTieu: 'dua-vat', vatCan: 'sat',
-      goiY: ['Ba hướng thì cần if, elif, else trong vòng đọc chuỗi.', 'Nam châm mỗi lệnh chỉ 1 nhịp, còn mỗi bước đi mất 2 nhịp: bớt bước mới là nhanh.'],
-      sao: { o: 8, nhip: 22 },
+      goiY: ['Ba hướng thì cần if, elif, else trong vòng đọc chuỗi.', 'Đang mang thùng vẫn đổi hướng được: gọi lại magnet_n với hướng mới, mất 1 nhịp, thùng xoay theo.'],
+      sao: { o: 8, nhip: 19 },
       doiCho: true,
-      loiGiai: { chinh: ['magnet_n()', 'while right_clear():', '    go_right()', 'while front_clear():', '    go_up()', 'while left_clear():', '    go_left()', 'magnet_off()'] },
-      cachKhac: [{ chinh: ['magnet_n()', 'for c in "RRRUULLUUL":', '    if c == "R":', '        go_right()', '    elif c == "U":', '        go_up()', '    else:', '        go_left()', 'magnet_off()'] }] }),
+      loiGiai: { chinh: ['magnet_n("down")', 'while right_clear():', '    go_right()', 'while front_clear():', '    go_up()', 'while left_clear():', '    go_left()', 'magnet_off()'] },
+      cachKhac: [{ chinh: ['magnet_n("down")', 'for c in "RRRUULLU":', '    if c == "R":', '        go_right()', '    elif c == "U":', '        go_up()', '    else:', '        go_left()', 'magnet_n("left")', 'magnet_off()'] }] }),
 
     man(8, { ten: 'Bản đồ trong chuỗi',
-      deBai: 'Hai thùng sắt, hai ô đích. Viết một chuỗi làm bản đồ: có chữ đi, có chữ bật nam châm, có chữ tắt. Chương trình chính chỉ có 10 ô.',
-      san: ['....D', '...o.', '..D..', 'o....'],
-      vatChat: ['.....', '...s.', '.....', 's....'],
+      deBai: 'Hai thùng sắt, hai ô đích, thùng nào cũng nằm phía trên đường đi. Viết một chuỗi làm bản đồ: có chữ đi, có chữ bật nam châm, có chữ tắt. Chương trình chính chỉ có 10 ô.',
+      san: ['....D', '..Do.', 'o....', '.....'],
+      vatChat: ['.....', '...s.', 's....', '.....'],
       batDau: { x: 0, y: 3, huong: 0 },
       mucTieu: 'dua-vat', vatCan: 'sat',
-      sao: { o: 9, nhip: 18 },
-      loiGiai: { chinh: ['for c in "NRRUOURNRUO":', '    if c == "U":', '        go_up()', '    elif c == "R":', '        go_right()', '    elif c == "N":', '        magnet_n()', '    else:', '        magnet_off()'] },
+      sao: { o: 9, nhip: 16 },
+      loiGiai: { chinh: ['for c in "NRRUORNRUO":', '    if c == "U":', '        go_up()', '    elif c == "R":', '        go_right()', '    elif c == "N":', '        magnet_n("up")', '    else:', '        magnet_off()'] },
       huyHieu: { ma: 'm2-c2-tay', ten: 'Thợ nam châm' } })
   ]);
 

@@ -21,7 +21,7 @@
     m.khung = Object.assign({ chinh: 10, moiHam: 10 }, m.khung);
     m.cauTruc = ['for', 'if', 'while'];
     m.moXuong = true;
-    m.phienBanNoiDung = 1;
+    m.phienBanNoiDung = 2;
     ManHoc.khuonMoi(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -29,7 +29,7 @@
 
   var CUA = ['..F..', '##C##', 'M....', 'F#.##'];
   var LAP = ['###F###', '###.###', '.o.u..F', '###.###', '###.###'];
-  var NHEN_LAP = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()'];
+  var NHEN_LAP = ['magnet_n("right")', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()', 'go_right()'];
   var TRUM = ['..o.u.D', '####.##', '####o##', '####.##'];
 
   ManHoc.them([
@@ -51,16 +51,16 @@
       loiGiai: { doi: [{ chinh: ['wait()', 'wait()', 'forward()', 'forward()', 'forward()'] }, { chinh: FOR(4, ['forward()']) }] } }),
 
     man(3, { ten: 'Đi sớm là đâm cửa',
-      deBai: 'R2 đi tới nút M rồi đứng đó giữ cửa C mở, xong mới về cờ của nó. R1 đợi ít quá nên đụng R2. Mở thẻ R2 đọc code, rồi sửa đúng một số ở R1.',
+      deBai: 'R2 đi tới nút rồi đứng đó giữ cửa mở, xong mới về cờ của nó. R1 đợi ít quá nên đụng R2. Mở thẻ R2 đọc code, rồi sửa đúng một số ở R1.',
       san: CUA,
       doi: DOI({ batDau: { x: 2, y: 3, huong: 0 }, co: [{ x: 2, y: 0 }] }, { batDau: { x: 4, y: 2, huong: 3 }, co: [{ x: 0, y: 3 }] }),
       maMau: { doi: [{ chinh: FOR(1, ['wait()']).concat(FOR(3, ['forward()'])) }, { chinh: [] }] },
-      goiY: ['R2 tới nút M ở nhịp 4, cửa mở từ lúc đó. R1 cũng phải đợi R2 đi khỏi ô giữa.'],
+      goiY: ['R2 tới nút ở nhịp 4, cửa mở từ lúc đó. R1 cũng phải đợi R2 đi khỏi ô giữa.'],
       sao: { o: 4, nhip: 10 },
       loiGiai: { doi: [{ chinh: FOR(3, ['wait()']).concat(FOR(3, ['forward()'])) }, { chinh: FOR(4, ['forward()']).concat(FOR(3, ['wait()']), ['turn_left()', 'forward()']) }] } }),
 
     man(4, { ten: 'Đợi nhện lấp hố',
-      deBai: 'R2 là nhện, đang mang thùng sắt đi lấp hố. Hố chưa lấp mà R1 đi vào thì rơi. Mở thẻ R2 đếm xem bao giờ nhện rời khỏi ô hố, rồi viết code cho R1 tới cờ.',
+      deBai: 'R2 là nhện, đang mang thùng sắt đi lấp hố rồi bước qua ô đó. Hố chưa lấp mà R1 đi vào thì rơi. Mở thẻ R2 đếm xem bao giờ nhện đi khỏi ô hố, rồi viết code cho R1 tới cờ.',
       san: LAP,
       vatChat: CHAT(LAP, 1, 2),
       doi: DOI({ batDau: { x: 3, y: 4, huong: 0 }, co: [{ x: 3, y: 0 }] }, { may: NHEN, batDau: { x: 0, y: 2, huong: 1 }, co: [{ x: 6, y: 2 }] }),
@@ -97,13 +97,13 @@
       cachKhac: [{ doi: [{ chinh: ['turn_left()', 'forward()', 'turn_right()'].concat(FOR(6, ['forward()']), ['turn_right()', 'forward()']) }, { chinh: FOR(13, ['wait()']).concat(['forward()']) }] }] }),
 
     man(8, { ten: 'Thùng qua hố',
-      deBai: 'R1 phải đưa thùng gỗ tới ô đích D, nhưng hố chắn đường. R2 là nhện, sẽ mang thùng sắt tới lấp hố. Tự tính nhịp.',
+      deBai: 'R1 phải đưa thùng gỗ tới ô đích, nhưng hố chắn đường. R2 là nhện, sẽ mang thùng sắt tới lấp hố. Tự tính nhịp.',
       san: TRUM,
       vatChat: CHAT(TRUM, 4, 2),
       mucTieu: 'dua-vat',
       doi: DOI({ batDau: { x: 1, y: 0, huong: 1 } }, { may: NHEN, batDau: { x: 4, y: 3, huong: 0 } }),
-      sao: { o: 8, nhip: 14 },
-      loiGiai: { doi: [{ chinh: ['pick()'].concat(FOR(2, ['forward()']), FOR(6, ['wait()']), FOR(2, ['forward()']), ['drop()']) }, { chinh: ['go_up()', 'magnet_n()', 'go_up()', 'go_up()', 'magnet_off()', 'go_down()'] }] },
+      sao: { o: 8, nhip: 10 },
+      loiGiai: { doi: [{ chinh: ['pick()'].concat(FOR(2, ['forward()']), FOR(2, ['wait()']), FOR(2, ['forward()']), ['drop()']) }, { chinh: ['magnet_n("up")', 'go_up()', 'go_up()', 'magnet_off()'] }] },
       huyHieu: { ma: 'm5-c1-co-san', ten: 'Đọc code đồng đội' } })
   ]);
 

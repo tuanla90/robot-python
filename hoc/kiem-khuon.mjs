@@ -2,6 +2,7 @@
 // Mỗi màn: lời giải mẫu thắng đủ 3 sao, CHỈ với hàm của chính nó (tên hàm tự đặt nên không màn nào dựa vào màn trước).
 // Mỗi dạng bài: code mẫu đúng kiểu của dạng đó (cả 4 mùa theo khuôn mới ManHoc.khuonMoi). Màn viết mở thì lời giải và các cách khác đều thắng, đi khác đường.
 // Mỗi cột: đúng bộ part theo chuỗi chuyển part của kế hoạch. Không tuple / dict / set / list lồng.
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -224,22 +225,26 @@ function kiemLapHo() {
   const chay = (chinh, them = {}) => ChamHoc.cham({ ...man, chiChay: false, ...them }, { chinh, hamCuaMan: [] }, []);
   const ma = (kq) => kq.chanDoan.map((c) => c.ma);
   const qua = ['go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()'];
-  if (!ma(chay(qua)).includes('roi-ho')) loi.push('lấp hố: không mang thùng mà bước vào hố phải rơi');
-  const mang = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'go_right()', 'go_right()', 'go_right()'];
+  const khongThung = { san: man.san.map((h) => h.replace('o', '.')), vatChat: man.vatChat.map((h) => h.replace('s', '.')) };
+  if (!ma(chay(qua, khongThung)).includes('roi-ho')) loi.push('lấp hố: không mang thùng mà bước vào hố phải rơi');
+  const chan = chay(['go_right()', 'go_right()']);
+  if (!ma(chan).includes('dam-tuong')) loi.push('nam châm: thùng nằm đất phải chắn đường nhện');
+  const R = '"right"', mang = [`magnet_n(${R})`, 'go_right()', 'go_right()', 'go_right()', 'go_right()'];
   const k1 = chay(mang);
-  if (k1.thang || ma(k1).includes('roi-ho')) loi.push('lấp hố: mang thùng nhưng chưa thả thì không rơi và không đi xuyên qua được');
-  const dungDan = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()'];
-  if (!chay(dungDan).thang) loi.push('lấp hố: thả thùng ở hố rồi đi tiếp phải thắng');
-  if (chay(dungDan, { vatChat: man.vatChat.map((h) => h.replace('s', 'N')) }).thang) loi.push('lấp hố: vật nam châm không lấp được hố');
-  const batLai = ['go_right()', 'magnet_n()', 'go_right()', 'go_right()', 'magnet_off()', 'magnet_n()', 'go_right()', 'go_right()', 'go_right()'];
-  const k2 = chay(batLai);
-  if (k2.thang || !ma(k2).includes('dam-tuong')) loi.push('lấp hố: bật lại nam châm trên ô đã lấp thì thùng phải giữ nhện lại');
-  const moLai = ['magnet_n()', 'for i in range(3):', '    go_right()', 'magnet_off()', 'magnet_n()', 'magnet_off()', 'for i in range(3):', '    go_right()'];
-  if (!chay(moLai).thang) loi.push('lấp hố: tắt nam châm rồi phải bước đi được');
+  if (k1.thang || !ma(k1).includes('roi-ho')) loi.push('lấp hố: mang thùng mà bước vào hố vẫn phải rơi');
+  const dungDan = [`magnet_n(${R})`, 'go_right()', 'go_right()', 'magnet_off()', 'go_right()', 'go_right()', 'go_right()', 'go_right()'];
+  if (!chay(dungDan).thang) loi.push('lấp hố: thả thùng xuống hố kề bên rồi đi tiếp phải thắng');
+  const cucN = { vatChat: man.vatChat.map((h) => h.replace('s', 'N')) };
+  if (chay(dungDan.map((d) => d.replace('magnet_n', 'magnet_s')), cucN).thang) loi.push('lấp hố: vật nam châm không lấp được hố');
+  if (chay(dungDan, cucN).thang) loi.push('nam châm: cùng cực thì đẩy, không mang được vật');
+  const batLai = dungDan.slice(0, 4).concat([`magnet_n(${R})`], dungDan.slice(4));
+  if (!chay(batLai).thang) loi.push('lấp hố: bật lại nam châm trên ô đã lấp vẫn phải bước đi được');
+  if (!ma(chay(['magnet_n()'])).includes('huong-nam-cham-sai')) loi.push('nam châm: nhện bật không kèm hướng phải báo lỗi');
+  if (!ma(chay(['magnet_n("xeo")'])).includes('huong-nam-cham-sai')) loi.push('nam châm: nhện bật sai hướng phải báo lỗi');
   // hoạt cảnh: nhịp đầu của bước đi được mang .nua (đi nửa ô), nhịp đầu của bước bị chặn thì không
   const nhipDau = (kq) => kq.vet.filter((e) => e.loai === 'nhip').flatMap((e) => e.suKien.filter((s) => s.ma === 'chuan-bi'));
   if (!nhipDau(chay(dungDan)).every((s) => s.nua && s.nua.x === 1 && s.nua.y === 0)) loi.push('hoạt cảnh: mọi bước đi được phải đi nửa ô ở nhịp đầu');
-  if (nhipDau(k2).filter((s) => s.nua).length !== 3) loi.push('hoạt cảnh: bước bị thùng giữ thì nhịp đầu phải đứng tại chỗ');
+  if (nhipDau(chan).some((s) => s.nua)) loi.push('hoạt cảnh: bước bị thùng chắn thì nhịp đầu phải đứng tại chỗ');
 }
 
 /** Luật đất của mùa 4: tưới đất không khô thì úng, ô phủ rơm warm() không đọc được, gieo ngoài luống hỏng, không dùng danh sách thì chưa qua, lưới bắt đúng tầm 2 ô. */
@@ -273,6 +278,10 @@ function kiemBangNhip() {
   const CAM = /^(front_clear|left_clear|right_clear|front_metal|front_pole|color|warm)$/;
   const CHAY_THU = { seed: 'seed("red")' };
   const daThu = {};
+  // Khay lọc hàm của em theo robot (thanh-phan.js LENH_GOC): lệnh gốc nào không có trong đó thì hàm của xe khác lọt vào khay mà không chạy được.
+  const nguonKhay = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8').match(/var LENH_GOC = \[([^\]]*)\]/)[1];
+  const lenhKhay = new Set(nguonKhay.match(/[a-z_0-9]+/g).concat(require('./kho-ham.js').HAM_GOC_MAC_DINH));
+  ManHoc.danhSach.forEach((m) => m.hamGoc.forEach((ten) => { if (!lenhKhay.has(ten)) loi.push(`khay: bộ lọc hàm theo robot không biết lệnh ${ten} (thanh-phan.js LENH_GOC)`); }));
   ManHoc.danhSach.forEach((m) => m.hamGoc.forEach((ten) => {
     if (CAM.test(ten)) return;
     const can = SanHoc.soNhipLenh(m.loaiRobot, ten);
@@ -283,7 +292,8 @@ function kiemBangNhip() {
     const nen = m.loaiRobot === 'xuong' ? '~' : '.', co = m.loaiRobot === 'xuong' ? 'Q' : 'F';
     const san = [co + nen.repeat(4)].concat(Array(4).fill(nen.repeat(5)));
     const man = { ...m, doi: undefined, san, batDau: { x: 2, y: 2, huong: 0 }, mucTieu: 'toi-co', vatChat: undefined, mau: undefined, dong: undefined, datKho: undefined, hinh: undefined, chiChay: false, chiSapXep: false, canList: false, noi: undefined };
-    const kq = ChamHoc.cham(man, { chinh: [(CHAY_THU[ten] || ten + '()')], hamCuaMan: [] }, []);
+    const chayThu = m.loaiRobot === 'nhen' && /^magnet_[ns]$/.test(ten) ? ten + '("up")' : (CHAY_THU[ten] || ten + '()');
+    const kq = ChamHoc.cham(man, { chinh: [chayThu], hamCuaMan: [] }, []);
     const nhip = kq.soNhip;
     if (nhip !== can) loi.push(`bảng nhịp: ${khoa} khai ${can} nhịp, chạy thật ${nhip}`);
   }));

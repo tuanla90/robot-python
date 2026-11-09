@@ -93,12 +93,12 @@ Quyết định riêng của Mùa 1 (có thể đổi nếu muốn):
 
 Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
 
-- **Lấp hố**: nhện đang dính thùng sắt bước vào hố thì không rơi; `magnet_off()` thả thùng lấp hố, ô thành sàn. Không mang gì, hay mang vật nam châm, thì rơi.
-- **Thùng dưới hố giữ nhện**: nam châm còn bật mà thùng sắt ở dưới hố ngay chân nhện (đang mang tới hay đã lấp từ trước) thì nhện không bước đi được, vẫn mất 2 nhịp; tắt nam châm mới đi. Thùng không bị hút lên. Nhờ vậy mang thùng không phải cách đi xuyên qua hố.
+- **Nam châm của nhện có hướng**: nhện không có mũi nên chọn hướng khi bật, `magnet_n("up")`, bốn hướng `"up"`, `"down"`, `"left"`, `"right"`. Hút sắt cách tới 2 ô, vật nam châm tới 3 ô, cùng cực bị đẩy. Vật dính sát nhện về hướng đó, `magnet_off()` thả xuống ô đó. Đang mang đổi hướng được, mất 1 nhịp. Thùng nằm đất chắn đường nhện gắn nam châm, nên nhện khác drone.
+- **Lấp hố**: mang thùng sắt tới sát hố, cho nam châm chỉ về phía hố rồi `magnet_off()`: thùng lấp hố, ô thành sàn. Bước vào hố chưa lấp là rơi, có mang thùng cũng vậy. Vật nam châm không lấp được hố.
 - **Hoạt cảnh bước của nhện**: mỗi nhịp đi nửa ô, nhịp 1 nửa đầu, nhịp 2 nửa sau. Bước không đi được thì nhịp 1 đứng tại chỗ nhấc chân, nhịp 2 rung. Luật vẫn tính nhện đổi ô ở nhịp 2 (`front_clear()` đọc ở nhịp 1 vẫn theo ô cũ).
 - **Hố vẽ vuông** để khớp thùng sắt (hình `ho` trong `hoc/game/ve-vector-o2.js`).
-- **Cảm biến trên nhện nhìn cố định**: khoảng cách thì `front` là phía trên sân, `left` trái, `right` phải; cảm ứng từ của Bãi tái chế nhìn sang phải (`batDau.huong = 1`). Vật nằm đất làm `front_clear()` thành False dù nhện đứng trùm lên được.
-- **Nhện gắn kẹp đứng trùm lên vật được**, như nhện gắn nam châm, vì tay làm ở ô đang đứng.
+- **Cảm biến trên nhện nhìn cố định**: khoảng cách thì `front` là phía trên sân, `left` trái, `right` phải; cảm ứng từ của Bãi tái chế nhìn sang phải (`batDau.huong = 1`). Vật nằm đất làm `front_clear()` thành False. Đầu dò từ nhìn theo `batDau.huong`, không theo hướng nam châm, nên màn nào muốn dò vật phía trên phải đặt `huong: 0` và nói trong đề bài.
+- **Nhện gắn kẹp đứng trùm lên vật được** vì tay làm ở ô đang đứng. Nhện gắn nam châm thì không.
 - **Nhập `and`/`or`**: màn khai `vaHoac: true`; chạm vào điều kiện rồi chọn `+ and`/`+ or`, tối đa hai vế. Chạm chữ bên phải của `c == "R"` hay `front_pole() == "N"` để đổi chữ.
 - **Biến chưa dạy ở Mùa 2**: chuỗi chỉ đi qua `for c in "..."`, chưa gán vào biến; biến và tham số để Mùa 3.
 

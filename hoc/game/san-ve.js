@@ -657,7 +657,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.vis.son = this.cfg.robot.tay === 'son' ? { ha: false, mau: this.cfg.mucBanDau || 'red' } : null;      // máy sơn: đầu sơn đang hạ không, màu đang chọn
       this.vis.loa = this.cfg.robot.tay === 'loa' ? { am: null, den: 0 } : null;                                 // loa: âm đang phát (1..8 hoặc 'x'), tới lúc nào loa còn sáng
       this.vis.sung = this.cfg.robot.tay === 'hoi' ? { dan: this.cfg.danToiDa, truoc: 0, sau: 0, het: 0 } : null;      // súng hơi: dan = số viên còn (null: vô hạn); truoc / sau = tới lúc nào nòng trước / nòng sau còn lóe; het = hết đạn, nhấp nháy đỏ
-      this.vis.bung = this.cfg.robot.than === 'nhen' && this.cfg.robot.tay === 'nam-cham';      // NAM CHÂM BỤNG NHỆN (mùa 3): vật treo dưới thân, gợn từ quanh ô (veDuoiNhen)
+      this.vis.bung = false;                                                                   // nhện gắn nam châm giờ hút theo hướng lệnh bật chọn (nc.huong), vật dính bên cạnh như xe
       this.vis.dr = this.cfg.robot.than === 'drone' ? { alt: ALT, roi: false, nguy: false, dau: false, pin: this.cfg.pin, pinMax: this.cfg.pin, nhay: 0, sacLoe: 0 } : null;          // drone: alt = độ cao, roi = đã rơi xuống đất, nguy = đang rơi, pin / pinMax (null: pin vô hạn, ẩn thanh pin), nhay = tới lúc nào thanh pin còn nháy (đọc battery()), sacLoe = tới lúc nào ô sạc còn lóe
       this.vis.xu = this.cfg.robot.than === 'xuong' ? { neo: false, keo: null, day: 0, giu: 0, neoLoe: 0, troi: 0 } : null;      // BẾN SÔNG xuồng: neo = đã thả neo; keo = { id, cho } vật đang kéo; day = tới lúc nào tời còn quăng; neoLoe = mỏ neo vừa đổi; troi = đang trôi theo dòng (không quay chân vịt)
       this.vis.cau = this.cfg.robot.than === 'cau' ? { nac: b.nac || 0, tam: b.tam || 1, treo: [], doi: false, nang: 1, quet: 0, loiCan: 0 } : null;      // CẢNG SÔNG cần cẩu: nac / tam (số lẻ khi đang quay / vươn), treo = container đang treo, nang 0..1 (container đang nhấc lên / hạ xuống), quet = tới lúc nào tia quét còn chạy, loiCan = cần nháy đỏ
@@ -1641,14 +1641,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /* ---- NAM CHÂM: sóng hút, vật dính, vật bay */
     /** Góc (rad, 0 = lên, quay thuận chiều kim đồng hồ) của hướng mũi xe: theo hướng xe, cộng góc xích quay dở; đang quay thì dùng góc đang nội suy. */
     gocMui: function () {
-      var v = this.vis, q = v.nc || v.nem, base = q && q.ang !== null && q.ang !== undefined ? q.ang : (v.d || 0) * Math.PI / 2;
+      var v = this.vis, q = v.nc || v.nem, base = q && q.ang !== null && q.ang !== undefined ? q.ang : ((v.nc && typeof v.nc.huong === 'number') ? v.nc.huong : (v.d || 0)) * Math.PI / 2;
       return base + (v.goc || 0) + (q && q.ang !== null && q.ang !== undefined ? 0 : (v.gocMem || 0));     // gocMem: quay mượt (gói V4)
     },
     /** Robot có hướng mặt (không phải drone / nhện không tay): quay thì xoay mượt cả hình (v.gocMem) thay vì đổi hướng ở nửa nhịp. */
     xoayMem: function () { var r = this.cfg.robot; return r.than !== 'drone' && !(r.than === 'nhen' && !r.tay); },
     /** Nhìn từ ô xe (làm tròn) theo hướng mặt: vật đầu tiên trong 3 ô (tường, mép sân, thùng nặng chắn). { khoang, chan, vat } (khoang 4 = hết tầm trống). */
     nhinTruoc: function () {
-      var v = this.vis, c = this.cfg, bx = Math.round(v.x), by = Math.round(v.y), h = v.d || 0, d, x, y, o;
+      var v = this.vis, c = this.cfg, bx = Math.round(v.x), by = Math.round(v.y), h = v.nc && typeof v.nc.huong === 'number' ? v.nc.huong : (v.d || 0), d, x, y, o;
       for (d = 1; d <= 3; d++) {
         x = bx + DX[h] * d; y = by + DY[h] * d;
         if (x < 0 || y < 0 || x >= c.w || y >= c.h || c.rows[y][x] === '#' || this.thungTaiO(x, y)) return { khoang: d, chan: 'tuong', vat: null };
@@ -2303,7 +2303,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     phatNhip: async function (e, ms) {
       var my = this.rid, v = this.vis, self = this, evs = e.suKien || [];
       var b = (e.robot && e.robot.banh) || { trai: 0, phai: 0 };
-      if (v.nc && e.robot && e.robot.namCham) { v.nc.bat = !!e.robot.namCham.bat; v.nc.cuc = e.robot.namCham.cuc || null; }     // nam châm: trạng thái bật / tắt và cực của nhịp (lệnh bật tắt chạy ĐẦU nhịp)
+      if (v.nc && e.robot && e.robot.namCham) { v.nc.bat = !!e.robot.namCham.bat; v.nc.cuc = e.robot.namCham.cuc || null; v.nc.huong = e.robot.namCham.huong; }     // nam châm: trạng thái bật / tắt và cực của nhịp (lệnh bật tắt chạy ĐẦU nhịp)
       v.camBien = (e.robot && e.robot.camBien) ? { bat: true } : null;       // cảm biến sáng trong nhịp có lệnh đọc cảm biến (lõi chưa có: chương sau điền e.robot.camBien)
       this.wh.L = b.trai !== 0 ? 2 : 0; this.wh.R = b.phai !== 0 ? 2 : 0;
       if (e.robot && e.robot.truot) { this.wh.L = 2; this.wh.R = 2; }       // omni trượt ngang: cả bốn bánh nhỏ cùng quay
@@ -2652,7 +2652,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       v.goc = e.robot.quayDo ? (e.robot.quayDo > 0 ? 1 : -1) * Math.PI / 4 : 0;       // xích còn quay dở: nghiêng 45° chờ nhịp kế   // nhện không quay: mặt trước (cạnh gắn tay) cố định theo batDau.huong
       if (e.thung) this.dongBoThung(e.thung);
       if (v.nc) {                                                       // nam châm: đưa vật (dính / nằm) và trạng thái bật về đúng vết
-        v.nc.ang = null; if (e.robot.namCham) { v.nc.bat = !!e.robot.namCham.bat; v.nc.cuc = e.robot.namCham.cuc || null; }
+        v.nc.ang = null; if (e.robot.namCham) { v.nc.bat = !!e.robot.namCham.bat; v.nc.cuc = e.robot.namCham.cuc || null; v.nc.huong = e.robot.namCham.huong; }
         this.dongBoVat(e.vat);
         for (var oi = 0; oi < this.objs.length; oi++) { this.objs[oi].bay = null; this.objs[oi].nang = 0; this.objs[oi].dx = 0; this.objs[oi].dy = 0; }
       }

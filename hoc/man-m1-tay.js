@@ -57,7 +57,7 @@
       loiGiai: { chinh: ['pick()', 'forward()', 'turn_right()', 'forward()', 'drop()'] } }),
 
     man(4, { ten: 'Thùng nằm bên phải',
-      deBai: 'Màn trống, em tự viết: mang thùng tới ô đích D.',
+      deBai: 'Màn trống, em tự viết: mang thùng tới ô đích.',
       san: ['...D.', '.....', '.....', '.....', '..o..'],
       batDau: { x: 1, y: 4, huong: 0 },
       goiY: ['Tay chỉ làm ở ô trước mũi xe, nên phải quay mặt vào thùng trước khi pick().', 'Đi thẳng nhiều ô thì dùng for cho ngắn: for i in range(n). Chạm con số trong range(...) là đổi được số.', 'Tới cạnh ô đích, quay mặt vào nó rồi mới drop().'],

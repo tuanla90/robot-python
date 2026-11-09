@@ -96,8 +96,8 @@
       gioi: ['Nhanh: mỗi lệnh go_…() là 1 nhịp, 1 ô', 'Bay qua hàng rào thấp, băng chuyền, vật, bậc thang'],
       khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném',
         { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }, { chu: 'Đang đậu thì không bay được: take_off() trước đã', can: ['land'] }],
-      luuY: [{ chu: 'Dừng ở ô sạc P thì pin sạc đầy ở cuối nhịp.', can: ['battery'], khongCan: ['land'] },
-        { chu: 'Bản nâng cấp: chỉ khi land() xuống ô sạc P thì pin mới đầy, bay ngang qua P không sạc. Đậu không tốn pin.', can: ['land'] }]
+      luuY: [{ chu: 'Dừng ở ô sạc thì pin sạc đầy ở cuối nhịp.', can: ['battery'], khongCan: ['land'] },
+        { chu: 'Bản nâng cấp: chỉ khi land() xuống ô sạc thì pin mới đầy, bay ngang qua ô sạc thì không sạc. Đậu không tốn pin.', can: ['land'] }]
     },
 
     /* ------------------------------------------------------------ TAY */
@@ -138,16 +138,17 @@
     'nam-cham': {
       khe: 'tay', ten: 'Nam châm',
       moTa: 'Nam châm chữ U trước mũi xe. Bật cực N hoặc S để hút vật từ xa.',
-      moTaThan: { nhen: 'Nam châm treo dưới bụng nhện. Bật cực N hoặc S để hút vật ở ô đang đứng.', xuong: 'Nam châm chữ U trước mũi xuồng. Bật cực N hoặc S để hút thùng trôi trên sông.' },
+      moTaThan: { nhen: 'Nam châm của nhện bật theo hướng em chọn. Bật cực N hoặc S để hút vật ở phía đó từ xa.', xuong: 'Nam châm chữ U trước mũi xuồng. Bật cực N hoặc S để hút thùng trôi trên sông.' },
       lenh: ['magnet_n', 'magnet_s', 'magnet_off'],
       moTaLenh: { magnet_n: 'Bật nam châm cực N, màu đỏ', magnet_s: 'Bật nam châm cực S, màu xanh dương' },
-      gioi: [{ chu: 'Hút vật sắt cách tới 2 ô về dính ở mũi xe', khongThan: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô', khongThan: 'nhen' },
-        { chu: 'Cực nào cũng hút vật sắt ở ô đang đứng', than: 'nhen' }, { chu: 'Vật nam châm: khác cực thì hút, cùng cực thì nằm yên', than: 'nhen' }],
+      gioi: [{ chu: 'Hút vật sắt cách tới 2 ô về dính ở mũi xe', khongThan: 'nhen' }, { chu: 'Hút vật sắt cách tới 2 ô về dính sát nhện, cực nào cũng hút', than: 'nhen' },
+        'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô'],
       khong: ['Không hút được vật gỗ', 'Không đẩy được vật sắt', 'Mỗi lần chỉ dính một vật'],
       luuY: ['Mỗi lệnh nam châm tự chạy 1 nhịp, robot đứng yên trong nhịp đó.', { chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên xuồng, ô trước mũi phải là nước thì mới thả được.', than: 'xuong' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
-        { chu: 'Trên nhện, nam châm treo dưới bụng: hút và thả vật sắt ở ô ngay dưới, mang theo khi đi và khi nhảy qua hố.', than: 'nhen' },
-        { chu: 'Mang thùng sắt bước vào hố: thùng đỡ chân, nhện không rơi. Gọi magnet_off() để thả thùng lấp hố, ô đó thành sàn.', than: 'nhen' },
-        { chu: 'Còn bật nam châm thì thùng sắt dưới hố giữ nhện lại, không bước đi được.', than: 'nhen' }]
+        { chu: 'Nhện chọn hướng khi bật: magnet_n("up"), có bốn hướng "up", "down", "left", "right".', than: 'nhen' },
+        { chu: 'magnet_off() thả vật xuống ô kề nhện theo hướng đó. Đang mang vật vẫn đổi hướng được.', than: 'nhen' },
+        { chu: 'Thùng nằm đất chắn đường nhện, nên đứng cạnh thùng rồi hút.', than: 'nhen' },
+        { chu: 'Thả thùng sắt xuống ô hố kề bên: thùng lấp hố, ô đó thành sàn. Bước vào hố chưa lấp là rơi.', than: 'nhen' }]
     },
     'nem': {
       khe: 'tay', ten: 'Máy ném',
@@ -333,12 +334,12 @@
         { lenh: ['backward'], ra: 'Lùi 1 ô nước', ket: { x: 2, y: 3, huong: 0 } }
       ],
       gioi: [
-        'Lướt trên các ô nước ~, bến phao Q, bến hàng q và cống mở k',
+        'Lướt trên mặt nước, bến phao, bến hàng và cống đang mở',
         'Quay nhanh: đi hay quay đều 1 nhịp',
         { can: ['anchor'], chu: 'anchor() thả neo giữ xuồng không bị dòng nước cuốn trôi khi đứng chờ' }
       ],
       khong: [
-        'Không lên được bờ đất . hay bờ kè # và không đi xuyên qua cống đóng K',
+        'Không lên được bờ đất, bờ kè và không đi xuyên qua cống đang đóng',
         { can: ['anchor'], chu: 'Đang thả neo thì không tiến, lùi hay quay được cho tới khi gọi unanchor()' }
       ],
       luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp.', 'Trên ô có dòng nước chảy, mỗi nhịp xuồng bị đẩy theo chiều dòng, kể cả nhịp đang tung lưới hay đứng yên.']
@@ -350,13 +351,13 @@
       moTaLenhThan: { drone: { cast_net: 'Tung lưới theo hướng d, bắt vật cách drone đúng 2 ô, mất 2 nhịp', drop_net: 'Thả vật trong lưới xuống ô nó đang nằm, 1 nhịp' } },
       lenh: ['cast_net', 'drop_net', 'set_length'],
       moTaLenh: {
-        cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van V, mất 2 nhịp',
+        cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van, mất 2 nhịp',
         drop_net: 'Mở lưới thả vật đang giữ xuống đúng ô nước hiện tại của nó, 1 nhịp',
         set_length: 'Đặt độ dài dây lưới từ 0 đến 3, với 0 là kéo vật về khoang tàu và 1 đến 3 là số ô dây dưới nước'
       },
       ghep: [
-        { lenh: ['cast_net'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van V trên bờ', khongThan: 'drone' },
-        { lenh: ['drop_net'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng q', khongThan: 'drone' },
+        { lenh: ['cast_net'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van trên bờ', khongThan: 'drone' },
+        { lenh: ['drop_net'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng', khongThan: 'drone' },
         { lenh: ['cast_net'], ra: 'Tung lưới bắt vật cách drone 2 ô', than: 'drone' },
         { lenh: ['drop_net'], ra: 'Mở lưới thả vật xuống ô nó đang nằm', than: 'drone' },
         { lenh: ['set_length', 'wait'], ra: 'Thu dây kéo vật về khoang tàu hoặc thả dây ra độ dài mới' }
@@ -376,7 +377,7 @@
         { chu: 'Không bay được về phía vật trong lưới', than: 'drone' },
         { can: ['set_length'], chu: 'Khi vật đang nằm trong khoang tàu ở độ dài 0 thì phải gọi set_length(n) thả ra mặt nước trước khi gọi drop_net()' }
       ],
-      luuY: [{ chu: 'Gọi drop_net() khi vật trong lưới đang nằm ngay trên ô bến hàng q để giao hàng.', khongThan: 'drone' }, { chu: 'Gọi drop_net() khi vật trong lưới đang nằm trên ô đích.', than: 'drone' }]
+      luuY: [{ chu: 'Gọi drop_net() khi vật trong lưới đang nằm ngay trên ô bến hàng để giao hàng.', khongThan: 'drone' }, { chu: 'Gọi drop_net() khi vật trong lưới đang nằm trên ô đích.', than: 'drone' }]
     },
     'dong-chay': {
       khe: 'camBien', ten: 'Chong chóng dòng chảy',

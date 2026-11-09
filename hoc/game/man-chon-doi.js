@@ -152,7 +152,7 @@
     el.tom.appendChild(h('div', 'cx-tom-dong', d.moTa));
     if (laLap()) el.tom.appendChild(h('div', 'cx-tom-dong', d.moTaTay + ' ' + d.moTaCam));
     el.tom.appendChild(h('div', 'cx-tom-dong ket', d.ket));
-    el.tom.appendChild(h('div', 'cx-tom-lenh', d.lenh.map(function (l) { return l + '()'; }).join('  ')));
+    el.tom.appendChild(h('div', 'cx-tom-lenh', d.lenh.map(function (l) { return d.than === 'nhen' && /^magnet_[ns]$/.test(l) ? l + '("up")' : l + '()'; }).join('  ')));
   }
 
   /** Code mẫu của xe đang chọn: dòng gọi lệnh cỗ máy không có thì tô đỏ. */

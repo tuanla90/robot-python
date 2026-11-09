@@ -28,15 +28,15 @@
 
   ManHoc.them([
     man(1, { ten: 'Thùng giữ cửa',
-      deBai: 'Có xe hay thùng đè lên nút M thì cửa C mở ra. Ở đây xe không đứng lại trên nút mà cửa vẫn phải mở. Đọc code và nhìn sân, đoán rồi bấm Chạy.',
+      deBai: 'Ô vuông đen là nút, ô có hai cánh vàng là cửa. Có xe hay thùng đè lên nút thì cửa mở ra. Ở đây xe không đứng lại trên nút mà cửa vẫn phải mở. Đọc code và nhìn sân, đoán rồi bấm Chạy.',
       san: ['#####', '##F##', '##C##', '#Mo##', '##.##'],
       batDau: { x: 2, y: 4, huong: 0 },
-      duDoan: { hoi: 'Lúc xe đi qua cửa C, cái gì đang đè lên nút M?', luaChon: ['Xe', 'Thùng', 'Không có gì'], dung: 1, xacMinh: { vat: [{ x: 1, y: 3 }] } },
+      duDoan: { hoi: 'Lúc xe đi qua cửa, cái gì đang đè lên nút?', luaChon: ['Xe', 'Thùng', 'Không có gì'], dung: 1, xacMinh: { vat: [{ x: 1, y: 3 }] } },
       sao: { o: 7, nhip: 11 },
       loiGiai: { chinh: ['pick()', 'forward()', 'turn_left()', 'drop()', 'turn_right()', 'forward()', 'forward()'] } }),
 
     man(2, { ten: 'Nút bên phải', dangBai: 'sap-xep',
-      deBai: 'Đủ lệnh nhưng sai thứ tự. Giữ một dòng rồi kéo sang chỗ đúng: nhặt thùng, đặt lên nút M, rồi đi qua cửa.',
+      deBai: 'Đủ lệnh nhưng sai thứ tự. Giữ một dòng rồi kéo sang chỗ đúng: nhặt thùng, đặt lên nút, rồi đi qua cửa.',
       san: ['#####', '##F##', '##C##', '##oM#', '##.##'],
       batDau: { x: 2, y: 4, huong: 0 },
       maMau: { chinh: ['turn_right()', 'pick()', 'forward()', 'turn_left()', 'drop()', 'forward()', 'forward()'] },
@@ -45,27 +45,27 @@
       loiGiai: { chinh: ['pick()', 'forward()', 'turn_right()', 'drop()', 'turn_left()', 'forward()', 'forward()'] } }),
 
     man(3, { ten: 'Đặt nhầm phía',
-      deBai: 'Code này sai đúng 1 chỗ: xe không đặt được thùng lên nút M. Bấm Chạy xem lỗi, rồi sửa dòng sai.',
+      deBai: 'Code này sai đúng 1 chỗ: xe không đặt được thùng lên nút. Bấm Chạy xem lỗi, rồi sửa dòng sai.',
       san: ['#####', '##F##', '##.##', '##C##', '#Mo##', '##.##'],
       batDau: { x: 2, y: 5, huong: 0 },
       maMau: { chinh: ['pick()', 'forward()', 'turn_right()', 'drop()', 'turn_right()', 'forward()', 'forward()', 'forward()'] },
-      goiY: ['Nhìn sân: nút M nằm bên nào của xe lúc xe đứng ở ô thùng?'],
+      goiY: ['Nhìn sân: nút nằm bên nào của xe lúc xe đứng ở ô thùng?'],
       sao: { o: 8, nhip: 12 },
       loiGiai: { chinh: ['pick()', 'forward()', 'turn_left()', 'drop()', 'turn_right()', 'forward()', 'forward()', 'forward()'] } }),
 
     man(4, { ten: 'Một nút, hai cửa',
-      deBai: 'Màn trống, em tự viết: tới cờ. Nút M mở cửa C nhưng lại đóng cửa c đang mở sẵn.',
+      deBai: 'Màn trống, em tự viết: tới cờ. Nút này mở cửa đang đóng ở phía trên, nhưng lại đóng cửa đang mở ở phía dưới.',
       san: ['####', '#F##', '#C##', '#.M#', '#c##', '#o##', '#.##'],
       batDau: { x: 1, y: 6, huong: 0 },
-      goiY: ['Đè nút thì c đóng, nên phải đi qua c TRƯỚC khi đè nút.', 'Mang thùng qua c rồi đặt lên M, cửa C mới mở.'],
+      goiY: ['Đè nút thì cửa dưới đóng lại, nên phải đi qua cửa dưới TRƯỚC khi đè nút.', 'Mang thùng qua cửa dưới rồi đặt lên nút, cửa trên mới mở.'],
       sao: { o: 9, nhip: 13 },
       loiGiai: { chinh: ['pick()', 'forward()', 'forward()', 'forward()', 'turn_right()', 'drop()', 'turn_left()', 'forward()', 'forward()'] } }),
 
     man(5, { ten: 'Mở cửa hay đi vòng',
-      deBai: 'Tới cờ bằng đường vòng quanh kho, hoặc mở cửa C đi thẳng qua giữa. Một sao cho bài gọn, một sao cho bài nhanh, có thể lấy bằng hai bài khác nhau.',
+      deBai: 'Tới cờ bằng đường vòng quanh kho, hoặc mở cửa đi thẳng qua giữa. Một sao cho bài gọn, một sao cho bài nhanh, có thể lấy bằng hai bài khác nhau.',
       san: ['.......', '.#####.', '.#####.', '.M####.', '.o..C.F', '.######', '.######', '.######'],
       batDau: { x: 0, y: 7, huong: 0 },
-      goiY: ['Đường vòng chỉ cần dò tới tường rồi rẽ, viết gọn nhưng đi xa.', 'Qua cửa thì gần hơn, nhưng phải đặt thùng lên nút M trước.'],
+      goiY: ['Đường vòng chỉ cần dò tới tường rồi rẽ, viết gọn nhưng đi xa.', 'Qua cửa thì gần hơn, nhưng phải đặt thùng lên nút trước.'],
       sao: { o: 8, nhip: 19 },
       doiCho: true,
       loiGiai: { chinh: DO.concat(['turn_right()'], DO, ['turn_right()'], DO) },
@@ -102,7 +102,7 @@
       }] }),
 
     man(8, { ten: 'TRÙM: Kho hàng xuất xưởng',
-      deBai: 'Màn trùm của mùa. Hai sân khác nhau: dò tới thùng, đặt lên nút M để mở cửa, đi hết hành lang, rẽ về phía còn trống rồi dò tới cờ. Chương trình chính chỉ có 10 ô.',
+      deBai: 'Màn trùm của mùa. Hai sân khác nhau: dò tới thùng, đặt lên nút để mở cửa, đi hết hành lang, rẽ về phía còn trống rồi dò tới cờ. Chương trình chính chỉ có 10 ô.',
       san: [
         ['######', '##..F#', '##C###', '#Mo###', '##.###', '##.###', '##.###'],
         ['######', 'F..###', '##.###', '##.###', '##C###', '#Mo###', '##.###']

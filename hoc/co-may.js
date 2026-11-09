@@ -75,13 +75,13 @@
   var PART = {
     than: {
       'hai-banh': { ten: 'Xe', loai: 'banh', lenh: DI_XE, moTa: 'Tiến 1 nhịp, quay 2 nhịp. Đứng giữ được nút.', ket: 'Hố và thùng chặn đường.' },
-      nhen: { ten: 'Nhện', loai: 'nhen', lenh: DI_BAY, moTa: 'Đi 4 hướng, 2 nhịp một ô. Trèo qua thùng, giữ được nút.', ket: 'Hố chặn đường.' },
+      nhen: { ten: 'Nhện', loai: 'nhen', lenh: DI_BAY, moTa: 'Đi 4 hướng, 2 nhịp một ô, giữ được nút.', ket: 'Hố chặn đường.' },
       xuong: { ten: 'Xuồng', loai: 'xuong', lenh: DI_XE, moTa: 'Chạy trên mặt nước, tiến 1 nhịp, quay 2 nhịp.', ket: 'Không lên được bờ.' },
       drone: { ten: 'Drone', loai: 'drone', lenh: DI_BAY, co: { luoiBay: true }, moTa: 'Bay 4 hướng, 1 nhịp một ô, qua hố, nước và thùng.', ket: 'Tường và cửa chặn, không giữ được nút.' }
     },
     tay: {
-      kep: { ten: 'Tay kẹp', lenh: ['pick', 'drop'], moTa: 'Nhặt và đặt thùng.' },
-      'nam-cham': { ten: 'Nam châm', lenh: ['magnet_n', 'magnet_s', 'magnet_off'], moTa: 'Hút thùng sắt, không hút được gỗ.' },
+      kep: { ten: 'Tay kẹp', lenh: ['pick', 'drop'], moTa: 'Nhặt và đặt thùng.', moTaNhen: 'Nhặt và đặt thùng dưới chân.' },
+      'nam-cham': { ten: 'Nam châm', lenh: ['magnet_n', 'magnet_s', 'magnet_off'], moTa: 'Hút thùng sắt, không hút được gỗ.', moTaNhen: 'Hút thùng sắt theo hướng em chọn, không hút được gỗ. Thùng chắn đường.' },
       'day-keo': { ten: 'Lưới', lenh: ['cast_net', 'drop_net'], moTa: 'Bắt vật cách đúng 2 ô.' },
       hoi: { ten: 'Vòi phun', lenh: ['spray', 'seed'], moTa: 'Phun nước và gieo hạt.' }
     },
@@ -100,7 +100,7 @@
     drone: { tay: ['day-keo', 'hoi'], cam: ['camera', 'hong-ngoai'] }
   };
   /** Mã của 4 máy nhà: bảng chọn xe của cột 3. */
-  var MAY_NHA = { XE: 'hai-banh|kep|khoang-cach', NHEN: 'nhen|nam-cham|tu', XUONG: 'xuong|day-keo|camera', DRONE: 'drone|day-keo|camera' };
+  var MAY_NHA = { XE: 'hai-banh|kep|khoang-cach', NHEN: 'nhen|kep|khoang-cach', XUONG: 'xuong|day-keo|camera', DRONE: 'drone|day-keo|camera' };
   /** Tách mã thành { than, tay, cam } (mã 4 máy nhà hay mã ghép); không đúng bảng ghép thì null. */
   function tachMa(ma) {
     var p = String(MAY_NHA[ma] || ma).split('|');
@@ -115,7 +115,8 @@
     if (DS[ma]) return { ten: DS[ma].ten, moTa: DS[ma].gioi, ket: DS[ma].ket, lenh: DS[ma].hamGoc };
     var c = tachMa(ma); if (!c) return null;
     var th = PART.than[c.than], ty = PART.tay[c.tay], ca = PART.cam[c.cam];
-    return { ten: th.ten, than: c.than, tay: c.tay, cam: c.cam, moTa: th.moTa, ket: th.ket, lenh: th.lenh.concat(ty.lenh, ca.lenh, ['wait']), moTaTay: ty.moTa, moTaCam: ca.moTa, tenTay: ty.ten, tenCam: ca.ten };
+    var tayNhen = c.than === 'nhen' && ty.moTaNhen;
+    return { ten: th.ten, than: c.than, tay: c.tay, cam: c.cam, moTa: c.than === 'nhen' && c.tay === 'kep' ? th.moTa + ' Trèo qua thùng.' : th.moTa, ket: th.ket, lenh: th.lenh.concat(ty.lenh, ca.lenh, ['wait']), moTaTay: tayNhen || ty.moTa, moTaCam: ca.moTa, tenTay: ty.ten, tenCam: ca.ten };
   }
   /** Bảng chọn của một màn lắp part: mọi mã ghép hợp lệ từ các khe { than, tay, cam }. */
   function menuLap(khe) {

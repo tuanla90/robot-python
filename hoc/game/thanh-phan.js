@@ -1033,6 +1033,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function kieuBienCua(ten) { return (tuyChon.kieuBien && tuyChon.kieuBien(ten)) || 'so'; }   // 'so' | 'don' (một chữ) | 'ghep' (chuỗi chữ) của một đối số của hàm đang sửa
     /** Kiểu ô của đối số k trong dòng đã tách d: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi ghép) | 'bien' (ô biến của if) | 'dl' (chữ so sánh của if). */
     function kieuArg(d, k) {
+      if (d && (d.ten === 'magnet_n' || d.ten === 'magnet_s')) return 'hnc';   // magnet_n("up") của nhện: bảng chọn bốn hướng
       if (d && d.loai === 'td') return 'td';
       if (d && d.loai === 'bt') return 'bt';
       if (d && d.cau) {                                                    // dòng danh sách: tên danh sách · phần tử · đối số của lời gọi hàm
@@ -1230,7 +1231,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }
-      if (kd === 'huong' || kd === 'luoi') { chonChuoi({ neo: so, kieu: kd, gia: String(d.ds[kk] || '').replace(/"/g, ''), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
+      if (kd === 'huong' || kd === 'luoi' || kd === 'hnc') { chonChuoi({ neo: so, kieu: kd, gia: String(d.ds[kk] || '').replace(/"/g, ''), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mau') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('mau', i).concat(CHE_BT ? BT.nguon.filter(function (x) { return /^color\(/.test(x); }) : []), khongNone: true, khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mauls') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('bien', i), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
@@ -2040,6 +2041,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   var CHU_TOI_DA = 16;       // chuỗi ghép dài tối đa
   var CHU_HUONG = ['U', 'D', 'L', 'R'];
+  var HUONG_NC = ['up', 'down', 'left', 'right'];                   // hướng nam châm của nhện: magnet_n("up"), theo bản đồ
   var HUONG_LUOI = ['front', 'left', 'right', 'back'];             // hướng tung lưới của cast_net(d), theo mũi xuồng
   var LUC_BAN = ['low', 'high'];                                   // lực bắn của súng hơi ở màn Lực bắn: spray("low") / spray("high")
   /**
@@ -2072,8 +2074,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       el.appendChild(hang0);
     }
     if (o.kieu !== 'bien') {
-      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' || o.kieu === 'huong' || o.kieu === 'luoi' ? ' cc-luc' : ''));
-      (o.kieu === 'huong' ? huongCam() : o.kieu === 'luoi' ? HUONG_LUOI : o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {      // 'huong': hướng camera bốn hướng (mùa 4)           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
+      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' || o.kieu === 'huong' || o.kieu === 'luoi' || o.kieu === 'hnc' ? ' cc-luc' : ''));
+      (o.kieu === 'huong' ? huongCam() : o.kieu === 'luoi' ? HUONG_LUOI : o.kieu === 'hnc' ? HUONG_NC : o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {      // 'huong': hướng camera bốn hướng (mùa 4)           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
         var b = h('button', 'bt g-pu cs' + (o.kieu !== 'ghep' && c === o.gia ? ' on' : ''), c); b.setAttribute('data-chu', c);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
@@ -2312,7 +2314,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   /** Hàm của em dùng được với robot của màn: hàm gọi (trực tiếp hay qua hàm khác của em) một lệnh gốc mà màn không có trong `hamGoc` thì ẩn khỏi kho
    *  (vd. nhện bỏ hàm dùng lệnh bánh; xích / omni bỏ go(d); xe không tay bỏ pick()). Màn không khai hamGoc: giữ nguyên. */
-  var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'pick', 'drop', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'seed', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'land', 'take_off', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look', 'distance', 'warm'];
+  var LENH_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'left_move', 'right_move', 'left_back', 'right_back', 'wait', 'pick', 'drop', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'seed', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'land', 'take_off', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look', 'distance', 'warm'];
   /** Lệnh gốc mà THÂN HÀM CỦA EM được gọi ở màn này: các lệnh trên khay (hamGoc) cộng PHẦN CỨNG robot (SanHoc.phanCungCua(man) của lõi: man.phanCung nếu màn khai — màn hỏng —,
    *  không thì trọn bộ lệnh loại robot, vd. xe bánh luôn có bánh lùi dù khay chưa cho dùng). Lõi cũ chưa có SanHoc.phanCungCua thì dùng man.phanCung nếu có, không thì chỉ hamGoc như trước. */
   function lenhDuocGoi(man) {
@@ -2338,6 +2340,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     } catch (e) { /* lõi cũ: rơi xuống cách cũ */ }
     return lenhDuocGoi(man);
   }
+  /** Tên này có phải lệnh của phần cứng robot không (print, range... của nhân chạy code thì không). */
+  function laLenhRobot(ten) {
+    if (LENH_GOC.indexOf(ten) >= 0) return true;
+    var kho = (window.KhoHam && KhoHam.HAM_GOC_MAC_DINH) || [];
+    return kho.indexOf(ten) >= 0 && ['print', 'range', 'len', 'str', 'int'].indexOf(ten) < 0;
+  }
   function locHamTheoRobot(man, ds) {
     if (!ds || !man || !man.hamGoc || !man.hamGoc.length) return ds;
     var co = lenhCuaLoaiRobot(man), bat = {};
@@ -2347,7 +2355,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return (f.than || []).some(function (dong) {
         var re = /([A-Za-z_]\w*)\(/g, m, s = boChuThich(dong);
         while ((m = re.exec(s))) {
-          if (LENH_GOC.indexOf(m[1]) >= 0 && !co[m[1]]) return true;
+          if (laLenhRobot(m[1]) && !co[m[1]]) return true;
           var g = theoTen[m[1]];
           if (g && !da[m[1]]) { da[m[1]] = true; if (dungLenhThieu(g, da)) return true; }
         }
@@ -2750,11 +2758,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (loai === 'goc' && ten === 'ink') goi = 'ink("red")';                   // ink(c): thẻ chèn sẵn màu đỏ, chạm màu để chọn màu khác
       if (loai === 'goc' && ten === 'note') goi = 'note(1)';                     // note(n) (mùa 8): chèn sẵn nốt 1, chạm số để chọn nốt 1–8; beat() gõ một tiếng trống, không đối số
       if (loai === 'goc' && ten === NOTE_NGAN) goi = 'note(1, 2)';               // gói Ngân dài: note(n, k) ngân nốt n trong k nhịp
+      var ncHuong = loai === 'goc' && (ten === 'magnet_n' || ten === 'magnet_s') && lastSpec && lastSpec.loai === 'nhen';
+      if (ncHuong) goi = ten + '("up")';                                          // nhện không có mũi: bật nam châm phải chọn hướng, chạm "up" để đổi
       if (loai === 'goc' && GOC_DOI_SO_BT[ten]) goi = ten + '(' + GOC_DOI_SO_BT[ten] + ')';      // mùa 4–7: rail(1), cast_net("left"), set_length(1): chạm đối số để đổi
       var hien = '(' + (hamTS || []).join(', ') + ')';
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', loai); d.setAttribute('data-goi', goi);
       var sp = h('span', 'tx');
-      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : ten === 'seed' ? 'seed(c)' : ten === 'note' ? 'note(n)' : ten === NOTE_NGAN ? 'note(n, k)' : goi !== ten + '()' && GOC_DOI_SO_BT[ten] ? goi : ten;
+      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : ten === 'seed' ? 'seed(c)' : ten === 'note' ? 'note(n)' : ten === NOTE_NGAN ? 'note(n, k)' : ncHuong || (goi !== ten + '()' && GOC_DOI_SO_BT[ten]) ? goi : ten;
       else { sp.appendChild(document.createTextNode(ten)); sp.appendChild(h('span', 'pn' + (hamTS && hamTS.length ? ' co' : ''), hien)); }
       d.appendChild(sp);
       if (loai !== 'goc') {

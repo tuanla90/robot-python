@@ -1,7 +1,7 @@
 /* ============================================================================
    man-m5-lap-part.js — diem10code-python: MÙA 5 Đồng đội, CỘT 4 "Lắp part": em lắp thân, tay, cảm biến cho từng xe rồi mới viết code.
    Mã cỗ máy là "thân|tay|cảm biến" (co-may.js), chỉ các cặp part đã gặp trong 4 mùa, mỗi xe một cảm biến. m.chonDoi.khe nói màn này có những part nào, giao diện hiện từng khe thay vì thẻ xe.
-   Tay kẹp nhặt được cả gỗ lẫn sắt nhưng tốn nhịp, nam châm chỉ hút sắt nhưng nhanh; xe nhanh nhưng phải quay, nhện chậm mà ít dòng; lắp giống nhau mới dùng chung được hàm.
+   Tay kẹp nhặt được cả gỗ lẫn sắt, đứng lên thùng được nhưng tốn nhịp; nam châm chỉ hút sắt, thùng chắn đường nhưng hút từ xa nên nhanh; xe nhanh nhưng phải quay, nhện chậm mà ít dòng; lắp giống nhau mới dùng chung được hàm.
    8 hàng theo khuôn mới ManHoc.khuonMoi (hoc/KE-HOACH-4-MUA-COT-LOI.md).
    ========================================================================== */
 (function () {
@@ -40,7 +40,7 @@
     m.khung = Object.assign({ chinh: 10, moiHam: 10 }, m.khung);
     m.cauTruc = ['for', 'if', 'while'];
     m.moXuong = true;
-    m.phienBanNoiDung = 1;
+    m.phienBanNoiDung = 2;
     ManHoc.khuonMoi(so, m);
     m.camHamCuaEm = m.moXuong === false;
     return ManHoc.chuanHoa(m);
@@ -52,36 +52,36 @@
   var DOC_CODE = ['..o.D##', '#######', '..o...D'];
   var HAI_LAN = ['.o...D', '######', '.o...D'];
   var GAP = ['###D#D###', '###.#.###', '###.#.###', '....#....', '.#######.', 'o#######o', '.#######.'];
-  var BON = ['.oD...oD...', '...oD...oD.'];
+  var BON = ['.oD...oD...', '..oD...oD..'];
   var MOT_HAI = ['.o.o.....', '.........', '.D.D.....'];
   var TRUM = [
-    ['....o..o.D.', '###########', '.......o...', '......D....'],
-    ['.o...o.D...', '###########', '....o......', '...D.......']
+    ['....o..o.D.', '...........', '###########', '.......o...', '......D....'],
+    ['.o...o.D...', '...........', '###########', '....o......', '...D.......']
   ];
 
   ManHoc.them([
     man(1, { ten: 'Cùng thân, khác tay',
-      deBai: 'Hai nhện lắp hai tay khác nhau. Tay kẹp phải đứng lên thùng rồi mới nhặt, mất 2 nhịp, nhặt được cả gỗ lẫn sắt. Nam châm bật trước, đi qua thùng sắt là hút, mỗi lệnh chỉ mất 1 nhịp. Đọc code, đoán rồi bấm Chạy.',
+      deBai: 'Hai nhện lắp hai tay khác nhau. Tay kẹp phải đứng lên thùng rồi mới nhặt, mất 2 nhịp, nhặt được cả gỗ lẫn sắt. Nam châm bật về phía thùng sắt là hút từ xa, mỗi lệnh chỉ mất 1 nhịp. Đọc code, đoán rồi bấm Chạy.',
       san: HAI_THUNG,
       vatChat: ['...', '...', '.s.'],
       mucTieu: 'dua-vat',
       doi: [XE_CO(KEP, { batDau: { x: 0, y: 0, huong: 1 } }), XE_CO(HUT, { batDau: { x: 0, y: 2, huong: 1 } })],
-      duDoan: { hoi: 'Nhện nào đưa thùng tới đích trước?', luaChon: ['R1 lắp tay kẹp', 'R2 lắp nam châm', 'Cùng lúc'], dung: 1, xacMinh: { nhipXe: [6, 5] } },
-      sao: { o: 8, nhip: 8 },
-      loiGiai: { doi: [{ chinh: ['go_right()', 'pick()', 'go_right()', 'drop()'] }, { chinh: ['magnet_n()', 'go_right()', 'go_right()', 'magnet_off()'] }] } }),
+      duDoan: { hoi: 'Nhện nào đưa thùng tới đích trước?', luaChon: ['R1 lắp tay kẹp', 'R2 lắp nam châm', 'Cùng lúc'], dung: 1, xacMinh: { nhipXe: [6, 3] } },
+      sao: { o: 7, nhip: 8 },
+      loiGiai: { doi: [{ chinh: ['go_right()', 'pick()', 'go_right()', 'drop()'] }, { chinh: ['magnet_n("right")', 'go_right()', 'magnet_off()'] }] } }),
 
     man(2, { ten: 'Đọc code, lắp part',
-      deBai: 'Code đã có sẵn, part thì chưa. Đọc từng dòng để biết mỗi xe cần gì: lệnh go_ cần thân nhện, pick() cần tay kẹp, magnet_n() cần nam châm, front_clear() cần cảm biến khoảng cách, front_metal() cần cảm biến từ. Lắp đúng, rồi điền dòng còn thiếu của R1.',
+      deBai: 'Code đã có sẵn, part thì chưa. Đọc từng dòng để biết mỗi xe cần gì: lệnh go_ cần thân nhện, pick() cần tay kẹp, magnet_n("right") cần nam châm, front_clear() cần cảm biến khoảng cách, front_metal() cần cảm biến từ. Lắp đúng, rồi điền dòng còn thiếu của R1.',
       san: DOC_CODE,
       vatChat: ['.......', '.......', '..s....'],
       mucTieu: 'dua-vat',
       doi: [{ batDau: { x: 0, y: 0, huong: 1 } }, { batDau: { x: 0, y: 2, huong: 1 } }],
       chonDoi: LAP(HAI, [CACH([KEP, DO_TU],
         ['go_right()', 'go_right()', 'pick()', 'while front_clear():', '    go_right()', 'drop()'],
-        ['if front_metal():', '    magnet_n()'].concat(DI('right', 6), ['magnet_off()']))]),
-      maMau: { doi: [{ chinh: ['go_right()', 'go_right()', '', 'while front_clear():', '    go_right()', 'drop()'] }, { chinh: ['if front_metal():', '    magnet_n()'].concat(DI('right', 6), ['magnet_off()']) }] },
+        ['if front_metal():', '    magnet_n("right")'].concat(DI('right', 5), ['magnet_off()']))]),
+      maMau: { doi: [{ chinh: ['go_right()', 'go_right()', '', 'while front_clear():', '    go_right()', 'drop()'] }, { chinh: ['if front_metal():', '    magnet_n("right")'].concat(DI('right', 5), ['magnet_off()']) }] },
       goiY: ['Khay lệnh chỉ hiện lệnh của part đang lắp. Thiếu lệnh nào thì bấm Lắp lại ở thanh trên, code vẫn được giữ.', 'R1 đã có drop() ở cuối, nên phải có lệnh nhặt tương ứng.'],
-      sao: { o: 11, nhip: 14 } }),
+      sao: { o: 11, nhip: 12 } }),
 
     man(3, { ten: 'Đổi tay, sót lệnh',
       deBai: 'R1 vừa tháo nam châm để lắp tay kẹp vì thùng của R1 là thùng gỗ. Nhưng code còn sót một lệnh của nam châm. Giữ nguyên part, sửa đúng một dòng.',
@@ -89,10 +89,10 @@
       vatChat: ['...', '...', '.s.'],
       mucTieu: 'dua-vat',
       doi: [{ batDau: { x: 0, y: 0, huong: 1 } }, { batDau: { x: 0, y: 2, huong: 1 } }],
-      chonDoi: LAP(TAY, [CACH([KEP, HUT], ['go_right()', 'pick()', 'go_right()', 'drop()'], ['magnet_n()', 'go_right()', 'go_right()', 'magnet_off()'])], [KEP, HUT]),
-      maMau: { doi: [{ chinh: ['go_right()', 'pick()', 'go_right()', 'magnet_off()'] }, { chinh: ['magnet_n()', 'go_right()', 'go_right()', 'magnet_off()'] }] },
+      chonDoi: LAP(TAY, [CACH([KEP, HUT], ['go_right()', 'pick()', 'go_right()', 'drop()'], ['magnet_n("right")', 'go_right()', 'magnet_off()'])], [KEP, HUT]),
+      maMau: { doi: [{ chinh: ['go_right()', 'pick()', 'go_right()', 'magnet_off()'] }, { chinh: ['magnet_n("right")', 'go_right()', 'magnet_off()'] }] },
       goiY: ['Dòng tô đỏ là lệnh mà part đang lắp không có. Tay kẹp đặt thùng xuống bằng lệnh nào?'],
-      sao: { o: 8, nhip: 8 } }),
+      sao: { o: 7, nhip: 8 } }),
 
     man(4, { ten: 'Thùng nào tay nấy',
       deBai: 'Trên là thùng gỗ, dưới là thùng sắt, cùng một quãng đường. Lắp tay cho từng nhện rồi viết code. Tay kẹp nào cũng làm được hết, nhưng lắp đúng thì mới đủ ba sao.',
@@ -100,8 +100,8 @@
       vatChat: ['......', '......', '.s....'],
       mucTieu: 'dua-vat',
       doi: [{ batDau: { x: 0, y: 0, huong: 1 } }, { batDau: { x: 0, y: 2, huong: 1 } }],
-      chonDoi: LAP(TAY, [CACH([KEP, HUT], ['go_right()', 'pick()'].concat(DI('right', 4), ['drop()']), ['magnet_n()'].concat(DI('right', 5), ['magnet_off()']))]),
-      goiY: ['Nam châm không hút được gỗ.', 'Thùng sắt dùng nam châm: bật trước rồi đi một mạch, ít dòng hơn và nhanh hơn tay kẹp.'],
+      chonDoi: LAP(TAY, [CACH([KEP, HUT], ['go_right()', 'pick()'].concat(DI('right', 4), ['drop()']), ['magnet_n("right")'].concat(DI('right', 4), ['magnet_off()']))]),
+      goiY: ['Nam châm không hút được gỗ.', 'Thùng sắt dùng nam châm: bật về phía thùng rồi đi một mạch, ít dòng hơn và nhanh hơn tay kẹp.'],
       sao: { o: 9, nhip: 14 } }),
 
     man(5, { ten: 'Bánh hay chân',
@@ -122,15 +122,15 @@
       doiCho: true }),
 
     man(6, { ten: 'Lắp giống nhau, dùng chung hàm',
-      deBai: 'Bốn thùng sắt. Hai xe lắp giống nhau thì một hàm chạy được trên cả hai. Lắp part, tự viết một hàm mang một thùng qua 2 ô, rồi cho cả hai xe gọi. Mỗi xe chỉ có 3 ô chương trình chính.',
+      deBai: 'Bốn thùng sắt. Hai xe lắp giống nhau thì một hàm chạy được trên cả hai. Lắp part, tự viết một hàm hút thùng bên phải rồi đưa vào ô đích ngay sau nó, rồi cho cả hai xe gọi. Mỗi xe chỉ có 3 ô chương trình chính.',
       san: BON,
-      vatChat: ['.s....s....', '...s....s..'],
+      vatChat: ['.s....s....', '..s....s...'],
       mucTieu: 'dua-vat',
       doi: [{ batDau: { x: 0, y: 0, huong: 1 } }, { batDau: { x: 5, y: 0, huong: 1 } }],
-      chonDoi: LAP(TAY, [CACH([HUT, HUT], ['mang()', 'go_down()', 'mang()'], ['mang()', 'go_down()', 'mang()'], [H('mang', ['magnet_n()', 'go_right()', 'go_right()', 'magnet_off()'])])]),
+      chonDoi: LAP(TAY, [CACH([HUT, HUT], ['mang()', 'go_down()', 'mang()'], ['mang()', 'go_down()', 'mang()'], [H('mang', ['magnet_n("right")', 'go_right()', 'magnet_off()'])])]),
       khung: { chinh: 3 },
-      goiY: ['Hàm gồm bốn dòng: bật nam châm, đi hai ô, tắt nam châm.', 'Mỗi xe: gọi hàm, xuống một ô, gọi hàm.'],
-      sao: { o: 10, nhip: 14 } }),
+      goiY: ['Hàm gồm ba dòng: bật nam châm sang phải, đi một ô, tắt nam châm.', 'Mỗi xe: gọi hàm, xuống một ô, gọi hàm.'],
+      sao: { o: 9, nhip: 10 } }),
 
     man(7, { ten: 'Một tay làm hết',
       deBai: 'Một thùng gỗ, một thùng sắt. Tay kẹp nhặt được cả hai, nên R1 có thể làm hết: viết gọn nhưng lâu. Hai xe cùng làm thì nhanh nhưng viết nhiều. Một sao cho bài gọn, một sao cho bài nhanh.',
@@ -140,21 +140,21 @@
       doi: [{ batDau: { x: 0, y: 0, huong: 1 } }, { batDau: { x: 8, y: 0, huong: 3 } }],
       chonDoi: LAP(TAY, [
         CACH([KEP, KEP], FOR(2, ['go_right()', 'pick()', 'go_down()', 'go_down()', 'drop()', 'go_up()', 'go_up()', 'go_right()']), []),
-        CACH([KEP, HUT], ['go_right()', 'pick()', 'go_down()', 'go_down()', 'drop()'], ['magnet_n()'].concat(DI('left', 5), ['go_down()', 'go_down()', 'magnet_off()']))
+        CACH([KEP, HUT], ['go_right()', 'pick()', 'go_down()', 'go_down()', 'drop()'], ['magnet_n("left")'].concat(DI('left', 4), ['go_down()', 'go_down()', 'magnet_off()']))
       ]),
-      goiY: ['R1 làm hết: hai thùng cách nhau 2 ô, lặp lại đúng một thao tác.', 'Hai xe: R2 lắp nam châm, bật rồi đi một mạch sang thùng sắt.'],
-      sao: { o: 9, nhip: 16 },
+      goiY: ['R1 làm hết: hai thùng cách nhau 2 ô, lặp lại đúng một thao tác.', 'Hai xe: R2 lắp nam châm, bật sang trái rồi đi một mạch, gần tới thùng sắt là thùng tự bay về.'],
+      sao: { o: 9, nhip: 14 },
       doiCho: true }),
 
     man(8, { ten: 'Xưởng lắp ráp',
-      deBai: 'Hai sân, vật nằm khác chỗ nhau. Trên có thùng gỗ lẫn thùng sắt, phải tìm đúng thùng sắt rồi đưa tới ô đích cách nó 2 ô, thùng gỗ để yên. Dưới có một thùng sắt, dò tới sát thùng, nhặt rồi đặt xuống ô đích ngay bên phải. Tự lắp part, tự viết cả hai chương trình.',
+      deBai: 'Hai sân, vật nằm khác chỗ nhau. Trên có thùng gỗ lẫn thùng sắt xếp ở hàng phía trên làn đường của R1, đầu dò từ của R1 nhìn lên. Phải tìm đúng thùng sắt rồi đưa tới ô đích cách nó 2 ô, thùng gỗ để yên. Dưới có một thùng sắt, dò tới sát thùng, nhặt rồi đặt xuống ô đích ngay bên phải. Tự lắp part, tự viết cả hai chương trình.',
       san: TRUM,
-      vatChat: [['.......s...', '...........', '.......s...', '...........'], ['.....s.....', '...........', '....s......', '...........']],
+      vatChat: [['.......s...', '...........', '...........', '.......s...', '...........'], ['.....s.....', '...........', '...........', '....s......', '...........']],
       vatCan: 'tu',
       mucTieu: 'dua-vat',
-      doi: [{ batDau: [{ x: 0, y: 0, huong: 1 }, { x: 0, y: 0, huong: 1 }] }, { batDau: [{ x: 0, y: 2, huong: 1 }, { x: 0, y: 2, huong: 1 }] }],
+      doi: [{ batDau: [{ x: 0, y: 1, huong: 0 }, { x: 0, y: 1, huong: 0 }] }, { batDau: [{ x: 0, y: 3, huong: 1 }, { x: 0, y: 3, huong: 1 }] }],
       chonDoi: LAP(HAI, [CACH([DO_TU, XE],
-        ['while not front_metal():', '    go_right()', 'magnet_n()'].concat(DI('right', 4), ['magnet_off()']),
+        ['while not front_metal():', '    go_right()', 'magnet_n("up")'].concat(DI('right', 2), ['magnet_off()']),
         ['while front_clear():', '    forward()', 'pick()', 'turn_right()', 'drop()'])]),
       sao: { o: 11, nhip: 20 },
       huyHieu: { ma: 'm5-c4-lap-part', ten: 'Thợ lắp ráp' } })
