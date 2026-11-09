@@ -850,21 +850,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         HU().hoaDa(g, xv, yv, mv, lv ? (now - lv) / 380 : 1, sai ? (hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : BM.vecDo) : null, sai && hinh[yv][xv] ? MAU_VIEN[hinh[yv][xv]] : null);
       }
     },
-    /** NÔNG TRẠI: ô đất khô = nền đất nứt, chấm tròn đếm số lần còn phải tưới; luống đo (m) = đất nứt có cọc đo; ô phủ rơm = sọc vàng đè lên. */
+    /** NÔNG TRẠI: lớp phủ vector (ve-vector-nong-trai.js): ô đất khô = dat-kho; luống đo (m) có cọc đo; ô phủ rơm = rom đè lên; chấm đếm số lần còn phải tưới = cham-tuoi trên cùng. */
     veDatKho: function (g) {
-      var rom = this.cfg.datRom, x, y, k, n;
-      for (k in this.khoT) {
-        n = this.khoT[k]; if (!n) continue;
-        var a = k.split(','); x = +a[0] * T; y = +a[1] * T;
-        g.fillStyle = BM.sanNauSang; g.fillRect(x + 1, y + 1, T - 2, T - 2);
-        g.fillStyle = BM.sanNauV1;
-        g.fillRect(x + 3, y + 5, 4, 1); g.fillRect(x + 7, y + 6, 3, 1); g.fillRect(x + 4, y + 10, 5, 1);
-        if (n === 'm') { g.fillStyle = BM.sanCamToi; g.fillRect(x + T - 4, y + 2, 1, T - 5); g.fillRect(x + T - 7, y + 2, 3, 2); }
-        else { g.fillStyle = BM.sanCamToi; for (var i = 0; i < n; i++) g.fillRect(x + 3 + i * 3, y + 2, 2, 2); }
-      }
-      if (rom) for (y = 0; y < rom.length; y++) for (x = 0; x < rom[y].length; x++) if (rom[y][x] === 'x' && this.khoT[x + ',' + y] !== 0) {
-        g.fillStyle = BM.sanCam; for (n = 0; n < 4; n++) g.fillRect(x * T + 2, y * T + 2 + n * 3, T - 4, 1);
-      }
+      var rom = this.cfg.datRom, x, y, k, n, self = this;
+      function ve(ma, st, ox, oy) { g.drawImage(self.oV(ma, st, g), ox * T, oy * T, T, T); }
+      for (k in this.khoT) { n = this.khoT[k]; if (!n) continue; var a = k.split(','); ve('dat-kho', n === 'm' ? { do: 1 } : {}, +a[0], +a[1]); }
+      if (rom) for (y = 0; y < rom.length; y++) for (x = 0; x < rom[y].length; x++) if (rom[y][x] === 'x' && this.khoT[x + ',' + y] !== 0) ve('rom', {}, x, y);
+      for (k in this.khoT) { n = this.khoT[k]; if (!n || n === 'm') continue; var b = k.split(','); ve('cham-tuoi', { cham: n }, +b[0], +b[1]); }
     },
     /** Tô ô o màu mau (hoạt cảnh): ô lóe trắng rồi hiện màu. */
     toO: function (o, mau) { var k = o.x + ',' + o.y; this.daSon[k] = mau; this.sonLoe[k] = performance.now(); },

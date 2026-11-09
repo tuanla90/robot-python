@@ -156,6 +156,37 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veBongHoa(g, H, 50, 34, 17, BM[MAU_DAI[m]], BM[MAU_VIEN[m]], SO_CANH[m]);
   }});
 
+  // Luống đất khô (lớp phủ trên sàn, san-ve.js veDatKho): khối đất bo góc có gờ dưới, mặt đất sáng, vết nứt gãy khúc; s.do: luống đo, có cọc đo cắm bên phải
+  dk({ loai: 'o', ma: 'dat-kho', ten: 'Luống đất khô', cacTrangThai: [{}, { do: 1 }], ve: function (g, s, H) {
+    H.bo(g, 6, 6, 88, 88, 12);
+    g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, [[0, BM.vecDat], [0.7, BM.vecDatToi], [1, BM.vecGoToi]]);
+    g.fill(); H.vien(g, BM.vecGoToi, 3);
+    H.bo(g, 9, 8, 82, 75, 9);
+    g.fillStyle = H.gradDoc(g, 0, 8, 0, 83, [[0, BM.vecDatSang], [1, BM.vecDat]]);
+    g.fill(); H.vien(g, BM.vecDatToi, 1.8);
+    H.duong(g, 'M18 15 H42'); g.globalAlpha = 0.75; H.vien(g, BM.vecGoSang, 3.5); g.globalAlpha = 1;
+    H.duong(g, 'M16 45 L25 41 L31 47 L40 43 L47 47 M31 47 L29 55 L34 60 M18 71 L27 67 L34 72 L44 68 L55 73 M44 68 L47 61'); H.vien(g, BM.vecGoToi, 2.6);
+    if (s && s.do) {
+      H.elip(g, 73.5, 70, 8, 3.2); H.to(g, BM.vecDatToi);
+      H.bo(g, 70, 19, 7, 51, 3); H.to(g, BM.vecGoMat); H.vien(g, BM.vecVien, 2);
+      H.bo(g, 50, 19, 25, 15, 3.5); H.to(g, BM.vecGoSang); H.vien(g, BM.vecVien, 2);
+      H.duong(g, 'M56 24 V29 M62 24 V29 M68 24 V29'); H.vien(g, BM.vecVien, 1.8);
+    }
+  }});
+
+  // Rơm phủ (lớp phủ, vẽ sau đất): các cọng ngắn đan chéo, hở khe nên vẫn thấy ô bên dưới; màu theo kiện rơm bui-cay
+  var CONG_ROM = [[14, 24, 44, 17], [36, 15, 66, 22], [58, 26, 87, 18], [13, 37, 41, 44], [34, 46, 64, 36], [58, 38, 87, 46], [15, 62, 45, 54], [38, 55, 67, 63], [60, 64, 87, 56], [13, 75, 42, 83], [35, 85, 65, 76], [58, 77, 87, 85]];
+  dk({ loai: 'o', ma: 'rom', ten: 'Rơm phủ', cacTrangThai: [{}], ve: function (g, s, H) {
+    var d = CONG_ROM.map(function (c) { return 'M' + c[0] + ' ' + c[1] + ' L' + c[2] + ' ' + c[3]; }).join(' ');
+    H.duong(g, d); H.vien(g, BM.vecHoPhachDam, 7.6);
+    H.duong(g, d); H.vien(g, BM.vecNhuy, 4.4);
+  }});
+
+  // Chấm đếm số lần còn phải tưới (s.cham 1..3; lớp phủ, vẽ sau rơm để rơm không che)
+  dk({ loai: 'o', ma: 'cham-tuoi', ten: 'Chấm số lần tưới', cacTrangThai: [{ cham: 1 }, { cham: 2 }, { cham: 3 }], ve: function (g, s, H) {
+    for (var i = 0; i < ((s && s.cham) || 0); i++) { H.tron(g, 22 + i * 15, 22, 7); H.to(g, BM.vecGoSang); H.vien(g, BM.vecVien, 2.4); }
+  }});
+
   // Bao hạt giống (vật nhặt / phân loại ở mùa 4): bao vải bố màu kraft ấm áp, cổ bao xoè tự nhiên, giữa thân có huy hiệu tròn trắng in bông hoa
   dk({ loai: 'vat', ma: 'bao-hat', ten: 'Bao hạt giống',
     cacTrangThai: [{}].concat(MAU.map(function (m) { return { mau: m }; }), MAU.map(function (m) { return { mau: m, sat: true }; })),

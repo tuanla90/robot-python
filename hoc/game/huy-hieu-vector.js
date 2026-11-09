@@ -873,13 +873,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function cot(ma, f) { dk(ma, function (g, c, tt) { f(g, c, ROBOT_COT[ma], tt); }); }
   var GIU = { tuThe: 'tren', kep: 'dong', cam: true }, MO = { tuThe: 'tren', kep: 'mo' };
   function nenNuoc(c) { c.o('nuoc', {}, 50, 50, 80); }
-  /** Ô đất khô (datKho của mùa Nông trại, cùng màu với san-ve.js veDatKho): nền nâu, vết nứt, ba chấm số lần tưới. */
-  function datKho(g, cx, cy, n) {
-    var x = cx - n / 2, y = cy - n / 2, u = n / 16;
-    H.bo(g, x, y, n, n, u * 2); H.to(g, BM.sanNauSang); H.vien(g, BM.vecVien, 2);
-    H.duong(g, 'M' + (x + 3 * u) + ' ' + (y + 8 * u) + ' h' + (4 * u) + ' l' + (2 * u) + ' ' + (1.5 * u) + ' h' + (4 * u) + ' M' + (x + 4 * u) + ' ' + (y + 12 * u) + ' h' + (5 * u)); H.vien(g, BM.sanNauV1, 1.6, 'butt');
-    [3, 7, 11].forEach(function (d) { H.tron(g, x + (d + 1) * u, y + 4 * u, u); H.to(g, BM.sanCamToi); });
-  }
+  /** Ô đất khô (datKho của mùa Nông trại, cùng hình với san-ve.js veDatKho): luống đất, ba chấm số lần tưới. */
+  function datKho(c, cx, cy, n) { c.o('dat-kho', {}, cx, cy, n); c.o('cham-tuoi', { cham: 3 }, cx, cy, n); }
   cot('m1-c1-than', function (g, c, r) { c.robot(r, st(), 0, 50, 52, 70); });
   cot('m1-c2-tay', function (g, c, r) { robotCam(c, r, st(null, GIU), 0, 50, 60, 64); });
   cot('m1-c3-cam-bien', function (g, c, r) {
@@ -921,12 +916,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   cot('m4-c2-tay', function (g, c, r) { c.robot(r, st({ quat: true }, { dangBanTruoc: true }), 0, 50, 54, 62); });
   cot('m4-c3-cam-bien', function (g, c, r) {
     var cx = 36, cy = 50, canh = 56, o = V.diemCamBien(r, 'hong-ngoai', 0, canh)[0], oy = cy + (o.y - canh / 2), ox = cx + (o.x - canh / 2);
-    datKho(g, 72, oy, 24);
+    datKho(c, 72, oy, 24);
     c.tiaDo(ox + 2, 60, oy);
     c.robot(r, st({ quat: true }, null, { bat: true }), 0, cx, cy, canh);
   });
   cot('m4-c4-san', function (g, c, r) {
-    datKho(g, 38, 72, 24);
+    datKho(c, 38, 72, 24);
     c.o('luong-hoa', { mau: 'yellow' }, 66, 66, 24);
     c.robot(r, st({ quat: true }, { dangBanTruoc: true }, { bat: true }), 0, 40, 38, 52);
   });
