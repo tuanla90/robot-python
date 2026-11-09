@@ -165,6 +165,6 @@ Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
 
 ## Việc còn lại
 
-1. Mùa Tổ hợp (mùa 5): chưa thiết kế, làm sau khi xong 4 mùa cốt lõi.
+1. Mùa 5 Đồng đội: đã có đủ 4 cột, độ tự do tăng dần: Xe có sẵn (R2 khóa), Hai chương trình (viết cả hai xe), Chọn xe (`man.chonDoi.menu` gồm mã `XE`, `NHEN`, `XUONG`, `DRONE`), Lắp part (`man.chonDoi.khe`, mã `thân|tay|cảm biến`, chỉ các cặp đã gặp trong 4 mùa, xem `CoMay.GHEP`). Màn hình chọn ở `game/man-chon-doi.js`. Chưa dùng vòi phun và hồng ngoại ở cột 4; `return` vẫn để ngoài.
 2. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua forward/backward/turn_left/turn_right;
    chưa xem lại toàn bộ UI nhập lệnh — vẫn là việc treo từ đầu buổi.

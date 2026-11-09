@@ -1369,7 +1369,7 @@
       coRieng = null;                             // nhiều robot: cờ riêng của robot này (rc.co); null = cờ nào cũng được
       if (laDoi && rc.co !== undefined && rc.co !== null) {
         if (!Array.isArray(rc.co) || !rc.co.length) throw new Error('co của robot phải là mảng ô cờ [{x,y}].');
-        rc.co.forEach(function (q) { if (oTai(san, q.x, q.y) !== 'F') throw new Error('Cờ riêng (' + q.x + ', ' + q.y + ') không phải ô cờ F.'); });
+        rc.co.forEach(function (q) { if (oTai(san, q.x, q.y) !== 'F' && oTai(san, q.x, q.y) !== 'Q') throw new Error('Cờ riêng (' + q.x + ', ' + q.y + ') không phải ô cờ F hay Q.'); });
         coRieng = rc.co;
       }
     }
@@ -1386,7 +1386,7 @@
         soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, lucBan: lucBan, laR1: laR1,
         coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung, coDap: coDap, dau: dau, coCam4: coCam4, cam4TaiCho: cam4TaiCho,
         coOmniCheo: coOmniCheo, coChinhLuc: coChinhLuc, coRadar: coRadar, coRadarNhanDang: coRadarNhanDang, vuaCheo: vuaCheo,
-        laXuong: laXuong, coNeo: coNeo, coPhao: coPhao, coSetLength: coSetLength, daiLuoi: daiLuoi, coDongChay: coDongChay, neo: neo, keo: keo, neoCho: neoCho, phaoCho: phaoCho,
+        laXuong: laXuong, coNeo: coNeo, coPhao: coPhao, luoiBay: luoiBay, coSetLength: coSetLength, daiLuoi: daiLuoi, coDongChay: coDongChay, neo: neo, keo: keo, neoCho: neoCho, phaoCho: phaoCho,
         laCau: laCau, coMoc: coMoc, coMoc2: coMoc2, coQuetMa: coQuetMa, coCan: coCan, coRay: coRay, nac: nac, tam: tam, treo: treo,
         coLoa: coLoa, loa: loa, loaCho: loaCho, loaNgan: loaNgan, laGai: laGai, coThuGai: coThuGai, gai: gai, gaiCho: gaiCho, coAmThanh: coAmThanh, coPhanAm: coPhanAm,
         lai9: lai9
@@ -1404,7 +1404,7 @@
       soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho; lucBan = o.lucBan; laR1 = o.laR1;
       coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung; coDap = o.coDap; dau = o.dau; coCam4 = o.coCam4; cam4TaiCho = o.cam4TaiCho;
       coOmniCheo = o.coOmniCheo; coChinhLuc = o.coChinhLuc; coRadar = o.coRadar; coRadarNhanDang = o.coRadarNhanDang; vuaCheo = o.vuaCheo;
-      laXuong = o.laXuong; coNeo = o.coNeo; coPhao = o.coPhao; coSetLength = o.coSetLength; daiLuoi = o.daiLuoi; coDongChay = o.coDongChay; neo = o.neo; keo = o.keo; neoCho = o.neoCho; phaoCho = o.phaoCho;
+      laXuong = o.laXuong; coNeo = o.coNeo; coPhao = o.coPhao; luoiBay = o.luoiBay; coSetLength = o.coSetLength; daiLuoi = o.daiLuoi; coDongChay = o.coDongChay; neo = o.neo; keo = o.keo; neoCho = o.neoCho; phaoCho = o.phaoCho;
       laCau = o.laCau; coMoc = o.coMoc; coMoc2 = o.coMoc2; coQuetMa = o.coQuetMa; coCan = o.coCan; coRay = o.coRay; nac = o.nac; tam = o.tam; treo = o.treo;
       coLoa = o.coLoa; loa = o.loa; loaCho = o.loaCho; loaNgan = o.loaNgan; laGai = o.laGai; coThuGai = o.coThuGai; gai = o.gai; gaiCho = o.gaiCho; coAmThanh = o.coAmThanh; coPhanAm = o.coPhanAm;
       lai9 = o.lai9;
@@ -4018,7 +4018,7 @@
           if (dq && !dq.da) { dq.da = true; sk.push({ ma: 'qua-diem', nhip: nhip, o: { x: dq.x, y: dq.y } }); }
         }
         if (laDoi && (mucTieu === 'toi-co' || (doiKhang && !laR1))) {       // nhiều robot: mỗi robot tới một cờ; tới rồi thì dừng chương trình, đứng yên (thắng: chayDoi). Đối kháng giao hàng: cờ F là đích của R2, R1 đi qua F không dừng
-          var tronCo = oTai(san, rb.x, rb.y) === 'F' && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }));
+          var tronCo = (oTai(san, rb.x, rb.y) === 'F' || oTai(san, rb.x, rb.y) === 'Q') && (!coRieng || coRieng.some(function (q) { return q.x === rb.x && q.y === rb.y; }));
           if (thangKhiXong && !doiKhang) { if (xeToiCo && !tronCo) rb.quaCo = true; xeToiCo = tronCo; }   // chạy xong mới chấm: xe đi tiếp, xét ô đang đứng; sự kiện toi-co ghi ở nhịp cuối (chayDoi)
           else if (!xeToiCo && tronCo) { xeToiCo = true; sk.push({ ma: 'toi-co' }); }
         }

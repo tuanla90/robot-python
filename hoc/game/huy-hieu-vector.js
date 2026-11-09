@@ -938,6 +938,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 67, 56, 42);
   });
 
+  dk('m5-c3-chon-xe', function (g, c) {
+    c.robot(ROBOT_COT['m4-c1-than'], st(), 0, 50, 42, 40);
+    c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 31, 66, 32);
+    c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 69, 66, 32);
+  });
+  dk('m5-c4-lap-part', function (g, c) {
+    c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 42, 54, 50);
+    H.duong(g, 'M72 40 L80 44.5 V53.5 L72 58 L64 53.5 V44.5 Z'); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.6);
+    H.duong(g, 'M72 45.5 A3.5 3.5 0 1 0 72 52.5 A3.5 3.5 0 1 0 72 45.5 Z'); H.to(g, BM.vecVien);
+  });
+
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
     ve: ve,

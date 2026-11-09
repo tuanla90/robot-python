@@ -122,7 +122,7 @@
       C.cachMau.forEach(function (cm, i) {
         if (!cm || !cm.loiGiai) return;
         var mm; try { mm = LapRap.apDungDoi(goc, cm); } catch (e) { return; }
-        ds.push({ ma: 'doi' + (i + 1), nhan: t('go.giaiLap', { n: i + 1 }), moTa: cm.chon.map(function (x) { return LapRap.coMay().DS[x].ten; }).join(' + ') + (cm.ghiChu ? '. ' + cm.ghiChu : ''), man: mm,
+        ds.push({ ma: 'doi' + (i + 1), nhan: t('go.giaiLap', { n: i + 1 }), moTa: cm.chon.map(function (x) { return LapRap.coMay().thongTin(x).ten; }).join(' + ') + (cm.ghiChu ? '. ' + cm.ghiChu : ''), man: mm,
           bai: chepBai(mm.loiGiai), moi: (cm.loiGiai.hamCuaEmMoi || []).map(chepHam), coMoi: true, chon: cm.chon.slice() });
       });
     } else if (L && Array.isArray(L.cachLap) && window.LapRap) {

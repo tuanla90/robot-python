@@ -1801,7 +1801,7 @@
             camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, xichDay: mi.xichDay, beSung: mi.beSung, mucBanDau: mi.mucBanDau,
             omniCheo: mi.omniCheo || (mi.robot && mi.robot.omniCheo), chinhLuc: mi.chinhLuc || (mi.robot && mi.robot.chinhLuc), nhanDang: mi.nhanDang || (mi.robot && mi.robot.nhanDang), tamNemMacDinh: mi.tamNemMacDinh,
             thuGai: mi.thuGai || (mi.robot && mi.robot.thuGai), phanAm: mi.phanAm || (mi.robot && mi.robot.phanAm),
-            co: SanHoc.coCuaSan(mi.co, si, nhieu),
+            co: SanHoc.coCuaSan(mi.co, si, nhieu), luoiBay: !!mi.luoiBay,
             daoChieu: mi.daoChieu, phanCung: SanHoc.phanCungCua(mi), nguonDong: nguonDongCua(gs[i])
           };
         })

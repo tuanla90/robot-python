@@ -319,7 +319,7 @@
   }
   /** Các khoá cấu hình cỗ máy trên một mục man.doi[i] (CoMay.dung đặt): bỏ đi trước khi gắn cỗ máy / cách lắp mới, để cờ của cỗ máy cũ không sót lại. */
   function khoaCoMay() {
-    var ks = ['loaiRobot', 'robot', 'hamGoc', 'pin'], DS = CM().DS;
+    var ks = ['loaiRobot', 'robot', 'hamGoc', 'pin', 'luoiBay'], DS = CM().DS;
     Object.keys(DS).forEach(function (m) { Object.keys(DS[m].co || {}).forEach(function (k) { if (ks.indexOf(k) < 0) ks.push(k); }); });
     return ks;
   }
@@ -379,8 +379,9 @@
     (Array.isArray(man && man.doi) ? man.doi : []).forEach(function (r, i) { if (!r.coDinh) kq.push(i); });
     return kq;
   }
+  function menuCua(C, i) { return (C.menuXe && C.menuXe[i]) || C.menu || []; }   // menuXe: bảng chọn riêng từng xe (xe đứng dưới nước chỉ nhận cỗ máy chạy được trên nước)
   function soChonCua(man) { var C = chonDoiCua(man); return C && typeof C.so === 'number' ? C.so : robotEm(man).length; }
-  function tenCoMay(ma) { var d = CM().DS[ma]; return d ? d.ten : String(ma); }
+  function tenCoMay(ma) { var d = CM().thongTin(ma); return d ? d.ten : String(ma); }
   /** Lựa chọn `chon` (mảng mã cỗ máy) có hợp lệ với màn không: { ok, lyDo, ma: 'khong-chon-doi' | 'thieu' | 'thua' | 'khong-co' | 'trung' | null }. */
   function kiemChon(man, chon) {
     var C = chonDoiCua(man);
@@ -390,7 +391,7 @@
     if (chon.length < so) return { ok: false, ma: 'thieu', lyDo: 'Chọn đủ ' + so + ' cỗ máy cho đội.' };
     if (chon.length > so) return { ok: false, ma: 'thua', lyDo: 'Đội này chỉ có ' + so + ' chỗ.' };
     for (var i = 0; i < chon.length; i++) {
-      if (menu.indexOf(chon[i]) < 0) return { ok: false, ma: 'khong-co', lyDo: 'Bảng chọn không có ' + (CM().DS[chon[i]] ? tenCoMay(chon[i]).toLowerCase() : 'cỗ máy "' + chon[i] + '"') + '.' };
+      if (menuCua(C, i).indexOf(chon[i]) < 0) return { ok: false, ma: 'khong-co', lyDo: 'Bảng chọn không có ' + (CM().laMa(chon[i]) ? tenCoMay(chon[i]).toLowerCase() : 'cỗ máy "' + chon[i] + '"') + '.' };
       if (C.trung !== true && chon.indexOf(chon[i]) < i) return { ok: false, ma: 'trung', lyDo: 'Hai bạn không chọn cùng một ' + tenCoMay(chon[i]).toLowerCase() + '.' };
     }
     return { ok: true, ma: null, lyDo: '' };
@@ -402,7 +403,7 @@
     var so = soChonCua(man), menu = C.menu || [];
     (function de(dang) {
       if (dang.length === so) { if (kiemChon(man, dang).ok) kq.push(dang.slice()); return; }
-      menu.forEach(function (m) { dang.push(m); de(dang); dang.pop(); });
+      menuCua(C, dang.length).forEach(function (m) { dang.push(m); de(dang); dang.pop(); });
     })([]);
     return kq;
   }
@@ -431,12 +432,12 @@
   }
   /** Lỗi dữ liệu chonDoi của màn (rỗng = ổn). */
   function kiemDuLieuDoi(man) {
-    var C = chonDoiCua(man), ma = (man && man.ma) || '(màn)', loi = [], DS = CM().DS;
+    var C = chonDoiCua(man), ma = (man && man.ma) || '(màn)', loi = [];
     function them(s) { loi.push(ma + ': ' + s); }
     if (!C) { them('thiếu chonDoi.'); return loi; }
     if (!Array.isArray(man.doi) || !man.doi.length) { them('màn chọn đội phải có man.doi.'); return loi; }
     if (!Array.isArray(C.menu) || C.menu.length < 2) them('chonDoi.menu cần ít nhất 2 cỗ máy.');
-    (C.menu || []).forEach(function (m) { if (!DS[m]) them('chonDoi.menu có mã lạ "' + m + '".'); });
+    (C.menu || []).forEach(function (m) { if (!CM().laMa(m)) them('chonDoi.menu có mã lạ "' + m + '".'); });
     var so = soChonCua(man), em = robotEm(man);
     if (so < 1 || so > em.length) them('chonDoi.so = ' + so + ' mà màn có ' + em.length + ' robot em lập trình.');
     if (C.trung !== true && so > (C.menu || []).length) them('bảng ' + (C.menu || []).length + ' cỗ máy không đủ chọn ' + so + ' khác nhau.');
@@ -619,6 +620,8 @@
     if (tatCaLenh) return tatCaLenh;
     var kq = [];
     KHE.forEach(function (k) { DANH_MUC[k].forEach(function (d) { d.ham.concat(d.nangCap || []).forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
+    var P = CM().PART;                                                                     // part mùa 5 dùng lệnh hiện hành (co-may.js)
+    ['than', 'tay', 'cam'].forEach(function (k) { Object.keys(P[k]).forEach(function (m) { P[k][m].lenh.forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
     return (tatCaLenh = kq);
   }
   /** Chỉ số (từ 0) các dòng của `dong` gọi một lệnh gốc của part (mọi part trong danh mục) mà robot của `man` KHÔNG có; wait() thì thân nào cũng có. */

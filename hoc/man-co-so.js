@@ -142,11 +142,13 @@
     XE: { loaiRobot: 'banh', robot: { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
       hamGoc: ['forward', 'backward', 'turn_left', 'turn_right', 'pick', 'drop', 'front_clear', 'left_clear', 'right_clear', 'wait'] },
     NHEN: { loaiRobot: 'nhen', robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
-      hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'wait'] }
+      hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'wait'] },
+    DRONE: { loaiRobot: 'drone', luoiBay: true, robot: { than: 'drone', tay: 'day-keo', camBien: [{ ma: 'camera', o: 'tren' }] },
+      hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'cast_net', 'drop_net', 'color', 'wait'] }
   };
   /** Phần riêng một xe của màn hai xe: cỗ máy may + { batDau, co, ... }. */
   ManHoc.xeDoi = function (may, them) {
-    var o = Object.assign({ loaiRobot: may.loaiRobot, robot: may.robot, hamGoc: may.hamGoc.slice() }, them);
+    var o = Object.assign({ loaiRobot: may.loaiRobot, robot: may.robot, hamGoc: may.hamGoc.slice() }, may.luoiBay ? { luoiBay: true } : {}, them);
     delete o.may;
     return o;
   };

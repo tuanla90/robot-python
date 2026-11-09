@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 const day = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const ChamHoc = require(path.join(day, 'cham.js'));
+const LapRap = require('./lap-rap.js');
 const ManHoc = require(path.join(day, 'lo-trinh-hoc.js'));
 const SanHoc = require(path.join(day, 'san-hoc.js'));
 require(path.join(day, 'game', 'huy-hieu-vector.js'));
@@ -44,7 +45,7 @@ const MUA = [
   ] }
 ];
 // Mùa 5: mỗi màn hai xe. Mỗi xe là một cỗ máy "nhà". khoa: số xe khóa của cột. Cột 3, 4 làm sau nên mùa này chưa đủ 32 màn.
-const MUA_DOI = { ten: 'Mùa 5', tien: 'm5-', soMan: 16, cot: [{ ma: 'm5-c1-co-san', khoa: 1 }, { ma: 'm5-c2-hai-xe', khoa: 0 }] };
+const MUA_DOI = { ten: 'Mùa 5', tien: 'm5-', soMan: 32, cot: [{ ma: 'm5-c1-co-san', khoa: 1 }, { ma: 'm5-c2-hai-xe', khoa: 0 }, { ma: 'm5-c3-chon-xe', khoa: 0, chon: 7 }, { ma: 'm5-c4-lap-part', khoa: 0, chon: 7, lap: true }] };
 const HAM_CAM = { 'khoang-cach': 'front_clear', tu: 'front_metal', camera: 'color', 'hong-ngoai': 'warm' };
 
 const loi = [];
@@ -116,6 +117,10 @@ function kiemDang(m, kq, bao) {
     if (!m.chiSapXep) bao('thiếu chiSapXep');
     if ([...mm].sort().join('|') !== [...lg].sort().join('|')) bao('dạng sắp xếp: code mẫu phải đúng các dòng của lời giải, chỉ khác thứ tự');
     thuaMau();
+    if (m.chonDoi) LapRap.dsCachChon(m).forEach((chon) => {
+      if (chon.join() === m.chonDoi.cachMau[0].chon.join()) return;
+      if (ChamHoc.cham(LapRap.apDungDoi(m, chon), m.loiGiai, hamLg(m)).thang) bao(`dạng điền phải đọc code mới chọn được xe: đội ${chon.join(' + ')} cũng thắng`);
+    });
   }
   if (dang === 'sua-loi') {
     const khac = mm.length === lg.length ? mm.filter((d, i) => d !== lg[i]).length : -1;
@@ -352,6 +357,11 @@ function kiemDangDoi(m, kq, bao) {
       if (!k.thang) return bao(`cách khác ${i + 1} không thắng: ${JSON.stringify(k.chanDoan.slice(0, 2).map((x) => x.ma))}`);
       cach.push(k);
     });
+    ((m.chonDoi && m.chonDoi.cachMau) || []).slice(1).forEach((c) => {
+      const k = ChamHoc.cham(LapRap.apDungDoi(m, c), { doi: c.loiGiai.doi, hamCuaMan: [] }, c.loiGiai.hamCuaEmMoi || []);
+      if (!k.thang) return bao(`đội ${c.chon.join(' + ')} không thắng: ${JSON.stringify(k.chanDoan.slice(0, 2).map((x) => x.ma + ': ' + x.loi))}`);
+      cach.push(k);
+    });
     if (cach.length < 2) return bao('viết mở phải có ít nhất một cách khác');
     if (new Set(cach.map(duongDoi)).size < 2) bao('viết mở: các cách phải đi khác đường');
     if (m.sao.o < Math.min(...cach.map((k) => k.soO))) bao('mốc gọn chặt hơn mọi cách đã biết');
@@ -397,12 +407,20 @@ function kiemCotDoi(c) {
   const ds = ManHoc.danhSach.filter((m) => m.chuong === c.ma);
   if (ds.length !== 8) loi.push(`${c.ma}: có ${ds.length} màn, phải đúng 8`);
   const may = Object.values(ManHoc.CO_MAY).map((x) => JSON.stringify(x.robot));
+  const soChon = ds.filter((m) => m.chonDoi).length;
+  if (c.chon !== undefined && soChon !== c.chon) loi.push(`${c.ma}: có ${soChon} màn chọn xe, phải đúng ${c.chon}`);
   ds.forEach((m) => {
     const bao = (s) => loi.push(`${m.ma} (${m.dangBai}) ${m.ten}: ${s}`);
     if (!Array.isArray(m.doi) || m.doi.length !== 2) return bao('màn Mùa 5 phải có đúng hai xe');
     if (m.doi.filter((r) => r.coDinh).length !== c.khoa) bao(`cột này phải có ${c.khoa} xe khóa`);
+    if (m.chonDoi) LapRap.kiemDuLieuDoi(m).forEach((s) => bao(s));
+    if (m.chonDoi) LapRap.dsCachChon(m).forEach((chon) => {
+      try { ChamHoc.cham(LapRap.apDungDoi(m, chon), { doi: m.doi.map(() => ({ chinh: [] })), hamCuaMan: [] }, []); }
+      catch (e) { bao(`đội ${chon.join(' + ')} làm máy chấm ném lỗi, bảng chọn phải bỏ lựa chọn này: ${e.message}`); }
+    });
     m.doi.forEach((r, i) => {
-      if (!may.includes(JSON.stringify(r.robot))) bao(`R${i + 1} không phải cỗ máy nhà`);
+      const { son, ...goc } = r.robot;
+      if (!m.chonDoi && !c.lap && !may.includes(JSON.stringify(goc))) bao(`R${i + 1} không phải cỗ máy nhà`);
       if (!r.hamGoc.includes('wait')) bao(`R${i + 1} thiếu wait trên khay`);
     });
     if (m.khung.chinh > O_TOI_DA || m.khung.moiHam > O_TOI_DA) bao(`khung quá ${O_TOI_DA} ô, giao diện không vẽ hết`);

@@ -461,6 +461,12 @@
       'go.napGiaiLoi': 'Đã nạp bài nhưng kho hàm chưa nhận hết: {loi}',
 
       /* ---- chế độ lắp ráp (man-lap.js, lõi lap-rap.js; KE-HOACH-LAP-RAP.md) */
+      'doi.doi': 'Đổi xe',
+      'doi.doiNhan': 'Đổi xe',
+      'doi.lap': 'Lắp lại',
+      'doi.vao': 'Vào màn',
+      'doi.codeCua': 'Code của {xe}',
+      'doi.khongGhep': '{than} không lắp được {part}.',
       'lap.tieuDe': 'Lắp robot',
       'lap.ve': 'Về',
       'lap.deBai': 'Đề bài',

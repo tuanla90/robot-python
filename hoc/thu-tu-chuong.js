@@ -27,7 +27,7 @@
       'm2-c1-than', 'm2-c2-tay', 'm2-c3-cam-bien', 'm2-c4-san',                       // mùa 2: chuỗi part Nhện + Kẹp + Khoảng cách → + Nam châm → + Cảm ứng từ → sân riêng
       'm3-c1-than', 'm3-c2-tay', 'm3-c3-cam-bien', 'm3-c4-san',                       // mùa 3: chuỗi part Xuồng + Nam châm + Cảm ứng từ → + Lưới phao → + Camera màu → sân riêng
       'm4-c1-than', 'm4-c2-tay', 'm4-c3-cam-bien', 'm4-c4-san',
-      'm5-c1-co-san', 'm5-c2-hai-xe'],                                                 // mùa 5: hai xe, độ tự do tăng dần theo cột (cột 3 Chọn xe, cột 4 Lắp part làm sau)                       // mùa 4: chuỗi part Drone + Lưới phao + Camera → + Vòi phun → + Hồng ngoại
+      'm5-c1-co-san', 'm5-c2-hai-xe', 'm5-c3-chon-xe', 'm5-c4-lap-part'],                                                 // mùa 5: hai xe, độ tự do tăng dần theo cột (cột 3 Chọn xe, cột 4 Lắp part làm sau)                       // mùa 4: chuỗi part Drone + Lưới phao + Camera → + Vòi phun → + Hồng ngoại
     dot2: [],
     congDot2: null,
     mua: [
@@ -56,7 +56,9 @@
       { ma: 'm4-c3-cam-bien', ten: 'Hồng ngoại', hinh: 'm4-c3-cam-bien', loai: 'bo-phan', mua: 'mua-4', chuong: ['m4-c3-cam-bien'] },
       { ma: 'm4-c4-san', ten: 'Nông trại: tưới và gieo', hinh: 'm4-c4-san', loai: 'bo-phan', mua: 'mua-4', chuong: ['m4-c4-san'] },
       { ma: 'm5-c1-co-san', ten: 'Xe có sẵn', hinh: 'm5-c1-co-san', loai: 'bo-phan', mua: 'mua-5', chuong: ['m5-c1-co-san'] },
-      { ma: 'm5-c2-hai-xe', ten: 'Hai chương trình', hinh: 'm5-c2-hai-xe', loai: 'bo-phan', mua: 'mua-5', chuong: ['m5-c2-hai-xe'] }
+      { ma: 'm5-c2-hai-xe', ten: 'Hai chương trình', hinh: 'm5-c2-hai-xe', loai: 'bo-phan', mua: 'mua-5', chuong: ['m5-c2-hai-xe'] },
+      { ma: 'm5-c3-chon-xe', ten: 'Chọn xe', hinh: 'm5-c3-chon-xe', loai: 'bo-phan', mua: 'mua-5', chuong: ['m5-c3-chon-xe'] },
+      { ma: 'm5-c4-lap-part', ten: 'Lắp part', hinh: 'm5-c4-lap-part', loai: 'bo-phan', mua: 'mua-5', chuong: ['m5-c4-lap-part'] }
     ],
     ten: {
       'm1-c1-than': 'Hai bánh',
