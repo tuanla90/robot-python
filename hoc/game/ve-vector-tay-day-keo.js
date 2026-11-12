@@ -99,7 +99,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         H.vien(g, BM.vecVien, 3.8); H.vien(g, BM.vecVanNong, 2.1);
         return;
       }
-      var yP = s.day ? 93.2 : 90.2, rx = s.day ? 11.5 : 8.8, ry = s.day ? 4.8 : 3.8;
+      var yP = s.day ? 93.2 : 91.6, rx = s.day ? 11.5 : 6.4, ry = s.day ? 4.8 : 6.4;   // 12/11: lúc nghỉ cuộn lưới TRÒN (trước là elip dẹt 8.8 × 3.8, trông như cái phao méo) cho khớp phao tời tròn của video
       g.beginPath(); g.moveTo(47, 85.5); g.lineTo(50 - rx * 0.55, yP); g.moveTo(53, 85.5); g.lineTo(50 + rx * 0.55, yP);
       H.vien(g, BM.vecVien, 3.4); H.vien(g, BM.vecVanNong, 1.9);
       if (s.day) { g.beginPath(); g.moveTo(38, 90.5); g.lineTo(35, 95); g.moveTo(62, 90.5); g.lineTo(65, 95); H.vien(g, H.rgba(BM.vecMatSangRgb, 0.9), 2); }

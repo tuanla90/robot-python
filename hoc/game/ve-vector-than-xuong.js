@@ -1,6 +1,6 @@
 var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require === 'function' ? require('./bang-mau.js') : {});   // bảng màu theo vai (bang-mau.js)
 /* ve-vector-than-xuong.js — THÂN XUỒNG CHÂN VỊT 'xuong' (Bến sông, mùa 5, 31/10; hoc/KE-HOACH-MUA-CANG-SONG.md mục 2.2, 2.4, 2.6).
-   Xuồng tuần tra / cứu hộ thủy lợi: thân phao đệm khí CAM cứu hộ 3D có đai chia khoang, mũi đệm cao su tối, dải phản quang trắng hai mạn, lòng khoang tàu thép tối,
+   Xuồng tuần tra / cứu hộ thủy lợi: thân phao đệm khí TRẮNG (12/11: đổi từ cam cho khớp video) 3D có đai chia khoang, mũi đệm cao su tối, dải phản quang trắng hai mạn, lòng khoang tàu thép tối,
    hai cụm chân vịt có vòng chắn bảo vệ ở đuôi (−y), cabin vỏ trắng chuẩn gia đình thân R1 (kính + mắt màu đội, ăng-ten, vệt sáng). Quay mặt XUỐNG, tâm (50, 56).
    Trạng thái s: neo (đã thả neo: hai mỏ neo hải quân vàng hai hông + xích + vòng sóng), dat (nâng cấp buộc đuôi: bích móc kéo cam ở đuôi), dangDat (đang có vật buộc đuôi),
    chay (chân vịt đang quay: cánh xoay 45°, bọt sóng sau đuôi), mat (mắt biểu cảm của H.kinh).
@@ -45,7 +45,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       g.quadraticCurveTo(50, 95, 24, 82);
       g.bezierCurveTo(13, 68, 12, 38, 20, 24);
       g.closePath();
-      g.fillStyle = H.gradDoc(g, 0, 22, 0, 92, [[0, BM.vecVanNongSang], [0.55, BM.vecVanNong], [1, BM.vecLuaCam]]); g.fill();
+      g.fillStyle = H.gradDoc(g, 0, 22, 0, 92, [[0, BM.vecVo], [0.6, BM.vecVo], [1, BM.vecVoToi]]); g.fill();   // 12/11: thân TRẮNG cho khớp thân xuồng của series video (trước là phao cam cứu hộ); cam chỉ còn ở tời kéo / bích móc
       H.vien(g, BM.vecVien, 3.6);
       /* vệt sáng nổi 3D và các đường đai chia khoang phao khí */
       H.duong(g, 'M17 36 H24 M76 36 H83 M16 64 H24 M76 64 H84 M29 77 L24 82 M71 77 L76 82');
@@ -53,8 +53,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       /* đệm mũi chống va đập (bow bumper) */
       H.bo(g, 38, 85.5, 24, 6.5, 3.2); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 2);
       /* dải phản quang trắng cứu hộ hai mạn */
-      H.bo(g, 14.5, 44, 6.5, 18, 3); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 1.8);
-      H.bo(g, 79, 44, 6.5, 18, 3); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 1.8);
+      H.bo(g, 14.5, 44, 6.5, 18, 3); H.to(g, M.chinh); H.vien(g, BM.vecVien, 1.8);   // 12/11: dải hai mạn màu đội (sọc mớn nước), trắng thì chìm vào thân trắng
+      H.bo(g, 79, 44, 6.5, 18, 3); H.to(g, M.chinh); H.vien(g, BM.vecVien, 1.8);
       /* lòng sàn khoang tàu thép tối tạo chiều sâu trước khi đặt cabin R1 */
       H.bo(g, 23, 26.5, 54, 54, 17); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, 2);
       /* cặp mỏ neo hải quân hai hông + xích khi thả neo (s.neo) */
