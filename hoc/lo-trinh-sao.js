@@ -833,7 +833,7 @@
   "tap-hop.7": { "o": 9, "nhip": 3 },
   "tap-hop.8": { "o": 12, "nhip": 8 },
   "tap-hop.9": { "o": 9, "nhip": 4 },
-  "tap-hop.10": { "o": 13, "nhip": 16 },
+  "tap-hop.10": { "o": 15, "nhip": 14 },
   "am-thanh.1": { "o": 7, "nhip": 4 },
   "am-thanh.2": { "o": 6, "nhip": 6 },
   "am-thanh.3": { "o": 11, "nhip": 8 },

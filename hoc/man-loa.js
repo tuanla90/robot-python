@@ -695,10 +695,10 @@
       huyHieu: { ma: 'tap-hop', ten: 'Huy hiệu Tập hợp không trùng' },
       hamCuaEmCan: ['turn_right', 'march_beat', 'count_unique', 'unique_march'],
       nhipTheo: 'tong',
-      dieu: 'xxxx.xxx',
+      dieu: ['xxxx.xxx', 'xxx.xx'],      // điệu theo sân (SanHoc.lopMauCuaSan)
       dieuToiCo: true,
-      deBai: 'Trùm Gói 2! Dùng unique_march với hai danh sách mẫu đá trên cả hai sân để vừa đi hết hành lang chữ L (ngang 4 bước, rẽ phải nghỉ 1 nhịp, xuống 3 bước) vừa gõ chuẩn bản nhạc xxxx.xxx tới cờ.',
-      veMaMau: 'Gọi unique_march([1, 2, 1, 3, 4]), turn_right() rồi unique_march([5, 6, 5, 7]).',
+      deBai: 'Trùm Gói 2! Mỗi sân có hai danh sách mẫu đá a và b riêng (sân 1: a = [1, 2, 1, 3, 4], b = [5, 6, 5, 7]). Dùng unique_march với a và b để vừa đi hết hành lang chữ L (đi ngang, rẽ phải nghỉ 1 nhịp, đi xuống) vừa gõ chuẩn bản nhạc của sân tới cờ (sân 1: xxxx.xxx).',
+      veMaMau: 'Dòng a, b đã có sẵn theo từng sân. Gọi unique_march(a), turn_right() rồi unique_march(b).',
       san: [
         [
           '#######',
@@ -710,31 +710,38 @@
         ],
         [
           '#######',
-          '#..II.#',
-          '#uuuu.#',
-          '#####I#',
-          '#####F#',
+          '#.II..#',
+          '#uuuI##',
+          '####F##',
+          '#######',
           '#######'
         ]
       ],
+      duLieuSan: [['a = [1, 2, 1, 3, 4]', 'b = [5, 6, 5, 7]'], ['a = [2, 8, 2, 9]', 'b = [6, 6, 3]']],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: [
         { x: 1, y: 1, huong: 1 },
         { x: 1, y: 1, huong: 1 }
       ],
-      maMau: bai([]),
+      maMau: bai([
+        'a = [1, 2, 1, 3, 4]',
+        'b = [5, 6, 5, 7]'
+      ]),
       loiGiai: bai([
-        'unique_march([1, 2, 1, 3, 4])',
+        'a = [1, 2, 1, 3, 4]',
+        'b = [5, 6, 5, 7]',
+        'unique_march(a)',
         'turn_right()',
-        'unique_march([5, 6, 5, 7])'
+        'unique_march(b)'
       ]),
       loiSai: [
-        { moTa: 'Đảo ngược hai danh sách: đi ngang 3 bước rồi rẽ xuống hố sụt', baiLam: bai(['unique_march([5, 6, 5, 7])', 'turn_right()', 'unique_march([1, 2, 1, 3, 4])']), phaiCoMa: ['lo-nhip'] },
-        { moTa: 'Danh sách sau chỉ có 2 số khác nhau: dừng trước cờ 1 ô', baiLam: bai(['unique_march([1, 2, 1, 3, 4])', 'turn_right()', 'unique_march([5, 6, 5, 6])']), phaiCoMa: ['chua-du-dieu'] }
+        { moTa: 'Đảo ngược hai danh sách: đi ngang thiếu bước rồi rẽ xuống hố sụt', baiLam: bai(['a = [1, 2, 1, 3, 4]', 'b = [5, 6, 5, 7]', 'unique_march(b)', 'turn_right()', 'unique_march(a)']), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Dùng march_beat(len(a)) cho đoạn ngang: len đếm cả số trùng nên đi quá đà đâm tường', baiLam: bai(['a = [1, 2, 1, 3, 4]', 'b = [5, 6, 5, 7]', 'march_beat(len(a))', 'turn_right()', 'unique_march(b)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Điền thẳng số của sân 1: march_beat(4), turn_right(), march_beat(3) gõ lệch nhịp ở sân 2', baiLam: bai(['a = [1, 2, 1, 3, 4]', 'b = [5, 6, 5, 7]', 'march_beat(4)', 'turn_right()', 'march_beat(3)']), phaiCoMa: ['lech-nhip'] }
       ],
-      sao: { o: 13, nhip: 16 },
+      sao: { o: 15, nhip: 16 },      // o: 13 → 15 vì hai danh sách tách thành hai dòng dữ liệu a, b
       goiY: [
-        'Đoạn ngang dài 4 bước: gọi unique_march([1, 2, 1, 3, 4]) rồi turn_right().',
-        'Đoạn dọc dài 3 bước: gọi unique_march([5, 6, 5, 7]) để tới cờ.'
+        'Đoạn ngang: gọi unique_march(a) rồi turn_right(). Ở sân 1, a có 4 số khác nhau nên đi 4 bước.',
+        'Đoạn dọc: gọi unique_march(b) để tới cờ. Điền thẳng số thì chỉ đúng ở một sân.'
       ]
     })
   ];
