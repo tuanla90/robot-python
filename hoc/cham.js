@@ -1455,6 +1455,34 @@
   }
 
   /** Dòng đầu của mỗi khối (chương trình, thân từng hàm) mà thụt lề → Python sẽ hiểu sai khối. */
+  /** DỮ LIỆU THEO SÂN (13/11): màn nhiều sân khai duLieuSan, mỗi sân một phần tử: MỘT dòng gán ('g = [[3, 1], [2, 2]]') hay MỘT MẢNG dòng gán
+   *  (['a = [1, 1, 2, 3]', 'b = [4, 5, 4, 6]']); vế trái có thể nhiều tên ('a, b = (2, 3)'). Các sân khai cùng các vế trái, khác vế phải.
+   *  Khi chạy sân i, mỗi dòng gán không thụt của chương trình chính có CÙNG VẾ TRÁI được thay bằng dòng của sân i: chương trình phải ĐỌC từ dữ liệu,
+   *  điền thẳng số của sân 1 thì hỏng ở sân 2. Trả chính baiLam nếu màn không khai hay không dòng nào đổi (số dòng không đổi nên ánh xạ dòng giữ nguyên). */
+  function dongDuLieuSan(man, i) {
+    var ds = man && (man.duLieuSan || (man.manGoc && man.manGoc.duLieuSan));
+    if (!Array.isArray(ds) || ds[i] === undefined || ds[i] === null) return null;
+    return Array.isArray(ds[i]) ? ds[i] : [ds[i]];
+  }
+  /** Vế trái của một dòng gán không thụt ('a, b = …' → 'a,b'); null nếu không phải. */
+  function veTraiGan(s) {
+    var m = /^([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*=(?!=)/.exec(String(s === undefined || s === null ? '' : s));
+    return m ? m[1].replace(/\s+/g, '') : null;
+  }
+  function baiTheoSan(man, baiLam, i) {
+    var dl = dongDuLieuSan(man, i);
+    if (!dl || !baiLam || !Array.isArray(baiLam.chinh)) return baiLam;
+    var chinh = null;
+    dl.forEach(function (d) {
+      var vt = veTraiGan(d), nguon = chinh || baiLam.chinh; if (!vt) return;
+      for (var j = 0; j < nguon.length; j++) {
+        if (veTraiGan(nguon[j]) !== vt) continue;
+        if (nguon[j] !== d) { chinh = chinh || baiLam.chinh.slice(); chinh[j] = d; }
+        break;
+      }
+    });
+    return chinh ? Object.assign({}, baiLam, { chinh: chinh }) : baiLam;
+  }
   function loiDauKhoi(baiLam, hamEmDung, chiHam) {
     var kq = [];
     function xet(ds, tenKhoi, cotInfo) {
@@ -1575,6 +1603,7 @@
     var thangHet = true, nhipMax = 0, nhipTong = 0, gom = [], dsMa = {}, dung = {};
     dsSan.forEach(function (rows, i) {
       var bd = Array.isArray(man.batDau) ? man.batDau[i] : man.batDau;
+      var bli = baiTheoSan(man, baiLam, i), gi = bli === baiLam ? g : KhungCode.ghep(bli, tap.em);      // dữ liệu theo sân (man.duLieuSan): sân i chạy với dòng dữ liệu của riêng nó
       var lm = SanHoc.lopMauCuaSan(man, i);
       var res = SanHoc.chay({
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
@@ -1591,10 +1620,10 @@
         damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
-        bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g)
-      }, g.ma);
-      var cd = chanDoanSan(man, res, g, false, bc);
-      var vet = chuyenVet(res.vet, g);
+        bongMo: lm.bongMo || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: man.mucBanDau, daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(gi)
+      }, gi.ma);
+      var cd = chanDoanSan(man, res, gi, false, bc);
+      var vet = chuyenVet(res.vet, gi);
       hamTrongVet(vet, dung);
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,

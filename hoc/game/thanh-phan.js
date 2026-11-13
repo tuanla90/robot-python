@@ -268,7 +268,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var CHE_TD = false, TD_KHOA = ['a', 'b', 'c'], TD_NGUON = [];                                             // TD_KHOA: khoá chọn được của màn · TD_NGUON: 'hear' / 'listen' có trên robot
   var TD_TOI_DA = 5, TD_TEN = { dict: ['d', 'buoc', 'not_da'], set: ['s', 'da_nghe', 'da_go'] };            // số cặp / phần tử tối đa vẽ trên khung · tên gợi ý
   function datCheTD(b, khoa, nguon) { CHE_TD = !!b; TD_KHOA = (khoa && khoa.length) ? khoa.slice() : ['a', 'b', 'c']; TD_NGUON = (nguon || []).slice(); }
-  function coTDCua(man) { return coCauTruc(man, 'dict') || coCauTruc(man, 'set') || nguonAmCua(man).length > 0; }
+  function coTDCua(man) { return coCauTruc(man, 'dict') || coCauTruc(man, 'set') || nguonAmCua(man).length > 0 || coDongTD(man); }
+  /** Màn có dòng gán từ điển / tập hợp (lời giải, mã mẫu) dù cauTruc không khai 'dict' / 'set' (gói 142 Từ điển, 144 Tập hợp): vẫn tách thành ô chạm được để bảng dữ liệu mở ra. Khay khối thì vẫn theo cauTruc. */
+  function coDongTD(man) {
+    return dongCuaMan(man).some(function (s) { s = boThut(chuoi(s)); return RE_TD_GAN_D.test(s) || RE_TD_GAN_S.test(s) || RE_TD_ADD.test(s); });
+  }
   /** Cảm biến âm thanh của màn: 'hear' (tiếng vang: số ô tới chuông đá gần nhất), 'listen' (nốt của chuông đá gần nhất). */
   function nguonAmCua(man) { return ((man && man.hamGoc) || []).filter(function (n) { return n === 'hear' || n === 'listen'; }); }
   /** Khoá chọn được ở màn: man.khoaTD, không có thì mọi khoá "…" xuất hiện trong lời giải / mã mẫu, thêm a b c cho đủ ba. */
@@ -285,8 +289,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     ['a', 'b', 'c'].forEach(function (k) { if (kq.length < 3 && kq.indexOf(k) < 0) kq.push(k); });
     return kq;
   }
-  var RE_TD_GAN_D = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)\{(\s*(?:"[^"]*"\s*:[^,}]*(?:,\s*"[^"]*"\s*:[^,}]*)*)?\s*)\}\s*$/;      // d = {"a": 1, "b": 2} (từ điển rỗng `{}` là từ điển)
-  var RE_TD_GAN_S = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)(?:set\(\)|\{([^{}:"]+)\})\s*$/;                                     // s = set() · s = {1, 2}
+  var RE_TD_GAN_D = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)\{(\s*(?:(?:"[^"]*"|\d+)\s*:[^,}]*(?:,\s*(?:"[^"]*"|\d+)\s*:[^,}]*)*)?\s*)\}\s*$/;      // d = {"a": 1, "b": 2} (từ điển rỗng `{}` là từ điển)
+  var RE_TD_GAN_S = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)(?:set\(\)|\{([^{}:]+)\})\s*$/;                                     // s = set() · s = {1, 2}
   var RE_TD_KHOA = /^(\s*)([A-Za-z_]\w*)\[("[^"]*")\](\s*=\s*)(.+?)\s*$/;                                              // d["a"] = 1
   var RE_TD_ADD = /^(\s*)([A-Za-z_]\w*)\.add\((.*)\)\s*$/;                                                            // s.add(1)
   var RE_TD_FOR = /^(\s*for\s+)([A-Za-z_]\w*)(\s+in\s+)([A-Za-z_]\w*)(\s*:.*)$/;                                       // for k in d:
@@ -384,6 +388,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (vai === 'op') return '<span class="num td-op"' + at + ' data-so="0">' + esc(v) + '</span>';
       if (vai === 'ten') return '<span class="num lsten td-ten"' + at + ' data-so="0" data-bien="' + escA(v) + '">' + esc(v) + '</span>';
       if (vai === 'bm') return '<span class="vr">' + esc(v) + '</span>';
+      if (vai === 'khoa' && RE_SO.test(v)) return '<span class="num td-khoa"' + at + ' data-so="' + v + '">' + v + '</span>';      // khoá số: d = {3: 4}
       if (vai === 'khoa' || /^"[^"]*"$/.test(v)) return '<span class="num chuoi td-khoa' + (lopThem || '') + '"' + at + ' data-so="0" data-chuoi="' + escA(v.slice(1, -1)) + '">' + esc(v) + '</span>';
       if (RE_SO.test(v)) return '<span class="num' + (vai === 'gt' ? ' ptu' : '') + '"' + at + ' data-so="' + v + '">' + v + '</span>';
       return '<span class="num bien bth"' + at + ' data-so="0" data-bien="' + escA(v) + '">' + esc(v) + '</span>';
@@ -461,7 +466,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function nguyenTu() {
       var x = tk[p]; if (x === undefined) return null;
       if (/^\d+$/.test(x) || x.charAt(0) === '"') { p++; return { t: 'la', v: x }; }
-      if (x === '(') { p++; var e = hoac(); return e && an(')') ? e : null; }
+      if (x === '(') {                                                       // (a + b) là ngoặc nhóm · (2, 3) là bộ cố định (tuple): nút { t: 'bo', e }
+        p++; var e = hoac(); if (!e) return null;
+        if (tk[p] !== ',') return an(')') ? e : null;
+        var bo = [e];
+        while (an(',')) { var e2 = hoac(); if (!e2) return null; bo.push(e2); }
+        return an(')') ? { t: 'bo', e: bo } : null;
+      }
       if (x === '[') { p++; var ds = day(']'); return ds ? { t: 'ds', e: ds } : null; }
       if (/^[A-Za-z_]\w*$/.test(x) && (BT_KW.indexOf(x) < 0 || /^(True|False|None)$/.test(x))) {
         p++;
@@ -480,6 +491,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (n.t === 'goi') return n.f + '(' + n.a.map(inBT).join(', ') + ')';
     if (n.t === 'chi') return boc(n.o, 9) + '[' + inBT(n.i) + ']';
     if (n.t === 'ds') return '[' + n.e.map(inBT).join(', ') + ']';
+    if (n.t === 'bo') return '(' + n.e.map(inBT).join(', ') + ')';
     if (n.t === 'am') return '-' + boc(n.a, 7);
     if (n.t === 'not') return 'not ' + boc(n.a, 3);
     var b = bacBT(n);
@@ -578,6 +590,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (!n.e.length) o1('them', '+', cho, 'ptu them', ' data-so="0" data-them="1"');
         n.e.forEach(function (x, i) { if (i) P(', '); di(x, n.e, i, { ds: n, i: i }); });
         P(']'); ht += '</span>'; return;
+      }
+      if (n.t === 'bo') {                                                    // bộ cố định (2, 3): ô chạm được nhưng không thêm / bỏ ô (ptu null); bảng dữ liệu (bang-du-lieu.js) nhận ô này
+        ht += '<span class="pg bo">'; P('(');
+        n.e.forEach(function (x, i) { if (i) P(', '); di(x, n.e, i); });
+        P(')'); ht += '</span>'; return;
       }
       if (n.t === 'am') { o1('am', '-', cho, 'td-op bt-op'); con(n.a, n, 'a', 7); return; }
       if (n.t === 'not') { o1('not', 'not', cho, 'td-op bt-op'); ht += ' '; con(n.a, n, 'a', 3); return; }
@@ -1066,6 +1083,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         tenListTai(i).forEach(function (ds) {
           vongSo.forEach(function (v) { kq.push(ds + '[' + v + ']'); });
           kq.push(ds + '[0]', 'len(' + ds + ')');
+          if (window.BangDuLieu && BangDuLieu.luoiCuaTen(arr, i, ds)) kq.push(ds + '[0][0]');      // ds là lưới (list lồng) gán ở trên: thêm chip g[0][0]; chọn xong bảng dữ liệu mở ra để chạm đúng ô (moBT). Đối số lời gọi vẫn lọc bỏ (giaTriBT).
         });
       }
       if (CHE_TD && slot === 'so') {                                                      // mùa 8: số lấy từ biến gán n = listen(), cảm biến âm thanh, từ điển (d["a"], d[k]), độ dài len(s)
@@ -1235,6 +1253,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function moBT(so, i, d, kk) {
       var vai = d.vt[kk], v = d.ds[kk], cho = d.o[kk];
       function dat(s) { ed.thayDong(i, s); }
+      // Bảng dữ liệu (bang-du-lieu.js): số của lưới đặt thẳng [[2, 1], [2, 2]] mở bảng sửa lưới; g, 0, 1 của g[0][1] mở bảng chạm ô. Không nhận thì mở bảng chọn cũ.
+      if (window.BangDuLieu && BangDuLieu.chan(i, d, kk, { lay: lay, dat: dat, soMax: BT.soMax, choAm: phepDuoc().indexOf('am') >= 0 })) return;
       if (vai === 'them') { dat(d.them(kk)); return; }
       if (vai === 'dich') {
         var ten = [];
@@ -1252,13 +1272,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var cha = cho.cha && cho.cha.t, phepPhang = phepDuoc().filter(function (p) { return (p === 'am' && cha !== 'am') || (p === 'chi' && cha === 'chi' && cho.khoa === 'o' && cho.cha.o.t === 'la'); });      // còn được: −x (số âm là một giá trị), g[i] → g[0][i]
       chonBT({ neo: so, v: v, so: true, bien: phang && cha !== 'not' ? giaTriBT(bienBT(i)) : bienBT(i), chu: BT.chu, phep: phang ? phepPhang : phepDuoc(d.kieu === 'dk' ? [] : ['not']),
         ptu: cho && cho.ptu ? { coThem: cho.ptu.ds.e.length < LIST_TOI_DA } : null, bo: vai === 'ham' && /^(abs|min|max)$/.test(cho.nut.f),
-        khiChon: function (x) { dat(d.doi(kk, x)); }, khiPhep: function (p) { dat(d.doi(kk, phepBT(p, v))); },
+        khiChon: function (x) {
+          dat(d.doi(kk, x));
+          if (/^[A-Za-z_]\w*\[0\]\[0\]$/.test(x)) {                                          // vừa chọn g[0][0]: mở luôn bảng chạm ô, khỏi phải chạm lại
+            var ct = strips[i] && strips[i].querySelector ? strips[i].querySelector('.num[data-k="' + kk + '"]') : null;
+            if (ct) moBoChon(ct, i, kk);
+          }
+        }, khiPhep: function (p) { dat(d.doi(kk, phepBT(p, v))); },
         khiThem: function () { dat(d.them(kk)); }, khiBo: function () { dat(d.bo(kk)); } });
     }
     /** Chạm một ô của dòng mùa 8 (tachTD): + thêm cặp / phần tử; in ↔ not in, == != > < đổi ngay; tên chọn trong từ điển / tập hợp đã có (dòng gán thì đổi tên);
      *  khoá chọn trong khoá của màn / của từ điển; giá trị đặt thẳng có thêm / bỏ; ô số mở bảng số kèm chip (n, hear(), listen(), d["a"], d[k], len(s)). */
     function moTD(so, i, d, kk) {
       var arr = lay(), vai = d.vt[kk], v = d.ds[kk], ds;
+      // Bảng dữ liệu (bang-du-lieu.js): ô của d = {"a": 1} mở bảng khoá → giá trị; ô của s = {1, 2} / s = set() mở bảng tập hợp; s.add("a") chọn chuỗi. Không nhận thì theo cách cũ.
+      if (window.BangDuLieu && BangDuLieu.chanTD(so, i, d, kk, { lay: lay, dat: function (s) { ed.thayDong(i, s); }, khoa: TD_KHOA })) return;
       if (vai === 'them') { ed.themTD(i, 0, true); return; }
       if (vai === 'op') { var ops = d.kieu === 'in' ? ['in', 'not in'] : TD_SS; ed.datSo(i, ops[(ops.indexOf(v) + 1) % ops.length], kk); return; }
       if (vai === 'ten') {
@@ -1294,6 +1322,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         for (var j = i - 1; j >= 0; j--) { var ft = RE_TD_FOR.exec(chuoi(arr[j])); if (ft && bien.indexOf(ft[2]) < 0) bien.unshift(ft[2]); }
       }
       if (d.kieu === 'ganN') bien = bien.filter(function (x) { return RE_TD_NGUON.test(x); });     // n = …: chỉ nguồn số (listen(), len(s), d["a"])
+      if (d.kieu === 'add') {                                                              // s.add(1) vừa chèn ở màn tập hợp CHUỖI (s.add("a"), s = {"a", "b"}): thêm các chuỗi đó + khoá của màn để đổi 1 thành "c"
+        var chuTH = [];
+        arr.forEach(function (x) { x = boThut(chuoi(x)); if (RE_TD_ADD.test(x) || RE_TD_GAN_S.test(x)) (x.match(/"[^"]*"/g) || []).forEach(function (c) { if (chuTH.indexOf(c) < 0) chuTH.push(c); }); });
+        if (chuTH.length) TD_KHOA.forEach(function (k) { if (chuTH.indexOf('"' + k + '"') < 0) chuTH.push('"' + k + '"'); });
+        chuTH.forEach(function (c) { if (bien.indexOf(c) < 0) bien.push(c); });
+      }
       chonSo({ neo: so, so: RE_SO.test(v) ? +v : -1, hien: RE_SO.test(v) ? null : v, toiDa: SO_TOI_DA, coKhong: true, bien: bien, khiChon: function (x) { ed.datSo(i, x, kk); } });
     }
     /** Chạm một phần tử của danh sách: bảng chọn số / màu + "thêm ô" (chèn ngay sau ô này) + "bỏ ô". Chạm dấu + của danh sách rỗng thì thêm phần tử đầu rồi mở bảng chọn. */
@@ -1408,6 +1442,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         r.addEventListener('click', function (ev) {
           var arr = lay(), kieu = kieuCuoi;          // kiểu lấy từ pointerdown: Safari iOS báo click của cú chạm là 'mouse', không tin ev.pointerType của click
           if (chiDoc()) { cham = null; tuyChon.khiBam && tuyChon.khiBam(i); baoChiDoc(); return; }       // chương trình chính cố định: chạm chỉ báo, không chọn ô / mở bộ chọn số / xóa
+          if (tuyChon.dongDuLieu && i < arr.length && !dangChay() && tuyChon.dongDuLieu(i)) {        // dòng dữ liệu do sân cấp (man.duLieuSan): chạm đâu cũng mở bảng xem dữ liệu từng sân, không sửa / xóa
+            cham = null; tuyChon.khiBam && tuyChon.khiBam(i); if (tuyChon.khiChamDuLieu) tuyChon.khiChamDuLieu(i); return;
+          }
           var so = ev.target.closest && ev.target.closest('.num');
           if (so && !xt && i < dung && i < arr.length && !dangChay() && !Chan.dang()) {      // chạm con số trong range(n) / lời gọi hàm: bộ chọn 1–9 (+ biến của hàm)
             cham = null; tuyChon.khiBam && tuyChon.khiBam(i);          // không đổi ô đang chọn: khối kế tiếp vẫn chèn vào chỗ cũ
@@ -1511,6 +1548,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (tuyChon.nutXoaHet) tuyChon.nutXoaHet.disabled = !arr.length || cd;
       veXx();
       veThut();
+      if (tuyChon.dongDuLieu) strips.forEach(function (s, i) { s.classList.toggle('du-lieu-san', i < arr.length && !!tuyChon.dongDuLieu(i)); });      // dòng dữ liệu do sân cấp: viền + khoá (bang-du-lieu.css)
       if (!xt && tuyChon.khiNhip) tuyChon.khiNhip(this.camNhip());     // khay làm mờ khối của bộ phận đã có lệnh trong nhịp đang soạn
     };
     /** Tiêu đề đầy đủ nếu vừa, không vừa thì dùng chữ rút gọn. */
@@ -2984,7 +3022,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       };
       var partThe = {                                                                         // 22/10: tiêu đề thẻ vẽ bằng HÌNH BỘ PHẬN THẬT (bộ PART) thay icon đèn: điều khiển xe thì thấy thân xe, không thấy bánh tròn
         than: { loai: 'than', ma: ({ nhen: 'nhen', drone: 'drone', xich: 'xich', omni: 'omni', gai: 'gai', cau: 'cau', xuong: 'xuong' })[spec.loai] || 'hai-banh' },
-        tay: loaiTay.length === 1 && loaiTay[0] !== 'Loa' ? { loai: 'tay', ma: ({ Kep: 'kep', Xoay: 'xoay', NamCham: 'nam-cham', Nem: 'nem', Sung: 'hoi', Son: 'son', MocCau: 'moc-cau', DayKeo: 'day-keo' })[loaiTay[0]] } : null,      // loa: hình bộ phận vẽ ở P2 (KE-HOACH-MUA-8.md), tới đó dùng icon
+        tay: loaiTay.length === 1 ? { loai: 'tay', ma: ({ Kep: 'kep', Xoay: 'xoay', NamCham: 'nam-cham', Nem: 'nem', Sung: 'hoi', Son: 'son', Loa: 'loa', MocCau: 'moc-cau', DayKeo: 'day-keo' })[loaiTay[0]] } : null,      // 13/11: loa đã có hình bộ phận (VeVector 'tay' / 'loa') nên cũng vẽ hình thật; nhiều loại tay cùng lúc mới dùng icon chung
         cam: null                                                                              // thẻ Logic (for / if / while / biến) không phải phần cứng: giữ icon
       };
       the = [];

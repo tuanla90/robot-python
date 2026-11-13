@@ -1,0 +1,97 @@
+/* bang-du-lieu.css — BẢNG DỮ LIỆU (bang-du-lieu.js): bảng nhập mở từ đáy #stage (360 px), ô chạm từ 40 px. */
+/* dòng code có list lồng dài quá một dòng: cho xuống dòng GIỮA các cặp [2, 1] (trước đây cả lưới là một khối liền nên cặp cuối bị cắt mất) */
+.strip.hai .pg:has(> .pg){display:contents}
+.strip.hai:has(.pg > .pg){row-gap:0;align-content:center}
+body.ve-vector .strip.hai:has(.pg > .pg ~ .pg ~ .pg ~ .pg){font-size:8.5px!important;line-height:9.5px}      /* lưới từ 4 hàng: ba dòng chữ nhỏ mới vừa một ô code */
+body.ve-vector .strip.hai:has(.pg > .pg ~ .pg ~ .pg ~ .pg) .num{line-height:9px;padding:0 3px}
+
+.bdl-nen{position:absolute;left:0;top:0;right:0;bottom:0;z-index:95;display:flex;align-items:flex-end;background:rgba(18,20,46,.46);animation:bdl-mo .16s ease-out}
+.bdl{--bdl-o:44px;box-sizing:border-box;width:100%;max-height:97%;overflow-y:auto;padding:10px 12px 14px;border-radius:18px 18px 0 0;
+  background:var(--g-vecThe,#fff);color:var(--g-vecChu,#1b1d3a);box-shadow:0 -10px 32px rgba(10,12,40,.28);font-family:var(--px,system-ui,sans-serif);animation:bdl-len .2s cubic-bezier(.2,.8,.2,1)}
+@keyframes bdl-mo{from{background:rgba(18,20,46,0)}}
+@keyframes bdl-len{from{transform:translateY(40px);opacity:.4}}
+@media (prefers-reduced-motion:reduce){.bdl-nen,.bdl{animation:none}}
+
+.bdl-dau{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.bdl-td{font:700 16px/1.2 var(--px,system-ui,sans-serif)}
+.bdl-xong{flex:none;min-width:72px;height:40px;padding:0 16px;border:0;border-radius:12px;background:var(--g-vecBrand,#4f46e5);color:#fff;font:700 15px/1 var(--px,system-ui,sans-serif);cursor:pointer}
+.bdl-xong:focus-visible,.bdl-o:focus-visible,.bdl-so:focus-visible,.bdl-nut:focus-visible{outline:3px solid var(--g-vecBrand,#4f46e5);outline-offset:2px}
+
+/* dòng code đang nhập: chữ to, xuống dòng tự do, ô đang chọn tô đậm */
+.bdl-code{padding:8px 10px;border-radius:10px;background:var(--g-vecTheLom,#eef0f8);font:500 14px/1.55 var(--mono,ui-monospace,monospace);overflow-wrap:anywhere}
+.bdl-c-ten{color:var(--g-vecLaDam,#2f7a2f);font-weight:700}
+.bdl-c-pu{color:#7b7f9a;white-space:pre-wrap}
+.bdl-c-nhom{white-space:nowrap;border-radius:5px;padding:1px 0}
+.bdl-c-nhom.on{background:rgba(79,70,229,.13)}
+.bdl-code b{display:inline-block;min-width:1ch;padding:0 4px;border-radius:5px;background:var(--g-vecBrand,#4f46e5);color:#fff;font-weight:700;text-align:center}
+.bdl-chon .bdl-code{font-size:20px;text-align:center}
+.bdl-chon .bdl-code b{margin:0 1px}
+
+/* lưới hàng × cột */
+.bdl-khung{--bdl-cot:2;display:grid;grid-template-columns:minmax(44px,max-content) repeat(var(--bdl-cot),minmax(40px,56px));gap:6px;justify-content:center;align-items:center;margin:10px 0 6px}
+.bdl-khung.day{--bdl-o:40px;gap:5px}
+.bdl-chi{font:500 12px/1 var(--mono,ui-monospace,monospace);color:#7b7f9a;text-align:center;white-space:nowrap}
+.bdl-chi.hang{text-align:right;padding-right:2px}
+.bdl-chi.on{color:var(--g-vecBrand,#4f46e5);font-weight:700}
+.bdl-o{height:var(--bdl-o);border:0;border-radius:11px;background:var(--g-vecTheLom,#eef0f8);box-shadow:inset 0 0 0 1px var(--g-vecKe,#d5d8ea);color:inherit;font:700 20px/1 var(--mono,ui-monospace,monospace);cursor:pointer}
+.bdl-o.on{background:#fff;box-shadow:inset 0 0 0 3px var(--g-vecBrand,#4f46e5);color:var(--g-vecBrand,#4f46e5)}
+.bdl-chon .bdl-o:active{background:var(--g-vecBrand,#4f46e5);color:#fff}
+.bdl-nhac{min-height:16px;margin:2px 0 8px;text-align:center;font:500 12px/1.3 var(--px,system-ui,sans-serif);color:#5d6180}
+
+/* bàn số + nút hàng / cột */
+.bdl-ban{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.bdl-so{height:42px;border:0;border-radius:11px;background:#ecebfd;color:#3730a3;font:700 18px/1 var(--mono,ui-monospace,monospace);cursor:pointer}
+.bdl-so.on{background:var(--g-vecBrand,#4f46e5);color:#fff}
+.bdl-so:active{transform:translateY(1px)}
+.bdl-thao{display:flex;gap:6px;margin-top:8px}
+.bdl-thao:empty{display:none}
+.bdl-nut{flex:1;height:40px;padding:0 2px;border:0;border-radius:11px;background:var(--g-vecTheLom,#eef0f8);box-shadow:inset 0 0 0 1px var(--g-vecKe,#d5d8ea);color:inherit;font:600 13px/1 var(--px,system-ui,sans-serif);white-space:nowrap;cursor:pointer}
+.bdl-nut.them{color:var(--g-vecLaDam,#2f7a2f)}
+.bdl-nut.bo{color:var(--g-vecLoi,#c0392b)}
+.bdl-nut:disabled{opacity:.38;pointer-events:none}
+
+/* chung cho tuple / dict / set */
+.bdl-than{margin:10px 0 6px}
+.bdl-c-chu{color:#b45309}
+.bdl-code b.bdl-c-chu{color:#fff}
+.bdl-mui{color:#7b7f9a;font:700 16px/1 var(--mono,ui-monospace,monospace);text-align:center}
+.bdl-rong{grid-column:1/-1;width:100%;padding:16px 8px;border-radius:11px;border:2px dashed var(--g-vecKe,#d5d8ea);text-align:center;font:500 13px/1.3 var(--px,system-ui,sans-serif);color:#5d6180;box-sizing:border-box}
+.bdl-ban.chu{display:flex;flex-wrap:wrap}
+.bdl-so.chu{flex:1 0 56px;padding:0 10px;background:#fdf1dc;color:#92400e;font-size:16px}
+.bdl-so.chu.on{background:#b45309;color:#fff}
+.bdl-so:disabled{opacity:.35;pointer-events:none}
+.bdl-o.trung{text-decoration:line-through;text-decoration-thickness:2px;opacity:.5}
+
+/* tuple: một dãy ô, khoá số lượng */
+.bdl-day{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:8px}
+.bdl-cot{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bdl-cot .bdl-o{width:56px}
+.bdl-cot.on .bdl-chi{color:var(--g-vecBrand,#4f46e5);font-weight:700}
+.bdl-bo .bdl-chi{font-size:13px}
+.bdl-khoa{align-self:flex-end;margin:0 0 14px 4px;padding:5px 8px;border-radius:999px;background:#fdf1dc;color:#92400e;font:600 11px/1 var(--px,system-ui,sans-serif);white-space:nowrap}
+
+/* dict: khoá → giá trị */
+.bdl-cap{display:grid;grid-template-columns:minmax(72px,120px) 20px minmax(72px,120px);gap:6px;justify-content:center;align-items:center}
+.bdl-cap .bdl-o{height:44px;padding:0 6px;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bdl-cap .bdl-o.khoa{background:#fdf1dc;color:#92400e;box-shadow:inset 0 0 0 1px #f1d9ae}
+.bdl-cap .bdl-o.khoa.on{background:#fff;box-shadow:inset 0 0 0 3px #b45309}
+
+/* set: túi thẻ */
+.bdl-tui{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:10px;border-radius:16px;background:var(--g-vecTheLom,#eef0f8);min-height:48px}
+.bdl-tui .bdl-o.the{min-width:48px;height:44px;padding:0 10px;border-radius:999px;background:#fff}
+.bdl-len{font:700 14px/1.3 var(--mono,ui-monospace,monospace);color:var(--g-vecBrand,#4f46e5)}
+
+/* dòng code: bộ cố định (2, 3) là một khối như danh sách */
+.strip .pg.bo{white-space:pre}
+
+/* dữ liệu theo sân: dòng do sân cấp trên khung code (khoá) + thẻ đổi sân trong bảng xem */
+.strip.du-lieu-san{box-shadow:inset 0 0 0 2px #b45309;background:#fdf6e7}
+.strip.du-lieu-san::before{content:"";position:absolute;right:3px;top:3px;width:9px;height:9px;border-radius:2px;background:#b45309;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat}
+.bdl-ban.san{display:flex;gap:6px}
+.bdl-so.san{flex:1;font:700 15px/1 var(--px,system-ui,sans-serif)}
+.bdl-xem .bdl-o{cursor:default}
+
+.bdl-xem .bdl-o:disabled{opacity:1;cursor:default}
+.bdl-xem .bdl-day .bdl-o{min-width:48px;padding:0 8px}

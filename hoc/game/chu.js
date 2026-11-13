@@ -117,6 +117,7 @@
       'choi.nhom.bt': 'BIỂU THỨC',
       'choi.nhom.dict': 'TỪ ĐIỂN',
       'choi.nhom.set': 'TẬP HỢP',
+      'choi.duLieuSan': 'Dòng {ten} do sân cấp: mỗi sân một bộ số, không sửa được',
       'choi.nhom.am': 'ÂM THANH',
       'choi.nhom.loa': 'LOA',
       'choi.nhom.mocCau': 'MÓC CẨU',

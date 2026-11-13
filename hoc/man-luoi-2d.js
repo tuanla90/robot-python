@@ -99,9 +99,10 @@
 
     manLuoi({
       so: 2, ten: 'Lấy ô trong lưới', hang: 'lam-quen', hamCuaEmCan: ['move', 'forward', 'slide_r'],
-      deBai: 'Sola nhờ bạn: lưới g = [[3, 1], [2, 2]] có hai hàng: hàng đầu g[0] là [3, 1], hàng sau g[1] là [2, 2]. Chương trình mới chạy xong hàng đầu g[0]. Hãy gọi tiếp slide_r(g[1][0]) và forward(g[1][1]) để xe đi nốt hàng thứ hai tới cờ.',
+      deBai: 'Sola nhờ bạn: mỗi sân có một lưới g riêng, ở sân 1 là g = [[3, 1], [2, 2]]. Hàng đầu là g[0], hàng sau là g[1]. Chương trình mới chạy xong hàng đầu g[0]. Hãy lấy tiếp t = g[1][0] rồi slide_r(t), lấy t = g[1][1] rồi forward(t) để xe đi nốt hàng thứ hai tới cờ ở cả hai sân.',
       veMaMau: 'Chương trình có sẵn đã đi theo g[0][0] và g[0][1]. Viết thêm hai dòng lấy g[1][0] và g[1][1].',
-      san: ['#####F', '#####.', '###...', '....##'],
+      san: [['#####F', '#####.', '###...', '....##'], ['#####F', '##....', '##.###', '...###']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì đâm tường ở sân 2
+      duLieuSan: ['g = [[3, 1], [2, 2]]', 'g = [[2, 2], [3, 1]]'],
       batDau: { x: 0, y: 3, huong: 0 },
       maMau: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)']),
       loiGiai: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)', 't = g[1][0]', 'slide_r(t)', 't = g[1][1]', 'forward(t)']),
@@ -115,7 +116,7 @@
         { moTa: 'Chỉ trượt g[1][0] mà quên forward(g[1][1])', baiLam: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)', 't = g[1][0]', 'slide_r(t)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Dùng chỉ số g[2][0] vượt quá số hàng của lưới', baiLam: bai(['g = [[3, 1], [2, 2]]', 't = g[0][0]', 'slide_r(t)', 't = g[0][1]', 'forward(t)', 't = g[2][0]', 'slide_r(t)']), phaiCoMa: ['loi-chay'] }
       ],
-      goiY: ['Luna: g[1] là hàng thứ hai [2, 2]; phần tử đầu là g[1][0], phần tử sau là g[1][1].', 'Luna: Sau hai dòng có sẵn, thêm slide_r(g[1][0]) rồi forward(g[1][1]).']
+      goiY: ['Luna: g[1] là hàng thứ hai [2, 2]; phần tử đầu là g[1][0], phần tử sau là g[1][1].', 'Luna: Viết tiếp t = g[1][0], slide_r(t), rồi t = g[1][1], forward(t). Điền thẳng số thì chỉ đúng ở một sân.']
     }),
 
     manLuoi({
@@ -141,9 +142,10 @@
 
     manLuoi({
       so: 4, ten: 'Hai vòng lặp lồng nhau', hang: 'luyen', hamCuaEmCan: ['move', 'slide_r'],
-      deBai: 'Sola nhờ bạn: lưới g = [[2, 1], [2, 2]] ghi độ dài bốn bậc đá chia làm hai tầng. Với mỗi số n trong từng hàng r của g, xe cần trượt phải n ô rồi tiến lên một ô bằng move(). Dùng hai vòng lặp for lồng nhau để duyệt hết lưới.',
+      deBai: 'Sola nhờ bạn: mỗi sân có một lưới g riêng (sân 1: g = [[2, 1], [2, 2]]) ghi độ dài bốn bậc đá chia làm hai tầng. Với mỗi số n trong từng hàng r của g, xe cần trượt phải n ô rồi tiến lên một ô bằng move(). Dùng hai vòng lặp for lồng nhau để duyệt hết lưới.',
       veMaMau: 'Chương trình có sẵn đã mở vòng lặp ngoài for r in g. Viết tiếp vòng lặp trong for n in r để trượt phải n ô rồi move().',
-      san: ['#######F', '#####...', '###...##', '##..####', '...#####'],
+      san: [['#######F', '#####...', '###...##', '##..####', '...#####'], ['#######F', '######..', '###....#', '#...####', '..######']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì hỏng ở sân 2
+      duLieuSan: ['g = [[2, 1], [2, 2]]', 'g = [[1, 2], [3, 1]]'],
       batDau: { x: 0, y: 4, huong: 0 },
       maMau: bai(['g = [[2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])']),
       loiGiai: bai(['g = [[2, 1], [2, 2]]', 'for r in g:', '    for n in r:', '        slide_r(n)', '        move()']),
@@ -162,9 +164,10 @@
 
     manLuoi({
       so: 5, ten: 'Hàng ba cột số', hang: 'luyen', hamCuaEmCan: ['move', 'forward', 'slide_r'],
-      deBai: 'Sola nhờ bạn: mỗi hàng r trong lưới g = [[2, 2, 1], [1, 2, 2]] có đủ ba số [r[0], r[1], r[2]]: trượt phải r[0] ô, tiến lên r[1] ô, trượt phải r[2] ô rồi tiến thêm 1 ô bằng move(). Hoàn thành thân vòng lặp để xe vượt hai tầng đá tới cờ.',
+      deBai: 'Sola nhờ bạn: mỗi sân có một lưới g riêng (sân 1: g = [[2, 2, 1], [1, 2, 2]]); mỗi hàng r trong g có đủ ba số [r[0], r[1], r[2]]: trượt phải r[0] ô, tiến lên r[1] ô, trượt phải r[2] ô rồi tiến thêm 1 ô bằng move(). Hoàn thành thân vòng lặp để xe vượt hai tầng đá tới cờ.',
       veMaMau: 'Chương trình có sẵn mới chạy hai cột đầu r[0] và r[1]. Thêm bước trượt phải r[2] ô và move() vào cuối vòng lặp.',
-      san: ['######F', '####...', '####.##', '###..##', '##..###', '##.####', '...####'],
+      san: [['######F', '####...', '####.##', '###..##', '##..###', '##.####', '...####'], ['######F', '#####..', '#####.#', '###...#', '#...###', '#.#####', '..#####']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì hỏng ở sân 2
+      duLieuSan: ['g = [[2, 2, 1], [1, 2, 2]]', 'g = [[1, 2, 2], [2, 2, 1]]'],
       batDau: { x: 0, y: 6, huong: 0 },
       maMau: bai(['g = [[2, 2, 1], [1, 2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])']),
       loiGiai: bai(['g = [[2, 2, 1], [1, 2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])', '    slide_r(r[2])', '    move()']),
@@ -182,9 +185,10 @@
 
     manLuoi({
       so: 6, ten: 'Hàm đọc hàng lưới', hang: 'luyen', canHam: 'tran-khung', hamCuaEmCan: ['move', 'forward', 'slide_r'], taoHam: ['run_row'],
-      deBai: 'Sola nhờ bạn: chế hàm run_row(r) nhận một hàng r gồm hai số [ngang, lên], trượt phải r[0] ô rồi tiến lên r[1] ô. Dùng run_row(r) để đi hết bốn bậc đá trong lưới g tới cờ.',
+      deBai: 'Sola nhờ bạn: chế hàm run_row(r) nhận một hàng r gồm hai số [ngang, lên], trượt phải r[0] ô rồi tiến lên r[1] ô. Dùng run_row(r) để đi hết bốn bậc đá trong lưới g tới cờ. Mỗi sân có một lưới g riêng.',
       veMaMau: 'Chương trình chính đã gọi run_row(r) cho từng hàng trong g, nhưng bạn chưa tạo hàm run_row. Hãy vào Xưởng hàm tạo run_row(r).',
-      san: ['######F', '######.', '#####..', '###...#', '###.###', '##..###', '...####'],
+      san: [['######F', '######.', '#####..', '###...#', '###.###', '##..###', '...####'], ['######F', '####...', '####.##', '###..##', '#...###', '#.#####', '..#####']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì hỏng ở sân 2
+      duLieuSan: ['g = [[2, 1], [1, 2], [2, 1], [1, 2]]', 'g = [[1, 2], [2, 1], [1, 2], [2, 1]]'],
       batDau: { x: 0, y: 6, huong: 0 },
       maMau: bai(['g = [[2, 1], [1, 2], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)']),
       loiGiai: bai(['g = [[2, 1], [1, 2], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)'], { hamCuaEmMoi: [H('run_row', ['r'], T_RUN_ROW)] }),
@@ -204,9 +208,10 @@
 
     manLuoi({
       so: 7, ten: 'Đếm số hàng bằng len', hang: 'bien-the', hamCuaEmCan: ['move', 'forward', 'slide_r', 'run_row'],
-      deBai: 'Sola nhờ bạn: sau khi đi hết các bậc trong lưới g = [[2, 1], [2, 1], [1, 2]] bằng run_row(r), đoạn hành lang ngang cuối cùng tới cờ dài đúng bằng số hàng của lưới g. Hãy dùng len(g) cho bước trượt phải cuối cùng.',
-      veMaMau: 'Chương trình có sẵn đã đi hết ba hàng của g. Thêm một dòng cuối trượt phải len(g) ô để tới cờ.',
-      san: ['#####...F', '#####.###', '####..###', '##...####', '...######'],
+      deBai: 'Sola nhờ bạn: mỗi sân có một lưới g riêng (sân 1: g = [[2, 1], [2, 1], [1, 2]]). Sau khi đi hết các bậc trong g bằng run_row(r), đoạn hành lang ngang cuối cùng tới cờ dài đúng bằng số hàng của lưới g. Hãy dùng len(g) cho bước trượt phải cuối cùng.',
+      veMaMau: 'Chương trình có sẵn đã đi hết các hàng của g. Thêm một dòng cuối trượt phải len(g) ô để tới cờ.',
+      san: [['#####...F', '#####.###', '####..###', '##...####', '...######'], ['####....F', '###..####', '##..#####', '#..######', '..#######']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì hỏng ở sân 2
+      duLieuSan: ['g = [[2, 1], [2, 1], [1, 2]]', 'g = [[1, 1], [1, 1], [1, 1], [1, 1]]'],
       batDau: { x: 0, y: 4, huong: 0 },
       maMau: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)']),
       loiGiai: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)', 'slide_r(len(g))']),
@@ -220,7 +225,7 @@
         { moTa: 'Dùng len(g[0]) thay vì len(g): mỗi hàng chỉ có 2 số nên xe trượt thiếu 1 ô', baiLam: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)', 't = len(g[0])', 'slide_r(t)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đặt slide_r(len(g)) thụt lề vào trong vòng lặp for: xe đâm tường hai hàng đầu', baiLam: bai(['g = [[2, 1], [2, 1], [1, 2]]', 'for r in g:', '    run_row(r)', '    slide_r(len(g))']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Luna: Lưới g có 3 hàng con nên len(g) bằng 3, còn len(g[0]) là độ dài một hàng (bằng 2).', 'Luna: Đặt dòng slide_r(len(g)) ở ngoài vòng lặp for.']
+      goiY: ['Luna: Ở sân 1 lưới g có 3 hàng con nên len(g) bằng 3, sân 2 có số hàng khác; còn len(g[0]) là độ dài một hàng (bằng 2).', 'Luna: Đặt dòng slide_r(len(g)) ở ngoài vòng lặp for.']
     }),
 
     manLuoi({
@@ -267,9 +272,10 @@
     manLuoi({
       so: 10, ten: 'Bản đồ mỏ đá lớn', hang: 'trum', hamCuaEmCan: ['move', 'forward', 'slide_r', 'run_row', 'run_grid'],
       huyHieu: { ma: 'luoi-2d', ten: 'Huy hiệu Đọc bản đồ mỏ' },
-      deBai: 'Sola nhờ bạn: trùm cuối gói, lập lưới g = [[2, 1], [1, 2], [2, 1]] cho ba tầng đá đầu tiên rồi gọi run_grid(g). Sau khi lên tới tầng áp chót, trượt phải đúng len(g) ô rồi tiến lên 1 ô bằng move() để cắm cờ.',
+      deBai: 'Sola nhờ bạn: trùm cuối gói, mỗi sân có một lưới g riêng cho các tầng đá đầu tiên (sân 1: g = [[2, 1], [1, 2], [2, 1]]). Gọi run_grid(g). Sau khi lên tới tầng áp chót, trượt phải đúng len(g) ô rồi tiến lên 1 ô bằng move() để cắm cờ.',
       veMaMau: 'Chương trình có sẵn đã khai báo lưới g. Hãy gọi run_grid(g), trượt phải len(g) ô rồi move().',
-      san: ['########F', '#####....', '###...###', '###.#####', '##..#####', '...######'],
+      san: [['########F', '#####....', '###...###', '###.#####', '##..#####', '...######'], ['########F', '####.....', '###..####', '##..#####', '#..######', '..#######']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì hỏng ở sân 2
+      duLieuSan: ['g = [[2, 1], [1, 2], [2, 1]]', 'g = [[1, 1], [1, 1], [1, 1], [1, 1]]'],
       batDau: { x: 0, y: 5, huong: 0 },
       maMau: bai(['g = [[2, 1], [1, 2], [2, 1]]']),
       loiGiai: bai(['g = [[2, 1], [1, 2], [2, 1]]', 'run_grid(g)', 'slide_r(len(g))', 'move()']),
@@ -281,9 +287,9 @@
       loiSai: [
         { moTa: 'Quên trượt phải len(g) ô trước khi tiến lên ở tầng cuối', baiLam: bai(['g = [[2, 1], [1, 2], [2, 1]]', 'run_grid(g)', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Trượt phải len(g) ô nhưng quên move() cuối cùng để vào cờ', baiLam: bai(['g = [[2, 1], [1, 2], [2, 1]]', 'run_grid(g)', 'slide_r(len(g))']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Ghi sai hàng giữa của lưới g thành [1, 1]: xe thiếu một ô tiến lên nên đâm tường', baiLam: bai(['g = [[2, 1], [1, 1], [2, 1]]', 'run_grid(g)', 'slide_r(len(g))', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Điền thẳng slide_r(3) thay cho len(g): đúng ở sân 1, sang sân 2 lưới có 4 hàng nên trượt thiếu', baiLam: bai(['g = [[2, 1], [1, 2], [2, 1]]', 'run_grid(g)', 'slide_r(3)', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Luna: Gọi run_grid(g) để xe tự leo hết ba bậc trong lưới g.', 'Luna: Sau run_grid(g), gọi slide_r(len(g)) rồi move() để vào ô cờ.']
+      goiY: ['Luna: Gọi run_grid(g) để xe tự leo hết các bậc trong lưới g.', 'Luna: Sau run_grid(g), gọi slide_r(len(g)) rồi move() để vào ô cờ.']
     })
   ];
 

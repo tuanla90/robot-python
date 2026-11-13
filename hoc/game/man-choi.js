@@ -82,6 +82,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       thutLe: function () { return TP.coCauTruc(S.man, 'for') || TP.coCauTruc(S.man, 'if') || TP.coCauTruc(S.man, 'while'); },
       camBien: function () { return TP.camBienCua(manXe()); },                                    // điều kiện while / if chạm đổi được: front_clear() …
       kieuDoiSo: function (ten, k) { return S.kieu(ten, k); },
+      dongDuLieu: function (i) { return laDongDuLieu(i); }, khiChamDuLieu: function (i) { xemDuLieu(i); },      // dữ liệu theo sân (man.duLieuSan): dòng đầu do sân cấp, chạm là xem bảng
       soToiDa: function (ten, k) { return S.soMax(ten, k); },                                    // aim(n) chỉ nhận 1–3
       listChu: function () { return !!TP.coMauCua(S.man) || !!(S.man && S.man.robot && S.man.robot.tay === 'son'); },     // máy sơn: danh sách màu (sow_rows, copy_row)                                     // danh sách cho phần tử là màu (màn có color() / look()): bảng chọn phần tử có thêm hàng màu
       tt: q('.p-prog .tt'), ttDay: t('choi.chuongTrinh'), ttNgan: t('choi.chuongTrinhNgan'),
@@ -522,6 +523,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* ----------------------------------------------------------- sửa chương trình */
   function khiDoi() {
+    var cdl = chuanDuLieu(0);                                                           // người chơi vừa sửa / xoá / dời dòng dữ liệu của sân: trả lại nguyên chỗ
+    if (cdl) S.ed.render();
+    if (cdl === 2) toast(t('choi.duLieuSan', { ten: tenDuLieu(dsDuLieu()) }), 'bad', 3200);
     dongBoBai(); Luu.ghiNhap(S.man.ma, S.bai);
     datLaiChay();
     veKho();
@@ -580,7 +584,40 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     });
     veSanBar();
   }
+  /* ---- DỮ LIỆU THEO SÂN (13/11; lõi: cham.js baiTheoSan): màn nhiều sân khai `duLieuSan: ['g = [[3, 1], [2, 2]]', 'g = [[2, 2], [3, 1]]']`.
+     Dòng đầu chương trình là dòng gán đó, luôn hiện bộ số của SÂN ĐANG XEM và không sửa được; chấm thì mỗi sân chạy với bộ số của riêng nó,
+     nên điền thẳng số của sân 1 sẽ hỏng ở sân 2. Chạm dòng đó: bảng dữ liệu chỉ xem, đổi qua lại giữa các sân. Chưa làm cho màn nhiều robot. */
+  /** Dữ liệu của từng sân, mỗi sân một MẢNG dòng gán (màn khai một dòng thì mảng một phần tử); null nếu màn không dùng. */
+  function dsDuLieu() {
+    var ds = S.man && (S.man.duLieuSan || (S.man.manGoc && S.man.manGoc.duLieuSan));
+    if (!Array.isArray(ds) || !ds.length || !nhieuSan() || S.man.doi) return null;
+    return ds.map(function (x) { return Array.isArray(x) ? x : [x]; });
+  }
+  function veTraiGan(s) { var k = /^([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*=(?!=)/.exec(String(s === undefined || s === null ? '' : s)); return k ? k[1].replace(/\s+/g, '') : null; }
+  function tenDuLieu(ds) { return ds ? ds[0].map(veTraiGan).filter(Boolean).join(', ').replace(/,(?! )/g, ', ') : null; }
+  function laDongDuLieu(i) {
+    var ds = dsDuLieu();
+    return !!ds && !!S.bai && i < ds[0].length && ds.some(function (san) { return san[i] === S.bai.chinh[i]; });
+  }
+  /** Đặt các dòng dữ liệu của sân si lên đầu chương trình (sửa tại chỗ). Trả 0: không đổi · 1: chỉ đổi theo sân · 2: người chơi đã sửa / xoá / dời / viết thêm một dòng gán cùng vế trái. */
+  function chuanDuLieu(si) {
+    var ds = dsDuLieu();
+    if (!ds || !S.bai || !Array.isArray(S.bai.chinh)) return 0;
+    var arr = S.bai.chinh, dich = ds[si] || ds[0], k = dich.length, ten = dich.map(veTraiGan);
+    function khop(san) { return san.every(function (d, j) { return arr[j] === d; }); }
+    var thua = arr.some(function (x, j) { return j >= k && ten.indexOf(veTraiGan(x)) >= 0; });
+    if (khop(dich) && !thua) return 0;
+    var chiDoiSan = ds.some(khop) && !thua;
+    for (var j = arr.length - 1; j >= 0; j--) if (ten.indexOf(veTraiGan(arr[j])) >= 0) arr.splice(j, 1);
+    Array.prototype.unshift.apply(arr, dich);
+    return chiDoiSan ? 1 : 2;
+  }
+  function xemDuLieu(i) {
+    var ds = dsDuLieu(); i = i || 0;
+    if (ds && window.BangDuLieu && BangDuLieu.xemSan) BangDuLieu.xemSan({ dong: ds.map(function (san) { return san[i]; }), si: S.si });
+  }
   function veSanBar() {
+    if (S.ed && chuanDuLieu(S.si)) S.ed.render();                                       // đổi sân xem (hay vừa đặt lại về sân 1): dòng dữ liệu hiện bộ số của sân đó
     S.nut.forEach(function (b, i) {
       b.classList.toggle('on', i === S.si);
       var d = b.querySelector('.dau'), tt = S.marks ? S.marks[i] : null;

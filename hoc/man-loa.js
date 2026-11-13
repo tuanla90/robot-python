@@ -41,8 +41,8 @@
       hamCuaEmCan: [],
       taoHam: [],
       bienDem: true,
-      cauTruc: ['for', 'if', 'return', 'list'],
-      khung: { chinh: 12, moiHam: 10, cauTruc: ['for', 'if', 'return', 'list'] },
+      cauTruc: ['for', 'if', 'return', 'list', 'set'],
+      khung: { chinh: 12, moiHam: 10, cauTruc: ['for', 'if', 'return', 'list', 'set'] },
       mucTieu: 'choi-dieu'
     }, ds);
   }
