@@ -614,21 +614,30 @@
       ten: 'Duyệt qua tập hợp',
       mucTieu: 'toi-co',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Ta có thể duyệt từng phần tử trong tập hợp bằng vòng lặp for x in s:. Cho tập hợp s = {4, 3, 4}, hãy dùng for x in s: gọi spike_step(x) để đi chặng ngang 4 bước rồi chặng dọc 3 bước tới cờ.',
-      veMaMau: 'Khởi tạo s = {4, 3, 4} rồi viết vòng lặp for x in s: gọi spike_step(x).',
+      deBai: 'Ta có thể duyệt từng phần tử trong tập hợp bằng vòng lặp for x in s:. Mỗi sân có một tập hợp s riêng (sân 1: s = {4, 3, 4}). Hãy dùng for x in s: gọi spike_step(x) để đi chặng ngang rồi chặng dọc tới cờ (sân 1: ngang 4 bước, dọc 3 bước).',
+      veMaMau: 'Dòng s đã có sẵn theo từng sân. Viết vòng lặp for x in s: gọi spike_step(x).',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '#####I#',
-        '#####F#',
-        '#######'
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '#####I#',
+          '#####F#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.II..#',
+          '####I##',
+          '####F##',
+          '#######',
+          '#######'
+        ]
       ],
+      duLieuSan: ['s = {4, 3, 4}', 's = {3, 2, 3}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
-        's = {4, 2, 4}',
-        'for x in s:',
-        '    spike_step(x)'
+        's = {4, 3, 4}'
       ]),
       loiGiai: bai([
         's = {4, 3, 4}',
@@ -636,13 +645,14 @@
         '    spike_step(x)'
       ]),
       loiSai: [
-        { moTa: 'Để nguyên s = {4, 2, 4}: chặng dọc chỉ đi 2 bước, dừng trước cờ', baiLam: bai(['s = {4, 2, 4}', 'for x in s:', '    spike_step(x)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đổi thành s = {3, 3, 4}: chặng ngang chỉ đi 3 bước nên rẽ sớm đâm tường', baiLam: bai(['s = {3, 3, 4}', 'for x in s:', '    spike_step(x)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Chưa viết vòng lặp: robot đứng yên ở ô xuất phát', baiLam: bai(['s = {4, 3, 4}']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gọi forward(x) thay vì spike_step(x): không rẽ phải nên đâm tường cuối chặng ngang', baiLam: bai(['s = {4, 3, 4}', 'for x in s:', '    forward(x)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(4) rồi spike_step(3) đâm tường ở sân 2', baiLam: bai(['s = {4, 3, 4}', 'spike_step(4)', 'spike_step(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 12, nhip: 8 },
       goiY: [
-        'Tập hợp {4, 3, 4} lọc bỏ số 4 trùng thứ hai, giữ lại 4 rồi 3.',
-        'Sửa số 2 trong s = {4, 2, 4} thành 3.'
+        'Tập hợp {4, 3, 4} lọc bỏ số 4 trùng thứ hai, giữ lại 4 rồi 3. Sân 2 có tập hợp khác.',
+        'Viết for x in s: rồi thụt lề spike_step(x). Điền thẳng số thì chỉ đúng ở một sân.'
       ]
     }),
 
