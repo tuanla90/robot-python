@@ -3339,6 +3339,13 @@
       if (m.doi) m.doi.forEach(function (r) { if (r && r.chinhLuoi === undefined) r.chinhLuoi = true; });
       else if (m.chinhLuoi === undefined) m.chinhLuoi = true;
     });
+    // 14/11 (KE-HOACH-GHEP-NHIP.md mục 2a): GHÌ XÍCH mở từ luc-ban.6 trở đi: phun mạnh cùng nhịp hai xích đi thẳng thì xích + giật cộng lại (lõi bỏ qua cờ ở robot không phải xích có vòi).
+    var iGhi = M.danhSach.indexOf(get('luc-ban.6'));
+    if (iGhi >= 0) M.danhSach.forEach(function (m, i) {
+      if (i < iGhi) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.ghiXich === undefined) r.ghiXich = true; });
+      else if (m.ghiXich === undefined) m.ghiXich = true;
+    });
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

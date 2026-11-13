@@ -152,6 +152,10 @@ console.log('\n== 3. Mười màn ==');
     (() => { const m = Object.assign({}, ds[0], { chiChay: false, chinhCoDinh: false }); return ds[0].chiChay === true && !ChamHoc.cham(m, { chinh: ['spray()', 'wait()', 'tr_left()', 'forward(3)'], hamCuaMan: [] }, kho).thang; })());
   kiem('màn 2: bắn nhanh thì bóng rơi (ban-ngan), cửa không mở', (() => { const m = ds[1]; return maCua(ChamHoc.cham(m, { chinh: ['spray("low")', 'wait()', 'tr_left()', 'forward(2)'], hamCuaMan: [] }, kho)).includes('ban-ngan'); })());
   kiem('trùm: luôn một lực thì không qua được cả ba sân (mỗi lực trượt ít nhất một sân)', ds[9].loiSai.length >= 2 && ds[9].loiSai.every((ls) => !ChamHoc.cham(ds[9], ls.baiLam, kho).thang));
+  // 14/11 ghép nhịp 2a: màn 6 trình diễn ghì xích (bấm Chạy), màn 7 ÉP: không ghì thì không có đường thắng nào (BFS bỏ cờ ghiXich), lời giải có nhịp ghi-xich
+  kiem('màn 6 "Ghì xích" là màn trình diễn (chiChay, khoá), lời giải có nhịp ghì xích; ghiXich bật từ màn 6, màn 1–5 không', ds[5].chiChay === true && ds[5].chinhCoDinh === true &&
+    ds.every((m) => !!m.ghiXich === (m.so >= 6)) && ChamHoc.cham(ds[5], ds[5].loiGiai, kho).theoSan[0].vet.some((v) => (v.suKien || []).some((e) => e.ma === 'ghi-xich')));
+  kiem('màn 7 ép ghì xích: bỏ cờ ghiXich thì BFS không có đường thắng (phun nhẹ hụt van, phun mạnh rơi hố)', Bo.nhipSungHoiNganNhat(Object.assign({}, ds[6], { ghiXich: false })).nhip === null && Bo.nhipSungHoiNganNhat(ds[6]).nhip !== null);
   kiem('trùm có huy hiệu luc-ban, nhịp tính tổng ba sân', ds[9].huyHieu && ds[9].huyHieu.ma === 'luc-ban' && ds[9].nhipTheo === 'tong' && ds[9].san.length === 3);
   kiem('hàm cốt truyện tạo ở chương: squirt (4), squirt_back (5), smart_spray (8); có mục Sổ lệnh nhóm hoi, chương luc-ban, đúng màn',
     J(ds.flatMap((m) => m.taoHam)) === '["squirt","squirt_back","smart_spray"]' &&
@@ -189,7 +193,8 @@ console.log('\n== 5. Khay ==');
     const k4 = TP.taoKieu(() => ({ man: m4, hamCuaMan: [], kho: [] }));
     kiem('màn Lực bắn: kiểu đối số của spray / spray_back là "luc" (thẻ chèn spray("high"))', k4('spray', 0) === 'luc' && k4('spray_back', 0) === 'luc');
     kiem('squirt(p) của lời giải: đối số p suy ra kiểu "luc"', k4('squirt', 0) === 'luc');
-    const kTho = TP.taoKieu(() => ({ man: ds[6], hamCuaMan: [], kho: [] }));
+    // 14/11: màn 7 "Đố: quên dùng p" (tap_left) nhường chỗ cho màn ép ghì xích; vẫn thử suy kiểu với hàm của màn tap_left(p) đưa vào ngữ cảnh
+    const kTho = TP.taoKieu(() => ({ man: ds[6], hamCuaMan: [{ ten: 'tap_left', thamSo: ['p'], than: ['tr_left()', 'spray(p)', 'wait()', 'tr_right()'] }], kho: [] }));
     kiem('hàm của màn tap_left(p): đối số p kiểu "luc"', kTho('tap_left', 0) === 'luc');
     const kCu = TP.taoKieu(() => ({ man: M.timMa('sung-hoi.4'), hamCuaMan: [], kho: [] }));
     kiem('màn súng hơi cũ: spray không có ô lực', kCu('spray', 0) !== 'luc');
