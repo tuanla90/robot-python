@@ -96,6 +96,15 @@
         - BỆ SÚNG XÍCH (mùa 2; màn khai cfg.beSung = true; robot không súng bỏ qua cờ): XÍCH gắn vòi phun phun MẠNH ("high") thì tia bay như cũ nhưng xe KHÔNG GIẬT:
           không có sự kiện 'giat', thùng sau xe không bị hất; thay bằng sự kiện 'be-sung' { nhip, huong } (thông tin cho hoạt cảnh: xe rung nhẹ, bệ giữ). Phun nhẹ ("low", không đối số) như cũ.
           Thân khác (hai bánh, omni) có beSung vẫn giật như thường; không khai cờ thì xích cũng giật như hiện nay.
+        - GHÉP NHỊP VÒI PHUN + XÍCH (mùa 2, 14/11, hoc/KE-HOACH-GHEP-NHIP.md mục 2; chỉ XÍCH có vòi phun, thân khác bỏ qua cờ; không khai cờ thì luật cũ y nguyên).
+          "Đi thẳng" = hai xích cùng chiều trong nhịp (left_move + right_move, hay left_back + right_back). Tổ hợp quay (một bên, hai bên ngược chiều) cùng nhịp phun vẫn bị bỏ
+          ('ban-dung-yen'; màn có cờ thì sự kiện có thêm ghep { thang, luc } để cham.js nói vì sao). Quay dở cũ (nếu có) mất như mọi nhịp đi thẳng ('xich-quay-do').
+          · 2a GHÌ XÍCH (cfg.ghiXich): phun MẠNH ("high") + đi thẳng. (a) tia bay → (b) cộng chuyển động theo trục mũi: xích (+1 tiến / −1 lùi) + giật (−1 tia bay ra trước, +1 ra sau;
+            0 nếu hết đạn hay có bệ súng beSung) → (c) băng chuyền. Tổng 0: đứng yên, 'ghi-xich' { nhip, o, huong: hướng giật bị ghì, xich: hướng xích đẩy }, KHÔNG có 'giat'.
+            Tổng ±1: đi 1 ô như xích thường. Tổng ±2 PHÓNG: đi 2 ô TỪNG Ô bằng đúng luật đi của xích (thuDi: đâm tường / thùng nặng, xichDay tiến thì đẩy thùng mỗi ô), vướng thì dừng
+            ở ô trước vật cản (có 'dam-tuong'); 'phong' { nhip, tu, den, soO: 0..2, huong: hướng đi, vat: null | lý do vướng } (vướng thì cũng vào suKien cho cham.js).
+          · 2b VỪA CHẠY VỪA PHUN (cfg.phunKhiChay): phun NHẸ ("low" / không đối số) + đi thẳng. (a) xích đi 1 ô (bị chặn thì đứng, 'dam-tuong') → (b) tia phun từ ô MỚI, bay tối đa
+            TAM_BAN_NHANH ô, không giật. Phun mạnh + đi thẳng mà màn chỉ có phunKhiChay: vẫn bỏ như cũ; phun nhẹ mà màn chỉ có ghiXich: vẫn bỏ như cũ.
         - ĐÂM LÀ THUA (HD2, 29/10; màn ÉP khối mới của mùa 1 khai cfg.damLaThua = true; mặc định tắt, không khai thì luật cũ y nguyên): nhịp nào có sự kiện
           'dam-tuong' (tường, mép sân, cửa đóng, thùng nặng, vật nằm đất... mọi loại) mà chưa thắng thì chương trình DỪNG NGAY cuối nhịp đó (dungSom = 'dam-tuong'),
           robot đứng lại ở cú đâm, không chạy tiếp các nhịp sau; sân đó không thắng. Lời chẩn đoán dam-tuong của cham.js nói rõ luật. Chỉ màn một robot.
@@ -126,7 +135,7 @@
             "low"   PHUN NHẸ: tia bay TỐI ĐA TAM_BAN_NHANH = 2 ô rồi rơi (không trúng gì: 'ban-ngan', thông tin), xe KHÔNG GIẬT (không có sự kiện 'giat'). Bánh vẫn nghỉ.
             "high"  PHUN MẠNH: tia bay tới vật cản đầu tiên, xe GIẬT một ô: spray("high") giật LÙI (về phía đuôi), spray_back("high") giật TỚI (về phía mũi).
           p lạ (chữ khác, số, nhiều đối số) → lỗi chạy 'luc-ban-sai'. Màn không khai lucBan mà gọi có đối số → lỗi chạy 'luc-chua-mo'. Robot không vòi phun bỏ qua cờ lucBan. Sự kiện 'ban' có thêm luc và hetTam (bóng nhanh rơi vì hết tầm).
-        - Nhịp có bắn thì xe không tự đi: lệnh bánh / trượt cùng nhịp bị bỏ ('ban-dung-yen', thông tin). Hai phát cùng nhịp: phát sau bị bỏ ('ban-goi-lai', lỗi). Quên wait() sau lệnh bắn →
+        - Nhịp có bắn thì xe không tự đi: lệnh bánh / trượt cùng nhịp bị bỏ ('ban-dung-yen', thông tin; trừ xích có cờ ghép nhịp ghiXich / phunKhiChay, xem mục GHÉP NHỊP VÒI PHUN + XÍCH). Hai phát cùng nhịp: phát sau bị bỏ ('ban-goi-lai', lỗi). Quên wait() sau lệnh bắn →
           'quen-wait'. Đạn vô hạn, trừ khi màn khai cfg.danToiDa = n: mỗi phát tốn 1 viên, hết đạn thì không phun VÀ không giật ('het-dan', lỗi) nhưng vẫn mất nhịp.
         - THỨ TỰ TRONG NHỊP: (a) bắn: bóng bay (nút đổi, băng chuyền nối nút đổi NGAY) → (b) GIẬT: xe (hay thùng) → (c) băng chuyền (theo trạng thái MỚI) → (d) cửa đổi ở CUỐI nhịp.
         - BÓNG bay THẲNG theo hướng bắn (spray: hướng mặt; spray_back: hướng ngược mặt, bay từ ô sát đuôi xe), ô tới ô TRONG CÙNG NHỊP, dừng ở vật cản đầu tiên: tường cao '#', nút 'N' (trung 'nut'),

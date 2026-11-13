@@ -27,6 +27,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    MÙA 2 (27/10): cảm biến HỒNG NGOẠI (docCamBien.cam === 'hong-ngoai', distance() / warm()): tia đỏ mảnh từ mũi xe tới vật cản, vạch nhỏ ở mỗi ô trống đi qua, ô vật cản ám đỏ; warm() thấy
    vật nóng thì ô đó loé cam + gợn nhiệt. NÚT BẮN ĐANG BẬT là NÓNG (luật warm): ngoài hình nút xanh còn có quầng đỏ cam thở và hai gợn nhiệt bay lên (veNong) — ở mọi màn có nút.
    XÍCH ĐẨY THÙNG (thung-di nguon 'xich'): thùng trượt cùng nhịp với bước 'tien' của xe (dính sát mũi). BỆ SÚNG XÍCH (be-sung): bắn tụ mà xe không giật, bệ rung tại chỗ (veGiuBe).
+   GHÉP NHỊP MÙA 2 (cfg.ghiXich / cfg.phunKhiChay): ghi-xich (xích ghì triệt giật) rung tại chỗ như be-sung; phong (phóng 2 ô) chỉ là thông tin, xe trượt bằng các bước 'tien' / 'lui' có sẵn
+   ngay sau tia; vừa chạy vừa phun: bước 'tien' / 'lui' trước rồi tia phun từ ô mới (thứ tự sự kiện).
    CỠ SÂN (15/10): sân tự co giãn theo số ô (Field.canhO): cạnh ô = số nguyên px lớn nhất mà cả sân còn lọt khung `kich` (210) cả ngang lẫn dọc, trần `oToiDa` (84 px = 2 lần ô sân 5×5), sàn T (14 px);
    mỗi lần nạp sân (đổi sân trong màn nhiều sân, sân thử Xưởng) tính lại, lớp phủ robot dựng lại theo cỡ ô mới (doiCo), mọi hiệu ứng vẽ theo pixel sân nên co giãn cùng ô.
    KHUNG ÔM SÂN (15/10): vùng .ffr luôn 218×218 (cột nút bên cạnh không nhảy) nhưng khung gỗ viền sân là div .khung-san tự đặt theo canvas thật (datKhung: canvas + 4 px mỗi phía, kể cả khi sân dính đáy vì nhãn ⚠), phần còn lại của vùng là nền bàn xưởng; toast bám đáy khung qua --kw / --kdy.
@@ -96,7 +98,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return co ? kq : null;
   }
-  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'nut-de': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1, 'phat-am': 1, 'sai-not': 1, 'lech-nhip': 1, 'lo-nhip': 1, 'xong-dieu': 1, 'loa-goi-lai': 1, 'doi-thu-thang': 1, 'be-sung': 1, 'dem-giu': 1, 'dem-can': 1, 'rung-da-chuong': 1, 'vo-da-chuong': 1, 'doi-gai': 1 };   // dem-giu / dem-can: đệm từ giữ xe tại chỗ (không chiếm thời gian) · sự kiện tức thì của tay (không chiếm thời gian của nhịp); be-sung: bệ súng xích giữ xe (rung trong bước 'ban')
+  var HIEU_UNG = { 'dinh-vat': 1, 'nhat-vat': 1, 'dat-vat': 1, 'vat-vo': 1, 'kep-hut': 1, 'xong-dua-vat': 1, 'xich-quay-do': 1, 'omni-khong-cheo': 1, 'xong-day-thung': 1, 'nem-dung-yen': 1, 'giat-chan': 1, 'doc-cam-bien': 1, 'ban-hut': 1, 'ban-bi-chan': 1, 'ban-goi-lai': 1, 'ban-dung-yen': 1, 'nut-doi': 1, 'nut-de': 1, 'bang-doi': 1, 'cua-doi': 1, 'cua-ket': 1, 'bay-qua': 1, 'qua-diem': 1, 'to-o': 1, 'to-thua': 1, 'to-sai-mau': 1, 'ha-but': 1, 'nhac-but': 1, 'xong-to-hinh': 1, 'son-goi-lai': 1, 'phat-am': 1, 'sai-not': 1, 'lech-nhip': 1, 'lo-nhip': 1, 'xong-dieu': 1, 'loa-goi-lai': 1, 'doi-thu-thang': 1, 'be-sung': 1, 'ghi-xich': 1, 'phong': 1, 'dem-giu': 1, 'dem-can': 1, 'rung-da-chuong': 1, 'vo-da-chuong': 1, 'doi-gai': 1 };   // dem-giu / dem-can: đệm từ giữ xe tại chỗ (không chiếm thời gian) · sự kiện tức thì của tay (không chiếm thời gian của nhịp); be-sung: bệ súng xích giữ xe (rung trong bước 'ban')
 
   /* BẾN SÔNG / CẢNG SÔNG (31/10): sự kiện mới có bước hoạt cảnh riêng (Field.nhipMuaMoi) và trọng số thời gian trong nhịp (TRONG) */
   var NHIP_MOI = { 'troi': 1, 'troi-chan': 1, 'neo-giu': 1, 'tha-neo': 1, 'nho-neo': 1, 'keo-vat': 1, 'keo-hut': 1, 'keo-van': 1, 'tha-keo': 1, 'coi-duoi': 1, 'buoc-duoi': 1, 'doi-dai-luoi': 1, 'cong-batch': 1,
@@ -2298,6 +2300,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var thungGiat = evs.filter(function (s) { return s.ma === 'thung-di' && s.nguon === 'giat'; });     // thùng nặng nằm sau xe bị cú giật hất đi
       var thungXich = evs.filter(function (s) { return s.ma === 'thung-di' && s.nguon === 'xich'; });     // mùa 2: xích tiến đẩy thùng trước mũi đi 1 ô, thùng trượt cùng bước 'tien'
       var beSungEv = evs.filter(function (s) { return s.ma === 'be-sung'; })[0] || null;                 // mùa 2: bệ súng xích giữ xe khi bắn tụ (không giật)
+      if (!beSungEv) beSungEv = evs.filter(function (s) { return s.ma === 'ghi-xich'; })[0] || null;     // mùa 2 ghép nhịp 2a: xích ghì triệt giật, xe rung tại chỗ như bệ giữ (phóng thì hai bước 'tien' / 'lui' sau tia)
       var chanGiat = evs.filter(function (s) { return s.ma === 'thung-chan' && s.kieu === 'giat'; })[0] || null;   // thùng sau xe bị chặn ngay: xe và thùng cùng rung
       list = list.filter(function (s) {
         if (s.ma === 'thung-di') return s.nguon !== 'bang' && s.nguon !== 'xich' && !(s.nguon === 'giat' && coBan);
