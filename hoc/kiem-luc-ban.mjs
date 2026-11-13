@@ -155,7 +155,7 @@ console.log('\n== 3. Mười màn ==');
   // 14/11 ghép nhịp 2a: màn 6 trình diễn ghì xích (bấm Chạy), màn 7 ÉP: không ghì thì không có đường thắng nào (BFS bỏ cờ ghiXich), lời giải có nhịp ghi-xich
   kiem('màn 6 "Ghì xích" là màn trình diễn (chiChay, khoá), lời giải có nhịp ghì xích; ghiXich bật từ màn 6, màn 1–5 không', ds[5].chiChay === true && ds[5].chinhCoDinh === true &&
     ds.every((m) => !!m.ghiXich === (m.so >= 6)) && ChamHoc.cham(ds[5], ds[5].loiGiai, kho).theoSan[0].vet.some((v) => (v.suKien || []).some((e) => e.ma === 'ghi-xich')));
-  kiem('màn 7 ép ghì xích: bỏ cờ ghiXich thì BFS không có đường thắng (phun nhẹ hụt van, phun mạnh rơi hố)', Bo.nhipSungHoiNganNhat(Object.assign({}, ds[6], { ghiXich: false })).nhip === null && Bo.nhipSungHoiNganNhat(ds[6]).nhip !== null);
+  kiem('màn 7 ép ghì xích: bỏ cờ ghiXich thì BFS không có đường thắng (phun nhẹ hụt van, phun mạnh hất thùng)', Bo.nhipSungHoiNganNhat(Object.assign({}, ds[6], { ghiXich: false })).nhip === null && Bo.nhipSungHoiNganNhat(ds[6]).nhip !== null);
   kiem('trùm có huy hiệu luc-ban, nhịp tính tổng ba sân', ds[9].huyHieu && ds[9].huyHieu.ma === 'luc-ban' && ds[9].nhipTheo === 'tong' && ds[9].san.length === 3);
   kiem('hàm cốt truyện tạo ở chương: squirt (4), squirt_back (5), smart_spray (8), brace_spray (9, 14/11 ghì xích); có mục Sổ lệnh nhóm hoi, chương luc-ban, đúng màn',
     J(ds.flatMap((m) => m.taoHam)) === '["squirt","squirt_back","smart_spray","brace_spray"]' &&
