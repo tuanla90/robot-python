@@ -104,7 +104,8 @@ Lõi đã đúng thứ tự (a) neo → (b) lưới → (c) chân vịt → (d) 
 - Màn ép: xuồng neo giữa dòng sức 2, cửa kênh êm trước mũi, dưới dòng là bờ đá / cống đóng.
 
 ### 4b. Neo + tung lưới (gói 5, chương 2) — không sửa lõi
-- `anchor(); cast_net("left"); wait()`: bè trôi đi ngang tầm lưới đúng một nhịp; neo trước một nhịp thì bè trôi qua, không neo thì xuồng lệch, lưới trượt.
+- `anchor(); cast_net("left"); wait()`: bè trôi đi ngang tầm lưới đúng một nhịp; neo trước một nhịp thì bè trôi qua. Không neo thì lưới VẪN bắt được (lưới pha (b) chạy trước dòng (d)), nhưng dòng cuốn cả xuồng lẫn bè vào ngách ngay sau: màn ép dựng theo cơ chế này.
+- XONG 13/11 (180c87c, gói A): gói 5 có 18/20 màn ghép. `lift_anchor()` còn một dòng `unanchor()` (bỏ `wait()`), hàm mới `anchor_net(d)`; 11 màn sau chỉ hạ ngưỡng sao. Lưới đã bắt bè trước mũi thì xuồng không tiến được (`luoi-vuong`), nên 4a ghép nhổ neo với LÙI / QUAY khi bè ở mũi.
 
 ### 4c. Tời cuộn từng ô: `reel_in()` / `reel_out()` thay `set_length` (gói 6 Cuộn dây) — sửa lõi
 - Vấn đề hiện tại: `set_length(0)` kéo bè vào khoang NGAY trong một nhịp dù dây dài 3, nên ghép với chân vịt chỉ bớt một nhịp.
