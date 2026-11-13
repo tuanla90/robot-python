@@ -116,7 +116,7 @@ kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), t
       assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ': gói 10 chạy một mình cần 2–3 sân, có ' + soSan(m));
       assert.equal(m.nhipTheo, 'tong', m.ma + ': gói 10 chạy một mình cần nhipTheo === "tong"');
     }
-    else if (m.hang !== 'trum' && !NHIEU_SAN_KHONG_TRUM.includes(m.ma)) assert.equal(soSan(m), 1, m.ma);
+    else if (m.hang !== 'trum' && !NHIEU_SAN_KHONG_TRUM.includes(m.ma) && !m.duLieuSan) assert.equal(soSan(m), 1, m.ma);      // 13/11: màn DỮ LIỆU THEO SÂN (man.duLieuSan) được nhiều sân dù không phải trùm: mỗi sân một bộ số để chặn mẹo điền thẳng số (hoc/kiem-du-lieu-san.cjs kiểm riêng)
     if (m.hang === 'trum') assert.equal(m.so, ds.length, m.ma + ' trùm không đứng cuối chương');
     if (ds.length === 10) assert.equal(m.hang === 'trum', m.so === 10, m.ma);
   }
