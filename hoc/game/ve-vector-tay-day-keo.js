@@ -83,7 +83,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.veDayKeo = veDayKeo;
 
   V.dangKy({
-    loai: 'tay', ma: 'day-keo', hamGoc: ['cast_net', 'drop_net', 'set_length', 'tow', 'drop_tow', 'tether', 'untether'], ten: 'Tay lưới thủy lợi', gan: 'tay', diemNeo: { x: 50, y: 82 },
+    loai: 'tay', ma: 'day-keo', hamGoc: ['cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out', 'tow', 'drop_tow', 'tether', 'untether'], ten: 'Tay lưới thủy lợi', gan: 'tay', diemNeo: { x: 50, y: 82 },
     ve: function (g, s, M, H) {
       s = s || {};
       /* giá tời & khung phóng lưới chữ U gắn mũi xuồng: hai má thép tối + tang cuốn dây cam có rãnh cáp + hai càng dẫn lưới */

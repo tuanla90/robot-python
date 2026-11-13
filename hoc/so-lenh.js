@@ -317,6 +317,8 @@
     g('cast_net', 'drop_net', 'Tay lưới: tung lưới theo hướng "front", "back", "left", "right" cách 2 ô để bắt bè hoặc gạt van cống'),
     g('drop_net', 'cast_net', 'Tay lưới: mở lưới thả bè đang giữ tại ô nước hiện tại'),
     g('set_length', null, 'Cuộn dây lưới: đặt độ dài dây từ 0 đến 3, với 0 là kéo bè về khoang tàu và 1 đến 3 là số ô dây dưới nước'),
+    g('reel_in', 'reel_out', 'Tời cuộn: cuộn dây lưới ngắn đi 1 ô, bè trong lưới về gần xuồng 1 ô; dây còn 1 ô thì cuộn bè vào khoang tàu'),
+    g('reel_out', 'reel_in', 'Tời cuộn: nhả dây lưới dài thêm 1 ô (tối đa 3), bè trong lưới (hay trong khoang) ra xa xuồng 1 ô'),
     g('flow_dir', null, 'Hỏi: nước ô trước mũi chảy về đâu so với mũi xuồng ("front", "back", "left", "right", "none")'),
     g('flow', null, 'Hỏi: nước ô trước mũi chảy về đâu và mạnh bao nhiêu; trả về một cặp (hướng, sức), ví dụ ("back", 2)'),
     // CẢNG SÔNG (mùa 4): cần cẩu container, mỗi lệnh một nhịp (không cần wait())

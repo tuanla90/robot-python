@@ -43,7 +43,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var NOTE_NGAN = 'note_ngan';                                  // khối giả của gói Ngân dài (spec.nganDai): chèn note(1, 2), nốt n ngân k nhịp
   var AM_TEN = ['hear', 'listen'];                              // cảm biến âm thanh (mùa 8): trả SỐ, chỉ dùng làm ô số / khối nhóm ÂM THANH, không phải lệnh
   var MOC_TEN = ['pick_up', 'set_down', 'pick_up2'];            // lệnh MÓC CẨU (mùa Cảng sông, tay 'moc-cau'): nhóm MÓC CẨU (cùng màu cam với tay)
-  var DAY_TEN = ['cast_net', 'drop_net', 'set_length', 'tow', 'drop_tow', 'tether', 'untether'];   // lệnh DÂY KÉO (mùa Bến sông, tay 'day-keo'): nhóm DÂY KÉO (cùng màu cam với tay)
+  var DAY_TEN = ['cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out', 'tow', 'drop_tow', 'tether', 'untether'];   // lệnh DÂY KÉO (mùa Bến sông, tay 'day-keo'): nhóm DÂY KÉO (cùng màu cam với tay)
   var DIAG_TEN = ['diag_left', 'diag_right'];                   // omni đi chéo (mùa Mỏ đá): gộp chung nhóm TRƯỢT với slide_left / slide_right
   function lopMau(ten) {
     if (ten === 'left_move' || ten === 'right_move' || ten === 'left_back' || ten === 'right_back') return 'cy';
