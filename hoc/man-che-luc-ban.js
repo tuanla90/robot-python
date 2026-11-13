@@ -117,7 +117,7 @@
 
   var C_3 = ['quick_pick()', 'tr_left()', 'quick_pick()', 'spin()', 'forward(4)', 'tr_right()'];
   var C_4 = FOR(3, ['auto_right()', 'move()']).concat(['move()']);
-  var C_5 = ['squirt_left("low")', 'squirt("high")', 'forward(5)', 'squirt_left("high")', 'tr_right()', 'forward(3)'];
+  var C_5 = ['squirt_left("low")', 'brace_spray()', 'forward(4)', 'squirt_left("high")', 'tr_right()', 'forward(3)'];   // 14/11: van B ghì xích (brace_spray, luc-ban.9) nên xe không lùi, forward(4)
   var T_FIRE_LEFT = ['tr_left()', 'squirt(p)', 'tr_right()'];
 
   var C_6 = ['close_spray()', 'tr_right()', 'close_spray()', 'tr_right()', 'forward(5)'];
@@ -218,15 +218,16 @@
 
     man({
       so: 5, ten: 'Hàm squirt_left(p)', yMoi: 'hàm có tham số lực p, truyền tiếp p cho squirt(p) (hàm gọi hàm)',
-      hamCuaEmCan: ['squirt', 'tr_left', 'tr_right', 'forward', 'move'], taoHam: ['squirt_left'], chinhCoDinh: true,
-      deBai: 'Một cánh cửa chắn ngay đầu hành lang; van A bên trái mở cửa đó, van B cuối hành lang và van C bên trái ở cuối đường mở hai cửa xuống cờ. ' +
+      hamCuaEmCan: ['squirt', 'brace_spray', 'tr_left', 'tr_right', 'forward', 'move'], taoHam: ['squirt_left'], chinhCoDinh: true,
+      deBai: 'Một cánh cửa chắn ngay đầu hành lang; van A bên trái mở cửa đó, van B cuối hành lang và van C bên trái ở cuối đường mở hai cửa xuống cờ. Van B thì ghì xích bằng brace_spray() cho xe khỏi lùi. ' +
         'Em chế squirt_left(p): quay trái, phun với lực p bằng squirt(p), quay lại. Chương trình chính đã khóa, gọi squirt_left("low") rồi squirt_left("high").',
       veMaMau: 'Chương trình chính bị khóa. Tạo squirt_left(p): trong thân, gọi squirt(p) để truyền tiếp lực p.',
       san: SAN_5, batDau: { x: 2, y: 3, huong: 1 }, noi: NOI_5,
       maMau: bai(C_5),
-      sao: { o: 22, nhip: 21 },
+      sao: { o: 26, nhip: 20 },
       loiGiai: { chinh: C_5.slice(), hamCuaEmMoi: [H('squirt_left', ['p'], T_FIRE_LEFT)] },
-      loiGiaiKhac: { moTa: 'Viết spray(p), wait() thay cho squirt(p): đúng, thêm một ô', baiLam: bai(C_5), hamCuaEmMoi: [H('squirt_left', ['p'], ['tr_left()', 'spray(p)', 'wait()', 'tr_right()'])] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: bai(C_5), hamCuaEmMoi: [H('squirt_left', ['p'], ['# quay trái, phun lực p, quay lại'].concat(T_FIRE_LEFT))] },
+      congThucKhac: [{ moTa: 'Viết spray(p), wait() thay cho squirt(p)', baiLam: bai(C_5), hamCuaEmMoi: [H('squirt_left', ['p'], ['tr_left()', 'spray(p)', 'wait()', 'tr_right()'])] }],
       loiSai: [
         { moTa: 'Viết cứng squirt("low"): van C cách 3 ô, tia nước rơi giữa đường', baiLam: bai(C_5), hamCuaEmMoi: [H('squirt_left', ['p'], ['tr_left()', 'squirt("low")', 'tr_right()'])], phaiCoMa: ['ban-ngan'] },
         { moTa: 'Viết cứng squirt("high"): ở van A xe giật lùi xuống hốc', baiLam: bai(C_5), hamCuaEmMoi: [H('squirt_left', ['p'], ['tr_left()', 'squirt("high")', 'tr_right()'])], phaiCoMa: ['chua-toi-co'] },
