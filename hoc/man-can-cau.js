@@ -479,11 +479,15 @@
 
     manSoAm({
       so: 9, ten: 'Danh sách độ lệch quanh cảng', hang: 'bien-the', hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane'],
-      deBai: 'Sola nhờ bạn: danh sách steps = [[3, 2], [-4, -1], [2, 1]] lưu các cặp độ lệch [da, dr] cho ba chặng kiểm tra cảng. Hãy duyệt từng cặp s trong steps và gọi aim_crane(s[0], s[1]).',
+      deBai: 'Sola nhờ bạn: mỗi sân có một danh sách steps riêng, lưu các cặp độ lệch [da, dr] cho ba chặng kiểm tra cảng. Sân 1 là steps = [[3, 2], [-4, -1], [2, 1]]. Hãy duyệt từng cặp s trong steps và gọi aim_crane(s[0], s[1]).',
       veMaMau: 'Chương trình có sẵn đã khai báo steps và vòng lặp for s in steps. Hãy gọi aim_crane(s[0], s[1]) trong vòng lặp.',
-      san: SAN_CANG,
+      san: [SAN_CANG, SAN_CANG],
+      duLieuSan: ['steps = [[3, 2], [-4, -1], [2, 1]]', 'steps = [[-3, 1], [4, -1], [-1, 2]]'],      // dữ liệu theo sân: mốc và bóng mờ khác nhau; điền thẳng số của sân 1 thì lệch bóng mờ ở sân 2
       batDau: { x: 3, y: 3, nac: 2, tam: 1 },
-      bongMo: { x: 3, y: 3, nac: 3, tam: 3, diQua: [{ x: 0, y: 6 }, { x: 5, y: 1 }] },
+      bongMo: [
+        { x: 3, y: 3, nac: 3, tam: 3, diQua: [{ x: 0, y: 6 }, { x: 5, y: 1 }] },
+        { x: 3, y: 3, nac: 2, tam: 3, diQua: [{ x: 1, y: 1 }, { x: 4, y: 4 }] }
+      ],
       maMau: bai(['steps = [[3, 2], [-4, -1], [2, 1]]', 'for s in steps:', '    swing_by(s[0])']),
       loiGiai: bai(['steps = [[3, 2], [-4, -1], [2, 1]]', 'for s in steps:', '    aim_crane(s[0], s[1])']),
       sao: { o: 19, nhip: 13 },
@@ -493,9 +497,10 @@
       },
       loiSai: [
         { moTa: 'Chỉ gọi swing_by(s[0]) mà quên đổi tầm s[1]', baiLam: bai(['steps = [[3, 2], [-4, -1], [2, 1]]', 'for s in steps:', '    swing_by(s[0])']), phaiCoMa: ['chua-qua-diem', 'lech-bong-mo'] },
-        { moTa: 'Đổi nhầm vị trí s[1] và s[0] trong aim_crane', baiLam: bai(['steps = [[3, 2], [-4, -1], [2, 1]]', 'for s in steps:', '    aim_crane(s[1], s[0])']), phaiCoMa: ['can-het-tam'] }
+        { moTa: 'Đổi nhầm vị trí s[1] và s[0] trong aim_crane', baiLam: bai(['steps = [[3, 2], [-4, -1], [2, 1]]', 'for s in steps:', '    aim_crane(s[1], s[0])']), phaiCoMa: ['can-het-tam'] },
+        { moTa: 'Điền thẳng số của sân 1: ba lệnh aim_crane viết sẵn số lệch bóng mờ ở sân 2', baiLam: bai(['steps = [[3, 2], [-4, -1], [2, 1]]', 'aim_crane(3, 2)', 'aim_crane(-4, -1)', 'aim_crane(2, 1)']), phaiCoMa: ['lech-bong-mo'] }
       ],
-      goiY: ['Luna: Mỗi phần tử s trong steps là cặp [da, dr], nên s[0] là độ lệch góc và s[1] là độ lệch tầm.', 'Luna: Thay dòng swing_by(s[0]) bằng aim_crane(s[0], s[1]).']
+      goiY: ['Luna: Mỗi phần tử s trong steps là cặp [da, dr], nên s[0] là độ lệch góc và s[1] là độ lệch tầm.', 'Luna: Thay dòng swing_by(s[0]) bằng aim_crane(s[0], s[1]). Điền thẳng số thì chỉ đúng ở một sân.']
     }),
 
     manSoAm({
