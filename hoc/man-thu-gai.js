@@ -772,16 +772,27 @@
     manCheThuGai(8, 'bien-the', {
       ten: 'Bản đồ trượt từ điển',
       hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'glide_step', 'glide_left'],
-      deBai: 'Từ điển d = {"a": "R", "b": "L", "c": "R"} lưu hướng rẽ ở cuối mỗi dải đá ướt. Hãy duyệt for k in d:, nếu d[k] == "R" thì gọi glide_step(), ngược lại gọi glide_left(). Sau vòng lặp, bước 1 ô vào cờ.',
+      deBai: 'Mỗi sân có một từ điển d riêng lưu hướng rẽ ở cuối mỗi dải đá ướt. Sân 1 là d = {"a": "R", "b": "L", "c": "R"}. Hãy duyệt for k in d:, nếu d[k] == "R" thì gọi glide_step(), ngược lại gọi glide_left(). Sau vòng lặp, bước 1 ô vào cờ.',
       veMaMau: 'Hoàn thành nhánh else trong vòng lặp for k in d: và thêm move() ở cuối.',
       san: [
-        '#######',
-        '#.II###',
-        '###I###',
-        '###.I.#',
-        '#####F#',
-        '#######'
+        [
+          '#######',
+          '#.II###',
+          '###I###',
+          '###.I.#',
+          '#####F#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '##.II.#',
+          '##F####',
+          '#######'
+        ]
       ],
+      duLieuSan: ['d = {"a": "R", "b": "L", "c": "R"}', 'd = {"a": "R", "b": "R", "c": "L"}'],      // dữ liệu theo sân: thứ tự rẽ khác nhau nên điền thẳng lệnh của sân này thì đâm tường ở sân kia
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'd = {"a": "R", "b": "L", "c": "R"}',
@@ -799,13 +810,14 @@
         'move()'
       ]),
       loiSai: [
-        { moTa: 'Thiếu nhánh else và lệnh move() cuối', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Quên lệnh move() sau vòng lặp: dừng ở (5, 3) sát trước cờ', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()', '    else:', '        glide_left()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else và lệnh move() cuối', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên lệnh move() sau vòng lặp: dừng sát trước cờ', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()', '    else:', '        glide_left()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng lệnh của sân 1: glide_step(), glide_left(), glide_step() rồi move() đâm tường ở sân 2', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'glide_step()', 'glide_left()', 'glide_step()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 22, nhip: 7 },
       goiY: [
         'Thêm else: rồi thụt lề glide_left() bên trong vòng lặp for k in d:.',
-        'Ngoài vòng lặp, gọi move() để bước xuống cờ (5, 4).'
+        'Ngoài vòng lặp, gọi move() để bước vào cờ. Viết thẳng các lệnh rẽ thì chỉ đúng ở một sân.'
       ]
     }),
 
