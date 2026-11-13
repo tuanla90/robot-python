@@ -115,6 +115,7 @@ Lõi đã đúng thứ tự (a) neo → (b) lưới → (c) chân vịt → (d) 
   - `set_length` thôi dạy (11 màn gói 6 làm lại); lõi giữ để không vỡ mã cũ / xe tời bờ mùa 9.
 - Ghép: `reel_in(); left_move(); right_move(); wait()`. Dây còn 1 ô thì vật vào khoang và xuồng đi trong cùng nhịp. Tiến về phía vật trong lúc cuộn thì cán lên dây (`luoi-vuong` có sẵn), trừ nấc cuối: dạy như lỗi hay gặp.
 - Màn ép "giữ chỗ giữa dòng": bè cách 3 ô, xuồng giữa dòng sức 1, không neo: phải cuộn 3 nhịp, nhịp nào cũng vừa cuộn vừa chạy máy ngược dòng (ngược dòng sức 1 thì đứng yên). Gói có neo: so với cách `anchor()` rồi cuộn yên (mất nhịp thả / nhổ neo).
+- XONG 14/11 (lõi 1915467, gói 6 4e450a1, mùa 9 c02bbaa): `reel_in` / `reel_out` ≡ `set_length(dài ∓ 1)` chung đường code, bật bằng hamGoc hay cờ `cuonDay`. Gói 6 có 17/20 màn ghép; gói 7–10 tự ghép qua `tether_grab()` = `reel_in()` (7: 10/20, 8: 10/20, 9: 4/20, 10: 10/20). Màn ép "giữ chỗ giữa dòng" KHÔNG dựng được (dây theo vệt nước xuồng vừa rời, dòng đẩy lùi thì lệnh tiến cán dây): thay bằng lục bình trôi chắn đường lùi (buoc-duoi.4, che-buoc-duoi.5). Mùa 9: xuồng R1 (`co-may.js` XU, `man-cuu-ben-song.js`) thêm `reel_in` / `reel_out`.
 
 ## 5. Mùa 7 Mỏ đá (xe omni)
 
