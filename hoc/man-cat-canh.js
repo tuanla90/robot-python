@@ -254,60 +254,79 @@
     }),
     'list.4': banList({
       ten: 'Hàng cuối bay thẳng', hang: 'luyen', hamCuaEmCan: ['fly_right'],
-      deBai: 'Ba hàng đầu mỗi hàng bay sang phải rồi hạ xuống một ô, nhưng ở hàng cuối cờ nằm ngay cuối hàng nên không hạ xuống nữa. Dùng danh sách cho ba hàng đầu, rồi bay nốt hàng cuối.',
+      deBai: 'Ba hàng đầu mỗi hàng bay sang phải rồi hạ xuống một ô, nhưng ở hàng cuối cờ nằm ngay cuối hàng nên không hạ xuống nữa. Dùng danh sách cho ba hàng đầu, rồi bay nốt hàng cuối. Mỗi sân có một danh sách a riêng: sân 1 là [3, 2, 2], sân 2 là [2, 3, 2]. Ở sân nào hàng cuối cũng dài 2 ô.',
       veMaMau: 'Chương trình có sẵn đã bay xong ba hàng đầu và hạ xuống hàng cuối. Viết thêm lệnh bay sang phải tới cờ.',
-      san: ['.=.>######', '###.u.####', '#####.=.##', '#######.>F'],
+      san: [
+        ['.=.>######', '###.u.####', '#####.=.##', '#######.>F'],
+        ['.=.#######', '##.u=.####', '#####.=.##', '#######.>F']
+      ],
+      duLieuSan: ['a = [3, 2, 2]', 'a = [2, 3, 2]'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm bụi cây ở sân 2
       batDau: { x: 0, y: 0, huong: 0 },
       maMau: bai(['a = [3, 2, 2]'].concat(DUYET('a'))),
       loiGiai: bai(['a = [3, 2, 2]'].concat(DUYET('a'), ['fly_right(2)'])),
       sao: { o: 7, nhip: 12 },
       loiSai: [
         { moTa: 'Chưa bay hàng cuối: dừng cách cờ 2 ô', baiLam: bai(['a = [3, 2, 2]'].concat(DUYET('a'))), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Hàng cuối chỉ bay sang phải 1 ô: dừng ngay trước cờ', baiLam: bai(['a = [3, 2, 2]'].concat(DUYET('a'), ['fly_right(1)'])), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Hàng cuối chỉ bay sang phải 1 ô: dừng ngay trước cờ', baiLam: bai(['a = [3, 2, 2]'].concat(DUYET('a'), ['fly_right(1)'])), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng danh sách của sân 1 vào vòng for: ở sân 2 hạ xuống đâm bụi cây', baiLam: bai(['a = [3, 2, 2]'].concat(DUYET('[3, 2, 2]'), ['fly_right(2)'])), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       goiY: ['Mỗi phần tử trong vòng for đều kèm go_down() ở cuối.', 'Hàng cuối không có go_down() nên gọi riêng fly_right(2) sau vòng for.']
     }),
     'list.7': banList({
       ten: 'Dùng lại danh sách', hang: 'luyen', hamCuaEmCan: ['fly_right'],
-      deBai: 'Đường bay gồm hai nhịp bậc thang giống hệt nhau, mỗi nhịp có hai hàng dài 2 ô và 2 ô. Cất danh sách vào biến a rồi gọi tour(a) hai lần.',
+      deBai: 'Đường bay gồm hai nhịp bậc thang giống hệt nhau, mỗi nhịp có hai hàng. Mỗi sân có một danh sách a riêng: sân 1 là [2, 2], sân 2 là [3, 1]. Danh sách đã cất trong biến a: gọi tour(a) hai lần.',
       veMaMau: 'Chương trình có sẵn mới gọi tour(a) một lần. Gọi thêm một lần nữa.',
-      san: ['.=.######', '##.u.####', '####.=u.#', '######.>.', '########F'],
+      san: [
+        ['.=.######', '##.u.####', '####.=u.#', '######.>.', '########F'],
+        ['.=.>#####', '###u.####', '####.=u>#', '#######.=', '########F']
+      ],
+      duLieuSan: ['a = [2, 2]', 'a = [3, 1]'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm bụi cây ở sân 2
       batDau: { x: 0, y: 0, huong: 0 },
       maMau: bai(['a = [2, 2]', 'tour(a)'], { hamCuaMan: [H_TOUR] }),
       loiGiai: bai(['a = [2, 2]', 'tour(a)', 'tour(a)'], { hamCuaMan: [H_TOUR] }),
       sao: { o: 8, nhip: 12 },
       loiSai: [
         { moTa: 'Chỉ gọi tour(a) một lần: mới đi được nửa đường', baiLam: bai(['a = [2, 2]', 'tour(a)'], { hamCuaMan: [H_TOUR] }), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Sửa danh sách thành [2, 1]: lệch nhịp đâm bụi cây', baiLam: bai(['a = [2, 1]', 'tour(a)', 'tour(a)'], { hamCuaMan: [H_TOUR] }), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Điền thẳng danh sách của sân 1: tour([2, 2]) hai lần thì đâm bụi cây ở sân 2', baiLam: bai(['a = [2, 2]', 'tour([2, 2])', 'tour([2, 2])'], { hamCuaMan: [H_TOUR] }), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       goiY: ['Cất danh sách vào biến a để truyền cho nhiều lời gọi hàm.', 'Gọi tour(a) hai lần liên tiếp.']
     }),
     'list.9': banList({
       ten: 'Sửa vòng lặp danh sách', hang: 'bien-the', hamCuaEmCan: ['fly_right'],
-      deBai: 'Sola ghi đúng danh sách a = [3, 2, 2, 2], nhưng lệnh go_down() lại nằm ngoài vòng for nên drone bay tuột một mạch ở hàng đầu rồi đâm bụi cây. Sửa lại thụt lề.',
+      deBai: 'Mỗi sân có một danh sách a riêng (sân 1 là [3, 2, 2, 2], sân 2 là [2, 3, 1, 3]) và Sola đã ghi đúng cả hai. Nhưng lệnh go_down() lại nằm ngoài vòng for nên drone bay tuột một mạch ở hàng đầu rồi đâm bụi cây. Sửa lại thụt lề.',
       veMaMau: 'Chạy thử xem vì sao drone không hạ xuống sau hàng đầu, rồi thụt go_down() vào trong vòng for.',
-      san: ['.=.>######', '###.u.####', '#####.=.##', '#######.>.', '#########F'],
+      san: [
+        ['.=.>######', '###.u.####', '#####.=.##', '#######.>.', '#########F'],
+        ['.=.#######', '##.u=.####', '#####.u###', '######.=>.', '#########F']
+      ],
+      duLieuSan: ['a = [3, 2, 2, 2]', 'a = [2, 3, 1, 3]'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm bụi cây ở sân 2
       batDau: { x: 0, y: 0, huong: 0 },
       maMau: bai(['a = [3, 2, 2, 2]', 'for n in a:', '    fly_right(n)', 'go_down()']),
       loiGiai: bai(['a = [3, 2, 2, 2]'].concat(DUYET('a'))),
       sao: { o: 6, nhip: 13 },
       loiSai: [
-        { moTa: 'Để go_down() ngoài vòng for: bay thẳng vào bụi cây ở hàng đầu', baiLam: bai(['a = [3, 2, 2, 2]', 'for n in a:', '    fly_right(n)', 'go_down()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Để go_down() ngoài vòng for: bay thẳng vào bụi cây ở hàng đầu', baiLam: bai(['a = [3, 2, 2, 2]', 'for n in a:', '    fly_right(n)', 'go_down()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Bỏ vòng for, điền thẳng số của sân 1: ở sân 2 hàng đầu đâm bụi cây', baiLam: bai(['a = [3, 2, 2, 2]', 'fly_right(3)', 'go_down()', 'fly_right(2)', 'go_down()', 'fly_right(2)', 'go_down()', 'fly_right(2)', 'go_down()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       goiY: ['Hết MỖI hàng đều phải hạ xuống một ô.', 'Thụt go_down() vào trong thân vòng for n in a:']
     }),
     'list.5': banList({
       ten: 'Mỗi hàng hạ hai ô', hang: 'luyen', hamCuaEmCan: ['fly_right'],
-      deBai: 'Giữa hai lối bay ngang là cả một dãy bụi cây và hàng rào, nên hết mỗi hàng trong danh sách a = [3, 2, 2] drone phải hạ xuống HAI ô, cuối cùng bay sang phải 1 ô vào cờ.',
+      deBai: 'Giữa hai lối bay ngang là cả một dãy bụi cây và hàng rào, nên hết mỗi hàng trong danh sách a drone phải hạ xuống HAI ô, cuối cùng bay sang phải 1 ô vào cờ. Mỗi sân có một danh sách a riêng: sân 1 là [3, 2, 2], sân 2 là [1, 4, 2].',
       veMaMau: 'Chương trình có sẵn mới hạ xuống một ô sau mỗi hàng. Thêm một lệnh go_down() trong vòng lặp và một bước sang phải ở cuối.',
-      san: ['.=.>#####', '###=#####', '###.u.###', '#####u###', '#####.>.#', '#######=#', '#######.F'],
+      san: [
+        ['.=.>#####', '###=#####', '###.u.###', '#####u###', '#####.>.#', '#######=#', '#######.F'],
+        ['.=#######', '#u#######', '#.=u.>###', '#####u###', '#####.>.#', '#######=#', '#######.F']
+      ],
+      duLieuSan: ['a = [3, 2, 2]', 'a = [1, 4, 2]'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm bụi cây ở sân 2
       batDau: { x: 0, y: 0, huong: 0 },
       maMau: bai(['a = [3, 2, 2]'].concat(DUYET('a'))),
       loiGiai: bai(['a = [3, 2, 2]', 'for n in a:', '    fly_right(n)', '    go_down()', '    go_down()', 'go_right()']),
       sao: { o: 8, nhip: 14 },
       loiSai: [
         { moTa: 'Chỉ hạ xuống một ô trong vòng lặp: đâm bụi cây', baiLam: bai(['a = [3, 2, 2]'].concat(DUYET('a'))), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Quên bước go_right() cuối cùng vào cờ', baiLam: bai(['a = [3, 2, 2]', 'for n in a:', '    fly_right(n)', '    go_down()', '    go_down()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Quên bước go_right() cuối cùng vào cờ', baiLam: bai(['a = [3, 2, 2]', 'for n in a:', '    fly_right(n)', '    go_down()', '    go_down()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng danh sách của sân 1 vào vòng for: ở sân 2 hàng đầu đâm bụi cây', baiLam: bai(['a = [3, 2, 2]', 'for n in [3, 2, 2]:', '    fly_right(n)', '    go_down()', '    go_down()', 'go_right()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       goiY: ['Trong vòng for n in a: sau fly_right(n) cần hai dòng go_down().', 'Sau khi vòng for chạy xong, gọi thêm go_right() để vào ô cờ.']
     }),
