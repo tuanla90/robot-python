@@ -100,7 +100,7 @@
         baiLam: bai(['anchor()', 'wait()', 'cast_net()', 'wait()', 'unanchor()', 'wait()', 'forward(4)'])
       },
       loiSai: [],
-      goiY: ['Luna: Bấm nút Chạy để xem mỏ neo giữ xuồng đứng yên trên dòng chảy.', 'Luna: Trước khi chạy chân vịt, xuồng luôn phải nhổ neo bằng unanchor() và wait().']
+      goiY: ['Luna: Bấm nút Chạy để xem mỏ neo giữ xuồng đứng yên trên dòng chảy.', 'Luna: Ở đây xuồng nhổ neo bằng unanchor() rồi wait() riêng, để dòng đưa xuồng xuống luồng êm hàng 2.']
     }),
 
     manThaNeo({
