@@ -147,9 +147,7 @@
       maMau: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'back()', 'back()', 'back()']),
       loiGiai: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'back()', 'back()', 'back()']),
       sao: { o: 12, nhip: 5 },
-      loiSai: [
-        { moTa: 'Nhổ neo một nhịp riêng nên dòng cuốn cả xuồng lẫn bè xuống ngách cụt', baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'back()', 'back()', 'back()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
-      ],
+      loiSai: [],
       goiY: ['Luna: unanchor() chỉ ra lệnh nhổ neo. Lệnh chạy ở wait() kế tiếp.', 'Luna: back() có sẵn wait() bên trong, nên nhổ neo và lùi chạy cùng một nhịp.']
     }),
 
@@ -205,9 +203,9 @@
     }),
 
     manThaNeo({
-      so: 6, ten: 'Neo giữ vị trí chờ gạt van cống', hang: 'luyen', mucTieu: 'toi-co',
-      deBai: 'Sola hướng dẫn: xuồng ở (1, 1) đang hướng lên van V ở (1, 0). Trên kênh Đông, bè B ở (3, 1) đang chắn đường nhưng dòng chảy sẽ đẩy B qua (4, 1) rồi tụt xuống hốc (4, 2) sau 2 nhịp! Nếu gạt van V quá sớm, dòng tắt khi B còn chắn ngang kênh. Hãy gọi anchor(), chờ 2 nhịp wait() cho B trôi xuống (4, 2), rồi gọi tow_grab() gạt van V (mở cống K và tắt dòng), nhổ neo bằng unanchor(), wait() và gọi pair_step("R", 4) tới Q!',
-      veMaMau: 'Gọi anchor(), chờ 2 nhịp wait(), gọi tow_grab() gạt van V, rồi unanchor(), wait() và pair_step("R", 4).',
+      so: 6, ten: 'Nhổ neo quay mũi cùng một nhịp', hang: 'luyen', mucTieu: 'toi-co',
+      deBai: 'Các hàm có sẵn đã trở lại. Xuồng ở (1, 1) nhìn lên van V. Bè B đang chắn kênh, 2 nhịp nữa nó trôi xuống hốc (4, 2). Hãy neo chờ 2 nhịp, gạt van V bằng tow_grab() để mở cống K. Rồi nhổ neo và quay phải cùng một nhịp: unanchor() rồi pair_step("R", 4) ngay. Tới cờ Q.',
+      veMaMau: 'Viết unanchor() ngay trước pair_step("R", 4). Lệnh quay đầu tiên chạy chung nhịp với nhổ neo.',
       san: [
         '#V#####',
         '#~KB~Q#',
@@ -218,60 +216,62 @@
       noi: [{ nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 1 }], dong: [{ x: 1, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 }] }],
       batDau: { x: 1, y: 1, huong: 0 },
       maMau: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()']),
-      loiGiai: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'pair_step("R", 4)']),
-      sao: { o: 22, nhip: 9 },
+      loiGiai: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()', 'unanchor()', 'pair_step("R", 4)']),
+      sao: { o: 22, nhip: 8 },
       loiGiaiKhac: {
-        moTa: 'Dùng turn_right() và forward(4) sau khi nhổ neo',
-        baiLam: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'turn_right()', 'forward(4)'])
+        moTa: 'Dùng turn_right() và forward(4) ngay sau unanchor()',
+        baiLam: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()', 'unanchor()', 'turn_right()', 'forward(4)'])
       },
       loiSai: [
         { moTa: 'Gạt van ngay ở nhịp 1 nên bè B dừng lại giữa kênh chắn lối đi', baiLam: bai(['tow_grab()', 'pair_step("R", 4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
         { moTa: 'Quên nhổ neo trước khi gọi pair_step("R", 4)', baiLam: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()', 'pair_step("R", 4)']), phaiCoMa: ['dang-neo', 'chua-toi-co'] }
       ],
-      goiY: ['Luna: Khi đang neo, bạn vẫn bắn dây phao tow_grab() vào van V được nhưng không thể quay mũi.', 'Luna: Sau tow_grab(), dòng ở (1, 1) đã tắt; hãy gọi unanchor(), wait() rồi pair_step("R", 4).']
+      goiY: ['Luna: Khi đang neo, xuồng vẫn bắn dây vào van V được.', 'Luna: Nhổ neo một nhịp riêng thì phí một nhịp. Viết unanchor() sát trước pair_step("R", 4).']
     }),
 
     manThaNeo({
-      so: 7, ten: 'Đọc dòng trước mũi để quyết định chờ thêm', hang: 'bien-the', nhipTheo: 'tong',
-      deBai: 'Sola thử thách trên 2 sân: từ (1, 1), hãy gọi anchor() và wait() trước. Sau nhịp đầu, nếu ô trước mũi (2, 1) vẫn có dòng chảy ngược (đọc h = flow_dir(), if h == "back":) tức là bè B xuất phát từ xa (5, 1), hãy gọi thêm 1 lệnh wait() nữa! Cuối cùng gọi tow_grab(), unanchor(), wait() và forward(3) đưa bè tới bến q ở (2, 2).',
-      veMaMau: 'Sau anchor() và wait(), đã có h = flow_dir() và if h == "back": wait(). Thêm tow_grab(), unanchor(), wait(), forward(3).',
+      so: 7, ten: 'Đọc dòng trước mũi rồi nhổ neo lùi', hang: 'bien-the', nhipTheo: 'tong',
+      deBai: 'Sola đưa 2 sân. Xuồng neo ở (4, 1) trên dòng xiết, bè B trôi về phía xuồng. Ở sân 1, ô trước mũi (5, 1) có dòng chảy về phía xuồng ("back"): bè còn xa, chờ thêm 1 nhịp. Ở sân 2 thì không. Bắt bè rồi nhổ neo lùi cùng một nhịp. Kéo B vào bến q ở (3, 1).',
+      veMaMau: 'Đã có anchor(), wait(), h = flow_dir(). Thêm if h == "back": wait(), rồi tow_grab(), unanchor() và vòng lặp lùi.',
       san: [
         [
-          '########',
-          '#~~~~B~#',
-          '#~q~~~~#',
-          '########'
+          '##########',
+          '#~~q~~~~B#',
+          '####~#####',
+          '####~#####',
+          '##########'
         ],
         [
-          '########',
-          '#~~~B~~#',
-          '#~q~~~~#',
-          '########'
+          '##########',
+          '#~~q~~~B~#',
+          '####~#####',
+          '####~#####',
+          '##########'
         ]
       ],
       dong: [
-        [{ x: 1, y: 1, huong: 2, suc: 1 }, { x: 2, y: 1, huong: 3, suc: 1 }, { x: 5, y: 1, huong: 3, suc: 1 }, { x: 4, y: 1, huong: 3, suc: 1 }, { x: 3, y: 1, huong: 2, suc: 1 }],
-        [{ x: 1, y: 1, huong: 2, suc: 1 }, { x: 4, y: 1, huong: 3, suc: 1 }, { x: 3, y: 1, huong: 2, suc: 1 }]
+        [{ x: 4, y: 1, huong: 2, suc: 2 }, { x: 4, y: 2, huong: 2, suc: 2 }, { x: 4, y: 3, huong: 2, suc: 2 }, { x: 5, y: 1, huong: 3, suc: 1 }, { x: 6, y: 1, huong: 3, suc: 1 }, { x: 7, y: 1, huong: 3, suc: 1 }, { x: 8, y: 1, huong: 3, suc: 1 }],
+        [{ x: 4, y: 1, huong: 2, suc: 2 }, { x: 4, y: 2, huong: 2, suc: 2 }, { x: 4, y: 3, huong: 2, suc: 2 }, { x: 6, y: 1, huong: 3, suc: 1 }, { x: 7, y: 1, huong: 3, suc: 1 }]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "back":', '    wait()']),
-      loiGiai: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "back":', '    wait()', 'tow_grab()', 'unanchor()', 'wait()', 'forward(3)']),
-      sao: { o: 15, nhip: 13 },
+      batDau: [{ x: 4, y: 1, huong: 1 }, { x: 4, y: 1, huong: 1 }],
+      maMau: bai(['anchor()', 'wait()', 'h = flow_dir()']),
+      loiGiai: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "back":', '    wait()', 'tow_grab()', 'unanchor()', 'for i in range(3):', '    back()']),
+      sao: { o: 14, nhip: 11 },
       loiGiaiKhac: {
         moTa: 'Dùng if not is_calm_front(): wait() thay cho so sánh chuỗi "back"',
-        baiLam: bai(['anchor()', 'wait()', 'if not is_calm_front():', '    wait()', 'tow_grab()', 'unanchor()', 'wait()', 'forward(3)'])
+        baiLam: bai(['anchor()', 'wait()', 'if not is_calm_front():', '    wait()', 'tow_grab()', 'unanchor()', 'for i in range(3):', '    back()'])
       },
       loiSai: [
-        { moTa: 'Không chờ thêm ở sân 1 nên bè B chưa vào tầm lưới 2 ô', baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'forward(3)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
-        { moTa: 'Chờ cứng 2 nhịp ở cả hai sân nên ở sân 2 bè B trôi tuột xuống hàng 2 mất', baiLam: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'forward(3)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
+        { moTa: 'Chờ cứng 2 nhịp ở cả hai sân nên ở sân 2 bè trôi sát mũi, lưới không bắt được', baiLam: bai(['anchor()', 'wait()', 'wait()', 'tow_grab()', 'unanchor()', 'for i in range(3):', '    back()']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
+        { moTa: 'Nhổ neo một nhịp riêng nên dòng xiết cuốn xuồng xuống ngách', baiLam: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "back":', '    wait()', 'tow_grab()', 'unanchor()', 'wait()', 'for i in range(3):', '    back()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Ở sân 1, ô (2, 1) có dòng ngược ("back") báo hiệu bè ở xa cần thêm 1 nhịp wait().', 'Luna: Sau khối if, gọi tow_grab(), unanchor(), wait() và forward(3).']
+      goiY: ['Luna: Lưới bắt bè cách mũi đúng 2 ô. Sân 1 bè cần 2 nhịp mới tới, sân 2 chỉ 1 nhịp.', 'Luna: Sau khối if, viết tow_grab(), rồi unanchor() sát trước vòng lặp lùi.']
     }),
 
     manThaNeo({
       so: 8, ten: 'Gạt van giữ bè ở ngã tư rồi kéo về bến', hang: 'bien-the',
-      deBai: 'Sola chỉ điểm: bè B ở hốc Bắc (5, 1) đang trôi xuống ngã tư (5, 2). Nếu không tắt dòng ở (5, 2) kịp lúc, nhịp sau B sẽ trôi tuột xuống hốc Nam (5, 3)! Xuồng ở (1, 2) đang nhìn lên van V ở (1, 1). Hãy gọi anchor(), wait() để B trôi vừa tới (5, 2); lập tức gọi tow_grab() gạt van V (mở cống K và tắt mọi dòng chảy để giữ B đứng yên tại (5, 2)); sau đó nhổ neo bằng unanchor(), wait(), quay phải (turn_right()) và gọi tow_pair(2, 1) đưa B vào bến q ở (4, 2)!',
-      veMaMau: 'Gọi anchor(), wait(), tow_grab() vào van V, rồi unanchor(), wait(), turn_right() và tow_pair(2, 1).',
+      deBai: 'Sola chỉ điểm: bè B ở hốc Bắc (5, 1) đang trôi xuống ngã tư (5, 2). Nhịp sau nữa B sẽ tụt xuống hốc Nam. Xuồng ở (1, 2) nhìn lên van V. Hãy neo 1 nhịp, gạt van V bằng tow_grab() để tắt dòng giữ B lại. Rồi nhổ neo và quay phải cùng nhịp, gọi tow_pair(2, 1) đưa B vào bến q ở (4, 2).',
+      veMaMau: 'Gọi anchor(), wait(), tow_grab(), rồi unanchor() sát trước turn_right(), cuối cùng tow_pair(2, 1).',
       san: [
         '########',
         '#V###B##',
@@ -282,62 +282,68 @@
       dong: [{ x: 1, y: 2, huong: 2, suc: 1 }, { x: 5, y: 1, huong: 2, suc: 1 }, { x: 5, y: 2, huong: 2, suc: 1 }],
       noi: [{ nut: { x: 1, y: 1 }, cong: [{ x: 2, y: 2 }], dong: [{ x: 1, y: 2 }, { x: 5, y: 1 }, { x: 5, y: 2 }] }],
       batDau: { x: 1, y: 2, huong: 0 },
-      maMau: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()']),
-      loiGiai: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'turn_right()', 'tow_pair(2, 1)']),
-      sao: { o: 21, nhip: 8 },
+      maMau: bai(['anchor()', 'wait()', 'tow_grab()']),
+      loiGiai: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'turn_right()', 'tow_pair(2, 1)']),
+      sao: { o: 21, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Dùng pair_step("R", 2) và tow_pair(0, 1) sau khi nhổ neo',
-        baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'pair_step("R", 2)', 'tow_pair(0, 1)'])
+        baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'pair_step("R", 2)', 'tow_pair(0, 1)'])
       },
       loiSai: [
         { moTa: 'Gạt van ngay từ đầu nên bè B bị kẹt lại trong hốc Bắc (5, 1)', baiLam: bai(['tow_grab()', 'turn_right()', 'tow_pair(2, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
         { moTa: 'Chưa quay phải và gọi tow_pair(2, 1) sau khi nhổ neo', baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau anchor(), wait() và tow_grab(), bè B đã dừng ngay tại (5, 2) và cống (2, 2) đã mở.', 'Luna: Sau unanchor() và wait(), thêm turn_right() và tow_pair(2, 1).']
+      goiY: ['Luna: Sau anchor(), wait() và tow_grab(), bè B dừng ở (5, 2) và cống (2, 2) đã mở.', 'Luna: unanchor() đứng sát trước turn_right() thì nhổ neo và quay chung một nhịp.']
     }),
 
     manThaNeo({
-      so: 9, ten: 'Thả neo đón lục bình rồi vượt dòng thuận', hang: 'bien-the', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn phối hợp trên 2 sân: từ (1, 1), hãy gọi anchor(), wait() để giữ xuồng chờ lục bình L ở (4, 1) trôi về (3, 1); gọi tow_grab() tung lưới bắt L; rồi gọi unanchor(), wait() để dòng ở (1, 1) đưa xuồng xuống hàng 2 tại (1, 2). Cuối cùng gọi hai lần flow_step() để vượt qua đoạn nước êm hoặc dòng thuận trên hàng 2 và kéo L vào bến q ở (3, 2)!',
-      veMaMau: 'Gọi anchor(), wait(), tow_grab(), unanchor(), wait() rồi hai lần flow_step().',
+      so: 9, ten: 'Neo và tung dây gạt van bên trái cùng nhịp', hang: 'bien-the', mucTieu: 'toi-co', nhipTheo: 'tong',
+      deBai: 'Sola đưa 2 sân. Xuồng đứng trên dòng xiết, không neo ngay là bị cuốn xuống ngách. Van V nằm bên trái xuồng, cống K chắn đường tới cờ Q. Trong nhịp đầu, hãy thả neo và tung dây sang trái cùng lúc: anchor(), cast_net("left"), wait(). Rồi nhổ neo và tiến 4 ô cùng nhịp.',
+      veMaMau: 'Nhịp 1: anchor(), cast_net("left"), wait(). Sau đó unanchor() sát trước forward(4).',
       san: [
         [
-          '########',
-          '#~~~L~~#',
-          '#~~q~~~#',
-          '########'
+          '##V######',
+          '##~K~~Q##',
+          '##~######',
+          '##~######',
+          '#########'
         ],
         [
-          '########',
-          '#~~~L~~#',
-          '#~~q~~~#',
-          '########'
+          '##V######',
+          '##~######',
+          '##~~K~Q##',
+          '##~######',
+          '#########'
         ]
       ],
       dong: [
-        [{ x: 1, y: 1, huong: 2, suc: 1 }, { x: 4, y: 1, huong: 3, suc: 1 }, { x: 2, y: 2, huong: 1, suc: 1 }],
-        [{ x: 1, y: 1, huong: 2, suc: 1 }, { x: 4, y: 1, huong: 3, suc: 1 }, { x: 4, y: 2, huong: 1, suc: 1 }]
+        [{ x: 2, y: 1, huong: 2, suc: 2 }, { x: 2, y: 2, huong: 2, suc: 2 }, { x: 2, y: 3, huong: 2, suc: 2 }],
+        [{ x: 2, y: 2, huong: 2, suc: 2 }, { x: 2, y: 3, huong: 2, suc: 2 }]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()']),
-      loiGiai: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'flow_step()', 'flow_step()']),
-      sao: { o: 18, nhip: 12 },
+      noi: [
+        [{ nut: { x: 2, y: 0 }, cong: [{ x: 3, y: 1 }], dong: [] }],
+        [{ nut: { x: 2, y: 0 }, cong: [{ x: 4, y: 2 }], dong: [] }]
+      ],
+      batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
+      maMau: bai(['anchor()', 'cast_net("left")']),
+      loiGiai: bai(['anchor()', 'cast_net("left")', 'wait()', 'unanchor()', 'forward(4)']),
+      sao: { o: 10, nhip: 10 },
       loiGiaiKhac: {
-        moTa: 'Dùng cast_net(), wait() rồi nhổ neo và gọi hai lần flow_step()',
-        baiLam: bai(['anchor()', 'wait()', 'cast_net()', 'wait()', 'unanchor()', 'wait()', 'flow_step()', 'flow_step()'])
+        moTa: 'Dùng vòng lặp for i in range(4): move() sau unanchor()',
+        baiLam: bai(['anchor()', 'cast_net("left")', 'wait()', 'unanchor()', 'for i in range(4):', '    move()'])
       },
       loiSai: [
-        { moTa: 'Quên gọi anchor() ở đầu nên xuồng trôi xuống hàng 2 trước khi bắt lục bình', baiLam: bai(['wait()', 'tow_grab()', 'flow_step()', 'flow_step()']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
-        { moTa: 'Mới nhổ neo xuống hàng 2 mà chưa gọi flow_step() để đưa L về bến', baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không thả neo nên ngay nhịp đầu xuồng bị cuốn xuống ngách', baiLam: bai(['cast_net("left")', 'wait()', 'forward(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Thả neo một nhịp rồi mới tung dây: vẫn tới nhưng chậm một nhịp mỗi sân', baiLam: bai(['anchor()', 'wait()', 'cast_net("left")', 'wait()', 'unanchor()', 'forward(4)']) }
       ],
-      goiY: ['Luna: Sau unanchor() và wait(), xuồng ở (1, 2) còn L đi theo dây lưới.', 'Luna: Gọi tiếp hai lần flow_step() để xuồng tiến 4 ô tới (5, 2), kéo L vào bến (3, 2) trên cả 2 sân.']
+      goiY: ['Luna: Neo làm trước, dây làm sau, rồi mới tới chân vịt. Cả ba nằm gọn trong một nhịp.', 'Luna: cast_net("left") tung dây sang bên trái mũi xuồng.']
     }),
 
     manThaNeo({
       so: 10, ten: 'Trùm: Giữ nhịp neo trên bến sông đôi', hang: 'trum', nhipTheo: 'tong',
       huyHieu: { ma: 'tha-neo', ten: 'Huy hiệu Thả neo giữ nhịp' },
-      deBai: 'Sola giao thử thách Trùm chương 1 trên 2 sân: xuồng ở (1, 3) hướng lên van V ở (1, 0). Hãy gọi anchor() và wait() trước; nếu thấy ô trước mũi (1, 2) có dòng chảy (đọc h = flow_dir(), if h == "front":) báo hiệu bè B xuất phát từ xa (7, 1), hãy gọi thêm 1 lệnh wait() nữa! Khi B đã xuống đúng ngã tư (7, 3), gọi tow_grab() gạt van V (mở cống K ở (2, 3) và tắt dòng giữ B lại), rồi gọi unanchor(), wait(), pair_step("R", 1), flow_step() để tiến tới (4, 3), và gọi tow_pair(1, 1) đưa B vào bến q ở (6, 3)!',
-      veMaMau: 'Kết hợp anchor(), wait(), h = flow_dir(), if h == "front": wait(), tow_grab(), unanchor(), wait(), pair_step("R", 1), flow_step() và tow_pair(1, 1).',
+      deBai: 'Sola giao thử thách Trùm trên 2 sân. Xuồng ở (1, 3) nhìn lên van V. Neo trước. Nếu ô trước mũi có dòng chảy ("front") thì bè B còn xa, chờ thêm 1 nhịp. Khi B tới ngã tư (7, 3), gạt van V để tắt dòng. Rồi nhổ neo và quay phải cùng nhịp, đi tiếp và gọi tow_pair(1, 1) đưa B vào bến q ở (6, 3).',
+      veMaMau: 'Kết hợp anchor(), wait(), h = flow_dir(), if h == "front": wait(), tow_grab(), unanchor(), pair_step("R", 1), flow_step() và tow_pair(1, 1).',
       san: [
         [
           '#V########',
@@ -392,12 +398,11 @@
         '    wait()',
         'tow_grab()',
         'unanchor()',
-        'wait()',
         'pair_step("R", 1)',
         'flow_step()',
         'tow_pair(1, 1)'
       ]),
-      sao: { o: 34, nhip: 20 },
+      sao: { o: 42, nhip: 18 },
       loiGiaiKhac: {
         moTa: 'Dùng if not is_calm_front(): wait() thay cho h = flow_dir() và if h == "front": wait()',
         baiLam: bai([
@@ -407,17 +412,16 @@
           '    wait()',
           'tow_grab()',
           'unanchor()',
-          'wait()',
           'pair_step("R", 1)',
           'flow_step()',
           'tow_pair(1, 1)'
         ])
       },
       loiSai: [
-        { moTa: 'Không kiểm tra dòng chảy để chờ thêm 1 nhịp ở sân 1 nên bè B chưa xuống tới ngã tư', baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'wait()', 'pair_step("R", 1)', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
-        { moTa: 'Quên gọi unanchor(), wait() trước khi quay phải', baiLam: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "front":', '    wait()', 'tow_grab()', 'pair_step("R", 1)', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['dang-neo', 'chua-dua-vat'] }
+        { moTa: 'Không kiểm tra dòng chảy để chờ thêm 1 nhịp ở sân 1 nên bè B chưa xuống tới ngã tư', baiLam: bai(['anchor()', 'wait()', 'tow_grab()', 'unanchor()', 'pair_step("R", 1)', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] },
+        { moTa: 'Quên gọi unanchor() trước khi quay phải', baiLam: bai(['anchor()', 'wait()', 'h = flow_dir()', 'if h == "front":', '    wait()', 'tow_grab()', 'pair_step("R", 1)', 'flow_step()', 'tow_pair(1, 1)']), phaiCoMa: ['dang-neo', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau tow_grab(), bè B đã dừng ngay tại (7, 3) trên cả 2 sân và cống (2, 3) đã mở.', 'Luna: Gọi unanchor(), wait(), pair_step("R", 1), flow_step() và tow_pair(1, 1) để đưa B tới bến (6, 3).']
+      goiY: ['Luna: Sau tow_grab(), bè B dừng ở (7, 3) trên cả 2 sân và cống (2, 3) đã mở.', 'Luna: unanchor() sát trước pair_step("R", 1) thì nhổ neo và quay chung một nhịp.']
     }),
 
     /* ========================================================================
