@@ -315,7 +315,20 @@
     vecDoiR2: '#f472b6',               // R2: màu chính
     vecDoiR2Toi: '#db2777',            // R2: đỉnh gradient kính
     vecMatR2: '#ffe4f1',               // R2: lõi mắt (R1 dùng vecMat); mắt thường và mắt biểu cảm theo màu đội (29/10 user: mắt R2 không còn xanh)
-    vecMatSangR2Rgb: '251,207,232'     // R2: bộ ba quầng sáng quanh mắt (R1 dùng vecMatSangRgb)
+    vecMatSangR2Rgb: '251,207,232',    // R2: bộ ba quầng sáng quanh mắt (R1 dùng vecMatSangRgb)
+    // mắt mở "ba vòng" (13/11, theo đầu R1 của video physicraft): tròng chuyển màu (sáng → tối) + đồng tử, theo đội; lòng trắng và đốm sáng dùng vecMatSang, viền trong tròng dùng lõi mắt của đội
+    vecTrongR1: '#4a9bff',             // R1: tâm tròng
+    vecTrongR1Toi: '#1840b8',          // R1: mép tròng
+    vecDongTuR1: '#0b1650',            // R1: đồng tử
+    vecTrongR2: '#ff6fb4',             // R2: tâm tròng
+    vecTrongR2Toi: '#b8136a',          // R2: mép tròng
+    vecDongTuR2: '#4a0628',            // R2: đồng tử
+    vecTrongDo: '#ff7a70',             // đối thủ đỏ: tâm tròng
+    vecTrongDoToi: '#a8231c',          // đối thủ đỏ: mép tròng
+    vecDongTuDo: '#3d0a07',            // đối thủ đỏ: đồng tử
+    vecTrongTim: '#b48cff',            // dự phòng tím: tâm tròng
+    vecTrongTimToi: '#5b2fb0',         // dự phòng tím: mép tròng
+    vecDongTuTim: '#22104a'            // dự phòng tím: đồng tử
   };
 
   // ======================================================================== LUẬT CHƠI (44 sau V7c3): màu đọc bằng color() / màu vật / ô sàn màu / sơn. Đổi được, nhưng bốn màu đỏ / xanh lá / xanh dương / vàng phải luôn phân biệt rõ với nhau và với nền sân

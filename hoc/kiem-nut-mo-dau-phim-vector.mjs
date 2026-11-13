@@ -22,7 +22,7 @@ import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const NEN_VEC = '8a09db2';                             // 01/11 gộp hình các part, ô sân và vật bản mới (3D vector) từ claude/ve-moi-tu-ban-chup (trước: aaeee1f)
+const NEN_VEC = '64ee231';                             // 13/11 mắt robot ba vòng (trước: 8a09db2, 01/11 gộp hình các part, ô sân và vật bản mới)
 const day = path.dirname(fileURLToPath(import.meta.url));
 const GAME = path.join(day, 'game');
 const goc = path.resolve(day, '..');
