@@ -199,9 +199,10 @@
 
     manMayNem({
       so: 17, ten: 'Danh sách khoảng trượt', hang: 'bien-the', hamCuaEmCan: ['slide_r', 'lob'],
-      deBai: 'Sola nhờ bạn: ba tảng đá đặt cách nhau theo danh sách s = [1, 2, 2]. Duyệt từng số n trong s: trượt phải n ô tới trước tảng đá rồi gọi lob() để hất vào đích.',
-      veMaMau: 'Chương trình có sẵn đã khai báo s = [1, 2, 2] và vòng lặp for n in s. Hãy thêm lệnh gọi lob() vào thân vòng lặp.',
-      san: ['#######', '##D#D#D', '##o#o#o', '#......'],
+      deBai: 'Sola nhờ bạn: ba tảng đá đặt cách nhau theo danh sách s. Mỗi sân có một danh sách s riêng, ở sân 1 là s = [1, 2, 2]. Duyệt từng số n trong s: trượt phải n ô tới trước tảng đá rồi gọi lob() để hất vào đích.',
+      veMaMau: 'Chương trình có sẵn đã có danh sách s và vòng lặp for n in s. Hãy thêm lệnh gọi lob() vào thân vòng lặp.',
+      san: [['#######', '##D#D#D', '##o#o#o', '#......'], ['#######', '###D#DD', '###o#oo', '#......']],      // dữ liệu theo sân: mỗi sân một danh sách s, điền thẳng số của sân 1 thì xúc hụt ở sân 2
+      duLieuSan: ['s = [1, 2, 2]', 's = [2, 2, 1]'],
       batDau: { x: 1, y: 3, huong: 0 },
       maMau: bai(['s = [1, 2, 2]', 'for n in s:', '    slide_r(n)']),
       loiGiai: bai(['s = [1, 2, 2]', 'for n in s:', '    slide_r(n)', '    lob()']),
@@ -213,9 +214,10 @@
       loiSai: [
         { moTa: 'Chưa gọi lob() trong vòng lặp: xe chỉ trượt qua các tảng đá', baiLam: bai(['s = [1, 2, 2]', 'for n in s:', '    slide_r(n)']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Đặt lob() ở ngoài vòng lặp for: chỉ hất được tảng đá cuối cùng', baiLam: bai(['s = [1, 2, 2]', 'for n in s:', '    slide_r(n)', 'lob()']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Gọi lob() trước slide_r(n): xúc hụt ở ngay ô xuất phát', baiLam: bai(['s = [1, 2, 2]', 'for n in s:', '    lob()', '    slide_r(n)']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
+        { moTa: 'Gọi lob() trước slide_r(n): xúc hụt ở ngay ô xuất phát', baiLam: bai(['s = [1, 2, 2]', 'for n in s:', '    lob()', '    slide_r(n)']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 tảng đá đầu ở cột khác nên xúc hụt', baiLam: bai(['s = [1, 2, 2]', 'slide_r(1)', 'lob()', 'slide_r(2)', 'lob()', 'slide_r(2)', 'lob()']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Trong thân vòng lặp for n in s:, sau slide_r(n) xe đã đứng ngay trước tảng đá.', 'Luna: Thụt lề dòng lob() vào trong vòng lặp for.']
+      goiY: ['Luna: Trong thân vòng lặp for n in s:, sau slide_r(n) xe đã đứng ngay trước tảng đá.', 'Luna: Thụt lề dòng lob() vào trong vòng lặp for. Điền thẳng số thì chỉ đúng ở một sân.']
     }),
 
     manMayNem({
@@ -241,9 +243,10 @@
 
     manMayNem({
       so: 19, ten: 'Bản đồ hai tầng hất đá', hang: 'bien-the', hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob'],
-      deBai: 'Sola nhờ bạn: lưới g = [[2, 1], [2, 2]] ghi đường lên hai bậc mỏ, ở đầu mỗi bậc đều có một tảng đá chờ hất vào đích. Với mỗi hàng r trong g: trượt phải r[0] ô, tiến lên r[1] ô rồi gọi lob() để hất đá vào đích.',
+      deBai: 'Sola nhờ bạn: lưới g ghi đường lên hai bậc mỏ, mỗi sân một lưới g riêng (sân 1: g = [[2, 1], [2, 2]]). Ở đầu mỗi bậc đều có một tảng đá chờ hất vào đích. Với mỗi hàng r trong g: trượt phải r[0] ô, tiến lên r[1] ô rồi gọi lob() để hất đá vào đích.',
       veMaMau: 'Chương trình có sẵn đã trượt phải r[0] và tiến lên r[1] theo từng hàng của g. Thêm lob() vào cuối vòng lặp.',
-      san: ['####D#', '####o#', '##D..#', '##o..#', '##...#', '...###'],
+      san: [['####D#', '####o#', '##D..#', '##o..#', '##...#', '...###'], ['####D#', '#D##o#', '#o##.#', '#....#', '#.####', '..####']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì đâm tường ở sân 2
+      duLieuSan: ['g = [[2, 1], [2, 2]]', 'g = [[1, 2], [3, 1]]'],
       batDau: { x: 0, y: 5, huong: 0 },
       maMau: bai(['g = [[2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])']),
       loiGiai: bai(['g = [[2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])', '    lob()']),
@@ -254,17 +257,19 @@
       },
       loiSai: [
         { moTa: 'Chưa thêm lob() vào vòng lặp: xe chỉ đi qua hai bậc mà không hất đá', baiLam: bai(['g = [[2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Gọi lob() trước khi tiến lên r[1] ô: xúc hụt vì chưa tới trước tảng đá', baiLam: bai(['g = [[2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    lob()', '    forward(r[1])']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
+        { moTa: 'Gọi lob() trước khi tiến lên r[1] ô: xúc hụt vì chưa tới trước tảng đá', baiLam: bai(['g = [[2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    lob()', '    forward(r[1])']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 lối lên ở cột khác nên đâm tường', baiLam: bai(['g = [[2, 1], [2, 2]]', 'slide_r(2)', 'forward(1)', 'lob()', 'slide_r(2)', 'forward(2)', 'lob()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau slide_r(r[0]) và forward(r[1]), xe đứng ngay dưới tảng đá của bậc đó.', 'Luna: Thêm dòng lob() thụt lề bên trong vòng lặp for r in g.']
+      goiY: ['Luna: Sau slide_r(r[0]) và forward(r[1]), xe đứng ngay dưới tảng đá của bậc đó.', 'Luna: Thêm dòng lob() thụt lề bên trong vòng lặp for r in g. Điền thẳng số thì chỉ đúng ở một sân.']
     }),
 
     manMayNem({
       so: 20, ten: 'Ba bậc đá mỏ', hang: 'trum', hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob'],
       huyHieu: { ma: 'may-nem', ten: 'Huy hiệu Hất đá qua rào' },
-      deBai: 'Sola nhờ bạn: trùm chương Hất đá qua rào có ba tảng đá trên ba bậc mỏ theo lưới g = [[1, 1], [2, 1], [2, 2]]. Ở mỗi bậc r trong g, trượt phải r[0] ô, tiến lên r[1] ô rồi gọi lob() để hất cả ba tảng đá vào ba ô đích.',
+      deBai: 'Sola nhờ bạn: trùm chương Hất đá qua rào có ba tảng đá trên ba bậc mỏ theo lưới g. Mỗi sân có một lưới g riêng (sân 1: g = [[1, 1], [2, 1], [2, 2]]). Ở mỗi bậc r trong g, trượt phải r[0] ô, tiến lên r[1] ô rồi gọi lob() để hất cả ba tảng đá vào ba ô đích.',
       veMaMau: 'Chương trình có sẵn đã khai báo lưới g. Hãy viết vòng lặp duyệt từng hàng r trong g để đi tới từng tảng đá và gọi lob().',
-      san: ['#####D#', '#####o#', '###D..#', '#D#o..#', '#o....#', '#...###', '..#####'],
+      san: [['#####D#', '#####o#', '###D..#', '#D#o..#', '#o....#', '#...###', '..#####'], ['#####D#', '###D#o#', '###o#.#', '##D...#', '##o.###', '##..###', '...####']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì đâm tường ở sân 2
+      duLieuSan: ['g = [[1, 1], [2, 1], [2, 2]]', 'g = [[2, 1], [1, 2], [2, 1]]'],
       batDau: { x: 0, y: 6, huong: 0 },
       maMau: bai(['g = [[1, 1], [2, 1], [2, 2]]']),
       loiGiai: bai(['g = [[1, 1], [2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])', '    lob()']),
@@ -276,7 +281,8 @@
       loiSai: [
         { moTa: 'Chưa viết vòng lặp duyệt lưới g', baiLam: bai(['g = [[1, 1], [2, 1], [2, 2]]']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên gọi lob() ở cuối mỗi vòng lặp', baiLam: bai(['g = [[1, 1], [2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Đặt lob() ở ngoài vòng lặp for: chỉ hất được tảng đá cuối cùng', baiLam: bai(['g = [[1, 1], [2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])', 'lob()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đặt lob() ở ngoài vòng lặp for: chỉ hất được tảng đá cuối cùng', baiLam: bai(['g = [[1, 1], [2, 1], [2, 2]]', 'for r in g:', '    slide_r(r[0])', '    forward(r[1])', 'lob()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 lối lên ở cột khác nên đâm tường', baiLam: bai(['g = [[1, 1], [2, 1], [2, 2]]', 'slide_r(1)', 'forward(1)', 'lob()', 'slide_r(2)', 'forward(1)', 'lob()', 'slide_r(2)', 'forward(2)', 'lob()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Duyệt for r in g: rồi lần lượt gọi slide_r(r[0]), forward(r[1]) và lob().', 'Luna: Có thể gọi run_row(r) rồi lob() trong vòng lặp.']
     }),
