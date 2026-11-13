@@ -126,7 +126,9 @@
   var LUA_T9 = [[lua(2, 3, 2)], [lua(4, 3, 1)]];
   var NOI_T9 = [[noi(2, 1, [[4, 4]])], [noi(4, 1, [[6, 5]])]];
   var BD_T9 = [{ x: 1, y: 4, huong: 1 }, { x: 1, y: 5, huong: 1 }];
-  var L_T9 = nhieu(['go_safe(1)', 'tr_left()'], DAP, ['fence_shot()', 'tr_right()', 'go_to_wall()']);
+  //   Ghép nhịp (14/11): ghì xích bằng brace_spray() của gói Lực phun, xe đứng yên ở trạm (fence_shot() giật rồi tiến lại vẫn thắng, tốn hai nhịp mỗi ngày).
+  var L_T9 = nhieu(['go_safe(1)', 'tr_left()'], DAP, ['brace_spray()', 'tr_right()', 'go_to_wall()']);
+  var L_T9_RAO = nhieu(['go_safe(1)', 'tr_left()'], DAP, ['fence_shot()', 'tr_right()', 'go_to_wall()']);
   // 10 (trùm, ba sân, một chương trình): xe (1,1) quay phải ở đầu hành lang cháy (tường sau lưng: phun mạnh không giật); đám cháy cỡ 1 / 2 / 3, gần xa khác nhau;
   //   hành lang dài 5 / 7 / 9 ô rồi tường; cờ ở cuối giếng hai ô phía dưới đầu kia. while warm(): squirt("high"), go_to_wall(), tr_right(), forward(2).
   var SAN_T10 = [
@@ -375,22 +377,23 @@
     }),
 
     man({
-      chuong: 'tong-hop-2', so: 9, ten: 'Van sau rào', yMoi: 'ôn Góc kho cũ (gói 8): tia nước bay qua hàng rào, xe không; go_safe(1) dừng cách cửa một ô để trạm mỗi ngày một chỗ',
-      kieuBai: 'rao', hamCuaEmCan: ['go_safe', 'go_to_wall', 'fence_shot', 'squirt', 'tr_left', 'tr_right', 'forward', 'move'],
+      chuong: 'tong-hop-2', so: 9, ten: 'Van sau rào', yMoi: 'ôn Góc kho cũ (gói 8) + ghì xích (gói 6): tia nước bay qua hàng rào, xe không; brace_spray() phun mạnh mà xe đứng vững; go_safe(1) dừng cách cửa một ô',
+      kieuBai: 'rao', ghiXich: true, hamCuaEmCan: ['go_safe', 'go_to_wall', 'brace_spray', 'fence_shot', 'squirt', 'tr_left', 'tr_right', 'forward', 'move'],
       deBai: 'Hành lang tới cánh cửa đóng; trạm là ô cách cửa một ô (mỗi ngày hành lang dài ngắn khác: go_safe(1) của gói Hồng ngoại). Bên trái trạm là giếng: đám cháy, ' +
-        'rồi hàng rào, rồi van mở cửa. Tia nước bay qua rào, xe thì không. Dập lửa, fence_shot() phun mạnh qua rào (xe giật xuống hốc rồi tiến lại), quay lại, go_to_wall() tới cờ.',
+        'rồi hàng rào, rồi van mở cửa. Tia nước bay qua rào, xe thì không. Dập lửa, rồi brace_spray() phun mạnh qua rào: nước đẩy xe lùi, xích đẩy tới cùng lúc nên xe đứng vững. Quay lại, go_to_wall() tới cờ.',
       veMaMau: 'Chương trình có sẵn phun mạnh ngay: tia trúng lửa, van chưa mở; xe giật xuống hốc.',
       san: SAN_T9, batDau: BD_T9, lua: LUA_T9, noi: NOI_T9,
       maMau: bai(['go_safe(1)', 'tr_left()', 'squirt("high")', 'tr_right()', 'go_to_wall()']),
-      sao: { o: 24, nhip: 25 },
+      sao: { o: 26, nhip: 23 },
       loiGiai: bai(L_T9),
-      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# dập lửa, phun qua rào, bù giật'].concat(L_T9)) },
+      loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# dập lửa, ghì xích phun qua rào'].concat(L_T9)) },
+      congThucKhac: [{ moTa: 'fence_shot() của Góc kho cũ: giật xuống hốc rồi tiến lại (thêm nhịp)', baiLam: bai(L_T9_RAO) }],
       loiSai: [
         cung('Đếm cứng theo ngày đầu: đi một ô rồi phun; ngày sau trạm ở xa hơn, tia trúng tường', bai(nhieu(['move()', 'tr_left()'], DAP, ['fence_shot()', 'tr_right()', 'go_to_wall()'])), ['chua-toi-co']),
         { moTa: 'Phun mạnh không bù giật: xe tụt xuống hốc, go_to_wall() húc tường hốc', baiLam: bai(nhieu(['go_safe(1)', 'tr_left()'], DAP, ['squirt("high")', 'tr_right()', 'go_to_wall()'])), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Phun nhẹ qua rào: van ở xa, tia nước rơi trước van', baiLam: bai(nhieu(['go_safe(1)', 'tr_left()'], DAP, ['squirt("low")', 'tr_right()', 'go_to_wall()'])), phaiCoMa: ['ban-ngan', 'chua-toi-co'] }
       ],
-      goiY: ['go_safe(1): tiến tới khi trước mũi còn đúng một ô trống (cửa đóng là vật cản).', 'Hốc dưới trạm là để xe giật: fence_shot() tiến lại đúng trạm.']
+      goiY: ['go_safe(1): tiến tới khi trước mũi còn đúng một ô trống (cửa đóng là vật cản).', 'brace_spray(): phun mạnh mà xe đứng yên. Vòi phải giữ thẳng hướng: quay trong lúc phun thì xích nghỉ.']
     }),
 
     man({
