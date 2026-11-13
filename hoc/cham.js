@@ -158,6 +158,8 @@
    dang-neo (lỗi: lệnh bánh lúc đang neo, mất nhịp; như dang-dau), mui-vuong (lỗi: bè kéo ở mũi không có chỗ khi tiến / quay; kieu), duoi-vuong (lỗi: tether() không có chỗ sau đuôi, hay lùi vào bè buộc đuôi),
    dang-keo (lỗi: tow() khi đang kéo), khong-keo (lỗi: drop_tow() / untether() khi không kéo), buoc-hut (lỗi: tether() không có bè sau đuôi), neo-goi-lai / phao-goi-lai (lỗi: hai lệnh cùng nhịp),
    keo-hut (thông tin: dây không trúng bè; vat 'het-tam' | 'bo' | 'cong' | 'co-xe' | …), cong-ket (thông tin: cống không đóng đè xuồng / bè); quen-wait nói "lệnh neo" / "lệnh dây phao".
+   TỜI CUỘN (4c, reel_in / reel_out): day-het-thu / day-het-nha (thông tin: dây đã ngắn nhất / dài nhất, lệnh không làm gì); luoi-vuong / trong-khoang nói đúng tên lệnh dây
+   đã gọi (set_length hay reel_in / reel_out) và gợi ý lệnh của màn (màn có tời cuộn thì reel_in() / reel_out(), không thì set_length()).
    Sự kiện vết (không chẩn đoán, cho hoạt cảnh): troi, troi-chan, neo-giu, tha-neo, nho-neo, da-neo, chua-neo, keo-vat, keo-theo, keo-van, tha-keo, buoc-duoi, coi-duoi, da-buoc, van-doi, dong-doi, cong-doi.
 
    CẢNG SÔNG (mùa 4, 31/10; san-hoc.js phần CẢNG SÔNG): cần cẩu loaiRobot 'cau', mỗi lệnh một nhịp (không có quen-wait). cham.js đưa lớp cfg.chong / tau / giao (theo sân) và
@@ -1079,22 +1081,25 @@
         ' không chạy được: xuồng đứng yên, mất một nhịp' + (dangNeo.length > 1 ? ' (chuyện này xảy ra ' + dangNeo.length + ' lần)' : '') + '. Gọi unanchor() rồi wait() để nhổ neo trước khi chạy tiếp.',
         { nhip: dn0.nhip, o: dn0.o, cho: cho(mdn) });
     }
+    var coToiCuon = (man.phanCung || SanHoc.phanCungCua(man)).indexOf('reel_in') >= 0;   // 4c: màn có tời cuộn → gợi ý reel_in / reel_out thay set_length
     var luoiVuong = res.suKien.filter(function (e) { return e.ma === 'luoi-vuong'; });
     if (luoiVuong.length) {
       var lv0 = luoiVuong[0], mlv = lv0.lenh ? (g.anhXa[lv0.lenh.dongPy] || null) : null;
       var laDoiDai = lv0.kieu === 'set_length' || lv0.kieu === 'tha-khoang';
+      var tenDay = (lv0.lenh && /^(set_length|reel_in|reel_out)$/.test(lv0.lenh.ten)) ? lv0.lenh.ten : 'set_length';   // lệnh dây đã gọi
       them('luoi-vuong', 'Ở nhịp ' + lv0.nhip + ', ' + (laDoiDai
-        ? 'set_length()' + (mlv ? ' ở ' + viTri(mlv) : '') + ' không thả được dây lưới ra ô (' + lv0.o.x + ', ' + lv0.o.y + ') vì ô đó là ' + (LY_SONG[lv0.vat] || lv0.vat) + ': lưới giữ nguyên độ dài cũ.'
+        ? tenDay + '()' + (mlv ? ' ở ' + viTri(mlv) : '') + ' không ' + (tenDay === 'reel_in' ? 'thu' : 'thả') + ' được dây lưới ' + (tenDay === 'reel_in' ? 'về' : 'ra') + ' ô (' + lv0.o.x + ', ' + lv0.o.y + ') vì ô đó là ' + (LY_SONG[lv0.vat] || lv0.vat) + ': lưới giữ nguyên độ dài cũ.'
         : 'xuồng định đi vào ô (' + lv0.o.x + ', ' + lv0.o.y + ') nhưng vướng ' + (LY_SONG[lv0.vat] || lv0.vat) + ' nên cả xuồng lẫn lưới đứng yên (vẫn mất một nhịp).') +
         (luoiVuong.length > 1 ? ' Chuyện này xảy ra ' + luoiVuong.length + ' lần.' : '') +
-        (laDoiDai ? ' Quay xuồng hướng về luồng nước trống rồi hãy set_length().' : ' Xuồng không đi đè lên chính dây lưới hay túi lưới đang căng dưới nước; hãy đi hướng khác hoặc kéo về khoang bằng set_length(0) trước.'),
+        (laDoiDai ? ' Quay xuồng hướng về luồng nước trống rồi hãy ' + tenDay + '().'
+          : ' Xuồng không đi đè lên chính dây lưới hay túi lưới đang căng dưới nước; hãy đi hướng khác hoặc ' + (coToiCuon ? 'cuộn dây bằng reel_in() cho tới khi bè vào khoang (nấc cuối cuộn vào khoang thì đi được ngay trong nhịp đó)' : 'kéo về khoang bằng set_length(0)') + ' trước.'),
         { nhip: lv0.nhip, o: lv0.o, vat: lv0.vat, kieu: lv0.kieu, cho: cho(mlv) });
     }
     var trongKhoang = res.suKien.filter(function (e) { return e.ma === 'trong-khoang'; });
     if (trongKhoang.length) {
       var tk0 = trongKhoang[0], mtk = tk0.lenh ? (g.anhXa[tk0.lenh.dongPy] || null) : null;
       them('trong-khoang', 'Ở nhịp ' + tk0.nhip + ', drop_net()' + (mtk ? ' ở ' + viTri(mtk) : '') + ' không mở được lưới: bè đang nằm trong khoang tàu (độ dài dây = 0).' +
-        (trongKhoang.length > 1 ? ' Chuyện này xảy ra ' + trongKhoang.length + ' lần.' : '') + ' Gọi set_length(1) (hoặc 2, 3) kèm wait() để thả lưới đưa bè ra ô mặt nước trước khi gọi drop_net().',
+        (trongKhoang.length > 1 ? ' Chuyện này xảy ra ' + trongKhoang.length + ' lần.' : '') + (coToiCuon ? ' Gọi reel_out() kèm wait() để nhả dây đưa bè ra ô mặt nước trước mũi rồi mới gọi drop_net().' : ' Gọi set_length(1) (hoặc 2, 3) kèm wait() để thả lưới đưa bè ra ô mặt nước trước khi gọi drop_net().'),
         { nhip: tk0.nhip, id: tk0.id, cho: cho(mtk) });
     }
     var dangKeo = res.suKien.filter(function (e) { return e.ma === 'dang-keo'; });
@@ -1111,6 +1116,17 @@
         (khongKeo.length > 1 ? ' Chuyện này xảy ra ' + khongKeo.length + ' lần.' : '') + ' Tung lưới bắt bè bằng cast_net() trước.',
         { nhip: kk0.nhip, cho: cho(mkk) });
     }
+    ['day-het-thu', 'day-het-nha'].forEach(function (maH) {                // 4c TỜI CUỘN: hết nấc, lệnh không làm gì (thông tin, chương trình chạy tiếp)
+      var ds = res.suKien.filter(function (e) { return e.ma === maH; });
+      if (!ds.length) return;
+      var e0 = ds[0], m0 = e0.lenh ? (g.anhXa[e0.lenh.dongPy] || null) : null, thu = maH === 'day-het-thu';
+      var lyDo = thu ? (e0.cho === 'khoang' ? 'bè đã nằm trong khoang tàu (dây 0 ô), không cuộn thêm được'
+          : 'lưới không giữ bè nào mà dây đã ngắn nhất (1 ô); chỉ khi lưới đang kéo bè, reel_in() ở nấc 1 mới cuộn bè vào khoang')
+        : 'dây đã dài nhất (' + e0.doDai + ' ô), không nhả thêm được';
+      cd.push({ ma: maH, muc: 'thong-tin', nhip: e0.nhip, soLan: ds.length, o: e0.o, doDai: e0.doDai, cho: cho(m0),
+        loi: 'Ở nhịp ' + e0.nhip + ', ' + (thu ? 'reel_in()' : 'reel_out()') + (m0 ? ' ở ' + viTri(m0) : '') + ' không làm gì: ' + lyDo + '.' +
+          (ds.length > 1 ? ' Chuyện này xảy ra ' + ds.length + ' lần.' : '') + ' Mỗi lần ' + (thu ? 'cuộn' : 'nhả') + ' đúng 1 ô dây: đếm số ô từ xuồng tới bè rồi gọi đủ số lần.' });
+    });
     var keoHut = res.suKien.filter(function (e) { return e.ma === 'keo-hut'; });
     if (keoHut.length) {
       var kh0 = keoHut[0], mkh = kh0.lenh ? (g.anhXa[kh0.lenh.dongPy] || null) : null;

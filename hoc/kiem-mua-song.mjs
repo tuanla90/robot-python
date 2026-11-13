@@ -482,6 +482,19 @@ console.log('\n== 11. Lời chẩn đoán (cham.js) và sổ lệnh (so-lenh.js)
   kiem('cham: cong-ket (thông tin) nói xuồng nằm trong cống nên cống giữ mở', !!cd(r, 'cong-ket') && cd(r, 'cong-ket').muc === 'thong-tin' && /cống/.test(loiCua(cd(r, 'cong-ket'))), J(r.chanDoan));
   r = ChamHoc.cham(man(), { chinh: ['for i in range(4):', '    left_move()', '    right_move()', '    wait()', 'right_move()', 'wait()', 'for i in range(2):', '    left_move()', '    right_move()', '    wait()'] }, []);
   kiem('cham: lời giải tới Q thắng, không chẩn đoán lỗi', r.thang === true && !(r.chanDoan || []).some((c) => c.muc === 'loi'), J(r.chanDoan));
+  // 4c TỜI CUỘN: lời nói đúng tên lệnh dây đã gọi, gợi ý reel_in / reel_out khi màn có tời cuộn
+  const XR = XUONG.filter((t) => t !== 'set_length').concat(['reel_in', 'reel_out']);
+  const manR = (t) => man(Object.assign({ hamGoc: XR, chinhLuoi: false, cuonDay: true, san: SAN5b, batDau: { x: 3, y: 2, huong: 1 } }, t || {}));
+  r = ChamHoc.cham(manR({ san: ['##########', '#~~~~~~~~#', '#~~~~~~B~#', '#~~~~~~~~#', '##########'], batDau: { x: 6, y: 2, huong: 1 } }), { chinh: ['reel_in()', 'wait()', 'cast_net()', 'wait()', 'reel_out()', 'wait()', 'reel_out()', 'wait()'] }, []);
+  kiem('cham: reel_out() vướng bờ → luoi-vuong nói đúng "reel_out()" (không nói set_length)', !!cd(r, 'luoi-vuong') && /reel_out\(\)/.test(loiCua(cd(r, 'luoi-vuong'))) && !/set_length/.test(loiCua(cd(r, 'luoi-vuong'))), J(r.chanDoan));
+  r = ChamHoc.cham(manR(), { chinh: ['cast_net()', 'wait()', 'reel_in()', 'left_move()', 'right_move()', 'wait()'] }, []);
+  kiem('cham: màn có tời cuộn, tiến cán lên dây lúc cuộn → luoi-vuong gợi ý reel_in() (không gợi ý set_length(0))', !!cd(r, 'luoi-vuong') && /reel_in\(\)/.test(loiCua(cd(r, 'luoi-vuong'))) && !/set_length/.test(loiCua(cd(r, 'luoi-vuong'))), J(r.chanDoan));
+  r = ChamHoc.cham(manR(), { chinh: ['cast_net()', 'wait()', 'reel_in()', 'wait()', 'reel_in()', 'wait()', 'drop_net()', 'wait()'] }, []);
+  kiem('cham: màn có tời cuộn, drop_net() khi bè trong khoang → trong-khoang gợi ý reel_out()', !!cd(r, 'trong-khoang') && /reel_out\(\)/.test(loiCua(cd(r, 'trong-khoang'))) && !/set_length/.test(loiCua(cd(r, 'trong-khoang'))), J(r.chanDoan));
+  r = ChamHoc.cham(manR(), { chinh: ['cast_net()', 'wait()', 'reel_in()', 'wait()', 'reel_in()', 'wait()', 'reel_in()', 'wait()'] }, []);
+  kiem('cham: reel_in() khi bè đã trong khoang → day-het-thu (thông tin) nói khoang, trỏ dòng lệnh', !!cd(r, 'day-het-thu') && cd(r, 'day-het-thu').muc === 'thong-tin' && /khoang/.test(loiCua(cd(r, 'day-het-thu'))) && /reel_in\(\)/.test(loiCua(cd(r, 'day-het-thu'))) && cd(r, 'day-het-thu').cho, J(r.chanDoan));
+  r = ChamHoc.cham(manR(), { chinh: ['reel_out()', 'wait()', 'reel_out()', 'wait()'] }, []);
+  kiem('cham: reel_out() khi dây đã dài nhất → day-het-nha (thông tin) nói "dài nhất (3 ô)"', !!cd(r, 'day-het-nha') && cd(r, 'day-het-nha').muc === 'thong-tin' && /dài nhất \(3 ô\)/.test(loiCua(cd(r, 'day-het-nha'))), J(r.chanDoan));
   const ten = ['anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'flow_dir', 'flow'];
   kiem('so-lenh: 7 lệnh gốc mùa sông có mô tả; cặp ngược khớp SanHoc.LENH_NGUOC', ten.every((t) => SoLenh.lenhGoc.some((l) => l.ten === t && l.moTa && (l.nguoc || null) === (SanHoc.LENH_NGUOC[t] || null))));
   kiem('so-lenh: capNguoc() có anchor / cast_net', ['anchor', 'cast_net'].every((t) => SoLenh.capNguoc().some((c) => c[0] === t || c[1] === t)));
