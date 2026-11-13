@@ -99,7 +99,7 @@
 
   function manCheSucNuoc(cfg) {
     return Object.assign({
-      chuong: 'che-suc-nuoc', tenChuong: 'Chế lệnh: chọn nhánh êm nhất',
+      chuong: 'che-suc-nuoc', tenChuong: 'Chế lệnh: chọn nhánh êm',
       loaiRobot: 'xuong',
       robot: ROBOT_SUC,
       vo: 'song',
@@ -602,7 +602,7 @@
 
     manCheSucNuoc({
       so: 10, ten: 'Trùm: Vượt kênh biến thiên và chọn nhánh êm giao bè', hang: 'trum', mucTieu: 'dua-vat', nhipTheo: 'tong',
-      huyHieu: { ma: 'che-suc-nuoc', ten: 'Huy hiệu Chế lệnh: chọn nhánh êm nhất' },
+      huyHieu: { ma: 'che-suc-nuoc', ten: 'Huy hiệu Chế lệnh: chọn nhánh êm' },
       hamCuaEmCan: KHO_TRUOC.concat(['flow_power', 'calmer_power', 'faster_power', 'turn_to_calmer', 'best_branch']),
       deBai: 'Sola giao bài kiểm tra Trùm Gói 7: xuồng xuất phát ở (4, 6) hướng Nam với bè B ở (4, 8). Hãy gọi tow_to_tail() bắt B và thu dây về 1 ô, rồi gọi u_turn() quay lên Bắc. Chặng dọc dài 4 ô lên ngã ba (4, 2) có dòng xuôi ở (4, 5) mạnh 1 hoặc 2; tại ngã ba (4, 2), nhánh êm hơn có sức đẩy 1 (sân 1) hoặc 0 (sân 2). Mỗi chặng đọc p = flow_power(), tính t (4 - p ở chặng dọc, 3 - p sau turn_to_calmer()) rồi forward(t) để đưa B vào bến q!',
       veMaMau: 'Đã có chặng dọc (p = flow_power(), t = 4 - p, forward(t)). Thêm turn_to_calmer(), rồi đọc lại p, t = 3 - p, forward(t).',

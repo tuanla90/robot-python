@@ -1904,13 +1904,13 @@
   ];
   var TEN_MUA_CANG = {
     'can-cau': 'Quay cần vươn tầm', 'so-am': 'Số âm và khoảng cách',
-    'moc-cau': 'Nhấc container', 'chia-du': 'Chia lấy phần nguyên, phần dư',
+    'moc-cau': 'Nhấc container', 'chia-du': 'Chia phần nguyên, phần dư',
     'quet-ma': 'Đọc mã số', 'che-quet-ma': 'Chế lệnh: phân loại theo mã',
     'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: giao đúng tàu',
     'duong-ray': 'Chạy dọc đường ray', 'che-duong-ray': 'Chế lệnh: dời bệ cẩu',
     'nhac-doi': 'Móc đôi hai tầng', 'che-nhac-doi': 'Chế lệnh: bốc nhanh',
     'can-tai': 'Đo sức nặng', 'che-can-tai': 'Chế lệnh: giữ cần an toàn',
-    'cang-cu': 'Bãi cảng cũ', 'che-cang-cu': 'Chế lệnh: vượt chướng ngại cũ',
+    'cang-cu': 'Bãi cảng cũ', 'che-cang-cu': 'Chế lệnh: qua vật cản cũ',
     'doi-cang': 'Đội cẩu và nhện', 'che-doi-cang': 'Đội cẩu và nhện phối hợp',
     'tong-hop-cang': 'Tổng hợp cảng sông', 'trum-mua-cang': 'Trùm mùa cảng sông'
   };
@@ -1995,8 +1995,8 @@
     'dong-chay': 'Đo hướng nước chảy', 'che-dong-chay': 'Chế lệnh: lựa chiều nước',
     'cong-thuy-loi': 'Mở cống dẫn nước', 'che-cong': 'Chế lệnh: điều tiết dòng',
     'tha-neo': 'Thả neo giữ nhịp', 'che-tha-neo': 'Chế lệnh: neo giữa dòng xiết',
-    'buoc-duoi': 'Thu thả dây lưới', 'che-buoc-duoi': 'Chế lệnh: thu lưới qua khúc cua',
-    'suc-nuoc': 'Đo sức nước chảy', 'che-suc-nuoc': 'Chế lệnh: chọn nhánh êm nhất',
+    'buoc-duoi': 'Thu thả dây lưới', 'che-buoc-duoi': 'Chế lệnh: thu lưới khúc cua',
+    'suc-nuoc': 'Đo sức nước chảy', 'che-suc-nuoc': 'Chế lệnh: chọn nhánh êm',
     'ben-cu': 'Dọn luồng bến cũ', 'che-ben-cu': 'Chế lệnh: cứu hộ bến cũ',
     'doi-xuong': 'Đội xuồng bắc cầu phao', 'che-doi-xuong': 'Chế lệnh: đội xuồng phối hợp',
     'tong-hop-song': 'Tổng hợp bến sông', 'trum-mua-song': 'Trùm mùa bến sông'
@@ -2085,7 +2085,7 @@
     'phat-not': 'Cộng hưởng thạch nhũ', 'che-phat-not': 'Chế lệnh: tấu khúc phá đá',
     'nghe-not': 'Thẩm âm chuông đá', 'che-nghe-not': 'Chế lệnh: giải mã giai điệu',
     'hang-cu': 'Khám phá hang cổ', 'che-hang-cu': 'Chế lệnh: giải cứu hang sâu',
-    'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang-dong': 'Chế lệnh: phối hợp trong hang',
+    'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang-dong': 'Chế lệnh: cùng vượt hang',
     'tong-hop-hang': 'Tổng hợp hang động', 'trum-mua-hang': 'Trùm mùa hang động'
   };
   var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong', 'manThuGai', 'manPhatNot', 'manNgheNot', 'manHangCu', 'manDoiHangDong', 'manTrumMuaHang'];
@@ -3302,7 +3302,7 @@
     TT.goi.forEach(function (g) { if (g.mua === 'mua-2' && TEN_GOI_2[g.ma]) g.ten = TEN_GOI_2[g.ma]; });
     var TEN_CHUONG_2 = {
       'xich': 'Quay hai nhịp', 'bien-xich': 'Đi xoắn ốc',       // PDM2a 31/10: gói 1 chưa cảm biến, biến đếm độ dài đoạn xoắn ốc (trước: Đếm bước để về)
-      'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy em',
+      'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy ý',
       'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
       'bang-chuyen': 'Canh băng chở thùng',      // PDM2a2 31/10: băng chở thùng, xích không trôi (trước: Trôi theo băng)
       'che-sung-hoi': 'Chế lệnh: mở van',

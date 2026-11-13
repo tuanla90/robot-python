@@ -73,6 +73,7 @@
     if (dau) { Luu.datDaXem('goi-mo:' + dau.ma); Luu.datDaXem('mua-mo:' + maMua); }
     if (window.AmThanh) AmThanh.phat('moKhoa');
     if (App.manHinh === 'goi' && window.ChonGoi) ChonGoi.ve(dau ? dau.ma : null);
+    else if (App.manHinh === 'mua' && window.ChonMua) ChonMua.ve();
   };
   /** Vào màn của mùa sau: thêm vào kho các hàm cốt truyện của MỌI MÙA TRƯỚC mà kho còn thiếu (người mua thẳng mùa sau, chưa chơi mùa trước).
    *  Chỉ thêm, không thay hàm em đã có. Hàm chế trong chính mùa này vẫn phải tự chế (mo-goi.js, luật 'can-ham'). */
@@ -129,15 +130,16 @@
   };
 
   /* ---------------------------------------------------------------- màn hình */
-  var MAN_HINH = { dau: 'sc-dau', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi', lap: 'sc-lap', doi: 'sc-doi' };
+  var MAN_HINH = { dau: 'sc-dau', mua: 'sc-mua', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi', lap: 'sc-lap', doi: 'sc-doi' };
   App.manHinh = null;
-  /** Hiện một màn hình: 'dau' (khởi đầu) | 'goi' (chọn gói) | 'chon' (lưới màn của gói App.goi) | 'choi' | 'lap' (Lắp robot, màn lắp ráp) | 'doi' (Chọn đội, màn chọn đội M9D2). */
+  /** Hiện một màn hình: 'dau' (khởi đầu) | 'mua' (bản đồ chọn mùa) | 'goi' (chọn gói của App.mua) | 'chon' (lưới màn của gói App.goi) | 'choi' | 'lap' (Lắp robot, màn lắp ráp) | 'doi' (Chọn đội, màn chọn đội M9D2). */
   App.hien = function (ten) {
     TP.Chan.giu(400);                                  // cú bấm đến muộn không rơi xuống màn mới
     Object.keys(MAN_HINH).forEach(function (k) { var e = document.getElementById(MAN_HINH[k]); if (e) e.classList.toggle('hidden', k !== ten); });
     App.manHinh = ten;
     if (window.Dau) Dau.chay(ten === 'dau');           // robot ở màn khởi đầu chỉ chạy hoạt hình khi đang thấy
     if (ten === 'dau') Dau.ve();
+    else if (ten === 'mua') ChonMua.ve();
     else if (ten === 'goi') { ChonGoi.ve(); App.baoGoiMoi(); }
     else if (ten === 'chon') { Chon.ve(); App.baoGoiMoi(); }   // an toàn: bảng "Mở gói mới!" chưa kịp hiện (vd mở lại game) thì hiện ở đây
     if (window.VeIcon && VeIcon.thay) Promise.resolve().then(function () { VeIcon.thay(document.getElementById(MAN_HINH[ten]) || document.getElementById('stage')); });   // V7b: nút chỉ icon có title (sau khi màn dựng xong)
@@ -145,12 +147,13 @@
   /** Vẽ lại màn hình đang thấy (sau khi bảng Gỡ lỗi đổi tiến độ / "Mở hết"). */
   App.veLai = function () {
     if (App.manHinh === 'dau') Dau.ve();
+    else if (App.manHinh === 'mua') ChonMua.ve();
     else if (App.manHinh === 'goi') ChonGoi.ve();
     else if (App.manHinh === 'chon') Chon.ve();
   };
   /** Báo nhanh (dải vàng) trên màn hình đang thấy. */
   App.thongBao = function (chu) {
-    var m = App.manHinh === 'dau' ? window.Dau : App.manHinh === 'goi' ? window.ChonGoi : window.Chon;
+    var m = App.manHinh === 'dau' ? window.Dau : App.manHinh === 'mua' ? window.ChonMua : App.manHinh === 'goi' ? window.ChonGoi : window.Chon;
     if (m && m.thongBao) m.thongBao(chu);
   };
   /** Vào màn theo mã cố định (vd 'vong-lap.4'); nhận cả id hiển thị ('3.4') cho tiện thử. */
@@ -223,6 +226,7 @@
     App.hien('chon');
   };
   App.veGoi = function () { App.hien('goi'); };
+  App.veMua = function () { App.hien('mua'); };
   App.veDau = function () { App.hien('dau'); };
 
   /* --------------------------------------------------------- co giãn khung */
@@ -259,8 +263,9 @@
     KhoHam.datTenCoDinh(ManHoc.hamCotTruyen());
     var r = Luu.docKho();
     donHamDemoMotLan();
-    var kd = document.getElementById('sc-dau'), kg = document.getElementById('sc-goi'), kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi'), kl = document.getElementById('sc-lap');
+    var kd = document.getElementById('sc-dau'), km = document.getElementById('sc-mua'), kg = document.getElementById('sc-goi'), kb = document.getElementById('sc-chon'), kc = document.getElementById('sc-choi'), kl = document.getElementById('sc-lap');
     Dau.dung(kd);
+    if (window.ChonMua) ChonMua.dung(km);
     ChonGoi.dung(kg);
     Chon.dung(kb);
     Choi.dung(kc);

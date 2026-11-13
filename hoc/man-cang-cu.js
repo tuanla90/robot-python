@@ -2,7 +2,7 @@
    man-cang-cu.js — "Robot Chấn Hưng": GÓI 8 MÙA 4 "CẢNG SÔNG" (BÃI CẢNG CŨ)
    Gồm 20 màn mới trên Cần cẩu R1 đầy đủ gặp yếu tố mùa 1–3 (#, =, u, C, H):
    - cang-cu.1..10     (10 màn chương cang-cu "Bãi cảng cũ")
-   - che-cang-cu.1..10 (10 màn chương che-cang-cu "Chế lệnh: vượt chướng ngại cũ")
+   - che-cang-cu.1..10 (10 màn chương che-cang-cu "Chế lệnh: qua vật cản cũ")
    ========================================================================== */
 (function () {
   'use strict';
@@ -571,7 +571,7 @@
     }),
 
     /* ========================================================================
-       CHƯƠNG 2: che-cang-cu (10 màn) — Chế lệnh: vượt chướng ngại cũ
+       CHƯƠNG 2: che-cang-cu (10 màn) — Chế lệnh: qua vật cản cũ
        ======================================================================== */
     manCheCangCu({
       so: 1, ten: 'Chế hàm vươn nhấc thu về', hang: 'lam-quen',
@@ -827,9 +827,9 @@
     }),
 
     manCheCangCu({
-      so: 10, ten: 'Trùm Chế lệnh: vượt chướng ngại cũ', hang: 'trum', nhipTheo: 'tong',
+      so: 10, ten: 'Trùm Chế lệnh: qua vật cản cũ', hang: 'trum', nhipTheo: 'tong',
       taiToiDa: 4,
-      huyHieu: { ma: 'che-cang-cu', ten: 'Huy hiệu Chế lệnh: vượt chướng ngại cũ' },
+      huyHieu: { ma: 'che-cang-cu', ten: 'Huy hiệu Chế lệnh: qua vật cản cũ' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'over_wall', 'over_wall2', 'vault_stack'],
       deBai: 'Trùm chương 2: trên hai sân với taiToiDa = 4, bệ cẩu bắt đầu ở (1, 3) hướng nấc 4 tầm 1. Dọc 3 cột 2, 3, 4 phía sau hàng rào = và hố u (tại (2, 5), (3, 5), (4, 5)), mỗi cột có 2 kiện hàng (cột 1 tấn hoặc cột 2 tấn tùy sân). Trong vòng lặp 3 cột, hãy trượt rail(1), vươn extend(), đọc w = weight(), thu retract(), rồi kiểm tra if w == 1 để chọn over_wall2(4) + swing_by(4) hoặc vault_stack(2, 4)!',
       veMaMau: 'Lặp 3 cột: trượt rail(1), kiểm tra khối lượng ở tầm 2 rồi gọi over_wall2(4) hoặc vault_stack(2, 4).',

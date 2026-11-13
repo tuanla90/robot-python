@@ -21,6 +21,8 @@
       'chon.sau': 'Chương sau',
       'chon.chuoi': 'Chương {n}',
       'chon.tienDo': '{n}/{tong}',
+      'chon.voLab': 'Phòng Lab',
+      'chon.voHienTruong': 'Hiện trường',
       'chon.hang.lam-quen': 'Làm quen',
       'chon.hang.luyen': 'Luyện',
       'chon.hang.bien-the': 'Biến thể',
@@ -401,6 +403,10 @@
       'goi.truoc': 'Gói trước',
       'goi.sau': 'Gói sau',
       'goi.xong': 'XONG',
+      'goi.veMua': 'Về chọn mùa',
+      'chonMua.tieuDe': 'CHỌN MÙA',
+      'chonMua.sapCoTb': 'Mùa này đang được làm.',
+      'chonMua.vaoMua': 'Vào mùa',
       'moKhoa.nut': 'Tuyệt!',
 
       /* ---- gỡ lỗi (go-loi.js): chỉ cho người làm game */

@@ -2,7 +2,7 @@
    man-moc-cau.js — "Robot Chấn Hưng": GÓI 2 MÙA 4 "CẢNG SÔNG" (MÓC CẨU ĐƠN & CHIA DƯ)
    Gồm 20 màn mới trên Cần cẩu R1 gắn móc cẩu đơn (thân cau, tay moc-cau):
    - moc-cau.1..10 (10 màn chương moc-cau "Nhấc container")
-   - chia-du.1..10 (10 màn chương chia-du "Chia lấy phần nguyên, phần dư")
+   - chia-du.1..10 (10 màn chương chia-du "Chia phần nguyên, phần dư")
    ========================================================================== */
 (function () {
   'use strict';
@@ -439,7 +439,7 @@
     }),
 
     /* ========================================================================
-       CHƯƠNG 2: chia-du (10 màn) — Chia lấy phần nguyên, phần dư
+       CHƯƠNG 2: chia-du (10 màn) — Chia phần nguyên, phần dư
        ======================================================================== */
     manChiaDu({
       so: 1, ten: 'Vòng tròn 8 nấc và phép %', hang: 'lam-quen',
@@ -761,7 +761,7 @@
 
     manChiaDu({
       so: 10, ten: 'Trùm cuối: Điều phối chia dư hai cảng', hang: 'trum', nhipTheo: 'tong',
-      huyHieu: { ma: 'chia-du', ten: 'Huy hiệu Chia lấy phần nguyên, phần dư' },
+      huyHieu: { ma: 'chia-du', ten: 'Huy hiệu Chia phần nguyên, phần dư' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'carry_by', 'carry_n', 'split_pair', 'haul_to'],
       deBai: 'Sola nhờ bạn: trùm cuối gói 2! Trên cả hai sân, chồng 3 kiện ở vị trí xuất phát (tầm 2) cần được chia bằng split_pair(3, -1, 1), rút kiện dư về tầm 1 bằng haul_to(0, -1), sau đó sang vị trí lệch (+4 nấc, +1 tầm) chuyển nốt chồng 2 kiện sang nấc kế (+1) bằng carry_n(2, 1).',
       veMaMau: 'Đã có bước chia chồng 3 kiện đầu tiên. Hãy rút kiện dư về tầm 1, sang chồng 2 kiện đối diện và dùng carry_n(2, 1).',
