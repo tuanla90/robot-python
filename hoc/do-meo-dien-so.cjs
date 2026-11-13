@@ -105,7 +105,7 @@ function lamPhang(bai, kho, hamGoc) {
   return vet;
 }
 
-const RE_DU_LIEU = /=\s*(\[|\(|\{|set\(\))|\(\s*\[|\bin\s+\[/;
+const RE_DU_LIEU = /=\s*(\[|\(|\{|set\(\))|\(\s*[\[(]|\bin\s+\[/;      // có cả dữ liệu đặt thẳng trong lời gọi: tour([3, 2]) · max((2, 1), (2, 3))
 const khoCua = (m) => { const moi = (m.loiGiai && m.loiGiai.hamCuaEmMoi) || []; return ManHoc.khoThamChieu(m).filter((h) => !moi.some((x) => x.ten === h.ten)).concat(moi); };
 function chay() {
 const kq = { lach: [], daiQua: [], chan: [], boQua: {} };
@@ -123,7 +123,10 @@ ManHoc.danhSach.forEach((m) => {
   const ma = (k.chanDoan || []).map((c) => c.ma);
   const muc = { id: m.id, ma: m.ma, ten: m.ten, sao: k.sao, soDong: phang.length, phang, san: Array.isArray(m.san[0]) ? m.san.length : 1, duLieuSan: !!m.duLieuSan, loi: ma };
   if (k.thang) kq.lach.push(muc);
-  else if (ma.includes('tran-khung')) kq.daiQua.push(muc);
+  else if (ma.includes('tran-khung')) {                                           // dài quá khung: nới khung chấm lại, để tách "thật sự bị chặn" khỏi "chỉ nhờ giới hạn số dòng"
+    const noi = ChamHoc.cham(Object.assign({}, m, { khung: Object.assign({}, m.khung || {}, { chinh: 200 }) }), { chinh: phang, hamCuaMan: bai.hamCuaMan || [] }, khoCua(m));
+    if (noi.thang) kq.daiQua.push(muc); else { muc.loi = (noi.chanDoan || []).map((c) => c.ma); kq.chan.push(muc); }
+  }
   else kq.chan.push(muc);
 });
 

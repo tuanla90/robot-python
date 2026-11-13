@@ -549,7 +549,7 @@
       else if (n && (n.t === 'ds' || n.t === 'bo')) x = { kieu: n.t === 'bo' ? 'bo' : 'list', pt: n.e.map(window.TP.inBT) };
       else if (td && td.kieu === 'ganDict') { x = { kieu: 'dict', cap: [] }; for (var k = 1; k + 1 < td.ds.length; k += 2) x.cap.push([td.ds[k], td.ds[k + 1]]); }
       else if (td && td.kieu === 'ganSet') x = { kieu: 'set', pt: td.ds.slice(1).filter(function (v, j) { return td.vt[j + 1] !== 'them'; }) };
-      if (!x) return false;
+      if (!x) x = { kieu: 'tho' };                                         // vế phải không phải dữ liệu đặt thẳng (a, b = max((2, 1), (2, 3))): chỉ hiện dòng code của từng sân
       x.dong = dong; ten = ten || m[1].replace(/\s*,\s*/g, ', '); cac.push(x);
     }
     if (cac.every(function (c) { return c.kieu === 'luoi'; })) { moLuoi({ kieu: 'xem', ten: ten, cacSan: cac.map(function (c) { return c.luoi; }), si: o.si || 0, r: 0, c: 0 }); return true; }
@@ -560,7 +560,7 @@
   /** Bảng chỉ xem cho list phẳng / tuple / dict / set của từng sân. o: { ten: vế trái, cac: [{ kieu, dong, pt | cap }], si }. */
   function moXem(o) {
     var SI = Math.max(0, Math.min(o.si || 0, o.cac.length - 1)), nhieuTen = o.ten.indexOf(',') >= 0;
-    var TD = { list: 'Danh sách', bo: 'Bộ cố định', dict: 'Từ điển', set: 'Tập hợp' };
+    var TD = { list: 'Danh sách', bo: 'Bộ cố định', dict: 'Từ điển', set: 'Tập hợp', tho: 'Dữ liệu' };
     var k = vo({ lop: 'bdl-xem', td: TD[o.cac[0].kieu] + ' ' + o.ten + ' · do sân cấp', nut: 'Đóng', nhan: 'Bảng dữ liệu: dữ liệu của từng sân' });
     k.thao.style.display = 'none';
     function o1(cha, lop, txt) { var b = h('button', 'bdl-o ' + lop, txt); b.disabled = true; cha.appendChild(b); return b; }
@@ -568,7 +568,9 @@
       var c = o.cac[SI], them = '';
       k.code.textContent = c.dong;
       k.than.textContent = '';
-      if (c.kieu === 'list' || c.kieu === 'bo') {
+      if (c.kieu === 'tho') {
+        k.than.className = 'bdl-than'; k.than.style.display = 'none';
+      } else if (c.kieu === 'list' || c.kieu === 'bo') {
         k.than.className = 'bdl-than bdl-day';
         var tenO = nhieuTen ? o.ten.split(',').map(function (x) { return x.trim(); }) : null;
         c.pt.forEach(function (v, i) {
