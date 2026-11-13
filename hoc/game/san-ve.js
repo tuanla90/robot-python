@@ -2760,7 +2760,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 1.6; });
         v.dx = 0; if (this.onRung) this.onRung(); return;
       }
-      if (m === 'da-neo' || m === 'chua-neo' || m === 'da-buoc' || m === 'phao-goi-lai' || m === 'neo-goi-lai' || m === 'day-het-thu' || m === 'day-het-nha') {   // thông tin: lệnh không làm gì (tời cuộn hết nấc như neo đã neo) this.baoHieu('?', 1200); await ngu(per); return; }
+      if (m === 'da-neo' || m === 'chua-neo' || m === 'da-buoc' || m === 'phao-goi-lai' || m === 'neo-goi-lai' || m === 'day-het-thu' || m === 'day-het-nha') { this.baoHieu('?', 1200); await ngu(per); return; }   // thông tin: lệnh không làm gì (tời cuộn hết nấc như neo đã neo)
       /* ---- Cảng sông */
       if (m === 'quay-can') {                                                                // cần quay mượt một nấc (qua số lẻ, veCanCau nội suy)
         var n0 = s.tu, n1 = s.tu + (s.chieu > 0 ? 1 : -1);
