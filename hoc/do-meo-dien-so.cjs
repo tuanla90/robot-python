@@ -107,6 +107,7 @@ function lamPhang(bai, kho, hamGoc) {
 
 const RE_DU_LIEU = /=\s*(\[|\(|\{|set\(\))|\(\s*\[|\bin\s+\[/;
 const khoCua = (m) => { const moi = (m.loiGiai && m.loiGiai.hamCuaEmMoi) || []; return ManHoc.khoThamChieu(m).filter((h) => !moi.some((x) => x.ten === h.ten)).concat(moi); };
+function chay() {
 const kq = { lach: [], daiQua: [], chan: [], boQua: {} };
 let xet = 0;
 ManHoc.danhSach.forEach((m) => {
@@ -142,3 +143,6 @@ if (process.argv.includes('--xem')) {
   const ds = process.argv.slice(process.argv.indexOf('--xem') + 1);
   ds.forEach((ma) => { const x = kq.lach.concat(kq.daiQua, kq.chan).find((y) => y.ma === ma || y.id === ma); console.log('\n' + ma + ': ' + (x ? x.phang.join(' ; ') + '  → ' + (kq.lach.includes(x) ? 'LÁCH ĐƯỢC' : x.loi.join(',')) : 'không có trong ba nhóm')); });
 }
+}
+module.exports = { lamPhang, khoCua, RE_DU_LIEU, ManHoc, ChamHoc };
+if (require.main === module) chay();
