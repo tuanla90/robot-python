@@ -1078,7 +1078,7 @@
       coNamCham, coNem, coHoi, coCamBien, coCamTu, coColor, dsCamBien, coCamMauBung, coCamera, camNhin, coPinCamBien, coLook,
       coCamBay, pinToiDa, pin, dao, rb, demBang, quayDo, lenh, lenhTon, tayCho, chanCho, nhayBuoc,
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
-      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung, coDap, dau, coCam4, cam4TaiCho,
+      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung, ghiXich, phunKhiChay, coDap, dau, coCam4, cam4TaiCho,
       coOmniCheo, coChinhLuc, coRadar, coRadarNhanDang, vuaCheo,
       laXuong, coNeo, coPhao, coSetLength, coCuonDay, daiLuoi, coDongChay, neo, keo, neoCho, phaoCho,   // BẾN SÔNG: xuồng, neo, tay lưới, chong chóng
       laCau, coMoc, coMoc2, coQuetMa, coCan, coRay, nac, tam, treo,         // CẢNG SÔNG: cần cẩu (nấc 0–7, tầm 1–3, container đang treo đáy → đỉnh), móc, móc đôi, máy quét mã, cân tải, ray
@@ -1330,6 +1330,8 @@
                                               // (29/10: lộ trình bật lucBan cho mọi màn từ gói 6 Lực phun, kể cả robot không vòi phun)
       xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
       beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật; robot không súng bỏ qua cờ, để màn nhiều robot khai một chỗ)
+      ghiXich = !!rc.ghiXich && coHoi && loai === 'xich';          // mùa 2 (ghép nhịp 2a): phun MẠNH cùng nhịp hai xích đi thẳng thì xích + giật cộng lại (đứng yên / phóng 2 ô)
+      phunKhiChay = !!rc.phunKhiChay && coHoi && loai === 'xich';  // mùa 2 (ghép nhịp 2b): phun NHẸ cùng nhịp hai xích đi thẳng thì xích chạy 1 ô rồi phun từ ô mới
       vet = [], suKienChan = [];
       loi = null;
       docCho = [], docLienTiep = 0, soLanDoc = 0, traVe = 0;       // cảm biến: sự kiện chờ gắn vào nhịp kế, số lần đọc liên tiếp chưa có nhịp, tổng số lần đọc, giá trị trả về cho nhân
@@ -1357,7 +1359,7 @@
         truotCho: truotCho, ncCho: ncCho, nc: nc, nem: nem, nemCho: nemCho, hoiCho: hoiCho,
         dan: dan, vet: vet, suKienChan: suKienChan, loi: loi, docCho: docCho, docLienTiep: docLienTiep,
         soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, lucBan: lucBan, laR1: laR1,
-        coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung, coDap: coDap, dau: dau, coCam4: coCam4, cam4TaiCho: cam4TaiCho,
+        coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung, ghiXich: ghiXich, phunKhiChay: phunKhiChay, coDap: coDap, dau: dau, coCam4: coCam4, cam4TaiCho: cam4TaiCho,
         coOmniCheo: coOmniCheo, coChinhLuc: coChinhLuc, coRadar: coRadar, coRadarNhanDang: coRadarNhanDang, vuaCheo: vuaCheo,
         laXuong: laXuong, coNeo: coNeo, coPhao: coPhao, coSetLength: coSetLength, coCuonDay: coCuonDay, daiLuoi: daiLuoi, coDongChay: coDongChay, neo: neo, keo: keo, neoCho: neoCho, phaoCho: phaoCho,
         laCau: laCau, coMoc: coMoc, coMoc2: coMoc2, coQuetMa: coQuetMa, coCan: coCan, coRay: coRay, nac: nac, tam: tam, treo: treo,
@@ -1375,7 +1377,7 @@
       truotCho = o.truotCho; ncCho = o.ncCho; nc = o.nc; nem = o.nem; nemCho = o.nemCho; hoiCho = o.hoiCho;
       dan = o.dan; vet = o.vet; suKienChan = o.suKienChan; loi = o.loi; docCho = o.docCho; docLienTiep = o.docLienTiep;
       soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho; lucBan = o.lucBan; laR1 = o.laR1;
-      coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung; coDap = o.coDap; dau = o.dau; coCam4 = o.coCam4; cam4TaiCho = o.cam4TaiCho;
+      coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung; ghiXich = o.ghiXich; phunKhiChay = o.phunKhiChay; coDap = o.coDap; dau = o.dau; coCam4 = o.coCam4; cam4TaiCho = o.cam4TaiCho;
       coOmniCheo = o.coOmniCheo; coChinhLuc = o.coChinhLuc; coRadar = o.coRadar; coRadarNhanDang = o.coRadarNhanDang; vuaCheo = o.vuaCheo;
       laXuong = o.laXuong; coNeo = o.coNeo; coPhao = o.coPhao; coSetLength = o.coSetLength; coCuonDay = o.coCuonDay; daiLuoi = o.daiLuoi; coDongChay = o.coDongChay; neo = o.neo; keo = o.keo; neoCho = o.neoCho; phaoCho = o.phaoCho;
       laCau = o.laCau; coMoc = o.coMoc; coMoc2 = o.coMoc2; coQuetMa = o.coQuetMa; coCan = o.coCan; coRay = o.coRay; nac = o.nac; tam = o.tam; treo = o.treo;
@@ -2898,6 +2900,38 @@
         return true;
       }
 
+      /** GHÌ XÍCH (mùa 2, cfg.ghiXich; ghép nhịp 2a): nhịp phun MẠNH mà hai xích cùng chiều (t = +1 tiến / −1 lùi). (a) tia bay (banBong) → (b) cộng chuyển động theo trục mũi xe:
+       *  xích t + giật (−1 khi tia bay ra trước, +1 khi tia bay ra sau; 0 nếu không phun được (hết đạn…) hay bệ súng xích giữ). Tổng 0: xe đứng yên, 'ghi-xich' (không 'giat').
+       *  Tổng ±1: đi 1 ô như xích thường. Tổng ±2: PHÓNG 2 ô, TỪNG Ô theo đúng luật đi của xích (thuDi: đâm tường / thùng nặng; xichDay tiến thì đẩy thùng), vướng thì dừng ở ô trước
+       *  vật cản; 'phong' { nhip, tu, den, soO, huong, vat }. (c) băng chuyền làm sau, ở phaA như mọi nhịp. */
+      function ghiXichNhip(l, hb, t) {
+        var kb = banBong(l, hb), giat = 0;
+        if (kb) {
+          if (beSung) sk.push({ ma: 'be-sung', nhip: nhip, huong: (hb + 2) % 4 });          // bệ súng xích giữ: không giật, chỉ còn xích
+          else giat = l.sau ? 1 : -1;
+        }
+        var tong = t + giat, maDi = tong > 0 ? 'tien' : 'lui', dauX = rb.x, dauY = rb.y;
+        if (tong === 0) sk.push({ ma: 'ghi-xich', nhip: nhip, o: { x: rb.x, y: rb.y }, huong: (hb + 2) % 4, xich: t > 0 ? rb.huong : (rb.huong + 2) % 4 });   // huong: hướng giật bị ghì; xich: hướng xích đẩy
+        else if (tong === 1 || tong === -1) thuDi(rb.huong, tong, maDi);
+        else {
+          var buoc = tong > 0 ? 1 : -1, tuP = { x: rb.x, y: rb.y }, soO = 0, vatP = null;
+          for (var i = 0; i < 2; i++) {
+            var x0 = rb.x, y0 = rb.y, n0 = sk.length;
+            thuDi(rb.huong, buoc, maDi);
+            if (rb.x === x0 && rb.y === y0) {
+              var ed = sk.slice(n0).filter(function (e) { return e.ma === 'dam-tuong'; })[0];
+              vatP = ed ? ed.vat : 'chan';
+              break;
+            }
+            soO++;
+          }
+          var ePh = { ma: 'phong', nhip: nhip, tu: tuP, den: { x: rb.x, y: rb.y }, soO: soO, huong: tong > 0 ? rb.huong : (rb.huong + 2) % 4, vat: vatP };
+          sk.push(ePh);
+          if (vatP) suKienChan.push(ePh);                                                 // phóng bị vướng (chưa đủ 2 ô): cham.js nói thêm vào lời đâm tường
+        }
+        if (kb) thongTinBan(kb, l, hb, rb.x !== dauX || rb.y !== dauY);
+      }
+
       /** Cuối nhịp: cửa đổi theo nút (đã bị bắn trong nhịp), nút đè giữ (M trên sàn) hay theo chu kỳ (cửa nhịp). Cửa không đóng xuống ô đang có xe / vật / thùng: giữ mở ('cua-ket'). */
       function capNhatCua() {
         nutDes.forEach(function (m) {
@@ -3773,14 +3807,25 @@
             apNem(hanhDong.nem);
           }
           else if (coHoi && hanhDong.hoi) {                                          // nhịp có spray() / spray_back(): bắn rồi giật; lệnh bánh / trượt cùng nhịp bị bỏ
-            banhGhi = { trai: 0, phai: 0 };
             var lh = hanhDong.hoi;
-            if (t !== 0 || p !== 0 || tr || ch) {
+            var xichThang = loai === 'xich' && !tr && !ch && t === p && t !== 0;          // hai xích CÙNG CHIỀU (cùng tiến / cùng lùi): đi thẳng, không quay
+            var ghiNay = xichThang && ghiXich && lh.luc !== 'low';                          // 2a GHÌ XÍCH (cfg.ghiXich): phun mạnh + xích đi thẳng
+            var chayNay = xichThang && phunKhiChay && lh.luc === 'low';                     // 2b VỪA CHẠY VỪA PHUN (cfg.phunKhiChay): phun nhẹ + xích đi thẳng
+            banhGhi = (ghiNay || chayNay) ? { trai: t, phai: p } : { trai: 0, phai: 0 };
+            if (!ghiNay && !chayNay && (t !== 0 || p !== 0 || tr || ch)) {
               var eby = { ma: 'ban-dung-yen', nhip: nhip, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : ch ? { ten: ch.ten, dongPy: ch.dongPy } : hanhDong.lenhBanh) || null, ban: { ten: lh.ten, dongPy: lh.dongPy } };
+              if (ghiXich || phunKhiChay) eby.ghep = { thang: xichThang, luc: lh.luc || 'high' };   // màn có ghép nhịp: cham.js nói vì sao nhịp này không ghép được (chỉ thêm khi có cờ)
               sk.push(eby); suKienChan.push(eby);
             }
             if (loai === 'xich') xichThoi(sk);
             var hb = lh.sau ? (rb.huong + 2) % 4 : rb.huong;
+            if (chayNay) {                                                                  // 2b: (a) xích chạy 1 ô (bị chặn thì đứng) → (b) tia phun từ ô MỚI (nhẹ: bay ≤ 2 ô, không giật)
+              thuDi(rb.huong, t, t > 0 ? 'tien' : 'lui');
+              var kbC = banBong(lh, hb);
+              if (kbC) thongTinBan(kbC, lh, hb, false);
+            }
+            else if (ghiNay) ghiXichNhip(lh, hb, t);                                        // 2a: (a) tia bay → (b) xích + giật cộng lại
+            else {
             var kb = banBong(lh, hb);
             if (kb) {
               var giatCoDoi = false;
@@ -3788,6 +3833,7 @@
               else if (beSung && loai === 'xich') sk.push({ ma: 'be-sung', nhip: nhip, huong: (hb + 2) % 4 });          // BỆ SÚNG XÍCH (mùa 2, cfg.beSung): xích bắn tụ không giật, bệ giữ (thông tin cho hoạt cảnh)
               else giatCoDoi = giatXe(hb, lh.dongPy ? { ten: lh.ten, dongPy: lh.dongPy } : null);
               thongTinBan(kb, lh, hb, giatCoDoi);
+            }
             }
           }
           else if (coTay && tay.tuThe === 'duoi' && (tr || ch || t !== 0 || p !== 0)) {   // (c) bánh chạy — nhưng tay vướng sàn
@@ -4726,6 +4772,14 @@
         return { x: rb.x + v[0] * buoc, y: rb.y + v[1] * buoc, drone: false };
       } else if (h.nem) return null;
       else if (h.hoi) {
+        var thangH = loai === 'xich' && !h.truot && !h.cheo && h.trai === h.phai && h.trai !== 0;
+        if (thangH && ((phunKhiChay && h.hoi.luc === 'low') || (ghiXich && h.hoi.luc !== 'low'))) {   // ghép nhịp 2a / 2b: xích đi thẳng (+ giật); ô kế theo hướng tổng (phóng: chỉ ô đầu)
+          var tongH = h.trai + (h.hoi.luc === 'low' || beSung ? 0 : (h.hoi.sau ? 1 : -1));
+          if (tongH === 0) return null;
+          d = tongH > 0 ? rb.huong : (rb.huong + 2) % 4;
+          v = VEC[d];
+          return { x: rb.x + v[0], y: rb.y + v[1], drone: false };
+        }
         if (beSung && loai === 'xich' && h.hoi.luc !== 'low') return null;                                           // bệ súng xích: bắn tụ không giật nên không định tới ô nào
         d = ((h.hoi.sau ? (rb.huong + 2) % 4 : rb.huong) + 2) % 4;
       }
