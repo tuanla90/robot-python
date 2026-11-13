@@ -442,15 +442,25 @@
       ten: 'Kiểm tra mẫu trong tập hợp',
       mucTieu: 'toi-co',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Giống từ điển, ta dùng x in s hoặc x not in s để kiểm tra phần tử trong tập hợp. Hãy thêm "c" và "d" vào s = {"a", "b"}, sau đó kiểm tra nếu "d" in s thì đi ngang len(s) bước, rẽ phải và đi xuống 2 bước tới cờ.',
-      veMaMau: 'Mã mẫu đã thêm "c" và "d" (nên len(s) bằng 4). Hãy viết tiếp nhánh if "d" in s: để tới cờ.',
+      deBai: 'Giống từ điển, ta dùng x in s hoặc x not in s để kiểm tra phần tử trong tập hợp. Mỗi sân có một tập hợp s ban đầu riêng (sân 1: s = {"a", "b"}). Hãy thêm "c" và "d" vào s, sau đó kiểm tra nếu "d" in s thì đi ngang len(s) bước, rẽ phải và đi xuống 2 bước tới cờ.',
+      veMaMau: 'Mã mẫu đã thêm "c" và "d". Ở sân 1 len(s) thành 4. Ở sân 2 "c" có sẵn nên len(s) chỉ thành 3. Hãy viết tiếp nhánh if "d" in s: để tới cờ.',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '#####F#',
-        '#######'
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '#####F#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.II..#',
+          '####I##',
+          '####F##',
+          '#######'
+        ]
       ],
+      duLieuSan: ['s = {"a", "b"}', 's = {"a", "c"}'],      // dữ liệu theo sân: sân 2 có sẵn "c" nên s.add("c") không làm s lớn thêm; điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         's = {"a", "b"}',
@@ -468,12 +478,13 @@
         '    forward(2)'
       ]),
       loiSai: [
-        { moTa: 'Chưa viết forward(2) sau spike_step: dừng ở góc (5, 1)', baiLam: bai(['s = {"a", "b"}', 's.add("c")', 's.add("d")', 'if "d" in s:', '    spike_step(len(s))']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Bỏ mất dòng s.add("c"): len(s) chỉ bằng 3 nên rẽ sớm đâm tường', baiLam: bai(['s = {"a", "b"}', 's.add("d")', 'if "d" in s:', '    spike_step(len(s))', '    forward(2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Chưa viết forward(2) sau spike_step: dừng ở góc', baiLam: bai(['s = {"a", "b"}', 's.add("c")', 's.add("d")', 'if "d" in s:', '    spike_step(len(s))']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bỏ mất dòng s.add("c"): ở sân 1 len(s) chỉ bằng 3 nên rẽ sớm đâm tường', baiLam: bai(['s = {"a", "b"}', 's.add("d")', 'if "d" in s:', '    spike_step(len(s))', '    forward(2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(4) rồi forward(2) đâm tường ở sân 2', baiLam: bai(['s = {"a", "b"}', 's.add("c")', 's.add("d")', 'spike_step(4)', 'forward(2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 15, nhip: 7 },
       goiY: [
-        'Sau khi thêm "c" và "d", len(s) bằng 4 nên spike_step(len(s)) đưa robot tới góc (5, 1) và quay mặt xuống.',
+        'Ở sân 1, sau khi thêm "c" và "d", len(s) bằng 4 nên spike_step(len(s)) đưa robot tới góc và quay mặt xuống. Ở sân 2, "c" có sẵn nên len(s) bằng 3.',
         'Thêm dòng forward(2) thụt lề bên trong khối if "d" in s:.'
       ]
     }),
@@ -518,16 +529,27 @@
       ten: 'Hai danh sách thạch nhũ',
       mucTieu: 'toi-co',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step', 'count_unique'],
-      deBai: 'Dùng hàm count_unique cho hai danh sách khảo sát a = [1, 1, 2, 3] và b = [4, 5, 4, 6] để đi hết hành lang chữ L tới cờ.',
+      deBai: 'Mỗi sân có hai danh sách khảo sát a và b riêng (sân 1: a = [1, 1, 2, 3], b = [4, 5, 4, 6]). Dùng hàm count_unique cho a và b để đi hết hành lang chữ L tới cờ.',
       veMaMau: 'Đoạn ngang đã dùng spike_step(count_unique(a)). Hãy dùng forward(count_unique(b)) cho đoạn dọc.',
       san: [
-        '######',
-        '#.II.#',
-        '####I#',
-        '####I#',
-        '####F#',
-        '######'
+        [
+          '######',
+          '#.II.#',
+          '####I#',
+          '####I#',
+          '####F#',
+          '######'
+        ],
+        [
+          '######',
+          '#.I..#',
+          '###I##',
+          '###I##',
+          '###F##',
+          '######'
+        ]
       ],
+      duLieuSan: [['a = [1, 1, 2, 3]', 'b = [4, 5, 4, 6]'], ['a = [2, 5, 2, 5]', 'b = [7, 8, 7, 9]']],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'a = [1, 1, 2, 3]',
@@ -541,11 +563,12 @@
         'forward(count_unique(b))'
       ]),
       loiSai: [
-        { moTa: 'Chưa viết đoạn dọc: dừng ở góc (4, 1)', baiLam: bai(['a = [1, 1, 2, 3]', 'b = [4, 5, 4, 6]', 'spike_step(count_unique(a))']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa viết đoạn dọc: dừng ở góc', baiLam: bai(['a = [1, 1, 2, 3]', 'b = [4, 5, 4, 6]', 'spike_step(count_unique(a))']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(3) rồi forward(3) đâm tường ở sân 2', baiLam: bai(['a = [1, 1, 2, 3]', 'b = [4, 5, 4, 6]', 'spike_step(3)', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 13, nhip: 7 },
       goiY: [
-        'Cả a và b đều có 3 giá trị phân biệt nên count_unique(a) và count_unique(b) đều trả về 3.',
+        'Ở sân 1, cả a và b đều có 3 giá trị phân biệt nên count_unique(a) và count_unique(b) đều trả về 3. Sân 2 có số khác.',
         'Thêm dòng forward(count_unique(b)) vào cuối chương trình.'
       ]
     }),
