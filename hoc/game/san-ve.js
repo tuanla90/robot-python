@@ -100,7 +100,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   /* BẾN SÔNG / CẢNG SÔNG (31/10): sự kiện mới có bước hoạt cảnh riêng (Field.nhipMuaMoi) và trọng số thời gian trong nhịp (TRONG) */
   var NHIP_MOI = { 'troi': 1, 'troi-chan': 1, 'neo-giu': 1, 'tha-neo': 1, 'nho-neo': 1, 'keo-vat': 1, 'keo-hut': 1, 'keo-van': 1, 'tha-keo': 1, 'coi-duoi': 1, 'buoc-duoi': 1, 'doi-dai-luoi': 1, 'cong-batch': 1,
-    'dang-neo': 1, 'mui-vuong': 1, 'duoi-vuong': 1, 'luoi-vuong': 1, 'buoc-hut': 1, 'khong-keo': 1, 'dang-keo': 1, 'trong-khoang': 1, 'da-neo': 1, 'chua-neo': 1, 'da-buoc': 1, 'phao-goi-lai': 1, 'neo-goi-lai': 1,
+    'dang-neo': 1, 'mui-vuong': 1, 'duoi-vuong': 1, 'luoi-vuong': 1, 'buoc-hut': 1, 'khong-keo': 1, 'dang-keo': 1, 'trong-khoang': 1, 'da-neo': 1, 'chua-neo': 1, 'da-buoc': 1, 'phao-goi-lai': 1, 'neo-goi-lai': 1, 'day-het-thu': 1, 'day-het-nha': 1,
     'quay-can': 1, 'vuon-can': 1, 'thu-can': 1, 'moc-cont': 1, 'ha-cont': 1, 'chay-ray': 1, 'tau-cap': 1, 'tau-roi': 1, 'can-het-tam': 1, 'qua-tai': 1, 'het-ray': 1, 'giao-nham': 1,
     'dang-treo': 1, 'moc-hut': 1, 'moc-thieu': 1, 'khong-treo': 1, 'ha-bi-chan': 1, 'thap-sai': 1 };
   var TRONG_MOI = { 'troi': 1.3, 'keo-vat': 1.8, 'keo-hut': 1.4, 'keo-van': 1.6, 'buoc-duoi': 1.3, 'doi-dai-luoi': 1.3, 'tha-keo': 0.8, 'coi-duoi': 0.8, 'cong-batch': 1.1, 'tha-neo': 0.9, 'nho-neo': 0.9,
@@ -2741,7 +2741,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         this.dayKeo = null; return;
       }
       if (m === 'buoc-duoi' || m === 'doi-dai-luoi') {                                       // buộc dắt hoặc đổi độ dài dây lưới (cuộn vào khoang / thu gần / thả ra xa)
-        var ob = this.objTheoId(s.id), laLuoi = m === 'doi-dai-luoi' || typeof s.denDai === 'number';
+        var ob = this.objTheoId(s.id), laLuoi = m === 'doi-dai-luoi';
         this.nangCap().dat = true;
         if (ob) {
           ob.keo = true; var bx0 = ob.x, by0 = ob.y; if (xu) xu.keo = null;
@@ -2750,7 +2750,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           ob.x = s.den.x; ob.y = s.den.y;
           this.burst(s.den.x * T + 7, s.den.y * T + 7, 4, BOT, 0.4);
         } else await ngu(per);
-        if (xu) xu.keo = laLuoi ? { id: s.id, cho: s.denDai === 0 ? 'khoang' : 'luoi', doDai: s.denDai, day: s.day } : { id: s.id, cho: 'duoi' };
+        if (xu) xu.keo = laLuoi ? { id: s.id, cho: s.doDai === 0 ? 'khoang' : 'luoi', doDai: s.doDai, day: s.day } : { id: s.id, cho: 'duoi' };   // lõi ghi doDai (không có denDai)
         this.dayKeo = null; return;
       }
       if (m === 'cong-batch') { await this.congBatch(evs.filter(function (q) { return q.ma === 'cong-doi' || q.ma === 'cong-ket'; }), per, my); return; }
@@ -2760,7 +2760,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 1.6; });
         v.dx = 0; if (this.onRung) this.onRung(); return;
       }
-      if (m === 'da-neo' || m === 'chua-neo' || m === 'da-buoc' || m === 'phao-goi-lai' || m === 'neo-goi-lai') { this.baoHieu('?', 1200); await ngu(per); return; }
+      if (m === 'da-neo' || m === 'chua-neo' || m === 'da-buoc' || m === 'phao-goi-lai' || m === 'neo-goi-lai' || m === 'day-het-thu' || m === 'day-het-nha') {   // thông tin: lệnh không làm gì (tời cuộn hết nấc như neo đã neo) this.baoHieu('?', 1200); await ngu(per); return; }
       /* ---- Cảng sông */
       if (m === 'quay-can') {                                                                // cần quay mượt một nấc (qua số lẻ, veCanCau nội suy)
         var n0 = s.tu, n1 = s.tu + (s.chieu > 0 ? 1 : -1);
