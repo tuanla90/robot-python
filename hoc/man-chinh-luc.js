@@ -880,13 +880,14 @@
       id: 6619, chuong: 'che-chinh-luc', so: 9, ma: 'che-chinh-luc.9',
       ten: 'Mở cổng và bắc cầu theo bảng', hang: 'bien-the',
       hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'lob_step'],
-      deBai: 'Bảng `plan = [[1, 3], [2, 2]]` điều khiển R1: bước đầu trượt sang cột 2 và hất đá xa 3 ô đè lên nút `M` mở cửa `C`; bước hai trượt sang cột 4 và hất đá xa 2 ô lấp hố sâu `u`. Hãy duyệt `for r in plan:` gọi `lob_step(r)`, rồi gọi `forward(4)` tiến thẳng qua cửa `C` tới cờ.',
+      deBai: 'Bảng `plan` điều khiển R1, mỗi sân một bảng riêng (sân 1: `plan = [[1, 3], [2, 2]]`). Mỗi hàng `r` là một bước: trượt phải `r[0]` ô rồi hất đá xa `r[1]` ô. Bước đầu hất đá đè lên nút `M` mở cửa `C`; bước hai hất đá lấp hố sâu `u` ở cột 4. Hãy duyệt `for r in plan:` gọi `lob_step(r)`, rồi gọi `forward(4)` tiến thẳng qua cửa `C` tới cờ.',
       veMaMau: 'Chương trình có sẵn đã duyệt bảng plan bằng lob_step(r). Hãy thêm lệnh forward(4) ở cuối để tiến lên cờ.',
       goiY: [
         'Sau vòng lặp for r in plan: lob_step(r), R1 đang đứng ở (4, 5), hố ở (4, 3) đã lấp và cửa C ở (4, 2) đã mở.',
         'Gọi forward(4) ở ngoài vòng lặp để đưa R1 từ (4, 5) lên thẳng cờ ở (4, 1).'
       ],
-      san: [
+      // dữ liệu theo sân: mỗi sân một bảng plan, điền thẳng số của sân 1 thì xúc hụt, cửa C không mở ở sân 2 (và ngược lại)
+      san: [[
         '######',
         '####F#',
         '##M#C#',
@@ -894,7 +895,16 @@
         '##o#o#',
         '#....#',
         '######'
-      ],
+      ], [
+        '######',
+        '####F#',
+        '###MC#',
+        '###=u#',
+        '###oo#',
+        '#....#',
+        '######'
+      ]],
+      duLieuSan: ['plan = [[1, 3], [2, 2]]', 'plan = [[2, 3], [1, 2]]'],
       batDau: { x: 1, y: 5, huong: 0 },
       maMau: bai([
         'plan = [[1, 3], [2, 2]]',
@@ -910,7 +920,8 @@
       sao: { o: 20, nhip: 11 },
       loiSai: [
         { moTa: 'Mới mở cửa và lấp hố xong mà chưa gọi forward(4) lên cờ', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'for r in plan:', '    lob_step(r)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đặt nhầm forward(4) vào bên trong vòng lặp for nên đâm vào hàng rào ở cột 2', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'for r in plan:', '    lob_step(r)', '    forward(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Đặt nhầm forward(4) vào bên trong vòng lặp for nên đâm vào hàng rào', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'for r in plan:', '    lob_step(r)', '    forward(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 xúc hụt ở cột 2, cửa C không mở nên xe đâm cửa', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'slide_r(1)', 'aim_lob(3)', 'slide_r(2)', 'aim_lob(2)', 'forward(4)']), phaiCoMa: ['nap-hut', 'dam-tuong', 'chua-toi-co'] }
       ],
       loiBinh: 'Một bảng 2 chiều kết hợp lob_step(r) giải quyết cùng lúc cả việc đè nút mở cửa lẫn việc lấp hố bắc cầu.'
     }),
