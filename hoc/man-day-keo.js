@@ -557,16 +557,27 @@
     manBoCoDinh(4, 'lam-quen', {
       ten: 'Duyệt qua từng phần tử của bộ cố định',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'back', 'tow_grab', 'tow_drop', 'pull_back'],
-      deBai: 'Vòng lặp for cũng duyệt trực tiếp qua từng phần tử của một tuple: với steps = (1, 2), viết for a in steps: thì vòng đầu a = 1, vòng hai a = 2. Ở mỗi nhánh dọc (cột 2 và cột 5), hãy rẽ phải, tiến a ô xuống nhánh, gọi pull_back(a) để kéo bè lùi về bến q ở hàng 3, rồi tháo lưới bằng tow_drop(), rẽ trái và tiến 3 ô sang nhánh tiếp theo.',
+      deBai: 'Vòng lặp for cũng duyệt trực tiếp qua từng phần tử của một tuple: với steps = (1, 2), viết for a in steps: thì vòng đầu a = 1, vòng hai a = 2. Mỗi sân có một bộ steps riêng: sân 1 là (1, 2), sân 2 là (2, 1). Ở mỗi nhánh dọc (cột 2 và cột 5), hãy rẽ phải, tiến a ô xuống nhánh, gọi pull_back(a) để kéo bè lùi về bến q ở hàng 3, rồi tháo lưới bằng tow_drop(), rẽ trái và tiến 3 ô sang nhánh tiếp theo.',
       veMaMau: 'Trong vòng lặp for a in steps:, sau pull_back(a) hãy tháo lưới, rẽ trái và tiến 3 ô.',
       san: [
-        '.........',
-        '~~~~~~~~~',
-        '..~..~...',
-        '..q..q...',
-        '..B..~...',
-        '.....B...'
+        [
+          '.........',
+          '~~~~~~~~~',
+          '..~..~...',
+          '..q..q...',
+          '..B..~...',
+          '.....B...'
+        ],
+        [
+          '.........',
+          '~~~~~~~~~',
+          '..~..~...',
+          '..q..q...',
+          '..~..B...',
+          '..B......'
+        ]
       ],
+      duLieuSan: ['steps = (1, 2)', 'steps = (2, 1)'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì lưới hụt ở sân 2
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'steps = (1, 2)',
@@ -588,11 +599,12 @@
       loiSai: [
         { moTa: 'Để nguyên mã mẫu: chưa thả lưới và chưa rẽ trái sang nhánh thứ hai', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)']), phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
         { moTa: 'Quên gọi tow_drop() sau pull_back(a): khi đi sang nhánh thứ hai bè đầu bị kéo tuột khỏi bến q', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)', '    turn_left()', '    forward(3)']), phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
-        { moTa: 'Cuối vòng lặp dùng forward(2) thay vì forward(3): xuồng dừng ở cột 4 thay vì cột 5', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)', '    tow_drop()', '    turn_left()', '    forward(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Cuối vòng lặp dùng forward(2) thay vì forward(3): xuồng dừng ở cột 4 thay vì cột 5', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)', '    tow_drop()', '    turn_left()', '    forward(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Điền thẳng số của sân 1: for a in (1, 2): thì ở sân 2 nhánh đầu lưới không tới bè', baiLam: bai(['steps = (1, 2)', 'for a in (1, 2):', '    turn_right()', '    forward(a)', '    pull_back(a)', '    tow_drop()', '    turn_left()', '    forward(3)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       sao: { o: 27, nhip: 15 },
       goiY: [
-        'Sau pull_back(a), xuồng đã lùi về hàng 1 và bè đã nằm đúng trên bến q ở hàng 3: hãy gọi tow_drop() để tháo lưới.',
+        'Sau pull_back(a), xuồng đã lùi về hàng 1 và bè đã nằm đúng trên bến q ở hàng 3: hãy gọi tow_drop() để tháo lưới. Ở sân nào cũng vậy.',
         'Tiếp theo gọi turn_left() và forward(3) để đi dọc hàng 1 từ cột 2 sang nhánh thứ hai ở cột 5.'
       ]
     }),
@@ -690,13 +702,21 @@
     manBoCoDinh(7, 'luyen', {
       ten: 'So sánh hai bộ cố định',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'back', 'tow_grab', 'tow_drop', 'pull_back', 'pair_step'],
-      deBai: 'Trong Python, hai tuple được so sánh lần lượt từ phần tử đầu tiên: (3, 1) > (2, 5) là đúng vì 3 > 2; nếu phần tử đầu bằng nhau thì mới so tới phần tử thứ hai. Hàm max(p1, p2) cũng chọn bộ lớn hơn theo đúng quy tắc đó. Hãy dùng a, b = max((2, 1), (2, 3)) để lấy cặp bước lớn hơn, tiến a ô rồi gọi pull_back(b) kéo bè vào bến.',
-      veMaMau: 'Dùng a, b = max((2, 1), (2, 3)) để lấy a = 2 và b = 3.',
+      deBai: 'Trong Python, hai tuple được so sánh lần lượt từ phần tử đầu tiên: (3, 1) > (2, 5) là đúng vì 3 > 2; nếu phần tử đầu bằng nhau thì mới so tới phần tử thứ hai. Hàm max(p1, p2) cũng chọn bộ lớn hơn theo đúng quy tắc đó. Mỗi sân có một dòng a, b = max(...) riêng: sân 1 là max((2, 1), (2, 3)), sân 2 là max((3, 2), (1, 4)). Hãy dùng cặp a, b lớn hơn đó, tiến a ô rồi gọi pull_back(b) kéo bè vào bến.',
+      veMaMau: 'Ở sân 1, a, b = max((2, 1), (2, 3)) cho a = 2 và b = 3. Ở sân 2, max((3, 2), (1, 4)) chọn (3, 2) vì 3 > 1.',
       san: [
-        '........',
-        '~~~q~~B.',
-        '........'
+        [
+          '........',
+          '~~~q~~B.',
+          '........'
+        ],
+        [
+          '........',
+          '~~~~~q~B',
+          '........'
+        ]
       ],
+      duLieuSan: ['a, b = max((2, 1), (2, 3))', 'a, b = max((3, 2), (1, 4))'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì lưới hụt ở sân 2
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'a, b = max((2, 1), (2, 3))',
@@ -709,13 +729,13 @@
       ]),
       loiSai: [
         { moTa: 'Để nguyên mã mẫu: mới tiến a ô, chưa gọi pull_back(b) để kéo bè', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(a)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Dùng min thay vì max: b nhận 1 thay vì 3 nên kéo bè thiếu 2 ô', baiLam: bai(['a, b = min((2, 1), (2, 3))', 'forward(a)', 'pull_back(b)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Kéo bè bằng pull_back(a) thay vì pull_back(b): mới lùi 2 ô, thiếu 1 ô tới bến q', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(a)', 'pull_back(a)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Kéo bè bằng pull_back(a) thay vì pull_back(b): ở sân 1 mới lùi 2 ô, thiếu 1 ô tới bến q', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(a)', 'pull_back(a)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Điền thẳng số của sân 1: forward(2) rồi pull_back(3) thì ở sân 2 lưới không tới bè', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(2)', 'pull_back(3)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       sao: { o: 16, nhip: 6 },
       goiY: [
         'Hai bộ (2, 1) và (2, 3) có cùng phần tử đầu là 2, nên max chọn (2, 3) vì 3 > 1.',
-        'Thêm dòng pull_back(b) ở cuối chương trình để bắt bè ở (6, 1) và kéo lùi 3 ô về bến (3, 1).'
+        'Thêm dòng pull_back(b) ở cuối chương trình. Ở sân 1 nó bắt bè ở (6, 1) và kéo lùi 3 ô về bến (3, 1).'
       ]
     }),
 
