@@ -142,6 +142,7 @@
     m('squirt', 'hoi', 'Phun ra trước với lực p, "low" hay "high", rồi chờ một nhịp', 'luc-ban', 'luc-ban.4'),
     m('squirt_back', 'hoi', 'Phun ra sau với lực p rồi chờ một nhịp', 'luc-ban', 'luc-ban.5'),
     m('smart_spray', 'hoi', 'Trước mũi trống thì phun mạnh cho tia nước bay xa, có vật sát mũi thì phun nhẹ', 'luc-ban', 'luc-ban.8'),
+    m('brace_spray', 'hoi', 'Ghì xích: phun mạnh cùng lúc hai xích tiến, nước đẩy lùi và xích đẩy tới triệt tiêu nên xe đứng yên (một nhịp)', 'luc-ban', 'luc-ban.9'),
     // đợt 2: cảm biến màu, nam châm, máy ném, drone
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
     // chương Chế lệnh màu (go_out, come_back, line_step, trace là hàm của màn nên không có ở đây)

@@ -3339,10 +3339,13 @@
       if (m.doi) m.doi.forEach(function (r) { if (r && r.chinhLuoi === undefined) r.chinhLuoi = true; });
       else if (m.chinhLuoi === undefined) m.chinhLuoi = true;
     });
-    // 14/11 (KE-HOACH-GHEP-NHIP.md mục 2a): GHÌ XÍCH mở từ luc-ban.6 trở đi: phun mạnh cùng nhịp hai xích đi thẳng thì xích + giật cộng lại (lõi bỏ qua cờ ở robot không phải xích có vòi).
+    // 14/11 (KE-HOACH-GHEP-NHIP.md mục 2a): GHÌ XÍCH mở từ luc-ban.6 tới hết gói 6 Lực phun (luc-ban, che-luc-ban): phun mạnh cùng nhịp hai xích đi thẳng thì xích + giật cộng lại.
+    // CHỈ gói 6: cờ này kéo theo cú PHÓNG 2 ô (tổng ±2) mà lõi không tách được; bật cho cả gói 7–10 thì dãy cố định có phóng thắng mọi sân, phá ép cảm biến (20 màn gói 10).
+    // Gói 10 bật cờ từng màn (man-trum-mua-2.js). Gói 7–9 chưa có: xem báo cáo ghép nhịp mùa 2.
     var iGhi = M.danhSach.indexOf(get('luc-ban.6'));
+    var goiGhi = {}; TT.goi.forEach(function (g) { if (g.ma === 'luc-ban') g.chuong.forEach(function (c) { goiGhi[c] = true; }); });
     if (iGhi >= 0) M.danhSach.forEach(function (m, i) {
-      if (i < iGhi) return;
+      if (i < iGhi || !goiGhi[m.chuong]) return;
       if (m.doi) m.doi.forEach(function (r) { if (r && r.ghiXich === undefined) r.ghiXich = true; });
       else if (m.ghiXich === undefined) m.ghiXich = true;
     });

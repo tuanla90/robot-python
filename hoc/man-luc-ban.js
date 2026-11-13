@@ -13,7 +13,9 @@
      luc-ban.4 squirt(p)      = spray(p), wait()                                                     phun ra trước với lực p (1 nhịp)
      luc-ban.5 squirt_back(p) = spray_back(p), wait()                                                phun ra sau với lực p (1 nhịp)
      luc-ban.8 smart_spray() = if distance() > 0: squirt("high") / else: squirt("low")                trước mũi trống (nút ở xa) thì phun mạnh, vật sát mũi thì phun nhẹ (1 nhịp)
-   HÀM CỦA MÀN: luc-ban.7 tap_left(p) thân ban đầu bỏ quên p (spray("high")), sửa thành spray(p) · luc-ban.9 pick_spray() thân ban đầu đảo hai nhánh, sửa lại cho đúng.
+     luc-ban.9 brace_spray() = spray("high"), left_move(), right_move(), wait()                         GHÌ XÍCH: phun mạnh mà xe đứng yên (1 nhịp)
+   GHÉP NHỊP (14/11, KE-HOACH-GHEP-NHIP.md mục 2a; lộ trình bật ghiXich từ màn 6): 6 trình diễn ghì xích (thay "Nhẹ để mở, mạnh để đẩy"), 7 màn ép hố sau đuôi
+   (thay "Đố: quên dùng p", hàm của màn tap_left), 9 hàm brace_spray() (thay "Đố: đảo nhánh", hàm của màn pick_spray).
 
    Sao: sao.nhip = số nhịp của lời giải chuẩn = đường ngắn nhất (BFS do-duong-sung-hoi.mjs có thêm hai hành động phun nhẹ khi man.lucBan); sao.o = ô của lời giải chuẩn.
    Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên. Nối tiếp man-chuoi-1.js vào cùng window.ManHoc. Thứ tự chương: thu-tu-chuong.js.
@@ -79,9 +81,10 @@
   // 8: xe (3,3) quay phải; nút (4,3) SÁT mũi, thùng (2,3) sau lưng; nút xa (3,0) cách 3 ô; cửa 1 (3,4), cửa 2 (3,6), xe mờ (3,7)
   var SAN_8 = ['###N###', '###.###', '###.###', '#.H.N##', '###C###', '###.###', '###C###', '###.###', '#######'];
   var NOI_8 = [{ nut: { x: 4, y: 3 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 3, y: 0 }, cua: [{ x: 3, y: 6 }] }];
-  // 9: lật dọc 8: xe (3,5) quay trái; nút (2,5) sát mũi, thùng (4,5) sau lưng; nút xa (3,8) cách 3 ô bên dưới; cửa 1 (3,4), cửa 2 (3,2), xe mờ (3,1)
-  var SAN_9 = ['#######', '###.###', '###C###', '###.###', '###C###', '##N.H.#', '###.###', '###.###', '###N###'];
-  var NOI_9 = [{ nut: { x: 2, y: 5 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 3, y: 8 }, cua: [{ x: 3, y: 2 }] }];
+  // 9 (14/11, hàm brace_spray()): như sân 8 nhưng HAI van đều xa: xe (3,3) quay phải, van phải (6,3) cách 3 ô, thùng (2,3) sau lưng (chỗ trượt (1,3)); van trên (3,0) cách 3 ô;
+  //   cửa 1 (3,4) theo van phải, cửa 2 (3,6) theo van trên; xe mờ (3,7). Hai lần phun mạnh mà xe phải đứng yên: ghì xích cả hai lần.
+  var SAN_9 = ['###N###', '###.###', '###.###', '#.H...N', '###C###', '###.###', '###C###', '###.###', '#######'];
+  var NOI_9 = [{ nut: { x: 6, y: 3 }, cua: [{ x: 3, y: 4 }] }, { nut: { x: 3, y: 0 }, cua: [{ x: 3, y: 6 }] }];
   // 10 (30/10, nghiệm thu mùa 2: trùm cũ ba dòng dễ hơn màn 8): ba sân, mỗi sân HAI van ở hai hướng như màn 8, xa gần khác nhau; xe (3,3) quay phải.
   //     A: van trước SÁT mũi, thùng sau lưng (phun mạnh thì hất thùng), van trên cách 3 ô (phun mạnh, giật xuống ô cửa 1 vừa mở) = sân màn 8.
   //     B: van trước cách 3 ô (phun mạnh, giật lùi sang cột 2), van trên SÁT mũi ở cột 2 (phun nhẹ). C: cả hai van xa (phun mạnh hai lần, giật hai lần).
@@ -110,7 +113,9 @@
   var L_6 = GHI.concat(['tr_left()', 'forward(2)', 'tr_left()', 'squirt("high")']);
   var L_7 = GHI.concat(['tr_right()', 'forward(2)']);
   var C_8 = ['smart_spray()', 'tr_left()', 'smart_spray()', 'spin()', 'forward(3)'];
-  var C_9 = ['pick_spray()', 'tr_left()', 'pick_spray()', 'spin()', 'forward(3)'];
+  var C_9 = ['brace_spray()', 'tr_left()', 'brace_spray()', 'spin()', 'forward(4)'];
+  var T_BRACE = ['spray("high")', 'left_move()', 'right_move()', 'wait()'];               // 9: ghì xích một nhịp (không wait() thừa)
+  var BRACE = function () { return H('brace_spray', [], T_BRACE); };
   var L_10 = ['smart_spray()', 'tr_right()', 'move()', 'squirt_back("high")', 'go_to_wall()'];   // van trên ở sau lưng khi quay xuống: phun mạnh ra sau, cú giật đưa xe đi tới
 
   var DS = [
@@ -257,21 +262,23 @@
     }),
 
     man({
-      so: 9, ten: 'Đố: đảo nhánh', hang: 'bien-the', mucTieu: 'bong-mo', coCam: true, hamCuaEmCan: ['squirt', 'tr_left', 'spin', 'forward', 'move'],
-      deBai: 'Hàm pick_spray() của màn cũng chọn lực theo cảm biến, nhưng đang chọn sai. Chương trình chính gọi nó hai lần: một van sát mũi, một van ở xa bên dưới. Sửa pick_spray() cho đúng.',
-      veMaMau: 'Chạy thử, xem lần phun nào làm hỏng việc, rồi sửa thân pick_spray().',
-      san: SAN_9, batDau: { x: 3, y: 5, huong: 3 }, noi: NOI_9, nhipTheoLoiGiai: true,
-      bongMo: { x: 3, y: 1, huong: 0, thung: [{ x: 4, y: 5 }] },
+      so: 9, ten: 'Hàm brace_spray()', hang: 'bien-the', mucTieu: 'bong-mo', coCam: true, hamCuaEmCan: ['tr_left', 'spin', 'forward', 'move'], taoHam: ['brace_spray'],
+      deBai: 'Hai van đều cách 3 ô nên phải phun mạnh, mà xe phải đứng yên cả hai lần: lần đầu thùng sau lưng, lần sau đường đi đã tính sẵn. ' +
+        'Em chế brace_spray(): ghì xích trong một nhịp, phun mạnh cùng lúc hai xích tiến. Chương trình chính gọi nó hai lần.',
+      veMaMau: 'Chương trình chính bị khóa. Tạo brace_spray() trong Xưởng hàm: bốn lệnh gốc, wait() ở cuối.',
+      san: SAN_9, batDau: { x: 3, y: 3, huong: 1 }, noi: NOI_9, nhipTheoLoiGiai: true,
+      bongMo: { x: 3, y: 7, huong: 2, thung: [{ x: 2, y: 3 }] },
       chinhCoDinh: true,
-      maMau: { chinh: C_9.slice(), hamCuaMan: [H('pick_spray', [], T_PICK_CU)] },
-      sao: { o: 24, nhip: 11 },
-      loiGiai: { chinh: C_9.slice(), hamCuaMan: [H('pick_spray', [], T_SMART)] },
-      loiGiaiKhac: { moTa: 'Gọi smart_spray() của em trong pick_spray()', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('pick_spray', [], ['# dùng hàm của em', 'smart_spray()'])] } },
+      maMau: { chinh: C_9.slice() },
+      sao: { o: 22, nhip: 12 },
+      loiGiai: { chinh: C_9.slice(), hamCuaEmMoi: [BRACE()] },
+      loiGiaiKhac: { moTa: 'Cùng cách chế, thêm một dòng chú thích trong hàm', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('brace_spray', [], ['# phun mạnh mà không giật'].concat(T_BRACE))] },
       loiSai: [
-        { moTa: 'Để nguyên: van sát mũi bị phun mạnh, thùng sau lưng bị hất', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('pick_spray', [], T_PICK_CU)] }, phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Luôn phun nhẹ: van bên dưới cách 3 ô, tia nước rơi giữa đường', baiLam: { chinh: C_9.slice(), hamCuaMan: [H('pick_spray', [], ['squirt("low")'])] }, phaiCoMa: ['ban-ngan', 'lech-bong-mo'] }
+        { moTa: 'Phun mạnh rồi mới chạy ở nhịp sau: cú giật hất thùng sau lưng', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('brace_spray', [], ['squirt("high")', 'move()'])], phaiCoMa: ['lech-bong-mo'] },
+        { moTa: 'Chỉ chạy một xích: vòi phải giữ thẳng hướng, quay trong lúc phun thì xích nghỉ', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('brace_spray', [], ['spray("high")', 'left_move()', 'wait()'])], phaiCoMa: ['ban-dung-yen', 'lech-bong-mo'] },
+        { moTa: 'Phun nhẹ: tia nước rơi sau 2 ô, van không mở', baiLam: { chinh: C_9.slice() }, hamCuaEmMoi: [H('brace_spray', [], ['squirt("low")'])], phaiCoMa: ['ban-ngan', 'lech-bong-mo'] }
       ],
-      goiY: ['Nhánh if chạy khi distance() > 0, tức trước mũi còn ô TRỐNG: lúc đó van ở xa.', 'Đổi chỗ "low" và "high" cho nhau.']
+      goiY: ['Ghì xích là MỘT nhịp: spray("high"), left_move(), right_move() rồi mới wait().', 'Đừng thêm wait() giữa lệnh phun và lệnh xích: tách ra hai nhịp thì xe giật.']
     }),
 
     /* -------------------------------------------- trùm */

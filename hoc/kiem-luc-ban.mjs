@@ -157,9 +157,9 @@ console.log('\n== 3. Mười màn ==');
     ds.every((m) => !!m.ghiXich === (m.so >= 6)) && ChamHoc.cham(ds[5], ds[5].loiGiai, kho).theoSan[0].vet.some((v) => (v.suKien || []).some((e) => e.ma === 'ghi-xich')));
   kiem('màn 7 ép ghì xích: bỏ cờ ghiXich thì BFS không có đường thắng (phun nhẹ hụt van, phun mạnh rơi hố)', Bo.nhipSungHoiNganNhat(Object.assign({}, ds[6], { ghiXich: false })).nhip === null && Bo.nhipSungHoiNganNhat(ds[6]).nhip !== null);
   kiem('trùm có huy hiệu luc-ban, nhịp tính tổng ba sân', ds[9].huyHieu && ds[9].huyHieu.ma === 'luc-ban' && ds[9].nhipTheo === 'tong' && ds[9].san.length === 3);
-  kiem('hàm cốt truyện tạo ở chương: squirt (4), squirt_back (5), smart_spray (8); có mục Sổ lệnh nhóm hoi, chương luc-ban, đúng màn',
-    J(ds.flatMap((m) => m.taoHam)) === '["squirt","squirt_back","smart_spray"]' &&
-    ['squirt', 'squirt_back', 'smart_spray'].every((t, i) => SoLenh.tim(t) && SoLenh.tim(t).nhom === 'hoi' && SoLenh.tim(t).chuong === 'luc-ban' && SoLenh.tim(t).man === 'luc-ban.' + [4, 5, 8][i]));
+  kiem('hàm cốt truyện tạo ở chương: squirt (4), squirt_back (5), smart_spray (8), brace_spray (9, 14/11 ghì xích); có mục Sổ lệnh nhóm hoi, chương luc-ban, đúng màn',
+    J(ds.flatMap((m) => m.taoHam)) === '["squirt","squirt_back","smart_spray","brace_spray"]' &&
+    ['squirt', 'squirt_back', 'smart_spray', 'brace_spray'].every((t, i) => SoLenh.tim(t) && SoLenh.tim(t).nhom === 'hoi' && SoLenh.tim(t).chuong === 'luc-ban' && SoLenh.tim(t).man === 'luc-ban.' + [4, 5, 8, 9][i]));
   kiem('hàm của màn tap_left (7) và pick_spray (9) không có trong Sổ lệnh', !SoLenh.tim('tap_left') && !SoLenh.tim('pick_spray'));
 }
 
