@@ -495,8 +495,8 @@ console.log('\n== 11. Lời chẩn đoán (cham.js) và sổ lệnh (so-lenh.js)
   kiem('cham: reel_in() khi bè đã trong khoang → day-het-thu (thông tin) nói khoang, trỏ dòng lệnh', !!cd(r, 'day-het-thu') && cd(r, 'day-het-thu').muc === 'thong-tin' && /khoang/.test(loiCua(cd(r, 'day-het-thu'))) && /reel_in\(\)/.test(loiCua(cd(r, 'day-het-thu'))) && cd(r, 'day-het-thu').cho, J(r.chanDoan));
   r = ChamHoc.cham(manR(), { chinh: ['reel_out()', 'wait()', 'reel_out()', 'wait()'] }, []);
   kiem('cham: reel_out() khi dây đã dài nhất → day-het-nha (thông tin) nói "dài nhất (3 ô)"', !!cd(r, 'day-het-nha') && cd(r, 'day-het-nha').muc === 'thong-tin' && /dài nhất \(3 ô\)/.test(loiCua(cd(r, 'day-het-nha'))), J(r.chanDoan));
-  const ten = ['anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'flow_dir', 'flow'];
-  kiem('so-lenh: 7 lệnh gốc mùa sông có mô tả; cặp ngược khớp SanHoc.LENH_NGUOC', ten.every((t) => SoLenh.lenhGoc.some((l) => l.ten === t && l.moTa && (l.nguoc || null) === (SanHoc.LENH_NGUOC[t] || null))));
+  const ten = ['anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out', 'flow_dir', 'flow'];
+  kiem('so-lenh: 9 lệnh gốc mùa sông có mô tả; cặp ngược khớp SanHoc.LENH_NGUOC', ten.every((t) => SoLenh.lenhGoc.some((l) => l.ten === t && l.moTa && (l.nguoc || null) === (SanHoc.LENH_NGUOC[t] || null))));
   kiem('so-lenh: capNguoc() có anchor / cast_net', ['anchor', 'cast_net'].every((t) => SoLenh.capNguoc().some((c) => c[0] === t || c[1] === t)));
 }
 

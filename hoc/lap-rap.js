@@ -93,7 +93,7 @@
     { ma: 'son', part: 'son', ten: 'Bộ gieo hạt', gia: 3, icon: 'denSon', vuot: 'Gieo hạt, chấm màu ô đang đứng', ham: ['ink', 'dot', 'pen_down', 'pen_up'] },
     { ma: 'loa', part: 'loa', ten: 'Loa', gia: 3, icon: 'denLoa', vuot: 'Phát nốt nhạc, phá đá chuông', ham: ['note', 'beat'] },
     { ma: 'moc-cau', part: 'moc-cau', ten: 'Móc cẩu', gia: 4, icon: 'denKepDong', vuot: 'Nhấc, hạ container ở đầu cần', ham: ['pick_up', 'set_down', 'pick_up2'] },
-    { ma: 'day-keo', part: 'day-keo', ten: 'Tay lưới', gia: 3, icon: 'denTayXuong', vuot: 'Tung lưới kéo bè, vật nổi về mũi', ham: ['cast_net', 'drop_net', 'set_length'], tenCu: ['tow', 'drop_tow', 'tether', 'untether'] }
+    { ma: 'day-keo', part: 'day-keo', ten: 'Tay lưới', gia: 3, icon: 'denTayXuong', vuot: 'Tung lưới kéo bè, vật nổi về mũi', ham: ['cast_net', 'drop_net', 'set_length'], nangCap: ['reel_in', 'reel_out'], tenCu: ['tow', 'drop_tow', 'tether', 'untether'] }
   ];
   // o: ổ gắn trên thân (VeVector.kiemGhep). Cảm biến từ ('tu'): PART RIÊNG (P1 mùa 3 29/10; hình ve-vector-cam.js 'tu'), chỉ hai hàm front_metal / front_pole; trước đó là
   // part khoang-cach + hai hàm. Giá giữ 2 (rap-du.9 cách mẫu 'tu' không dùng front_clear nên kết quả cũ y nguyên).
@@ -286,7 +286,7 @@
     });
     if (goc.indexOf('wait') < 0) goc.push('wait');
     if (c.than === 'cau') goc = goc.filter(function (h) { return h !== 'arm_down' && h !== 'arm_up'; });   // M9B2 (L8): gầu ngoạm trên cần cẩu chỉ grab() / release() (gầu thả từ đầu cần, không nâng hạ tay)
-    if (c.than === 'cau' || c.than === 'drone') goc = goc.filter(function (h) { return h !== 'set_length'; });   // M9C2 (L9, L10): giỏ cứu hộ / phao chỉ cast_net() / drop_net()
+    if (c.than === 'cau' || c.than === 'drone') goc = goc.filter(function (h) { return h !== 'set_length'; });   // M9C2 (L9, L10): giỏ cứu hộ / phao chỉ cast_net() / drop_net() (không set_length; reel_in / reel_out lọc sau nangCap)
     if (!(c.than === 'drone' && coPinMan(man))) goc = goc.filter(function (h) { return h !== 'battery'; });
     // land / take_off: nâng cấp drone đáp đất để sạc (mùa 4 gói 5) chỉ khi màn mở nó trên khay
     if (!(c.than === 'drone' && (man.hamGoc || []).indexOf('land') >= 0)) goc = goc.filter(function (h) { return h !== 'land' && h !== 'take_off'; });
@@ -295,6 +295,7 @@
       var d = c[k] ? tim(k, c[k]) : null;
       (d && d.nangCap || []).forEach(function (h) { if ((man.hamGoc || []).indexOf(h) < 0) goc = goc.filter(function (x) { return x !== h; }); else if (goc.indexOf(h) < 0) goc.push(h); });
     });
+    if (c.than === 'cau' || c.than === 'drone') goc = goc.filter(function (h) { return h !== 'reel_in' && h !== 'reel_out'; });   // tời cuộn (nangCap tay lưới) không lên giỏ / phao dù màn khai
     return goc;
   }
   /** Lời giải của một cách mẫu (lắp hay chọn đội) ở dạng máy chấm / máy kiểm chạy được: màn một robot { chinh, hamCuaMan, hamCuaEmMoi }; màn đội { doi: [{ chinh }…], hamCuaMan, hamCuaEmMoi }.

@@ -185,7 +185,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         chuongDa: Array.isArray(cfg.chuongDa) ? cfg.chuongDa : Array.isArray(cfg.danDoi) ? cfg.danDoi : null, daChuong: Array.isArray(cfg.daChuong) ? cfg.daChuong : null, ngachHang: Array.isArray(cfg.ngachHang) ? cfg.ngachHang : null };   // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm (xem dungMuaMoi)
       this.dungMuaMoi(rows, cfg);                        // BẾN SÔNG / CẢNG SÔNG (31/10): bảng dòng chảy, cống, van, nước; ray, tàu, chồng lúc đầu
       var hg = Array.isArray(cfg.hamGoc) ? cfg.hamGoc : [];
-      this.nc_ = { dat: hg.indexOf('tether') >= 0 || hg.indexOf('set_length') >= 0, nang: hg.indexOf('flow') >= 0, doi: hg.indexOf('pick_up2') >= 0, can: hg.indexOf('weight') >= 0, ray: hg.indexOf('rail') >= 0 };   // nâng cấp hiện trên hình (nangCap): theo khay lệnh nếu màn đưa xuống, không thì bật dần theo vết
+      this.nc_ = { dat: hg.indexOf('tether') >= 0 || hg.indexOf('set_length') >= 0 || hg.indexOf('reel_in') >= 0, nang: hg.indexOf('flow') >= 0, doi: hg.indexOf('pick_up2') >= 0, can: hg.indexOf('weight') >= 0, ray: hg.indexOf('rail') >= 0 };   // nâng cấp hiện trên hình (nangCap): theo khay lệnh nếu màn đưa xuống, không thì bật dần theo vết
       // nhiều robot (cfg.doi = [{ robot, batDau, loaiRobot, pin, danToiDa }]): mỗi xe một ngữ cảnh (xem chonXe); this.cfg mang phần của xe đang xét
       this.cfgXe = Array.isArray(cfg.doi) ? cfg.doi.map(function (r, i) {
         var l = r.loaiRobot || 'banh', rb = r.robot || { than: l === 'nhen' ? 'nhen' : 'hai-banh', tay: null, camBien: [] };
