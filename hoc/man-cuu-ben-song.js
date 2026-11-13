@@ -14,7 +14,7 @@
     loaiRobot: 'xuong',
     chinhLuoi: true,
     robot: { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] },
-    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor', 'set_length', 'flow']
+    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor', 'set_length', 'reel_in', 'reel_out', 'flow']
   };
 
   var R1_LOA = {

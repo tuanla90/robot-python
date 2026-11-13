@@ -46,7 +46,7 @@
     XU: {
       ma: 'XU', ten: 'Xuồng thủy lợi', noi: 'Bến sông', mua: 5, loaiRobot: 'xuong',
       than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], co: { chinhLuoi: true },
-      hamGoc: BANH.concat(['cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor', 'set_length', 'flow']),
+      hamGoc: BANH.concat(['cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor', 'set_length', 'reel_in', 'reel_out', 'flow']),
       gioi: 'đi nước, kéo bè, ghép cầu phao, gạt van cống', ket: 'mọi ô bờ'
     },
     DR: {
