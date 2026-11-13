@@ -420,23 +420,26 @@
 
     manCheNem({
       so: 17, ten: 'Hai tầng danh sách đá', hang: 'bien-the', hamCuaEmCan: ['move', 'forward', 'slide_r', 'slide_l', 'lob', 'lob_row'],
-      deBai: 'Sola nhờ bạn: mỏ đá có hai tầng, mỗi tầng có hai tảng đá theo một hàng trong lưới g = [[1, 2], [1, 2]]. Sau khi gọi lob_row(g[0]) ở tầng dưới, hãy trượt trái 3 ô về cột đầu, tiến lên 3 ô sang tầng trên rồi gọi lob_row(g[1]).',
+      deBai: 'Sola nhờ bạn: mỏ đá có hai tầng, mỗi tầng có hai tảng đá theo một hàng trong lưới g. Mỗi sân có một lưới g riêng (sân 1: g = [[1, 2], [1, 2]]). Sau khi gọi lob_row(g[0]) ở tầng dưới, hãy trượt trái 3 ô về cột đầu, tiến lên 3 ô sang tầng trên rồi gọi lob_row(g[1]).',
       veMaMau: 'Chương trình có sẵn đã xử lý tầng dưới bằng lob_row(g[0]). Hãy đưa xe lên đầu tầng trên và gọi lob_row(g[1]).',
-      san: ['#####', '.D#D#', '.o#o#', '....#', '.D#D#', '.o#o#', '.....'],
+      san: [['#####', '.D#D#', '.o#o#', '....#', '.D#D#', '.o#o#', '.....'], ['#####', '.D#D#', '.o#o#', '....#', '.#DD#', '.#oo#', '.....']],      // dữ liệu theo sân: mỗi sân một lưới g, điền thẳng số của sân 1 thì xúc hụt ở sân 2
+      duLieuSan: ['g = [[1, 2], [1, 2]]', 'g = [[2, 1], [1, 2]]'],
       batDau: { x: 0, y: 6, huong: 0 },
       maMau: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])']),
       loiGiai: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])', 'slide_l(3)', 'forward(3)', 'lob_row(g[1])']),
       sao: { o: 23, nhip: 20 },
       loiGiaiKhac: {
-        moTa: 'Truyền trực tiếp [1, 2] cho hai lần gọi lob_row',
-        baiLam: bai(['lob_row([1, 2])', 'slide_l(3)', 'forward(3)', 'lob_row([1, 2])'])
+        moTa: 'Ở tầng trên tự duyệt for n in g[1] thay cho lob_row(g[1])',
+        baiLam: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])', 'slide_l(3)', 'forward(3)', 'for n in g[1]:', '    slide_r(n)', '    lob()'])
       },
       loiSai: [
         { moTa: 'Chưa đưa xe lên tầng trên để hất hai tảng đá còn lại', baiLam: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên slide_l(3) trước khi tiến lên: đâm vào tường tầng dưới', baiLam: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])', 'forward(3)', 'lob_row(g[1])']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Chỉ tiến 2 ô thay vì 3 ô: chưa tới hàng đứng của tầng trên', baiLam: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])', 'slide_l(3)', 'forward(2)', 'lob_row(g[1])']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
+        { moTa: 'Chỉ tiến 2 ô thay vì 3 ô: chưa tới hàng đứng của tầng trên', baiLam: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])', 'slide_l(3)', 'forward(2)', 'lob_row(g[1])']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] },
+        { moTa: 'Điền thẳng lob_row([1, 2]) của sân 1 thay cho g[0], g[1]: sang sân 2 tầng dưới xếp đá khác nên xúc hụt', baiLam: bai(['g = [[1, 2], [1, 2]]', 'lob_row([1, 2])', 'slide_l(3)', 'forward(3)', 'lob_row([1, 2])']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] },
+        { moTa: 'Gọi lob_row(g[0]) cả hai tầng: sân 1 hai hàng giống nhau nên qua, sang sân 2 tầng trên xúc hụt', baiLam: bai(['g = [[1, 2], [1, 2]]', 'lob_row(g[0])', 'slide_l(3)', 'forward(3)', 'lob_row(g[0])']), phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau lob_row(g[0]), xe đang ở (3, 6); gọi slide_l(3) để về cột 0.', 'Luna: Từ (0, 6) gọi forward(3) lên (0, 3) rồi gọi lob_row(g[1]).']
+      goiY: ['Luna: Sau lob_row(g[0]), xe đang ở (3, 6); gọi slide_l(3) để về cột 0.', 'Luna: Từ (0, 6) gọi forward(3) lên (0, 3) rồi gọi lob_row(g[1]). Tầng trên đọc hàng g[1], không phải g[0].']
     }),
 
     manCheNem({
