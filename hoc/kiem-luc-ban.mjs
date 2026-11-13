@@ -303,6 +303,26 @@ console.log('\n== 6. Ghép nhịp mùa 2: ghì xích (cfg.ghiXich, 2a, phóng ±
   kq = ChamHoc.cham(Object.assign({}, man, { ghiXich: undefined }), { chinh: ['spray("high")', 'left_move()', 'wait()'], hamCuaMan: [] }, []);
   cd = kq.chanDoan.find((c) => c.ma === 'ban-dung-yen');
   kiem('chẩn đoán ban-dung-yen màn không cờ: lời cũ y nguyên ("bánh nghỉ")', !!cd && /Nhịp có lệnh phun chỉ phun \(và giật\), bánh nghỉ\./.test(cd.loi) && !/giữ thẳng/.test(cd.loi), cd && cd.loi);
+  // --- bộ dò gói 2 biết ghép nhịp + hố (14/11): hành động ghép chỉ có khi màn khai cờ; so chéo ngẫu nhiên với lõi ---
+  const dem = (cfg) => Bo.hanhDongChoPhep(Object.assign({}, goc, cfg)).filter((a) => a.ban && a.banh).length;
+  kiem('bộ dò: không cờ thì không có hành động ghép; ghiXich thêm 4 (c/h × tiến/lùi); phunKhiChay thêm 4; xe hai bánh không có', dem({}) === 0 && dem(G) === 4 && dem(P) === 4 && dem(GP) === 8 && dem(Object.assign({ loaiRobot: 'banh' }, GP)) === 0);
+  const SANS = [['#########', '#u.H...N#', '#.#.##..#', '#...C...#', '#########'], ['########', '#u....N#', '########'], ['#########', '#..H.u..#', '#.N...H.#', '#########']];
+  let hat = 7, lech = '', lan = 0;
+  const rr = () => { hat ^= hat << 13; hat >>>= 0; hat ^= hat >> 17; hat ^= hat << 5; hat >>>= 0; return hat / 4294967296; };
+  for (const san of SANS) for (const cfg of [G, P, Object.assign({ xichDay: true }, GP), {}]) {
+    const man = Object.assign({}, goc, { san, batDau: { x: 2, y: 1, huong: 1 }, mucTieu: 'bong-mo', bongMo: { x: 4, y: 1, huong: 1 } }, cfg);
+    const ctx = Bo.dungNguCanh(man), HD = Bo.hanhDongChoPhep(man);
+    for (let k = 0; k < 300 && !lech; k++) {
+      const ch = [];
+      let S = Bo.trangThaiDau(ctx);
+      for (let j = 1 + Math.floor(rr() * 10); j > 0 && !S.chet; j--) { const a = HD[Math.floor(rr() * HD.length)]; ch.push(a); S = Bo.buocMotNhip(ctx, S, a); }
+      const kq = SanHoc.chay(man, Bo.chuoiThanhMa(ch)), roi = kq.suKien.some((e) => e.ma === 'roi-ho');
+      const tl = (kq.thung || []).map((q) => q.y * ctx.rong + q.x).sort((a, b) => a - b).join('.'), ts = S.p.slice().sort((a, b) => a - b).join('.');
+      lan++;
+      if (S.chet !== roi || (!roi && (kq.robot.x !== S.x || kq.robot.y !== S.y || kq.robot.huong !== S.h || tl !== ts))) lech = J(cfg) + ' ' + J(ch);
+    }
+  }
+  kiem('bộ dò gói 2 (ghì, phóng, phun khi chạy, hố) khớp lõi trên ' + lan + ' dãy ngẫu nhiên', !lech, lech);
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);

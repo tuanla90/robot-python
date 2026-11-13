@@ -10,6 +10,9 @@
        — nếu phần cứng có spray / spray_back;
      - màn có man.lucBan (gói 6 Lực phun trở đi) thêm PHUN MẠNH { ban } (không có luc; spray("high")): ban-truoc tia ra trước, xe giật lùi; ban-sau tia ra sau, xe giật tới.
    Nhịp có bắn thì bánh nghỉ (khay chặn luôn lệnh bánh cùng nhịp), nên bắn là MỘT hành động riêng.
+   Trừ GHÉP NHỊP mùa 2 (14/11, xích; san-hoc.js mục GHÉP NHỊP VÒI PHUN + XÍCH): man.ghiXich (+ lucBan) thêm { ban, banh: 'tien' | 'lui' } = phun MẠNH + hai xích đi thẳng
+   (tia bay trước, rồi xích ±1 + giật ∓1: 0 ghì đứng yên, ±2 phóng 2 ô từng ô, vướng thì dừng); man.phunKhiChay thêm { ban, luc: 'low', banh } = xích đi 1 ô trước, tia nhẹ từ ô mới.
+   Hố u: xe kết thúc nhịp trên hố là trạng thái chết (rơi); phóng đi QUA hố giữa nhịp thì không rơi (như lõi).
    Thứ tự trong nhịp: bắn (bóng bay, nút đổi, băng đổi ngay) → giật (xe / thùng) → băng chuyền xe → băng chuyền thùng → cửa đổi ở cuối nhịp (cửa không đóng đè lên xe hay thùng).
    Mục tiêu: 'toi-co' (chạm cờ F), 'day-thung' (mọi thùng nằm trên ô đích; thùng kẹt góc = trạng thái chết), 'bong-mo' (xe đúng tư thế, đã qua mọi ô ◆, thùng mờ nếu khai: thắng khi chương trình CHẠY XONG nên
    BFS dừng ở trạng thái đầu tiên thỏa). Không hỗ trợ: vật nhẹ (o, X), tay kẹp, xích / omni, hố / gầm.
@@ -47,6 +50,20 @@ export function hanhDongChoPhep(man, tuyChon = {}) {
     if (pc.includes(truoc)) kq.push({ ban: 'truoc' });
     if (pc.includes(sau)) kq.push({ ban: 'sau' });
   }
+  // GHÉP NHỊP mùa 2 (14/11, KE-HOACH-GHEP-NHIP.md mục 2; chỉ xích): phun + hai xích đi thẳng trong CÙNG nhịp (tiến / lùi phải có trong tập bánh)
+  if (man.loaiRobot === 'xich') {
+    const thang = ['tien', 'lui'].filter((b) => kq.some((a) => a.banh === b));
+    for (const b of thang) {
+      if (man.ghiXich && man.lucBan) {                                   // 2a ghì / phóng: phun MẠNH + đi thẳng
+        if (pc.includes(truoc)) kq.push({ ban: 'truoc', banh: b });
+        if (pc.includes(sau)) kq.push({ ban: 'sau', banh: b });
+      }
+      if (man.phunKhiChay) {                                             // 2b vừa chạy vừa phun: phun NHẸ + đi thẳng
+        if (pc.includes(truoc)) kq.push({ ban: 'truoc', luc: 'low', banh: b });
+        if (pc.includes(sau)) kq.push({ ban: 'sau', luc: 'low', banh: b });
+      }
+    }
+  }
   return kq;
 }
 
@@ -60,7 +77,10 @@ export function dungNguCanh(man, tuyChon = {}) {
   const san = SanHoc.docSan(man.san, man.mau || null, null, null);
   if ((man.hamGoc || []).some((t) => SanHoc.TAY_LENH.includes(t))) throw new Error('Bộ dò súng hơi không hỗ trợ tay kẹp.');
   if (san.vat.length && san.vat.some((v) => san.o[v.y][v.x] !== 'o')) throw new Error('Bộ dò súng hơi không hỗ trợ vật nhẹ trên ô đích (X).');
-  if (san.gam.length || san.ho.length) throw new Error('Bộ dò súng hơi không hỗ trợ gầm / hố.');
+  if (san.gam.length) throw new Error('Bộ dò súng hơi không hỗ trợ gầm.');
+  // HỐ u (14/11, màn ép ghì xích mùa 2): xe kết thúc nhịp trên hố là RƠI, thua (trạng thái chết). Đi qua giữa nhịp (phóng 2 ô) thì không rơi. Thùng không xét hố (lõi cũng không).
+  const ho = new Uint8Array(san.rong * san.cao);
+  for (const q of san.ho) ho[q.y * san.rong + q.x] = 1;
   const rong = san.rong, cao = san.cao, o = (x, y) => y * rong + x;
   const trongSan = (x, y) => x >= 0 && y >= 0 && x < rong && y < cao;
   const chan = new Uint8Array(rong * cao), banDung = new Uint8Array(rong * cao), thungChanTinh = new Uint8Array(rong * cao), mepGoc = new Uint8Array(rong * cao);
@@ -114,7 +134,8 @@ export function dungNguCanh(man, tuyChon = {}) {
   const diQua = bm ? (bm.diQua || []).map((q) => o(q.x, q.y)) : [];
   const thungMo = bm && bm.thung ? bm.thung.map((q) => o(q.x, q.y)) : null;
   return { san, loai, rong, cao, o, trongSan, chan, banDung, thungChanTinh, mepGoc, bang, bangIdx, bangDs, nutIdx, cuaIdx, cua, nutCua, nutBang, L, dich, mucTieu, bm, diQua, thungMo,
-    thung0: san.thung.map((t) => o(t.x, t.y)), bd: tuyChon.batDau || man.batDau, nguong: 2, xichDay: loai === 'xich' && !!man.xichDay };
+    thung0: san.thung.map((t) => o(t.x, t.y)), bd: tuyChon.batDau || man.batDau, nguong: 2, xichDay: loai === 'xich' && !!man.xichDay, ho, coHo: san.ho.length > 0,
+    ghiXich: loai === 'xich' && !!man.ghiXich && !!man.lucBan, phunKhiChay: loai === 'xich' && !!man.phunKhiChay };
 }
 
 const cuaMoNhip = (nh, t) => ((t + nh.pha) % (nh.mo + nh.dong)) < nh.mo;
@@ -164,6 +185,23 @@ export function buocMotNhip(ctx, S, a) {
     return N.x === x && N.y === y;
   };
   let doiCua = 0;
+  const tuDi = (huongDi, soBuoc) => {
+    const v = VEC[huongDi], nx = N.x + v[0] * soBuoc, ny = N.y + v[1] * soBuoc;
+    if (!ctx.trongSan(nx, ny)) return false;
+    const cell = ny * rong + nx;
+    if (!ctx.chan[cell] && !cuaDong(cell) && N.p.indexOf(cell) < 0) { N.x = nx; N.y = ny; return true; }
+    // xích đẩy thùng (cfg.xichDay): tiến vào thùng thì thùng trượt một ô theo hướng tiến nếu ô sau nhận được, xe vào ô thùng vừa rời
+    const i = N.p.indexOf(cell);
+    if (ctx.xichDay && soBuoc === 1 && i >= 0 && !ctx.chan[cell] && !cuaDong(cell)) {
+      const sx = nx + v[0], sy = ny + v[1];
+      if (!thungChan(sx, sy)) { N.p[i] = sy * rong + sx; N.e[i] = 0; N.x = nx; N.y = ny; return true; }
+    }
+    return false;
+  };
+  // GHÉP NHỊP (xích, cờ màn): a.ban + a.banh ('tien' / 'lui'). Không có cờ thì hanhDongChoPhep không sinh hành động này.
+  const ghep = a.ban && a.banh ? (a.luc === 'low' ? (ctx.phunKhiChay ? 'chay' : null) : (ctx.ghiXich ? 'ghi' : null)) : null;
+  const tX = a.banh === 'tien' ? 1 : -1;
+  if (ghep === 'chay') tuDi(N.h, tX);                                   // 2b: (a) xích chạy 1 ô (bị chặn thì đứng) → (b) tia phun từ ô MỚI
   if (a.ban) {
     const hb = a.ban === 'sau' ? (N.h + 2) % 4 : N.h;
     // (a) bóng bay
@@ -184,9 +222,13 @@ export function buocMotNhip(ctx, S, a) {
         break;
       }
     }
+    if (ghep === 'ghi') {                                               // 2a: (b) cộng xích (±1) + giật (−1 tia ra trước, +1 ra sau): 0 ghì đứng yên, ±1 đi 1 ô, ±2 phóng từng ô
+      const tong = tX + (a.ban === 'sau' ? 1 : -1), buoc = tong > 0 ? 1 : -1;
+      for (let k = 0; k < Math.abs(tong); k++) if (!tuDi(N.h, buoc)) break;
+    }
     // (b) giật (bắn nhanh thì không giật)
     const hg = (hb + 2) % 4, vg = VEC[hg], nx = N.x + vg[0], ny = N.y + vg[1];
-    if (!nhanh && ctx.trongSan(nx, ny)) {
+    if (!nhanh && !ghep && ctx.trongSan(nx, ny)) {
       const cell = ny * rong + nx;
       if (!ctx.chan[cell] && !cuaDong(cell)) {
         const i = N.p.indexOf(cell);
@@ -197,18 +239,6 @@ export function buocMotNhip(ctx, S, a) {
       }
     }
   } else {
-    const tuDi = (huongDi, soBuoc) => {
-      const v = VEC[huongDi], nx = N.x + v[0] * soBuoc, ny = N.y + v[1] * soBuoc;
-      if (!ctx.trongSan(nx, ny)) return;
-      const cell = ny * rong + nx;
-      if (!ctx.chan[cell] && !cuaDong(cell) && N.p.indexOf(cell) < 0) { N.x = nx; N.y = ny; return; }
-      // xích đẩy thùng (cfg.xichDay): tiến vào thùng thì thùng trượt một ô theo hướng tiến nếu ô sau nhận được, xe vào ô thùng vừa rời
-      const i = N.p.indexOf(cell);
-      if (ctx.xichDay && soBuoc === 1 && i >= 0 && !ctx.chan[cell] && !cuaDong(cell)) {
-        const sx = nx + v[0], sy = ny + v[1];
-        if (!thungChan(sx, sy)) { N.p[i] = sy * rong + sx; N.e[i] = 0; N.x = nx; N.y = ny; }
-      }
-    };
     if (ctx.loai === 'xich' && (a.banh === 'phai' || a.banh === 'trai')) {
       // xích quay chậm: nhịp thứ hai liên tiếp cùng chiều mới quay 90°; nhịp đầu chỉ "quay dở" (g); hành động khác xoá phần quay dở
       if (S.g === a.banh) N.h = (N.h + (a.banh === 'phai' ? 1 : 3)) % 4;
@@ -274,6 +304,7 @@ export function buocMotNhip(ctx, S, a) {
   const k = ctx.diQua.indexOf(cellXe());
   if (k >= 0) N.q |= 1 << k;
   if (ctx.mucTieu === 'day-thung' && !laDich(ctx, N) && coThungKet(ctx, N)) N.chet = true;
+  if (ctx.coHo && ctx.ho[cellXe()]) N.chet = true;                       // xe kết thúc nhịp trên hố: rơi, thua
   return N;
 }
 
@@ -359,7 +390,7 @@ export function chuoiThanhMa(chuoi, tuyChon = {}) {
   const dong = [];
   for (const a of chuoi) {
     if (a.ban) dong.push((((a.ban === 'truoc') === !daoS) ? 'spray' : 'spray_back') + (a.luc === 'low' ? '()' : '("high")'));
-    else { const [t, p] = BANH[a.banh]; dong.push(...tl(t), ...pl(p)); }
+    if (a.banh) { const [t, p] = BANH[a.banh]; dong.push(...tl(t), ...pl(p)); }   // ghép nhịp: phun + hai xích cùng nhịp
     dong.push('wait()');
   }
   void pc;
