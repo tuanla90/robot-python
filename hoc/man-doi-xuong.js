@@ -12,7 +12,7 @@
   var XUONG_HAM = [
     'left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor',
-    'set_length', 'flow'
+    'reel_in', 'reel_out', 'flow'
   ];
   var BANH_HAM = [
     'left_move', 'right_move', 'left_back', 'right_back', 'wait',
@@ -35,8 +35,8 @@
 
   function R1_XUONG() {
     return {
-      loaiRobot: 'xuong',
-      robot: { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] },
+      loaiRobot: 'xuong', chinhLuoi: false,
+      robot: { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], cuonDay: true },
       hamGoc: XUONG_HAM.slice()
     };
   }

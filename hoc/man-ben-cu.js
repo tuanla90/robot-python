@@ -12,9 +12,9 @@
   var GOC_BEN_CU = [
     'left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor',
-    'set_length', 'flow'
+    'reel_in', 'reel_out', 'flow'
   ];
-  var ROBOT_BEN_CU = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
+  var ROBOT_BEN_CU = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], cuonDay: true };
   var CAU_TRUC = ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'];
 
   var KHO_TRUOC = [
@@ -85,7 +85,7 @@
   function manBenCu(cfg) {
     return Object.assign({
       chuong: 'ben-cu', tenChuong: 'Dọn luồng bến cũ',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: ROBOT_BEN_CU,
       vo: 'song',
       hamGoc: GOC_BEN_CU.slice(),
@@ -101,7 +101,7 @@
   function manCheBenCu(cfg) {
     return Object.assign({
       chuong: 'che-ben-cu', tenChuong: 'Chế lệnh: cứu hộ bến cũ',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: ROBOT_BEN_CU,
       vo: 'song',
       hamGoc: GOC_BEN_CU.slice(),
@@ -426,7 +426,7 @@
     manBenCu({
       so: 10, ten: 'Trùm: Dọn luồng bến sông cũ liên hoàn', hang: 'trum', mucTieu: 'dua-vat', nhipTheo: 'tong',
       huyHieu: { ma: 'ben-cu', ten: 'Huy hiệu Dọn luồng bến cũ' },
-      deBai: 'Sola giao bài kiểm tra Trùm chương 1 tại khu bến sông cũ: từ (4, 5) hướng Bắc với bè B ở (4, 6) sau đuôi, hãy gọi cast_net("back") và tether_grab() để bắt B ở sát đuôi. Kênh dọc có dòng xuôi ở (4, 4) mạnh 1 hoặc 2 đưa xuồng lên ngã ba (4, 1) nơi hai bên có rào cũ =, hố u và thùng H. Hãy đọc p = flow_power(), tính t = 4 - p, gọi forward(t) để lên đúng ngã ba (4, 1), gọi turn_to_calmer() chọn nhánh êm hơn (sức 1 ở sân 1, sức 0 ở sân 2), rồi đọc lại p, tính t = 3 - p và gọi forward(t) kéo B vào bến q!',
+      deBai: 'Sola giao bài kiểm tra Trùm chương 1 tại khu bến sông cũ: từ (4, 5) hướng Bắc với bè B ở (4, 6) sau đuôi, hãy gọi reel_in() và wait() cho dây còn 1 ô, rồi gọi cast_net("back") bắt B ở sát đuôi (lưới bắt và chân vịt chạy chung nhịp đầu của forward(t)). Kênh dọc có dòng xuôi ở (4, 4) mạnh 1 hoặc 2 đưa xuồng lên ngã ba (4, 1) nơi hai bên có rào cũ =, hố u và thùng H. Hãy đọc p = flow_power(), tính t = 4 - p, gọi forward(t) để lên đúng ngã ba (4, 1), gọi turn_to_calmer() chọn nhánh êm hơn (sức 1 ở sân 1, sức 0 ở sân 2), rồi đọc lại p, tính t = 3 - p và gọi forward(t) kéo B vào bến q!',
       veMaMau: 'Đã có chặng đầu (p = flow_power(), t = 4 - p, forward(t)). Thêm turn_to_calmer(), rồi đọc lại p, t = 3 - p, forward(t).',
       san: [
         ['#########', '#~q~~~~~#', '#=u=~=H=#', '####~####', '####~####', '####~####', '####B####', '#########'],
@@ -437,10 +437,11 @@
         [{ x: 4, y: 4, huong: 0, suc: 2 }, { x: 3, y: 1, huong: 3, suc: 1 }]
       ],
       batDau: [{ x: 4, y: 5, huong: 0 }, { x: 4, y: 5, huong: 0 }],
-      maMau: bai(['cast_net("back")', 'tether_grab()', 'p = flow_power()', 't = 4 - p', 'forward(t)']),
+      maMau: bai(['reel_in()', 'wait()', 'cast_net("back")', 'p = flow_power()', 't = 4 - p', 'forward(t)']),
       loiGiai: bai([
+        'reel_in()',
+        'wait()',
         'cast_net("back")',
-        'tether_grab()',
         'p = flow_power()',
         't = 4 - p',
         'forward(t)',
@@ -453,8 +454,9 @@
       loiGiaiKhac: {
         moTa: 'Lưu sức nước vào biến s1 và s2 ở từng chặng trước khi gọi forward',
         baiLam: bai([
+          'reel_in()',
+          'wait()',
           'cast_net("back")',
-          'tether_grab()',
           's1 = flow_power()',
           't = 4 - s1',
           'forward(t)',
@@ -465,10 +467,10 @@
         ])
       },
       loiSai: [
-        { moTa: 'Chỉ tiến 2 bước forward(2) ở chặng dọc nên ở sân 1 chưa lên tới ngã ba đã rẽ đâm vào rào cũ', baiLam: bai(['cast_net("back")', 'tether_grab()', 'forward(2)', 'turn_to_calmer()', 'p = flow_power()', 't = 3 - p', 'forward(t)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Dùng best_branch(2) cố định ở ngã ba nên ở sân 2 nhánh sức 0 đi thiếu 1 ô', baiLam: bai(['cast_net("back")', 'tether_grab()', 'p = flow_power()', 't = 4 - p', 'forward(t)', 'best_branch(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chỉ tiến 2 bước forward(2) ở chặng dọc nên ở sân 1 chưa lên tới ngã ba đã rẽ đâm vào rào cũ', baiLam: bai(['reel_in()', 'wait()', 'cast_net("back")', 'forward(2)', 'turn_to_calmer()', 'p = flow_power()', 't = 3 - p', 'forward(t)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Dùng best_branch(2) cố định ở ngã ba nên ở sân 2 nhánh sức 0 đi thiếu 1 ô', baiLam: bai(['reel_in()', 'wait()', 'cast_net("back")', 'p = flow_power()', 't = 4 - p', 'forward(t)', 'best_branch(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Gọi cast_net("back") và tether_grab() để bắt bè B ở sát đuôi (4, 6), rồi p = flow_power(), t = 4 - p, forward(t) lên ngã ba (4, 1).', 'Luna: Tại ngã ba (4, 1), gọi turn_to_calmer() rồi p = flow_power(), t = 3 - p, forward(t) để đưa bè B vào đúng bến q.']
+      goiY: ['Luna: Gọi reel_in(), wait() rồi cast_net("back") để bắt bè B ở sát đuôi (4, 6), rồi p = flow_power(), t = 4 - p, forward(t) lên ngã ba (4, 1).', 'Luna: Tại ngã ba (4, 1), gọi turn_to_calmer() rồi p = flow_power(), t = 3 - p, forward(t) để đưa bè B vào đúng bến q.']
     }),
 
     /* ========================================================================

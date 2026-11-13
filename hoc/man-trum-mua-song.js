@@ -12,9 +12,9 @@
   var GOC_TRUM_SONG = [
     'left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor',
-    'set_length', 'flow'
+    'reel_in', 'reel_out', 'flow'
   ];
-  var ROBOT_TRUM_SONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
+  var ROBOT_TRUM_SONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], cuonDay: true };
   var CAU_TRUC = ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'];
 
   var KHO_TRUOC = [
@@ -90,7 +90,7 @@
   function manTongHop(cfg) {
     return M.chuanHoa(Object.assign({
       chuong: 'tong-hop-song', tenChuong: 'Tổng hợp bến sông',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: JSON.parse(JSON.stringify(ROBOT_TRUM_SONG)),
       vo: 'song',
       hamGoc: GOC_TRUM_SONG.slice(),
@@ -109,7 +109,7 @@
   function manTrumSong(cfg) {
     return M.chuanHoa(Object.assign({
       chuong: 'trum-mua-song', tenChuong: 'Trùm mùa bến sông',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: JSON.parse(JSON.stringify(ROBOT_TRUM_SONG)),
       vo: 'song',
       hamGoc: GOC_TRUM_SONG.slice(),

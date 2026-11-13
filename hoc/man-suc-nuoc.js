@@ -9,8 +9,8 @@
   var M = (typeof window !== 'undefined' && window.ManHoc) ||
     (typeof require === 'function' ? require('./man-chuoi-1.js') : null);
 
-  var GOC_SUC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor', 'set_length', 'flow'];
-  var ROBOT_SUC = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
+  var GOC_SUC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor', 'reel_in', 'reel_out', 'flow'];
+  var ROBOT_SUC = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], cuonDay: true };
   var CAU_TRUC = ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'];
 
   var KHO_TRUOC = [
@@ -84,7 +84,7 @@
   function manSucNuoc(cfg) {
     return Object.assign({
       chuong: 'suc-nuoc', tenChuong: 'Đo sức nước chảy',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: ROBOT_SUC,
       vo: 'song',
       hamGoc: GOC_SUC.slice(),
@@ -100,7 +100,7 @@
   function manCheSucNuoc(cfg) {
     return Object.assign({
       chuong: 'che-suc-nuoc', tenChuong: 'Chế lệnh: chọn nhánh êm',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: ROBOT_SUC,
       vo: 'song',
       hamGoc: GOC_SUC.slice(),
