@@ -14,6 +14,16 @@
   var ROBOT_TAI = { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] };
   var CAU_TRUC = ['for', 'if', 'while', 'list'];
 
+  // Bãi phụ hai đầu ray (14/11, cẩu 4 hướng): ô chéo không còn với tới, nên tháp mượn ô (1, 3) hay (5, 3) cạnh bệ làm bãi tạm
+  var SAN_TAI_3 = [
+    '~~~~~~~',
+    '~~~~~~~',
+    '~DTTTD~',
+    '.DRRRD.',
+    '.DDDDD.',
+    '.DDDDD.',
+    '.......'
+  ];
   var SAN_TAI_1 = [
     '~~~~~~~',
     '~~~~~~~',
@@ -112,9 +122,10 @@
   var T_LOAD_SAFE_STACK = [
     'w = weight()',
     'if w == 1:',
-    '    carry2_by(4)',
+    '    carry2_by(2)',
     'else:',
-    '    move_tower2(1, 4)'
+    '    t = 2 * d',
+    '    move_tower2(d, t)'
   ];
   var T_CHECK_LOAD_SAI = [
     'for i in range(n):',
@@ -141,7 +152,7 @@
   function hSafeCarry(than) { return H('safe_carry', ['d'], than || T_SAFE_CARRY); }
   function hSafeExtend(than) { return H('safe_extend', [], than || T_SAFE_EXTEND); }
   function hHeavyRail(than) { return H('heavy_rail', [], than || T_HEAVY_RAIL); }
-  function hLoadSafeStack(than) { return H('load_safe_stack', [], than || T_LOAD_SAFE_STACK); }
+  function hLoadSafeStack(than) { return H('load_safe_stack', ['d'], than || T_LOAD_SAFE_STACK); }
   function hCheckLoad(than) { return H('check_load', ['n'], than || T_CHECK_LOAD_DUNG); }
 
   function manCanTai(cfg) {
@@ -513,38 +524,38 @@
       taiToiDa: 4,
       luatThap: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'move_tower2'],
-      deBai: 'Sola nhờ bạn: tại (3, 4) có tháp 2 kiện [28, 14] với kiện đáy nặng 3 tấn và kiện đỉnh nặng 2 tấn. Vì tổng tải là 3 + 2 = 5 > taiToiDa (4) nên không thể dùng pick_up2() nhấc cả tháp cùng lúc! Hãy gọi hàm move_tower2(1, 4) để mượn bãi phụ nấc 5 (2, 4) dời từng kiện của tháp lên tàu ở nấc 0 đúng luật tháp.',
-      veMaMau: 'Sau khi dời tháp ở (3, 4) bằng move_tower2(1, 4), hãy trượt sang cột 4 và giao tiếp kiện ở (4, 4).',
-      san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 1 },
-      chong: [CW(3, 4, [[28, 3], [14, 2]]), CW(4, 4, [[20, 2]])],
-      tau: tauDon(29, 2),
+      deBai: 'Sola nhờ bạn: tại (2, 4) có tháp 2 kiện [28, 14] với kiện đáy nặng 3 tấn và kiện đỉnh nặng 2 tấn. Vì tổng tải là 3 + 2 = 5 > taiToiDa (4) nên không thể dùng pick_up2() nhấc cả tháp cùng lúc! Hãy gọi hàm move_tower2(1, 2) để mượn bãi phụ nấc 3 (1, 3) dời từng kiện của tháp lên tàu ở nấc 0 đúng luật tháp.',
+      veMaMau: 'Sau khi dời tháp ở (2, 4) bằng move_tower2(1, 2), hãy trượt sang cột 3 và giao tiếp kiện ở (3, 4).',
+      san: SAN_TAI_3,
+      batDau: { x: 2, y: 3, nac: 2, tam: 1 },
+      chong: [CW(2, 4, [[28, 3], [14, 2]]), CW(3, 4, [[20, 2]])],
+      tau: tauDon(19, 2),
       giao: [{ tau: 0, so: [14, 20, 28] }],
       maMau: bai([
-        'move_tower2(1, 4)',
+        'move_tower2(1, 2)',
         'rail(1)'
       ]),
       loiGiai: bai([
-        'move_tower2(1, 4)',
+        'move_tower2(1, 2)',
         'rail(1)',
-        'swing_by(4)',
-        'carry_by(4)'
+        'swing_by(2)',
+        'carry_by(2)'
       ]),
-      sao: { o: 20, nhip: 29 },
+      sao: { o: 23, nhip: 19 },
       loiGiaiKhac: {
-        moTa: 'Quay về nấc 4 bằng swing_by(4) trước khi gọi rail(1)',
+        moTa: 'Quay về nấc 2 bằng swing_by(2) trước khi gọi rail(1)',
         baiLam: bai([
-          'move_tower2(1, 4)',
-          'swing_by(4)',
+          'move_tower2(1, 2)',
+          'swing_by(2)',
           'rail(1)',
-          'carry_by(4)'
+          'carry_by(2)'
         ])
       },
       loiSai: [
-        { moTa: 'Dùng pick_up2() nhấc cả tháp 5 tấn (3 + 2 > 4) nên bị lỗi quá tải', baiLam: bai(['pick_up2()', 'swing_by(4)', 'set_down()']), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Mới dời xong tháp ở cột 3, chưa giao kiện 20 ở cột 4', baiLam: bai(['move_tower2(1, 4)', 'rail(1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Dùng pick_up2() nhấc cả tháp 5 tấn (3 + 2 > 4) nên bị lỗi quá tải', baiLam: bai(['pick_up2()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['qua-tai'] },
+        { moTa: 'Mới dời xong tháp ở cột 2, chưa giao kiện 20 ở cột 3', baiLam: bai(['move_tower2(1, 2)', 'rail(1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Hàm move_tower2(1, 4) bắt đầu ở nấc 4 và kết thúc ở nấc 0 sau khi đã xếp xong tháp [28, 14] lên (3, 2).', 'Luna: Sau rail(1), gọi swing_by(4) rồi carry_by(4) để đưa kiện 20 từ (4, 4) lên (4, 2).']
+      goiY: ['Luna: Hàm move_tower2(1, 2) bắt đầu ở nấc 2 và kết thúc ở nấc 0 sau khi đã xếp xong tháp [28, 14] lên (2, 2).', 'Luna: Sau rail(1), gọi swing_by(2) rồi carry_by(2) để đưa kiện 20 từ (3, 4) lên (3, 2).']
     }),
 
     manCanTai({
@@ -740,29 +751,29 @@
       luatThap: true,
       taoHam: ['load_safe_stack'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'move_tower2', 'carry2_by'],
-      deBai: 'Sola nhờ bạn: khi gặp tháp 2 kiện ở nấc 4 (tầm 1) có luật tháp và taiToiDa = 4, nếu kiện đỉnh nặng 1 tấn (cả tháp nặng tối đa 1 + 3 = 4 tấn) thì gọi carry2_by(4) nhấc đôi thẳng lên tàu; ngược lại (tổng tải > 4) thì phải gọi move_tower2(1, 4) dời từng kiện qua bãi phụ nấc 5. Hãy chế hàm load_safe_stack() và áp dụng cho tháp ở (3, 4).',
-      veMaMau: 'Tạo hàm load_safe_stack() rồi gọi ở chương trình chính.',
-      san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 1 },
-      chong: [CW(3, 4, [[28, 3], [14, 2]])],
-      tau: tauDon(18, 2),
+      deBai: 'Sola nhờ bạn: chế hàm load_safe_stack(d) cho tháp 2 kiện ở nấc 2 (tầm 1), có luật tháp và taiToiDa = 4. Nếu kiện đỉnh nặng 1 tấn (cả tháp tối đa 1 + 3 = 4 tấn) thì gọi carry2_by(2) nhấc đôi thẳng lên tàu. Ngược lại thì tính t = 2 * d rồi gọi move_tower2(d, t) dời từng kiện qua bãi phụ: d = 1 là bãi bên trái, d = -1 là bãi bên phải. Hãy áp dụng cho tháp ở (2, 4) với bãi phụ bên trái (1, 3).',
+      veMaMau: 'Tạo hàm load_safe_stack(d) rồi gọi load_safe_stack(1) ở chương trình chính.',
+      san: SAN_TAI_3,
+      batDau: { x: 2, y: 3, nac: 2, tam: 1 },
+      chong: [CW(2, 4, [[28, 3], [14, 2]])],
+      tau: tauDon(12, 2),
       giao: [{ tau: 0, so: [14, 28] }],
-      maMau: bai(['load_safe_stack()']),
+      maMau: bai(['load_safe_stack(1)']),
       loiGiai: bai(
-        ['load_safe_stack()'],
+        ['load_safe_stack(1)'],
         { hamCuaEmMoi: [hLoadSafeStack()] }
       ),
-      sao: { o: 21, nhip: 18 },
+      sao: { o: 26, nhip: 12 },
       loiGiaiKhac: {
         moTa: 'Thêm chú thích trước khi gọi load_safe_stack()',
-        baiLam: bai(['# chọn nhấc đôi hoặc mượn bãi phụ theo tải', 'load_safe_stack()']),
+        baiLam: bai(['# chọn nhấc đôi hoặc mượn bãi phụ theo tải', 'load_safe_stack(1)']),
         hamCuaEmMoi: [hLoadSafeStack()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm load_safe_stack mà đã bấm Chạy', baiLam: bai(['load_safe_stack()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong load_safe_stack dùng w <= 2 nên gọi carry2_by(4) cho tháp 5 tấn bị quá tải', baiLam: bai(['load_safe_stack()']), hamCuaEmMoi: [hLoadSafeStack(['w = weight()', 'if w <= 2:', '    carry2_by(4)', 'else:', '    move_tower2(1, 4)'])], phaiCoMa: ['qua-tai'] }
+        { moTa: 'Chưa tạo hàm load_safe_stack mà đã bấm Chạy', baiLam: bai(['load_safe_stack(1)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong load_safe_stack dùng w <= 2 nên gọi carry2_by(2) cho tháp 5 tấn bị quá tải', baiLam: bai(['load_safe_stack(1)']), hamCuaEmMoi: [hLoadSafeStack(['w = weight()', 'if w <= 2:', '    carry2_by(2)', 'else:', '    t = 2 * d', '    move_tower2(d, t)'])], phaiCoMa: ['qua-tai'] }
       ],
-      goiY: ['Luna: Vì kiện đáy nặng 3 tấn nên chỉ khi kiện đỉnh có w == 1 mới nhấc đôi được (3 + 1 = 4).', 'Luna: Thân hàm load_safe_stack() đọc w = weight(), kiểm tra if w == 1: gọi carry2_by(4), else: gọi move_tower2(1, 4).']
+      goiY: ['Luna: Vì kiện đáy nặng 3 tấn nên chỉ khi kiện đỉnh có w == 1 mới nhấc đôi được (3 + 1 = 4).', 'Luna: Thân hàm load_safe_stack(d): w = weight(), if w == 1: gọi carry2_by(2), else: t = 2 * d rồi move_tower2(d, t).']
     }),
 
     manCheCanTai({
@@ -896,44 +907,45 @@
       taiToiDa: 4,
       luatThap: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'move_tower2', 'carry2_by', 'load_safe_stack'],
-      deBai: 'Sola nhờ bạn: trên hai sân có luật tháp và taiToiDa = 4, tại (2, 4) và (4, 4) đều có một tháp 2 kiện (có tháp nhẹ nhấc đôi được, có tháp nặng phải mượn bãi phụ). Bệ cẩu bắt đầu ở (2, 3) hướng nấc 4. Hãy gọi load_safe_stack() cho cột 2, trượt rail(2) sang cột 4, quay về nấc 4 bằng swing_by(4) rồi gọi load_safe_stack() lần nữa.',
-      veMaMau: 'Sau load_safe_stack() và rail(2), hãy quay về nấc 4 rồi gọi load_safe_stack().',
-      san: [SAN_TAI_1, SAN_TAI_1],
-      batDau: [{ x: 2, y: 3, nac: 4, tam: 1 }, { x: 2, y: 3, nac: 4, tam: 1 }],
+      deBai: 'Sola nhờ bạn: trên hai sân có luật tháp và taiToiDa = 4, tại (2, 4) và (4, 4) đều có một tháp 2 kiện (có tháp nhẹ nhấc đôi được, có tháp nặng phải mượn bãi phụ). Bệ cẩu bắt đầu ở (2, 3) hướng nấc 2. Hãy gọi load_safe_stack(1) cho cột 2 (bãi phụ bên trái (1, 3)), trượt rail(2) sang cột 4, quay về nấc 2 bằng swing_by(2) rồi gọi load_safe_stack(-1) (bãi phụ bên phải (5, 3)).',
+      veMaMau: 'Sau load_safe_stack(1) và rail(2), hãy quay về nấc 2 rồi gọi load_safe_stack(-1).',
+      san: [SAN_TAI_3, SAN_TAI_3],
+      batDau: [{ x: 2, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, nac: 2, tam: 1 }],
       chong: [
         [CW(2, 4, [[22, 2], [11, 1]]), CW(4, 4, [[28, 3], [14, 2]])],
         [CW(2, 4, [[30, 3], [15, 2]]), CW(4, 4, [[24, 2], [12, 1]])]
       ],
-      tau: [tauDon(30, 2), tauDon(30, 2)],
+      tau: [tauDon(20, 2), tauDon(20, 2)],
       giao: [
         [{ tau: 0, so: [11, 14, 22, 28] }],
         [{ tau: 0, so: [12, 15, 24, 30] }]
       ],
       maMau: bai([
-        'load_safe_stack()',
+        'load_safe_stack(1)',
         'rail(2)'
       ]),
       loiGiai: bai([
-        'load_safe_stack()',
+        'load_safe_stack(1)',
         'rail(2)',
-        'swing_by(4)',
-        'load_safe_stack()'
+        'swing_by(2)',
+        'load_safe_stack(-1)'
       ]),
-      sao: { o: 27, nhip: 60 },
+      sao: { o: 32, nhip: 40 },
       loiGiaiKhac: {
-        moTa: 'Quay về nấc 4 bằng swing_by(4) trước khi trượt rail(2)',
+        moTa: 'Quay về nấc 2 bằng swing_by(2) trước khi trượt rail(2)',
         baiLam: bai([
-          'load_safe_stack()',
-          'swing_by(4)',
+          'load_safe_stack(1)',
+          'swing_by(2)',
           'rail(2)',
-          'load_safe_stack()'
+          'load_safe_stack(-1)'
         ])
       },
       loiSai: [
-        { moTa: 'Mới dời tháp ở cột 2, chưa dời tháp ở cột 4', baiLam: bai(['load_safe_stack()', 'rail(2)']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Quên gọi swing_by(4) nên gọi load_safe_stack() khi đầu cần đang ở nấc 0', baiLam: bai(['load_safe_stack()', 'rail(2)', 'load_safe_stack()']), phaiCoMa: ['moc-hut'] }
+        { moTa: 'Mới dời tháp ở cột 2, chưa dời tháp ở cột 4', baiLam: bai(['load_safe_stack(1)', 'rail(2)']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Quên gọi swing_by(2) nên gọi load_safe_stack(-1) khi đầu cần đang ở nấc 0', baiLam: bai(['load_safe_stack(1)', 'rail(2)', 'load_safe_stack(-1)']), phaiCoMa: ['moc-hut'] },
+        { moTa: 'Ở cột 4 vẫn gọi load_safe_stack(1) nên tháp nặng mượn bãi trên đường ray (3, 3)', baiLam: bai(['load_safe_stack(1)', 'rail(2)', 'swing_by(2)', 'load_safe_stack(1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Dù đi nhánh carry2_by(4) hay move_tower2(1, 4), hàm load_safe_stack() đều kết thúc tại nấc 0.', 'Luna: Sau rail(2), gọi swing_by(4) về nấc 4 rồi gọi load_safe_stack().']
+      goiY: ['Luna: Dù đi nhánh carry2_by(2) hay move_tower2, hàm load_safe_stack(d) đều kết thúc tại nấc 0.', 'Luna: Sau rail(2), gọi swing_by(2) về nấc 2 rồi gọi load_safe_stack(-1): bãi phụ bên trái (3, 3) là đường ray, nên mượn bãi bên phải.']
     }),
 
     manCheCanTai({
