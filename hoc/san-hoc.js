@@ -498,6 +498,11 @@
           Tàu rời mang container KHÔNG có trong danh sách của tàu đó (hay tàu không có danh sách): thua ngay, dungSom = 'giao-nham', sự kiện 'giao-nham' { tau, so, o, can }. Kết quả: chong, chongBanDau, tau [{ o, co, vang, pha, coMat }], tauBanDau, daGiao [[so]], ray, taiToiDa, luatThap.
         - BÓNG MỜ CHỒNG (mục tiêu bong-mo): cần cẩu không cần bongMo.huong; không khai x, y thì bệ ở nguyên chỗ xuất phát. bongMo.chong = [{ x, y, so: [đáy → đỉnh] }]: lúc chạy xong MỌI chồng trên sân phải đúng — ô khai phải đúng dãy số
           (so: [] = trống), ô không khai phải trống, móc không còn treo gì; sai thì không thắng (cham.js: chua-xep-chong). Dùng cho bài sắp xếp / Tháp Hà Nội (cùng luatThap).
+        - LUẬT XẾP CHỒNG (ghép nhịp 3c, 15/11; mục tiêu bong-mo): bongMo.chongLuat = [{ x, y, luat: 'nho-tren' | 'lon-tren', mau?: 0..3 | [..], du?: n }]: chấm theo LUẬT, không theo dãy số cố định (mỗi sân một bộ số vẫn một
+          mục tiêu). Lúc chạy xong: móc không treo gì; chồng ở ô (x, y) chỉ chứa container HỢP MÀU (màu = so % 4: 0 đỏ · 1 xanh dương · 2 vàng · 3 xanh lá; không khai mau = mọi màu), có đúng `du` cái (không khai du = MỌI
+          container hợp màu có trên sân lúc đầu) và đúng chiều: 'nho-tren' = đi từ đáy lên số không tăng (số nhỏ nằm trên), 'lon-tren' = ngược lại. Ô không khai KHÔNG bị xét (chồng tạm còn hàng khác màu vẫn thắng).
+          Không dùng chung với bongMo.chong. Sai thì không thắng (cham.js: sai-luat-chong, chỉ chỗ sai ĐẦU TIÊN). Hàm chấm dùng chung: SanHoc.soatChongLuat(chongLuat, chong, treo) → null (đạt) hay
+          { kieu: 'treo' | 'la-mau' | 'thieu' | 'thua' | 'sai-chieu', x, y, … }. Kết quả `bongMo.chongLuat` [{ x, y, luat, mau: [..] | null, du }] (du đã đếm).
         - NHIỀU ROBOT: bệ chiếm ô như tường với xe dưới đất (xe đâm 'dong-doi'); xe đi qua ô R như sàn; đầu cần KHÔNG chặn ai (xe đứng dưới đầu cần được, nhưng set_down xuống ô có xe → ha-bi-chan 'robot'); rail bị xe chặn ('robot').
         - NHÂN (nhan/san-robot-core.js, 31/10): phép % đổi theo Python (kết quả cùng dấu số chia: -5 % 8 = 3) để bài "(b - a) % 4 lần swing_right()" chạy đúng; // vẫn Math.floor; abs / min / max có sẵn.
 
@@ -703,6 +708,7 @@
   var NAC_VEC = [[0, -1], [1, 0], [0, 1], [-1, 0]];   // 4 hướng cần (14/11, thay 8 nấc): 0 lên, 1 phải, 2 xuống, 3 trái; không có nấc chéo nên cần dài đúng bằng tầm
   var SO_NAC = 4;
   var TAM_CAU_TOI_DA = 3;                         // tầm cần 1–3 ô
+  var LUAT_CHONG = ['nho-tren', 'lon-tren'];      // bongMo.chongLuat: chiều xếp của chồng đích (số nhỏ ở trên / số lớn ở trên)
   var CHONG_TOI_DA = 4;                           // một chồng tối đa 4 container
   var RAY_TOI_DA = 9;                             // rail(n): abs(n) ≤ 9
   var CONT_SO_TOI_DA = 99, CONT_TAN_TOI_DA = 4;   // số in trên container 1–99, tấn 1–4
@@ -1480,6 +1486,27 @@
           return { x: q.x, y: q.y, so: q.so.slice() };
         });
       }
+      bongMo.chongLuat = null;                                                               // CẢNG SÔNG: luật xếp chồng [{x,y,luat,mau,du}] — chấm theo luật (nhỏ ở trên / lớn ở trên, lọc màu = so % 4), không theo dãy cố định; du đếm sau khi dựng chồng
+      if (bm.chongLuat !== undefined && bm.chongLuat !== null) {
+        if (!laCau) throw new Error('bongMo.chongLuat chỉ dùng cho cần cẩu (loaiRobot "cau").');
+        if (bongMo.chong) throw new Error('bongMo.chongLuat không dùng chung với bongMo.chong (một màn chấm theo luật hoặc theo dãy số, không cả hai).');
+        if (!Array.isArray(bm.chongLuat) || !bm.chongLuat.length) throw new Error('bongMo.chongLuat phải là mảng [{ x, y, luat, mau?, du? }] (ít nhất một chồng đích).');
+        var oLuat = {};
+        bongMo.chongLuat = bm.chongLuat.map(function (q) {
+          if (!q || !laSoNguyen(q.x) || !laSoNguyen(q.y)) throw new Error('bongMo.chongLuat: mỗi mục là { x, y, luat: "nho-tren" | "lon-tren", mau?, du? }.');
+          if (LUAT_CHONG.indexOf(q.luat) < 0) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): luat phải là "nho-tren" (số nhỏ ở trên) hay "lon-tren" (số lớn ở trên).');
+          if (!laOChong(q.x, q.y)) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + ') phải là ô bãi "." hay ô đích D.');
+          if (oLuat[q.x + ',' + q.y]) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + ') khai hai lần.');
+          oLuat[q.x + ',' + q.y] = true;
+          var mauL = null;
+          if (q.mau !== undefined && q.mau !== null) {
+            mauL = Array.isArray(q.mau) ? q.mau.slice() : [q.mau];
+            if (!mauL.length || !mauL.every(function (n, i) { return laSoNguyen(n) && n >= 0 && n <= 3 && mauL.indexOf(n) === i; })) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): mau là số 0..3 (màu = so % 4: 0 đỏ, 1 xanh dương, 2 vàng, 3 xanh lá) hay mảng các số đó, không trùng.');
+          }
+          if (q.du !== undefined && q.du !== null && !(laSoNguyen(q.du) && q.du >= 1 && q.du <= CHONG_TOI_DA)) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): du phải là số nguyên 1..' + CHONG_TOI_DA + '.');
+          return { x: q.x, y: q.y, luat: q.luat, mau: mauL, du: q.du === undefined || q.du === null ? null : q.du };
+        });
+      }
     } else if (cfg.bongMo) throw new Error('bongMo chỉ dùng với mục tiêu "bong-mo".');
 
     // máy sơn (xem phần MÁY SƠN): lớp ô đã tô (dùng chung mọi robot) và hình mờ của mục tiêu 'to-hinh'
@@ -2023,6 +2050,20 @@
       });
     }
     var chongBanDau = chupChong(), tauBanDau = chupTau();
+    if (bongMo && bongMo.chongLuat) {                                      // LUẬT XẾP CHỒNG: du không khai = đếm mọi container hợp màu có trên sân lúc đầu; hai chồng đích không khai du thì không được chung màu
+      var mauDaNhan = {};
+      bongMo.chongLuat.forEach(function (q) {
+        if (q.du !== null) return;
+        [0, 1, 2, 3].forEach(function (m) {
+          if (q.mau && q.mau.indexOf(m) < 0) return;
+          if (mauDaNhan[m]) throw new Error('bongMo.chongLuat: hai chồng đích cùng nhận màu ' + m + ' (so % 4) mà không khai du: không biết chia thế nào.');
+          mauDaNhan[m] = true;
+        });
+        q.du = conts.filter(function (c) { return !q.mau || q.mau.indexOf(c.so % 4) >= 0; }).length;
+        if (q.du < 1) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): trên sân không có container nào hợp màu.');
+        if (q.du > CHONG_TOI_DA) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): có ' + q.du + ' container hợp màu, chồng cao tối đa ' + CHONG_TOI_DA + '.');
+      });
+    }
     if (cfg.noi) {
       cfg.noi.forEach(function (g) {
         var vN = g.nut ? vanTai[g.nut.x + ',' + g.nut.y] : null;
@@ -2158,6 +2199,7 @@
         for (var kc in chongTai) if (chongTai[kc].length && bmC[kc] === undefined) return false;
         if (!bongMo.chong.every(function (q) { return chongO(q.x, q.y).map(function (c) { return c.so; }).join(',') === bmC[q.x + ',' + q.y]; })) return false;
       }
+      if (bongMo.chongLuat && soatChongLuat(bongMo.chongLuat, chupChong(), treo) !== null) return false;   // CẢNG SÔNG: luật xếp chồng (nhỏ ở trên / lớn ở trên, lọc màu)
       if (bongMo.cam) {                                                    // xe mờ đang cầm vật: lúc xong tay phải đang giữ một vật (đúng màu nếu khai)
         var dcId = tay.cam !== null ? tay.cam : nc.cam;                    // đang cầm bằng tay kẹp hay đang dính bằng nam châm
         if (dcId === null) return false;
@@ -5120,6 +5162,34 @@
     };
   }
 
+  /** LUẬT XẾP CHỒNG (bongMo.chongLuat, xem phần CẢNG SÔNG): soát trạng thái cuối. chongLuat: [{ x, y, luat, mau: [..] | null, du }] (đã chuẩn hoá), chong: [{ x, y, cont: [{ so }] }] (đáy → đỉnh), treo: [{ so }].
+   *  Trả null nếu đạt, không thì CHỖ SAI ĐẦU TIÊN: { kieu: 'treo', so: [..] } | { kieu: 'la-mau', x, y, so, mau: [..] } | { kieu: 'thieu' | 'thua', x, y, co, can, con: { x, y, so } | null }
+   *  | { kieu: 'sai-chieu', x, y, luat, duoi, tren }. Dùng chung cho lõi (thắng / chưa) và cham.js (lời sai-luat-chong). */
+  function soatChongLuat(chongLuat, chong, treo) {
+    if (!chongLuat || !chongLuat.length) return null;
+    if (treo && treo.length) return { kieu: 'treo', so: treo.map(function (c) { return c.so; }) };
+    var tai = {};
+    (chong || []).forEach(function (c) { tai[c.x + ',' + c.y] = c.cont.map(function (k) { return k.so; }); });
+    function hop(q, so) { return !q.mau || q.mau.indexOf(so % 4) >= 0; }
+    for (var i = 0; i < chongLuat.length; i++) {
+      var q = chongLuat[i], k = q.x + ',' + q.y, ds = tai[k] || [];
+      for (var j = 0; j < ds.length; j++) if (!hop(q, ds[j])) return { kieu: 'la-mau', x: q.x, y: q.y, so: ds[j], mau: q.mau.slice() };
+      if (ds.length !== q.du) {
+        var con = null;
+        if (ds.length < q.du) Object.keys(tai).some(function (kk) {
+          if (kk === k) return false;
+          var a = kk.split(',');
+          return tai[kk].some(function (n) { if (!hop(q, n)) return false; con = { x: +a[0], y: +a[1], so: n }; return true; });
+        });
+        return { kieu: ds.length < q.du ? 'thieu' : 'thua', x: q.x, y: q.y, co: ds.length, can: q.du, con: con };
+      }
+      for (var t = 0; t + 1 < ds.length; t++) {
+        if (q.luat === 'nho-tren' ? ds[t + 1] > ds[t] : ds[t + 1] < ds[t]) return { kieu: 'sai-chieu', x: q.x, y: q.y, luat: q.luat, duoi: ds[t], tren: ds[t + 1] };
+      }
+    }
+    return null;
+  }
+
   var API = {
     VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_XOAY: TAY_XOAY, XOAY_NAC: XOAY_NAC, TAY_NHOM: TAY_NHOM, BANG: BANG, BAN_XOAY: BAN_XOAY, CONG_KY: CONG_KY, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, OMNI_CHEO: OMNI_CHEO, OMNI_CHEO_BIEN: OMNI_CHEO_BIEN, CAM_BIEN_HAM: CAM_BIEN_HAM,
     TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, LUC_BAN: LUC_BAN, TEN_CU_VOI_PHUN: TEN_CU_VOI_PHUN, TAM_BAN_NHANH: TAM_BAN_NHANH, TAY_SON: TAY_SON, SON_LENH: SON_LENH, laLenhSon: laLenhSon, TAY_LOA: TAY_LOA, NOT_TOI_DA: NOT_TOI_DA, SO_NHIP_TOI_DA: SO_NHIP_TOI_DA, laLenhLoa: laLenhLoa, docDieu: docDieu, docDieuDoi: docDieuDoi, THAN_GAI: THAN_GAI, CAM_AM_THANH_HAM: CAM_AM_THANH_HAM, MA_CAM_AM_THANH: MA_CAM_AM_THANH, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_HONG_NGOAI_HAM: CAM_HONG_NGOAI_HAM, MA_CAM_HONG_NGOAI: MA_CAM_HONG_NGOAI, CAM_RADAR_HAM: CAM_RADAR_HAM, MA_CAM_RADAR: MA_CAM_RADAR, RADAR_HUONG: RADAR_HUONG, DANG_KY: DANG_KY, DANG_TEN: DANG_TEN, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
@@ -5127,6 +5197,7 @@
     NUOC_KY: NUOC_KY, VAT_NOI_KY: VAT_NOI_KY, THAN_NEO: THAN_NEO, TAY_PHAO: TAY_PHAO, TOI_CUON: TOI_CUON, HUONG_LUOI: HUONG_LUOI, DAI_LUOI_MAC_DINH: DAI_LUOI_MAC_DINH, CAM_DONG_HAM: CAM_DONG_HAM, MA_CAM_DONG: MA_CAM_DONG, TAM_KEO: TAM_KEO, HUONG_TUONG_DOI: HUONG_TUONG_DOI, laNuoc: laNuoc,   // BẾN SÔNG
     CANG_KY: CANG_KY, NAC_VEC: NAC_VEC, SO_NAC: SO_NAC, TAM_CAU_TOI_DA: TAM_CAU_TOI_DA, CHONG_TOI_DA: CHONG_TOI_DA, RAY_TOI_DA: RAY_TOI_DA, CONT_SO_TOI_DA: CONT_SO_TOI_DA, CONT_TAN_TOI_DA: CONT_TAN_TOI_DA,
     CAU_LENH: CAU_LENH, TAY_MOC: TAY_MOC, CAM_QUET_HAM: CAM_QUET_HAM, MA_CAM_QUET: MA_CAM_QUET, THAN_RAY: THAN_RAY,   // CẢNG SÔNG
+    LUAT_CHONG: LUAT_CHONG, soatChongLuat: soatChongLuat,   // CẢNG SÔNG: luật xếp chồng (bongMo.chongLuat)
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };
   if (laNode) module.exports = API;

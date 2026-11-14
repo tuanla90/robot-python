@@ -168,6 +168,8 @@
    khong-treo (set_down khi không treo), ha-bi-chan (set_down không hạ được; vat tuong | nuoc | ray | tau-vang | chong-day | robot | vat | …), thap-sai (luật tháp: số lớn lên số nhỏ),
    het-ray (rail(n) hết ray / có robot / đầu cần sẽ lòi ra ngoài sân; các nhịp còn lại của rail(n) đứng yên), giao-nham (tàu rời mang container không có trong danh sách: thua ngay),
    ray-sai / khong-ray (lỗi chạy rail(n) sai đối số / không có bánh ray), chua-giao-tau (chạy xong chưa giao đủ), chua-xep-chong (bong-mo: chồng container chưa đúng).
+   LUẬT XẾP CHỒNG (ghép nhịp 3c, 15/11): man.bongMo.chongLuat (xem san-hoc.js phần CẢNG SÔNG) đi xuống cùng bongMo. Chạy xong mà chồng đích chưa đúng luật: 'sai-luat-chong' { kieu, x, y, … } (lỗi; chỉ chỗ sai ĐẦU TIÊN):
+   kieu 'treo' (móc còn treo), 'la-mau' (chồng đích có container khác màu; nhắc màu = mã chia 4 dư mấy), 'thieu' / 'thua' (chưa đủ / quá số container, chỉ ô còn sót), 'sai-chieu' (cặp dưới / trên ngược luật nhỏ ở trên / lớn ở trên).
    Sự kiện vết (hoạt cảnh): quay-can, vuon-can, thu-can, moc-cont, ha-cont, chay-ray, tau-cap, tau-roi, xong-giao-tau.
    ========================================================================== */
 (function () {
@@ -1355,7 +1357,21 @@
     } else if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'bong-mo') {
       if (!res.dungSom) {
         var rbm = res.robot, bmo = res.bongMo;
-        if (bmo && bmo.chong && man.loaiRobot === 'cau') {                  // CẢNG SÔNG: chồng container lúc xong chưa đúng
+        if (bmo && bmo.chongLuat && man.loaiRobot === 'cau') {              // CẢNG SÔNG: luật xếp chồng (nhỏ ở trên / lớn ở trên, lọc màu = mã chia 4 dư mấy) — chỉ chỗ sai đầu tiên
+          if (rbm.x !== bmo.x || rbm.y !== bmo.y) them('lech-bong-mo', 'Bệ cẩu dừng ở ô (' + rbm.x + ', ' + rbm.y + ') mà bóng mờ ở ô (' + bmo.x + ', ' + bmo.y + '): chạy ray cho đúng chỗ.', { robot: { x: rbm.x, y: rbm.y }, bongMo: { x: bmo.x, y: bmo.y } });
+          var slc = SanHoc.soatChongLuat(bmo.chongLuat, res.chong || [], res.treo || []);
+          if (slc) {
+            var TEN_MAU_CONT = ['đỏ', 'xanh dương', 'vàng', 'xanh lá'];
+            var tenMauCont = function (ds) { return ds.map(function (m) { return TEN_MAU_CONT[m]; }).join(' / '); };
+            var oSlc = 'Chồng đích ở ô (' + slc.x + ', ' + slc.y + ')', loiSlc;
+            if (slc.kieu === 'treo') loiSlc = 'Chương trình chạy xong mà móc vẫn treo container số ' + slc.so.join(', ') + ': phải hạ hết xuống bằng set_down().';
+            else if (slc.kieu === 'la-mau') loiSlc = oSlc + ' chỉ nhận container màu ' + tenMauCont(slc.mau) + ', mà có container số ' + slc.so + ' màu ' + TEN_MAU_CONT[slc.so % 4] + '. Màu = mã chia 4 dư mấy: ' + slc.so + ' % 4 = ' + (slc.so % 4) + '.';
+            else if (slc.kieu === 'thieu') loiSlc = oSlc + ' mới có ' + slc.co + ' container, cần đủ ' + slc.can + '.' + (slc.con ? ' Container số ' + slc.con.so + ' còn nằm ở ô (' + slc.con.x + ', ' + slc.con.y + ').' : '');
+            else if (slc.kieu === 'thua') loiSlc = oSlc + ' có ' + slc.co + ' container, chỉ cần ' + slc.can + '.';
+            else loiSlc = oSlc + ' phải xếp số ' + (slc.luat === 'nho-tren' ? 'nhỏ' : 'lớn') + ' ở trên, mà số ' + slc.tren + ' đang nằm trên số ' + slc.duoi + '. Chồng là ngăn xếp: cái hạ sau nằm trên. Hạ số ' + (slc.luat === 'nho-tren' ? 'lớn' : 'nhỏ') + ' trước.';
+            them('sai-luat-chong', loiSlc, slc);
+          }
+        } else if (bmo && bmo.chong && man.loaiRobot === 'cau') {           // CẢNG SÔNG: chồng container lúc xong chưa đúng
           var chongSai = [];
           var coTai = {}; (res.chong || []).forEach(function (c) { coTai[c.x + ',' + c.y] = c.cont.map(function (k) { return k.so; }); });
           bmo.chong.forEach(function (q) { var k = q.x + ',' + q.y, hien = coTai[k] || []; if (hien.join(',') !== q.so.join(',')) chongSai.push({ x: q.x, y: q.y, can: q.so, hien: hien }); delete coTai[k]; });
