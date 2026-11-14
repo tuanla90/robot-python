@@ -102,7 +102,7 @@
   ];
   var T_SPLIT_STACK2_SAI = [
     't = n % 2',
-    'carry2_n(t, 4)',
+    'carry2_n(t, 2)',
     't = n // 2',
     'carry_n(t, 2)'
   ];
@@ -110,7 +110,7 @@
     't = n // 2',
     'carry2_n(t, 2)',
     't = n % 2',
-    'carry_n(t, 4)'
+    'carry_n(t, 2)'
   ];
 
   function hCarry2By(than) { return H('carry2_by', ['d'], than || T_CARRY2_BY); }
@@ -816,7 +816,7 @@
       so: 7, ten: 'Sửa hàm split_stack2(n)', hang: 'bien-the',
       chinhCoDinh: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by', 'carry2_n'],
-      deBai: 'Sola nhờ bạn: hàm split_stack2(n) của màn cần chuyển chồng n kiện từ (3, 4) lên tàu ở (3, 2) bằng n // 2 chuyến nhấc đôi và n % 2 chuyến nhấc đơn. Nhưng hàm đang tráo nhầm: t = n % 2 trước carry2_n(t, 4) và t = n // 2 trước carry_n(t, 4) nên khi n = 4 chỉ chuyển được 2 kiện. Hãy sửa lại hàm split_stack2(n).',
+      deBai: 'Sola nhờ bạn: hàm split_stack2(n) của màn cần chuyển chồng n kiện từ (3, 4) lên tàu ở (3, 2) bằng n // 2 chuyến nhấc đôi và n % 2 chuyến nhấc đơn. Nhưng hàm đang tráo nhầm: t = n % 2 trước carry2_n(t, 2) và t = n // 2 trước carry_n(t, 2) nên khi n = 4 chỉ chuyển được 2 kiện. Hãy sửa lại hàm split_stack2(n).',
       veMaMau: 'Chương trình chính đã khóa. Hãy đổi % 2 và // 2 cho đúng trong hàm split_stack2(n).',
       san: SAN_DOI_1,
       batDau: { x: 3, y: 3, nac: 2, tam: 1 },
@@ -833,13 +833,13 @@
       ),
       sao: { o: 20, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Bốc kiện lẻ trước (t = n % 2, carry_n(t, 4)) rồi mới bốc cặp (t = n // 2, carry2_n(t, 4))',
+        moTa: 'Bốc kiện lẻ trước (t = n % 2, carry_n(t, 2)) rồi mới bốc cặp (t = n // 2, carry2_n(t, 2))',
         baiLam: bai(
           ['split_stack2(4)'],
           {
             hamCuaMan: [H('split_stack2', ['n'], [
               't = n % 2',
-              'carry_n(t, 4)',
+              'carry_n(t, 2)',
               't = n // 2',
               'carry2_n(t, 2)'
             ])]

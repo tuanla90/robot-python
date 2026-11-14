@@ -96,8 +96,8 @@
     '    set_down()',
     '    retract()',
     'else:',
-    '    carry_by(4)',
-    '    swing_by(4)'
+    '    carry_by(2)',
+    '    swing_by(2)'
   ];
   var T_HEAVY_RAIL = [
     'c = read_code()',
@@ -121,20 +121,20 @@
     '    rail(1)',
     '    w = weight()',
     '    if w >= 2:',
-    '        carry2_by(4)',
-    '        swing_by(4)',
+    '        carry2_by(2)',
+    '        swing_by(2)',
     '    else:',
-    '        carry_n(2, 4)'
+    '        carry_n(2, 2)'
   ];
   var T_CHECK_LOAD_DUNG = [
     'for i in range(n):',
     '    rail(1)',
     '    w = weight()',
     '    if w <= 2:',
-    '        carry2_by(4)',
-    '        swing_by(4)',
+    '        carry2_by(2)',
+    '        swing_by(2)',
     '    else:',
-    '        carry_n(2, 4)'
+    '        carry_n(2, 2)'
   ];
 
   function hSafeLift(than) { return H('safe_lift', [], than || T_SAFE_LIFT); }
@@ -187,16 +187,16 @@
       chiChay: true, chinhCoDinh: true,
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry2_by'],
-      deBai: 'Sola làm mẫu: mỗi container nay có khối lượng từ 1 đến 4 tấn, và cần cẩu có tải tối đa taiToiDa = 4 (tích số tấn nhân tầm vươn không vượt quá 4). Tại (3, 4) có 2 kiện 2 tấn, ở tầm 1 tổng tải là (2 + 2) * 1 = 4 <= 4 nên gọi carry2_by(4) nhấc đôi an toàn.',
+      deBai: 'Sola làm mẫu: mỗi container nay có khối lượng từ 1 đến 4 tấn, và cần cẩu có tải tối đa taiToiDa = 4 (tích số tấn nhân tầm vươn không vượt quá 4). Tại (3, 4) có 2 kiện 2 tấn, ở tầm 1 tổng tải là (2 + 2) * 1 = 4 <= 4 nên gọi carry2_by(2) nhấc đôi an toàn.',
       veMaMau: 'Chương trình mẫu đã khóa. Bấm Chạy để xem cần cẩu nhấc đôi 2 kiện 2 tấn ở tầm 1.',
       san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       chong: [CW(3, 4, [[20, 2], [10, 2]])],
-      tau: tauDon(6, 2),
+      tau: tauDon(4, 2),
       giao: [{ tau: 0, so: [10, 20] }],
-      maMau: bai(['carry2_by(4)']),
-      loiGiai: bai(['carry2_by(4)']),
-      sao: { o: 10, nhip: 6 },
+      maMau: bai(['carry2_by(2)']),
+      loiGiai: bai(['carry2_by(2)']),
+      sao: { o: 11, nhip: 4 },
       loiSai: [],
       goiY: ['Luna: Bấm nút Chạy để quan sát cần cẩu bốc cặp kiện 2 tấn lên tàu.', 'Luna: Luật tải trọng yêu cầu tổng số tấn đang treo nhân với tầm vươn tam không vượt quá taiToiDa.']
     }),
@@ -205,29 +205,29 @@
       so: 2, ten: 'Tách đôi kiện nặng', hang: 'lam-quen',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n'],
-      deBai: 'Sola nhờ bạn: tại (3, 4) có 2 kiện nặng 3 tấn, còn tải tối đa của cần cẩu là taiToiDa = 4. Nếu nhấc đôi cả 2 kiện thì tổng tải là (3 + 3) * 1 = 6 > 4 sẽ bị lỗi quá tải! Hãy dùng carry_n(2, 4) để bốc từng kiện 3 tấn lên tàu.',
-      veMaMau: 'Thay vì nhấc đôi, hãy gọi carry_n(2, 4) để chuyển từng kiện 3 tấn.',
+      deBai: 'Sola nhờ bạn: tại (3, 4) có 2 kiện nặng 3 tấn, còn tải tối đa của cần cẩu là taiToiDa = 4. Nếu nhấc đôi cả 2 kiện thì tổng tải là (3 + 3) * 1 = 6 > 4 sẽ bị lỗi quá tải! Hãy dùng carry_n(2, 2) để bốc từng kiện 3 tấn lên tàu.',
+      veMaMau: 'Thay vì nhấc đôi, hãy gọi carry_n(2, 2) để chuyển từng kiện 3 tấn.',
       san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       chong: [CW(3, 4, [[24, 3], [14, 3]])],
-      tau: tauDon(20, 2),
+      tau: tauDon(12, 2),
       giao: [{ tau: 0, so: [14, 24] }],
-      maMau: bai(['carry_n(1, 4)']),
-      loiGiai: bai(['carry_n(2, 4)']),
-      sao: { o: 15, nhip: 20 },
+      maMau: bai(['carry_n(1, 2)']),
+      loiGiai: bai(['carry_n(2, 2)']),
+      sao: { o: 16, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Dùng vòng lặp for 2 lần gọi carry_by(4) và swing_by(4)',
+        moTa: 'Dùng vòng lặp for 2 lần gọi carry_by(2) và swing_by(2)',
         baiLam: bai([
           'for i in range(2):',
-          '    carry_by(4)',
-          '    swing_by(4)'
+          '    carry_by(2)',
+          '    swing_by(2)'
         ])
       },
       loiSai: [
-        { moTa: 'Gọi pick_up2() nhấc cùng lúc 2 kiện 3 tấn (6 tấn > taiToiDa 4) nên bị quá tải', baiLam: bai(['pick_up2()', 'swing_by(4)', 'set_down()']), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Mới chuyển 1 kiện bằng carry_n(1, 4)', baiLam: bai(['carry_n(1, 4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Gọi pick_up2() nhấc cùng lúc 2 kiện 3 tấn (6 tấn > taiToiDa 4) nên bị quá tải', baiLam: bai(['pick_up2()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['qua-tai'] },
+        { moTa: 'Mới chuyển 1 kiện bằng carry_n(1, 2)', baiLam: bai(['carry_n(1, 2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Mỗi kiện nặng 3 tấn nên chỉ nhấc đơn từng kiện được (3 * 1 = 3 <= 4).', 'Luna: Đổi đối số đầu của carry_n thành 2: carry_n(2, 4).']
+      goiY: ['Luna: Mỗi kiện nặng 3 tấn nên chỉ nhấc đơn từng kiện được (3 * 1 = 3 <= 4).', 'Luna: Đổi đối số đầu của carry_n thành 2: carry_n(2, 2).']
     }),
 
     manCanTai({
@@ -256,7 +256,7 @@
         '    else:',
         '        rail_drop(1)'
       ]),
-      sao: { o: 9, nhip: 8 },
+      sao: { o: 10, nhip: 8 },
       loiGiaiKhac: {
         moTa: 'Dùng while c != -1 (c = read_code()) thay cho for i in range(2)',
         baiLam: bai([
@@ -285,7 +285,7 @@
       deBai: 'Sola nhờ bạn: tại (2, 4) có kiện hàng nặng 4 tấn, cần dời sang (4, 4) và đỗ bệ cẩu ở (4, 3). Với taiToiDa = 4, kiện 4 tấn chỉ nâng được ở tầm 1 (4 * 1 = 4); nếu gọi extend() ra tầm 2 thì 4 * 2 = 8 > 4 sẽ bị quá tải! Hãy giữ tầm 1, nhấc kiện lên rồi trượt rail(2) sang cột 4 hạ xuống.',
       veMaMau: 'Sau pick_up() và rail(2), hãy gọi set_down() để hạ kiện 4 tấn tại (4, 4).',
       san: SAN_TAI_1,
-      batDau: { x: 2, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 2, y: 3, nac: 2, tam: 1 },
       chong: [CW(2, 4, [[32, 4]])],
       tau: tauDon(20, 0),
       bongMo: BM(4, 3, [
@@ -322,56 +322,56 @@
       so: 5, ten: 'Bãi sâu tầm hai', hang: 'luyen-tap',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'haul_to'],
-      deBai: 'Sola nhờ bạn: tại bãi sâu (3, 5) ở tầm 2 có chồng 2 kiện mỗi kiện nặng 2 tấn. Với taiToiDa = 4, ở tầm 2 mỗi lần chỉ nhấc được 1 kiện 2 tấn (2 * 2 = 4 <= 4); nếu gọi pick_up2() thì (2 + 2) * 2 = 8 > 4 sẽ bị quá tải! Hãy lặp 2 lần: gọi haul_to(4, -1) đưa từng kiện lên tàu ở (3, 2) rồi gọi aim_crane(4, 1) quay về (3, 5).',
-      veMaMau: 'Trong vòng lặp 2 lần, sau haul_to(4, -1) hãy gọi aim_crane(4, 1) để quay lại (3, 5).',
+      deBai: 'Sola nhờ bạn: tại bãi sâu (3, 5) ở tầm 2 có chồng 2 kiện mỗi kiện nặng 2 tấn. Với taiToiDa = 4, ở tầm 2 mỗi lần chỉ nhấc được 1 kiện 2 tấn (2 * 2 = 4 <= 4); nếu gọi pick_up2() thì (2 + 2) * 2 = 8 > 4 sẽ bị quá tải! Hãy lặp 2 lần: gọi haul_to(2, -1) đưa từng kiện lên tàu ở (3, 2) rồi gọi aim_crane(2, 1) quay về (3, 5).',
+      veMaMau: 'Trong vòng lặp 2 lần, sau haul_to(2, -1) hãy gọi aim_crane(2, 1) để quay lại (3, 5).',
       san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 2 },
+      batDau: { x: 3, y: 3, nac: 2, tam: 2 },
       chong: [CW(3, 5, [[22, 2], [12, 2]])],
-      tau: tauDon(24, 2),
+      tau: tauDon(16, 2),
       giao: [{ tau: 0, so: [12, 22] }],
       maMau: bai([
         'for i in range(2):',
-        '    haul_to(4, -1)'
+        '    haul_to(2, -1)'
       ]),
       loiGiai: bai([
         'for i in range(2):',
-        '    haul_to(4, -1)',
-        '    aim_crane(4, 1)'
+        '    haul_to(2, -1)',
+        '    aim_crane(2, 1)'
       ]),
-      sao: { o: 20, nhip: 24 },
+      sao: { o: 22, nhip: 16 },
       loiGiaiKhac: {
-        moTa: 'Dùng aim_crane(-4, 1) để quay về nấc 4 tầm 2',
+        moTa: 'Dùng aim_crane(-2, 1) để quay về nấc 2 tầm 2',
         baiLam: bai([
           'for i in range(2):',
-          '    haul_to(4, -1)',
-          '    aim_crane(-4, 1)'
+          '    haul_to(2, -1)',
+          '    aim_crane(-2, 1)'
         ])
       },
       loiSai: [
-        { moTa: 'Dùng pick_up2() ở tầm 2 cho 2 kiện 2 tấn ((2 + 2) * 2 = 8 > 4) nên bị quá tải', baiLam: bai(['pick_up2()', 'aim_crane(4, -1)', 'set_down()']), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Mới giao 1 kiện vì quên gọi aim_crane(4, 1) quay lại (3, 5)', baiLam: bai(['haul_to(4, -1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Dùng pick_up2() ở tầm 2 cho 2 kiện 2 tấn ((2 + 2) * 2 = 8 > 4) nên bị quá tải', baiLam: bai(['pick_up2()', 'aim_crane(2, -1)', 'set_down()']), phaiCoMa: ['qua-tai'] },
+        { moTa: 'Mới giao 1 kiện vì quên gọi aim_crane(2, 1) quay lại (3, 5)', baiLam: bai(['haul_to(2, -1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Ở tầm 2, mỗi kiện 2 tấn đã chạm ngưỡng tải 2 * 2 = 4 nên phải bốc từng kiện bằng haul_to(4, -1).', 'Luna: Thêm aim_crane(4, 1) ngay dưới haul_to(4, -1) trong vòng lặp for.']
+      goiY: ['Luna: Ở tầm 2, mỗi kiện 2 tấn đã chạm ngưỡng tải 2 * 2 = 4 nên phải bốc từng kiện bằng haul_to(2, -1).', 'Luna: Thêm aim_crane(2, 1) ngay dưới haul_to(2, -1) trong vòng lặp for.']
     }),
 
     manCanTai({
       so: 6, ten: 'Đo tải chọn móc dọc ray', hang: 'luyen-tap',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by'],
-      deBai: 'Sola nhờ bạn: dọc 3 cột (2, 4), (3, 4), (4, 4) mỗi cột có một cặp 2 kiện cùng số tấn. Với taiToiDa = 4 ở tầm 1, nếu kiện đỉnh nặng tối đa 2 tấn thì cả cặp nặng tối đa 4 tấn nên bốc đôi bằng carry2_by(4) rồi swing_by(4); ngược lại (3 tấn mỗi kiện) phải bốc từng kiện bằng carry_n(2, 4).',
-      veMaMau: 'Hoàn thiện nhánh else bằng carry_n(2, 4) cho cột có hàng nặng.',
+      deBai: 'Sola nhờ bạn: dọc 3 cột (2, 4), (3, 4), (4, 4) mỗi cột có một cặp 2 kiện cùng số tấn. Với taiToiDa = 4 ở tầm 1, nếu kiện đỉnh nặng tối đa 2 tấn thì cả cặp nặng tối đa 4 tấn nên bốc đôi bằng carry2_by(2) rồi swing_by(2); ngược lại (3 tấn mỗi kiện) phải bốc từng kiện bằng carry_n(2, 2).',
+      veMaMau: 'Hoàn thiện nhánh else bằng carry_n(2, 2) cho cột có hàng nặng.',
       san: SAN_TAI_1,
-      batDau: { x: 1, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
       chong: [CW(2, 4, [[21, 2], [11, 2]]), CW(3, 4, [[26, 3], [16, 3]]), CW(4, 4, [[29, 1], [19, 1]])],
-      tau: tauDon(43, 2),
+      tau: tauDon(27, 2),
       giao: [{ tau: 0, so: [11, 16, 19, 21, 26, 29] }],
       maMau: bai([
         'for i in range(3):',
         '    rail(1)',
         '    w = weight()',
         '    if w <= 2:',
-        '        carry2_by(4)',
-        '        swing_by(4)',
+        '        carry2_by(2)',
+        '        swing_by(2)',
         '    else:'
       ]),
       loiGiai: bai([
@@ -379,30 +379,30 @@
         '    rail(1)',
         '    w = weight()',
         '    if w <= 2:',
-        '        carry2_by(4)',
-        '        swing_by(4)',
+        '        carry2_by(2)',
+        '        swing_by(2)',
         '    else:',
-        '        carry_n(2, 4)'
+        '        carry_n(2, 2)'
       ]),
-      sao: { o: 24, nhip: 43 },
+      sao: { o: 26, nhip: 27 },
       loiGiaiKhac: {
-        moTa: 'Hỏi w > 2 trước để gọi carry_n(2, 4)',
+        moTa: 'Hỏi w > 2 trước để gọi carry_n(2, 2)',
         baiLam: bai([
           'for i in range(3):',
           '    rail(1)',
           '    w = weight()',
           '    if w > 2:',
-          '        carry_n(2, 4)',
+          '        carry_n(2, 2)',
           '    else:',
-          '        carry2_by(4)',
-          '        swing_by(4)'
+          '        carry2_by(2)',
+          '        swing_by(2)'
         ])
       },
       loiSai: [
-        { moTa: 'Gọi carry2_by(4) ở mọi cột nên gặp cột 3 gồm 2 kiện 3 tấn bị quá tải', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry2_by(4)', '    swing_by(4)']), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Trong nhánh else chỉ gọi carry_n(1, 4) nên sót 1 kiện ở cột 3', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w <= 2:', '        carry2_by(4)', '        swing_by(4)', '    else:', '        carry_n(1, 4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Gọi carry2_by(2) ở mọi cột nên gặp cột 3 gồm 2 kiện 3 tấn bị quá tải', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry2_by(2)', '    swing_by(2)']), phaiCoMa: ['qua-tai'] },
+        { moTa: 'Trong nhánh else chỉ gọi carry_n(1, 2) nên sót 1 kiện ở cột 3', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w <= 2:', '        carry2_by(2)', '        swing_by(2)', '    else:', '        carry_n(1, 2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Cột 2 và cột 4 có w <= 2 nên nhấc đôi được, còn cột 3 có w == 3 phải nhấc đơn 2 chuyến.', 'Luna: Trong nhánh else, gọi carry_n(2, 4) (hàm này đã tự quay về nấc 4 sau mỗi chuyến).']
+      goiY: ['Luna: Cột 2 và cột 4 có w <= 2 nên nhấc đôi được, còn cột 3 có w == 3 phải nhấc đơn 2 chuyến.', 'Luna: Trong nhánh else, gọi carry_n(2, 2) (hàm này đã tự quay về nấc 2 sau mỗi chuyến).']
     }),
 
     manCanTai({
@@ -434,7 +434,7 @@
         '        rail_drop(1)',
         '    c = read_code()'
       ]),
-      sao: { o: 9, nhip: 16 },
+      sao: { o: 12, nhip: 16 },
       loiGiaiKhac: {
         moTa: 'Dùng for i in range(4) thay cho while c != -1',
         baiLam: bai([
@@ -457,12 +457,12 @@
       so: 8, ten: 'Tải trọng ở tầm xa', hang: 'bien-the',
       taiToiDa: 6,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane'],
-      deBai: 'Sola nhờ bạn: màn này có taiToiDa = 6 và bệ cẩu bắt đầu ở (1, 3) hướng nấc 4, tầm 2 chỉ vào hàng bãi sâu y = 5. Ở tầm 2, cột nào có cặp kiện 1 tấn thì tổng tải đôi là (1 + 1) * 2 = 4 <= 6 nên gọi pick_up2() được; cột nào có kiện 3 tấn chỉ gọi pick_up() đơn (3 * 2 = 6 <= 6). Hãy quét 3 cột 2, 3, 4 và đưa hết hàng lên tàu.',
+      deBai: 'Sola nhờ bạn: màn này có taiToiDa = 6 và bệ cẩu bắt đầu ở (1, 3) hướng nấc 2, tầm 2 chỉ vào hàng bãi sâu y = 5. Ở tầm 2, cột nào có cặp kiện 1 tấn thì tổng tải đôi là (1 + 1) * 2 = 4 <= 6 nên gọi pick_up2() được; cột nào có kiện 3 tấn chỉ gọi pick_up() đơn (3 * 2 = 6 <= 6). Hãy quét 3 cột 2, 3, 4 và đưa hết hàng lên tàu.',
       veMaMau: 'Trong vòng lặp 3 cột, đọc w = weight() rồi kiểm tra if w == 1: để chọn pick_up2() hay pick_up().',
       san: SAN_TAI_1,
-      batDau: { x: 1, y: 3, nac: 4, tam: 2 },
+      batDau: { x: 1, y: 3, nac: 2, tam: 2 },
       chong: [CW(2, 5, [[21, 1], [11, 1]]), CW(3, 5, [[18, 3]]), CW(4, 5, [[29, 1], [19, 1]])],
-      tau: tauDon(39, 2),
+      tau: tauDon(27, 2),
       giao: [{ tau: 0, so: [11, 18, 19, 21, 29] }],
       maMau: bai([
         'for i in range(3):',
@@ -481,11 +481,11 @@
         '        pick_up2()',
         '    else:',
         '        pick_up()',
-        '    aim_crane(4, -1)',
+        '    aim_crane(2, -1)',
         '    set_down()',
-        '    aim_crane(4, 1)'
+        '    aim_crane(2, 1)'
       ]),
-      sao: { o: 23, nhip: 39 },
+      sao: { o: 26, nhip: 27 },
       loiGiaiKhac: {
         moTa: 'Hỏi w == 3 trước để gọi pick_up()',
         baiLam: bai([
@@ -496,16 +496,16 @@
           '        pick_up()',
           '    else:',
           '        pick_up2()',
-          '    aim_crane(4, -1)',
+          '    aim_crane(2, -1)',
           '    set_down()',
-          '    aim_crane(4, 1)'
+          '    aim_crane(2, 1)'
         ])
       },
       loiSai: [
-        { moTa: 'Mới nhấc kiện lên ở cột 2 mà chưa gọi aim_crane(4, -1), set_down(), aim_crane(4, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()']), phaiCoMa: ['dang-treo'] },
-        { moTa: 'Không thu cần về tầm 1 khi quay sang nấc 0 nên hạ hàng xuống nước ở (2, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()', '    swing_by(4)', '    set_down()', '    swing_by(4)']), phaiCoMa: ['ha-bi-chan'] }
+        { moTa: 'Mới nhấc kiện lên ở cột 2 mà chưa gọi aim_crane(2, -1), set_down(), aim_crane(2, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()']), phaiCoMa: ['dang-treo'] },
+        { moTa: 'Không thu cần về tầm 1 khi quay sang nấc 0 nên hạ hàng xuống nước ở (2, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()', '    swing_by(2)', '    set_down()', '    swing_by(2)']), phaiCoMa: ['ha-bi-chan'] }
       ],
-      goiY: ['Luna: Hàng đang ở y = 5 (tầm 2), còn boong tàu ở y = 2 (tầm 1) nên cần dùng aim_crane(4, -1) để vừa quay vừa thu cần.', 'Luna: Sau set_down(), gọi aim_crane(4, 1) để trở lại nấc 4, tầm 2 cho cột tiếp theo.']
+      goiY: ['Luna: Hàng đang ở y = 5 (tầm 2), còn boong tàu ở y = 2 (tầm 1) nên cần dùng aim_crane(2, -1) để vừa quay vừa thu cần.', 'Luna: Sau set_down(), gọi aim_crane(2, 1) để trở lại nấc 2, tầm 2 cho cột tiếp theo.']
     }),
 
     manCanTai({
@@ -552,15 +552,15 @@
       taiToiDa: 4,
       huyHieu: { ma: 'can-tai', ten: 'Huy hiệu Đo sức nặng' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by'],
-      deBai: 'Trùm chương 1: trên hai sân với taiToiDa = 4, dọc 3 cột (2, 4), (3, 4), (4, 4) mỗi cột có 2 kiện hàng cùng số tấn. Hãy lặp 3 lần tiến dọc đường ray: đọc w = weight(), kiểm tra if w <= 2: để bốc đôi bằng carry2_by(4) rồi swing_by(4), ngược lại thì bốc đơn 2 chuyến bằng carry_n(2, 4).',
-      veMaMau: 'Hoàn thiện vòng lặp 3 cột kết hợp w = weight(), if w <= 2:, carry2_by(4) và carry_n(2, 4).',
+      deBai: 'Trùm chương 1: trên hai sân với taiToiDa = 4, dọc 3 cột (2, 4), (3, 4), (4, 4) mỗi cột có 2 kiện hàng cùng số tấn. Hãy lặp 3 lần tiến dọc đường ray: đọc w = weight(), kiểm tra if w <= 2: để bốc đôi bằng carry2_by(2) rồi swing_by(2), ngược lại thì bốc đơn 2 chuyến bằng carry_n(2, 2).',
+      veMaMau: 'Hoàn thiện vòng lặp 3 cột kết hợp w = weight(), if w <= 2:, carry2_by(2) và carry_n(2, 2).',
       san: [SAN_TAI_1, SAN_TAI_1],
-      batDau: [{ x: 1, y: 3, nac: 4, tam: 1 }, { x: 1, y: 3, nac: 4, tam: 1 }],
+      batDau: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 1, y: 3, nac: 2, tam: 1 }],
       chong: [
         [CW(2, 4, [[22, 2], [12, 2]]), CW(3, 4, [[27, 3], [17, 3]]), CW(4, 4, [[24, 2], [14, 2]])],
         [CW(2, 4, [[28, 3], [18, 3]]), CW(3, 4, [[21, 1], [11, 1]]), CW(4, 4, [[29, 3], [19, 3]])]
       ],
-      tau: [tauDon(43, 2), tauDon(53, 2)],
+      tau: [tauDon(27, 2), tauDon(33, 2)],
       giao: [
         [{ tau: 0, so: [12, 14, 17, 22, 24, 27] }],
         [{ tau: 0, so: [11, 18, 19, 21, 28, 29] }]
@@ -570,20 +570,20 @@
         '    rail(1)',
         '    w = weight()',
         '    if w <= 2:',
-        '        carry2_by(4)',
-        '        swing_by(4)'
+        '        carry2_by(2)',
+        '        swing_by(2)'
       ]),
       loiGiai: bai([
         'for i in range(3):',
         '    rail(1)',
         '    w = weight()',
         '    if w <= 2:',
-        '        carry2_by(4)',
-        '        swing_by(4)',
+        '        carry2_by(2)',
+        '        swing_by(2)',
         '    else:',
-        '        carry_n(2, 4)'
+        '        carry_n(2, 2)'
       ]),
-      sao: { o: 24, nhip: 96 },
+      sao: { o: 26, nhip: 60 },
       loiGiaiKhac: {
         moTa: 'Đảo nhánh if w > 2 lên trước',
         baiLam: bai([
@@ -591,17 +591,17 @@
           '    rail(1)',
           '    w = weight()',
           '    if w > 2:',
-          '        carry_n(2, 4)',
+          '        carry_n(2, 2)',
           '    else:',
-          '        carry2_by(4)',
-          '        swing_by(4)'
+          '        carry2_by(2)',
+          '        swing_by(2)'
         ])
       },
       loiSai: [
-        { moTa: 'Dùng carry2_by(4) cho mọi cột nên gặp cặp 3 tấn bị lỗi quá tải', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry2_by(4)', '    swing_by(4)']), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Dùng carry_n(2, 4) cho mọi cột nên sân 1 mất 63 nhịp không kịp tàu rời bến ở nhịp 43', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry_n(2, 4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Dùng carry2_by(2) cho mọi cột nên gặp cặp 3 tấn bị lỗi quá tải', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry2_by(2)', '    swing_by(2)']), phaiCoMa: ['qua-tai'] },
+        { moTa: 'Dùng carry_n(2, 2) cho mọi cột nên sân 1 mất 39 nhịp không kịp tàu rời bến ở nhịp 27', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry_n(2, 2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Cặp 2 tấn trở xuống bốc đôi tốn 11 nhịp mỗi cột; cặp 3 tấn bốc đơn tốn 21 nhịp mỗi cột.', 'Luna: Thêm nhánh else: gọi carry_n(2, 4) là vượt qua cả hai sân.']
+      goiY: ['Luna: Cặp 2 tấn trở xuống bốc đôi tốn 7 nhịp mỗi cột; cặp 3 tấn bốc đơn tốn 13 nhịp mỗi cột.', 'Luna: Thêm nhánh else: gọi carry_n(2, 2) là vượt qua cả hai sân.']
     }),
 
     /* ========================================================================
@@ -612,33 +612,33 @@
       taiToiDa: 4,
       taoHam: ['safe_lift'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế safe_lift(): đọc w = weight(), if w <= 2: thì gọi pick_up2(), ngược lại gọi pick_up() để không bao giờ vượt tải 4 tấn ở tầm 1. Áp dụng gọi safe_lift(), swing_by(4), set_down() để bốc cặp kiện 2 tấn ở (3, 4) lên tàu.',
-      veMaMau: 'Tạo hàm safe_lift() rồi gọi safe_lift(), swing_by(4), set_down().',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế safe_lift(): đọc w = weight(), if w <= 2: thì gọi pick_up2(), ngược lại gọi pick_up() để không bao giờ vượt tải 4 tấn ở tầm 1. Áp dụng gọi safe_lift(), swing_by(2), set_down() để bốc cặp kiện 2 tấn ở (3, 4) lên tàu.',
+      veMaMau: 'Tạo hàm safe_lift() rồi gọi safe_lift(), swing_by(2), set_down().',
       san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       chong: [CW(3, 4, [[24, 2], [12, 2]])],
-      tau: tauDon(6, 2),
+      tau: tauDon(4, 2),
       giao: [{ tau: 0, so: [12, 24] }],
       maMau: bai([
         'safe_lift()',
-        'swing_by(4)',
+        'swing_by(2)',
         'set_down()'
       ]),
       loiGiai: bai(
-        ['safe_lift()', 'swing_by(4)', 'set_down()'],
+        ['safe_lift()', 'swing_by(2)', 'set_down()'],
         { hamCuaEmMoi: [hSafeLift()] }
       ),
-      sao: { o: 13, nhip: 6 },
+      sao: { o: 15, nhip: 4 },
       loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-4) khi quay sang nấc 0',
-        baiLam: bai(['safe_lift()', 'swing_by(-4)', 'set_down()']),
+        moTa: 'Dùng swing_by(-2) khi quay sang nấc 0',
+        baiLam: bai(['safe_lift()', 'swing_by(-2)', 'set_down()']),
         hamCuaEmMoi: [hSafeLift()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm safe_lift mà đã bấm Chạy', baiLam: bai(['safe_lift()', 'swing_by(4)', 'set_down()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong safe_lift dùng điều kiện w < 2 nên chỉ nhấc 1 kiện 2 tấn', baiLam: bai(['safe_lift()', 'swing_by(4)', 'set_down()']), hamCuaEmMoi: [hSafeLift(['w = weight()', 'if w < 2:', '    pick_up2()', 'else:', '    pick_up()'])], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Chưa tạo hàm safe_lift mà đã bấm Chạy', baiLam: bai(['safe_lift()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong safe_lift dùng điều kiện w < 2 nên chỉ nhấc 1 kiện 2 tấn', baiLam: bai(['safe_lift()', 'swing_by(2)', 'set_down()']), hamCuaEmMoi: [hSafeLift(['w = weight()', 'if w < 2:', '    pick_up2()', 'else:', '    pick_up()'])], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Thân hàm safe_lift() gồm 5 dòng: w = weight(), if w <= 2:, pick_up2(), else:, pick_up().', 'Luna: Chương trình chính gọi safe_lift(), swing_by(4), set_down().']
+      goiY: ['Luna: Thân hàm safe_lift() gồm 5 dòng: w = weight(), if w <= 2:, pick_up2(), else:, pick_up().', 'Luna: Chương trình chính gọi safe_lift(), swing_by(2), set_down().']
     }),
 
     manCheCanTai({
@@ -646,29 +646,29 @@
       taiToiDa: 4,
       taoHam: ['safe_carry'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế safe_carry(d) chuyển 2 kiện ở đầu cần sang nấc cách d rồi quay về: đọc w = weight(), nếu w <= 2 thì gọi carry2_by(d) và swing_by(-d), ngược lại gọi carry_n(2, d). Áp dụng gọi safe_carry(4) để chuyển cặp kiện 3 tấn ở (3, 4) lên tàu.',
-      veMaMau: 'Tạo hàm safe_carry(d) rồi gọi safe_carry(4).',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế safe_carry(d) chuyển 2 kiện ở đầu cần sang nấc cách d rồi quay về: đọc w = weight(), nếu w <= 2 thì gọi carry2_by(d) và swing_by(-d), ngược lại gọi carry_n(2, d). Áp dụng gọi safe_carry(2) để chuyển cặp kiện 3 tấn ở (3, 4) lên tàu.',
+      veMaMau: 'Tạo hàm safe_carry(d) rồi gọi safe_carry(2).',
       san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       chong: [CW(3, 4, [[28, 3], [18, 3]])],
-      tau: tauDon(20, 2),
+      tau: tauDon(12, 2),
       giao: [{ tau: 0, so: [18, 28] }],
-      maMau: bai(['safe_carry(4)']),
+      maMau: bai(['safe_carry(2)']),
       loiGiai: bai(
-        ['safe_carry(4)'],
+        ['safe_carry(2)'],
         { hamCuaEmMoi: [hSafeCarry()] }
       ),
-      sao: { o: 20, nhip: 20 },
+      sao: { o: 22, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Thêm dòng chú thích trước khi gọi safe_carry(4)',
-        baiLam: bai(['# chuyển cặp kiện an toàn theo tải trọng', 'safe_carry(4)']),
+        moTa: 'Thêm dòng chú thích trước khi gọi safe_carry(2)',
+        baiLam: bai(['# chuyển cặp kiện an toàn theo tải trọng', 'safe_carry(2)']),
         hamCuaEmMoi: [hSafeCarry()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm safe_carry mà đã bấm Chạy', baiLam: bai(['safe_carry(4)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong safe_carry luôn gọi carry2_by(d) nên gặp cặp 3 tấn bị quá tải', baiLam: bai(['safe_carry(4)']), hamCuaEmMoi: [hSafeCarry(['carry2_by(d)', 'swing_by(-d)'])], phaiCoMa: ['qua-tai'] }
+        { moTa: 'Chưa tạo hàm safe_carry mà đã bấm Chạy', baiLam: bai(['safe_carry(2)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong safe_carry luôn gọi carry2_by(d) nên gặp cặp 3 tấn bị quá tải', baiLam: bai(['safe_carry(2)']), hamCuaEmMoi: [hSafeCarry(['carry2_by(d)', 'swing_by(-d)'])], phaiCoMa: ['qua-tai'] }
       ],
-      goiY: ['Luna: Đọc w = weight() trước. Nhánh if w <= 2: gồm carry2_by(d) và swing_by(-d); nhánh else: gồm carry_n(2, d).', 'Luna: Ở chương trình chính chỉ cần gọi safe_carry(4).']
+      goiY: ['Luna: Đọc w = weight() trước. Nhánh if w <= 2: gồm carry2_by(d) và swing_by(-d); nhánh else: gồm carry_n(2, d).', 'Luna: Ở chương trình chính chỉ cần gọi safe_carry(2).']
     }),
 
     manCheCanTai({
@@ -676,12 +676,12 @@
       taiToiDa: 4,
       taoHam: ['safe_extend'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: tại (3, 4) có 2 kiện hàng: kiện nhẹ (<= 2 tấn) cần cất ra bãi sâu (3, 5) ở tầm 2 bằng pick_up(), extend(), set_down(), retract(); còn kiện nặng (> 2 tấn) không thể vươn ra tầm 2 nên giao thẳng lên tàu ở (3, 2) bằng carry_by(4) rồi swing_by(4). Hãy chế hàm safe_extend() thực hiện quy tắc đó và gọi 2 lần.',
+      deBai: 'Sola nhờ bạn: tại (3, 4) có 2 kiện hàng: kiện nhẹ (<= 2 tấn) cần cất ra bãi sâu (3, 5) ở tầm 2 bằng pick_up(), extend(), set_down(), retract(); còn kiện nặng (> 2 tấn) không thể vươn ra tầm 2 nên giao thẳng lên tàu ở (3, 2) bằng carry_by(2) rồi swing_by(2). Hãy chế hàm safe_extend() thực hiện quy tắc đó và gọi 2 lần.',
       veMaMau: 'Tạo hàm safe_extend() rồi gọi 2 lần để xử lý 2 kiện ở (3, 4).',
       san: SAN_TAI_1,
-      batDau: { x: 3, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       chong: [CW(3, 4, [[29, 3], [14, 2]])],
-      tau: tauDon(14, 2),
+      tau: tauDon(10, 2),
       giao: [{ tau: 0, so: [29] }],
       maMau: bai([
         'safe_extend()',
@@ -691,7 +691,7 @@
         ['safe_extend()', 'safe_extend()'],
         { hamCuaEmMoi: [hSafeExtend()] }
       ),
-      sao: { o: 19, nhip: 14 },
+      sao: { o: 21, nhip: 10 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng lặp for i in range(2) gọi safe_extend()',
         baiLam: bai(['for i in range(2):', '    safe_extend()']),
@@ -701,7 +701,7 @@
         { moTa: 'Chưa tạo hàm safe_extend mà đã bấm Chạy', baiLam: bai(['safe_extend()', 'safe_extend()']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Cố gọi extend() cho cả kiện 3 tấn nên bị quá tải ở tầm 2', baiLam: bai(['safe_extend()', 'safe_extend()']), hamCuaEmMoi: [hSafeExtend(['pick_up()', 'extend()', 'set_down()', 'retract()'])], phaiCoMa: ['qua-tai'] }
       ],
-      goiY: ['Luna: Đọc w = weight() trước. Nhánh if w <= 2: gồm 4 lệnh: pick_up(), extend(), set_down(), retract().', 'Luna: Nhánh else: gồm 2 lệnh: carry_by(4) và swing_by(4).']
+      goiY: ['Luna: Đọc w = weight() trước. Nhánh if w <= 2: gồm 4 lệnh: pick_up(), extend(), set_down(), retract().', 'Luna: Nhánh else: gồm 2 lệnh: carry_by(2) và swing_by(2).']
     }),
 
     manCheCanTai({
@@ -721,7 +721,7 @@
         ['heavy_rail()'],
         { hamCuaEmMoi: [hHeavyRail()] }
       ),
-      sao: { o: 10, nhip: 16 },
+      sao: { o: 13, nhip: 16 },
       loiGiaiKhac: {
         moTa: 'Thêm dòng chú thích trước khi gọi heavy_rail()',
         baiLam: bai(['# phân loại toàn bộ chồng theo tải trọng', 'heavy_rail()']),
@@ -769,12 +769,12 @@
       so: 6, ten: 'Quét ba cột bằng safe_carry', hang: 'luyen-tap',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by', 'safe_carry'],
-      deBai: 'Sola nhờ bạn: nhờ đã có hàm safe_carry(4), việc bốc 3 cặp kiện dọc các cột (2, 4), (3, 4), (4, 4) nay cực kỳ ngắn gọn! Hãy dùng vòng lặp for i in range(3): gọi rail(1) rồi safe_carry(4).',
-      veMaMau: 'Trong vòng lặp for i in range(3): hãy gọi rail(1) và safe_carry(4).',
+      deBai: 'Sola nhờ bạn: nhờ đã có hàm safe_carry(2), việc bốc 3 cặp kiện dọc các cột (2, 4), (3, 4), (4, 4) nay cực kỳ ngắn gọn! Hãy dùng vòng lặp for i in range(3): gọi rail(1) rồi safe_carry(2).',
+      veMaMau: 'Trong vòng lặp for i in range(3): hãy gọi rail(1) và safe_carry(2).',
       san: SAN_TAI_1,
-      batDau: { x: 1, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
       chong: [CW(2, 4, [[22, 2], [12, 2]]), CW(3, 4, [[28, 3], [18, 3]]), CW(4, 4, [[25, 2], [15, 2]])],
-      tau: tauDon(43, 2),
+      tau: tauDon(27, 2),
       giao: [{ tau: 0, so: [12, 15, 18, 22, 25, 28] }],
       maMau: bai([
         'for i in range(3):',
@@ -783,25 +783,25 @@
       loiGiai: bai([
         'for i in range(3):',
         '    rail(1)',
-        '    safe_carry(4)'
+        '    safe_carry(2)'
       ]),
-      sao: { o: 25, nhip: 43 },
+      sao: { o: 27, nhip: 27 },
       loiGiaiKhac: {
-        moTa: 'Viết 3 lần rail(1) và safe_carry(4) liên tiếp',
+        moTa: 'Viết 3 lần rail(1) và safe_carry(2) liên tiếp',
         baiLam: bai([
           'rail(1)',
-          'safe_carry(4)',
+          'safe_carry(2)',
           'rail(1)',
-          'safe_carry(4)',
+          'safe_carry(2)',
           'rail(1)',
-          'safe_carry(4)'
+          'safe_carry(2)'
         ])
       },
       loiSai: [
-        { moTa: 'Mới trượt dọc đường ray mà quên gọi safe_carry(4)', baiLam: bai(['for i in range(3):', '    rail(1)']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Chỉ lặp 2 lần nên bỏ sót cặp kiện ở cột 4', baiLam: bai(['for i in range(2):', '    rail(1)', '    safe_carry(4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Mới trượt dọc đường ray mà quên gọi safe_carry(2)', baiLam: bai(['for i in range(3):', '    rail(1)']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Chỉ lặp 2 lần nên bỏ sót cặp kiện ở cột 4', baiLam: bai(['for i in range(2):', '    rail(1)', '    safe_carry(2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Hàm safe_carry(4) đã tự đọc w = weight(), hỏi w <= 2 và tự quay đầu cần về nấc 4 sau khi giao.', 'Luna: Thêm safe_carry(4) ngay dưới rail(1) trong vòng lặp for.']
+      goiY: ['Luna: Hàm safe_carry(2) đã tự đọc w = weight(), hỏi w <= 2 và tự quay đầu cần về nấc 2 sau khi giao.', 'Luna: Thêm safe_carry(2) ngay dưới rail(1) trong vòng lặp for.']
     }),
 
     manCheCanTai({
@@ -809,12 +809,12 @@
       taiToiDa: 4,
       chinhCoDinh: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by'],
-      deBai: 'Sola nhờ bạn: hàm check_load(n) của màn cần quét qua n cột dọc đường ray, cột nào có w <= 2 (w = weight()) thì nhấc đôi bằng carry2_by(4) rồi swing_by(4), ngược lại thì nhấc đơn bằng carry_n(2, 4). Nhưng hàm đang viết nhầm điều kiện thành w >= 2 nên gặp cặp 3 tấn bị quá tải! Hãy sửa lại hàm check_load(n).',
+      deBai: 'Sola nhờ bạn: hàm check_load(n) của màn cần quét qua n cột dọc đường ray, cột nào có w <= 2 (w = weight()) thì nhấc đôi bằng carry2_by(2) rồi swing_by(2), ngược lại thì nhấc đơn bằng carry_n(2, 2). Nhưng hàm đang viết nhầm điều kiện thành w >= 2 nên gặp cặp 3 tấn bị quá tải! Hãy sửa lại hàm check_load(n).',
       veMaMau: 'Chương trình chính đã khóa. Hãy sửa >= 2 thành <= 2 trong hàm check_load(n).',
       san: SAN_TAI_1,
-      batDau: { x: 1, y: 3, nac: 4, tam: 1 },
+      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
       chong: [CW(2, 4, [[21, 1], [11, 1]]), CW(3, 4, [[27, 3], [17, 3]])],
-      tau: tauDon(32, 2),
+      tau: tauDon(20, 2),
       giao: [{ tau: 0, so: [11, 17, 21, 27] }],
       maMau: bai(
         ['check_load(2)'],
@@ -824,7 +824,7 @@
         ['check_load(2)'],
         { hamCuaMan: [hCheckLoad(T_CHECK_LOAD_DUNG)] }
       ),
-      sao: { o: 25, nhip: 32 },
+      sao: { o: 27, nhip: 20 },
       loiGiaiKhac: {
         moTa: 'Dùng điều kiện w < 3 thay cho w <= 2',
         baiLam: bai(
@@ -835,60 +835,60 @@
               '    rail(1)',
               '    w = weight()',
               '    if w < 3:',
-              '        carry2_by(4)',
-              '        swing_by(4)',
+              '        carry2_by(2)',
+              '        swing_by(2)',
               '    else:',
-              '        carry_n(2, 4)'
+              '        carry_n(2, 2)'
             ])]
           }
         )
       },
       loiSai: [
-        { moTa: 'Để nguyên hàm mẫu dùng >= 2 nên ở cột 3 gọi carry2_by(4) cho cặp 3 tấn bị quá tải', baiLam: bai(['check_load(2)'], { hamCuaMan: [hCheckLoad(T_CHECK_LOAD_SAI)] }), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Dùng carry2_by(4) cho mọi cột nên vẫn bị quá tải ở cột 3', baiLam: bai(['check_load(2)'], { hamCuaMan: [hCheckLoad(['for i in range(n):', '    rail(1)', '    carry2_by(4)', '    swing_by(4)'])] }), phaiCoMa: ['qua-tai'] }
+        { moTa: 'Để nguyên hàm mẫu dùng >= 2 nên ở cột 3 gọi carry2_by(2) cho cặp 3 tấn bị quá tải', baiLam: bai(['check_load(2)'], { hamCuaMan: [hCheckLoad(T_CHECK_LOAD_SAI)] }), phaiCoMa: ['qua-tai'] },
+        { moTa: 'Dùng carry2_by(2) cho mọi cột nên vẫn bị quá tải ở cột 3', baiLam: bai(['check_load(2)'], { hamCuaMan: [hCheckLoad(['for i in range(n):', '    rail(1)', '    carry2_by(2)', '    swing_by(2)'])] }), phaiCoMa: ['qua-tai'] }
       ],
-      goiY: ['Luna: Điều kiện >= 2 khiến cặp 3 tấn rơi vào nhánh carry2_by(4) gây quá tải (6 > 4).', 'Luna: Đổi dòng điều kiện thành if w <= 2: trong hàm check_load(n).']
+      goiY: ['Luna: Điều kiện >= 2 khiến cặp 3 tấn rơi vào nhánh carry2_by(2) gây quá tải (6 > 4).', 'Luna: Đổi dòng điều kiện thành if w <= 2: trong hàm check_load(n).']
     }),
 
     manCheCanTai({
       so: 8, ten: 'Dồn hàng nặng ra cầu cảng', hang: 'bien-the',
       taiToiDa: 4,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by', 'safe_carry', 'rail_drop', 'heavy_rail'],
-      deBai: 'Sola nhờ bạn: phân loại chồng hàng ở cầu cảng (3, 2) lên hai tàu bằng heavy_rail(), sau đó quay sang nấc 4 (3, 4) gọi safe_carry(4) để chuyển cặp hàng ở bãi sau ra (3, 2) an toàn, rồi quay về nấc 0 gọi heavy_rail() lần nữa.',
-      veMaMau: 'Sau safe_carry(4) ở nấc 4, hãy quay về nấc 0 bằng swing_by(4) và gọi heavy_rail().',
+      deBai: 'Sola nhờ bạn: phân loại chồng hàng ở cầu cảng (3, 2) lên hai tàu bằng heavy_rail(), sau đó quay sang nấc 2 (3, 4) gọi safe_carry(2) để chuyển cặp hàng ở bãi sau ra (3, 2) an toàn, rồi quay về nấc 0 gọi heavy_rail() lần nữa.',
+      veMaMau: 'Sau safe_carry(2) ở nấc 2, hãy quay về nấc 0 bằng swing_by(2) và gọi heavy_rail().',
       san: SAN_TAI_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [CW(3, 2, [[26, 3], [14, 2]]), CW(3, 4, [[29, 3], [18, 3]])],
-      tau: tauDoi(44, 2),
+      tau: tauDoi(32, 2),
       giao: [{ tau: 0, so: [14] }, { tau: 1, so: [18, 26, 29] }],
       maMau: bai([
         'heavy_rail()',
-        'swing_by(4)',
-        'safe_carry(4)'
+        'swing_by(2)',
+        'safe_carry(2)'
       ]),
       loiGiai: bai([
         'heavy_rail()',
-        'swing_by(4)',
-        'safe_carry(4)',
-        'swing_by(4)',
+        'swing_by(2)',
+        'safe_carry(2)',
+        'swing_by(2)',
         'heavy_rail()'
       ]),
-      sao: { o: 33, nhip: 44 },
+      sao: { o: 38, nhip: 32 },
       loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-4) khi quay về nấc 0',
+        moTa: 'Dùng swing_by(-2) khi quay về nấc 0',
         baiLam: bai([
           'heavy_rail()',
-          'swing_by(4)',
-          'safe_carry(4)',
-          'swing_by(-4)',
+          'swing_by(2)',
+          'safe_carry(2)',
+          'swing_by(-2)',
           'heavy_rail()'
         ])
       },
       loiSai: [
         { moTa: 'Mới phân loại chồng đầu tiên ở (3, 2)', baiLam: bai(['heavy_rail()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Đưa cặp ở (3, 4) ra (3, 2) nhưng quên gọi heavy_rail() lần hai', baiLam: bai(['heavy_rail()', 'swing_by(4)', 'safe_carry(4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Đưa cặp ở (3, 4) ra (3, 2) nhưng quên gọi heavy_rail() lần hai', baiLam: bai(['heavy_rail()', 'swing_by(2)', 'safe_carry(2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Sau safe_carry(4), cả 2 kiện từ (3, 4) đã nằm ở (3, 2) và đầu cần đang ở nấc 4.', 'Luna: Gọi swing_by(4) về nấc 0 rồi gọi heavy_rail() để phân loại nốt.']
+      goiY: ['Luna: Sau safe_carry(2), cả 2 kiện từ (3, 4) đã nằm ở (3, 2) và đầu cần đang ở nấc 2.', 'Luna: Gọi swing_by(2) về nấc 0 rồi gọi heavy_rail() để phân loại nốt.']
     }),
 
     manCheCanTai({
@@ -941,42 +941,42 @@
       taiToiDa: 4,
       huyHieu: { ma: 'che-can-tai', ten: 'Huy hiệu Chế lệnh: giữ cần an toàn' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by', 'safe_carry', 'rail_drop', 'heavy_rail'],
-      deBai: 'Trùm chương 2: trên hai sân với taiToiDa = 4, bệ cẩu bắt đầu ở (3, 3) hướng nấc 4. Tại (3, 4) có 2 kiện hàng cùng số tấn và tại cầu cảng (3, 2) cũng có sẵn 2 kiện. Hãy gọi safe_carry(4) để đưa cặp ở (3, 4) ra (3, 2) an toàn, quay cần về nấc 0 bằng swing_by(4), rồi gọi heavy_rail() để phân loại cả 4 kiện sang Tàu 1 (<= 2 tấn) và Tàu 2 (> 2 tấn).',
-      veMaMau: 'Kết hợp safe_carry(4), swing_by(4) và heavy_rail().',
+      deBai: 'Trùm chương 2: trên hai sân với taiToiDa = 4, bệ cẩu bắt đầu ở (3, 3) hướng nấc 2. Tại (3, 4) có 2 kiện hàng cùng số tấn và tại cầu cảng (3, 2) cũng có sẵn 2 kiện. Hãy gọi safe_carry(2) để đưa cặp ở (3, 4) ra (3, 2) an toàn, quay cần về nấc 0 bằng swing_by(2), rồi gọi heavy_rail() để phân loại cả 4 kiện sang Tàu 1 (<= 2 tấn) và Tàu 2 (> 2 tấn).',
+      veMaMau: 'Kết hợp safe_carry(2), swing_by(2) và heavy_rail().',
       san: [SAN_TAI_2, SAN_TAI_2],
-      batDau: [{ x: 3, y: 3, nac: 4, tam: 1 }, { x: 3, y: 3, nac: 4, tam: 1 }],
+      batDau: [{ x: 3, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, nac: 2, tam: 1 }],
       chong: [
         [CW(3, 4, [[24, 2], [12, 2]]), CW(3, 2, [[28, 4], [19, 3]])],
         [CW(3, 4, [[29, 3], [17, 3]]), CW(3, 2, [[21, 1], [15, 2]])]
       ],
-      tau: [tauDoi(30, 2), tauDoi(40, 2)],
+      tau: [tauDoi(24, 2), tauDoi(30, 2)],
       giao: [
         [{ tau: 0, so: [12, 24] }, { tau: 1, so: [19, 28] }],
         [{ tau: 0, so: [15, 21] }, { tau: 1, so: [17, 29] }]
       ],
       maMau: bai([
-        'safe_carry(4)',
-        'swing_by(4)'
+        'safe_carry(2)',
+        'swing_by(2)'
       ]),
       loiGiai: bai([
-        'safe_carry(4)',
-        'swing_by(4)',
+        'safe_carry(2)',
+        'swing_by(2)',
         'heavy_rail()'
       ]),
-      sao: { o: 34, nhip: 70 },
+      sao: { o: 39, nhip: 54 },
       loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-4) khi quay về nấc 0',
+        moTa: 'Dùng swing_by(-2) khi quay về nấc 0',
         baiLam: bai([
-          'safe_carry(4)',
-          'swing_by(-4)',
+          'safe_carry(2)',
+          'swing_by(-2)',
           'heavy_rail()'
         ])
       },
       loiSai: [
-        { moTa: 'Mới dồn hàng ra (3, 2), quên gọi heavy_rail() để phân loại lên hai tàu', baiLam: bai(['safe_carry(4)', 'swing_by(4)']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Dùng carry2_by(4) thay vì safe_carry(4) nên ở sân 2 gặp cặp 3 tấn bị quá tải', baiLam: bai(['carry2_by(4)', 'heavy_rail()']), phaiCoMa: ['qua-tai'] }
+        { moTa: 'Mới dồn hàng ra (3, 2), quên gọi heavy_rail() để phân loại lên hai tàu', baiLam: bai(['safe_carry(2)', 'swing_by(2)']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Dùng carry2_by(2) thay vì safe_carry(2) nên ở sân 2 gặp cặp 3 tấn bị quá tải', baiLam: bai(['carry2_by(2)', 'heavy_rail()']), phaiCoMa: ['qua-tai'] }
       ],
-      goiY: ['Luna: Sân 1 ở (3, 4) là cặp 2 tấn còn sân 2 ở (3, 4) là cặp 3 tấn, nên safe_carry(4) sẽ tự xử lý đúng cho cả hai sân.', 'Luna: Sau swing_by(4), gọi heavy_rail() để phân loại cả 4 kiện ở (3, 2) lên hai tàu.']
+      goiY: ['Luna: Sân 1 ở (3, 4) là cặp 2 tấn còn sân 2 ở (3, 4) là cặp 3 tấn, nên safe_carry(2) sẽ tự xử lý đúng cho cả hai sân.', 'Luna: Sau swing_by(2), gọi heavy_rail() để phân loại cả 4 kiện ở (3, 2) lên hai tàu.']
     })
   ];
 
