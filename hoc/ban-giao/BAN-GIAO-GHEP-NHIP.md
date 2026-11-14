@@ -12,10 +12,7 @@ User dặn tối 13/11: "xong 1 mùa thì commit, làm dần các mùa khác r m
 | 4 Cảng sông (cần cẩu) | ĐANG LÀM gói F1 (cẩu 4 hướng) | nhánh `claude/mua-4-cau-4-huong`, worktree `.claude/worktrees/agent-aa9ddb5dd10ec4f8a` | chưa đo |
 | 7 Mỏ đá (xe omni) | CHƯA BẮT ĐẦU | — | 0/200 |
 
-**Main chưa lên GitHub.** origin/main vẫn ở a1aadef. Main đi trước origin 35 commit, tính tới 5107a78. Mọi lần `git push origin main` sáng 14/11 đều lỗi. Đăng nhập vẫn qua (info/refs trả 200), nhưng lúc gửi gói (POST git-receive-pack, ~96 KB) thì trả `HTTP 503 Service Unavailable`. Lỗi vẫn ra khi chỉ đẩy 3 commit, còn fetch / ls-remote thì bình thường, nên là lỗi phía GitHub hoặc mạng. User đã cho phép push đợt này, nên khi GitHub hết lỗi thì chạy lại:
-```
-git push origin main
-```
+**Đã đẩy GitHub** (origin/main d7c4e52, 14/11). Sáng 14/11 các lần đẩy trước đó lỗi `HTTP 503` phía GitHub lúc gửi gói (đăng nhập vẫn qua); thử lại sau ~1 giờ thì được. Mỗi mùa xong: `git push origin main` (user cho phép đợt này).
 
 ## 2. Mùa 5 Bến sông: đã làm
 
