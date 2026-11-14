@@ -739,7 +739,7 @@
         [VS(3, 3)],
         [VS(3, 3)]
       ],
-      tau: [tauDoi(30, 2), tauDoi(30, 2)],
+      tau: [tauDoi(28, 2), tauDoi(28, 2)],
       giao: [
         [{ tau: 0, so: [18] }, { tau: 1, so: [24] }],
         [{ tau: 0, so: [15] }, { tau: 1, so: [29] }]

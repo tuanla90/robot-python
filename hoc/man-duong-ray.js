@@ -70,17 +70,24 @@
   }
 
   // Các hàm chế ở Gói 5 chương che-duong-ray
+  // Cần gạt đôi (14/11): hàm ghép nhịp, mỗi nhịp khép bằng wait(). rail_pick(dx): abs(dx) nhịp đi (móc ở nhịp tới nơi) + abs(dx) nhịp về (hạ ở nhịp về tới).
   var T_RAIL_PICK = [
     'rail(dx)',
     'pick_up()',
+    'wait()',
     'rail(-dx)',
-    'set_down()'
+    'set_down()',
+    'wait()'
   ];
+  // rail_drop(dx) ghép nhịp: móc (1 nhịp) → chạy ray + hạ (abs(dx) nhịp) → chạy ray về (abs(dx) nhịp).
   var T_RAIL_DROP = [
     'pick_up()',
+    'wait()',
     'rail(dx)',
     'set_down()',
-    'rail(-dx)'
+    'wait()',
+    'rail(-dx)',
+    'wait()'
   ];
   var T_SHUTTLE_CONT = [
     'rail(dx)',
@@ -283,253 +290,268 @@
     }),
 
     manDuongRay({
-      so: 4, ten: 'Quét ba cột bãi cảng', hang: 'luyen-tap',
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: ba kiện hàng nằm lần lượt ở các cột 2, 3, 4 tại hàng bãi y = 4. Bệ cẩu đang ở cột 1 (1, 3), nấc 2. Hãy lặp 3 lần: mỗi lần tiến 1 ô bằng rail(1), chuyển kiện sang boong tàu đối diện bằng carry_by(2), rồi quay lại nấc 2 bằng swing_by(2).',
-      veMaMau: 'Hoàn thiện thân vòng lặp for i in range(3): với rail(1), carry_by(2) và swing_by(2).',
+      so: 4, ten: 'Hai cần gạt một lúc', hang: 'luyen-tap',
+      chiChay: true, chinhCoDinh: true,
+      hamCuaEmCan: [],
+      deBai: 'Sola làm mẫu: người lái cẩu cầm hai cần gạt. Tay này cho bệ chạy, tay kia thả móc, cùng một lúc. Từ màn này, các lệnh viết liền trước wait() chạy chung MỘT nhịp. Mỗi bộ phận góp một lệnh: ray, quay, vươn, móc. Máy luôn làm theo thứ tự: chạy ray, quay cần, vươn cần, rồi mới móc. Bấm Chạy để xem: rail(1) và pick_up() chung một nhịp, swing_left() và set_down() chung một nhịp. Kiện 15 lên tàu sau đúng 3 nhịp, vừa kịp lúc tàu rời bến.',
+      veMaMau: 'Chương trình mẫu đã khóa. Bấm Chạy rồi đếm: ba lần wait() là ba nhịp.',
       san: SAN_RAY_1,
       batDau: { x: 1, y: 3, nac: 2, tam: 1 },
-      chong: [C(2, 4, [11]), C(3, 4, [14]), C(4, 4, [19])],
-      tau: tauDon(21, 2),
-      giao: [{ tau: 0, so: [11, 14, 19] }],
+      chong: [C(2, 4, [15])],
+      tau: tauDon(3, 2),
+      giao: [{ tau: 0, so: [15] }],
       maMau: bai([
-        'for i in range(3):',
-        '    rail(1)',
-        '    carry_by(2)'
+        'rail(1)',
+        'pick_up()',
+        'wait()',
+        'swing_left()',
+        'wait()',
+        'swing_left()',
+        'set_down()',
+        'wait()'
       ]),
       loiGiai: bai([
-        'for i in range(3):',
-        '    rail(1)',
-        '    carry_by(2)',
-        '    swing_by(2)'
+        'rail(1)',
+        'pick_up()',
+        'wait()',
+        'swing_left()',
+        'wait()',
+        'swing_left()',
+        'set_down()',
+        'wait()'
       ]),
-      sao: { o: 14, nhip: 21 },
-      loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-2) để quay lại nấc 2 sau mỗi lần giao',
-        baiLam: bai([
-          'for i in range(3):',
-          '    rail(1)',
-          '    carry_by(2)',
-          '    swing_by(-2)'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Quên gọi swing_by(2) nên ở vòng thứ hai đầu cần vẫn chỉ vào boong tàu nấc 0', baiLam: bai(['for i in range(3):', '    rail(1)', '    carry_by(2)']), phaiCoMa: ['moc-hut'] },
-        { moTa: 'Chỉ lặp 2 lần nên bỏ sót kiện 19 ở cột 4', baiLam: bai(['for i in range(2):', '    rail(1)', '    carry_by(2)', '    swing_by(2)']), phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: Sau carry_by(2), đầu cần đang ở nấc 0 phía boong tàu.', 'Luna: Thêm swing_by(2) vào cuối vòng lặp để đầu cần quay về nấc 2 trước khi tiến sang cột kế tiếp.']
+      sao: { o: 8, nhip: 3 },
+      loiSai: [],
+      goiY: ['Luna: Nhịp 1 bệ chạy sang cột 2 rồi móc kiện 15 ngay. Nhịp 3 cần quay lên rồi hạ kiện ngay.', 'Luna: Không viết wait() thì mỗi lệnh vẫn chạy một nhịp riêng như trước.']
     }),
 
     manDuongRay({
-      so: 5, ten: 'Vươn cần kết hợp chạy ray', hang: 'luyen-tap',
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'haul_to'],
-      deBai: 'Sola nhờ bạn: hai kiện hàng nằm ở bãi sâu y = 5 tại (2, 5) và (4, 5). Bệ cẩu bắt đầu ở (2, 3) với nấc 2, tầm 2. Hãy dùng haul_to(2, -1) đưa kiện ở (2, 5) lên tàu tại (2, 2), chạy sang cột 4 bằng rail(2), chỉnh cần về (4, 5) bằng aim_crane(2, 1) rồi gọi haul_to(2, -1).',
-      veMaMau: 'Sau rail(2), hãy gọi aim_crane(2, 1) rồi haul_to(2, -1).',
-      san: SAN_RAY_1,
-      batDau: { x: 2, y: 3, nac: 2, tam: 2 },
-      chong: [C(2, 5, [16]), C(4, 5, [26])],
-      tau: tauDon(15, 2),
-      giao: [{ tau: 0, so: [16, 26] }],
-      maMau: bai([
-        'haul_to(2, -1)',
-        'rail(2)'
-      ]),
-      loiGiai: bai([
-        'haul_to(2, -1)',
-        'rail(2)',
-        'aim_crane(2, 1)',
-        'haul_to(2, -1)'
-      ]),
-      sao: { o: 23, nhip: 15 },
-      loiGiaiKhac: {
-        moTa: 'Quay và vươn cần bằng aim_crane(2, 1) trước khi gọi rail(2)',
-        baiLam: bai([
-          'haul_to(2, -1)',
-          'aim_crane(2, 1)',
-          'rail(2)',
-          'haul_to(2, -1)'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Quên gọi aim_crane(2, 1) nên nhấc nhầm ở boong tàu (4, 2)', baiLam: bai(['haul_to(2, -1)', 'rail(2)', 'haul_to(2, -1)']), phaiCoMa: ['moc-hut'] },
-        { moTa: 'Mới giao kiện 16 ở cột 2, chưa lấy kiện 26 ở cột 4', baiLam: bai(['haul_to(2, -1)', 'rail(2)']), phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: Sau haul_to(2, -1) lần đầu và rail(2), đầu cần đang ở (4, 2) với nấc 0, tầm 1.', 'Luna: Gọi aim_crane(2, 1) để quay sang nấc 2, tầm 2 chỉ vào (4, 5), rồi gọi haul_to(2, -1).']
-    }),
-
-    manDuongRay({
-      so: 6, ten: 'Trượt ray chia hai tàu', hang: 'luyen-tap',
-      khung: { chinh: 12, moiHam: 10 },
+      so: 5, ten: 'Tàu chỉ ghé ba nhịp', hang: 'luyen-tap',
+      nhipToiDa: 12,
       hamCuaEmCan: [],
-      deBai: 'Sola nhờ bạn: tại cầu cảng giữa (3, 2) có 2 kiện hàng [28, 13], hai bên là Tàu 1 ở (2, 2) và Tàu 2 ở (4, 2). Bệ cẩu đang ở (3, 3) hướng nấc 0 chỉ thẳng vào (3, 2). Với mỗi kiện, đọc c = read_code(), t = c // 10: nếu t == 1 thì nhấc lên, rail(-1) sang Tàu 1 hạ xuống rồi rail(1) quay về; ngược lại thì rail(1) sang Tàu 2 hạ xuống rồi rail(-1) quay về.',
-      veMaMau: 'Hoàn thiện nhánh else để đưa kiện hàng chục bằng 2 sang Tàu 2 ở bên phải.',
+      deBai: 'Sola nhờ bạn: Tàu 1 chỉ ghé bến đúng 3 nhịp rồi đi hẳn. Kiện 26 nằm ở (3, 4), ngay dưới đầu cần. Boong Tàu 1 ở (2, 2). Làm từng lệnh một thì mất 5 nhịp, tàu đã rời bến. Hãy ghép nhịp. Nhịp 1: pick_up(). Nhịp 2: swing_left(). Nhịp 3: rail(-1), swing_left() và set_down() cùng lúc. Mỗi nhịp kết thúc bằng wait().',
+      veMaMau: 'Hai nhịp đầu đã có. Viết nhịp 3: chạy ray, quay cần và hạ kiện, rồi wait().',
+      san: SAN_RAY_2,
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
+      chong: [C(3, 4, [26])],
+      tau: tauDoi(3, 30),
+      giao: [{ tau: 0, so: [26] }],
+      maMau: bai([
+        'pick_up()',
+        'wait()',
+        'swing_left()',
+        'wait()'
+      ]),
+      loiGiai: bai([
+        'pick_up()',
+        'wait()',
+        'swing_left()',
+        'wait()',
+        'rail(-1)',
+        'swing_left()',
+        'set_down()',
+        'wait()'
+      ]),
+      sao: { o: 8, nhip: 3 },
+      loiGiaiKhac: {
+        moTa: 'Chạy ray ngay ở nhịp 2 cùng lúc quay cần',
+        baiLam: bai([
+          'pick_up()',
+          'wait()',
+          'rail(-1)',
+          'swing_left()',
+          'wait()',
+          'swing_left()',
+          'set_down()',
+          'wait()'
+        ])
+      },
+      loiSai: [
+        { moTa: 'Làm từng lệnh một, không ghép nhịp: 5 nhịp, tàu đã rời bến', baiLam: bai(['pick_up()', 'swing_left()', 'swing_left()', 'rail(-1)', 'set_down()']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Quên wait() cuối nên ba lệnh của nhịp 3 chạy thành ba nhịp riêng', baiLam: bai(['pick_up()', 'wait()', 'swing_left()', 'wait()', 'rail(-1)', 'swing_left()', 'set_down()']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Ghép pick_up() chung nhịp với swing_left(): máy quay cần trước rồi mới móc nên móc hụt', baiLam: bai(['pick_up()', 'swing_left()', 'wait()', 'rail(-1)', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['moc-hut'] }
+      ],
+      goiY: ['Luna: Trong một nhịp, máy chạy ray trước, quay cần sau, cuối cùng mới hạ móc.', 'Luna: Nhịp 3 viết ba dòng rail(-1), swing_left(), set_down() rồi một dòng wait().']
+    }),
+
+    manDuongRay({
+      so: 6, ten: 'Vừa quay vừa thu cần', hang: 'luyen-tap',
+      nhipToiDa: 12,
+      camHamCuaEm: true,
+      hamCuaEmCan: [],
+      deBai: 'Luna nhờ bạn: ở màn này kho hàm của em tạm cất, chỉ dùng lệnh gốc. Kiện 17 nằm xa ở (4, 5). Tàu ghé đúng 3 nhịp rồi đi hẳn. Nhịp 1: rail(1), extend() và pick_up() cùng lúc. Nhịp 2: vừa quay swing_left() vừa thu cần retract(). Nhịp 3: quay nốt rồi set_down() lên boong (4, 2).',
+      veMaMau: 'Nhịp 1 đã có: chạy ray, vươn cần, móc kiện. Viết tiếp nhịp 2 và nhịp 3.',
+      san: SAN_RAY_1,
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
+      chong: [C(4, 5, [17])],
+      tau: tauDon(3, 30),
+      giao: [{ tau: 0, so: [17] }],
+      maMau: bai([
+        'rail(1)',
+        'extend()',
+        'pick_up()',
+        'wait()'
+      ]),
+      loiGiai: bai([
+        'rail(1)',
+        'extend()',
+        'pick_up()',
+        'wait()',
+        'swing_left()',
+        'retract()',
+        'wait()',
+        'swing_left()',
+        'set_down()',
+        'wait()'
+      ]),
+      sao: { o: 10, nhip: 3 },
+      loiGiaiKhac: {
+        moTa: 'Thu cần ở nhịp 3 thay vì nhịp 2',
+        baiLam: bai([
+          'rail(1)',
+          'extend()',
+          'pick_up()',
+          'wait()',
+          'swing_left()',
+          'wait()',
+          'swing_left()',
+          'retract()',
+          'set_down()',
+          'wait()'
+        ])
+      },
+      loiSai: [
+        { moTa: 'Làm từng lệnh một, không ghép nhịp: 7 nhịp, tàu đã rời bến', baiLam: bai(['rail(1)', 'extend()', 'pick_up()', 'swing_left()', 'retract()', 'swing_left()', 'set_down()']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Quên retract() nên đầu cần vươn quá boong, hạ xuống mặt nước', baiLam: bai(['rail(1)', 'extend()', 'pick_up()', 'wait()', 'swing_left()', 'wait()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['ha-bi-chan'] }
+      ],
+      goiY: ['Luna: Quay và thu cần là hai cần gạt khác nhau nên làm chung một nhịp được.', 'Luna: Nhịp 2 viết swing_left(), retract(), wait(). Nhịp 3 viết swing_left(), set_down(), wait().']
+    }),
+
+    manDuongRay({
+      so: 7, ten: 'Trượt ray chia hai tàu', hang: 'bien-the',
+      khung: { chinh: 16, moiHam: 10 },
+      hamCuaEmCan: [],
+      deBai: 'Sola nhờ bạn: kho hàm của em đã mở lại. Tại cầu cảng giữa (3, 2) có 2 kiện hàng [28, 13]. Tàu 1 ở (2, 2), Tàu 2 ở (4, 2), cả hai chỉ ghé 6 nhịp. Bệ cẩu ở (3, 3), cần chỉ vào (3, 2). Với mỗi kiện: đọc c = read_code(), tính t = c // 10, rồi pick_up() và wait(). Nếu t == 1 thì rail(-1) và set_down() chung một nhịp sang Tàu 1, rồi rail(1) quay về. Ngược lại thì rail(1) và set_down() sang Tàu 2, rồi rail(-1) quay về.',
+      veMaMau: 'Nhánh if đã có. Hoàn thiện nhánh else: chạy ray và hạ kiện chung một nhịp sang Tàu 2, rồi quay về.',
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [28, 13])],
-      tau: tauDoi(8, 2),
+      tau: tauDoi(6, 2),
       giao: [{ tau: 0, so: [13] }, { tau: 1, so: [28] }],
       maMau: bai([
         'for i in range(2):',
         '    c = read_code()',
         '    t = c // 10',
+        '    pick_up()',
+        '    wait()',
         '    if t == 1:',
-        '        pick_up()',
         '        rail(-1)',
         '        set_down()',
+        '        wait()',
         '        rail(1)',
+        '        wait()',
         '    else:'
       ]),
       loiGiai: bai([
         'for i in range(2):',
         '    c = read_code()',
         '    t = c // 10',
+        '    pick_up()',
+        '    wait()',
         '    if t == 1:',
-        '        pick_up()',
         '        rail(-1)',
         '        set_down()',
+        '        wait()',
         '        rail(1)',
+        '        wait()',
         '    else:',
-        '        pick_up()',
         '        rail(1)',
         '        set_down()',
-        '        rail(-1)'
+        '        wait()',
+        '        rail(-1)',
+        '        wait()'
       ]),
-      sao: { o: 13, nhip: 8 },
+      sao: { o: 17, nhip: 6 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng lặp while c != -1 thay cho for i in range(2)',
         baiLam: bai([
           'c = read_code()',
           'while c != -1:',
           '    t = c // 10',
-          '    if t == 1:',
-          '        pick_up()',
-          '        rail(-1)',
-          '        set_down()',
-          '        rail(1)',
-          '    else:',
-          '        pick_up()',
-          '        rail(1)',
-          '        set_down()',
-          '        rail(-1)',
-          '    c = read_code()'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Đưa cả 2 kiện sang Tàu 1 bên trái nên kiện 28 bị giao nhầm', baiLam: bai(['for i in range(2):', '    pick_up()', '    rail(-1)', '    set_down()', '    rail(1)']), phaiCoMa: ['giao-nham'] },
-        { moTa: 'Trong nhánh else quên gọi rail(-1) quay về cột 3', baiLam: bai(['for i in range(2):', '    c = read_code()', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    else:', '        pick_up()', '        rail(1)', '        set_down()']), phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: Khi đầu cần giữ nguyên ở nấc 0, trượt bệ bằng rail(-1) sẽ đưa đầu cần sang (2, 2) trên Tàu 1, còn rail(1) sẽ đưa đầu cần sang (4, 2) trên Tàu 2.', 'Luna: Nhánh else gồm 4 lệnh: pick_up(), rail(1), set_down(), rail(-1).']
-    }),
-
-    manDuongRay({
-      so: 7, ten: 'Chuyển cả chồng ở đầu ray', hang: 'bien-the',
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: tại đầu ray bên trái (1, 4) có chồng hàng [19, 15, 12]. Đọc c = read_code(), dùng vòng lặp while c != -1: để nhấc từng kiện ở (1, 4), trượt sang cột 2 bằng rail(1), quay sang nấc 0 đặt lên tàu ở (2, 2), rồi quay lại nấc 2 và lùi rail(-1) về cột 1, cuối vòng đọc lại c.',
-      veMaMau: 'Sau set_down() lên tàu, hãy quay về nấc 2 bằng swing_by(2) rồi lùi về cột 1 bằng rail(-1).',
-      san: SAN_RAY_1,
-      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
-      chong: [C(1, 4, [19, 15, 12])],
-      tau: tauDon(24, 2),
-      giao: [{ tau: 0, so: [12, 15, 19] }],
-      maMau: bai([
-        'c = read_code()',
-        'while c != -1:',
-        '    pick_up()',
-        '    rail(1)',
-        '    swing_by(2)',
-        '    set_down()',
-        '    c = read_code()'
-      ]),
-      loiGiai: bai([
-        'c = read_code()',
-        'while c != -1:',
-        '    pick_up()',
-        '    rail(1)',
-        '    swing_by(2)',
-        '    set_down()',
-        '    swing_by(2)',
-        '    rail(-1)',
-        '    c = read_code()'
-      ]),
-      sao: { o: 16, nhip: 24 },
-      loiGiaiKhac: {
-        moTa: 'Lùi rail(-1) về cột 1 trước rồi mới gọi swing_by(2)',
-        baiLam: bai([
-          'c = read_code()',
-          'while c != -1:',
           '    pick_up()',
-          '    rail(1)',
-          '    swing_by(2)',
-          '    set_down()',
-          '    rail(-1)',
-          '    swing_by(2)',
+          '    wait()',
+          '    if t == 1:',
+          '        rail(-1)',
+          '        set_down()',
+          '        wait()',
+          '        rail(1)',
+          '        wait()',
+          '    else:',
+          '        rail(1)',
+          '        set_down()',
+          '        wait()',
+          '        rail(-1)',
+          '        wait()',
           '    c = read_code()'
         ])
       },
       loiSai: [
-        { moTa: 'Hạ kiện tại (1, 2) khi chưa gọi rail(1) nên kiện nằm trên cầu cảng chứ không lên tàu', baiLam: bai(['c = read_code()', 'while c != -1:', '    pick_up()', '    swing_by(2)', '    set_down()', '    swing_by(2)', '    c = read_code()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Quên lùi rail(-1) về cột 1 nên vòng sau đọc ô trống (2, 4)', baiLam: bai(['c = read_code()', 'while c != -1:', '    pick_up()', '    rail(1)', '    swing_by(2)', '    set_down()', '    swing_by(2)', '    c = read_code()']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Làm từng lệnh một như gói trước: 8 nhịp, hai tàu đã rời bến lúc nhịp 6', baiLam: bai(['for i in range(2):', '    c = read_code()', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    else:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Đưa cả 2 kiện sang Tàu 1 bên trái nên kiện 28 bị giao nhầm', baiLam: bai(['for i in range(2):', '    pick_up()', '    wait()', '    rail(-1)', '    set_down()', '    wait()', '    rail(1)', '    wait()']), phaiCoMa: ['giao-nham'] }
       ],
-      goiY: ['Luna: Ô (1, 2) là bến cảng D chứ không phải boong tàu T, nên phải gọi rail(1) sang cột 2 mới hạ lên tàu được.', 'Luna: Cuối vòng lặp cần thêm swing_by(2) và rail(-1) để đầu cần trở lại (1, 4).']
+      goiY: ['Luna: Cần giữ nguyên hướng lên. rail(-1) đưa đầu cần sang (2, 2) trên Tàu 1, rail(1) đưa sang (4, 2) trên Tàu 2.', 'Luna: Nhánh else viết rail(1), set_down(), wait(), rồi rail(-1), wait().']
     }),
 
     manDuongRay({
       so: 8, ten: 'Mượn cột bên cạnh giữ luật tháp', hang: 'bien-the',
-      khung: { chinh: 12, moiHam: 10 },
+      khung: { chinh: 18, moiHam: 10 },
       luatThap: true,
       hamCuaEmCan: [],
-      deBai: 'Sola nhờ bạn: tại cầu cảng (3, 2) có tháp 2 kiện [24, 12], cần xếp cả 2 kiện lên Tàu 1 ở (2, 2) đúng luật tháp. Với đầu cần giữ ở nấc 0, hãy tạm gửi kiện 12 sang Tàu 2 ở (4, 2) hoặc mượn cột bên cạnh: nhấc kiện 12 ở (3, 2) trượt rail(1) đặt tạm sang (4, 2), quay về (3, 2) đưa kiện 24 sang (2, 2) bằng rail(-1), rồi sang (4, 2) lấy kiện 12 đặt chồng lên kiện 24 ở (2, 2).',
-      veMaMau: 'Sau khi đặt kiện 24 lên (2, 2), hãy trượt rail(2) sang (4, 2) lấy kiện 12 đem về (2, 2).',
+      deBai: 'Sola nhờ bạn: tại cầu cảng (3, 2) có tháp 2 kiện [24, 12]. Cần xếp cả 2 kiện lên Tàu 1 ở (2, 2) đúng luật tháp. Hai tàu chỉ ghé 8 nhịp nên phải ghép nhịp. Nhấc kiện 12, rồi rail(1) và set_down() chung một nhịp để gửi tạm ở (4, 2). Kế đó rail(-1) và pick_up() chung một nhịp để lấy kiện 24, đưa sang (2, 2). Cuối cùng rail(2) và pick_up() lấy lại kiện 12, rail(-2) và set_down() đặt lên kiện 24.',
+      veMaMau: 'Kiện 24 đã lên (2, 2). Viết tiếp: rail(2) và pick_up() lấy kiện 12, rồi rail(-2) và set_down().',
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [24, 12])],
-      tau: tauDoi(13, 2),
+      tau: tauDoi(8, 2),
       giao: [{ tau: 0, so: [12, 24] }],
       maMau: bai([
         'pick_up()',
+        'wait()',
         'rail(1)',
         'set_down()',
+        'wait()',
         'rail(-1)',
         'pick_up()',
+        'wait()',
         'rail(-1)',
-        'set_down()'
+        'set_down()',
+        'wait()'
       ]),
       loiGiai: bai([
         'pick_up()',
+        'wait()',
         'rail(1)',
         'set_down()',
+        'wait()',
         'rail(-1)',
         'pick_up()',
+        'wait()',
         'rail(-1)',
         'set_down()',
+        'wait()',
         'rail(2)',
         'pick_up()',
+        'wait()',
         'rail(-2)',
-        'set_down()'
+        'set_down()',
+        'wait()'
       ]),
-      sao: { o: 11, nhip: 13 },
-      loiGiaiKhac: {
-        moTa: 'Tách rail(2) thành hai lần rail(1)',
-        baiLam: bai([
-          'pick_up()',
-          'rail(1)',
-          'set_down()',
-          'rail(-1)',
-          'pick_up()',
-          'rail(-1)',
-          'set_down()',
-          'rail(1)',
-          'rail(1)',
-          'pick_up()',
-          'rail(-2)',
-          'set_down()'
-        ])
-      },
+      sao: { o: 17, nhip: 8 },
       loiSai: [
-        { moTa: 'Chuyển thẳng cả 2 kiện từ (3, 2) sang (2, 2) nên kiện 24 đè lên kiện 12', baiLam: bai(['pick_up()', 'rail(-1)', 'set_down()', 'rail(1)', 'pick_up()', 'rail(-1)', 'set_down()']), phaiCoMa: ['thap-sai'] },
-        { moTa: 'Mới đưa kiện 24 sang Tàu 1, chưa lấy kiện 12 từ (4, 2) sang đặt lên đỉnh', baiLam: bai(['pick_up()', 'rail(1)', 'set_down()', 'rail(-1)', 'pick_up()', 'rail(-1)', 'set_down()']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Chuyển thẳng cả 2 kiện từ (3, 2) sang (2, 2) nên kiện 24 đè lên kiện 12', baiLam: bai(['pick_up()', 'wait()', 'rail(-1)', 'set_down()', 'wait()', 'rail(1)', 'pick_up()', 'wait()', 'rail(-1)', 'set_down()', 'wait()']), phaiCoMa: ['thap-sai'] },
+        { moTa: 'Làm từng lệnh một như gói trước: 13 nhịp, tàu rời bến lúc nhịp 8 khi kiện 12 còn gửi tạm trên Tàu 2', baiLam: bai(['pick_up()', 'rail(1)', 'set_down()', 'rail(-1)', 'pick_up()', 'rail(-1)', 'set_down()', 'rail(2)', 'pick_up()', 'rail(-2)', 'set_down()']), phaiCoMa: ['giao-nham'] }
       ],
-      goiY: ['Luna: Sau khi hạ kiện 24 xuống (2, 2), bệ cẩu đang ở cột 2 còn kiện 12 đang nằm tạm ở (4, 2).', 'Luna: Gọi rail(2), pick_up(), rail(-2), set_down() để đặt kiện 12 lên trên kiện 24 tại (2, 2).']
+      goiY: ['Luna: rail(2) đi mất 2 nhịp. Lệnh ghép cùng nó làm ở nhịp cuối, lúc bệ đã tới nơi.', 'Luna: Viết rail(2), pick_up(), wait(), rồi rail(-2), set_down(), wait().']
     }),
 
     manDuongRay({
@@ -577,18 +599,18 @@
 
     manDuongRay({
       so: 10, ten: 'Trùm Chạy dọc đường ray', hang: 'trum', nhipTheo: 'tong',
-      khung: { chinh: 12, moiHam: 10 },
+      khung: { chinh: 18, moiHam: 10 },
       huyHieu: { ma: 'duong-ray', ten: 'Huy hiệu Chạy dọc đường ray' },
       hamCuaEmCan: [],
-      deBai: 'Trùm chương 1: trên hai sân, tại cầu cảng giữa (3, 2) có chồng 4 kiện hàng. Bệ cẩu đứng ở (3, 3) hướng nấc 0. Hãy đọc c = read_code(), lặp while c != -1:, trong vòng tính t = c // 10 và hỏi if t == 1 để trượt rail(-1) giao kiện hàng chục bằng 1 sang Tàu 1, và trượt rail(1) giao kiện hàng chục bằng 2 sang Tàu 2.',
-      veMaMau: 'Hoàn thiện vòng lặp while phân loại cả 4 kiện ở (3, 2) sang hai tàu bằng lệnh rail.',
+      deBai: 'Trùm chương 1: trên hai sân, tại cầu cảng giữa (3, 2) có chồng 4 kiện hàng. Bệ cẩu đứng ở (3, 3), cần chỉ vào (3, 2). Hai tàu chỉ ghé 12 nhịp nên phải ghép nhịp: mỗi kiện 3 nhịp. Đọc c = read_code(), lặp while c != -1:, tính t = c // 10, rồi pick_up() và wait(). Nếu t == 1 thì rail(-1) và set_down() chung một nhịp sang Tàu 1, rồi rail(1) quay về. Ngược lại thì rail(1) và set_down() sang Tàu 2, rồi rail(-1) quay về.',
+      veMaMau: 'Nhánh if đã có. Viết nhánh else cho kiện hàng chục bằng 2 sang Tàu 2, vẫn ghép chạy ray với hạ kiện.',
       san: [SAN_RAY_2, SAN_RAY_2],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
       chong: [
         [C(3, 2, [27, 14, 21, 18])],
         [C(3, 2, [16, 29, 12, 25])]
       ],
-      tau: [tauDoi(16, 2), tauDoi(16, 2)],
+      tau: [tauDoi(12, 2), tauDoi(12, 2)],
       giao: [
         [{ tau: 0, so: [14, 18] }, { tau: 1, so: [21, 27] }],
         [{ tau: 0, so: [12, 16] }, { tau: 1, so: [25, 29] }]
@@ -597,53 +619,65 @@
         'c = read_code()',
         'while c != -1:',
         '    t = c // 10',
+        '    pick_up()',
+        '    wait()',
         '    if t == 1:',
-        '        pick_up()',
         '        rail(-1)',
         '        set_down()',
+        '        wait()',
         '        rail(1)',
+        '        wait()',
         '    c = read_code()'
       ]),
       loiGiai: bai([
         'c = read_code()',
         'while c != -1:',
         '    t = c // 10',
+        '    pick_up()',
+        '    wait()',
         '    if t == 1:',
-        '        pick_up()',
         '        rail(-1)',
         '        set_down()',
+        '        wait()',
         '        rail(1)',
+        '        wait()',
         '    else:',
-        '        pick_up()',
         '        rail(1)',
         '        set_down()',
+        '        wait()',
         '        rail(-1)',
+        '        wait()',
         '    c = read_code()'
       ]),
-      sao: { o: 14, nhip: 32 },
+      sao: { o: 18, nhip: 24 },
       loiGiaiKhac: {
         moTa: 'Dùng for i in range(4) thay cho while c != -1',
         baiLam: bai([
           'for i in range(4):',
           '    c = read_code()',
           '    t = c // 10',
+          '    pick_up()',
+          '    wait()',
           '    if t == 1:',
-          '        pick_up()',
           '        rail(-1)',
           '        set_down()',
+          '        wait()',
           '        rail(1)',
+          '        wait()',
           '    else:',
-          '        pick_up()',
           '        rail(1)',
           '        set_down()',
-          '        rail(-1)'
+          '        wait()',
+          '        rail(-1)',
+          '        wait()'
         ])
       },
       loiSai: [
-        { moTa: 'Chưa viết nhánh else nên gặp kiện hàng chục bằng 2 thì đứng im', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Trượt nhầm hướng nên giao ngược tàu', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)', '    else:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    c = read_code()']), phaiCoMa: ['giao-nham'] }
+        { moTa: 'Chưa viết nhánh else nên kiện hàng chục bằng 2 cứ treo trên móc', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    pick_up()', '    wait()', '    if t == 1:', '        rail(-1)', '        set_down()', '        wait()', '        rail(1)', '        wait()', '    c = read_code()']), phaiCoMa: ['dang-treo'] },
+        { moTa: 'Trượt nhầm hướng nên giao ngược tàu', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    pick_up()', '    wait()', '    if t == 1:', '        rail(1)', '        set_down()', '        wait()', '        rail(-1)', '        wait()', '    else:', '        rail(-1)', '        set_down()', '        wait()', '        rail(1)', '        wait()', '    c = read_code()']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Làm từng lệnh một như gói trước: mỗi kiện 4 nhịp, tàu rời bến lúc nhịp 12 khi mới giao 3 kiện', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    if t == 1:', '        pick_up()', '        rail(-1)', '        set_down()', '        rail(1)', '    else:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)', '    c = read_code()']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Khi chữ số hàng chục là 1 thì trượt sang trái bằng rail(-1), đặt xuống Tàu 1 rồi rail(1) về (3, 2).', 'Luna: Trong nhánh else, gọi pick_up(), rail(1), set_down(), rail(-1) để giao sang Tàu 2 rồi quay về (3, 2).']
+      goiY: ['Luna: Mỗi kiện ba nhịp: móc, chạy ray và hạ, rồi chạy ray về.', 'Luna: Nhánh else viết rail(1), set_down(), wait(), rồi rail(-1), wait().']
     }),
 
     /* ========================================================================
@@ -653,12 +687,12 @@
       so: 1, ten: 'Chế hàm rail_pick(dx)', hang: 'lam-quen',
       taoHam: ['rail_pick'],
       hamCuaEmCan: [],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế rail_pick(dx) gồm 4 lệnh: rail(dx), pick_up(), rail(-dx), set_down() để trượt đi lấy kiện hàng cách dx cột trên đường ray đem về đặt tại vị trí hiện tại. Áp dụng gọi rail_pick(-2) và rail_pick(2) khi đứng ở (3, 3) hướng nấc 0 để gom 2 kiện ở hai đầu cầu cảng (1, 2) và (5, 2) về boong tàu (3, 2).',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế rail_pick(dx), một hàm biết ghép nhịp. Thân hàm có hai nhịp lệnh, mỗi nhịp khép bằng wait(). Nhịp đi: rail(dx), pick_up(), wait(): bệ chạy tới nơi là móc ngay. Nhịp về: rail(-dx), set_down(), wait(): bệ về tới nơi là hạ ngay. Đứng ở (3, 3), cần chỉ lên boong (3, 2). Gọi rail_pick(-2) và rail_pick(2) để gom 2 kiện ở hai đầu cầu cảng (1, 2) và (5, 2) về boong tàu. Tàu chỉ ghé 8 nhịp.',
       veMaMau: 'Tạo hàm rail_pick(dx) rồi gọi rail_pick(-2) và rail_pick(2).',
       san: SAN_RAY_1,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(1, 2, [14]), C(5, 2, [23])],
-      tau: tauDon(12, 2),
+      tau: tauDon(8, 2),
       giao: [{ tau: 0, so: [14, 23] }],
       maMau: bai([
         'rail_pick(-2)',
@@ -676,9 +710,10 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm rail_pick mà đã bấm Chạy', baiLam: bai(['rail_pick(-2)', 'rail_pick(2)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong rail_pick quên gọi rail(-dx) nên lần gọi thứ hai nhấc hụt ở (3, 2)', baiLam: bai(['rail_pick(-2)', 'rail_pick(2)']), hamCuaEmMoi: [hRailPick(['rail(dx)', 'pick_up()', 'set_down()'])], phaiCoMa: ['moc-hut'] }
+        { moTa: 'Trong rail_pick quên gọi rail(-dx) nên lần gọi thứ hai nhấc hụt ở (3, 2)', baiLam: bai(['rail_pick(-2)', 'rail_pick(2)']), hamCuaEmMoi: [hRailPick(['rail(dx)', 'pick_up()', 'wait()', 'set_down()', 'wait()'])], phaiCoMa: ['moc-hut'] },
+        { moTa: 'Viết rail_pick như gói trước, không có wait(): mỗi lệnh một nhịp, 12 nhịp, tàu đã rời bến lúc nhịp 8', baiLam: bai(['rail_pick(-2)', 'rail_pick(2)']), hamCuaEmMoi: [hRailPick(['rail(dx)', 'pick_up()', 'rail(-dx)', 'set_down()'])], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Thân hàm rail_pick(dx) gồm 4 dòng: rail(dx), pick_up(), rail(-dx), set_down().', 'Luna: Ở chương trình chính gọi rail_pick(-2) và rail_pick(2).']
+      goiY: ['Luna: Thân hàm rail_pick(dx) gồm 6 dòng: rail(dx), pick_up(), wait(), rồi rail(-dx), set_down(), wait().', 'Luna: Ở chương trình chính gọi rail_pick(-2) và rail_pick(2).']
     }),
 
     manCheDuongRay({
@@ -689,7 +724,7 @@
       san: SAN_RAY_1,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(1, 2, [11, 17]), C(5, 2, [22, 28])],
-      tau: tauDon(24, 2),
+      tau: tauDon(16, 2),
       giao: [{ tau: 0, so: [11, 17, 22, 28] }],
       maMau: bai([
         'for i in range(2):',
@@ -720,12 +755,12 @@
       so: 3, ten: 'Chế hàm rail_drop(dx)', hang: 'lam-quen',
       taoHam: ['rail_drop'],
       hamCuaEmCan: [],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế rail_drop(dx) gồm 4 lệnh: pick_up(), rail(dx), set_down(), rail(-dx) để nhấc kiện tại chỗ đem sang cột cách dx hạ xuống rồi quay về. Áp dụng tại (3, 3) hướng nấc 0 để chuyển kiện đỉnh ở (3, 2) sang Tàu 1 bằng rail_drop(-1) và kiện đáy sang Tàu 2 bằng rail_drop(1).',
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế rail_drop(dx), hàm chuyển một kiện trong 3 nhịp. Nhịp 1: pick_up(), wait(). Nhịp 2: rail(dx), set_down(), wait(): chạy sang cột bên rồi hạ ngay. Nhịp 3: rail(-dx), wait(): quay về. Đứng ở (3, 3), cần chỉ vào (3, 2). Gọi rail_drop(-1) đưa kiện đỉnh sang Tàu 1 và rail_drop(1) đưa kiện đáy sang Tàu 2. Hai tàu chỉ ghé 6 nhịp.',
       veMaMau: 'Tạo hàm rail_drop(dx) rồi gọi rail_drop(-1) và rail_drop(1).',
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [26, 15])],
-      tau: tauDoi(8, 2),
+      tau: tauDoi(6, 2),
       giao: [{ tau: 0, so: [15] }, { tau: 1, so: [26] }],
       maMau: bai([
         'rail_drop(-1)',
@@ -743,9 +778,10 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm rail_drop mà đã bấm Chạy', baiLam: bai(['rail_drop(-1)', 'rail_drop(1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Gọi ngược thứ tự nên đưa kiện 15 sang Tàu 2 và kiện 26 sang Tàu 1', baiLam: bai(['rail_drop(1)', 'rail_drop(-1)']), hamCuaEmMoi: [hRailDrop()], phaiCoMa: ['giao-nham'] }
+        { moTa: 'Gọi ngược thứ tự nên đưa kiện 15 sang Tàu 2 và kiện 26 sang Tàu 1', baiLam: bai(['rail_drop(1)', 'rail_drop(-1)']), hamCuaEmMoi: [hRailDrop()], phaiCoMa: ['giao-nham'] },
+        { moTa: 'Viết rail_drop như gói trước, không có wait(): mỗi kiện 4 nhịp, hai tàu đã rời bến lúc nhịp 6', baiLam: bai(['rail_drop(-1)', 'rail_drop(1)']), hamCuaEmMoi: [hRailDrop(['pick_up()', 'rail(dx)', 'set_down()', 'rail(-dx)'])], phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Thân hàm rail_drop(dx) gồm 4 dòng: pick_up(), rail(dx), set_down(), rail(-dx).', 'Luna: Gọi rail_drop(-1) trước cho kiện 15 trên đỉnh, rồi gọi rail_drop(1) cho kiện 26 ở dưới.']
+      goiY: ['Luna: Thân hàm rail_drop(dx) gồm 7 dòng: pick_up(), wait(), rồi rail(dx), set_down(), wait(), rồi rail(-dx), wait().', 'Luna: Gọi rail_drop(-1) trước cho kiện 15 trên đỉnh, rồi gọi rail_drop(1) cho kiện 26 ở dưới.']
     }),
 
     manCheDuongRay({
@@ -789,7 +825,7 @@
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [19, 14, 11])],
-      tau: tauDoi(12, 2),
+      tau: tauDoi(9, 2),
       giao: [{ tau: 0, so: [11, 14, 19] }],
       maMau: bai(['rail_clear(-1)']),
       loiGiai: bai(
@@ -818,7 +854,7 @@
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [24, 15, 29, 12])],
-      tau: tauDoi(16, 2),
+      tau: tauDoi(12, 2),
       giao: [{ tau: 0, so: [12, 15] }, { tau: 1, so: [24, 29] }],
       maMau: bai(['scan_rail()']),
       loiGiai: bai(
@@ -889,7 +925,7 @@
       san: SAN_RAY_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [26, 14]), C(3, 4, [18, 21])],
-      tau: tauDoi(32, 2),
+      tau: tauDoi(28, 2),
       giao: [{ tau: 0, so: [14, 18] }, { tau: 1, so: [21, 26] }],
       maMau: bai([
         'scan_rail()',
@@ -932,7 +968,7 @@
         [C(1, 2, [12]), C(5, 2, [24]), C(3, 4, [18])],
         [C(1, 2, [21]), C(5, 2, [15]), C(3, 4, [29])]
       ],
-      tau: [tauDon(18, 2), tauDon(18, 2)],
+      tau: [tauDon(14, 2), tauDon(14, 2)],
       giao: [
         [{ tau: 0, so: [12, 18, 24] }],
         [{ tau: 0, so: [15, 21, 29] }]
@@ -976,7 +1012,7 @@
         [C(1, 4, [15]), C(5, 4, [22]), C(3, 2, [28, 12])],
         [C(1, 4, [25]), C(5, 4, [16]), C(3, 2, [19, 24])]
       ],
-      tau: [tauDoi(42, 2), tauDoi(42, 2)],
+      tau: [tauDoi(34, 2), tauDoi(34, 2)],
       giao: [
         [{ tau: 0, so: [12, 15] }, { tau: 1, so: [22, 28] }],
         [{ tau: 0, so: [16, 19] }, { tau: 1, so: [24, 25] }]

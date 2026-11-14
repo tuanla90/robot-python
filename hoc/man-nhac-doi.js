@@ -318,7 +318,7 @@
       san: SAN_DOI_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [28, 18, 12])],
-      tau: tauDoi(8, 2),
+      tau: tauDoi(7, 2),
       giao: [{ tau: 0, so: [12, 18] }, { tau: 1, so: [28] }],
       maMau: bai([
         'pick_up2()',

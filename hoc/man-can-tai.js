@@ -250,7 +250,7 @@
       san: SAN_TAI_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [CW(3, 2, [[28, 3], [15, 2]])],
-      tau: tauDoi(8, 2),
+      tau: tauDoi(6, 2),
       giao: [{ tau: 0, so: [15] }, { tau: 1, so: [28] }],
       maMau: bai([
         'for i in range(2):',
@@ -425,7 +425,7 @@
       san: SAN_TAI_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [CW(3, 2, [[28, 4], [14, 1], [25, 3], [12, 2]])],
-      tau: tauDoi(16, 2),
+      tau: tauDoi(12, 2),
       giao: [{ tau: 0, so: [12, 14] }, { tau: 1, so: [25, 28] }],
       maMau: bai([
         'c = read_code()',
@@ -725,7 +725,7 @@
       san: SAN_TAI_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [CW(3, 2, [[27, 4], [16, 2], [23, 3], [11, 1]])],
-      tau: tauDoi(16, 2),
+      tau: tauDoi(12, 2),
       giao: [{ tau: 0, so: [11, 16] }, { tau: 1, so: [23, 27] }],
       maMau: bai(['heavy_rail()']),
       loiGiai: bai(
@@ -870,7 +870,7 @@
       san: SAN_TAI_2,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [CW(3, 2, [[26, 3], [14, 2]]), CW(3, 4, [[29, 3], [18, 3]])],
-      tau: tauDoi(32, 2),
+      tau: tauDoi(28, 2),
       giao: [{ tau: 0, so: [14] }, { tau: 1, so: [18, 26, 29] }],
       maMau: bai([
         'heavy_rail()',
@@ -961,7 +961,7 @@
         [CW(3, 4, [[24, 2], [12, 2]]), CW(3, 2, [[28, 4], [19, 3]])],
         [CW(3, 4, [[29, 3], [17, 3]]), CW(3, 2, [[21, 1], [15, 2]])]
       ],
-      tau: [tauDoi(24, 2), tauDoi(30, 2)],
+      tau: [tauDoi(20, 2), tauDoi(26, 2)],
       giao: [
         [{ tau: 0, so: [12, 24] }, { tau: 1, so: [19, 28] }],
         [{ tau: 0, so: [15, 21] }, { tau: 1, so: [17, 29] }]
