@@ -24,31 +24,38 @@
     '.......'
   ];
 
-  var SAN_BEN_2 = [
+  // Hai bến hai bên bệ (14/11, cẩu 4 hướng): Tàu 1 ở nấc 3 (2, 3), Tàu 2 ở nấc 1 (4, 3), cầu cảng nấc 0 (3, 2)
+  var SAN_BEN_3 = [
     '~~~~~~~',
     '~~~~~~~',
-    '~TTDTT~',
+    '~~TDT~~',
+    '.DT.TD.',
+    '..DDD..',
+    '.D.D.D.',
+    '.......'
+  ];
+  // Hai tàu phía bắc ở hai tầm: Tàu 1 nhận ở (3, 2) tầm 1, Tàu 2 nhận ở (3, 1) tầm 2
+  var SAN_BEN_4 = [
+    '~~~~~~~',
+    '~~~TT~~',
+    '~~TT~~~',
     '.DD.DD.',
     '..DDD..',
     '.D.D.D.',
     '.......'
   ];
-
+  function tauHaiBen(co, vang) {
+    return [{ o: [{ x: 2, y: 3 }, { x: 2, y: 2 }], co: co, vang: vang }, { o: [{ x: 4, y: 3 }, { x: 4, y: 2 }], co: co, vang: vang }];
+  }
+  function tauHaiTam(co, vang) {
+    return [{ o: [{ x: 3, y: 2 }, { x: 2, y: 2 }], co: co, vang: vang }, { o: [{ x: 3, y: 1 }, { x: 4, y: 1 }], co: co, vang: vang }];
+  }
   var O_TAU_1 = [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }];
-  var O_TAU_TRAI = [{ x: 1, y: 2 }, { x: 2, y: 2 }];
-  var O_TAU_PHAI = [{ x: 4, y: 2 }, { x: 5, y: 2 }];
 
   function tauDon(co, vang, pha) {
     var t = { o: O_TAU_1, co: co, vang: vang };
     if (pha) t.pha = pha;
     return [t];
-  }
-  function tauDoi(co, vang, pha0, pha1) {
-    var t0 = { o: O_TAU_TRAI, co: co, vang: vang };
-    var t1 = { o: O_TAU_PHAI, co: co, vang: vang };
-    if (pha0) t0.pha = pha0;
-    if (pha1) t1.pha = pha1;
-    return [t0, t1];
   }
 
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }
@@ -334,10 +341,10 @@
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
       deBai: 'Sola nhờ bạn: cầu cảng nấc 0 (3, 2) nằm giữa Tàu 1 bên trái ở nấc 3 (2, 3) và Tàu 2 bên phải ở nấc 1 (4, 3). Hãy giao kiện 15 trên đỉnh cho Tàu 1 và kiện 24 bên dưới cho Tàu 2.',
       veMaMau: 'Sau khi giao kiện 15 cho Tàu 1 và quay về nấc 0, hãy giao kiện 24 cho Tàu 2.',
-      san: ['~~~~~~~', '~~~~~~~', '~~TDT~~', '.DT.TD.', '..DDD..', '.D.D.D.', '.......'],
+      san: SAN_BEN_3,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [24, 15])],
-      tau: [{ o: [{ x: 2, y: 3 }, { x: 2, y: 2 }], co: 7, vang: 2 }, { o: [{ x: 4, y: 3 }, { x: 4, y: 2 }], co: 7, vang: 2 }],
+      tau: tauHaiBen(7, 2),
       giao: [{ tau: 0, so: [15] }, { tau: 1, so: [24] }],
       maMau: bai([
         'carry_by(-1)',
@@ -371,13 +378,13 @@
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
       deBai: 'Sola nhờ bạn: đọc mã từng kiện trong chồng 3 kiện ở cầu cảng nấc 0 (3, 2) trên hai sân. Đọc c = read_code(), tính t = c // 10: nếu t == 1 thì giao cho Tàu 1 ở nấc 3 rồi quay về nấc 0, ngược lại giao cho Tàu 2 ở nấc 1 rồi quay về nấc 0.',
       veMaMau: 'Hoàn thiện nhánh else để giao các kiện 2x cho Tàu 2 ở nấc 1.',
-      san: [['~~~~~~~', '~~~~~~~', '~~TDT~~', '.DT.TD.', '..DDD..', '.D.D.D.', '.......'], ['~~~~~~~', '~~~~~~~', '~~TDT~~', '.DT.TD.', '..DDD..', '.D.D.D.', '.......']],
+      san: [SAN_BEN_3, SAN_BEN_3],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
       chong: [
         [C(3, 2, [26, 14, 21])],
         [C(3, 2, [19, 28, 12])]
       ],
-      tau: [[{ o: [{ x: 2, y: 3 }, { x: 2, y: 2 }], co: 11, vang: 2 }, { o: [{ x: 4, y: 3 }, { x: 4, y: 2 }], co: 11, vang: 2 }], [{ o: [{ x: 2, y: 3 }, { x: 2, y: 2 }], co: 11, vang: 2 }, { o: [{ x: 4, y: 3 }, { x: 4, y: 2 }], co: 11, vang: 2 }]],
+      tau: [tauHaiBen(11, 2), tauHaiBen(11, 2)],
       giao: [
         [{ tau: 0, so: [14] }, { tau: 1, so: [21, 26] }],
         [{ tau: 0, so: [12, 19] }, { tau: 1, so: [28] }]
@@ -642,10 +649,10 @@
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
       deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_pair() đọc kiện hàng ở cầu cảng nấc 0: đọc c = read_code(), t = c // 10, nếu t == 1 thì carry_by(-1) rồi swing_by(1) sang Tàu 1, ngược lại thì carry_by(1) rồi swing_by(-1) sang Tàu 2.',
       veMaMau: 'Tạo hàm ship_pair() rồi gọi 2 lần để giao 2 kiện ở cầu cảng nấc 0.',
-      san: ['~~~~~~~', '~~~~~~~', '~~TDT~~', '.DT.TD.', '..DDD..', '.D.D.D.', '.......'],
+      san: SAN_BEN_3,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [27, 14])],
-      tau: [{ o: [{ x: 2, y: 3 }, { x: 2, y: 2 }], co: 8, vang: 2 }, { o: [{ x: 4, y: 3 }, { x: 4, y: 2 }], co: 8, vang: 2 }],
+      tau: tauHaiBen(8, 2),
       giao: [{ tau: 0, so: [14] }, { tau: 1, so: [27] }],
       maMau: bai([
         'ship_pair()',
@@ -674,10 +681,10 @@
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'ship_pair'],
       deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_all_pair(): đọc c = read_code(), lặp while c != -1: gọi ship_pair() rồi đọc lại c, cho tới khi hết chồng hàng ở cầu cảng nấc 0.',
       veMaMau: 'Tạo hàm ship_all_pair() rồi gọi ở chương trình chính.',
-      san: ['~~~~~~~', '~~~~~~~', '~~TDT~~', '.DT.TD.', '..DDD..', '.D.D.D.', '.......'],
+      san: SAN_BEN_3,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [18, 23, 11, 29])],
-      tau: [{ o: [{ x: 2, y: 3 }, { x: 2, y: 2 }], co: 16, vang: 2 }, { o: [{ x: 4, y: 3 }, { x: 4, y: 2 }], co: 16, vang: 2 }],
+      tau: tauHaiBen(16, 2),
       giao: [{ tau: 0, so: [11, 18] }, { tau: 1, so: [23, 29] }],
       maMau: bai(['ship_all_pair()']),
       loiGiai: bai(
@@ -700,41 +707,41 @@
     manCheBenTau({
       so: 5, ten: 'Đưa hàng ra cầu cảng', hang: 'luyen-tap',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'clear_stack', 'ship_pair', 'ship_all_pair'],
-      deBai: 'Sola nhờ bạn: phân loại chồng hàng ở cầu cảng nấc 0 (3, 2) lên hai tàu bằng ship_all_pair(), sau đó quay sang nấc 4 (3, 4) chuyển chồng hàng 2 kiện ra nấc 0 bằng clear_stack(4), rồi quay về nấc 0 phân loại nốt.',
-      veMaMau: 'Sau clear_stack(4) ở nấc 4, hãy quay về nấc 0 và gọi ship_all_pair().',
-      san: SAN_BEN_2,
+      deBai: 'Sola nhờ bạn: phân loại chồng hàng ở cầu cảng nấc 0 (3, 2) lên hai tàu bằng ship_all_pair(), sau đó quay sang nấc 2 (3, 4) chuyển chồng hàng 2 kiện ra nấc 0 bằng clear_stack(2), rồi quay về nấc 0 phân loại nốt.',
+      veMaMau: 'Sau clear_stack(2) ở nấc 2, hãy quay về nấc 0 và gọi ship_all_pair().',
+      san: SAN_BEN_3,
       batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [C(3, 2, [25, 12]), C(3, 4, [16, 21])],
-      tau: tauDoi(44, 2),
+      tau: tauHaiBen(32, 2),
       giao: [{ tau: 0, so: [12, 16] }, { tau: 1, so: [21, 25] }],
       maMau: bai([
         'ship_all_pair()',
-        'swing_by(4)',
-        'clear_stack(4)'
+        'swing_by(2)',
+        'clear_stack(2)'
       ]),
       loiGiai: bai([
         'ship_all_pair()',
-        'swing_by(4)',
-        'clear_stack(4)',
-        'swing_by(4)',
+        'swing_by(2)',
+        'clear_stack(2)',
+        'swing_by(2)',
         'ship_all_pair()'
       ]),
-      sao: { o: 23, nhip: 44 },
+      sao: { o: 34, nhip: 32 },
       loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-4) khi quay về nấc 0',
+        moTa: 'Dùng swing_by(-2) khi quay về nấc 0',
         baiLam: bai([
           'ship_all_pair()',
-          'swing_by(4)',
-          'clear_stack(4)',
-          'swing_by(-4)',
+          'swing_by(2)',
+          'clear_stack(2)',
+          'swing_by(-2)',
           'ship_all_pair()'
         ])
       },
       loiSai: [
-        { moTa: 'Mới giao chồng đầu tiên ở nấc 0, chưa lấy chồng ở nấc 4', baiLam: bai(['ship_all_pair()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Đưa chồng ở nấc 4 ra nấc 0 nhưng quên gọi ship_all_pair() lần hai', baiLam: bai(['ship_all_pair()', 'swing_by(4)', 'clear_stack(4)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Mới giao chồng đầu tiên ở nấc 0, chưa lấy chồng ở nấc 2', baiLam: bai(['ship_all_pair()']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Đưa chồng ở nấc 2 ra nấc 0 nhưng quên gọi ship_all_pair() lần hai', baiLam: bai(['ship_all_pair()', 'swing_by(2)', 'clear_stack(2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Sau clear_stack(4) tại nấc 4, cần cẩu vẫn đứng ở nấc 4.', 'Luna: Gọi swing_by(4) để về nấc 0 rồi gọi ship_all_pair().']
+      goiY: ['Luna: Sau clear_stack(2) tại nấc 2, cần cẩu vẫn đứng ở nấc 2.', 'Luna: Gọi swing_by(2) để về nấc 0 rồi gọi ship_all_pair().']
     }),
 
     manCheBenTau({
@@ -848,43 +855,46 @@
       so: 9, ten: 'Hai bến dời tháp', hang: 'bien-the', nhipTheo: 'tong',
       luatThap: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'move_tower2'],
-      deBai: 'Sola nhờ bạn: trên hai sân, cần cẩu bắt đầu ở nấc 6 (2, 3). Hãy dời tháp 2 kiện ở nấc 6 lên Tàu 1 ở nấc 7 (mượn bãi nấc 5), sau đó quay sang nấc 2 (4, 3) dời tiếp tháp 2 kiện lên Tàu 2 ở nấc 1 (mượn bãi nấc 3).',
-      veMaMau: 'Sau move_tower2(-1, 1) và swing_by(3), hãy gọi move_tower2(1, -1).',
-      san: [SAN_BEN_2, SAN_BEN_2],
-      batDau: [{ x: 3, y: 3, nac: 6, tam: 1 }, { x: 3, y: 3, nac: 6, tam: 1 }],
+      deBai: 'Sola nhờ bạn: trên hai sân, cần cẩu bắt đầu ở nấc 3 (2, 3). Hãy dời tháp 2 kiện ở nấc 3 lên Tàu 1 ở nấc 0 (3, 2), mượn bãi nấc 2. Sau đó quay sang nấc 1 và vươn ra tầm 2 (5, 3), dời tiếp tháp 2 kiện lên Tàu 2 ở nấc 0 tầm 2 (3, 1), cũng mượn bãi nấc 2.',
+      veMaMau: 'Sau move_tower2(-1, 1), swing_by(1) và extend(), hãy gọi move_tower2(1, -1).',
+      san: [SAN_BEN_4, SAN_BEN_4],
+      batDau: [{ x: 3, y: 3, nac: 3, tam: 1 }, { x: 3, y: 3, nac: 3, tam: 1 }],
       chong: [
-        [C(2, 3, [22, 11]), C(4, 3, [28, 14])],
-        [C(2, 3, [34, 17]), C(4, 3, [26, 13])]
+        [C(2, 3, [22, 11]), C(5, 3, [28, 14])],
+        [C(2, 3, [34, 17]), C(5, 3, [26, 13])]
       ],
-      tau: [tauDoi(29, 2), tauDoi(29, 2)],
+      tau: [tauHaiTam(28, 2), tauHaiTam(28, 2)],
       giao: [
         [{ tau: 0, so: [11, 22] }, { tau: 1, so: [14, 28] }],
         [{ tau: 0, so: [17, 34] }, { tau: 1, so: [13, 26] }]
       ],
       maMau: bai([
         'move_tower2(-1, 1)',
-        'swing_by(3)'
+        'swing_by(1)',
+        'extend()'
       ]),
       loiGiai: bai([
         'move_tower2(-1, 1)',
-        'swing_by(3)',
+        'swing_by(1)',
+        'extend()',
         'move_tower2(1, -1)'
       ]),
-      sao: { o: 15, nhip: 58 },
+      sao: { o: 23, nhip: 56 },
       loiGiaiKhac: {
         moTa: 'Thêm dòng chú thích cho hai lần dời tháp',
         baiLam: bai([
           '# dời tháp bên trái rồi bên phải',
           'move_tower2(-1, 1)',
-          'swing_by(3)',
+          'swing_by(1)',
+          'extend()',
           'move_tower2(1, -1)'
         ])
       },
       loiSai: [
-        { moTa: 'Mới dời tháp thứ nhất lên Tàu 1, chưa dời tháp thứ hai lên Tàu 2', baiLam: bai(['move_tower2(-1, 1)', 'swing_by(3)']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Từ nấc 7 chỉ quay 2 nấc nên dừng ở nấc 1 thay vì nấc 2', baiLam: bai(['move_tower2(-1, 1)', 'swing_by(2)', 'move_tower2(1, -1)']), phaiCoMa: ['moc-hut'] }
+        { moTa: 'Mới dời tháp thứ nhất lên Tàu 1, chưa dời tháp thứ hai lên Tàu 2', baiLam: bai(['move_tower2(-1, 1)', 'swing_by(1)', 'extend()']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Quên extend() nên đầu cần còn ở tầm 1, móc vào ô trống (4, 3)', baiLam: bai(['move_tower2(-1, 1)', 'swing_by(1)', 'move_tower2(1, -1)']), phaiCoMa: ['moc-hut'] }
       ],
-      goiY: ['Luna: move_tower2(-1, 1) bắt đầu ở nấc 6 và kết thúc tại nấc 7.', 'Luna: Từ nấc 7, gọi swing_by(3) để sang nấc 2 rồi gọi move_tower2(1, -1).']
+      goiY: ['Luna: move_tower2(-1, 1) bắt đầu ở nấc 3 và kết thúc tại nấc 0.', 'Luna: Từ nấc 0, gọi swing_by(1) và extend() để tới tháp thứ hai ở (5, 3) rồi gọi move_tower2(1, -1).']
     }),
 
     manCheBenTau({
@@ -892,15 +902,15 @@
       luatThap: true,
       huyHieu: { ma: 'che-ben-tau', ten: 'Huy hiệu Chế lệnh: giao đúng tàu' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'ship_pair', 'ship_all_pair', 'move_tower2'],
-      deBai: 'Trùm chương 2: trên hai sân, hãy phân loại chồng 2 kiện ở cầu cảng nấc 0 (3, 2) lên hai tàu bằng ship_all_pair(), sau đó quay sang nấc 2 (4, 3) dùng move_tower2(1, -1) dời tháp 2 kiện lên Tàu 2 ở nấc 1 đúng luật tháp.',
-      veMaMau: 'Kết hợp ship_all_pair(), swing_by(2) và move_tower2(1, -1).',
-      san: [SAN_BEN_2, SAN_BEN_2],
+      deBai: 'Trùm chương 2: trên hai sân, hãy phân loại chồng 2 kiện ở cầu cảng nấc 0 (3, 2) lên hai tàu bằng ship_all_pair(). Sau đó quay sang nấc 2 (3, 4) dùng move_tower2(-2, -1) dời tháp 2 kiện lên Tàu 2 ở nấc 1 đúng luật tháp, mượn cầu cảng nấc 0 vừa trống làm bãi tạm.',
+      veMaMau: 'Kết hợp ship_all_pair(), swing_by(2) và move_tower2(-2, -1).',
+      san: [SAN_BEN_3, SAN_BEN_3],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
       chong: [
-        [C(3, 2, [28, 19]), C(4, 3, [24, 12])],
-        [C(3, 2, [17, 29]), C(4, 3, [26, 14])]
+        [C(3, 2, [28, 19]), C(3, 4, [24, 12])],
+        [C(3, 2, [17, 29]), C(3, 4, [26, 14])]
       ],
-      tau: [tauDoi(23, 2), tauDoi(23, 2)],
+      tau: [tauHaiBen(23, 2), tauHaiBen(23, 2)],
       giao: [
         [{ tau: 0, so: [19] }, { tau: 1, so: [12, 24, 28] }],
         [{ tau: 0, so: [17] }, { tau: 1, so: [14, 26, 29] }]
@@ -912,23 +922,23 @@
       loiGiai: bai([
         'ship_all_pair()',
         'swing_by(2)',
-        'move_tower2(1, -1)'
+        'move_tower2(-2, -1)'
       ]),
-      sao: { o: 26, nhip: 46 },
+      sao: { o: 34, nhip: 46 },
       loiGiaiKhac: {
         moTa: 'Thêm dòng chú thích cho hai giai đoạn giao tàu',
         baiLam: bai([
           '# phân tàu ở nấc 0 rồi dời tháp ở nấc 2',
           'ship_all_pair()',
           'swing_by(2)',
-          'move_tower2(1, -1)'
+          'move_tower2(-2, -1)'
         ])
       },
       loiSai: [
         { moTa: 'Mới phân loại chồng ở nấc 0, chưa dời tháp ở nấc 2', baiLam: bai(['ship_all_pair()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Dời tháp ở nấc 2 trước khi phân loại chồng ở nấc 0', baiLam: bai(['swing_by(2)', 'move_tower2(1, -1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Dời tháp ở nấc 2 trước khi phân loại chồng ở nấc 0', baiLam: bai(['swing_by(2)', 'move_tower2(-2, -1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Gọi ship_all_pair() ở nấc 0 để giao 2 kiện đầu tiên lên Tàu 1 và Tàu 2.', 'Luna: Tiếp theo gọi swing_by(2) sang nấc 2 rồi gọi move_tower2(1, -1) để xếp tháp 2 kiện lên trên kiện lớn ở Tàu 2.']
+      goiY: ['Luna: Gọi ship_all_pair() ở nấc 0 để giao 2 kiện đầu tiên lên Tàu 1 và Tàu 2. Cầu cảng nấc 0 trống ra.', 'Luna: Tiếp theo gọi swing_by(2) sang nấc 2 rồi gọi move_tower2(-2, -1): bãi tạm là nấc 0, tháp lên Tàu 2 ở nấc 1, trên kiện lớn.']
     })
   ];
 
