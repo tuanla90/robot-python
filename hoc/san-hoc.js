@@ -465,7 +465,14 @@
         - CẦN CẨU: bệ đứng ở batDau (phải là '.', D, sàn màu hay R; không băng chuyền / bàn xoay / cổng / cửa nên bệ không bao giờ bị đẩy), chiếm ô như tường với robot khác (dongDoiTai). Không có hướng mặt (huong bỏ qua),
           không có bánh, không gắn tay kẹp / nam châm / cảm biến khác (lỗi cấu hình). Cần có HƯỚNG nac 0–3 (NAC_VEC: 0 lên, 1 phải, 2 xuống, 3 trái; 14/11 bỏ nấc chéo, mỗi lệnh quay là 90°) và TẦM tam 1–3;
           batDau.nac / batDau.tam (mặc định 0, 1); ĐẦU CẦN = bệ + tam × NAC_VEC[nac] (bệ đứng yên với tới 12 ô hình chữ thập), lúc xuất phát phải nằm trong sân.
-          MỌI LỆNH CẨU LÀ MỘT NHỊP NGAY (như go_* của drone): không có hàng chờ, không có quen-wait; wait() = một nhịp đứng yên ('dung-yen').
+          Không cờ: MỌI LỆNH CẨU LÀ MỘT NHỊP NGAY (như go_* của drone): không có hàng chờ, không có quen-wait; wait() = một nhịp đứng yên ('dung-yen').
+          CẦN GẠT ĐÔI (cfg.canGatDoi, ghép nhịp 3a, 14/11; bật từ gói 5 Đường ray, gói 1–4 không bật): bốn BỘ PHẬN ray (rail), quay (swing_*), vươn (extend / retract),
+          móc (pick_up / pick_up2 / set_down; giỏ / nam châm / gầu ở đầu cần cũng tính là móc). Lệnh cẩu chỉ RA LỆNH vào hàng chờ cauCho; wait() gom các lệnh đứng ngay trước nó
+          thành MỘT nhịp, máy làm theo thứ tự cố định (a) ray 1 ô → (b) quay → (c) vươn / thu → kiểm đầu cần trong sân → (d) móc / hạ ở đầu cần MỚI (thứ tự viết không quan trọng).
+          Quay + vươn / thu cùng nhịp chỉ kiểm đầu cần ở chỗ cuối. rail(n) abs(n) > 1 trong hàng: các nhịp đầu chỉ chạy ray, lệnh khác làm ở nhịp CUỐI của rail.
+          Hàng chờ đóng KHÔNG có wait() (lệnh cùng bộ phận lần nữa, đọc cảm biến, lệnh không phải của cẩu, hết chương trình): mỗi lệnh trong hàng chạy một nhịp riêng theo thứ tự viết như cũ,
+          không quen-wait (chương trình gói 1–4 không wait() chạy đúng số nhịp cũ). Vì vậy hai lệnh cùng bộ phận không bao giờ cùng một hàng: không có sự kiện 'cau-goi-lai'.
+          Đổi so với không cờ: `swing_left(); wait()` (cũ 2 nhịp) thành 1 nhịp. Nhiều robot: hàng xả trước lần đọc cảm biến thì bộ xếp lịch chạy xong các nhịp đó rồi mới đọc.
           swing_left() / swing_right(): nấc −1 / +1 mod 4 (quay 90°) ('quay-can' { tu, den, chieu, dau }); extend() / retract(): tầm ±1 ('vuon-can' / 'thu-can' { tu, den, dau }). Cặp ngược: swing_left ↔ swing_right, extend ↔ retract, pick_up ↔ set_down.
           Cần CAO HƠN MỌI THỨ: quay / vươn qua tường, chồng, robot, nước không bị chặn. Vươn quá 3, thu dưới 1, hay đầu cần MỚI nằm ngoài sân (kể cả khi quay): không làm, mất nhịp, 'can-het-tam' { lenh, vat: 'tam' | 'ngoai-san', nac, tam, o } (lỗi).
           Container đang treo đi theo đầu cần (treoTheo). Vết nhịp robot: nac, tam, dau {x,y}, treo [{so,tan}] (đáy → đỉnh), doi (đang móc đôi); kết quả cũng có nac / tam / dau / treo.
@@ -1090,10 +1097,11 @@
       soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung, ghiXich, phunKhiChay, coDap, dau, coCam4, cam4TaiCho,
       coOmniCheo, coChinhLuc, coRadar, coRadarNhanDang, vuaCheo,
       laXuong, coNeo, coPhao, coSetLength, coCuonDay, daiLuoi, coDongChay, neo, keo, neoCho, phaoCho,   // BẾN SÔNG: xuồng, neo, tay lưới, chong chóng
-      laCau, coMoc, coMoc2, coQuetMa, coCan, coRay, nac, tam, treo,         // CẢNG SÔNG: cần cẩu (nấc 0–3, tầm 1–3, container đang treo đáy → đỉnh), móc, móc đôi, máy quét mã, cân tải, ray
+      laCau, coMoc, coMoc2, coQuetMa, coCan, coRay, nac, tam, treo, canGatDoi, cauCho,   // CẢNG SÔNG: cần cẩu (nấc 0–3, tầm 1–3, container đang treo đáy → đỉnh), móc, móc đôi, máy quét mã, cân tải, ray
       coLoa, loa, loaCho, loaNgan, laGai, coThuGai, gai, gaiCho, coAmThanh, coPhanAm,   // HANG ĐỘNG (mùa 8): loa, bánh gai, thu/bung gai, cảm biến âm thanh
       lai9;                                                                 // M9C2: { gio: id vật trong giỏ cứu hộ của cẩu (L9) | null, phao: phao drone đã thả (L10) | null, conPhao, beDau: id bè sạc drone đang đậu (T4) | null }
     var nhip = 0, thang = false, dungSom = null;
+    var cauThuLai = false;                  // cần gạt đôi, nhiều robot: hàng chờ cẩu vừa xả ra nhịp trước lần đọc cảm biến → bộ xếp lịch chạy xong các nhịp đó rồi mới đọc (gọi lại xuLy cùng lệnh)
     function dsCamBienCo(rc, ma) { return Array.isArray(rc.camBien) && rc.camBien.some(function (c) { return c && c.ma === ma; }); }
     var damLaThua = !!cfg.damLaThua;                                       // HD2: màn ép, đâm tường (mọi loại vật cản) là thua, dừng ngay cuối nhịp đó
     /** Dựng phần riêng của một robot từ cấu hình rc (một robot: chính cfg; nhiều robot: cfg gộp với cfg.doi[i]). */
@@ -1319,6 +1327,8 @@
       nac = laCau ? (bd.nac || 0) : null;     // cần cẩu: nấc cần 0–3 (xem NAC_VEC)
       tam = laCau ? (bd.tam || 1) : null;     // cần cẩu: tầm cần 1–3
       treo = [];                              // cần cẩu: container đang treo ở móc, đáy → đỉnh (mỗi phần tử là bản ghi container của conts)
+      canGatDoi = laCau && !!rc.canGatDoi;    // cần cẩu (ghép nhịp 3a): lệnh cẩu vào hàng chờ, wait() gom thành một nhịp
+      cauCho = [];                            // cần cẩu có canGatDoi: lệnh đang chờ wait() theo thứ tự viết: { bp: 'ray'|'quay'|'vuon'|'moc', ten, lenhDi, ray?, cuc?, vetLenh }
       if (laCau) { var d0 = NAC_VEC[nac]; if (oTai(san, bd.x + d0[0] * tam, bd.y + d0[1] * tam) === null) throw new Error('Đầu cần lúc xuất phát nằm ngoài sân (bệ (' + bd.x + ', ' + bd.y + '), nấc ' + nac + ', tầm ' + tam + ').'); }
       dan = null;                             // súng hơi: số viên còn lại (null = vô hạn)
       sonCho = null;                          // máy sơn: lệnh dot() / pen_down() / pen_up() đang chờ wait(): {ten, dongPy, mau} (mau = màu LÚC GỌI)
@@ -1371,7 +1381,7 @@
         coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung, ghiXich: ghiXich, phunKhiChay: phunKhiChay, coDap: coDap, dau: dau, coCam4: coCam4, cam4TaiCho: cam4TaiCho,
         coOmniCheo: coOmniCheo, coChinhLuc: coChinhLuc, coRadar: coRadar, coRadarNhanDang: coRadarNhanDang, vuaCheo: vuaCheo,
         laXuong: laXuong, coNeo: coNeo, coPhao: coPhao, coSetLength: coSetLength, coCuonDay: coCuonDay, daiLuoi: daiLuoi, coDongChay: coDongChay, neo: neo, keo: keo, neoCho: neoCho, phaoCho: phaoCho,
-        laCau: laCau, coMoc: coMoc, coMoc2: coMoc2, coQuetMa: coQuetMa, coCan: coCan, coRay: coRay, nac: nac, tam: tam, treo: treo,
+        laCau: laCau, coMoc: coMoc, coMoc2: coMoc2, coQuetMa: coQuetMa, coCan: coCan, coRay: coRay, nac: nac, tam: tam, treo: treo, canGatDoi: canGatDoi, cauCho: cauCho,
         coLoa: coLoa, loa: loa, loaCho: loaCho, loaNgan: loaNgan, laGai: laGai, coThuGai: coThuGai, gai: gai, gaiCho: gaiCho, coAmThanh: coAmThanh, coPhanAm: coPhanAm,
         lai9: lai9
       };
@@ -1389,7 +1399,7 @@
       coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung; ghiXich = o.ghiXich; phunKhiChay = o.phunKhiChay; coDap = o.coDap; dau = o.dau; coCam4 = o.coCam4; cam4TaiCho = o.cam4TaiCho;
       coOmniCheo = o.coOmniCheo; coChinhLuc = o.coChinhLuc; coRadar = o.coRadar; coRadarNhanDang = o.coRadarNhanDang; vuaCheo = o.vuaCheo;
       laXuong = o.laXuong; coNeo = o.coNeo; coPhao = o.coPhao; coSetLength = o.coSetLength; coCuonDay = o.coCuonDay; daiLuoi = o.daiLuoi; coDongChay = o.coDongChay; neo = o.neo; keo = o.keo; neoCho = o.neoCho; phaoCho = o.phaoCho;
-      laCau = o.laCau; coMoc = o.coMoc; coMoc2 = o.coMoc2; coQuetMa = o.coQuetMa; coCan = o.coCan; coRay = o.coRay; nac = o.nac; tam = o.tam; treo = o.treo;
+      laCau = o.laCau; coMoc = o.coMoc; coMoc2 = o.coMoc2; coQuetMa = o.coQuetMa; coCan = o.coCan; coRay = o.coRay; nac = o.nac; tam = o.tam; treo = o.treo; canGatDoi = o.canGatDoi; cauCho = o.cauCho;
       coLoa = o.coLoa; loa = o.loa; loaCho = o.loaCho; loaNgan = o.loaNgan; laGai = o.laGai; coThuGai = o.coThuGai; gai = o.gai; gaiCho = o.gaiCho; coAmThanh = o.coAmThanh; coPhanAm = o.coPhanAm;
       lai9 = o.lai9;
     }
@@ -3647,7 +3657,30 @@
       function hetTam(vat, o, lg) { var e = { ma: 'can-het-tam', nhip: nhip, lenh: lg, vat: vat, nac: nac, tam: tam, o: o || oDauCan() }; sk.push(e); suKienChan.push(e); }
       function quaTai(tan, tamXet, lg, cont) { var e = { ma: 'qua-tai', nhip: nhip, lenh: lg, tan: tan, tam: tamXet, tai: tan * tamXet, taiToiDa: taiToiDa, o: oDauCan(), cont: cont.map(chupCont) }; sk.push(e); suKienChan.push(e); }
       /** (a) hành động của cần cẩu trong nhịp: h.ten = null (wait) | swing_left | swing_right | extend | retract | pick_up | pick_up2 | set_down | rail (h.ray = { n, huong, chan } dùng chung cho abs(n) nhịp). */
+      /** CẦN GẠT ĐÔI: nhịp gom nhiều bộ phận (h.ghep đã xếp ray → quay → vươn → móc), mỗi bộ phận làm như lệnh riêng, nối tiếp trong cùng nhịp.
+       *  Quay + vươn / thu cùng nhịp: chỉ kiểm đầu cần ở chỗ CUỐI (quay với tầm cũ lòi ra ngoài sân mà thu lại thì vào sân: vẫn làm được cả hai). */
+      function apCauGhep(h) {
+        var quay = null, vuon = null, gop = false;
+        h.ghep.forEach(function (c) { if (c.bp === 'quay') quay = c; if (c.bp === 'vuon') vuon = c; });
+        h.ghep.forEach(function (c) {
+          if (c.bp === 'vuon' && gop) return;
+          if (c.bp === 'quay' && vuon && quayVuonCung(quay, vuon)) { gop = true; return; }
+          apCau({ kieu: 'cau', ten: c.ten, lenhDi: c.lenhDi, ray: c.ray, cuc: c.cuc });
+        });
+      }
+      function quayVuonCung(q, vn) {
+        var nacMoi = (nac + (q.ten === 'swing_right' ? 1 : SO_NAC - 1)) % SO_NAC, dM = NAC_VEC[nacMoi], tamMoi = tam + (vn.ten === 'extend' ? 1 : -1);
+        if (tamMoi < 1 || tamMoi > TAM_CAU_TOI_DA) return false;                                   // vươn quá tầm: làm lần lượt (lỗi rơi đúng lệnh vươn)
+        if (oTai(san, rb.x + dM[0] * tam, rb.y + dM[1] * tam) !== null) return false;              // quay với tầm cũ vẫn trong sân: lần lượt là đúng
+        var dauM = { x: rb.x + dM[0] * tamMoi, y: rb.y + dM[1] * tamMoi };
+        if (oTai(san, dauM.x, dauM.y) === null) return false;
+        if (vn.ten === 'extend' && taiToiDa !== null && treo.length && tongTan(treo) * tamMoi > taiToiDa) return false;
+        sk.push({ ma: 'quay-can', nhip: nhip, tu: nac, den: nacMoi, chieu: q.ten === 'swing_right' ? 1 : -1, dau: dauM });
+        sk.push({ ma: vn.ten === 'extend' ? 'vuon-can' : 'thu-can', nhip: nhip, tu: tam, den: tamMoi, dau: dauM });
+        nac = nacMoi; tam = tamMoi; treoTheo(); return true;
+      }
       function apCau(h) {
+        if (h.ghep) return apCauGhep(h);
         var ten = h.ten, lg = h.lenhDi || null, o = oDauCan(), k = o.x + ',' + o.y;
         if (!ten) { sk.push({ ma: 'dung-yen' }); return; }
         if (CAU_LENH[ten] === 'quay') {
@@ -4319,6 +4352,36 @@
       return { ma: 'doc-cam-bien', cam: MA_CAM_AM_THANH, ham: yc.ten, tu: { x: rb.x, y: rb.y }, o: gan ? { x: gan.x, y: gan.y } : { x: rb.x, y: rb.y }, khoang: khoang, not: not, nguon: gan ? gan.loaiNguon : null, nhip: nhip };
     }
 
+    /** CẦN GẠT ĐÔI (mùa 4, cfg.canGatDoi; KE-HOACH-GHEP-NHIP.md 3a): bộ phận của một lệnh cẩu ('ray' | 'quay' | 'vuon' | 'moc'), null nếu không phải lệnh cẩu. */
+    function boPhanCau(ten) {
+      if (ten === 'rail') return 'ray';
+      if (CAU_LENH[ten]) return CAU_LENH[ten];
+      if (TAY_MOC.indexOf(ten) >= 0 || TAY_GIO.indexOf(ten) >= 0 || TAY_NAM_CHAM.indexOf(ten) >= 0 || ten === 'grab' || ten === 'release') return 'moc';
+      return null;
+    }
+    function nhipCauMot(c) {                                     // một lệnh cẩu chạy riêng như cũ (rail(n): abs(n) nhịp)
+      if (c.bp === 'ray') { for (var i = 0; i < Math.abs(c.ray.n); i++) if (motNhip({ kieu: 'cau', ten: 'rail', ray: c.ray, lenhDi: c.lenhDi })) return true; return false; }
+      return motNhip({ kieu: 'cau', ten: c.ten, lenhDi: c.lenhDi, cuc: c.cuc });
+    }
+    /** Hàng chờ đóng KHÔNG có wait(): mỗi lệnh một nhịp riêng theo thứ tự viết (chương trình gói 1–4 không có wait() chạy đúng số nhịp cũ); vết lệnh xếp lại trước nhịp của nó. */
+    function xaCauCho() {
+      var ds = cauCho; cauCho = [];
+      ds.forEach(function (c) { var iv = vet.lastIndexOf(c.vetLenh); if (iv >= 0) vet.splice(iv, 1); });
+      for (var i = 0; i < ds.length; i++) { vet.push(ds[i].vetLenh); if (nhipCauMot(ds[i])) return true; }
+      return false;
+    }
+    /** wait() gom hàng chờ thành MỘT nhịp, thứ tự máy làm cố định: (a) ray 1 ô → (b) quay → (c) vươn / thu → (d) móc / hạ ở đầu cần MỚI.
+     *  rail(n) với abs(n) > 1: các nhịp đầu chỉ có ray, lệnh khác làm ở nhịp CUỐI của rail. Hàng trống: một nhịp đứng yên như cũ. */
+    var THU_BP_CAU = { ray: 0, quay: 1, vuon: 2, moc: 3 };
+    function gomCauCho() {
+      var ds = cauCho; cauCho = [];
+      if (!ds.length) return motNhip({ kieu: 'cau', ten: null, lenhDi: null });
+      var ghep = ds.slice().sort(function (a, b) { return THU_BP_CAU[a.bp] - THU_BP_CAU[b.bp]; }), r = ghep[0].bp === 'ray' ? ghep[0] : null;
+      if (r) for (var i = 1; i < Math.abs(r.ray.n); i++) if (motNhip({ kieu: 'cau', ten: 'rail', ray: r.ray, lenhDi: r.lenhDi })) return true;
+      if (ghep.length === 1) return motNhip({ kieu: 'cau', ten: ghep[0].ten, ray: ghep[0].ray, lenhDi: ghep[0].lenhDi, cuc: ghep[0].cuc });
+      return motNhip({ kieu: 'cau', ten: r ? 'rail' : ghep[0].ten, ray: r ? r.ray : undefined, lenhDi: ghep[0].lenhDi, ghep: ghep });
+    }
+
     /** Xử lý một lời gọi hàm gốc nhân nhường ra. Trả về true nếu phải dừng. */
     function xuLy(yc) {
       if (yc.ten !== 'wait' && OMNI_CHEO_BIEN[yc.ten] === undefined && yc.ten !== 'beat') vuaCheo = false;
@@ -4327,6 +4390,13 @@
         if (ngLenh === 'chinh' || ngLenh === 'hamMan') {
           loi = { loai: 'runtime-error', ma: 'lenh-chua-mo', dong: yc.dong, ten: yc.ten, thongDiep: 'Lệnh ' + yc.ten + '() chưa có trên khay ở màn này.' };
           return true;
+        }
+      }
+      if (laCau && canGatDoi && cauCho.length && yc.ten !== 'wait') {   // CẦN GẠT ĐÔI: hàng chờ đóng KHÔNG có wait() (đọc cảm biến, lệnh cùng bộ phận lần nữa, lệnh khác) → mỗi lệnh một nhịp riêng như cũ
+        var bpMoi = boPhanCau(yc.ten);
+        if (!bpMoi || cauCho.some(function (c) { return c.bp === bpMoi; })) {
+          if (xaCauCho()) return true;
+          if (laDoi && !bpMoi) { cauThuLai = true; return false; }     // nhiều robot: các nhịp vừa xả còn nằm trong hangNhip; đọc / làm lệnh này SAU khi chúng chạy
         }
       }
       vet.push({ loai: 'lenh', ten: yc.ten, dongPy: yc.dong, nganPy: yc.ngan });
@@ -4359,7 +4429,14 @@
         return false;
       }
       if (laCau) {                                               // CẢNG SÔNG: mọi lệnh cần cẩu là MỘT nhịp ngay (như go_* của drone); không có hàng chờ nên không có quen-wait
-        if (yc.ten === 'wait') return motNhip({ kieu: 'cau', ten: null, lenhDi: null });
+        if (yc.ten === 'wait') return canGatDoi ? gomCauCho() : motNhip({ kieu: 'cau', ten: null, lenhDi: null });   // cần gạt đôi: wait() gom hàng chờ thành MỘT nhịp
+        if (canGatDoi && boPhanCau(yc.ten) && yc.ten !== 'rail') {                  // cần gạt đôi: lệnh chỉ RA LỆNH vào hàng chờ (đối số của giỏ vẫn kiểm ngay bên dưới như cũ)
+          if (!(TAY_GIO.indexOf(yc.ten) >= 0 && yc.thamSo && yc.thamSo.length)) {
+            cauCho.push({ bp: boPhanCau(yc.ten), ten: yc.ten, lenhDi: { ten: yc.ten, dongPy: yc.dong }, vetLenh: vet[vet.length - 1],
+              cuc: TAY_NAM_CHAM.indexOf(yc.ten) >= 0 && yc.ten !== 'magnet_off' ? (dao.cuc ? CUC_DOI[CUC_LENH[yc.ten]] : CUC_LENH[yc.ten]) : null });
+            return false;
+          }
+        }
         if (CAU_LENH[yc.ten] || TAY_MOC.indexOf(yc.ten) >= 0) return motNhip({ kieu: 'cau', ten: yc.ten, lenhDi: { ten: yc.ten, dongPy: yc.dong } });
         if (TAY_GIO.indexOf(yc.ten) >= 0) {                      // M9C2 (L9): giỏ cứu hộ ở đầu cần, mỗi lệnh một nhịp như móc; không đối số
           if (yc.thamSo && yc.thamSo.length) {
@@ -4382,6 +4459,7 @@
           if (!coRay) { loi = { loai: 'runtime-error', ma: 'khong-ray', dong: yc.dong, ten: 'rail', thongDiep: 'Cần cẩu này không có bánh ray.' }; return true; }
           var rr = { n: rn, huong: rn > 0 ? 1 : -1, chan: false, daDi: 0 }, lr = { ten: 'rail', dongPy: yc.dong };
           vet[vet.length - 1].railN = rn;
+          if (canGatDoi) { cauCho.push({ bp: 'ray', ten: 'rail', lenhDi: lr, ray: rr, vetLenh: vet[vet.length - 1] }); return false; }   // cần gạt đôi: rail(n) vào hàng chờ
           for (var ir = 0; ir < Math.abs(rn); ir++) if (motNhip({ kieu: 'cau', ten: 'rail', ray: rr, lenhDi: lr })) return true;
           return false;
         }
@@ -4836,10 +4914,10 @@
         try {
           while (!x.xong && !hangNhip.length) {
             if (x.tiep) { x.r = x.g.next(x.traVe); x.tiep = false; }
-            if (x.r.done) { x.xong = true; break; }
+            if (x.r.done) { if (laCau && cauCho.length && !loi) xaCauCho(); x.xong = true; break; }   // cần gạt đôi: hết chương trình, xả hàng chờ cẩu
             traVe = 0;
             var dung = xuLy(x.r.value);
-            x.traVe = traVe; x.tiep = true;
+            x.traVe = traVe; x.tiep = !cauThuLai; cauThuLai = false;           // cần gạt đôi: gọi lại đúng lệnh này sau khi các nhịp vừa xả chạy xong
             if (dung) { x.g.return(); x.xong = true; }
           }
         } catch (e) {
@@ -4990,6 +5068,7 @@
       else throw e;
     }
 
+    if (laCau && cauCho.length && !loi && !thang && !dungSom) xaCauCho();       // cần gạt đôi: chương trình hết mà hàng chờ còn lệnh (không wait()) → mỗi lệnh một nhịp như cũ
     while (nguoiConDi()) { if (motNhip(nghi())) break; }                       // M9C1: chương trình hết mà người còn đi → nhịp rỗng cho người đi tiếp
 
     // xích: chương trình hết khi còn quay dở (chưa thắng) → ghi lại, để chẩn đoán nói rõ

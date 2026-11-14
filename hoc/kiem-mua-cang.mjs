@@ -14,6 +14,7 @@
     11. Vết nhịp / kết quả: robot.nac / tam / dau / treo / doi, mucVet.chong / tau, kết quả chong / chongBanDau / tau / daGiao / ray; màn cũ (xe bánh) không đổi.
     12. Nhiều robot: bệ cẩu chiếm ô như tường với xe; xe đi qua ray như sàn; rail bị xe chặn; đầu cần không chặn ai.
     13. cham.js đưa lớp mới xuống SanHoc.chay; lời chẩn đoán cho các sự kiện mới; so-lenh / kho-ham đủ tên.
+    14. Cần gạt đôi (cfg.canGatDoi): wait() gom lệnh cẩu khác bộ phận thành một nhịp; hàng đóng không wait() chạy như cũ; màn ép mẫu 3a.
    Chạy: node hoc/kiem-mua-cang.mjs        (trượt thì thoát mã 1)
    ========================================================================== */
 import path from 'node:path';
@@ -379,6 +380,57 @@ console.log('\n== 13. cham.js: lớp mới xuống SanHoc.chay, lời chẩn đo
   kiem('so-lenh: 10 lệnh gốc mới có mô tả; cặp ngược khớp SanHoc.LENH_NGUOC', ten.every((t) => SoLenh.lenhGoc.some((l) => l.ten === t && l.moTa && (l.nguoc || null) === (SanHoc.LENH_NGUOC[t] || null))));
   kiem('so-lenh: capNguoc() có swing_left / extend / pick_up', ['swing_left', 'extend', 'pick_up'].every((t) => SoLenh.capNguoc().some((c) => c[0] === t || c[1] === t)));
   kiem('kho-ham: 10 tên mới là tên gốc (cấm đặt); hook / unhook KHÔNG bị cấm (mùa 3 đã dạy trẻ tự tạo hook() / unhook())', ten.every((t) => KhoHam.HAM_GOC_MAC_DINH.includes(t)) && !KhoHam.HAM_GOC_MAC_DINH.includes('hook') && !KhoHam.HAM_GOC_MAC_DINH.includes('unhook'));
+}
+
+console.log('\n== 14. Cần gạt đôi (cfg.canGatDoi, KE-HOACH-GHEP-NHIP.md 3a): wait() gom lệnh cẩu của bộ phận khác nhau thành một nhịp ==');
+{
+  const g = (them) => cau(Object.assign({ canGatDoi: true }, them || {}));
+  let r = chay(cau(), 'swing_left()\nextend()\nwait()\n');
+  kiem('không cờ: swing_left(); extend(); wait() vẫn 3 nhịp như cũ', r.nhip === 3, r.nhip);
+  r = chay(g(), 'swing_left()\nextend()\nwait()\n');
+  kiem('có cờ: swing_left(); extend(); wait() = 1 nhịp; trong nhịp quay trước rồi vươn; nấc 3 tầm 2, đầu cần (2,2)',
+    r.nhip === 1 && J(nhipVet(r)[0].suKien.map((e) => e.ma).filter((m) => m === 'quay-can' || m === 'vuon-can')) === J(['quay-can', 'vuon-can']) && r.nac === 3 && r.tam === 2 && J(r.dau) === J({ x: 2, y: 2 }), J({ n: r.nhip, s: sks(r).map((e) => e.ma), nac: r.nac, tam: r.tam }));
+  r = chay(g(), 'extend()\nswing_left()\nwait()\n');
+  kiem('thứ tự viết không quan trọng: extend(); swing_left(); wait() cũng quay trước, vươn sau, 1 nhịp', r.nhip === 1 && sks(r).findIndex((e) => e.ma === 'quay-can') < sks(r).findIndex((e) => e.ma === 'vuon-can') && r.tam === 2 && r.nac === 3, J(sks(r)));
+  r = chay(g(), 'swing_left()\nextend()\n');
+  kiem('hàng chờ hết chương trình mà không có wait(): mỗi lệnh một nhịp như cũ (2 nhịp), không quen-wait', r.nhip === 2 && !r.suKien.some((e) => e.ma === 'quen-wait') && r.tam === 2 && r.nac === 3, J({ n: r.nhip, sk: r.suKien }));
+  r = chay(g(), 'swing_left()\nswing_left()\nextend()\nset_down()\npick_up()\n');
+  kiem('chương trình kiểu gói 1–4 (không wait()) chạy đúng số nhịp cũ khi bật cờ: 5 lệnh = 5 nhịp, vết lệnh nằm trước nhịp của nó',
+    r.nhip === 5 && J(r.vet.map((e) => e.loai === 'lenh' ? e.ten : '|')) === J(['swing_left', '|', 'swing_left', '|', 'extend', '|', 'set_down', '|', 'pick_up', '|']), J(r.vet.map((e) => e.loai === 'lenh' ? e.ten : '|')));
+  r = chay(g({ batDau: { x: 4, y: 2, nac: 1 } }), 'extend()\nextend()\nwait()\n');
+  kiem('lệnh cùng bộ phận lần nữa đóng hàng chờ: extend() riêng 1 nhịp, extend(); wait() 1 nhịp = 2 nhịp, tầm 3', r.nhip === 2 && r.tam === 3, J({ n: r.nhip, tam: r.tam }));
+  r = chay(g(), 'swing_left()\nwait()\n');
+  kiem('rủi ro đã biết: swing_left(); wait() (cũ = 2 nhịp) thành 1 nhịp khi bật cờ', r.nhip === 1 && r.nac === 3, r.nhip);
+  r = chay(g(), 'wait()\nwait()\n');
+  kiem('wait() với hàng trống vẫn là một nhịp đứng yên', r.nhip === 2 && dem(r, 'dung-yen') === 2, r.nhip);
+  r = chay(g(), 'swing_right()\nc = read_code()\nwait()\n');
+  kiem('đọc cảm biến đóng hàng chờ: swing_right chạy riêng TRƯỚC khi đọc (đọc ô (5,2) trống = -1), rồi wait() 1 nhịp = 2 nhịp',
+    r.nhip === 2 && docs(r)[0].so === -1 && J(docs(r)[0].o) === J({ x: 5, y: 2 }), J({ n: r.nhip, d: docs(r) }));
+  r = chay(g(), 'pick_up()\nswing_right()\nswing_right()\nwait()\nset_down()\n');
+  kiem('móc + quay khác bộ phận nhưng swing_right lần 2 đóng hàng: pick_up, swing_right riêng, swing_right; wait() gộp, set_down riêng = 4 nhịp', r.nhip === 4 && co(r, 'ha-cont') && J(chongO(r, 4, 3)) === J([7]), J({ n: r.nhip, sk: sks(r).map((e) => e.ma) }));
+  // móc / hạ ở đầu cần MỚI: quay + móc một nhịp
+  r = chay(g({ chong: [{ x: 4, y: 3, cont: [{ so: 9 }] }], batDau: { x: 4, y: 2, nac: 1 } }), 'swing_right()\npick_up()\nwait()\n');
+  kiem('quay + móc cùng nhịp: móc ở đầu cần MỚI (4,3), 1 nhịp', r.nhip === 1 && co(r, 'moc-cont') && J(sk1(r, 'moc-cont').o) === J({ x: 4, y: 3 }), J(sks(r)));
+  // ray: rail(2) + pick_up + wait → pick_up ở nhịp CUỐI của rail, đầu cần mới
+  r = chay(g({ chong: [{ x: 5, y: 1, cont: [{ so: 3 }] }], batDau: { x: 3, y: 2 } }), 'rail(2)\npick_up()\nwait()\n');
+  kiem('rail(2); pick_up(); wait(): 2 nhịp, móc ở nhịp CUỐI của ray (đầu cần (5,1))', r.nhip === 2 && co(r, 'moc-cont') && nhipVet(r)[1].suKien.some((e) => e.ma === 'moc-cont') && !nhipVet(r)[0].suKien.some((e) => e.ma === 'moc-cont'), J(nhipVet(r).map((n) => n.suKien.map((e) => e.ma))));
+  r = chay(g({ chong: [{ x: 5, y: 1, cont: [{ so: 3 }] }], batDau: { x: 4, y: 2 } }), 'rail(1)\nswing_right()\nwait()\n');
+  kiem('ray + quay cùng nhịp: ray chạy trước (bệ (5,2)) rồi quay sang phải: đầu cần (6,2), 1 nhịp', r.nhip === 1 && J(r.dau) === J({ x: 6, y: 2 }) && sks(r).findIndex((e) => e.ma === 'chay-ray') < sks(r).findIndex((e) => e.ma === 'quay-can'), J(sks(r)));
+  // quay + thu: đầu cần chỉ kiểm ở chỗ CUỐI
+  r = chay(g({ san: ['.....', '.....', '.....', '.....'], tau: undefined, chong: [], hamGoc: CAU.filter((t) => t !== 'rail'), batDau: { x: 2, y: 2, nac: 1, tam: 2 } }), 'swing_right()\nretract()\nwait()\n');
+  kiem('quay + thu cùng nhịp: quay với tầm 2 thì lòi ra ngoài sân, thu về tầm 1 thì trong sân → làm được cả hai, đầu cần (2,3), không can-het-tam',
+    r.nhip === 1 && !co(r, 'can-het-tam') && r.nac === 2 && r.tam === 1 && J(r.dau) === J({ x: 2, y: 3 }), J({ s: sks(r), dau: r.dau, nac: r.nac, tam: r.tam }));
+  r = chay(g({ san: ['.....', '.....', '.....', '.....'], tau: undefined, chong: [], hamGoc: CAU.filter((t) => t !== 'rail'), batDau: { x: 2, y: 2, nac: 1, tam: 2 } }), 'swing_right()\nretract()\n');
+  kiem('…còn tách nhịp (không wait()) thì quay trước bị can-het-tam như cũ, rồi thu', r.nhip === 2 && co(r, 'can-het-tam') && r.nac === 1 && r.tam === 1, J(sks(r)));
+  // MÀN ÉP mẫu 3a: cần chĩa phải tầm 1 vào container, boong ở hướng lên tầm 3, tàu cập đúng 3 nhịp
+  const ep = () => ({ loaiRobot: 'cau', hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], san: ['~~~T~~~', '.......', '.......', '..RR...'], batDau: { x: 3, y: 3, nac: 1, tam: 1 },
+    chong: [{ x: 4, y: 3, cont: [{ so: 5 }] }], tau: [{ o: [{ x: 3, y: 0 }], co: 3, vang: 40 }], giao: [{ tau: 0, so: [5] }], mucTieu: 'giao-tau', nhipToiDa: 30, canGatDoi: true });
+  r = chay(ep(), 'pick_up()\nwait()\nswing_left()\nextend()\nwait()\nextend()\nset_down()\nwait()\n');
+  kiem('màn ép mẫu: ghép pick_up(); wait() → swing_left(); extend(); wait() → extend(); set_down(); wait() = 3 nhịp, tàu mang số 5 đi, THẮNG', r.thang === true && r.nhip === 3, J({ t: r.thang, n: r.nhip, s: sks(r).map((e) => e.ma) }));
+  r = chay(ep(), 'pick_up()\nswing_left()\nextend()\nextend()\nset_down()\n');
+  kiem('màn ép mẫu: tách lệnh = 5 nhịp, tàu rời ở nhịp 3 → set_down ha-bi-chan tau-vang, KHÔNG thắng', r.thang === false && r.nhip === 5 && sk1(r, 'ha-bi-chan') && sk1(r, 'ha-bi-chan').vat === 'tau-vang', J({ t: r.thang, n: r.nhip, s: sks(r).map((e) => e.ma) }));
+  r = chay(Object.assign(ep(), { canGatDoi: false }), 'pick_up()\nwait()\nswing_left()\nextend()\nwait()\nextend()\nset_down()\nwait()\n');
+  kiem('màn ép mẫu không cờ: cùng chương trình = 8 nhịp, không thắng', r.thang === false && r.nhip === 8, J({ t: r.thang, n: r.nhip }));
 }
 
 console.log('\n---------------------------------------------');

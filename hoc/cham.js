@@ -1634,7 +1634,7 @@
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatDang: lm.vatDang || undefined, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay, canGatDoi: man.canGatDoi,
         omniCheo: man.omniCheo || (man.robot && man.robot.omniCheo), chinhLuc: man.chinhLuc || (man.robot && man.robot.chinhLuc), nhanDang: man.nhanDang || (man.robot && man.robot.nhanDang), tamNemMacDinh: man.tamNemMacDinh,
         thuGai: man.thuGai || (man.robot && man.robot.thuGai), phanAm: man.phanAm || (man.robot && man.robot.phanAm),
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
@@ -1793,7 +1793,7 @@
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,
-            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, xichDay: mi.xichDay, beSung: mi.beSung, ghiXich: mi.ghiXich, phunKhiChay: mi.phunKhiChay, mucBanDau: mi.mucBanDau,
+            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, xichDay: mi.xichDay, beSung: mi.beSung, ghiXich: mi.ghiXich, phunKhiChay: mi.phunKhiChay, canGatDoi: mi.canGatDoi, mucBanDau: mi.mucBanDau,
             omniCheo: mi.omniCheo || (mi.robot && mi.robot.omniCheo), chinhLuc: mi.chinhLuc || (mi.robot && mi.robot.chinhLuc), nhanDang: mi.nhanDang || (mi.robot && mi.robot.nhanDang), tamNemMacDinh: mi.tamNemMacDinh,
             thuGai: mi.thuGai || (mi.robot && mi.robot.thuGai), phanAm: mi.phanAm || (mi.robot && mi.robot.phanAm),
             co: SanHoc.coCuaSan(mi.co, si, nhieu),
@@ -1934,7 +1934,7 @@
     var res = SanHoc.chay({
       san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st), roBanDau: st.ro === true ? true : undefined,
-      danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
+      danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay, canGatDoi: man.canGatDoi, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
       omniCheo: man.omniCheo || (man.robot && man.robot.omniCheo), chinhLuc: man.chinhLuc || (man.robot && man.robot.chinhLuc), nhanDang: man.nhanDang || (man.robot && man.robot.nhanDang), tamNemMacDinh: man.tamNemMacDinh, daLapHo: man.daLapHo,
       thuGai: man.thuGai || (man.robot && man.robot.thuGai), phanAm: man.phanAm || (man.robot && man.robot.phanAm),
       daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g),
