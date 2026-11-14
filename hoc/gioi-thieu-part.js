@@ -250,17 +250,17 @@
     },
     'cau': {
       khe: 'than', ten: 'Cần cẩu cảng',
-      moTa: 'Mâm xoay cảng sông với cần vươn 3 tầm, xoay 8 nấc quanh trụ cẩu.',
+      moTa: 'Mâm xoay cảng sông với cần vươn 3 tầm, quay 4 hướng quanh trụ cẩu.',
       lenh: ['swing_left', 'swing_right', 'extend', 'retract', 'rail', 'wait'],
       moTaLenh: {
-        swing_left: 'Quay cần sang trái 1 nấc trong 8 nấc một vòng',
-        swing_right: 'Quay cần sang phải 1 nấc trong 8 nấc một vòng',
+        swing_left: 'Quay cần sang trái 1 nấc, 4 nấc là một vòng',
+        swing_right: 'Quay cần sang phải 1 nấc, 4 nấc là một vòng',
         extend: 'Vươn cần ra thêm 1 tầm, tối đa tầm 3',
         retract: 'Thu cần vào 1 tầm, tối thiểu tầm 1',
         rail: 'Trượt chân cẩu trên ray 1 ô theo hướng d'
       },
       gioi: [
-        'Quay tròn 8 nấc quanh trụ, nấc 0 là phía trên và tăng dần theo chiều kim đồng hồ',
+        'Quay 4 hướng quanh trụ: nấc 0 lên, 1 phải, 2 xuống, 3 trái',
         'Vươn cần từ tầm 1 tới tầm 3 để đưa đầu cần tới đúng ô mục tiêu',
         { can: ['rail'], chu: 'rail(d) trượt chân cẩu dọc theo đường ray cảng' }
       ],
