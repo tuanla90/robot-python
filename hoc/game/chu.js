@@ -562,6 +562,7 @@
       'pg.luc-ban.1': 'Phun mạnh spray("high"): tia nước bay xa, nhưng xe giật lùi một ô.',
       'pg.luc-ban.2': 'Phun nhẹ spray() như trước: nước chỉ bay hai ô, xe đứng yên.',
       'pg.luc-ban.3': 'Gần thì phun nhẹ, xa thì phun mạnh. Em hỏi distance() để chọn!',
+      'pg.luc-ban.4': 'Ghì xích: phun mạnh cùng lúc hai xích tiến, xe đứng vững!',
       'pg.do-nhiet.1': 'Van đang mở thì nóng. Lỡ phun vào là van đóng mất!',
       'pg.do-nhiet.2': 'Mắt hồng ngoại đo được nhiệt: van nóng để yên, nguội mới phun.',
       'pg.do-nhiet.3': 'Lệnh mới: warm() hỏi vật phía trước có đang nóng không.',
