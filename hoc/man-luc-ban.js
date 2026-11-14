@@ -16,6 +16,7 @@
      luc-ban.9 brace_spray() = spray("high"), left_move(), right_move(), wait()                         GHÌ XÍCH: phun mạnh mà xe đứng yên (1 nhịp)
    GHÉP NHỊP (14/11, KE-HOACH-GHEP-NHIP.md mục 2a; lộ trình bật ghiXich từ màn 6): 6 trình diễn ghì xích (thay "Nhẹ để mở, mạnh để đẩy"), 7 màn ép thùng kẹt hành lang
    (thay "Đố: quên dùng p", hàm của màn tap_left), 9 hàm brace_spray() (thay "Đố: đảo nhánh", hàm của màn pick_spray).
+   Màn 7: chương trình chính khóa, em viết lại thân hàm của màn open_valve() (đường cong cả mùa kiem-lo-trinh (g): 6 dòng ở chương trình chính quá mốc; 7 nhịp làm mốc cho màn 8).
 
    Sao: sao.nhip = số nhịp của lời giải chuẩn = đường ngắn nhất (BFS do-duong-sung-hoi.mjs có thêm hai hành động phun nhẹ khi man.lucBan); sao.o = ô của lời giải chuẩn.
    Hướng: 0 lên, 1 phải, 2 xuống, 3 trái. (x, y) với y = 0 ở hàng trên. Nối tiếp man-chuoi-1.js vào cùng window.ManHoc. Thứ tự chương: thu-tu-chuong.js.

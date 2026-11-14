@@ -18,6 +18,12 @@
    Màn chọn lực bằng cảm biến đều KHÓA chương trình chính và gọi hàm ở nhiều chỗ xa gần khác nhau (hay trùm nhiều sân): thân hàm cố định không thắng được.
    MỘT SÂN mỗi màn (luật lộ trình: nhiều sân chỉ ở trùm). kiem-che-luc-ban.mjs + do-duong-che-luc-ban.mjs kiểm.
    Không beSung (gói 9), không warm() (gói 7).
+   GHÉP NHỊP (14/11, KE-HOACH-GHEP-NHIP.md mục 2; lộ trình bật ghiXich cả chương, phunKhiChay từ màn 6):
+     5  chương trình chính gọi brace_spray() (ghì xích, hàm của em luc-ban.9) ở van B.
+     6  TRÌNH DIỄN vừa chạy vừa phun (chiChay): spray() + left_move() + right_move() trước một wait() = xe đi một ô rồi phun nhẹ từ ô mới. Thay "Hàm close_spray()" (hàm close_spray đã bỏ).
+     9  MÀN ÉP vừa chạy vừa phun "Đố: nhịp bị tách": hàm của màn spray_go() bị một wait() tách hai nhịp; hai cửa nhịp chỉ mở đúng một nhịp nên tách nhịp là thua. Thay "Đố: lực bị viết cứng".
+     10 trùm: van cuối hành lang mở bằng brace_spray().
+   Màn 1–4, 7, 8 (chọn lực bằng distance()) KHÔNG ghép: sân các màn này dùng cú giật làm bước đi (phun mạnh thì xe sang làn bên); ghì xích ở đó phá ý chọn lực.
    ========================================================================== */
 (function () {
   'use strict';
