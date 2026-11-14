@@ -84,6 +84,7 @@ Mùa 3, 6 không nằm trong kế hoạch này (đã ghép kiểu "kèm bước"
 - Nối Python: mùa 4 chưa học `list` (Python mùa 4: số âm, `abs`, `%`, `//`); sang mùa 6 học `list` thì nhắc lại: `append()` / `pop()` là ngăn xếp, `pop(0)` là hàng đợi.
 
 ### 3e. Cần quay 4 hướng thay 8 nấc (user chốt 13/11; làm cùng đợt 3a)
+- XONG 14/11 (merge 9ebfa0c, nhánh claude/mua-4-cau-4-huong): lõi SO_NAC 4, hình quay 90°, 200/200 màn mùa 4 + màn cẩu mùa 9 thắng; 34 màn dời sân, bài `% 8` thành `% 4`, `load_safe_stack(d)` thêm tham số. Gộp nhịp 3a chưa làm.
 - Lý do: 8 nấc cho đầu cần chéo ở (±tầm, ±tầm) nên cần trông dài ~1,4 lần; 4 hướng thì tầm đúng bằng số ô, độ dài cần không đổi. Quay 90° còn 1 lệnh (nay 2), 180° còn 2 (nay 4): bài quay xa ngắn lại, ghép với 3a gọn một nhịp.
 - Luật: `nac` 0–3 (0 lên, 1 phải, 2 xuống, 3 trái); `swing_left()` / `swing_right()` quay 90°. Đổi hẳn (mùa 4 đang ẩn), không giữ đường 8 nấc. `batDau.nac` cũ phải đổi sang hệ 4 hướng.
 - Tầm với: gói 1–4 bệ đứng yên chỉ với 12 ô hình chữ thập (nay 24): dùng chính điều này làm lý do mở ray ở gói 5 ("ô chéo cần không với tới, bệ phải chạy").
