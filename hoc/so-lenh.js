@@ -221,7 +221,6 @@
     m('auto_left', 'hoi', 'Quay trái, tự chọn lực phun van bên trái, rồi quay lại', 'che-luc-ban', 'che-luc-ban.2'),
     m('auto_right', 'hoi', 'Quay phải, tự chọn lực phun van bên phải, rồi quay lại', 'che-luc-ban', 'che-luc-ban.4'),
     m('squirt_left', 'hoi', 'Quay trái, phun với lực p, rồi quay lại', 'che-luc-ban', 'che-luc-ban.5'),
-    m('close_spray', 'hoi', 'Đi tới sát van rồi phun nhẹ, xe đứng yên', 'che-luc-ban', 'che-luc-ban.6'),
     m('scan_left', 'hoi', 'Hai lần: tự chọn lực phun van bên trái rồi tiến một ô', 'che-luc-ban', 'che-luc-ban.7'),
     m('auto_turn', 'hoi', 'Tự chọn lực phun van trước mặt rồi quay trái', 'che-luc-ban', 'che-luc-ban.8'),
     // chương che-do-nhiet · Hàm đo nhiệt (light, find_hot là hàm của màn nên không có ở đây)

@@ -3349,6 +3349,14 @@
       if (m.doi) m.doi.forEach(function (r) { if (r && r.ghiXich === undefined) r.ghiXich = true; });
       else if (m.ghiXich === undefined) m.ghiXich = true;
     });
+    // 14/11 (mục 2b): VỪA CHẠY VỪA PHUN mở từ che-luc-ban.6 (màn trình diễn) tới hết gói 6: phun NHẸ cùng nhịp hai xích đi thẳng thì xe đi một ô rồi phun từ ô mới.
+    // Gói 10 bật cờ từng màn (man-trum-mua-2.js), như ghiXich.
+    var iChay = M.danhSach.indexOf(get('che-luc-ban.6'));
+    if (iChay >= 0) M.danhSach.forEach(function (m, i) {
+      if (i < iChay || !goiGhi[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.phunKhiChay === undefined) r.phunKhiChay = true; });
+      else if (m.phunKhiChay === undefined) m.phunKhiChay = true;
+    });
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.
