@@ -370,6 +370,21 @@ async function main() {
     assert.deepEqual(loi, []);
   });
 
+  // 14/11 ghép nhịp (KE-HOACH-GHEP-NHIP.md mục 2a, PHÓNG ±2 ô ở gói 10): trum-mua-2.8 trình diễn, .9 màn ÉP (hàm boost()), .10 dùng lại; ghiXich bật từng màn
+  if (!CHI) kiem('ghép nhịp: phóng ở trum-mua-2.8 (trình diễn) / .9 (ép) / .10; .9 bỏ cờ ghiXich, đi thường hay tách nhịp đều thua; ghì ở tong-hop-2.9', () => {
+    const coSK = (m, ma) => cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi).theoSan.every((x) => x.vet.some((v) => (v.suKien || []).some((e) => e.ma === ma)));
+    const d = get('trum-mua-2.8'), e = get('trum-mua-2.9'), t = get('trum-mua-2.10');
+    assert.ok(d.chiChay && d.chinhCoDinh && d.ghiXich && coSK(d, 'phong'), 'trum-mua-2.8 không phải màn trình diễn có nhịp phóng');
+    assert.ok(e.ghiXich && (e.taoHam || []).includes('boost') && coSK(e, 'phong'), 'trum-mua-2.9 lời giải không phóng');
+    assert.ok(t.ghiXich && coSK(t, 'phong'), 'trum-mua-2.10 lời giải không phóng');
+    assert.ok(coSK(get('tong-hop-2.9'), 'ghi-xich'), 'tong-hop-2.9 lời giải không ghì xích');
+    assert.equal(cham(e, e.loiGiai, e.loiGiai.hamCuaEmMoi, { ghiXich: false }).thang, false, 'trum-mua-2.9 bỏ cờ ghiXich mà vẫn thắng');
+    const h = (than) => cham(e, e.loiGiai, [{ ten: 'boost', thamSo: [], than }]).thang;
+    for (const than of [['forward(2)'], ['move()', 'move()'], ['spray_back("high")', 'wait()', 'move()'], ['spray_back("high")', 'wait()', 'left_move()', 'right_move()', 'wait()']]) assert.equal(h(than), false, 'trum-mua-2.9 thân boost() không phóng mà vẫn thắng: ' + than.join(' / '));
+    const soGhep = DS.filter((m) => m.ghiXich || m.phunKhiChay).length;
+    assert.ok(soGhep >= 4, 'gói 10 chỉ ' + soGhep + ' màn bật ghép nhịp');
+  });
+
   /* ---------------------------------------------------------------- bảng */
   console.log('\nBẢNG MÀN: số | mã | tên | kiểu bài | điều mới (yMoi) | dòng | sân | nhịp | ô không tường | ô code | BFS từng sân | cần xích đẩy | dãy chung');
   for (const m of DS) {

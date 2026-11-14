@@ -207,16 +207,18 @@
   var BD_U9 = [{ x: 4, y: 4, huong: 0 }, { x: 4, y: 6, huong: 0 }];
   var C_U9 = ['put_out()', 'far_push()', 'tr_right()', 'far_push()', 'tr_right()', 'far_push()'];
   var T_FAR = ['d = distance()', 'push(d)'];
-  // 10 (TRÙM CUỐI MÙA 2, hai dây chuyền, một chương trình): xe (1,3) quay phải ở trạm đầu hành lang: lửa sát mũi (cỡ 1 / 3), giếng trái đang cháy (cỡ 1 / 2) chắn van (1,0)
+  // 10 (TRÙM CUỐI MÙA 2, hai dây chuyền, một chương trình): xe (1,3) quay phải ở trạm đầu hành lang: lửa sát mũi (cỡ 1 / 3), giếng trái đang cháy (cỡ 1 / 3) chắn van (1,0)
   //   mở cửa trên hành lang; hốc (1,4) để xe giật. Hành lang dài ngắn khác nhau, hết ở tường: go_to_wall(). Né xuống làn dưới (sidestep): thùng xa gần khác nhau, van ở xa
   //   bên trái khi đứng sát thùng (giếng riêng, tường ngăn với hành lang), cửa ngay sau thùng, ô đích sau cửa: gate_push().
   var SAN_U10 = [
     ['#N##########', '#.#####N####', '#.#####.####', '#...C.#.####', '#.###...HCD#', '############'],
-    ['#N#############', '#.########N####', '#.########.####', '#....C...#.####', '#.######...HCD#', '###############']
+    ['#N###############', '#.##########N####', '#.##########.####', '#....C.....#.####', '#.########...HCD#', '#################']      // 14/11: hành lang dài thêm hai ô (phóng), lửa giếng 3 ngọn
   ];
-  var LUA_U10 = [[lua(2, 3, 1), lua(1, 2, 1)], [lua(2, 3, 3), lua(1, 1, 2)]];
-  var NOI_U10 = [[noi(1, 0, [[4, 3]]), noi(7, 1, [[9, 4]])], [noi(1, 0, [[5, 3]]), noi(10, 1, [[12, 4]])]];
-  var L_U10 = ['put_out()', 'fire_valve()', 'go_to_wall()', 'sidestep()', 'gate_push()'];
+  var LUA_U10 = [[lua(2, 3, 1), lua(1, 2, 1)], [lua(2, 3, 3), lua(1, 1, 3)]];
+  var NOI_U10 = [[noi(1, 0, [[4, 3]]), noi(7, 1, [[9, 4]])], [noi(1, 0, [[5, 3]]), noi(12, 1, [[14, 4]])]];
+  //   Ghép nhịp (14/11): hành lang dài thì PHÓNG bằng boost() (trum-mua-2.9): còn hơn một ô trống thì phóng 2 ô, go_to_wall() đi nốt ô lẻ. Đi thường bằng go_to_wall() vẫn thắng (thêm nhịp).
+  var L_U10 = nhieu(['put_out()', 'fire_valve()'], WHILE('distance() > 1', ['boost()']), ['go_to_wall()', 'sidestep()', 'gate_push()']);
+  var L_U10_CHAM = ['put_out()', 'fire_valve()', 'go_to_wall()', 'sidestep()', 'gate_push()'];
   var M_U10 = ['put_out()', 'fire_valve()', 'forward(4)', 'sidestep()', 'forward(2)', 'squirt_left("high")', 'push(2)'];
 
   /* ---- GHÉP NHỊP 14/11 (KE-HOACH-GHEP-NHIP.md mục 2a, user chốt 13/11: PHÓNG ±2 ô ở gói 10). Hai màn bật ghiXich từng màn (lộ trình không bật cho gói 10). ----
@@ -609,26 +611,27 @@
     }),
 
     man({
-      chuong: 'trum-mua-2', so: 10, ten: 'Trùm: Nhà máy chạy lại', yMoi: 'trùm cuối mùa 2: một chương trình cho hai dây chuyền, nối năm hàm của em: put_out, fire_valve, go_to_wall, sidestep, gate_push',
-      hang: 'trum', kieuBai: 'trum', mucTieu: 'day-thung',
-      hamCuaEmCan: ['put_out', 'fire_valve', 'go_to_wall', 'sidestep', 'gate_push', 'squirt_left', 'push', 'squirt', 'tr_left', 'tr_right', 'forward', 'move'],
+      chuong: 'trum-mua-2', so: 10, ten: 'Trùm: Nhà máy chạy lại', yMoi: 'trùm cuối mùa 2: một chương trình cho hai dây chuyền, nối các hàm của em: put_out, fire_valve, boost (phóng dọc hành lang), go_to_wall, sidestep, gate_push',
+      hang: 'trum', kieuBai: 'trum', mucTieu: 'day-thung', ghiXich: true,
+      hamCuaEmCan: ['put_out', 'fire_valve', 'boost', 'go_to_wall', 'sidestep', 'gate_push', 'squirt_left', 'push', 'squirt', 'tr_left', 'tr_right', 'forward', 'move'],
       huyHieu: { ma: 'nha-may-chay', ten: 'Huy hiệu Nhà máy chạy lại' },
       deBai: 'Dập đám cháy cuối cùng là nhà máy của Sola chạy lại trọn vẹn: hai dây chuyền, một chương trình. Ở trạm xuất phát: lửa sát mũi xe (to nhỏ khác nhau) và giếng bên trái đang cháy ' +
         'chắn van mở cửa trên hành lang (hốc dưới trạm để xe giật). Hành lang dài ngắn khác nhau rồi hết ở tường. Né xuống làn dưới: thùng xa gần khác nhau, van ở xa bên trái khi đứng sát thùng, ' +
-        'cửa sau thùng, ô đích sau cửa. Nối các hàm của em: put_out(), fire_valve(), go_to_wall(), sidestep(), gate_push().',
+        'cửa sau thùng, ô đích sau cửa. Nối các hàm của em: put_out(), fire_valve(), phóng dọc hành lang bằng boost(), go_to_wall(), sidestep(), gate_push().',
       veMaMau: 'Chương trình có sẵn đếm cứng theo dây chuyền đầu: dây chuyền sau hành lang dài hơn, thùng ở xa hơn.',
       san: SAN_U10, batDau: { x: 1, y: 3, huong: 1 }, lua: LUA_U10, noi: NOI_U10,
       maMau: bai(M_U10),
-      sao: { o: 38, nhip: 58 },
+      sao: { o: 44, nhip: 55 },
       loiGiai: bai(L_U10),
       loiGiaiKhac: { moTa: 'Cùng cách giải, thêm một dòng chú thích', baiLam: bai(['# dập lửa, mở cửa trên, tới tường, né xuống, đẩy thùng qua cửa'].concat(L_U10)) },
-      congThucKhac: [{ moTa: 'Viết thẳng go_to_wall(), squirt_left("high"), push(2) thay gate_push()', baiLam: bai(['put_out()', 'fire_valve()', 'go_to_wall()', 'sidestep()', 'go_to_wall()', 'squirt_left("high")', 'push(2)']) }],
+      congThucKhac: [{ moTa: 'Đi thường dọc hành lang bằng go_to_wall(), không phóng: vẫn tới, thêm nhịp', baiLam: bai(L_U10_CHAM) },
+        { moTa: 'Viết thẳng go_to_wall(), squirt_left("high"), push(2) thay gate_push()', baiLam: bai(['put_out()', 'fire_valve()', 'go_to_wall()', 'sidestep()', 'go_to_wall()', 'squirt_left("high")', 'push(2)']) }],
       loiSai: [
         cung('Đếm cứng theo dây chuyền đầu: dây chuyền sau hành lang dài hơn, thùng ở xa hơn', bai(M_U10), ['dam-tuong']),
         { moTa: 'Quên fire_valve(): cửa hành lang còn đóng, go_to_wall() dừng ngay trước cửa', baiLam: bai(['put_out()', 'go_to_wall()', 'sidestep()', 'gate_push()']), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Phun nhẹ một lần thay put_out(): dây chuyền sau lửa ba ngọn còn cháy', baiLam: bai(['squirt("low")', 'fire_valve()', 'go_to_wall()', 'sidestep()', 'gate_push()']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Dập lửa trước: put_out(). Trạm: fire_valve() mở cửa. go_to_wall() tới tường. Làn dưới: sidestep(), gate_push().', 'Mỗi hàm lo một đoạn; nối đúng thứ tự.']
+      goiY: ['Dập lửa trước: put_out(). Trạm: fire_valve() mở cửa. Hành lang: while distance() > 1: boost(), rồi go_to_wall(). Làn dưới: sidestep(), gate_push().', 'Mỗi hàm lo một đoạn; nối đúng thứ tự.']
     })
   ];
 
