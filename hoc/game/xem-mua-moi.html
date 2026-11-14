@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Xem hình mùa mới</title>
-<!-- xem-mua-moi.html (31/10): trang xem thử MỌI hình vector của Mùa 4 Cảng sông và Mùa 5 Bến sông, MỌI trạng thái, hai cỡ (48 px và 160 px), cần cẩu 8 nấc × 3 tầm
+<!-- xem-mua-moi.html (31/10): trang xem thử MỌI hình vector của Mùa 4 Cảng sông và Mùa 5 Bến sông, MỌI trạng thái, hai cỡ (48 px và 160 px), cần cẩu 4 hướng × 3 tầm
      trên lưới 7 × 7, dây phao nối vật kéo ở mũi / đuôi. Chưa nối lõi (gói sau nối vào san-ve.js). Đặc tả: hoc/KE-HOACH-MUA-CANG-SONG.md mục 4. -->
 <link rel="stylesheet" href="font/font.css">
 <style>
@@ -222,7 +222,7 @@ function veTrang() {
     [C2, { camBien: { bat: true, can: true }, tay: { doi: true } }, 'quét + cân + móc đôi'], [C2, { huong: 1 }, 'hướng phải'], [{ than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }], son: 'lam' }, { huong: 3 }, 'R2 (sơn lam) · hướng trái']
   ].forEach(function (r) { hinhRobot(h, r[0], r[1], r[2], nenO('bai-cont')); });
 
-  /* lưới 7 × 7: 8 nấc × 3 tầm */
+  /* lưới 7 × 7: 4 hướng × 3 tầm */
   var NAC_TEN = ['lên', 'phải', 'xuống', 'trái'], DX = [0, 1, 0, -1], DY = [-1, 0, 1, 0];      // 14/11: cần 4 hướng (bỏ nấc chéo)
   function luoiCau(n, nac, tam, opt) {
     opt = opt || {};
@@ -236,7 +236,7 @@ function veTrang() {
       if (opt.quet) V.veTiaQuet(g, { x: r.tx, y: r.ty, o: n, pha: 0.5 });
     }, 7 * n);
   }
-  h = nhom(goc, 'Cần cẩu trên lưới 7 × 7 (ô 32 px), bệ ở giữa: đủ 8 nấc × 3 tầm. Khung xanh lá = ô đầu cần tính riêng theo đặc tả (bệ + tầm × hướng nấc).');
+  h = nhom(goc, 'Cần cẩu trên lưới 7 × 7 (ô 32 px), bệ ở giữa: đủ 4 hướng × 3 tầm. Khung xanh lá = ô đầu cần tính riêng theo đặc tả (bệ + tầm × hướng nấc).');
   var TREO = [null, [{ so: 7 }], [{ so: 23 }, { so: 14 }]];
   for (var tam = 1; tam <= 3; tam++) for (var nac = 0; nac < 4; nac++) {
     var t = el('div', 'the luoi'), kieu = (nac + tam) % 3, op = { treo: TREO[kieu], doi: kieu === 2, quet: nac === 2 && tam === 2 };

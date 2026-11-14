@@ -322,8 +322,8 @@
     g('flow_dir', null, 'Hỏi: nước ô trước mũi chảy về đâu so với mũi xuồng ("front", "back", "left", "right", "none")'),
     g('flow', null, 'Hỏi: nước ô trước mũi chảy về đâu và mạnh bao nhiêu; trả về một cặp (hướng, sức), ví dụ ("back", 2)'),
     // CẢNG SÔNG (mùa 4): cần cẩu container, mỗi lệnh một nhịp (không cần wait())
-    g('swing_left', 'swing_right', 'Cần cẩu quay cần sang trái một nấc (8 nấc một vòng, nấc 0 là hướng lên)'),
-    g('swing_right', 'swing_left', 'Cần cẩu quay cần sang phải một nấc (8 nấc một vòng)'),
+    g('swing_left', 'swing_right', 'Cần cẩu quay cần sang trái một nấc (4 nấc một vòng: 0 lên, 1 phải, 2 xuống, 3 trái)'),
+    g('swing_right', 'swing_left', 'Cần cẩu quay cần sang phải một nấc (4 nấc một vòng)'),
     g('extend', 'retract', 'Vươn cần xa thêm một ô (tầm 1 đến 3)'),
     g('retract', 'extend', 'Thu cần về gần một ô (tầm 1 đến 3)'),
     g('pick_up', 'set_down', 'Móc cẩu nhấc container trên cùng ở ô đầu cần'),
