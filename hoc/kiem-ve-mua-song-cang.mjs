@@ -112,6 +112,22 @@ const style = (xem.match(/<style>([\s\S]*?)<\/style>/) || [, ''])[1];
 kiem('CSS trang xem dùng màu qua var(--g-…), không mã hex gõ thẳng', !/#[0-9a-fA-F]{3,8}\b/.test(style) && /var\(--g-/.test(style));
 kiem('Sân chơi thử không tràn ngang 375 px: khung sân max-width 100 %, canvas max-width 100 %', co(xem, '.thu .ffr{') && co(xem, 'max-width:100%') && co(xem, 'canvas{display:block;max-width:100%}'));
 
+/* ---------- Cần gạt đôi (14/11): một nhịp ghép ray + quay + thu + móc phát đủ sự kiện theo thứ tự máy làm, san-ve.js chia thời gian nhịp cho từng bước */
+console.log('\n== 6. Cần gạt đôi: nhịp ghép nhiều bộ phận có hoạt cảnh từng bước ==');
+{
+  let r = null, loi = '';
+  try {
+    r = SanHoc.chay({ loaiRobot: 'cau', hamGoc: CAU, camBien: [{ ma: 'quet-ma' }], canGatDoi: true, san: ['#########', '#.......#', '#RRRRR..#', '#.......#', '#########'], batDau: { x: 1, y: 2, nac: 1, tam: 2 },
+      chong: [{ x: 2, y: 3, cont: [{ so: 5 }] }], nhipToiDa: 20 }, 'pick_up()\nretract()\nswing_right()\nrail(1)\nwait()\nset_down()\nwait()\n');
+  } catch (e) { loi = e.message; }
+  const nh = r ? r.vet.filter((e) => e.loai === 'nhip') : [];
+  const ma1 = nh[0] ? (nh[0].suKien || []).map((x) => x.ma) : [], ma2 = nh[1] ? (nh[1].suKien || []).map((x) => x.ma) : [];
+  kiem('nhịp ghép viết ngược (móc, thu, quay, ray) vẫn phát chay-ray → quay-can → thu-can → moc-cont trong MỘT nhịp', nh.length === 2 && JSON.stringify(ma1) === JSON.stringify(['chay-ray', 'quay-can', 'thu-can', 'moc-cont']), loi || JSON.stringify(ma1));
+  kiem('nhịp sau hạ lại đúng ô đầu cần mới: ha-cont', JSON.stringify(ma2) === JSON.stringify(['ha-cont']), JSON.stringify(ma2));
+  kiem('mọi sự kiện của nhịp ghép có bước hoạt cảnh riêng (NHIP_MOI) và san-ve.js chia thời gian nhịp theo trọng số từng bước (không treo, không bỏ bước)',
+    ma1.concat(ma2).every((m) => co(sv, "'" + m + "': 1")) && co(sv, 'per = tgian * TRONG(s) / tong') && co(sv, 'await this.nhipMuaMoi(s, per, my, evs, vanEvs);'));
+}
+
 console.log('\n---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);
