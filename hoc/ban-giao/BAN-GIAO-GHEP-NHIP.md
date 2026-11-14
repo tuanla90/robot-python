@@ -9,7 +9,7 @@ User dặn tối 13/11: "xong 1 mùa thì commit, làm dần các mùa khác r m
 |---|---|---|---|
 | 5 Bến sông (xuồng) | XONG | main | 69/200 (gói 5: 18, 6: 17, 7: 10, 8: 10, 9: 4, 10: 10); trước đợt là 0 |
 | 2 Nhà máy (xe cứu hỏa) | XONG, hụt chỉ tiêu | main 5107a78 | 11/200 (gói 6: 7/20, cần 15; gói 10: 4/20, cần 5) |
-| 4 Cảng sông (cần cẩu) | F1 cẩu 4 hướng XONG (main 9ebfa0c); F2–F4 chưa | main | chưa đo ghép (F1 không thêm ghép) |
+| 4 Cảng sông (cần cẩu) | F1 cẩu 4 hướng XONG (main 9ebfa0c); F2 cần gạt đôi XONG (nhánh claude/ban-giao-ghep-nhip-8ada93, CHƯA gộp main); F3–F4 chưa | F2 ở nhánh | 25/200 (gói 5: 14, 6: 1, 7: 5, 8: 1, 9: 1, 10: 3); trước F2 là 0 |
 | 7 Mỏ đá (xe omni) | CHƯA BẮT ĐẦU | — | 0/200 |
 
 **Đã đẩy GitHub** (origin/main d7c4e52, 14/11). Sáng 14/11 các lần đẩy trước đó lỗi `HTTP 503` phía GitHub lúc gửi gói (đăng nhập vẫn qua); thử lại sau ~1 giờ thì được. Mỗi mùa xong: `git push origin main` (user cho phép đợt này).
@@ -60,7 +60,16 @@ Thứ tự gói theo kế hoạch mục 3, 6:
   - Lúc ghi biên bản, agent đã có commit cho gói 9, gói 10 và 20 màn cẩu mùa 9 (7bdf14a).
   - Agent tự ghi việc còn dở: doi-cang.2, .5, .7, .9, che-doi-cang.10 lệch nhịp phối hợp; tong-hop-cang.7, trum-mua-cang.8 dùng cọc phụ ở nấc chéo.
   - Nền máy kiểm cẩu ở main: kiem-mua-cang 126/0, kiem-man-mua-cang 200/200, kiem-ve-mua-song-cang 35/0, kiem-cau-do-mua-9 27/0, kiem-lai-mua-9 170/0.
-- **F2** cần gạt đôi (3a): cờ `canGatDoi` từ gói 5. Lệnh cẩu vào hàng chờ, `wait()` gom thành một nhịp. Thứ tự trong nhịp: ray → quay → vươn → móc.
+- **F2** cần gạt đôi (3a). XONG 14/11, chưa gộp main. Agent opus làm lõi (5526e83) rồi dừng; agent fable làm nốt (c9e18d8, 31e80be); phiên chính áp 3 ca kiểm hình (53d62a6). Nhánh claude/mua-4-can-gat-doi đã ff vào nhánh claude/ban-giao-ghep-nhip-8ada93.
+  - Lõi: cờ `canGatDoi` bật gói 5–10 mùa 4 (`GOI_GAT_DOI` trong lo-trinh-hoc.js). Lệnh cẩu vào hàng chờ `cauCho`, `wait()` gom thành một nhịp theo thứ tự ray → quay → vươn → móc. Hàng đóng không `wait()` (lệnh cùng bộ phận lần nữa, đọc cảm biến, hết chương trình) thì mỗi lệnh một nhịp như cũ. Không có sự kiện 'cau-goi-lai' (brief có nhắc, lõi thấy không cần). Sửa thêm: màn nhiều robot, vết lệnh xả ra đứng ngay trước nhịp của nó, nên máy đo hết đếm nhầm gói 9.
+  - Bật cờ, đo 120 màn gói 5–10: lệch 2. doi-cang.5 `wait_n(4)` → `wait_n(5)`; cang-cu.4 lời sai thêm 2 `wait()`.
+  - Gói 5: duong-ray.4 trình diễn (khoá), .5 ép (tàu ghé 3 nhịp, tách 5 nhịp thua), .6 giấu kho hàm + ép, .7, .8 biến thể, .10 trùm; che-duong-ray.1 `rail_pick(dx)`, .3 `rail_drop(dx)` là hàm em có `wait()` ghép. BỎ 3 màn cũ: "Quét ba cột bãi cảng", "Vươn cần kết hợp chạy ray", "Chuyển cả chồng ở đầu ray". 19 màn nhanh lên vì hàm ghép: hạ giờ tàu rời + sửa sao tay.
+  - Phim gói 5 không có câu "mỗi lệnh một nhịp" nên không sửa. san-ve.js không cần sửa: nhịp chia thời gian theo từng sự kiện.
+  - Mùa 9: KHÔNG bật. Agent thử bật trong bộ nhớ cho 20 màn cẩu: lệch 0.
+  - Nghiệm thu (phiên chính, tại worktree nhánh này, tuần tự): kiem-mua-cang 144/0, kiem-man-mua-cang 200/200, kiem-ve-mua-song-cang 38/0 (ca mới tự đỏ khi tắt cờ), kiem-cau-do-mua-9 27/0, kiem-lai-mua-9 170/0, kiem-nhap-mua-4-7 41, kiem-phim-goi 55/0, kiem-huong-dan 40/0, kiem-loi-giai 67/67, kiem-hoc 6716/0. do-ghep-nhip mua-4: 25/200, 4183 nhịp (trước 4343). Trình duyệt: duong-ray.5 chạy lời giải 3 nhịp, 3 sao, console không lỗi game.
+  - Chờ user: (a) bỏ 3 màn cũ gói 5; (b) rail_pick / rail_drop đổi sang ghép ngay ở màn chế hàm, kho cũ bản 4 dòng sẽ thua "chua-giao-tau"; (c) bật cờ mùa 9 (lệch 0); (d) gói 6, 8, 9 mới 1/20 màn ghép: viết lại rail_carry2 / over_wall thành hàm ghép (~1–1,5 giờ); (e) đề duong-ray.5 viết sẵn từng nhịp (chữ nhiều, gần như cho lời giải).
+  - Chưa xem trên trình duyệt: duong-ray.4 (khoá mã), .6 (giấu kho hàm), che-duong-ray.3, lời giải dài 16–18 dòng (.7, .8, .10). Chưa có ca kiểm riêng cho sửa vết lệnh nhiều robot. Bẫy: `pick_up(); rail(1); wait()` chạy ray trước rồi mới móc.
+  - Brief: `hoc/ban-giao/brief-ghep-nhip-F2-can-gat-doi.md`.
 - **F3** xếp chồng theo luật màu + số (3c): `bongMo.chongLuat`, máy kiểm `hoc/kiem-chong-luat.mjs`, màn ở gói 2 / 6 / 8 / 10. Màu = `so % 4`, đã có sẵn trong hình.
 - **F4** gồm hai phần:
   - min/max theo hàng ngang (3f), chỉ làm màn;

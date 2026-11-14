@@ -49,6 +49,7 @@ Mùa 3, 6 không nằm trong kế hoạch này (đã ghép kiểu "kèm bước"
 ## 3. Mùa 4 Cảng sông (cần cẩu container)
 
 ### 3a. Cần gạt đôi: quay + vươn + móc trong một nhịp (gói 5 Đường ray, chương 2; cờ `cfg.canGatDoi`)
+- XONG 14/11 (lõi 5526e83, màn c9e18d8 + 31e80be, ca kiểm hình 53d62a6; chưa gộp main): cờ bật gói 5–10 mùa 4, gói 5 có 14/20 màn ghép, cả mùa 25/200; 120 màn đo lại lệch 2 đã sửa; mùa 9 không bật (đo lệch 0). Chi tiết và việc chờ user: hoc/ban-giao/BAN-GIAO-GHEP-NHIP.md mục 4.
 - Lý do: người lái cẩu cảng cầm hai cần gạt, quay cần và vươn cần cùng lúc rồi móc. Áp lực có sẵn: tàu chỉ cập vài nhịp (cả 140 màn gói 4–10 có tàu).
 - Luật (khuôn tay xoay mùa 1): bốn bộ phận **ray** (`rail(±1)`), **quay** (`swing_*`), **vươn** (`extend` / `retract`), **móc** (`pick_up` / `pick_up2` / `set_down`).
   Thứ tự: (a) ray 1 ô → (b) quay → (c) vươn / thu → kiểm đầu cần trong sân → (d) móc / hạ ở đầu cần MỚI.
