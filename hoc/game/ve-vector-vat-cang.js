@@ -87,6 +87,36 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veChongCont(g, H, s && s.cont, s);
   } });
 
+  /* LUẬT XẾP CHỒNG (ghép nhịp 3c, 15/11; lõi bongMo.chongLuat): hai hình phủ lên ô chồng, chỉ dùng dải TRÊN của ô 100 × 100 (không che số container).
+       'bien-luat-chong'  s: { luat: 'nho-tren' | 'lon-tren', mau?: [0..3] } — BIỂN LUẬT ở chồng đích: bảng kem, hình hai hộp chồng nhau (hộp nhỏ nằm trên hộp lớn = "nhỏ ở trên";
+                          hộp lớn nằm trên hộp nhỏ = "lớn ở trên"), mũi tên chỉ lên và chữ "nhỏ" / "lớn"; có lọc màu thì mỗi màu một ô màu (so % 4) ở mép phải bảng.
+       'dinh-chong'       — mũi tên hai đầu lên / xuống trong huy hiệu tròn ở góc trên-phải chồng: "vào / ra ở đỉnh" (ngăn xếp, vào sau ra trước). */
+  V.dangKy({ loai: 'vat', ma: 'bien-luat-chong', ten: 'Biển luật xếp chồng', cacTrangThai: [{ luat: 'nho-tren' }, { luat: 'lon-tren' }, { luat: 'nho-tren', mau: [0] }, { luat: 'lon-tren', mau: [1, 3] }], ve: function (g, s, H) {
+    s = s || {};
+    var lon = s.luat === 'lon-tren', mau = Array.isArray(s.mau) ? s.mau.slice(0, 4) : [], i;
+    var wB = mau.length ? 96 : 84, x0 = 50 - wB / 2;
+    g.lineWidth = 1;
+    H.bo(g, x0, 2, wB, 30, 7); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 2.4);
+    // hai hộp chồng nhau: hộp trên (y 7..15), hộp dưới (y 17..27); hộp nhỏ rộng 10, hộp lớn rộng 20
+    var cx = x0 + 15, wT = lon ? 20 : 10, wD = lon ? 10 : 20;
+    H.bo(g, cx - wT / 2, 6, wT, 9, 2); H.to(g, BM.vecVien);
+    H.bo(g, cx - wD / 2, 17, wD, 10, 2); H.to(g, BM.vecVien);
+    // mũi tên chỉ lên (phía đỉnh chồng)
+    H.duong(g, 'M' + (x0 + 33) + ' 27 V9 M' + (x0 + 28) + ' 14 L' + (x0 + 33) + ' 8 L' + (x0 + 38) + ' 14'); H.vien(g, BM.vecVien, 2.6);
+    g.font = '800 ' + (mau.length > 2 ? 13 : 17) + 'px ' + PHONG; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillStyle = BM.vecVien; g.fillText(lon ? 'lớn' : 'nhỏ', x0 + 43, 18);
+    for (i = 0; i < mau.length; i++) {                                                     // ô màu được nhận (màu = so % 4), xếp dọc / lưới 2 × 2 ở mép phải bảng
+      var m = MAU[((mau[i] % 4) + 4) % 4], cot = Math.floor(i / 2), hang = i % 2, c = mau.length === 1 ? 14 : 10;
+      var mx = x0 + wB - 6 - c - cot * (c + 2), my = mau.length === 1 ? 10 : 6 + hang * (c + 2);
+      H.bo(g, mx, my, c, c, 2.5); H.to(g, m.chinh); H.vien(g, BM.vecVien, 1.6);
+    }
+  } });
+
+  V.dangKy({ loai: 'vat', ma: 'dinh-chong', ten: 'Mũi tên vào / ra ở đỉnh chồng', cacTrangThai: [{}], ve: function (g, s, H) {
+    g.lineWidth = 1;
+    H.tron(g, 85, 16, 13); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 2.2);
+    H.duong(g, 'M80 22 V9 M76 13 L80 8 L84 13 M90 10 V23 M86 19 L90 24 L94 19'); H.vien(g, BM.vecVien, 2.4);
+  } });
+
   var MAU_TEN = ['red', 'green', 'blue', 'yellow'];
   var MAU_DAI = { red: 'luatSanDo', green: 'luatSanXanhLa', blue: 'luatSanXanhDuong', yellow: 'luatSanVang' };
   // Vật cảng sông (o): KIỆN HÀNG CẢNG SÔNG 3D CAO (mặt trên tôn gân sóng sáng y = 16..54 + vách đứng trước thép sẫm y = 54..86 gắn đai màu cảng)

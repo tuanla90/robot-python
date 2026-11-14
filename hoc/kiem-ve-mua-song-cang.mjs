@@ -128,6 +128,19 @@ console.log('\n== 6. Cần gạt đôi: nhịp ghép nhiều bộ phận có ho�
     ma1.concat(ma2).every((m) => co(sv, "'" + m + "': 1")) && co(sv, 'per = tgian * TRONG(s) / tong') && co(sv, 'await this.nhipMuaMoi(s, per, my, evs, vanEvs);'));
 }
 
+console.log('\n== 7. Luật xếp chồng (bongMo.chongLuat): biển luật ở chồng đích + mũi tên vào / ra ở đỉnh ==');
+{
+  const vc = doc('game/ve-vector-vat-cang.js');
+  const V = require(path.join(day, 'game/ve-vector.js'));
+  ['ve-vector-vat-cang.js'].forEach((f) => require(path.join(day, 'game', f)));
+  const lenh = (ma, s) => { const cv = V.vat(ma, 60, s); return cv && cv.lenh ? JSON.stringify(cv.lenh) : ''; };
+  kiem("hình 'bien-luat-chong' và 'dinh-chong' có trong bộ vẽ (ve-vector-vat-cang.js) và vẽ ra lệnh", V.ds('vat').includes('bien-luat-chong') && V.ds('vat').includes('dinh-chong') && lenh('bien-luat-chong', { luat: 'nho-tren' }).length > 50 && lenh('dinh-chong', {}).length > 50);
+  kiem('biển luật: "nhỏ ở trên" khác "lớn ở trên" (chữ nhỏ / lớn + hai hộp đổi cỡ); không có chữ tăng dần / giảm dần', lenh('bien-luat-chong', { luat: 'nho-tren' }) !== lenh('bien-luat-chong', { luat: 'lon-tren' }) && /nhỏ/.test(lenh('bien-luat-chong', { luat: 'nho-tren' })) && /lớn/.test(lenh('bien-luat-chong', { luat: 'lon-tren' })) && !/tăng dần|giảm dần/.test(vc));
+  kiem('biển luật có lọc màu: thêm ô màu theo so % 4 (khác biển không lọc, màu 0 khác màu 1)', lenh('bien-luat-chong', { luat: 'nho-tren', mau: [0] }) !== lenh('bien-luat-chong', { luat: 'nho-tren' }) && lenh('bien-luat-chong', { luat: 'nho-tren', mau: [0] }) !== lenh('bien-luat-chong', { luat: 'nho-tren', mau: [1] }));
+  kiem('san-ve.js: chuanBongMo nhận chongLuat; veBienLuat vẽ SAU veChong; chồng đích có khung nét đứt; mũi tên đỉnh ở mọi chồng có container', co(sv, 'chongLuat: Array.isArray(b.chongLuat)') && co(sv, 'veBienLuat: function') && /this\.veChong\(g, now\);[^\n]*\n\s*this\.veBienLuat\(g, now\);/.test(sv) && co(sv, "VeVector.vat('bien-luat-chong'") && co(sv, "VeVector.vat('dinh-chong'") && co(sv, '(b.chongLuat || []).length'));
+  kiem('man-choi.js đưa bongMo của từng sân xuống Field (chongLuat đi cùng)', co(mc, 'bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo'));
+}
+
 console.log('\n---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);

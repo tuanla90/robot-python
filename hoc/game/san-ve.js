@@ -126,6 +126,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return { x: bx, y: by, d: (((b.huong || 0) % 4) + 4) % 4, diQua: dsO(b.diQua), vat: dsO(b.vat), thung: dsO(b.thung),
       nac: typeof b.nac === 'number' ? b.nac : null, tam: typeof b.tam === 'number' ? b.tam : null,
       chong: Array.isArray(b.chong) ? b.chong.filter(function (o) { return o && isFinite(o.x) && isFinite(o.y); }) : null,
+      chongLuat: Array.isArray(b.chongLuat) ? b.chongLuat.filter(function (o) { return o && isFinite(o.x) && isFinite(o.y); }).map(function (o) { return { x: o.x, y: o.y, luat: o.luat === 'lon-tren' ? 'lon-tren' : 'nho-tren', mau: o.mau === undefined || o.mau === null ? null : [].concat(o.mau) }; }) : null,   // CẢNG SÔNG: luật xếp chồng (biển luật ở chồng đích)
       cam: !!b.cam, camMau: chuanMau(b.cam && typeof b.cam === 'object' ? b.cam.mau : b.camMau),
       xoay: b.xoay === 'trai' || b.xoay === 'phai' ? b.xoay : 'truoc',
       chan: b.chan === 'co' ? 'co' : 'dung' };                     // nhện: bóng mờ chân co hay duỗi            // cam: xe mờ đang cầm một vật (tay kẹp khép, vật mờ trong kẹp)
@@ -877,7 +878,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         o = b.chong[i];
         if (o.so && o.so.length) HU().khungO(g, o.x, o.y, 1.5, 2.2, 0.9, BM.vecDich, [3, 2], -((now / 140) % 5));
       }
+      for (i = 0; i < (b.chongLuat || []).length; i++) {                                                   // CẢNG SÔNG, luật xếp chồng: khung nét đứt quanh ô chồng đích (biển luật vẽ ở veBienLuat, trên chồng)
+        o = b.chongLuat[i];
+        HU().khungO(g, o.x, o.y, 1.5, 2.2, 0.9, BM.vecDich, [3, 2], -((now / 140) % 5));
+      }
       for (i = 0; i < b.diQua.length; i++) this.veDiQua(g, b.diQua[i], now, nhay);
+    },
+    /** CẢNG SÔNG, LUẬT XẾP CHỒNG (bongMo.chongLuat): màn có luật thì mỗi chồng có mũi tên "vào / ra ở đỉnh" ('dinh-chong', góc trên-phải), chồng đích có BIỂN LUẬT ('bien-luat-chong': nhỏ ở trên / lớn ở trên + ô màu nếu lọc màu)
+     *  nằm ở dải trên của ô, nhô lên trên mép ô 1/8 ô (không che số container). Vẽ SAU veChong (trên chồng), dưới cần cẩu ở lớp phủ. */
+    veBienLuat: function (g, now) {
+      var b = this.cfg.bm; if (!b || !b.chongLuat || !b.chongLuat.length) return;
+      var self = this, px = Math.max(2, Math.round(T * this.tiLeCua(g))), nhay = this.bmNhay > now && ((now / 150 | 0) & 1) === 0;
+      (this.chong || []).forEach(function (q) {
+        if (!q.cont.length) return;
+        g.drawImage(VeVector.vat('dinh-chong', px, {}), q.x * T, q.y * T, T, T);
+      });
+      b.chongLuat.forEach(function (o) {
+        g.save(); if (nhay) g.globalAlpha = 0.6;
+        g.drawImage(VeVector.vat('bien-luat-chong', px, { luat: o.luat, mau: o.mau || undefined }), o.x * T, o.y * T - T / 8, T, T);
+        g.restore();
+      });
     },
     /** Kiểu của một vật mờ: mặc định thùng gỗ (có dải màu nếu vật mờ mang màu). Sân của xe tay NAM CHÂM mà mọi vật thật đều cùng loại (cùng sắt, hay cùng vật nam châm cùng chữ N / S) thì vật mờ vẽ đúng loại đó. */
     kieuVatMo: function (mau) {
@@ -2230,6 +2250,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.veVat(g, now);
       this.veThung(g, now);
       this.veChong(g, now);                                    // CẢNG SÔNG: chồng container (dưới cần cẩu ở lớp phủ)
+      this.veBienLuat(g, now);                                 // CẢNG SÔNG: luật xếp chồng — mũi tên vào / ra ở đỉnh + biển luật ở chồng đích (trên chồng)
       this.veDichDay(g);
       this.veBongMoNen(g, now);                                // bóng mờ: vật mờ + ô ◆ (xe mờ vẽ ở lớp phủ robot)
       if (c.dd) HU().khungO(g, c.dd.x, c.dd.y, 1.5, 2.4, 0.8, BM.moSangV7, [2, 2]);   // ô xuất phát: khung nét đứt bo góc
