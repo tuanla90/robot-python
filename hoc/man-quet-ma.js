@@ -613,67 +613,67 @@
     manCheQuetMa({
       so: 2, ten: 'Phân loại ở hai trạm đối diện', hang: 'lam-quen', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'sort_parity'],
-      deBai: 'Sola nhờ bạn: tại nấc 2 (5, 3) và nấc 6 (1, 3) mỗi nơi có 2 kiện hàng. Dùng sort_parity() phân loại hết 2 kiện ở nấc 2, quay sang nấc 6 bằng swing_by(4) rồi phân loại tiếp 2 kiện ở nấc 6.',
-      veMaMau: 'Đã phân loại trạm đầu tiên ở nấc 2. Hãy quay sang nấc 6 và gọi sort_parity() cho 2 kiện còn lại.',
+      deBai: 'Sola nhờ bạn: tại nấc 1 (5, 3) và nấc 3 (1, 3) mỗi nơi có 2 kiện hàng. Dùng sort_parity() phân loại hết 2 kiện ở nấc 1, quay sang nấc 3 bằng swing_by(2) rồi phân loại tiếp 2 kiện ở nấc 3.',
+      veMaMau: 'Đã phân loại trạm đầu tiên ở nấc 1. Hãy quay sang nấc 3 và gọi sort_parity() cho 2 kiện còn lại.',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
       chong: [
         [C(5, 3, [14, 21]), C(1, 3, [32, 45])],
         [C(5, 3, [17, 26]), C(1, 3, [39, 44])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [14] }, { x: 5, y: 5, so: [21] }, { x: 1, y: 5, so: [32] }, { x: 1, y: 1, so: [45] }]),
-        BM([{ x: 5, y: 1, so: [26] }, { x: 5, y: 5, so: [17] }, { x: 1, y: 5, so: [44] }, { x: 1, y: 1, so: [39] }])
+        BM([{ x: 3, y: 1, so: [14, 45] }, { x: 3, y: 5, so: [21, 32] }]),
+        BM([{ x: 3, y: 1, so: [26, 39] }, { x: 3, y: 5, so: [17, 44] }])
       ],
       maMau: bai(['sort_parity()', 'sort_parity()']),
       loiGiai: bai([
         'for i in range(2):',
         '    sort_parity()',
         '    sort_parity()',
-        '    swing_by(4)'
+        '    swing_by(2)'
       ]),
-      sao: { o: 21, nhip: 48 },
+      sao: { o: 24, nhip: 40 },
       loiGiaiKhac: {
         moTa: 'Viết tuần tự không dùng vòng for ngoài',
-        baiLam: bai(['sort_parity()', 'sort_parity()', 'swing_by(4)', 'sort_parity()', 'sort_parity()'])
+        baiLam: bai(['sort_parity()', 'sort_parity()', 'swing_by(2)', 'sort_parity()', 'sort_parity()'])
       },
       loiSai: [
-        { moTa: 'Mới phân loại ở nấc 2, chưa sang nấc 6', baiLam: bai(['sort_parity()', 'sort_parity()']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Chỉ gọi 1 lần sort_parity() ở mỗi trạm nên còn sót kiện đáy', baiLam: bai(['for i in range(2):', '    sort_parity()', '    swing_by(4)']), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Mới phân loại ở nấc 1, chưa sang nấc 3', baiLam: bai(['sort_parity()', 'sort_parity()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Chỉ gọi 1 lần sort_parity() ở mỗi trạm nên còn sót kiện đáy', baiLam: bai(['for i in range(2):', '    sort_parity()', '    swing_by(2)']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Mỗi trạm có 2 kiện nên cần gọi sort_parity() 2 lần.', 'Luna: Giữa hai trạm cách nhau 4 nấc nên dùng swing_by(4).']
+      goiY: ['Luna: Mỗi trạm có 2 kiện nên cần gọi sort_parity() 2 lần.', 'Luna: Hai trạm nằm đối diện nhau, cách 2 nấc, nên dùng swing_by(2).']
     }),
 
     manCheQuetMa({
       so: 3, ten: 'Chế hàm sort_all_parity()', hang: 'lam-quen', nhipTheo: 'tong',
       taoHam: ['sort_all_parity'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'sort_parity'],
-      deBai: 'Sola nhờ bạn: chế hàm sort_all_parity(): đọc c = read_code(), while c != -1: gọi sort_parity() rồi đọc lại c, để tự động phân loại sạch cả chồng dù chồng cao mấy kiện. Dùng hàm đó cho nấc 2 và nấc 6.',
+      deBai: 'Sola nhờ bạn: chế hàm sort_all_parity(): đọc c = read_code(), while c != -1: gọi sort_parity() rồi đọc lại c, để tự động phân loại sạch cả chồng dù chồng cao mấy kiện. Dùng hàm đó cho nấc 1 và nấc 3.',
       veMaMau: 'Trong sort_all_parity(), viết c = read_code(), while c != -1:, thụt lề sort_parity() và c = read_code().',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
       chong: [
         [C(5, 3, [12, 25, 34]), C(1, 3, [41, 56])],
         [C(5, 3, [19, 28]), C(1, 3, [33, 42, 51])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [34, 12] }, { x: 5, y: 5, so: [25] }, { x: 1, y: 5, so: [56] }, { x: 1, y: 1, so: [41] }]),
-        BM([{ x: 5, y: 1, so: [28] }, { x: 5, y: 5, so: [19] }, { x: 1, y: 5, so: [42] }, { x: 1, y: 1, so: [51, 33] }])
+        BM([{ x: 3, y: 1, so: [34, 12, 41] }, { x: 3, y: 5, so: [25, 56] }]),
+        BM([{ x: 3, y: 1, so: [28, 51, 33] }, { x: 3, y: 5, so: [19, 42] }])
       ],
-      maMau: bai(['sort_all_parity()', 'swing_by(4)', 'sort_all_parity()']),
+      maMau: bai(['sort_all_parity()', 'swing_by(2)', 'sort_all_parity()']),
       loiGiai: bai(
-        ['sort_all_parity()', 'swing_by(4)', 'sort_all_parity()'],
+        ['sort_all_parity()', 'swing_by(2)', 'sort_all_parity()'],
         { hamCuaEmMoi: [hSortAllParity()] }
       ),
-      sao: { o: 22, nhip: 48 },
+      sao: { o: 27, nhip: 44 },
       loiGiaiKhac: {
-        moTa: 'Quay sang nấc 6 bằng swing_by(-4)',
-        baiLam: bai(['sort_all_parity()', 'swing_by(-4)', 'sort_all_parity()']),
+        moTa: 'Quay sang nấc 3 bằng swing_by(-2)',
+        baiLam: bai(['sort_all_parity()', 'swing_by(-2)', 'sort_all_parity()']),
         hamCuaEmMoi: [hSortAllParity()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm sort_all_parity mà đã bấm Chạy', baiLam: bai(['sort_all_parity()', 'swing_by(4)', 'sort_all_parity()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong sort_all_parity chỉ dùng if thay vì while nên chỉ phân loại 1 kiện đầu', baiLam: bai(['sort_all_parity()', 'swing_by(4)', 'sort_all_parity()']), hamCuaEmMoi: [hSortAllParity(['c = read_code()', 'if c != -1:', '    sort_parity()'])], phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Chưa tạo hàm sort_all_parity mà đã bấm Chạy', baiLam: bai(['sort_all_parity()', 'swing_by(2)', 'sort_all_parity()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong sort_all_parity chỉ dùng if thay vì while nên chỉ phân loại 1 kiện đầu', baiLam: bai(['sort_all_parity()', 'swing_by(2)', 'sort_all_parity()']), hamCuaEmMoi: [hSortAllParity(['c = read_code()', 'if c != -1:', '    sort_parity()'])], phaiCoMa: ['chua-xep-chong'] }
       ],
       goiY: ['Luna: Mở Xưởng hàm, tạo sort_all_parity() không tham số.', 'Luna: Thân hàm: c = read_code(), while c != -1:, rồi thụt lề sort_parity() và c = read_code().']
     }),
@@ -682,32 +682,32 @@
       so: 4, ten: 'Chế hàm clear_stack(d)', hang: 'luyen', nhipTheo: 'tong',
       taoHam: ['clear_stack'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: chế hàm clear_stack(d): đọc c = read_code(), while c != -1: lặp carry_by(d), swing_by(-d) rồi đọc lại c, để dọn sạch chồng hiện tại sang độ lệch d nấc. Dùng hàm đó dọn chồng ở nấc 1 sang nấc 2 và chồng ở nấc 5 sang nấc 4.',
+      deBai: 'Sola nhờ bạn: chế hàm clear_stack(d): đọc c = read_code(), while c != -1: lặp carry_by(d), swing_by(-d) rồi đọc lại c, để dọn sạch chồng hiện tại sang độ lệch d nấc. Dùng hàm đó dọn chồng ở nấc 0 sang nấc 1 và chồng ở nấc 3 sang nấc 2.',
       veMaMau: 'Tạo hàm clear_stack(d) trong Xưởng hàm rồi bấm Chạy.',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 0, tam: 2 }, { x: 3, y: 3, nac: 0, tam: 2 }],
       chong: [
-        [C(5, 1, [10, 20]), C(1, 5, [30, 40, 50])],
-        [C(5, 1, [15, 25, 35]), C(1, 5, [45, 55])]
+        [C(3, 1, [10, 20]), C(1, 3, [30, 40, 50])],
+        [C(3, 1, [15, 25, 35]), C(1, 3, [45, 55])]
       ],
       bongMo: [
         BM([{ x: 5, y: 3, so: [20, 10] }, { x: 3, y: 5, so: [50, 40, 30] }]),
         BM([{ x: 5, y: 3, so: [35, 25, 15] }, { x: 3, y: 5, so: [55, 45] }])
       ],
-      maMau: bai(['clear_stack(1)', 'swing_by(4)', 'clear_stack(-1)']),
+      maMau: bai(['clear_stack(1)', 'swing_by(-1)', 'clear_stack(-1)']),
       loiGiai: bai(
-        ['clear_stack(1)', 'swing_by(4)', 'clear_stack(-1)'],
+        ['clear_stack(1)', 'swing_by(-1)', 'clear_stack(-1)'],
         { hamCuaEmMoi: [hClearStack()] }
       ),
-      sao: { o: 17, nhip: 48 },
+      sao: { o: 20, nhip: 42 },
       loiGiaiKhac: {
-        moTa: 'Quay từ nấc 1 sang nấc 5 bằng swing_by(-4)',
-        baiLam: bai(['clear_stack(1)', 'swing_by(-4)', 'clear_stack(-1)']),
+        moTa: 'Quay từ nấc 0 sang nấc 3 bằng swing_by(3)',
+        baiLam: bai(['clear_stack(1)', 'swing_by(3)', 'clear_stack(-1)']),
         hamCuaEmMoi: [hClearStack()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm clear_stack mà đã bấm Chạy', baiLam: bai(['clear_stack(1)', 'swing_by(4)', 'clear_stack(-1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong clear_stack quên swing_by(-d) nên vòng lặp bị kẹt ở chồng đích', baiLam: bai(['clear_stack(1)', 'swing_by(4)', 'clear_stack(-1)']), hamCuaEmMoi: [hClearStack(['c = read_code()', 'while c != -1:', '    carry_by(d)', '    c = read_code()'])], phaiCoMa: ['vong-vo-han'] }
+        { moTa: 'Chưa tạo hàm clear_stack mà đã bấm Chạy', baiLam: bai(['clear_stack(1)', 'swing_by(-1)', 'clear_stack(-1)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong clear_stack quên swing_by(-d) nên vòng lặp bị kẹt ở chồng đích', baiLam: bai(['clear_stack(1)', 'swing_by(-1)', 'clear_stack(-1)']), hamCuaEmMoi: [hClearStack(['c = read_code()', 'while c != -1:', '    carry_by(d)', '    c = read_code()'])], phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['Luna: Hàm clear_stack(d) nhận 1 tham số d là độ lệch nấc cần chuyển tới.', 'Luna: Đọc c = read_code(); trong while c != -1:, gọi carry_by(d), swing_by(-d) rồi c = read_code().']
     }),
@@ -749,17 +749,17 @@
     manCheQuetMa({
       so: 6, ten: 'Dọn kho trung chuyển rồi phân luồng', hang: 'luyen', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'clear_stack', 'route_tens'],
-      deBai: 'Sola nhờ bạn: kiện hàng đang nằm ở nấc 7 (1, 1). Hãy dùng clear_stack(1) để dồn hết sang nấc 0 (3, 1), quay sang nấc 0 rồi đọc c = read_code(), dùng while c != -1: gọi route_tens() và đọc lại c để phân luồng từng kiện.',
-      veMaMau: 'Đã dồn chồng từ nấc 7 sang nấc 0. Hãy quay sang nấc 0 và lặp route_tens() cho tới khi hết hàng.',
+      deBai: 'Sola nhờ bạn: kiện hàng đang nằm ở nấc 3 (1, 3). Hãy dùng clear_stack(1) để dồn hết sang nấc 0 (3, 1), quay sang nấc 0 rồi đọc c = read_code(), dùng while c != -1: gọi route_tens() và đọc lại c để phân luồng từng kiện.',
+      veMaMau: 'Đã dồn chồng từ nấc 3 sang nấc 0. Hãy quay sang nấc 0 và lặp route_tens() cho tới khi hết hàng.',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 7, tam: 2 }, { x: 3, y: 3, nac: 7, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 3, tam: 2 }, { x: 3, y: 3, nac: 3, tam: 2 }],
       chong: [
-        [C(1, 1, [25, 18])],
-        [C(1, 1, [12, 34, 21])]
+        [C(1, 3, [25, 18])],
+        [C(1, 3, [12, 34, 21])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [18] }, { x: 5, y: 3, so: [25] }]),
-        BM([{ x: 5, y: 1, so: [12] }, { x: 5, y: 3, so: [21] }, { x: 5, y: 5, so: [34] }])
+        BM([{ x: 5, y: 3, so: [18] }, { x: 3, y: 5, so: [25] }]),
+        BM([{ x: 5, y: 3, so: [12] }, { x: 3, y: 5, so: [21] }, { x: 1, y: 3, so: [34] }])
       ],
       maMau: bai(['clear_stack(1)', 'swing_by(1)']),
       loiGiai: bai([
@@ -770,7 +770,7 @@
         '    route_tens()',
         '    c = read_code()'
       ]),
-      sao: { o: 21, nhip: 50 },
+      sao: { o: 27, nhip: 50 },
       loiGiaiKhac: {
         moTa: 'Dùng swing_right() thay cho swing_by(1) để sang nấc 0',
         baiLam: bai([
@@ -784,9 +784,9 @@
       },
       loiSai: [
         { moTa: 'Mới dồn sang nấc 0, chưa chạy vòng while phân luồng', baiLam: bai(['clear_stack(1)', 'swing_by(1)']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Quên swing_by(1) sang nấc 0 nên vòng while đọc ô trống ở nấc 7', baiLam: bai(['clear_stack(1)', 'c = read_code()', 'while c != -1:', '    route_tens()', '    c = read_code()']), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Quên swing_by(1) sang nấc 0 nên vòng while đọc ô trống ở nấc 3', baiLam: bai(['clear_stack(1)', 'c = read_code()', 'while c != -1:', '    route_tens()', '    c = read_code()']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Sau clear_stack(1), cần cẩu vẫn ở nấc 7 nên cần swing_by(1) để sang nấc 0.', 'Luna: Tại nấc 0, viết c = read_code(), while c != -1:, thụt lề route_tens() và c = read_code().']
+      goiY: ['Luna: Sau clear_stack(1), cần cẩu vẫn ở nấc 3 nên cần swing_by(1) để sang nấc 0.', 'Luna: Tại nấc 0, viết c = read_code(), while c != -1:, thụt lề route_tens() và c = read_code().']
     }),
 
     manCheQuetMa({
@@ -832,91 +832,91 @@
       so: 8, ten: 'Chế hàm route_all_tens()', hang: 'bien-the', nhipTheo: 'tong',
       taoHam: ['route_all_tens'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'route_tens'],
-      deBai: 'Sola nhờ bạn: chế hàm route_all_tens(): đọc c = read_code(), while c != -1: gọi route_tens() rồi đọc lại c, để tự động phân luồng sạch cả chồng theo hàng chục. Dùng hàm đó tại nấc 0 (3, 1) và nấc 4 (3, 5).',
+      deBai: 'Sola nhờ bạn: chế hàm route_all_tens(): đọc c = read_code(), while c != -1: gọi route_tens() rồi đọc lại c, để tự động phân luồng sạch cả chồng theo hàng chục. Dùng hàm đó tại nấc 0 (3, 1) và nấc 2 (3, 5).',
       veMaMau: 'Trong route_all_tens(), viết c = read_code(), while c != -1:, thụt lề route_tens() và c = read_code().',
       san: [SAN_CANG, SAN_CANG],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 2 }, { x: 3, y: 3, nac: 0, tam: 2 }],
       chong: [
-        [C(3, 1, [12, 24, 18]), C(3, 5, [15, 29])],
-        [C(3, 1, [21, 16]), C(3, 5, [27, 13, 22])]
+        [C(3, 1, [12, 34, 18]), C(3, 5, [15, 29])],
+        [C(3, 1, [31, 16]), C(3, 5, [27, 13, 22])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [18, 12] }, { x: 5, y: 3, so: [24] }, { x: 1, y: 5, so: [15] }, { x: 1, y: 3, so: [29] }]),
-        BM([{ x: 5, y: 1, so: [16] }, { x: 5, y: 3, so: [21] }, { x: 1, y: 5, so: [13] }, { x: 1, y: 3, so: [22, 27] }])
+        BM([{ x: 5, y: 3, so: [18, 12] }, { x: 1, y: 3, so: [34, 15] }, { x: 3, y: 1, so: [29] }]),
+        BM([{ x: 5, y: 3, so: [16] }, { x: 1, y: 3, so: [31, 13] }, { x: 3, y: 1, so: [22, 27] }])
       ],
-      maMau: bai(['route_all_tens()', 'swing_by(4)', 'route_all_tens()']),
+      maMau: bai(['route_all_tens()', 'swing_by(2)', 'route_all_tens()']),
       loiGiai: bai(
-        ['route_all_tens()', 'swing_by(4)', 'route_all_tens()'],
+        ['route_all_tens()', 'swing_by(2)', 'route_all_tens()'],
         { hamCuaEmMoi: [hRouteAllTens()] }
       ),
-      sao: { o: 19, nhip: 58 },
+      sao: { o: 23, nhip: 58 },
       loiGiaiKhac: {
-        moTa: 'Dùng vòng for 2 lần qua nấc 0 và nấc 4',
-        baiLam: bai(['for i in range(2):', '    route_all_tens()', '    swing_by(4)']),
+        moTa: 'Dùng vòng for 2 lần qua nấc 0 và nấc 2',
+        baiLam: bai(['for i in range(2):', '    route_all_tens()', '    swing_by(2)']),
         hamCuaEmMoi: [hRouteAllTens()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm route_all_tens mà đã bấm Chạy', baiLam: bai(['route_all_tens()', 'swing_by(4)', 'route_all_tens()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong route_all_tens chỉ gọi route_tens() 1 lần không có while', baiLam: bai(['route_all_tens()', 'swing_by(4)', 'route_all_tens()']), hamCuaEmMoi: [hRouteAllTens(['route_tens()'])], phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Chưa tạo hàm route_all_tens mà đã bấm Chạy', baiLam: bai(['route_all_tens()', 'swing_by(2)', 'route_all_tens()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Trong route_all_tens chỉ gọi route_tens() 1 lần không có while', baiLam: bai(['route_all_tens()', 'swing_by(2)', 'route_all_tens()']), hamCuaEmMoi: [hRouteAllTens(['route_tens()'])], phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Mở Xưởng hàm, tạo route_all_tens() gồm c = read_code(), while c != -1:, route_tens() và c = read_code().', 'Luna: Tạo xong hàm, bấm Chạy để phân luồng cả hai trạm nấc 0 và nấc 4.']
+      goiY: ['Luna: Mở Xưởng hàm, tạo route_all_tens() gồm c = read_code(), while c != -1:, route_tens() và c = read_code().', 'Luna: Tạo xong hàm, bấm Chạy để phân luồng cả hai trạm nấc 0 và nấc 2.']
     }),
 
     manCheQuetMa({
       so: 9, ten: 'Phân luồng hàng chục rồi tách chẵn lẻ', hang: 'bien-the', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'sort_parity', 'sort_all_parity', 'route_tens', 'route_all_tens'],
-      deBai: 'Sola nhờ bạn: tại nấc 0 (3, 1) có chồng hàng mang mã 2x và 4x. Hãy gọi route_all_tens() để đưa các kiện 2x về nấc 2 và 4x về nấc 4, sau đó đến nấc 2 và nấc 4 gọi sort_all_parity() để tách tiếp chẵn lẻ sang hai bên!',
-      veMaMau: 'Đã gọi route_all_tens() ở nấc 0. Hãy lần lượt sang nấc 2 và nấc 4 gọi sort_all_parity().',
+      deBai: 'Sola nhờ bạn: tại nấc 0 (3, 1) có chồng hàng mang mã 1x và 3x. Hãy gọi route_all_tens() để đưa các kiện 1x về nấc 1 và 3x về nấc 3, sau đó đến nấc 1 và nấc 3 gọi sort_all_parity() để tách tiếp chẵn lẻ sang hai bên!',
+      veMaMau: 'Đã gọi route_all_tens() ở nấc 0. Hãy lần lượt sang nấc 1 và nấc 3 gọi sort_all_parity().',
       san: [SAN_CANG, SAN_CANG],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 2 }, { x: 3, y: 3, nac: 0, tam: 2 }],
       chong: [
-        [C(3, 1, [21, 44, 28])],
-        [C(3, 1, [43, 26, 48])]
+        [C(3, 1, [13, 32, 18])],
+        [C(3, 1, [31, 16, 38])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [28] }, { x: 5, y: 5, so: [21, 44] }]),
-        BM([{ x: 5, y: 1, so: [26] }, { x: 5, y: 5, so: [48] }, { x: 1, y: 5, so: [43] }])
+        BM([{ x: 3, y: 1, so: [18] }, { x: 3, y: 5, so: [13, 32] }]),
+        BM([{ x: 3, y: 1, so: [16, 31] }, { x: 3, y: 5, so: [38] }])
       ],
       maMau: bai(['route_all_tens()']),
       loiGiai: bai([
         'route_all_tens()',
-        'swing_by(2)',
+        'swing_by(1)',
         'sort_all_parity()',
         'swing_by(2)',
         'sort_all_parity()'
       ]),
-      sao: { o: 29, nhip: 80 },
+      sao: { o: 37, nhip: 66 },
       loiGiaiKhac: {
-        moTa: 'Dùng vòng for 2 lần cho bước swing_by(2) và sort_all_parity()',
+        moTa: 'Dùng vòng for k in [1, 2] cho bước quay và sort_all_parity()',
         baiLam: bai([
           'route_all_tens()',
-          'for i in range(2):',
-          '    swing_by(2)',
+          'for k in [1, 2]:',
+          '    swing_by(k)',
           '    sort_all_parity()'
         ])
       },
       loiSai: [
-        { moTa: 'Mới phân luồng từ nấc 0, chưa tách chẵn lẻ ở nấc 2 và nấc 4', baiLam: bai(['route_all_tens()']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Chỉ tách chẵn lẻ ở nấc 2, quên sang nấc 4', baiLam: bai(['route_all_tens()', 'swing_by(2)', 'sort_all_parity()']), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Mới phân luồng từ nấc 0, chưa tách chẵn lẻ ở nấc 1 và nấc 3', baiLam: bai(['route_all_tens()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Chỉ tách chẵn lẻ ở nấc 1, quên sang nấc 3', baiLam: bai(['route_all_tens()', 'swing_by(1)', 'sort_all_parity()']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Sau route_all_tens() ở nấc 0, các kiện 2x nằm ở nấc 2 và 4x nằm ở nấc 4.', 'Luna: Gọi swing_by(2), sort_all_parity(), rồi lại swing_by(2), sort_all_parity().']
+      goiY: ['Luna: Sau route_all_tens() ở nấc 0, các kiện 1x nằm ở nấc 1 và 3x nằm ở nấc 3.', 'Luna: Gọi swing_by(1), sort_all_parity(), rồi swing_by(2), sort_all_parity().']
     }),
 
     manCheQuetMa({
       so: 10, ten: 'Trùm cuối: Trung tâm phân loại tự động', hang: 'trum', nhipTheo: 'tong',
       huyHieu: { ma: 'che-quet-ma', ten: 'Huy hiệu Chế lệnh: phân loại theo mã' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'sort_parity', 'sort_all_parity', 'clear_stack', 'route_tens', 'route_all_tens'],
-      deBai: 'Sola nhờ bạn: trùm cuối gói 3! Đầu tiên dồn chồng hàng ở nấc 7 sang nấc 0 bằng clear_stack(1), sang nấc 0 gọi route_all_tens() để chia các kiện 2x và 5x về nấc 2 và nấc 5, rồi sang nấc 2 gọi sort_all_parity() để tách chẵn lẻ!',
+      deBai: 'Sola nhờ bạn: trùm cuối gói 3! Đầu tiên dồn chồng hàng ở nấc 3 sang nấc 0 bằng clear_stack(1), sang nấc 0 gọi route_all_tens() để chia các kiện 1x và 3x về nấc 1 và nấc 3, rồi sang nấc 1 gọi sort_all_parity() để tách chẵn lẻ!',
       veMaMau: 'Kết hợp clear_stack(1), route_all_tens() và sort_all_parity() để hoàn thành dây chuyền phân loại.',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 7, tam: 2 }, { x: 3, y: 3, nac: 7, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 3, tam: 2 }, { x: 3, y: 3, nac: 3, tam: 2 }],
       chong: [
-        [C(1, 1, [24, 51, 27])],
-        [C(1, 1, [58, 22, 29])]
+        [C(1, 3, [14, 31, 17])],
+        [C(1, 3, [38, 12, 19])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [24] }, { x: 5, y: 5, so: [27] }, { x: 1, y: 5, so: [51] }]),
-        BM([{ x: 5, y: 1, so: [22] }, { x: 5, y: 5, so: [29] }, { x: 1, y: 5, so: [58] }])
+        BM([{ x: 3, y: 1, so: [14] }, { x: 3, y: 5, so: [17] }, { x: 1, y: 3, so: [31] }]),
+        BM([{ x: 3, y: 1, so: [12] }, { x: 3, y: 5, so: [19] }, { x: 1, y: 3, so: [38] }])
       ],
       maMau: bai([
         'clear_stack(1)',
@@ -926,10 +926,10 @@
         'clear_stack(1)',
         'swing_by(1)',
         'route_all_tens()',
-        'swing_by(2)',
+        'swing_by(1)',
         'sort_all_parity()'
       ]),
-      sao: { o: 32, nhip: 94 },
+      sao: { o: 42, nhip: 76 },
       loiGiaiKhac: {
         moTa: 'Thêm dòng chú thích cho hai giai đoạn phân loại',
         baiLam: bai([
@@ -937,15 +937,15 @@
           'clear_stack(1)',
           'swing_by(1)',
           'route_all_tens()',
-          'swing_by(2)',
+          'swing_by(1)',
           'sort_all_parity()'
         ])
       },
       loiSai: [
-        { moTa: 'Mới phân luồng về nấc 2 và nấc 5, chưa tách chẵn lẻ ở nấc 2', baiLam: bai(['clear_stack(1)', 'swing_by(1)', 'route_all_tens()']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Sau route_all_tens() ở nấc 0 quên swing_by(2) sang nấc 2 trước khi sort_all_parity()', baiLam: bai(['clear_stack(1)', 'swing_by(1)', 'route_all_tens()', 'sort_all_parity()']), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Mới phân luồng về nấc 1 và nấc 3, chưa tách chẵn lẻ ở nấc 1', baiLam: bai(['clear_stack(1)', 'swing_by(1)', 'route_all_tens()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Sau route_all_tens() ở nấc 0 quên swing_by(1) sang nấc 1 trước khi sort_all_parity()', baiLam: bai(['clear_stack(1)', 'swing_by(1)', 'route_all_tens()', 'sort_all_parity()']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Sau clear_stack(1) ở nấc 7, gọi swing_by(1) sang nấc 0 rồi gọi route_all_tens().', 'Luna: Tiếp theo gọi swing_by(2) sang nấc 2 rồi gọi sort_all_parity() để tách các kiện 2x.']
+      goiY: ['Luna: Sau clear_stack(1) ở nấc 3, gọi swing_by(1) sang nấc 0 rồi gọi route_all_tens().', 'Luna: Tiếp theo gọi swing_by(1) sang nấc 1 rồi gọi sort_all_parity() để tách các kiện 1x.']
     })
   ];
 
