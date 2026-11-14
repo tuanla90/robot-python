@@ -3343,6 +3343,7 @@
     // CHỈ gói 6: cờ này kéo theo cú PHÓNG 2 ô (tổng ±2) mà lõi không tách được; bật cho cả gói 7–10 thì dãy cố định có phóng thắng mọi sân, phá ép cảm biến (20 màn gói 10).
     // Gói 10 bật cờ từng màn (man-trum-mua-2.js). Gói 7–9 chưa có: xem báo cáo ghép nhịp mùa 2.
     var iGhi = M.danhSach.indexOf(get('luc-ban.6'));
+    if (iGhi >= 0) Object.assign(get('luc-ban.6'), { chiChay: true, chinhCoDinh: true });     // màn trình diễn ghì xích: chương trình khoá, bấm Chạy là thấy
     var goiGhi = {}; TT.goi.forEach(function (g) { if (g.ma === 'luc-ban') g.chuong.forEach(function (c) { goiGhi[c] = true; }); });
     if (iGhi >= 0) M.danhSach.forEach(function (m, i) {
       if (i < iGhi || !goiGhi[m.chuong]) return;

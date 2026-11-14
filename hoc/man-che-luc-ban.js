@@ -253,7 +253,7 @@
     man({
       so: 6, ten: 'Vừa chạy vừa phun', yMoi: 'ghép nhịp: phun nhẹ không giật nên xe chạy được trong lúc phun; xích chạy trước, tia nước phun từ ô mới',
       hamCuaEmCan: ['tr_right', 'forward', 'move'], chiChay: true, chinhCoDinh: true,
-      deBai: 'Phun nhẹ không giật, nên xe vừa chạy vừa phun được. Cùng một nhịp: hai xích đưa xe tới một ô, rồi vòi phun từ ô mới. ' +
+      deBai: 'Phun nhẹ không giật, nên xe vừa chạy vừa phun được: cùng một nhịp, hai xích đưa xe tới một ô rồi vòi phun từ ô mới. ' +
         'Van nào cũng cách xe 3 ô, đứng yên phun nhẹ thì không tới. Bấm Chạy xem xe chạy và phun cùng lúc ở ba đoạn đường.',
       veMaMau: 'Chương trình có sẵn. Bấm Chạy: trong vòng lặp có spray() cùng left_move() và right_move() trước một wait().',
       san: SAN_6, batDau: { x: 1, y: 5, huong: 1 }, noi: NOI_6,
@@ -312,7 +312,7 @@
     man({
       so: 9, ten: 'Đố: nhịp bị tách', yMoi: 'sửa hàm lỗi: lệnh phun và lệnh xích bị một wait() tách thành hai nhịp; ghép lại một nhịp thì tia mới kịp lọt cửa nhịp',
       hamCuaEmCan: ['squirt', 'brace_spray', 'tr_left', 'tr_right', 'forward', 'move'], chinhCoDinh: true, cuaNhip: NHIP_9,
-      deBai: 'Trước mỗi van có một tấm chắn chỉ mở đúng một nhịp, đúng lúc xe phải phun. Van nào cũng cách xe 3 ô. Sola chế spray_go() để vừa chạy vừa phun, ' +
+      deBai: 'Van nào cũng cách xe 3 ô, trước van có tấm chắn chỉ mở đúng một nhịp. Sola chế spray_go() để vừa chạy vừa phun, ' +
         'nhưng xe phun xong mới chạy: tia nước rơi trước van. Tìm và sửa một dòng trong spray_go().',
       veMaMau: 'Chạy thử. Trong spray_go() có mấy wait()? Mỗi wait() là hết một nhịp.',
       san: SAN_9, batDau: { x: 1, y: 1, huong: 1 }, noi: NOI_9,
