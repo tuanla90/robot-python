@@ -30,6 +30,7 @@ Mùa 3, 6 không nằm trong kế hoạch này (đã ghép kiểu "kèm bước"
 - Mọi luật mới bật bằng cờ màn, nên màn cũ không khai cờ chạy y nguyên (cách làm như `xichDay`, `lucBan`, `chinhLuc`).
 
 ## 2. Mùa 2 Nhà máy (xe cứu hỏa)
+- XONG 14/11 (lõi 1915467…36803b0, màn d6be3ac…f4962aa): ghì xích luc-ban.6 trình diễn / .7 ép / .9 hàm `brace_spray()`, che-luc-ban.5, .10, tong-hop-2.9; phun khi chạy che-luc-ban.6 trình diễn / .9 ép (cửa nhịp chắn tia nước); phóng trum-mua-2.8 trình diễn / .9 hàm `boost()` ép / .10 trùm. Đo: gói 6 7/20, gói 10 4/20 (chỉ tiêu 15 / 5 chưa đạt: sáu màn chọn lực dùng cú giật làm bước đi, thêm ghép phải dựng lại sân — chờ user quyết).
 
 ### 2a. Ghì xích chống giật (gói 6 Lực phun, chương 2; cờ `cfg.ghiXich`)
 - Lý do: phun mạnh thì nước đẩy xe lùi (lực đẩy ngược, định luật 3 Newton); xích bám đất đẩy tới cùng lúc thì hai lực triệt tiêu. Lấp chỗ "bệ vòi xích" đã bỏ: gói 6 chương 1 giữ bài "lần đầu bị giật", chương 2 học tự chống giật bằng lệnh.
