@@ -994,7 +994,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       // CẢNG SÔNG (2/11, user: ô tầm rối mắt, che ô mục tiêu): với cần cẩu, D chỉ đánh dấu ô trong tầm cần (lõi coi như sàn, thắng theo bóng mờ / giao tàu),
       // nên vẽ chấm vàng nhỏ mờ đứng yên thay cho khung đích; bỏ chấm ở ô đầu cần của bóng mờ để ô mục tiêu sạch
       var cau = this.vis && this.vis.cau, bm = this.cfg.bm, dauBm = null;
-      if (cau && bm && typeof bm.nac === 'number') { var hn = VeVector.NAC_CAU[((bm.nac % 8) + 8) % 8]; dauBm = (bm.x + hn[0] * (bm.tam || 1)) + ',' + (bm.y + hn[1] * (bm.tam || 1)); }
+      if (cau && bm && typeof bm.nac === 'number') { var hn = VeVector.NAC_CAU[((bm.nac % 4) + 4) % 4]; dauBm = (bm.x + hn[0] * (bm.tam || 1)) + ',' + (bm.y + hn[1] * (bm.tam || 1)); }
       for (var j = 0; j < ds.length; j++) {
         var e = ds[j], ex = e.x * T, ey = e.y * T, vo2 = this.vatTaiO(e.x, e.y);
         if (cau) {
@@ -2765,7 +2765,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (m === 'da-neo' || m === 'chua-neo' || m === 'da-buoc' || m === 'phao-goi-lai' || m === 'neo-goi-lai' || m === 'day-het-thu' || m === 'day-het-nha') { this.baoHieu('?', 1200); await ngu(per); return; }   // thông tin: lệnh không làm gì (tời cuộn hết nấc như neo đã neo)
       /* ---- Cảng sông */
-      if (m === 'quay-can') {                                                                // cần quay mượt một nấc (qua số lẻ, veCanCau nội suy)
+      if (m === 'quay-can') {                                                                // cần quay mượt 90° (qua số lẻ, veCanCau nội suy; 3 → 0 đi tiếp 3 → 4, không quay ngược cả vòng)
         var n0 = s.tu, n1 = s.tu + (s.chieu > 0 ? 1 : -1);
         await this.tween(per, my, function (k) { ca.nac = n0 + (n1 - n0) * ease(k); });
         ca.nac = s.den; return;

@@ -463,10 +463,10 @@
           Lớp cfg.tau = [{ o: [{x,y}], co, vang, pha? }]: mọi ô T phải thuộc đúng một tàu; tàu có mặt sau t nhịp khi (t + pha) mod (co + vang) < co (như cửa nhịp; vang 0 = tàu luôn ở bến).
           Màn nhiều sân: chong / tau / giao là mảng song song với san (lopMauCuaSan). cfg.taiToiDa (luật tải) và cfg.luatThap (luật tháp) là của màn; khai mà không có cẩu là lỗi cấu hình.
         - CẦN CẨU: bệ đứng ở batDau (phải là '.', D, sàn màu hay R; không băng chuyền / bàn xoay / cổng / cửa nên bệ không bao giờ bị đẩy), chiếm ô như tường với robot khác (dongDoiTai). Không có hướng mặt (huong bỏ qua),
-          không có bánh, không gắn tay kẹp / nam châm / cảm biến khác (lỗi cấu hình). Cần có NẤC nac 0–7 (NAC_VEC: 0 lên, 1 lên-phải, 2 phải, 3 xuống-phải, 4 xuống, 5 xuống-trái, 6 trái, 7 lên-trái) và TẦM tam 1–3;
-          batDau.nac / batDau.tam (mặc định 0, 1); ĐẦU CẦN = bệ + tam × NAC_VEC[nac] (nấc chéo: (±tam, ±tam)), lúc xuất phát phải nằm trong sân.
+          không có bánh, không gắn tay kẹp / nam châm / cảm biến khác (lỗi cấu hình). Cần có HƯỚNG nac 0–3 (NAC_VEC: 0 lên, 1 phải, 2 xuống, 3 trái; 14/11 bỏ nấc chéo, mỗi lệnh quay là 90°) và TẦM tam 1–3;
+          batDau.nac / batDau.tam (mặc định 0, 1); ĐẦU CẦN = bệ + tam × NAC_VEC[nac] (bệ đứng yên với tới 12 ô hình chữ thập), lúc xuất phát phải nằm trong sân.
           MỌI LỆNH CẨU LÀ MỘT NHỊP NGAY (như go_* của drone): không có hàng chờ, không có quen-wait; wait() = một nhịp đứng yên ('dung-yen').
-          swing_left() / swing_right(): nấc −1 / +1 mod 8 ('quay-can' { tu, den, chieu, dau }); extend() / retract(): tầm ±1 ('vuon-can' / 'thu-can' { tu, den, dau }). Cặp ngược: swing_left ↔ swing_right, extend ↔ retract, pick_up ↔ set_down.
+          swing_left() / swing_right(): nấc −1 / +1 mod 4 (quay 90°) ('quay-can' { tu, den, chieu, dau }); extend() / retract(): tầm ±1 ('vuon-can' / 'thu-can' { tu, den, dau }). Cặp ngược: swing_left ↔ swing_right, extend ↔ retract, pick_up ↔ set_down.
           Cần CAO HƠN MỌI THỨ: quay / vươn qua tường, chồng, robot, nước không bị chặn. Vươn quá 3, thu dưới 1, hay đầu cần MỚI nằm ngoài sân (kể cả khi quay): không làm, mất nhịp, 'can-het-tam' { lenh, vat: 'tam' | 'ngoai-san', nac, tam, o } (lỗi).
           Container đang treo đi theo đầu cần (treoTheo). Vết nhịp robot: nac, tam, dau {x,y}, treo [{so,tan}] (đáy → đỉnh), doi (đang móc đôi); kết quả cũng có nac / tam / dau / treo.
         - MÓC CẨU (tay, TAY_MOC; pick_up đi cùng set_down; pick_up2 là nâng cấp, cần có pick_up). TÊN: đặc tả ghi hook / unhook / hook2 nhưng mùa 3 đã dạy trẻ TỰ TẠO hàm hook() / unhook() (man-bung-nhen, man-trum-mua-3)
@@ -492,7 +492,7 @@
         - BÓNG MỜ CHỒNG (mục tiêu bong-mo): cần cẩu không cần bongMo.huong; không khai x, y thì bệ ở nguyên chỗ xuất phát. bongMo.chong = [{ x, y, so: [đáy → đỉnh] }]: lúc chạy xong MỌI chồng trên sân phải đúng — ô khai phải đúng dãy số
           (so: [] = trống), ô không khai phải trống, móc không còn treo gì; sai thì không thắng (cham.js: chua-xep-chong). Dùng cho bài sắp xếp / Tháp Hà Nội (cùng luatThap).
         - NHIỀU ROBOT: bệ chiếm ô như tường với xe dưới đất (xe đâm 'dong-doi'); xe đi qua ô R như sàn; đầu cần KHÔNG chặn ai (xe đứng dưới đầu cần được, nhưng set_down xuống ô có xe → ha-bi-chan 'robot'); rail bị xe chặn ('robot').
-        - NHÂN (nhan/san-robot-core.js, 31/10): phép % đổi theo Python (kết quả cùng dấu số chia: -5 % 8 = 3) để bài "(b - a) % 8 lần swing_right()" chạy đúng; // vẫn Math.floor; abs / min / max có sẵn.
+        - NHÂN (nhan/san-robot-core.js, 31/10): phép % đổi theo Python (kết quả cùng dấu số chia: -5 % 8 = 3) để bài "(b - a) % 4 lần swing_right()" chạy đúng; // vẫn Math.floor; abs / min / max có sẵn.
 
    KHAY VÀ PHẦN CỨNG (luật chế lệnh, 14/10): hai tập lệnh gốc khác nhau.
         - cfg.hamGoc = KHAY: lệnh hiện trên khay, dùng được trong CHƯƠNG TRÌNH CHÍNH và HÀM CỦA MÀN.
@@ -693,8 +693,8 @@
   LENH_NGUOC.reel_in = 'reel_out'; LENH_NGUOC.reel_out = 'reel_in';
   // CẢNG SÔNG (mùa 4, 31/10; xem phần CẢNG SÔNG): cần cẩu container. Ký hiệu T (boong tàu, trên nước), R (ray cẩu, sàn); lớp cfg.chong, cfg.tau, cfg.giao, cfg.taiToiDa, cfg.luatThap, bongMo.chong
   var CANG_KY = { 'T': 'boong', 'R': 'ray' };
-  var NAC_VEC = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];   // 8 nấc cần: 0 lên, 1 lên-phải, 2 phải, 3 xuống-phải, 4 xuống, 5 xuống-trái, 6 trái, 7 lên-trái
-  var SO_NAC = 8;
+  var NAC_VEC = [[0, -1], [1, 0], [0, 1], [-1, 0]];   // 4 hướng cần (14/11, thay 8 nấc): 0 lên, 1 phải, 2 xuống, 3 trái; không có nấc chéo nên cần dài đúng bằng tầm
+  var SO_NAC = 4;
   var TAM_CAU_TOI_DA = 3;                         // tầm cần 1–3 ô
   var CHONG_TOI_DA = 4;                           // một chồng tối đa 4 container
   var RAY_TOI_DA = 9;                             // rail(n): abs(n) ≤ 9
@@ -1090,7 +1090,7 @@
       soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung, ghiXich, phunKhiChay, coDap, dau, coCam4, cam4TaiCho,
       coOmniCheo, coChinhLuc, coRadar, coRadarNhanDang, vuaCheo,
       laXuong, coNeo, coPhao, coSetLength, coCuonDay, daiLuoi, coDongChay, neo, keo, neoCho, phaoCho,   // BẾN SÔNG: xuồng, neo, tay lưới, chong chóng
-      laCau, coMoc, coMoc2, coQuetMa, coCan, coRay, nac, tam, treo,         // CẢNG SÔNG: cần cẩu (nấc 0–7, tầm 1–3, container đang treo đáy → đỉnh), móc, móc đôi, máy quét mã, cân tải, ray
+      laCau, coMoc, coMoc2, coQuetMa, coCan, coRay, nac, tam, treo,         // CẢNG SÔNG: cần cẩu (nấc 0–3, tầm 1–3, container đang treo đáy → đỉnh), móc, móc đôi, máy quét mã, cân tải, ray
       coLoa, loa, loaCho, loaNgan, laGai, coThuGai, gai, gaiCho, coAmThanh, coPhanAm,   // HANG ĐỘNG (mùa 8): loa, bánh gai, thu/bung gai, cảm biến âm thanh
       lai9;                                                                 // M9C2: { gio: id vật trong giỏ cứu hộ của cẩu (L9) | null, phao: phao drone đã thả (L10) | null, conPhao, beDau: id bè sạc drone đang đậu (T4) | null }
     var nhip = 0, thang = false, dungSom = null;
@@ -1104,7 +1104,7 @@
       laBanh = loai === 'banh' || loai === 'xich' || loai === 'omni' || loai === 'xuong' || loai === 'gai';      // dùng chung bộ lệnh bánh (xuồng: hai chân vịt; bánh gai: mùa 8 Hang động)
       laGai = loai === 'gai';
       laXuong = loai === 'xuong';
-      laCau = loai === 'cau';                                               // CẦN CẨU (Cảng sông): bệ đứng yên (trừ ray), cần quay 8 nấc / vươn 3 tầm, mỗi lệnh một nhịp
+      laCau = loai === 'cau';                                               // CẦN CẨU (Cảng sông): bệ đứng yên (trừ ray), cần quay 4 hướng / vươn 3 tầm, mỗi lệnh một nhịp
       laDrone = loai === 'drone';                                          // drone: bay 4 hướng tuyệt đối, 1 nhịp / ô, có pin tuỳ chọn
       bd = rc.batDau;
       if (!bd) throw new Error('Thiếu vị trí xuất phát (batDau).');
@@ -1112,9 +1112,9 @@
       if (laCau) {                                                          // bệ cẩu đứng trên sàn thường, ô đích, sàn màu hay ray (không băng chuyền, bàn xoay, cổng, cửa: bệ không bị đẩy)
         var cBe = oTai(san, bd.x, bd.y);
         if (!(cBe === '.' || cBe === 'D' || cBe === 'R' || MAU_KY[cBe])) throw new Error('Bệ cẩu phải đứng trên sàn ".", ô đích D, sàn màu hay ray R (không đứng trên băng chuyền, bàn xoay, cổng, cửa).');
-        if (bd.nac !== undefined && bd.nac !== null && !(laSoNguyen(bd.nac) && bd.nac >= 0 && bd.nac < SO_NAC)) throw new Error('batDau.nac (nấc cần lúc đầu) phải là số nguyên 0–7.');
+        if (bd.nac !== undefined && bd.nac !== null && !(laSoNguyen(bd.nac) && bd.nac >= 0 && bd.nac < SO_NAC)) throw new Error('batDau.nac (nấc cần lúc đầu) phải là số nguyên 0–3 (0 lên, 1 phải, 2 xuống, 3 trái).');
         if (bd.tam !== undefined && bd.tam !== null && !(laSoNguyen(bd.tam) && bd.tam >= 1 && bd.tam <= TAM_CAU_TOI_DA)) throw new Error('batDau.tam (tầm cần lúc đầu) phải là 1, 2 hoặc 3.');
-        if (bd.huong !== undefined && bd.huong !== null && bd.huong !== 0) throw new Error('Cần cẩu không có hướng mặt: dùng batDau.nac (0–7) thay cho huong.');
+        if (bd.huong !== undefined && bd.huong !== null && bd.huong !== 0) throw new Error('Cần cẩu không có hướng mặt: dùng batDau.nac (0–3) thay cho huong.');
       } else if (bd.nac !== undefined || bd.tam !== undefined) throw new Error('batDau.nac / batDau.tam chỉ dùng cho cần cẩu (loaiRobot "cau").');
       if (laXuong && oTai(san, bd.x, bd.y) === 'K') throw new Error('Xuồng không xuất phát trong cống đang đóng.');
       if (laXuong && san.vatNoi.some(function (q) { return q.x === bd.x && q.y === bd.y; })) throw new Error('Xuồng không xuất phát trên ô có vật nổi.');
@@ -1316,7 +1316,7 @@
       neoCho = null;                          // xuồng: lệnh anchor() / unanchor() đang chờ wait(): {ten, dongPy}
       phaoCho = null;                         // xuồng: lệnh cast_net() / drop_net() / set_length() / reel_in() / reel_out() đang chờ wait(): {ten, dongPy, ...}
       lai9 = { gio: null, phao: null, conPhao: true, beDau: null };   // M9C2: giỏ cứu hộ (cẩu L9), phao (drone L10), bè sạc đang đậu (drone T4)
-      nac = laCau ? (bd.nac || 0) : null;     // cần cẩu: nấc cần 0–7 (xem NAC_VEC)
+      nac = laCau ? (bd.nac || 0) : null;     // cần cẩu: nấc cần 0–3 (xem NAC_VEC)
       tam = laCau ? (bd.tam || 1) : null;     // cần cẩu: tầm cần 1–3
       treo = [];                              // cần cẩu: container đang treo ở móc, đáy → đỉnh (mỗi phần tử là bản ghi container của conts)
       if (laCau) { var d0 = NAC_VEC[nac]; if (oTai(san, bd.x + d0[0] * tam, bd.y + d0[1] * tam) === null) throw new Error('Đầu cần lúc xuất phát nằm ngoài sân (bệ (' + bd.x + ', ' + bd.y + '), nấc ' + nac + ', tầm ' + tam + ').'); }
@@ -1448,10 +1448,10 @@
         bongMo.chan = bm.chan;
       }
       if (oTai(san, bm.x, bm.y) === 'u' && loai !== 'drone') throw new Error('Bóng mờ nằm trên cái hố: (' + bm.x + ', ' + bm.y + ').');
-      bongMo.nac = null; bongMo.tam = null;                                                  // CẢNG SÔNG: nấc (0..7) và tầm (1..3) đích của cần cẩu lúc xong (tuỳ chọn, cho Gói 1 chưa có móc cẩu)
+      bongMo.nac = null; bongMo.tam = null;                                                  // CẢNG SÔNG: nấc (0..3) và tầm (1..3) đích của cần cẩu lúc xong (tuỳ chọn, cho Gói 1 chưa có móc cẩu)
       if (bm.nac !== undefined && bm.nac !== null) {
         if (!laCau) throw new Error('bongMo.nac chỉ dùng cho cần cẩu (loaiRobot "cau").');
-        if (!laSoNguyen(bm.nac) || bm.nac < 0 || bm.nac >= SO_NAC) throw new Error('bongMo.nac phải là số nguyên 0..7.');
+        if (!laSoNguyen(bm.nac) || bm.nac < 0 || bm.nac >= SO_NAC) throw new Error('bongMo.nac phải là số nguyên 0..3.');
         bongMo.nac = bm.nac;
       }
       if (bm.tam !== undefined && bm.tam !== null) {

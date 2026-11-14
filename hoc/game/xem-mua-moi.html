@@ -223,7 +223,7 @@ function veTrang() {
   ].forEach(function (r) { hinhRobot(h, r[0], r[1], r[2], nenO('bai-cont')); });
 
   /* lưới 7 × 7: 8 nấc × 3 tầm */
-  var NAC_TEN = ['lên', 'lên-phải', 'phải', 'xuống-phải', 'xuống', 'xuống-trái', 'trái', 'lên-trái'], DX = [0, 1, 1, 1, 0, -1, -1, -1], DY = [-1, -1, 0, 1, 1, 1, 0, -1];
+  var NAC_TEN = ['lên', 'phải', 'xuống', 'trái'], DX = [0, 1, 0, -1], DY = [-1, 0, 1, 0];      // 14/11: cần 4 hướng (bỏ nấc chéo)
   function luoiCau(n, nac, tam, opt) {
     opt = opt || {};
     return canvas(7 * n, function (g) {
@@ -238,7 +238,7 @@ function veTrang() {
   }
   h = nhom(goc, 'Cần cẩu trên lưới 7 × 7 (ô 32 px), bệ ở giữa: đủ 8 nấc × 3 tầm. Khung xanh lá = ô đầu cần tính riêng theo đặc tả (bệ + tầm × hướng nấc).');
   var TREO = [null, [{ so: 7 }], [{ so: 23 }, { so: 14 }]];
-  for (var tam = 1; tam <= 3; tam++) for (var nac = 0; nac < 8; nac++) {
+  for (var tam = 1; tam <= 3; tam++) for (var nac = 0; nac < 4; nac++) {
     var t = el('div', 'the luoi'), kieu = (nac + tam) % 3, op = { treo: TREO[kieu], doi: kieu === 2, quet: nac === 2 && tam === 2 };
     t.appendChild(luoiCau(32, nac, tam, op));
     var p = el('p'); p.innerHTML = '<b>nấc ' + nac + ' (' + NAC_TEN[nac] + ') · tầm ' + tam + '</b> · ' + (kieu === 0 ? 'móc trống' : kieu === 1 ? 'treo 1 container' : 'móc đôi treo 2') + (op.quet ? ' · tia quét' : '');
@@ -260,7 +260,7 @@ function veTrang() {
       g.drawImage(V.vat('chong-cont', k * DPR, { cont: [{ so: 12 }, { so: 35 }, { so: 9 }] }), (cot - 1) * n + (n - k) / 2, 1 * n + (n - k) / 2, k, k);
       g.drawImage(V.vat('container', k * DPR, { so: 41 }), 0 * n + (n - k) / 2, 0 * n + (n - k) / 2, k, k);
       if (cot === 5) g.drawImage(V.vat('container', k * DPR, { so: 66 }), 2 * n + (n - k) / 2, 3 * n + (n - k) / 2, k, k);
-      V.veCanCau(g, { bx: (cot === 5 ? 2.5 : 0.5) * n, by: 2.5 * n, nac: cot === 5 ? 7 : 1, tam: cot === 5 ? 2 : 1, o: n, be: true, cfg: C2, ray: 'ngang', treo: [{ so: 58 }] });
+      V.veCanCau(g, { bx: (cot === 5 ? 2.5 : 0.5) * n, by: 2.5 * n, nac: cot === 5 ? 3 : 1, tam: cot === 5 ? 2 : 1, o: n, be: true, cfg: C2, ray: 'ngang', treo: [{ so: 58 }] });
     }, 4 * n);
     t.appendChild(cv);
     var p = el('p'); p.innerHTML = '<b>cảnh ô ' + n + ' px</b> · hàng 1: tàu cập (số tàu ở góc) / tàu vắng; giữa: chồng 3 tầng; hàng 3: ray, bệ có giá bánh ray; cần treo container 58';
