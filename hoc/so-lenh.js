@@ -258,7 +258,7 @@
     m('box_spray', 'hoi', 'Thùng trên băng còn chắn giếng (distance() < 2) thì chờ, rồi phun mạnh', 'trum-mua-2', 'trum-mua-2.5'),
     m('gate_push', 'hoi', 'Tới sát thùng, phun mạnh van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
     m('fire_valve', 'hoi', 'Quay trái, dập lửa trước van, fence_shot() mở van và bù giật, quay lại', 'trum-mua-2', 'trum-mua-2.7'),
-    m('far_push', 'hoi', 'Thùng cách d ô thì đẩy nó đi đúng d ô', 'trum-mua-2', 'trum-mua-2.9')
+    m('boost', 'hoi', 'Phóng: phun mạnh ra sau cùng lúc hai xích tiến, nước và xích cùng đẩy tới nên xe đi 2 ô trong một nhịp', 'trum-mua-2', 'trum-mua-2.9')
   );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
