@@ -3358,6 +3358,15 @@
       if (m.doi) m.doi.forEach(function (r) { if (r && r.phunKhiChay === undefined) r.phunKhiChay = true; });
       else if (m.phunKhiChay === undefined) m.phunKhiChay = true;
     });
+    // 14/11 (KE-HOACH-GHEP-NHIP.md mục 3a): CẦN GẠT ĐÔI mở từ gói 5 Đường ray tới hết mùa 4 Cảng sông (gói 5–10): lệnh cẩu của bộ phận khác nhau viết liền trước wait() chạy chung MỘT nhịp
+    // (ray → quay → vươn → móc). Gói 1–4 không bật: mỗi lệnh một nhịp. Chương trình không có wait() chạy đúng số nhịp cũ. Mùa 9 không bật (màn nào cần thì tự đặt canGatDoi).
+    var GOI_GAT_DOI = ['duong-ray', 'nhac-doi', 'can-tai', 'cang-cu', 'doi-cang', 'tong-hop-cang'], chuongGat = {};
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-4' && GOI_GAT_DOI.indexOf(g.ma) >= 0) g.chuong.forEach(function (c) { chuongGat[c] = true; }); });
+    M.danhSach.forEach(function (m) {
+      if (!chuongGat[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.canGatDoi === undefined) r.canGatDoi = true; });
+      else if (m.canGatDoi === undefined) m.canGatDoi = true;
+    });
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

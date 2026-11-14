@@ -284,7 +284,7 @@
       so: 5, ten: 'Nhện nhảy hố cứu đường ray', hang: 'luyen',
       taiToiDa: 6,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'wait_n', 'jump', 'go', 'pull_s'],
-      deBai: 'Sola và Luna phối hợp nhịp nhàng: R2 ở (3, 6) phía dưới hố sâu u tại (3, 5), còn trên đường ray (3, 3) có mẩu nam châm chữ S màu xanh. R2 hãy gọi jump("U") nhảy qua hố lên (3, 4), go("U") lên (3, 3), pull_s() hút mẩu S rồi go("R") sang (4, 3): mất 10 nhịp. R1 ở (2, 3) gọi carry_by(2) và swing_by(2) giao kiện 19 tại (2, 4) lên tàu chỉ mất 6 nhịp, nên phải chờ thêm wait_n(4). Sau đó R1 trượt rail(1) sang cột 3 và gọi carry_by(2) bốc nốt kiện 29!',
+      deBai: 'Sola và Luna phối hợp nhịp nhàng: R2 ở (3, 6) phía dưới hố sâu u tại (3, 5), còn trên đường ray (3, 3) có mẩu nam châm chữ S màu xanh. R2 hãy gọi jump("U") nhảy qua hố lên (3, 4), go("U") lên (3, 3), pull_s() hút mẩu S rồi go("R") sang (4, 3): mất 10 nhịp. R1 ở (2, 3) gọi carry_by(2) và swing_by(2) giao kiện 19 tại (2, 4) lên tàu chỉ mất 6 nhịp. Từ gói Đường ray, wait() đầu tiên chạy chung nhịp với lần quay cuối, nên R1 gọi wait_n(5) mới đủ 10 nhịp. Sau đó R1 trượt rail(1) sang cột 3 và gọi carry_by(2) bốc nốt kiện 29!',
       veMaMau: 'R2 nhảy qua hố lên dọn mẩu S ở (3, 3); R1 giao kiện 19 ở cột 2, chờ R2 rồi sang cột 3 bốc kiện 29.',
       san: SAN_DOI_HO,
       bd: [{ x: 2, y: 3, nac: 2, tam: 1 }, { x: 3, y: 6, huong: 0 }],
@@ -300,17 +300,17 @@
       loiGiai: B([
         'carry_by(2)',
         'swing_by(2)',
-        'wait_n(4)',
+        'wait_n(5)',
         'rail(1)',
         'carry_by(2)'
       ], ['jump("U")', 'go("U")', 'pull_s()', 'go("R")']),
       sao: { o: 35, nhip: 15 },
       loiSai: [
-        { moTa: 'R2 đi bộ go("U") vào hố u ở (3, 5) thay vì nhảy jump("U")', baiLam: B(['carry_by(2)', 'swing_by(2)', 'wait_n(4)', 'rail(1)', 'carry_by(2)'], ['go("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['roi-ho'] },
-        { moTa: 'R2 hút mẩu S nhưng quên gọi go("R") tránh khỏi ô (3, 3) nên R1 trượt rail(1) đâm phải R2', baiLam: B(['carry_by(2)', 'swing_by(2)', 'wait_n(4)', 'rail(1)', 'carry_by(2)'], ['jump("U")', 'go("U")', 'pull_s()']), phaiCoMa: ['het-ray'] },
-        { moTa: 'R1 không chờ wait_n(4) nên trượt sang (3, 3) khi mẩu S và R2 còn ở đó', baiLam: B(['carry_by(2)', 'swing_by(2)', 'rail(1)', 'carry_by(2)'], ['jump("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['het-ray'] }
+        { moTa: 'R2 đi bộ go("U") vào hố u ở (3, 5) thay vì nhảy jump("U")', baiLam: B(['carry_by(2)', 'swing_by(2)', 'wait_n(5)', 'rail(1)', 'carry_by(2)'], ['go("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'R2 hút mẩu S nhưng quên gọi go("R") tránh khỏi ô (3, 3) nên R1 trượt rail(1) đâm phải R2', baiLam: B(['carry_by(2)', 'swing_by(2)', 'wait_n(5)', 'rail(1)', 'carry_by(2)'], ['jump("U")', 'go("U")', 'pull_s()']), phaiCoMa: ['het-ray'] },
+        { moTa: 'R1 không chờ wait_n(5) nên trượt sang (3, 3) khi mẩu S và R2 còn ở đó', baiLam: B(['carry_by(2)', 'swing_by(2)', 'rail(1)', 'carry_by(2)'], ['jump("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['het-ray'] }
       ],
-      goiY: ['Luna: R2 gọi jump("U") (5 nhịp), go("U") (2 nhịp), pull_s() (1 nhịp), go("R") (2 nhịp) tổng cộng 10 nhịp. R1 xong carry_by(2) và swing_by(2) mới 6 nhịp nên chờ wait_n(4).', 'Luna: Sau rail(1), R1 gọi carry_by(2) để bốc kiện 29 lên tàu.']
+      goiY: ['Luna: R2 gọi jump("U") (5 nhịp), go("U") (2 nhịp), pull_s() (1 nhịp), go("R") (2 nhịp) tổng cộng 10 nhịp. R1 xong carry_by(2) và swing_by(2) là 6 nhịp. wait() đầu tiên chạy chung nhịp với lần quay cuối, nên gọi wait_n(5) cho đủ 10 nhịp.', 'Luna: Sau rail(1), R1 gọi carry_by(2) để bốc kiện 29 lên tàu.']
     }),
 
     manDoi({

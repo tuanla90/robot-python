@@ -4359,15 +4359,18 @@
       if (TAY_MOC.indexOf(ten) >= 0 || TAY_GIO.indexOf(ten) >= 0 || TAY_NAM_CHAM.indexOf(ten) >= 0 || ten === 'grab' || ten === 'release') return 'moc';
       return null;
     }
-    function nhipCauMot(c) {                                     // một lệnh cẩu chạy riêng như cũ (rail(n): abs(n) nhịp)
-      if (c.bp === 'ray') { for (var i = 0; i < Math.abs(c.ray.n); i++) if (motNhip({ kieu: 'cau', ten: 'rail', ray: c.ray, lenhDi: c.lenhDi })) return true; return false; }
-      return motNhip({ kieu: 'cau', ten: c.ten, lenhDi: c.lenhDi, cuc: c.cuc });
+    function nhipCauMot(c, vetTruoc) {                           // một lệnh cẩu chạy riêng như cũ (rail(n): abs(n) nhịp); vetTruoc: nhiều robot, vết lệnh ghi ngay trước nhịp đầu của nó
+      if (c.bp === 'ray') { for (var i = 0; i < Math.abs(c.ray.n); i++) if (motNhip({ kieu: 'cau', ten: 'rail', ray: c.ray, lenhDi: c.lenhDi, vetTruoc: i ? undefined : vetTruoc })) return true; return false; }
+      return motNhip({ kieu: 'cau', ten: c.ten, lenhDi: c.lenhDi, cuc: c.cuc, vetTruoc: vetTruoc });
     }
     /** Hàng chờ đóng KHÔNG có wait(): mỗi lệnh một nhịp riêng theo thứ tự viết (chương trình gói 1–4 không có wait() chạy đúng số nhịp cũ); vết lệnh xếp lại trước nhịp của nó. */
     function xaCauCho() {
       var ds = cauCho; cauCho = [];
       ds.forEach(function (c) { var iv = vet.lastIndexOf(c.vetLenh); if (iv >= 0) vet.splice(iv, 1); });
-      for (var i = 0; i < ds.length; i++) { vet.push(ds[i].vetLenh); if (nhipCauMot(ds[i])) return true; }
+      for (var i = 0; i < ds.length; i++) {
+        if (laDoi) { nhipCauMot(ds[i], ds[i].vetLenh); continue; }           // nhiều robot: nhịp còn nằm trong hangNhip, bộ xếp lịch ghi vết lệnh ngay trước khi chạy nhịp đó
+        vet.push(ds[i].vetLenh); if (nhipCauMot(ds[i])) return true;
+      }
       return false;
     }
     /** wait() gom hàng chờ thành MỘT nhịp, thứ tự máy làm cố định: (a) ray 1 ô → (b) quay → (c) vươn / thu → (d) móc / hạ ở đầu cần MỚI.
@@ -4376,6 +4379,10 @@
     function gomCauCho() {
       var ds = cauCho; cauCho = [];
       if (!ds.length) return motNhip({ kieu: 'cau', ten: null, lenhDi: null });
+      var vetWait = vet.pop();                                   // vết: các lệnh được gom đứng liền ngay trước wait() của chúng (nhiều robot: lệnh ra từ trước khi nhịp cũ chạy xong)
+      ds.forEach(function (c) { var iv = vet.lastIndexOf(c.vetLenh); if (iv >= 0) vet.splice(iv, 1); });
+      ds.forEach(function (c) { vet.push(c.vetLenh); });
+      vet.push(vetWait);
       var ghep = ds.slice().sort(function (a, b) { return THU_BP_CAU[a.bp] - THU_BP_CAU[b.bp]; }), r = ghep[0].bp === 'ray' ? ghep[0] : null;
       if (r) for (var i = 1; i < Math.abs(r.ray.n); i++) if (motNhip({ kieu: 'cau', ten: 'rail', ray: r.ray, lenhDi: r.lenhDi })) return true;
       if (ghep.length === 1) return motNhip({ kieu: 'cau', ten: ghep[0].ten, ray: ghep[0].ray, lenhDi: ghep[0].lenhDi, cuc: ghep[0].cuc });
@@ -4942,6 +4949,7 @@
         X.forEach(function (x) {                                           // hành động của nhịp, ô định tới, ô định kẹp
           napRobot(x.ctx);
           x.h = hangNhip.length ? hangNhip.shift() : nghi();
+          if (x.h.vetTruoc) { vet.push(x.h.vetTruoc); x.h.vetTruoc = null; }   // cần gạt đôi: vết lệnh cẩu vừa xả đứng ngay trước nhịp của nó
           x.du = duKienDi(x.h);
           if (x.h.tay && x.h.tay.kep === 'kep') { var ok = oTay(), k = ok.x + ',' + ok.y; demKep[k] = (demKep[k] || 0) + 1; }
           x.ctx = catRobot();

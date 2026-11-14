@@ -262,7 +262,7 @@
         baiLam: bai(['pick_up()', 'retract()', 'swing_by(2)', 'rail(2)', 'set_down()'])
       },
       loiSai: [
-        { moTa: 'Hạ nhầm xuống Tàu 1 ở (2, 2) mà chưa trượt rail(2) sang Tàu 2', baiLam: bai(['pick_up()', 'retract()', 'swing_by(2)', 'set_down()', 'wait()', 'wait()']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Hạ nhầm xuống Tàu 1 ở (2, 2) mà chưa trượt rail(2) sang Tàu 2', baiLam: bai(['pick_up()', 'retract()', 'swing_by(2)', 'set_down()', 'wait()', 'wait()', 'wait()', 'wait()']), phaiCoMa: ['giao-nham'] },
         { moTa: 'Hạ nhầm xuống cánh cửa đóng C ở (2, 4)', baiLam: bai(['pick_up()', 'retract()', 'set_down()']), phaiCoMa: ['ha-bi-chan'] }
       ],
       goiY: ['Luna: Kiện 24 thuộc đơn hàng của Tàu 2 ở cột 4.', 'Luna: Sau pick_up() và retract(), gọi rail(2), swing_by(2) rồi set_down().']
