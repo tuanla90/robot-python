@@ -258,7 +258,7 @@
         moTa: 'Thêm dòng chú thích bên trong vòng for',
         baiLam: bai([
           'for k in [3, 2, 1]:',
-          '    # đưa kiện vào nấc 4',
+          '    # đưa kiện vào nấc 3',
           '    pick_up()',
           '    swing_by(k)',
           '    set_down()',
@@ -546,36 +546,36 @@
       so: 4, ten: 'Chế hàm carry_by(d)', hang: 'luyen',
       taoHam: ['carry_by'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: chế hàm carry_by(d) gồm 3 bước: pick_up(), swing_by(d), set_down(). Sau đó dùng carry_by để chuyển 3 kiện hàng từ các nấc 0, 2, 4 sang các nấc 1, 3, 5.',
+      deBai: 'Sola nhờ bạn: chế hàm carry_by(d) gồm 3 bước: pick_up(), swing_by(d), set_down(). Sau đó dùng carry_by để chuyển 2 kiện hàng từ nấc 0 và nấc 2 sang nấc 1 và nấc 3.',
       veMaMau: 'Tạo hàm carry_by(d) trong Xưởng hàm rồi bấm Chạy chương trình.',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 0, tam: 2 },
-      chong: [C(3, 1, [11]), C(5, 3, [22]), C(3, 5, [33])],
-      bongMo: BM([{ x: 5, y: 1, so: [11] }, { x: 5, y: 5, so: [22] }, { x: 1, y: 5, so: [33] }]),
+      chong: [C(3, 1, [11]), C(3, 5, [33])],
+      bongMo: BM([{ x: 5, y: 3, so: [11] }, { x: 1, y: 3, so: [33] }]),
       maMau: bai([
-        'for i in range(3):',
+        'for i in range(2):',
         '    carry_by(1)',
         '    swing_by(1)'
       ]),
       loiGiai: bai(
         [
-          'for i in range(3):',
+          'for i in range(2):',
           '    carry_by(1)',
           '    swing_by(1)'
         ],
         { hamCuaEmMoi: [hCarryBy()] }
       ),
-      sao: { o: 12, nhip: 12 },
+      sao: { o: 13, nhip: 8 },
       loiGiaiKhac: {
-        moTa: 'Gọi tuần tự 3 lần carry_by(1) và 2 lần swing_by(1)',
-        baiLam: bai(['carry_by(1)', 'swing_by(1)', 'carry_by(1)', 'swing_by(1)', 'carry_by(1)']),
+        moTa: 'Gọi tuần tự 2 lần carry_by(1) và 1 lần swing_by(1)',
+        baiLam: bai(['carry_by(1)', 'swing_by(1)', 'carry_by(1)']),
         hamCuaEmMoi: [hCarryBy()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm carry_by mà đã bấm Chạy', baiLam: bai(['for i in range(3):', '    carry_by(1)', '    swing_by(1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên gọi set_down() trong carry_by(d)', baiLam: bai(['for i in range(3):', '    carry_by(1)', '    swing_by(1)']), hamCuaEmMoi: [hCarryBy(['pick_up()', 'swing_by(d)'])], phaiCoMa: ['dang-treo', 'chua-xep-chong'] }
+        { moTa: 'Chưa tạo hàm carry_by mà đã bấm Chạy', baiLam: bai(['for i in range(2):', '    carry_by(1)', '    swing_by(1)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Quên gọi set_down() trong carry_by(d)', baiLam: bai(['for i in range(2):', '    carry_by(1)', '    swing_by(1)']), hamCuaEmMoi: [hCarryBy(['pick_up()', 'swing_by(d)'])], phaiCoMa: ['dang-treo', 'chua-xep-chong'] }
       ],
-      goiY: ['Luna: Hàm carry_by(d) giúp gom 3 lệnh pick_up(), swing_by(d), set_down() thành 1 lệnh gọn.', 'Luna: Tạo xong carry_by(d), vòng for ở chương trình chính sẽ chuyển đủ 3 kiện.']
+      goiY: ['Luna: Hàm carry_by(d) giúp gom 3 lệnh pick_up(), swing_by(d), set_down() thành 1 lệnh gọn.', 'Luna: Tạo xong carry_by(d), vòng for ở chương trình chính sẽ chuyển đủ 2 kiện.']
     }),
 
     manChiaDu({
@@ -613,31 +613,31 @@
       deBai: 'Sola nhờ bạn: chế hàm split_pair(n, d1, d2) để chia chồng n kiện làm hai phần nguyên bằng nhau: chuyển n // 2 kiện tới độ lệch d1 và n // 2 kiện tới độ lệch d2 (phần dư n % 2 ở lại chỗ cũ).',
       veMaMau: 'Trong split_pair(n, d1, d2), tính t = n // 2, gọi carry_n(t, d1); tính lại t = n // 2, gọi carry_n(t, d2).',
       san: SAN_CANG,
-      batDau: { x: 3, y: 3, nac: 2, tam: 2 },
-      chong: [C(5, 3, [10, 20, 30]), C(1, 3, [40, 50])],
+      batDau: { x: 3, y: 3, nac: 1, tam: 2 },
+      chong: [C(5, 3, [10, 20, 30]), C(2, 3, [40, 50])],
       bongMo: BM([
         { x: 5, y: 3, so: [10] },
-        { x: 5, y: 1, so: [30] },
-        { x: 5, y: 5, so: [20] },
-        { x: 1, y: 1, so: [50] },
-        { x: 1, y: 5, so: [40] }
+        { x: 3, y: 1, so: [30] },
+        { x: 3, y: 5, so: [20] },
+        { x: 3, y: 2, so: [50] },
+        { x: 3, y: 4, so: [40] }
       ]),
-      maMau: bai(['split_pair(3, -1, 1)', 'swing_by(4)', 'split_pair(2, 1, -1)']),
+      maMau: bai(['split_pair(3, -1, 1)', 'swing_by(2)', 'retract()', 'split_pair(2, 1, -1)']),
       loiGiai: bai(
-        ['split_pair(3, -1, 1)', 'swing_by(4)', 'split_pair(2, 1, -1)'],
+        ['split_pair(3, -1, 1)', 'swing_by(2)', 'retract()', 'split_pair(2, 1, -1)'],
         { hamCuaEmMoi: [hSplitPair()] }
       ),
-      sao: { o: 19, nhip: 20 },
+      sao: { o: 23, nhip: 19 },
       loiGiaiKhac: {
-        moTa: 'Quay sang nấc 6 bằng swing_by(-4) thay vì swing_by(4)',
-        baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(-4)', 'split_pair(2, 1, -1)']),
+        moTa: 'Quay sang nấc 3 bằng swing_by(-2) thay vì swing_by(2)',
+        baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(-2)', 'retract()', 'split_pair(2, 1, -1)']),
         hamCuaEmMoi: [hSplitPair()]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm split_pair mà đã bấm Chạy', baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(4)', 'split_pair(2, 1, -1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Dùng n % 2 thay vì n // 2 trong split_pair', baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(4)', 'split_pair(2, 1, -1)']), hamCuaEmMoi: [hSplitPair(['t = n % 2', 'carry_n(t, d1)', 't = n % 2', 'carry_n(t, d2)'])], phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Chưa tạo hàm split_pair mà đã bấm Chạy', baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(2)', 'retract()', 'split_pair(2, 1, -1)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Dùng n % 2 thay vì n // 2 trong split_pair', baiLam: bai(['split_pair(3, -1, 1)', 'swing_by(2)', 'retract()', 'split_pair(2, 1, -1)']), hamCuaEmMoi: [hSplitPair(['t = n % 2', 'carry_n(t, d1)', 't = n % 2', 'carry_n(t, d2)'])], phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Với chồng 3 kiện ở nấc 2, 3 // 2 = 1 kiện sang nấc 1, 1 kiện sang nấc 3, còn dư 1 kiện ở nấc 2.', 'Luna: Với chồng 2 kiện ở nấc 6, 2 // 2 = 1 kiện sang nấc 7, 1 kiện sang nấc 5, còn dư 0 kiện.']
+      goiY: ['Luna: Với chồng 3 kiện ở nấc 1, 3 // 2 = 1 kiện sang nấc 0, 1 kiện sang nấc 2, còn dư 1 kiện ở nấc 1.', 'Luna: Với chồng 2 kiện ở nấc 3 tầm 1, 2 // 2 = 1 kiện sang nấc 0, 1 kiện sang nấc 2, còn dư 0 kiện.']
     }),
 
     manChiaDu({
@@ -647,34 +647,34 @@
       deBai: 'Sola nhờ bạn: hàm split_rem(n, d1, d2) của màn cần chuyển phần nguyên n // 2 kiện sang hướng d1 và phần dư n % 2 kiện sang hướng d2, nhưng hai phép toán đang bị viết ngược. Hãy sửa lại hàm!',
       veMaMau: 'Chương trình chính đã khóa. Mở hàm split_rem của màn và đổi lại thứ tự n // 2 và n % 2.',
       san: SAN_CANG,
-      batDau: { x: 3, y: 3, nac: 2, tam: 2 },
-      chong: [C(5, 3, [10, 20, 30, 40]), C(1, 3, [50, 60, 70])],
+      batDau: { x: 3, y: 3, nac: 1, tam: 2 },
+      chong: [C(5, 3, [10, 20, 30, 40]), C(2, 3, [50, 60, 70])],
       bongMo: BM([
         { x: 5, y: 3, so: [10, 20] },
-        { x: 5, y: 5, so: [40, 30] },
-        { x: 1, y: 3, so: [50] },
-        { x: 1, y: 1, so: [70] },
-        { x: 1, y: 5, so: [60] }
+        { x: 3, y: 5, so: [40, 30] },
+        { x: 2, y: 3, so: [50] },
+        { x: 3, y: 2, so: [70] },
+        { x: 3, y: 4, so: [60] }
       ]),
       maMau: bai(
-        ['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'],
+        ['split_rem(4, 1, -1)', 'swing_by(2)', 'retract()', 'split_rem(3, 1, -1)'],
         { hamCuaMan: [hSplitRem(T_SPLIT_REM_SAI)] }
       ),
       loiGiai: bai(
-        ['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'],
+        ['split_rem(4, 1, -1)', 'swing_by(2)', 'retract()', 'split_rem(3, 1, -1)'],
         { hamCuaMan: [hSplitRem(T_SPLIT_REM_DUNG)] }
       ),
-      sao: { o: 19, nhip: 20 },
+      sao: { o: 23, nhip: 19 },
       loiGiaiKhac: {
         moTa: 'Gán biến q = n // 2 và r = n % 2 trong thân split_rem',
         baiLam: bai(
-          ['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'],
+          ['split_rem(4, 1, -1)', 'swing_by(2)', 'retract()', 'split_rem(3, 1, -1)'],
           { hamCuaMan: [hSplitRem(['q = n // 2', 'r = n % 2', 'carry_n(q, d1)', 'carry_n(r, d2)'])] }
         )
       },
       loiSai: [
-        { moTa: 'Chưa sửa hàm split_rem nên chồng 4 kiện bị chuyển nhầm sang hướng d2', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(T_SPLIT_REM_SAI)] }), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Cả hai dòng đều dùng n // 2 nên chồng 3 kiện mất kiện cuối cùng', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(4)', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(['t = n // 2', 'carry_n(t, d1)', 't = n // 2', 'carry_n(t, d2)'])] }), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Chưa sửa hàm split_rem nên chồng 4 kiện bị chuyển nhầm sang hướng d2', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(2)', 'retract()', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(T_SPLIT_REM_SAI)] }), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Cả hai dòng đều dùng n // 2 nên chồng 3 kiện mất kiện cuối cùng', baiLam: bai(['split_rem(4, 1, -1)', 'swing_by(2)', 'retract()', 'split_rem(3, 1, -1)'], { hamCuaMan: [hSplitRem(['t = n // 2', 'carry_n(t, d1)', 't = n // 2', 'carry_n(t, d2)'])] }), phaiCoMa: ['chua-xep-chong'] }
       ],
       goiY: ['Luna: Hai dòng đầu của split_rem phải chuyển phần nguyên: t = n // 2 rồi carry_n(t, d1).', 'Luna: Hai dòng sau của split_rem chuyển phần dư: t = n % 2 rồi carry_n(t, d2).']
     }),
@@ -718,18 +718,16 @@
     manChiaDu({
       so: 9, ten: 'Chia hàng rồi rút phần dư', hang: 'bien-the',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'carry_by', 'carry_n', 'split_pair', 'haul_to'],
-      deBai: 'Sola nhờ bạn: tại nấc 2 tầm 2 (5, 3) và nấc 5 tầm 2 (1, 5) đều có chồng 3 kiện. Ở mỗi chồng, hãy gọi split_pair(3, -1, 1) để chia sang hai nấc kề bên, rồi dùng haul_to(0, -1) rút kiện dư còn lại về tầm 1.',
-      veMaMau: 'Đã xử lý xong chồng đầu tiên ở nấc 2. Hãy đưa cần cẩu sang nấc 5 tầm 2 và làm tương tự cho chồng thứ hai.',
+      deBai: 'Sola nhờ bạn: tại nấc 1 tầm 2 (5, 3) và nấc 3 tầm 2 (1, 3) đều có chồng 3 kiện. Ở mỗi chồng, hãy gọi split_pair(3, -1, 1) để chia sang hai nấc kề bên, rồi dùng haul_to(0, -1) rút kiện dư còn lại về tầm 1.',
+      veMaMau: 'Đã xử lý xong chồng đầu tiên ở nấc 1. Hãy đưa cần cẩu sang nấc 3 tầm 2 và làm tương tự cho chồng thứ hai.',
       san: SAN_CANG,
-      batDau: { x: 3, y: 3, nac: 2, tam: 2 },
-      chong: [C(5, 3, [10, 20, 30]), C(1, 5, [40, 50, 60])],
+      batDau: { x: 3, y: 3, nac: 1, tam: 2 },
+      chong: [C(5, 3, [10, 20, 30]), C(1, 3, [40, 50, 60])],
       bongMo: BM([
-        { x: 5, y: 1, so: [30] },
-        { x: 5, y: 5, so: [20] },
+        { x: 3, y: 1, so: [30, 50] },
+        { x: 3, y: 5, so: [20, 60] },
         { x: 4, y: 3, so: [10] },
-        { x: 3, y: 5, so: [60] },
-        { x: 1, y: 3, so: [50] },
-        { x: 2, y: 4, so: [40] }
+        { x: 2, y: 3, so: [40] }
       ]),
       maMau: bai([
         'split_pair(3, -1, 1)',
@@ -738,42 +736,42 @@
       loiGiai: bai([
         'split_pair(3, -1, 1)',
         'haul_to(0, -1)',
-        'aim_crane(3, 1)',
+        'aim_crane(2, 1)',
         'split_pair(3, -1, 1)',
         'haul_to(0, -1)'
       ]),
-      sao: { o: 32, nhip: 26 },
+      sao: { o: 36, nhip: 25 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng for lặp 2 lần qua hai chồng hàng',
         baiLam: bai([
           'for i in range(2):',
           '    split_pair(3, -1, 1)',
           '    haul_to(0, -1)',
-          '    aim_crane(3, 1)'
+          '    aim_crane(2, 1)'
         ])
       },
       loiSai: [
-        { moTa: 'Mới chia và rút chồng đầu ở nấc 2, chưa xử lý chồng ở nấc 5', baiLam: bai(['split_pair(3, -1, 1)', 'haul_to(0, -1)']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Sau haul_to(0, -1) chỉ gọi swing_by(3) mà quên vươn lại ra tầm 2', baiLam: bai(['split_pair(3, -1, 1)', 'haul_to(0, -1)', 'swing_by(3)', 'split_pair(3, -1, 1)', 'haul_to(0, -1)']), phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
+        { moTa: 'Mới chia và rút chồng đầu ở nấc 1, chưa xử lý chồng ở nấc 3', baiLam: bai(['split_pair(3, -1, 1)', 'haul_to(0, -1)']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Sau haul_to(0, -1) chỉ gọi swing_by(2) mà quên vươn lại ra tầm 2', baiLam: bai(['split_pair(3, -1, 1)', 'haul_to(0, -1)', 'swing_by(2)', 'split_pair(3, -1, 1)', 'haul_to(0, -1)']), phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
       ],
-      goiY: ['Luna: Sau haul_to(0, -1) đầu tiên, cần cẩu đang ở nấc 2 tầm 1.', 'Luna: Gọi aim_crane(3, 1) để sang nấc 5 tầm 2 rồi gọi split_pair(3, -1, 1) và haul_to(0, -1).']
+      goiY: ['Luna: Sau haul_to(0, -1) đầu tiên, cần cẩu đang ở nấc 1 tầm 1.', 'Luna: Gọi aim_crane(2, 1) để sang nấc 3 tầm 2 rồi gọi split_pair(3, -1, 1) và haul_to(0, -1).']
     }),
 
     manChiaDu({
       so: 10, ten: 'Trùm cuối: Điều phối chia dư hai cảng', hang: 'trum', nhipTheo: 'tong',
       huyHieu: { ma: 'chia-du', ten: 'Huy hiệu Chia phần nguyên, phần dư' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'carry_by', 'carry_n', 'split_pair', 'haul_to'],
-      deBai: 'Sola nhờ bạn: trùm cuối gói 2! Trên cả hai sân, chồng 3 kiện ở vị trí xuất phát (tầm 2) cần được chia bằng split_pair(3, -1, 1), rút kiện dư về tầm 1 bằng haul_to(0, -1), sau đó sang vị trí lệch (+4 nấc, +1 tầm) chuyển nốt chồng 2 kiện sang nấc kế (+1) bằng carry_n(2, 1).',
+      deBai: 'Sola nhờ bạn: trùm cuối gói 2! Trên cả hai sân, chồng 3 kiện ở vị trí xuất phát (tầm 2) cần được chia bằng split_pair(3, -1, 1), rút kiện dư về tầm 1 bằng haul_to(0, -1), sau đó sang vị trí đối diện (+2 nấc, +1 tầm) chuyển nốt chồng 2 kiện sang nấc kế (+1) bằng carry_n(2, 1).',
       veMaMau: 'Đã có bước chia chồng 3 kiện đầu tiên. Hãy rút kiện dư về tầm 1, sang chồng 2 kiện đối diện và dùng carry_n(2, 1).',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 0, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
       chong: [
-        [C(5, 1, [10, 20, 30]), C(1, 5, [40, 50])],
+        [C(3, 1, [10, 20, 30]), C(3, 5, [40, 50])],
         [C(5, 3, [10, 20, 30]), C(1, 3, [40, 50])]
       ],
       bongMo: [
-        BM([{ x: 3, y: 1, so: [30] }, { x: 5, y: 3, so: [20] }, { x: 4, y: 2, so: [10] }, { x: 1, y: 3, so: [50, 40] }]),
-        BM([{ x: 5, y: 1, so: [30] }, { x: 5, y: 5, so: [20] }, { x: 4, y: 3, so: [10] }, { x: 1, y: 1, so: [50, 40] }])
+        BM([{ x: 1, y: 3, so: [30, 50, 40] }, { x: 5, y: 3, so: [20] }, { x: 3, y: 2, so: [10] }]),
+        BM([{ x: 3, y: 1, so: [30, 50, 40] }, { x: 3, y: 5, so: [20] }, { x: 4, y: 3, so: [10] }])
       ],
       maMau: bai([
         'split_pair(3, -1, 1)',
@@ -782,24 +780,24 @@
       loiGiai: bai([
         'split_pair(3, -1, 1)',
         'haul_to(0, -1)',
-        'aim_crane(4, 1)',
+        'aim_crane(2, 1)',
         'carry_n(2, 1)'
       ]),
-      sao: { o: 31, nhip: 48 },
+      sao: { o: 35, nhip: 44 },
       loiGiaiKhac: {
-        moTa: 'Quay sang chồng đối diện bằng aim_crane(-4, 1)',
+        moTa: 'Quay sang chồng đối diện bằng aim_crane(-2, 1)',
         baiLam: bai([
           'split_pair(3, -1, 1)',
           'haul_to(0, -1)',
-          'aim_crane(-4, 1)',
+          'aim_crane(-2, 1)',
           'carry_n(2, 1)'
         ])
       },
       loiSai: [
         { moTa: 'Chưa chuyển chồng 2 kiện ở phía đối diện', baiLam: bai(['split_pair(3, -1, 1)', 'haul_to(0, -1)']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Ở chồng đối diện chỉ gọi carry_by(1) nên còn sót 1 kiện', baiLam: bai(['split_pair(3, -1, 1)', 'haul_to(0, -1)', 'aim_crane(4, 1)', 'carry_by(1)']), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Ở chồng đối diện chỉ gọi carry_by(1) nên còn sót 1 kiện', baiLam: bai(['split_pair(3, -1, 1)', 'haul_to(0, -1)', 'aim_crane(2, 1)', 'carry_by(1)']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Sau haul_to(0, -1), gọi aim_crane(4, 1) để tới chồng 2 kiện phía đối diện ở tầm 2.', 'Luna: Gọi carry_n(2, 1) để chuyển cả 2 kiện sang nấc kế bên.']
+      goiY: ['Luna: Sau haul_to(0, -1), gọi aim_crane(2, 1) để tới chồng 2 kiện phía đối diện ở tầm 2.', 'Luna: Gọi carry_n(2, 1) để chuyển cả 2 kiện sang nấc kế bên.']
     })
   ];
 
