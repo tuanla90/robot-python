@@ -71,6 +71,17 @@
     '.......'
   ];
 
+  // Cọc phụ cạnh bệ (14/11, cẩu 4 hướng): ô (2, 3) là đất (không phải ray), gầm thấp dời sang (2, 5)
+  var SAN_DOI_GAM_COC = [
+    '~~~~~~~',
+    '~~~~~~~',
+    '~DTTTD~',
+    '.DDRRR.',
+    '.DDDDD.',
+    '.DnDDD.',
+    '.......'
+  ];
+
   var O_TAU_1 = [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }];
   var O_TAU_TRAI = [{ x: 1, y: 2 }, { x: 2, y: 2 }];
   var O_TAU_PHAI = [{ x: 4, y: 2 }, { x: 5, y: 2 }];
@@ -200,22 +211,22 @@
       so: 2, ten: 'Bước lên ray nhặt sắt', hang: 'lam-quen',
       taiToiDa: 6,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'pull_s', 'go'],
-      deBai: 'Sola nhờ Luna: mẩu sắt vụn nằm trên đường ray tại (2, 3) chặn lối trượt của R1 từ (1, 3) sang tàu ở cột 2. R2 đang đứng ở (2, 4) ngay dưới ray: hãy lập trình cho R2 gọi go("U") bước lên (2, 3), gọi pull_s() hút mẩu sắt rồi go("D") lùi về (2, 4). Cùng lúc đó R1 nhấc kiện 18 ở (1, 4), quay swing_by(4), trượt rail(1) rồi set_down() lên tàu!',
+      deBai: 'Sola nhờ Luna: mẩu sắt vụn nằm trên đường ray tại (2, 3) chặn lối trượt của R1 từ (1, 3) sang tàu ở cột 2. R2 đang đứng ở (2, 4) ngay dưới ray: hãy lập trình cho R2 gọi go("U") bước lên (2, 3), gọi pull_s() hút mẩu sắt rồi go("D") lùi về (2, 4). Cùng lúc đó R1 vươn cần nhấc kiện 18 ở (1, 5), thu cần, quay swing_by(2), trượt rail(1) rồi set_down() lên tàu!',
       veMaMau: 'Viết tiếp cho R1 trượt sang cột 2 hạ hàng và R2 bước lên ray hút sắt rồi lùi xuống.',
       san: SAN_DOI_1,
-      bd: [{ x: 1, y: 3, nac: 4, tam: 1 }, { x: 2, y: 4, huong: 1 }],
-      chong: [CW(1, 4, [[18, 2]])],
+      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 4, huong: 1 }],
+      chong: [CW(1, 5, [[18, 2]])],
       vatThem: [VS(2, 3)],
       tau: tauDon(7, 2),
       giao: [{ tau: 0, so: [18] }],
-      maMau: B(['pick_up()', 'swing_by(4)'], ['go("U")']),
-      loiGiai: B(['pick_up()', 'swing_by(4)', 'rail(1)', 'set_down()'], ['go("U")', 'pull_s()', 'go("D")']),
-      sao: { o: 23, nhip: 7 },
+      maMau: B(['extend()', 'pick_up()'], ['go("U")']),
+      loiGiai: B(['extend()', 'pick_up()', 'retract()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['go("U")', 'pull_s()', 'go("D")']),
+      sao: { o: 26, nhip: 7 },
       loiSai: [
-        { moTa: 'R2 mới bước lên (2, 3) mà không hút sắt và lùi ra nên R1 đâm phải R2 trên ray', baiLam: B(['pick_up()', 'swing_by(4)', 'rail(1)', 'set_down()'], ['go("U")']), phaiCoMa: ['het-ray'] },
-        { moTa: 'R2 quên gọi pull_s() nên mẩu sắt vẫn nằm lại trên ray (2, 3) chặn R1', baiLam: B(['pick_up()', 'swing_by(4)', 'rail(1)', 'set_down()'], ['go("U")', 'go("D")']), phaiCoMa: ['het-ray'] }
+        { moTa: 'R2 mới bước lên (2, 3) mà không hút sắt và lùi ra nên R1 đâm phải R2 trên ray', baiLam: B(['extend()', 'pick_up()', 'retract()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['go("U")']), phaiCoMa: ['het-ray'] },
+        { moTa: 'R2 quên gọi pull_s() nên mẩu sắt vẫn nằm lại trên ray (2, 3) chặn R1', baiLam: B(['extend()', 'pick_up()', 'retract()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['go("U")', 'go("D")']), phaiCoMa: ['het-ray'] }
       ],
-      goiY: ['Luna: R2 gọi go("U"), pull_s(), go("D") mất 2 + 1 + 2 = 5 nhịp.', 'Luna: R1 gọi pick_up() và swing_by(4) cũng vừa đúng 5 nhịp, sang nhịp 6 gọi rail(1) và set_down() là khớp nhịp!']
+      goiY: ['Luna: R2 gọi go("U"), pull_s(), go("D") mất 2 + 1 + 2 = 5 nhịp.', 'Luna: R1 gọi extend(), pick_up(), retract() và swing_by(2) cũng vừa đúng 5 nhịp, sang nhịp 6 gọi rail(1) và set_down() là khớp nhịp!']
     }),
 
     manDoi({
@@ -272,32 +283,34 @@
     manDoi({
       so: 5, ten: 'Nhện nhảy hố cứu đường ray', hang: 'luyen',
       taiToiDa: 6,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'jump', 'go', 'pull_s'],
-      deBai: 'Sola và Luna phối hợp nhịp nhàng: R2 ở (3, 6) phía dưới hố sâu u tại (3, 5), còn trên đường ray (3, 3) có mẩu nam châm chữ S màu xanh. Trong lúc R1 ở (2, 3) gọi carry_by(4) và swing_by(4) để giao kiện 19 tại (2, 4) lên tàu (mất đúng 10 nhịp), R2 hãy gọi jump("U") nhảy qua hố lên (3, 4), go("U") lên (3, 3), pull_s() hút mẩu S rồi go("R") sang (4, 3) (cũng vừa đúng 10 nhịp!). Sau đó R1 trượt rail(1) sang cột 3 và gọi carry_by(4) bốc nốt kiện 29!',
-      veMaMau: 'R2 nhảy qua hố lên dọn mẩu S ở (3, 3); R1 giao kiện 19 ở cột 2 rồi sang cột 3 bốc kiện 29.',
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'wait_n', 'jump', 'go', 'pull_s'],
+      deBai: 'Sola và Luna phối hợp nhịp nhàng: R2 ở (3, 6) phía dưới hố sâu u tại (3, 5), còn trên đường ray (3, 3) có mẩu nam châm chữ S màu xanh. R2 hãy gọi jump("U") nhảy qua hố lên (3, 4), go("U") lên (3, 3), pull_s() hút mẩu S rồi go("R") sang (4, 3): mất 10 nhịp. R1 ở (2, 3) gọi carry_by(2) và swing_by(2) giao kiện 19 tại (2, 4) lên tàu chỉ mất 6 nhịp, nên phải chờ thêm wait_n(4). Sau đó R1 trượt rail(1) sang cột 3 và gọi carry_by(2) bốc nốt kiện 29!',
+      veMaMau: 'R2 nhảy qua hố lên dọn mẩu S ở (3, 3); R1 giao kiện 19 ở cột 2, chờ R2 rồi sang cột 3 bốc kiện 29.',
       san: SAN_DOI_HO,
-      bd: [{ x: 2, y: 3, nac: 4, tam: 1 }, { x: 3, y: 6, huong: 0 }],
+      bd: [{ x: 2, y: 3, nac: 2, tam: 1 }, { x: 3, y: 6, huong: 0 }],
       chong: [CW(2, 4, [[19, 2]]), CW(3, 4, [[29, 2]])],
       vatThem: [VN(3, 3, 'S')],
-      tau: tauDon(17, 2),
+      tau: tauDon(15, 2),
       giao: [{ tau: 0, so: [19, 29] }],
       maMau: B([
-        'carry_by(4)',
-        'swing_by(4)',
+        'carry_by(2)',
+        'swing_by(2)',
         'rail(1)'
       ], ['jump("U")', 'go("U")']),
       loiGiai: B([
-        'carry_by(4)',
-        'swing_by(4)',
+        'carry_by(2)',
+        'swing_by(2)',
+        'wait_n(4)',
         'rail(1)',
-        'carry_by(4)'
+        'carry_by(2)'
       ], ['jump("U")', 'go("U")', 'pull_s()', 'go("R")']),
-      sao: { o: 31, nhip: 17 },
+      sao: { o: 35, nhip: 15 },
       loiSai: [
-        { moTa: 'R2 đi bộ go("U") vào hố u ở (3, 5) thay vì nhảy jump("U")', baiLam: B(['carry_by(4)', 'swing_by(4)', 'rail(1)', 'carry_by(4)'], ['go("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['roi-ho'] },
-        { moTa: 'R2 hút mẩu S nhưng quên gọi go("R") tránh khỏi ô (3, 3) nên R1 trượt rail(1) đâm phải R2', baiLam: B(['carry_by(4)', 'swing_by(4)', 'rail(1)', 'carry_by(4)'], ['jump("U")', 'go("U")', 'pull_s()']), phaiCoMa: ['het-ray'] }
+        { moTa: 'R2 đi bộ go("U") vào hố u ở (3, 5) thay vì nhảy jump("U")', baiLam: B(['carry_by(2)', 'swing_by(2)', 'wait_n(4)', 'rail(1)', 'carry_by(2)'], ['go("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'R2 hút mẩu S nhưng quên gọi go("R") tránh khỏi ô (3, 3) nên R1 trượt rail(1) đâm phải R2', baiLam: B(['carry_by(2)', 'swing_by(2)', 'wait_n(4)', 'rail(1)', 'carry_by(2)'], ['jump("U")', 'go("U")', 'pull_s()']), phaiCoMa: ['het-ray'] },
+        { moTa: 'R1 không chờ wait_n(4) nên trượt sang (3, 3) khi mẩu S và R2 còn ở đó', baiLam: B(['carry_by(2)', 'swing_by(2)', 'rail(1)', 'carry_by(2)'], ['jump("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['het-ray'] }
       ],
-      goiY: ['Luna: R2 gọi jump("U") (5 nhịp), go("U") (2 nhịp), pull_s() (1 nhịp), go("R") (2 nhịp) tổng cộng 10 nhịp, vừa khớp lúc R1 xong carry_by(4) và swing_by(4).', 'Luna: Sau rail(1), R1 gọi carry_by(4) để bốc kiện 29 lên tàu.']
+      goiY: ['Luna: R2 gọi jump("U") (5 nhịp), go("U") (2 nhịp), pull_s() (1 nhịp), go("R") (2 nhịp) tổng cộng 10 nhịp. R1 xong carry_by(2) và swing_by(2) mới 6 nhịp nên chờ wait_n(4).', 'Luna: Sau rail(1), R1 gọi carry_by(2) để bốc kiện 29 lên tàu.']
     }),
 
     manDoi({
@@ -335,22 +348,22 @@
       so: 7, ten: 'Chui gầm thấp dọn cọc tháp', hang: 'bien-the',
       taiToiDa: 6, luatThap: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'move_tower2', 'crawl', 'pull_s', 'go'],
-      deBai: 'Sola gặp bài toán Tháp Hà Nội (luatThap = true): tại (3, 4) có tháp [20, 10] cần chuyển nguyên thứ tự lên tàu ở (3, 2) nhờ cọc phụ (2, 4) (nấc 5). Nhưng trên cọc phụ (2, 4) đang có mẩu sắt vụn, còn R2 ở (3, 6) phía dưới gầm thấp n tại (3, 5)! Hãy cho R2 gọi crawl("U") chui qua gầm lên (3, 4), go("L") sang (2, 4), pull_s() hút sắt rồi go("D") xuống (2, 5); R1 chờ R2 bằng wait_n(8) rồi gọi move_tower2(1, 4)!',
-      veMaMau: 'R2 chui qua gầm thấp lên dọn sắt ở cọc phụ (2, 4); R1 gọi wait_n(8) rồi move_tower2(1, 4).',
-      san: SAN_DOI_GAM,
-      bd: [{ x: 3, y: 3, nac: 4, tam: 1 }, { x: 3, y: 6, huong: 0 }],
+      deBai: 'Sola gặp bài toán Tháp Hà Nội (luatThap = true): tại (3, 4) có tháp [20, 10] cần chuyển nguyên thứ tự lên tàu ở (3, 2) nhờ cọc phụ (2, 3) bên trái bệ (nấc 3). Nhưng trên cọc phụ (2, 3) đang có mẩu sắt vụn, còn R2 ở (2, 6) phía dưới gầm thấp n tại (2, 5)! Hãy cho R2 gọi crawl("U") chui qua gầm lên (2, 4), go("U") lên (2, 3), pull_s() hút sắt rồi go("D") lùi về (2, 4); R1 chờ R2 bằng wait_n(8) rồi gọi move_tower2(1, 2)!',
+      veMaMau: 'R2 chui qua gầm thấp lên dọn sắt ở cọc phụ (2, 3); R1 gọi wait_n(8) rồi move_tower2(1, 2).',
+      san: SAN_DOI_GAM_COC,
+      bd: [{ x: 3, y: 3, nac: 2, tam: 1 }, { x: 2, y: 6, huong: 0 }],
       chong: [CW(3, 4, [[20, 2], [10, 1]])],
-      vatThem: [VS(2, 4)],
-      tau: tauDon(26, 2),
+      vatThem: [VS(2, 3)],
+      tau: tauDon(20, 2),
       giao: [{ tau: 0, so: [10, 20] }],
-      maMau: B(['wait_n(8)'], ['crawl("U")', 'go("L")']),
-      loiGiai: B(['wait_n(8)', 'move_tower2(1, 4)'], ['crawl("U")', 'go("L")', 'pull_s()', 'go("D")']),
-      sao: { o: 39, nhip: 26 },
+      maMau: B(['wait_n(8)'], ['crawl("U")', 'go("U")']),
+      loiGiai: B(['wait_n(8)', 'move_tower2(1, 2)'], ['crawl("U")', 'go("U")', 'pull_s()', 'go("D")']),
+      sao: { o: 42, nhip: 20 },
       loiSai: [
-        { moTa: 'R1 không chờ wait_n(8) nên hạ kiện 10 xuống cọc phụ (2, 4) khi mẩu sắt vẫn còn ở đó', baiLam: B(['move_tower2(1, 4)'], ['crawl("U")', 'go("L")', 'pull_s()', 'go("D")']), phaiCoMa: ['ha-bi-chan'] },
-        { moTa: 'R2 đi thẳng go("U") vào gầm thấp n mà không co chân bằng crawl("U")', baiLam: B(['wait_n(8)', 'move_tower2(1, 4)'], ['go("U")', 'go("U")', 'go("L")', 'pull_s()', 'go("D")']), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'R1 không chờ wait_n(8) nên hạ kiện 10 xuống cọc phụ (2, 3) khi mẩu sắt vẫn còn ở đó', baiLam: B(['move_tower2(1, 2)'], ['crawl("U")', 'go("U")', 'pull_s()', 'go("D")']), phaiCoMa: ['ha-bi-chan'] },
+        { moTa: 'R2 đi thẳng go("U") vào gầm thấp n mà không co chân bằng crawl("U")', baiLam: B(['wait_n(8)', 'move_tower2(1, 2)'], ['go("U")', 'go("U")', 'go("U")', 'pull_s()', 'go("D")']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['Luna: crawl("U") đưa R2 từ (3, 6) chui qua gầm thấp (3, 5) lên (3, 4) trong 5 nhịp.', 'Luna: Sau go("L"), R2 gọi pull_s() và go("D"), còn R1 gọi wait_n(8) rồi move_tower2(1, 4).']
+      goiY: ['Luna: crawl("U") đưa R2 từ (2, 6) chui qua gầm thấp (2, 5) lên (2, 4) trong 5 nhịp.', 'Luna: Sau go("U"), R2 gọi pull_s() và go("D"), còn R1 gọi wait_n(8) rồi move_tower2(1, 2).']
     }),
 
     manDoi({
@@ -393,16 +406,16 @@
       so: 9, ten: 'Dọn dọc hai cột ray', hang: 'bien-the',
       taiToiDa: 6,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'wait_n', 'pull_s', 'go'],
-      deBai: 'Sola giao việc: trên đường ray có tới 2 mẩu sắt vụn tại (2, 3) và (3, 3), còn dưới bãi là 2 kiện hàng ở (2, 4) và (3, 4). R2 bắt đầu ở (2, 3): vì nam châm bụng chỉ giữ 1 vật nên sau khi hút sắt ở (2, 3) và đem thả xuống (2, 5), R2 hãy vòng sang (3, 3) hút mẩu sắt thứ hai rồi bước sang (4, 3). R1 ở (1, 3) gọi wait_n(4), rồi lặp 2 cột: trượt rail(1), gọi carry_by(4) giao lên tàu và swing_by(4) quay về nấc 4!',
+      deBai: 'Sola giao việc: trên đường ray có tới 2 mẩu sắt vụn tại (2, 3) và (3, 3), còn dưới bãi là 2 kiện hàng ở (2, 4) và (3, 4). R2 bắt đầu ở (2, 3): vì nam châm bụng chỉ giữ 1 vật nên sau khi hút sắt ở (2, 3) và đem thả xuống (2, 5), R2 hãy vòng sang (3, 3) hút mẩu sắt thứ hai rồi bước sang (4, 3). R1 ở (1, 3) gọi wait_n(8), rồi lặp 2 cột: trượt rail(1), gọi carry_by(2) giao lên tàu và swing_by(2) quay về nấc 2!',
       veMaMau: 'R2 thả sắt đầu tiên ở (2, 5) rồi lên (3, 3) hút mẩu thứ hai sang (4, 3); R1 lặp 2 cột bốc hàng.',
       san: SAN_DOI_1,
-      bd: [{ x: 1, y: 3, nac: 4, tam: 1 }, { x: 2, y: 3, huong: 1 }],
+      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
       chong: [CW(2, 4, [[16, 2]]), CW(3, 4, [[26, 2]])],
       vatThem: [VS(2, 3), VS(3, 3)],
-      tau: tauDon(26, 2),
+      tau: tauDon(22, 2),
       giao: [{ tau: 0, so: [16, 26] }],
       maMau: B([
-        'wait_n(4)',
+        'wait_n(8)',
         'for i in range(2):',
         '    rail(1)'
       ], [
@@ -413,11 +426,11 @@
         'wait()'
       ]),
       loiGiai: B([
-        'wait_n(4)',
+        'wait_n(8)',
         'for i in range(2):',
         '    rail(1)',
-        '    carry_by(4)',
-        '    swing_by(4)'
+        '    carry_by(2)',
+        '    swing_by(2)'
       ], [
         'pull_s()',
         'go("D")',
@@ -430,12 +443,12 @@
         'pull_s()',
         'go("R")'
       ]),
-      sao: { o: 36, nhip: 26 },
+      sao: { o: 37, nhip: 22 },
       loiSai: [
-        { moTa: 'R2 mới dọn mẩu sắt ở (2, 3), chưa lên (3, 3) dọn mẩu sắt thứ hai nên R1 bị chặn ở cột 3', baiLam: B(['wait_n(4)', 'for i in range(2):', '    rail(1)', '    carry_by(4)', '    swing_by(4)'], ['pull_s()', 'go("D")', 'go("D")', 'magnet_off()', 'wait()']), phaiCoMa: ['het-ray'] },
-        { moTa: 'R1 quên gọi swing_by(4) ở cuối vòng lặp nên vừa lệch hướng cần vừa trượt sang cột 3 quá sớm khi R2 chưa dọn xong', baiLam: B(['wait_n(4)', 'for i in range(2):', '    rail(1)', '    carry_by(4)'], ['pull_s()', 'go("D")', 'go("D")', 'magnet_off()', 'wait()', 'go("R")', 'go("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['het-ray'] }
+        { moTa: 'R2 mới dọn mẩu sắt ở (2, 3), chưa lên (3, 3) dọn mẩu sắt thứ hai nên R1 bị chặn ở cột 3', baiLam: B(['wait_n(8)', 'for i in range(2):', '    rail(1)', '    carry_by(2)', '    swing_by(2)'], ['pull_s()', 'go("D")', 'go("D")', 'magnet_off()', 'wait()']), phaiCoMa: ['het-ray'] },
+        { moTa: 'R1 quên gọi swing_by(2) ở cuối vòng lặp nên vừa lệch hướng cần vừa trượt sang cột 3 quá sớm khi R2 chưa dọn xong', baiLam: B(['wait_n(8)', 'for i in range(2):', '    rail(1)', '    carry_by(2)'], ['pull_s()', 'go("D")', 'go("D")', 'magnet_off()', 'wait()', 'go("R")', 'go("U")', 'go("U")', 'pull_s()', 'go("R")']), phaiCoMa: ['het-ray'] }
       ],
-      goiY: ['Luna: Sau khi R2 thả mẩu sắt đầu tiên ở (2, 5), hãy gọi go("R"), go("U"), go("U") lên (3, 3), gọi pull_s() rồi go("R") sang (4, 3).', 'Luna: Trong vòng lặp của R1, sau rail(1) hãy gọi carry_by(4) và swing_by(4).']
+      goiY: ['Luna: Sau khi R2 thả mẩu sắt đầu tiên ở (2, 5), hãy gọi go("R"), go("U"), go("U") lên (3, 3), gọi pull_s() rồi go("R") sang (4, 3).', 'Luna: Trong vòng lặp của R1, sau rail(1) hãy gọi carry_by(2) và swing_by(2). Chờ wait_n(8) đầu bài để cột 3 kịp dọn xong.']
     }),
 
     manDoi({
@@ -755,7 +768,7 @@
       deBai: 'Trùm chương 2: trên hai sân với taiToiDa = 4, R1 ở (1, 3) cần trượt sang cột 2 bốc kiện đơn 3 tấn ở (2, 4), rồi trượt tiếp 2 ô sang cột 4 bốc đôi cặp kiện 1 tấn ở (4, 4). Trên đường ray có mẩu sắt ở (2, 3) và mẩu nam châm (N hoặc S) ở (4, 3). R2 bắt đầu tại (2, 3): hãy gọi clear_rail("D") xuống (2, 4), go("R") sang (3, 4) thả sắt magnet_off(); wait(), rồi go("U") lên (3, 3) và gọi clear_pole("R") để dọn thông cột 4 cho R1!',
       veMaMau: 'Phối hợp nhịp nhàng R1 (wait_n, slide_load, swing_by, slide_load2) và R2 (clear_rail, thả sắt ở (3, 4), lên (3, 3) gọi clear_pole).',
       san: [SAN_DOI_1, SAN_DOI_1],
-      bd: [{ x: 1, y: 3, nac: 4, tam: 1 }, { x: 2, y: 3, huong: 1 }],
+      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
       chong: [
         [CW(2, 4, [[15, 3]]), CW(4, 4, [[24, 1], [22, 1]])],
         [CW(2, 4, [[19, 3]]), CW(4, 4, [[28, 1], [26, 1]])]
@@ -764,15 +777,15 @@
         [VS(2, 3), VN(4, 3, 'N')],
         [VS(2, 3), VN(4, 3, 'S')]
       ],
-      tau: [tauDon(22, 2), tauDon(22, 2)],
+      tau: [tauDon(20, 2), tauDon(20, 2)],
       giao: [
         [{ tau: 0, so: [15, 22, 24] }],
         [{ tau: 0, so: [19, 26, 28] }]
       ],
       maMau: B([
-        'wait_n(3)',
-        'slide_load(1, 4)',
-        'swing_by(4)'
+        'wait_n(7)',
+        'slide_load(1, 2)',
+        'swing_by(2)'
       ], [
         'clear_rail("D")',
         'go("R")',
@@ -780,10 +793,10 @@
         'wait()'
       ]),
       loiGiai: B([
-        'wait_n(3)',
-        'slide_load(1, 4)',
-        'swing_by(4)',
-        'slide_load2(2, 4)'
+        'wait_n(7)',
+        'slide_load(1, 2)',
+        'swing_by(2)',
+        'slide_load2(2, 2)'
       ], [
         'clear_rail("D")',
         'go("R")',
@@ -792,12 +805,13 @@
         'go("U")',
         'clear_pole("R")'
       ]),
-      sao: { o: 47, nhip: 44 },
+      sao: { o: 48, nhip: 40 },
       loiSai: [
-        { moTa: 'R2 mới dọn mẩu sắt ở (2, 3), chưa lên (3, 3) gọi clear_pole("R") dọn cột 4 nên R1 bị chặn', baiLam: B(['wait_n(3)', 'slide_load(1, 4)', 'swing_by(4)', 'slide_load2(2, 4)'], ['clear_rail("D")', 'go("R")', 'magnet_off()', 'wait()']), phaiCoMa: ['het-ray'] },
-        { moTa: 'R1 quên gọi slide_load2(2, 4) ở bước cuối', baiLam: B(['wait_n(3)', 'slide_load(1, 4)', 'swing_by(4)'], ['clear_rail("D")', 'go("R")', 'magnet_off()', 'wait()', 'go("U")', 'clear_pole("R")']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'R2 mới dọn mẩu sắt ở (2, 3), chưa lên (3, 3) gọi clear_pole("R") dọn cột 4 nên R1 bị chặn', baiLam: B(['wait_n(7)', 'slide_load(1, 2)', 'swing_by(2)', 'slide_load2(2, 2)'], ['clear_rail("D")', 'go("R")', 'magnet_off()', 'wait()']), phaiCoMa: ['het-ray'] },
+        { moTa: 'R1 quên gọi slide_load2(2, 2) ở bước cuối', baiLam: B(['wait_n(7)', 'slide_load(1, 2)', 'swing_by(2)'], ['clear_rail("D")', 'go("R")', 'magnet_off()', 'wait()', 'go("U")', 'clear_pole("R")']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'R1 chỉ chờ wait_n(3) nên trượt sang cột 4 lúc R2 còn trên ray', baiLam: B(['wait_n(3)', 'slide_load(1, 2)', 'swing_by(2)', 'slide_load2(2, 2)'], ['clear_rail("D")', 'go("R")', 'magnet_off()', 'wait()', 'go("U")', 'clear_pole("R")']), phaiCoMa: ['het-ray'] }
       ],
-      goiY: ['Luna: Sau khi R2 thả sắt ở (3, 4), gọi go("U") lên (3, 3) rồi gọi clear_pole("R") để bước sang (4, 3) hút mẩu nam châm và sang (5, 3).', 'Luna: R1 sau swing_by(4) chỉ cần gọi slide_load2(2, 4) là bốc gọn cặp kiện ở (4, 4) lên tàu!']
+      goiY: ['Luna: Sau khi R2 thả sắt ở (3, 4), gọi go("U") lên (3, 3) rồi gọi clear_pole("R") để bước sang (4, 3) hút mẩu nam châm và sang (5, 3).', 'Luna: R1 chờ wait_n(7) cho R2 dọn xong cột 3, rồi sau swing_by(2) chỉ cần gọi slide_load2(2, 2) là bốc gọn cặp kiện ở (4, 4) lên tàu!']
     })
   ];
 
