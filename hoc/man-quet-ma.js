@@ -154,12 +154,12 @@
       so: 1, ten: 'Thử đầu đọc mã read_code()', hang: 'lam-quen',
       chiChay: true, chinhCoDinh: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola làm mẫu: đầu cần cẩu đã gắn cảm biến read_code() đọc mã số của container trên cùng tại ô đầu cần (trả về -1 nếu ô trống), không tốn nhịp. Bấm Chạy để xem cần cẩu kiểm tra mã chẵn 14 và đưa sang nấc 1.',
+      deBai: 'Sola làm mẫu: đầu cần cẩu đã gắn cảm biến read_code() đọc mã số của container trên cùng tại ô đầu cần (trả về -1 nếu ô trống), không tốn nhịp. Bấm Chạy để xem cần cẩu kiểm tra mã chẵn 14 và đưa sang nấc 0.',
       veMaMau: 'Chương trình mẫu đã khóa. Bấm Chạy để quan sát read_code() đọc mã trước khi nhấc.',
       san: SAN_CANG,
-      batDau: { x: 3, y: 3, nac: 2, tam: 2 },
+      batDau: { x: 3, y: 3, nac: 1, tam: 2 },
       chong: [C(5, 3, [14])],
-      bongMo: BM([{ x: 5, y: 1, so: [14] }]),
+      bongMo: BM([{ x: 3, y: 1, so: [14] }]),
       maMau: bai([
         'c = read_code()',
         't = c % 2',
@@ -176,7 +176,7 @@
         'else:',
         '    carry_by(1)'
       ]),
-      sao: { o: 13, nhip: 3 },
+      sao: { o: 16, nhip: 3 },
       loiSai: [],
       goiY: ['Luna: Bấm nút Chạy để xem read_code() đọc mã số trên lưng container.', 'Luna: Lưu ý gọi read_code() khi container còn nằm ở ô dưới đầu cần, trước khi pick_up().']
     }),
@@ -184,17 +184,17 @@
     manQuetMa({
       so: 2, ten: 'Phân loại kiện chẵn lẻ', hang: 'lam-quen', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: trên hai sân, kiện hàng tại nấc 2 tầm 2 (5, 3) có mã khác nhau. Nếu mã chẵn (chia 2 dư 0) thì chuyển sang nấc 1 bằng carry_by(-1), ngược lại mã lẻ thì chuyển sang nấc 3 bằng carry_by(1).',
+      deBai: 'Sola nhờ bạn: trên hai sân, kiện hàng tại nấc 1 tầm 2 (5, 3) có mã khác nhau. Nếu mã chẵn (chia 2 dư 0) thì chuyển sang nấc 0 bằng carry_by(-1), ngược lại mã lẻ thì chuyển sang nấc 2 bằng carry_by(1).',
       veMaMau: 'Đã có nhánh if cho mã chẵn. Hãy viết thêm nhánh else cho mã lẻ.',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
       chong: [
         [C(5, 3, [12])],
         [C(5, 3, [15])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [12] }]),
-        BM([{ x: 5, y: 5, so: [15] }])
+        BM([{ x: 3, y: 1, so: [12] }]),
+        BM([{ x: 3, y: 5, so: [15] }])
       ],
       maMau: bai([
         'c = read_code()',
@@ -210,7 +210,7 @@
         'else:',
         '    carry_by(1)'
       ]),
-      sao: { o: 15, nhip: 6 },
+      sao: { o: 18, nhip: 6 },
       loiGiaiKhac: {
         moTa: 'Kiểm tra mã lẻ trước rồi mới else sang mã chẵn',
         baiLam: bai([
@@ -226,7 +226,7 @@
         { moTa: 'Thiếu nhánh else nên sân có mã lẻ không được chuyển đi', baiLam: bai(['c = read_code()', 't = c % 2', 'if t == 0:', '    carry_by(-1)']), phaiCoMa: ['chua-xep-chong'] },
         { moTa: 'Đổi ngược hướng của chẵn và lẻ', baiLam: bai(['c = read_code()', 't = c % 2', 'if t == 0:', '    carry_by(1)', 'else:', '    carry_by(-1)']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Đọc c = read_code(), tính t = c % 2; t == 0 là mã chẵn.', 'Luna: Trong nhánh else, gọi carry_by(1) để đưa kiện lẻ sang nấc 3.']
+      goiY: ['Luna: Đọc c = read_code(), tính t = c % 2; t == 0 là mã chẵn.', 'Luna: Trong nhánh else, gọi carry_by(1) để đưa kiện lẻ sang nấc 2.']
     }),
 
     manQuetMa({
@@ -237,16 +237,16 @@
       san: [SAN_CANG, SAN_CANG],
       batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
       chong: [
-        [C(5, 3, [18])],
-        [C(5, 3, [27])]
+        [C(3, 5, [18])],
+        [C(3, 5, [27])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 5, so: [18] }]),
-        BM([{ x: 3, y: 5, so: [27] }])
+        BM([{ x: 1, y: 3, so: [18] }]),
+        BM([{ x: 3, y: 1, so: [27] }])
       ],
       maMau: bai(['k = read_code()']),
       loiGiai: bai(['c = read_code()', 't = c // 10', 'carry_by(t)']),
-      sao: { o: 10, nhip: 7 },
+      sao: { o: 13, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Đặt tên biến k cho chữ số hàng chục',
         baiLam: bai(['c = read_code()', 'k = c // 10', 'carry_by(k)'])
@@ -261,21 +261,21 @@
     manQuetMa({
       so: 4, ten: 'Đọc chữ số hàng đơn vị bằng % 10', hang: 'luyen', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'haul_to'],
-      deBai: 'Sola nhờ bạn: kiện hàng ở nấc 2 tầm 1 (4, 3) có chữ số hàng đơn vị (mã % 10) là số bước cần vươn thêm ra ngoài. Hãy lấy hàng đơn vị ra một biến rồi gọi haul_to(0, biến đó) để đưa kiện hàng ra đúng tầm.',
+      deBai: 'Sola nhờ bạn: kiện hàng ở nấc 2 tầm 1 (3, 4) có chữ số hàng đơn vị (mã % 10) là số bước cần vươn thêm ra ngoài. Hãy lấy hàng đơn vị ra một biến rồi gọi haul_to(0, biến đó) để đưa kiện hàng ra đúng tầm.',
       veMaMau: 'Mã đã đọc vào r. Lấy phần dư t = r % 10 rồi truyền t vào tham số thứ hai của haul_to.',
       san: [SAN_CANG_RONG, SAN_CANG_RONG],
       batDau: [{ x: 3, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, nac: 2, tam: 1 }],
       chong: [
-        [C(4, 3, [31])],
-        [C(4, 3, [42])]
+        [C(3, 4, [31])],
+        [C(3, 4, [42])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 3, so: [31] }]),
-        BM([{ x: 6, y: 3, so: [42] }])
+        BM([{ x: 3, y: 5, so: [31] }]),
+        BM([{ x: 3, y: 6, so: [42] }])
       ],
       maMau: bai(['r = read_code()']),
       loiGiai: bai(['c = read_code()', 't = c % 10', 'haul_to(0, t)']),
-      sao: { o: 12, nhip: 7 },
+      sao: { o: 15, nhip: 7 },
       loiGiaiKhac: {
         moTa: 'Đặt tên biến r cho chữ số hàng đơn vị',
         baiLam: bai(['c = read_code()', 'r = c % 10', 'haul_to(0, r)'])
@@ -290,21 +290,21 @@
     manQuetMa({
       so: 5, ten: 'Giải mã cả nấc lẫn tầm', hang: 'luyen', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'haul_to'],
-      deBai: 'Sola nhờ bạn: kiện hàng ở (4, 3) (nấc 2, tầm 1) mang mã số có hàng chục là độ lệch nấc và hàng đơn vị là độ lệch tầm. Hãy lưu c = read_code(), tách t = c // 10 và k = c % 10, rồi gọi haul_to(t, k).',
+      deBai: 'Sola nhờ bạn: kiện hàng ở (4, 3) (nấc 1, tầm 1) mang mã số có hàng chục là độ lệch nấc và hàng đơn vị là độ lệch tầm. Hãy lưu c = read_code(), tách t = c // 10 và k = c % 10, rồi gọi haul_to(t, k).',
       veMaMau: 'Đã có dòng c = read_code(). Hãy tách t = c // 10, k = c % 10 rồi gọi haul_to(t, k).',
       san: [SAN_CANG_RONG, SAN_CANG_RONG],
-      batDau: [{ x: 3, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, nac: 2, tam: 1 }],
+      batDau: [{ x: 3, y: 3, nac: 1, tam: 1 }, { x: 3, y: 3, nac: 1, tam: 1 }],
       chong: [
         [C(4, 3, [11])],
         [C(4, 3, [22])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 5, so: [11] }]),
-        BM([{ x: 3, y: 6, so: [22] }])
+        BM([{ x: 3, y: 5, so: [11] }]),
+        BM([{ x: 0, y: 3, so: [22] }])
       ],
       maMau: bai(['c = read_code()']),
       loiGiai: bai(['c = read_code()', 't = c // 10', 'k = c % 10', 'haul_to(t, k)']),
-      sao: { o: 19, nhip: 10 },
+      sao: { o: 23, nhip: 10 },
       loiGiaiKhac: {
         moTa: 'Tách hàng chục, hàng đơn vị ra hai biến rồi mới gọi haul_to',
         baiLam: bai(['c = read_code()', 't = c // 10', 'k = c % 10', 'haul_to(t, k)'])
@@ -319,17 +319,17 @@
     manQuetMa({
       so: 6, ten: 'Dọn chồng bằng vòng while', hang: 'luyen', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: chồng hàng tại nấc 2 tầm 2 (5, 3) có số kiện khác nhau ở hai sân. Đọc c = read_code(), dùng while c != -1: để chuyển từng kiện sang nấc 3 (5, 5) rồi quay lại nấc 2 cho tới khi chồng trống.',
+      deBai: 'Sola nhờ bạn: chồng hàng tại nấc 1 tầm 2 (5, 3) có số kiện khác nhau ở hai sân. Đọc c = read_code(), dùng while c != -1: để chuyển từng kiện sang nấc 2 (3, 5) rồi quay lại nấc 1 cho tới khi chồng trống.',
       veMaMau: 'Hoàn thiện thân vòng while: gọi carry_by(1) rồi swing_by(-1).',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
       chong: [
         [C(5, 3, [10, 20])],
         [C(5, 3, [10, 20, 30])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 5, so: [20, 10] }]),
-        BM([{ x: 5, y: 5, so: [30, 20, 10] }])
+        BM([{ x: 3, y: 5, so: [20, 10] }]),
+        BM([{ x: 3, y: 5, so: [30, 20, 10] }])
       ],
       maMau: bai([
         'c = read_code()',
@@ -344,7 +344,7 @@
         '    swing_by(-1)',
         '    c = read_code()'
       ]),
-      sao: { o: 14, nhip: 20 },
+      sao: { o: 17, nhip: 20 },
       loiGiaiKhac: {
         moTa: 'Viết while c > 0: thay cho c != -1',
         baiLam: bai([
@@ -356,26 +356,26 @@
         ])
       },
       loiSai: [
-        { moTa: 'Quên swing_by(-1) trong while nên cần cẩu nhấc đi nhấc lại ở nấc 3 vô hạn', baiLam: bai(['c = read_code()', 'while c != -1:', '    carry_by(1)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Quên swing_by(-1) trong while nên cần cẩu nhấc đi nhấc lại ở nấc 2 vô hạn', baiLam: bai(['c = read_code()', 'while c != -1:', '    carry_by(1)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
         { moTa: 'Dùng for cố định 2 lần nên sân thứ hai còn sót kiện 10', baiLam: bai(['for i in range(2):', '    carry_by(1)', '    swing_by(-1)']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Khi chồng ở nấc 2 hết hàng, read_code() trả về -1 và vòng while tự dừng.', 'Luna: Sau carry_by(1), bắt buộc phải swing_by(-1) về nấc 2 để kiểm tra kiện tiếp theo.']
+      goiY: ['Luna: Khi chồng ở nấc 1 hết hàng, read_code() trả về -1 và vòng while tự dừng.', 'Luna: Sau carry_by(1), bắt buộc phải swing_by(-1) về nấc 1 để kiểm tra kiện tiếp theo.']
     }),
 
     manQuetMa({
       so: 7, ten: 'Phân loại chẵn lẻ cả chồng', hang: 'bien-the', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: đọc c = read_code(), dùng while c != -1: tách hết chồng hàng ở nấc 2 (5, 3): kiện chẵn đưa sang nấc 1 (carry_by(-1) rồi swing_by(1)), kiện lẻ đưa sang nấc 3 (carry_by(1) rồi swing_by(-1)).',
+      deBai: 'Sola nhờ bạn: đọc c = read_code(), dùng while c != -1: tách hết chồng hàng ở nấc 1 (5, 3): kiện chẵn đưa sang nấc 0 (carry_by(-1) rồi swing_by(1)), kiện lẻ đưa sang nấc 2 (carry_by(1) rồi swing_by(-1)).',
       veMaMau: 'Đã có nhánh if cho kiện chẵn trong vòng while. Hãy viết tiếp nhánh else cho kiện lẻ.',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
       chong: [
         [C(5, 3, [11, 24, 32])],
         [C(5, 3, [18, 25, 37])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [32, 24] }, { x: 5, y: 5, so: [11] }]),
-        BM([{ x: 5, y: 1, so: [18] }, { x: 5, y: 5, so: [37, 25] }])
+        BM([{ x: 3, y: 1, so: [32, 24] }, { x: 3, y: 5, so: [11] }]),
+        BM([{ x: 3, y: 1, so: [18] }, { x: 3, y: 5, so: [37, 25] }])
       ],
       maMau: bai([
         'c = read_code()',
@@ -398,7 +398,7 @@
         '        swing_by(-1)',
         '    c = read_code()'
       ]),
-      sao: { o: 18, nhip: 24 },
+      sao: { o: 22, nhip: 24 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng for 3 lần vì cả hai sân đều có 3 kiện',
         baiLam: bai([
@@ -414,26 +414,26 @@
         ])
       },
       loiSai: [
-        { moTa: 'Quên quay lại nấc 2 ở nhánh else nên vòng lặp kẹt ở nấc 3', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c % 2', '    if t == 0:', '        carry_by(-1)', '        swing_by(1)', '    else:', '        carry_by(1)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Đưa cả kiện chẵn lẫn kiện lẻ sang cùng nấc 1', baiLam: bai(['c = read_code()', 'while c != -1:', '    carry_by(-1)', '    swing_by(1)', '    c = read_code()']), phaiCoMa: ['chua-xep-chong'] }
+        { moTa: 'Quên quay lại nấc 1 ở nhánh else nên vòng lặp kẹt ở nấc 2', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c % 2', '    if t == 0:', '        carry_by(-1)', '        swing_by(1)', '    else:', '        carry_by(1)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Đưa cả kiện chẵn lẫn kiện lẻ sang cùng nấc 0', baiLam: bai(['c = read_code()', 'while c != -1:', '    carry_by(-1)', '    swing_by(1)', '    c = read_code()']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Sau khi hạ kiện lẻ ở nấc 3 bằng carry_by(1), nhớ gọi swing_by(-1) để quay về nấc 2.', 'Luna: Sau khi hạ kiện chẵn ở nấc 1 bằng carry_by(-1), gọi swing_by(1) để quay về nấc 2.']
+      goiY: ['Luna: Sau khi hạ kiện lẻ ở nấc 2 bằng carry_by(1), nhớ gọi swing_by(-1) để quay về nấc 1.', 'Luna: Sau khi hạ kiện chẵn ở nấc 0 bằng carry_by(-1), gọi swing_by(1) để quay về nấc 1.']
     }),
 
     manQuetMa({
       so: 8, ten: 'Dọn tới khi gặp kiện tròn chục', hang: 'bien-the', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: dưới đáy chồng ở nấc 2 (5, 3) có một kiện hàng tròn chục (mã chia hết cho 10) cần giữ nguyên tại chỗ. Hãy đọc c = read_code(), tính t = c % 10 rồi dùng while t != 0: để dời hết các kiện lẻ phía trên sang nấc 3 (5, 5).',
+      deBai: 'Sola nhờ bạn: dưới đáy chồng ở nấc 2 (3, 5) có một kiện hàng tròn chục (mã chia hết cho 10) cần giữ nguyên tại chỗ. Hãy đọc c = read_code(), tính t = c % 10 rồi dùng while t != 0: để dời hết các kiện lẻ phía trên sang nấc 3 (1, 3).',
       veMaMau: 'Đã có while t != 0: với t = c % 10. Thêm swing_by(-1) để quay về nấc 2.',
       san: [SAN_CANG, SAN_CANG],
       batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
       chong: [
-        [C(5, 3, [20, 23, 27])],
-        [C(5, 3, [30, 35])]
+        [C(3, 5, [20, 23, 27])],
+        [C(3, 5, [30, 35])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 3, so: [20] }, { x: 5, y: 5, so: [27, 23] }]),
-        BM([{ x: 5, y: 3, so: [30] }, { x: 5, y: 5, so: [35] }])
+        BM([{ x: 3, y: 5, so: [20] }, { x: 1, y: 3, so: [27, 23] }]),
+        BM([{ x: 3, y: 5, so: [30] }, { x: 1, y: 3, so: [35] }])
       ],
       maMau: bai([
         'c = read_code()',
@@ -452,7 +452,7 @@
         '    c = read_code()',
         '    t = c % 10'
       ]),
-      sao: { o: 14, nhip: 12 },
+      sao: { o: 19, nhip: 12 },
       loiGiaiKhac: {
         moTa: 'Thêm dòng chú thích bên trong vòng while',
         baiLam: bai([
@@ -476,17 +476,17 @@
     manQuetMa({
       so: 9, ten: 'Quét ba nấc rút kiện mã lớn', hang: 'bien-the', nhipTheo: 'tong',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane', 'haul_to'],
-      deBai: 'Sola nhờ bạn: quét qua 3 nấc liên tiếp (nấc 1, 2, 3 ở tầm 2). Tại mỗi nấc, nếu container có mã từ 50 trở lên thì rút về tầm 1 bằng haul_to(0, -1) rồi vươn lại tầm 2 bằng reach_by(1), sau đó quay sang nấc kế tiếp.',
+      deBai: 'Sola nhờ bạn: quét qua 3 nấc liên tiếp (nấc 0, 2, 3 ở tầm 2). Tại mỗi nấc, nếu container có mã từ 50 trở lên thì rút về tầm 1 bằng haul_to(0, -1) rồi vươn lại tầm 2 bằng reach_by(1), sau đó quay sang nấc kế tiếp.',
       veMaMau: 'Hoàn thiện vòng for 3 lượt: đã có c = read_code() và if c >= 50:, thêm reach_by(1) rồi cuối mỗi lượt gọi swing_by(1).',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 0, tam: 2 }, { x: 3, y: 3, nac: 0, tam: 2 }],
       chong: [
-        [C(5, 1, [60]), C(5, 3, [25]), C(5, 5, [75])],
-        [C(5, 1, [30]), C(5, 3, [80]), C(5, 5, [40])]
+        [C(3, 1, [60]), C(5, 3, [25]), C(3, 5, [75])],
+        [C(3, 1, [30]), C(5, 3, [80]), C(3, 5, [40])]
       ],
       bongMo: [
-        BM([{ x: 4, y: 2, so: [60] }, { x: 5, y: 3, so: [25] }, { x: 4, y: 4, so: [75] }]),
-        BM([{ x: 5, y: 1, so: [30] }, { x: 4, y: 3, so: [80] }, { x: 5, y: 5, so: [40] }])
+        BM([{ x: 3, y: 2, so: [60] }, { x: 5, y: 3, so: [25] }, { x: 3, y: 4, so: [75] }]),
+        BM([{ x: 3, y: 1, so: [30] }, { x: 4, y: 3, so: [80] }, { x: 3, y: 5, so: [40] }])
       ],
       maMau: bai([
         'for i in range(3):',
@@ -502,7 +502,7 @@
         '        reach_by(1)',
         '    swing_by(1)'
       ]),
-      sao: { o: 22, nhip: 18 },
+      sao: { o: 25, nhip: 18 },
       loiGiaiKhac: {
         moTa: 'Tách t = c // 10 rồi hỏi t >= 5 thay cho c >= 50',
         baiLam: bai([
@@ -526,17 +526,17 @@
       so: 10, ten: 'Trùm cuối: Phân luồng theo hàng chục', hang: 'trum', nhipTheo: 'tong',
       huyHieu: { ma: 'quet-ma', ten: 'Huy hiệu Đọc mã số' },
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: trùm cuối chương 1! Chồng hàng ở nấc 2 tầm 2 (5, 3) gồm các kiện có chữ số hàng chục là 1, 3 hoặc 4, cần được chuyển tương ứng về nấc 1, nấc 3 hoặc nấc 4. Hãy đọc c = read_code(), lặp while c != -1:, tính t = c // 10 rồi độ lệch d = t - 2, chuyển đi, quay lại và đọc lại c.',
+      deBai: 'Sola nhờ bạn: trùm cuối chương 1! Chồng hàng ở nấc 2 tầm 2 (3, 5) gồm các kiện có chữ số hàng chục là 0, 1 hoặc 3 (kiện dưới 10 có hàng chục là 0), cần được chuyển tương ứng về nấc 0, nấc 1 hoặc nấc 3. Hãy đọc c = read_code(), lặp while c != -1:, tính t = c // 10 rồi độ lệch d = t - 2, chuyển đi, quay lại và đọc lại c.',
       veMaMau: 'Trong vòng while đã có t = c // 10 và d = t - 2. Thêm carry_by(d) rồi swing_by(-d).',
       san: [SAN_CANG, SAN_CANG],
       batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
       chong: [
-        [C(5, 3, [15, 32, 41])],
-        [C(5, 3, [38, 12, 49])]
+        [C(3, 5, [15, 32, 7])],
+        [C(3, 5, [38, 12, 9])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [15] }, { x: 5, y: 5, so: [32] }, { x: 3, y: 5, so: [41] }]),
-        BM([{ x: 5, y: 1, so: [12] }, { x: 5, y: 5, so: [38] }, { x: 3, y: 5, so: [49] }])
+        BM([{ x: 5, y: 3, so: [15] }, { x: 1, y: 3, so: [32] }, { x: 3, y: 1, so: [7] }]),
+        BM([{ x: 5, y: 3, so: [12] }, { x: 1, y: 3, so: [38] }, { x: 3, y: 1, so: [9] }])
       ],
       maMau: bai([
         'c = read_code()',
@@ -554,7 +554,7 @@
         '    swing_by(-d)',
         '    c = read_code()'
       ]),
-      sao: { o: 15, nhip: 28 },
+      sao: { o: 19, nhip: 28 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng for 3 lần vì mỗi sân có 3 kiện',
         baiLam: bai([
@@ -567,7 +567,7 @@
         ])
       },
       loiSai: [
-        { moTa: 'Quên trừ 2 khi tính độ lệch d từ nấc 2', baiLam: bai(['c = read_code()', 'while c != -1:', '    d = c // 10', '    carry_by(d)', '    swing_by(-d)', '    c = read_code()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Quên trừ 2 khi tính độ lệch d từ nấc 2 nên kiện hàng chục 0 không rời chỗ', baiLam: bai(['c = read_code()', 'while c != -1:', '    d = c // 10', '    carry_by(d)', '    swing_by(-d)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] },
         { moTa: 'Quên swing_by(-d) để quay lại nấc 2 sau mỗi kiện', baiLam: bai(['c = read_code()', 'while c != -1:', '    t = c // 10', '    d = t - 2', '    carry_by(d)', '    c = read_code()']), phaiCoMa: ['vong-vo-han'] }
       ],
       goiY: ['Luna: Đang đứng ở nấc 2 nên muốn tới nấc t = c // 10 thì độ lệch là d = t - 2.', 'Luna: Chuyển xong bằng carry_by(d), nhớ gọi swing_by(-d) để quay về nấc 2.']
@@ -581,23 +581,23 @@
       taoHam: ['sort_parity'],
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
       deBai: 'Sola nhờ bạn: mở Xưởng hàm chế sort_parity() để phân loại 1 kiện tại chỗ rồi quay về: đọc c = read_code(), t = c % 2, nếu t == 0 thì carry_by(-1) rồi swing_by(1), ngược lại thì carry_by(1) rồi swing_by(-1).',
-      veMaMau: 'Tạo hàm sort_parity() rồi gọi 2 lần để phân loại 2 kiện ở nấc 2.',
+      veMaMau: 'Tạo hàm sort_parity() rồi gọi 2 lần để phân loại 2 kiện ở nấc 1.',
       san: [SAN_CANG, SAN_CANG],
-      batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      batDau: [{ x: 3, y: 3, nac: 1, tam: 2 }, { x: 3, y: 3, nac: 1, tam: 2 }],
       chong: [
         [C(5, 3, [12, 25])],
         [C(5, 3, [19, 28])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [12] }, { x: 5, y: 5, so: [25] }]),
-        BM([{ x: 5, y: 1, so: [28] }, { x: 5, y: 5, so: [19] }])
+        BM([{ x: 3, y: 1, so: [12] }, { x: 3, y: 5, so: [25] }]),
+        BM([{ x: 3, y: 1, so: [28] }, { x: 3, y: 5, so: [19] }])
       ],
       maMau: bai(['sort_parity()', 'sort_parity()']),
       loiGiai: bai(
         ['sort_parity()', 'sort_parity()'],
         { hamCuaEmMoi: [hSortParity()] }
       ),
-      sao: { o: 19, nhip: 16 },
+      sao: { o: 22, nhip: 16 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng for 2 lần gọi sort_parity()',
         baiLam: bai(['for i in range(2):', '    sort_parity()']),
@@ -725,15 +725,15 @@
         [C(3, 1, [31, 19])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 1, so: [14] }, { x: 5, y: 3, so: [26] }]),
-        BM([{ x: 5, y: 1, so: [19] }, { x: 5, y: 5, so: [31] }])
+        BM([{ x: 5, y: 3, so: [14] }, { x: 3, y: 5, so: [26] }]),
+        BM([{ x: 5, y: 3, so: [19] }, { x: 1, y: 3, so: [31] }])
       ],
       maMau: bai(['route_tens()', 'route_tens()']),
       loiGiai: bai(
         ['route_tens()', 'route_tens()'],
         { hamCuaEmMoi: [hRouteTens()] }
       ),
-      sao: { o: 16, nhip: 22 },
+      sao: { o: 18, nhip: 22 },
       loiGiaiKhac: {
         moTa: 'Dùng vòng for 2 lần gọi route_tens()',
         baiLam: bai(['for i in range(2):', '    route_tens()']),
@@ -798,12 +798,12 @@
       san: [SAN_CANG, SAN_CANG],
       batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
       chong: [
-        [C(5, 3, [20, 15, 35]), C(3, 5, [40, 25])],
-        [C(5, 3, [10, 45]), C(3, 5, [30, 15, 25])]
+        [C(3, 5, [20, 15, 35]), C(3, 1, [40, 25])],
+        [C(3, 5, [10, 45]), C(3, 1, [30, 15, 25])]
       ],
       bongMo: [
-        BM([{ x: 5, y: 3, so: [20] }, { x: 4, y: 3, so: [35, 15] }, { x: 3, y: 5, so: [40] }, { x: 3, y: 4, so: [25] }]),
-        BM([{ x: 5, y: 3, so: [10] }, { x: 4, y: 3, so: [45] }, { x: 3, y: 5, so: [30] }, { x: 3, y: 4, so: [25, 15] }])
+        BM([{ x: 3, y: 5, so: [20] }, { x: 3, y: 4, so: [35, 15] }, { x: 3, y: 1, so: [40] }, { x: 3, y: 2, so: [25] }]),
+        BM([{ x: 3, y: 5, so: [10] }, { x: 3, y: 4, so: [45] }, { x: 3, y: 1, so: [30] }, { x: 3, y: 2, so: [25, 15] }])
       ],
       maMau: bai(
         ['pull_matching(5)', 'swing_by(2)', 'pull_matching(5)'],
@@ -813,7 +813,7 @@
         ['pull_matching(5)', 'swing_by(2)', 'pull_matching(5)'],
         { hamCuaMan: [hPullMatch(T_PULL_MATCH_DUNG)] }
       ),
-      sao: { o: 23, nhip: 28 },
+      sao: { o: 29, nhip: 28 },
       loiGiaiKhac: {
         moTa: 'Thêm dòng chú thích trong thân hàm pull_matching(r)',
         baiLam: bai(
