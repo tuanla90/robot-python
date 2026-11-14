@@ -70,6 +70,27 @@
     '#######'
   ];
 
+  // Cọc phụ cạnh bệ (14/11, cẩu 4 hướng): ô chéo không còn với tới, cọc phụ là ô đất (1, 3) / (5, 3) ở đầu ray
+  var SAN_CANG_COC_TRAI = [
+    '#######',
+    '#~~~~~#',
+    '#~TTT~#',
+    '#DRRRR#',
+    '#DDDDD#',
+    '#DDDDD#',
+    '#######'
+  ];
+
+  var SAN_CANG_COC_PHAI = [
+    '#######',
+    '#~~~~~#',
+    '#~TTT~#',
+    '#RRRRD#',
+    '#DDDDD#',
+    '#DDDDD#',
+    '#######'
+  ];
+
   var SAN_CANG_DAI = [
     '########',
     '#~~~~~~#',
@@ -373,27 +394,27 @@
       so: 7, ten: 'Dọn cọc phụ rồi chuyển tháp',
       taiToiDa: 4, luatThap: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry', 'move_tower2'],
-      deBai: 'Hai ngày làm việc với quy tắc Tháp Hà Nội (luatThap = true): tại (3, 4) có tháp 2 tầng [20, 10] cần chuyển nguyên thứ tự lên tàu ở (3, 2) nhờ cọc phụ (2, 4). Nhưng trên cọc phụ (2, 4) đang có chồng 2 kiện (ngày 1 là cặp 3 tấn [15, 18], ngày 2 là cặp 1 tấn [14, 12])! R1 ở (2, 3) hãy gọi safe_carry(4) để dọn sạch ô (2, 4) lên tàu trước, rồi trượt rail(1) sang (3, 3) và gọi move_tower2(1, 4)!',
-      veMaMau: 'Gọi safe_carry(4) dọn ô (2, 4), sau đó trượt rail(1) sang cột 3 gọi move_tower2(1, 4).',
-      san: [SAN_CANG_1, SAN_CANG_1],
-      batDau: { x: 2, y: 3, nac: 4, tam: 1 },
+      deBai: 'Hai ngày làm việc với quy tắc Tháp Hà Nội (luatThap = true): tại (2, 4) có tháp 2 tầng [11, 10] cần chuyển nguyên thứ tự lên tàu ở (2, 2) nhờ cọc phụ (1, 3) bên trái bệ. Nhưng trên cọc phụ (1, 3) đang có chồng 2 kiện (ngày 1 là cặp 3 tấn [15, 18], ngày 2 là cặp 1 tấn [14, 12])! R1 ở (2, 3) đang quay về cọc phụ (nấc 3): hãy gọi safe_carry(1) để dọn sạch ô (1, 3) lên tàu trước, rồi quay swing_by(-1) về tháp và gọi move_tower2(1, 2)!',
+      veMaMau: 'Gọi safe_carry(1) dọn ô (1, 3), sau đó quay swing_by(-1) về nấc 2 rồi gọi move_tower2(1, 2).',
+      san: [SAN_CANG_COC_TRAI, SAN_CANG_COC_TRAI],
+      batDau: { x: 2, y: 3, nac: 3, tam: 1 },
       chong: [
-        [CW(2, 4, [[15, 3], [18, 3]]), CW(3, 4, [[20, 2], [10, 1]])],
-        [CW(2, 4, [[14, 1], [12, 1]]), CW(3, 4, [[20, 2], [10, 1]])]
+        [CW(1, 3, [[15, 3], [18, 3]]), CW(2, 4, [[11, 2], [10, 1]])],
+        [CW(1, 3, [[14, 1], [12, 1]]), CW(2, 4, [[11, 2], [10, 1]])]
       ],
-      tau: [tauDon(39, 2), tauDon(29, 2)],
+      tau: [tauDon(21, 2), tauDon(17, 2)],
       giao: [
-        [{ tau: 0, so: [10, 15, 18, 20] }],
-        [{ tau: 0, so: [10, 12, 14, 20] }]
+        [{ tau: 0, so: [10, 11, 15, 18] }],
+        [{ tau: 0, so: [10, 11, 12, 14] }]
       ],
-      maMau: B(['carry2_by(4)', 'swing_by(4)', 'rail(1)', 'move_tower2(1, 4)']),
-      loiGiai: B(['safe_carry(4)', 'rail(1)', 'move_tower2(1, 4)']),
-      sao: { o: 30, nhip: 68 },
+      maMau: B(['carry2_by(1)', 'swing_by(2)', 'move_tower2(1, 2)']),
+      loiGiai: B(['safe_carry(1)', 'swing_by(-1)', 'move_tower2(1, 2)']),
+      sao: { o: 34, nhip: 38 },
       loiSai: [
-        cung('Gọi cứng carry2_by(4) ở cột 2 theo ngày 2: ở ngày 1 gặp cặp 3 tấn bị quá tải', B(['carry2_by(4)', 'swing_by(4)', 'rail(1)', 'move_tower2(1, 4)']), ['qua-tai']),
-        { moTa: 'Gọi move_tower2(1, 4) ngay mà quên dọn cọc phụ (2, 4) trước', baiLam: B(['rail(1)', 'move_tower2(1, 4)']), phaiCoMa: ['chua-giao-tau'] }
+        cung('Gọi cứng carry2_by(1) ở cọc phụ theo ngày 2: ở ngày 1 gặp cặp 3 tấn bị quá tải', B(['carry2_by(1)', 'swing_by(2)', 'move_tower2(1, 2)']), ['qua-tai']),
+        { moTa: 'Gọi move_tower2(1, 2) ngay mà quên dọn cọc phụ (1, 3) trước', baiLam: B(['swing_by(-1)', 'move_tower2(1, 2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: safe_carry(4) dọn sạch toàn bộ chồng hàng ở (2, 4) lên tàu và quay cần về nấc 4.', 'Luna: Sau đó trượt rail(1) sang (3, 3) và gọi move_tower2(1, 4) là chuyển gọn tháp [20, 10]!']
+      goiY: ['Luna: safe_carry(1) dọn sạch cả chồng ở (1, 3) lên tàu ở (2, 2) và quay cần về nấc 3.', 'Luna: Sau đó quay swing_by(-1) về tháp (2, 4) và gọi move_tower2(1, 2) là chuyển gọn tháp [11, 10] lên trên chồng hàng vừa dọn!']
     }),
 
     manCang({
@@ -711,15 +732,15 @@
       so: 8, ten: 'Quét hai cột rồi giải tháp Hà Nội',
       taiToiDa: 4, luatThap: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry', 'move_tower2', 'smart_slide', 'port_sweep'],
-      deBai: 'Hai ngày làm việc với quy tắc Tháp Hà Nội (luatThap = true): cột 2 và cột 3 có các chồng 2 kiện cần dọn sạch để lấy ô (3, 4) làm cọc phụ cho tháp [30, 10] đặt tại (4, 4). R1 bắt đầu ở (1, 3): hãy gọi port_sweep(2) để dọn sạch cột 2 và cột 3, rồi trượt rail(1) sang (4, 3) và gọi move_tower2(1, 4) để chuyển tháp [30, 10] qua cọc phụ (3, 4) lên tàu!',
-      veMaMau: 'Gọi port_sweep(2), sau đó trượt rail(1) và gọi move_tower2(1, 4).',
-      san: [SAN_CANG_1, SAN_CANG_1],
-      batDau: { x: 1, y: 3, nac: 4, tam: 1 },
+      deBai: 'Hai ngày làm việc với quy tắc Tháp Hà Nội (luatThap = true): cột 2 và cột 3 có các chồng 2 kiện cần dọn sạch lên tàu, còn tháp [30, 10] đặt tại (4, 4) phải chuyển nguyên thứ tự qua cọc phụ (5, 3) ở đầu ray. R1 bắt đầu ở (1, 3): hãy gọi port_sweep(2) để dọn sạch cột 2 và cột 3, rồi trượt rail(1) sang (4, 3) và gọi move_tower2(-1, -2) để chuyển tháp [30, 10] qua cọc phụ bên phải lên tàu!',
+      veMaMau: 'Gọi port_sweep(2), sau đó trượt rail(1) và gọi move_tower2(-1, -2).',
+      san: [SAN_CANG_COC_PHAI, SAN_CANG_COC_PHAI],
+      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
       chong: [
         [CW(2, 4, [[14, 1], [12, 1]]), CW(3, 4, [[25, 3], [26, 3]]), CW(4, 4, [[30, 2], [10, 1]])],
         [CW(2, 4, [[16, 3], [18, 3]]), CW(3, 4, [[24, 1], [22, 1]]), CW(4, 4, [[30, 2], [10, 1]])]
       ],
-      tau: [tauDon(51, 2), tauDon(51, 2)],
+      tau: [tauDon(33, 2), tauDon(33, 2)],
       giao: [
         [{ tau: 0, so: [10, 12, 14, 25, 26, 30] }],
         [{ tau: 0, so: [10, 16, 18, 22, 24, 30] }]
@@ -728,14 +749,15 @@
       loiGiai: B([
         'port_sweep(2)',
         'rail(1)',
-        'move_tower2(1, 4)'
+        'move_tower2(-1, -2)'
       ]),
-      sao: { o: 34, nhip: 102 },
+      sao: { o: 38, nhip: 66 },
       loiSai: [
-        cung('Dọn cột 3 bằng carry2_by(4) cứng theo ngày 2: ở ngày 1 gặp cặp 3 tấn bị quá tải', B(['smart_slide(1)', 'rail(1)', 'carry2_by(4)', 'swing_by(4)', 'rail(1)', 'move_tower2(1, 4)']), ['qua-tai']),
-        { moTa: 'Quên gọi move_tower2(1, 4) sau khi trượt sang cột 4', baiLam: B(['port_sweep(2)', 'rail(1)']), phaiCoMa: ['chua-giao-tau'] }
+        cung('Dọn cột 3 bằng carry2_by(2) cứng theo ngày 2: ở ngày 1 gặp cặp 3 tấn bị quá tải', B(['smart_slide(1)', 'rail(1)', 'carry2_by(2)', 'swing_by(2)', 'rail(1)', 'move_tower2(-1, -2)']), ['qua-tai']),
+        { moTa: 'Quên gọi move_tower2(-1, -2) sau khi trượt sang cột 4', baiLam: B(['port_sweep(2)', 'rail(1)']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Gọi move_tower2(1, 2) nên mượn cọc phụ bên trái (3, 3) là đường ray', baiLam: B(['port_sweep(2)', 'rail(1)', 'move_tower2(1, 2)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Khi R1 đứng ở (4, 3) hướng nấc 4, nấc 5 (quay phải 1 nấc) chính là ô cọc phụ (3, 4) vừa được dọn trống.', 'Luna: Sau port_sweep(2), chỉ cần gọi rail(1) và move_tower2(1, 4)!']
+      goiY: ['Luna: Khi R1 đứng ở (4, 3) hướng nấc 2, ô bên trái (3, 3) là đường ray, không đặt hàng được. Cọc phụ là ô (5, 3) bên phải ở nấc 1, nên d1 = -1.', 'Luna: Sau port_sweep(2), chỉ cần gọi rail(1) và move_tower2(-1, -2)!']
     }),
 
     manTrum({
