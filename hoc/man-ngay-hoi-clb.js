@@ -292,17 +292,17 @@
       hamCuaEmCan: ['swing_by', 'play_note', 'move'],
       deBai: 'Tại Bến cảng Ngày hội qua 3 chuyến tàu liên tiếp, R2 (bánh gai Mùa 8) đứng ở (2, 3) trước khối nhũ đá cộng hưởng tại (3, 3) (nốt 3, 5, 7 theo từng sân). Hãy cho R2 gọi play_note(listen()) phá nhũ đá rồi move() sang (3, 3) nhường ray cho cần cẩu R1 (Mùa 4) giao kiện hàng 25 lên tàu!',
       san: SAN_CANG,
-      bd: [{ x: 1, y: 3, nac: 4, tam: 1 }, { x: 2, y: 3, huong: 1 }],
+      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
       chong: [{ x: 1, y: 4, cont: [{ so: 25, tan: 1 }] }],
       daChuong: doi3(3, 3, 3, 5, 7, { ben: 1 }),
-      tau: [{ o: [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }], co: 7, vang: 2 }],
+      tau: [{ o: [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }], co: 5, vang: 2 }],
       giao: [{ tau: 0, so: [25] }],
-      maMau: baiDoi(['pick_up()', 'swing_by(4)', 'rail(1)', 'set_down()'], ['play_note(listen())']),
-      loiGiai: baiDoi(['pick_up()', 'swing_by(4)', 'rail(1)', 'set_down()'], ['play_note(listen())', 'move()']),
+      maMau: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['play_note(listen())']),
+      loiGiai: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['play_note(listen())', 'move()']),
       loiSai: [
-        { moTa: 'R2 mới phá nhũ đá mà chưa gọi move() sang (3, 3) nhường ray cho R1', baiLam: baiDoi(['pick_up()', 'swing_by(4)', 'rail(1)', 'set_down()'], ['play_note(listen())']), phaiCoMa: ['het-ray'] }
+        { moTa: 'R2 mới phá nhũ đá mà chưa gọi move() sang (3, 3) nhường ray cho R1', baiLam: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['play_note(listen())']), phaiCoMa: ['het-ray'] }
       ],
-      sao: { o: 17, nhip: 21 },
+      sao: { o: 18, nhip: 15 },
       goiY: ['Thêm move() sau play_note(listen()) ở chương trình của R2 để nhường ô ray (2, 3) cho R1.']
     }),
 
