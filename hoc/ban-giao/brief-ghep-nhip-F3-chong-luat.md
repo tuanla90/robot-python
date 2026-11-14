@@ -44,7 +44,7 @@ KIỂM TRA — TIỀN CẢNH, tuần tự, `timeout 300`, ghi ra tệp rồi đ�
   timeout 300 node hoc/kiem-huong-dan.mjs         → "ĐẠT 40 · HỎNG 0"
   timeout 300 node hoc/kiem-loi-giai.mjs          → "ĐẠT 67/67"
   timeout 300 node hoc/kiem-hoc.mjs               → "ĐẠT 6716 · HỎNG 0" (~60 s)
-  timeout 300 node hoc/do-meo-dien-so.cjs         → màn mới KHÔNG được có trong danh sách lách
+  timeout 900 node hoc/do-meo-dien-so.cjs         → màn mới KHÔNG được có trong danh sách lách (chạy > 5 phút; chạy MỘT lần cuối, Bash timeout 900000)
   timeout 300 node tools/do-ghep-nhip.mjs         → dòng mua-4 (nền 25/200; không được tụt)
   NỀN ĐỎ SẴN (chỉ báo nếu có lỗi KHÁC): hoc/kiem-lo-trinh.mjs (dừng ở AssertionError thứ tự gói mùa 1 'combo' / 'hai-robot'); hoc/kiem-ve-vector.mjs (HỎNG 1/101 mục 13a-v).
   Máy kiểm mới hoc/kiem-chong-luat.mjs phải tự chứng minh bắt lỗi thật: chạy với một lời giải sai luật → phải HỎNG.
