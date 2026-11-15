@@ -395,13 +395,19 @@
       chiChay: true, chinhCoDinh: true,
       mucTieu: 'bong-mo',
       khung: { chinh: 12, moiHam: 10 },
-      deBai: 'Sola làm mẫu: màu container = mã chia 4 dư mấy. Dư 0 đỏ, dư 1 xanh dương, dư 2 vàng, dư 3 xanh lá. Biển ở ô (3, 5): đỏ, số nhỏ ở trên. Biển ở ô (4, 4): xanh dương, số lớn ở trên. Bấm Chạy, xem từng container về đúng chồng.',
+      deBai: 'Sola làm mẫu: màu container = mã chia 4 dư mấy. Dư 0 đỏ, dư 1 xanh dương, dư 2 vàng, dư 3 xanh lá. Biển ở ô (3, 5): đỏ, số nhỏ ở trên. Biển ở ô (4, 4): xanh dương, số lớn ở trên. Bấm Chạy, xem từng container về đúng chồng. Hai sân hai bộ số, cùng một chương trình.',
       veMaMau: 'Mỗi lượt đọc mã ở đỉnh rồi tính m = c % 4. m bằng 0 là đỏ: vươn ra ô (3, 5). Còn lại là xanh dương: chạy ray sang ô (4, 4).',
-      san: SAN_CANG_1,
+      san: [SAN_CANG_1, SAN_CANG_1],
       batDau: { x: 3, y: 3, nac: 2, tam: 1 },
-      chong: [CW(3, 4, [[9, 1], [4, 1], [5, 1], [8, 1]])],
-      tau: tauDon(40, 2),
-      bongMo: { x: 3, y: 3, chongLuat: [{ x: 3, y: 5, luat: 'nho-tren', mau: 0 }, { x: 4, y: 4, luat: 'lon-tren', mau: 1 }] },
+      chong: [
+        [CW(3, 4, [[9, 1], [4, 1], [5, 1], [8, 1]])],
+        [CW(3, 4, [[12, 1], [13, 1], [16, 1], [1, 1]])]
+      ],
+      tau: [tauDon(40, 2), tauDon(40, 2)],
+      bongMo: [
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 5, luat: 'nho-tren', mau: 0 }, { x: 4, y: 4, luat: 'lon-tren', mau: 1 }] },
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 5, luat: 'nho-tren', mau: 0 }, { x: 4, y: 4, luat: 'lon-tren', mau: 1 }] }
+      ],
       maMau: B([
         'for i in range(4):',
         '    c = read_code()',
@@ -430,9 +436,9 @@
         '        set_down()',
         '        rail(-1)'
       ]),
-      sao: { o: 12, nhip: 16 },
+      sao: { o: 12, nhip: 32 },
       loiSai: [],
-      goiY: ['Luna: Đỏ ra theo thứ tự 8 rồi 4: số nhỏ nằm trên, đúng biển đỏ.', 'Luna: Xanh dương ra theo thứ tự 5 rồi 9: số lớn nằm trên, đúng biển xanh dương.']
+      goiY: ['Luna: Sân 1, đỏ ra theo thứ tự 8 rồi 4: số nhỏ nằm trên, đúng biển đỏ.', 'Luna: Sân 1, xanh dương ra theo thứ tự 5 rồi 9: số lớn nằm trên, đúng biển xanh dương.']
     }),
 
     manCang({

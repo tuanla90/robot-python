@@ -580,7 +580,7 @@
   "tong-hop-cang.4": { "o": 35, "nhip": 52 },
   "tong-hop-cang.5": { "o": 32, "nhip": 34 },
   "tong-hop-cang.6": { "o": 14, "nhip": 6 },
-  "tong-hop-cang.7": { "o": 12, "nhip": 16 },
+  "tong-hop-cang.7": { "o": 12, "nhip": 32 },
   "tong-hop-cang.8": { "o": 14, "nhip": 36 },
   "tong-hop-cang.9": { "o": 27, "nhip": 87 },
   "tong-hop-cang.10": { "o": 36, "nhip": 102 },
