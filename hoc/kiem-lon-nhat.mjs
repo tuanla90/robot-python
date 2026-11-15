@@ -33,7 +33,8 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
 const DS_MAN = [
   { ma: 'can-tai.8', viec: 'lon' },
   { ma: 'can-tai.9', viec: 'lon', san: 3 },
-  { ma: 'che-can-tai.8', viec: 'nang', san: 3 }
+  { ma: 'che-can-tai.8', viec: 'nang', san: 3 },
+  { ma: 'cang-cu.7', viec: 'nho', san: 3 }
 ];
 
 console.log('\n== 1. Lõi: ô trống, quét thắng mọi bộ số ==');
