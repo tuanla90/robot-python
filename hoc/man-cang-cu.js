@@ -76,6 +76,36 @@
     };
   }
 
+  // DÃY NGANG SAU RÀO (ghép nhịp 3f, 15/11; cùng khuôn với man-can-tai.js): ray y = 3 từ x = 0, rào / hố y = 4, dãy bãi y = 5 từ x = 1 (tầm 2), mỗi ô MỘT container.
+  // Cẩu quét giữ KỶ LỤC, lùi về ô kỷ lục, quay 180° đưa container sang bãi y = 1 bên kia mặt nước, ngay đối diện. Mỗi sân một bộ số, kỷ lục ở ô khác nhau.
+  var SAN_DAY_CU = [
+    '~~~~~~~~',
+    '~DDDDD~~',
+    '~~~~~~~~',
+    'RRRRRR..',
+    '.=u=#=..',
+    'DDDDDD..',
+    '........'
+  ];
+  var BD_DAY_CU = { x: 0, y: 3, nac: 2, tam: 2 };
+  function dayNgang(ds) {
+    return ds.map(function (p, i) { return { x: i + 1, y: 5, cont: [{ so: p[0], tan: p[1] }] }; });
+  }
+  function bmKyLuc(ds, kieu) {
+    var k = 0;
+    for (var i = 1; i < ds.length; i++) {
+      if (kieu === 'lon' && ds[i][0] > ds[k][0]) k = i;
+      if (kieu === 'nho' && ds[i][0] < ds[k][0]) k = i;
+    }
+    var chong = ds.map(function (p, i) { return { x: i + 1, y: 5, so: i === k ? [] : [p[0]] }; });
+    chong.push({ x: k + 1, y: 1, so: [ds[k][0]] });
+    return { x: k + 1, y: 3, chong: chong };
+  }
+  // [mã, tấn]; số nhỏ nhất mỗi sân một ô, ở ô 3 / ô 1 / ô 5
+  var DAY_7A = [[42, 1], [27, 1], [8, 1], [35, 1], [19, 1]];
+  var DAY_7B = [[5, 1], [31, 1], [17, 1], [44, 1], [12, 1]];
+  var DAY_7C = [[38, 1], [24, 1], [50, 1], [16, 1], [3, 1]];
+
   // Các hàm chế ở Gói 8 chương che-cang-cu
   var T_REACH_PICK = [
     'reach_by(dr)',
@@ -377,55 +407,46 @@
     }),
 
     manCangCu({
-      so: 7, ten: 'Quét dọc dãy rào chắn', hang: 'bien-the',
-      taiToiDa: 4,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola giao việc: bệ cẩu ở (1, 3) hướng nấc 2 tầm 1. Dọc 3 cột 2, 3, 4 phía sau hàng rào = và hố sâu u (tức tại (2, 5), (3, 5), (4, 5)), mỗi cột có 2 kiện 1 tấn. Hãy lặp 3 lần: trượt rail(1), vươn extend(), nhấc đôi pick_up2(), thu retract(), quay swing_by(2), hạ set_down() lên tàu rồi quay swing_by(2) về nấc 2.',
-      veMaMau: 'Dùng vòng lặp for i in range(3) để bốc gọn 3 cặp kiện qua rào và hố.',
-      san: SAN_CU_1,
-      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
-      chong: [
-        CW(2, 5, [[12, 1], [11, 1]]),
-        CW(3, 5, [[22, 1], [21, 1]]),
-        CW(4, 5, [[32, 1], [31, 1]])
-      ],
-      tau: tauDon(27, 2),
-      giao: [{ tau: 0, so: [11, 12, 21, 22, 31, 32] }],
+      so: 7, ten: 'Số nhỏ nhất sau hàng rào', hang: 'bien-the',
+      taiToiDa: 6,
+      mucTieu: 'bong-mo',
+      khung: { chinh: 16, moiHam: 10 },
+      deBai: 'Sola nhờ bạn: sau hàng rào và hố sâu có dãy 5 container. Lần này tìm container số NHỎ nhất. Đưa nó sang bãi bên kia mặt nước, ngay đối diện. Ba sân, mỗi sân một bộ số.',
+      veMaMau: 'Cần đã vươn tầm 2, qua được rào. Hãy giữ kỷ lục nhỏ nhất.',
+      san: [SAN_DAY_CU, SAN_DAY_CU, SAN_DAY_CU],
+      batDau: [BD_DAY_CU, BD_DAY_CU, BD_DAY_CU],
+      chong: [dayNgang(DAY_7A), dayNgang(DAY_7B), dayNgang(DAY_7C)],
+      bongMo: [bmKyLuc(DAY_7A, 'nho'), bmKyLuc(DAY_7B, 'nho'), bmKyLuc(DAY_7C, 'nho')],
       maMau: bai([
-        'for i in range(3):',
+        'nho = 100',
+        'for i in range(5):',
         '    rail(1)',
-        '    extend()',
-        '    pick_up2()'
+        '    c = read_code()'
       ]),
       loiGiai: bai([
-        'for i in range(3):',
+        'nho = 100',
+        'for i in range(5):',
         '    rail(1)',
-        '    extend()',
-        '    pick_up2()',
-        '    retract()',
-        '    swing_by(2)',
-        '    set_down()',
-        '    swing_by(2)'
+        '    c = read_code()',
+        '    if c < nho:',
+        '        nho = c',
+        'c = read_code()',
+        'while c != nho:',
+        '    rail(-1)',
+        '    c = read_code()',
+        'pick_up()',
+        'swing_left()',
+        'swing_left()',
+        'set_down()',
+        'wait()'
       ]),
-      sao: { o: 15, nhip: 27 },
-      loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-2) khi quay cần',
-        baiLam: bai([
-          'for i in range(3):',
-          '    rail(1)',
-          '    extend()',
-          '    pick_up2()',
-          '    retract()',
-          '    swing_by(-2)',
-          '    set_down()',
-          '    swing_by(-2)'
-        ])
-      },
+      sao: { o: 15, nhip: 12 },
       loiSai: [
-        { moTa: 'Chỉ lặp 2 cột nên bỏ sót cặp kiện ở cột 4', baiLam: bai(['for i in range(2):', '    rail(1)', '    extend()', '    pick_up2()', '    retract()', '    swing_by(2)', '    set_down()', '    swing_by(2)']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Quên gọi retract() nên hạ container ở tầm 2 rơi xuống mặt nước (x, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    extend()', '    pick_up2()', '    swing_by(2)', '    set_down()', '    retract()', '    swing_by(2)']), phaiCoMa: ['ha-bi-chan'] }
+        { moTa: 'Làm theo sân 1: số nhỏ nhất ở ô 3 nên chạy thẳng tới đó. Sân khác lấy nhầm', baiLam: bai(['rail(3)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Kỷ lục bắt đầu bằng -1 như bài lớn nhất: không mã nào nhỏ hơn -1 nên kỷ lục không đổi, cẩu lùi tới ô trống', baiLam: bai(['nho = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c < nho:', '        nho = c', 'c = read_code()', 'while c != nho:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['moc-hut'] },
+        { moTa: 'Hỏi c > nho: không mã nào lớn hơn 100 nên kỷ lục không đổi, cẩu lùi tới hết ray', baiLam: bai(['nho = 100', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c > nho:', '        nho = c', 'c = read_code()', 'while c != nho:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['het-ray'] }
       ],
-      goiY: ['Luna: Sau pick_up2() ở tầm 2, phải gọi retract() về tầm 1 trước khi quay và hạ xuống tàu.', 'Luna: Cuối mỗi vòng lặp nhớ gọi swing_by(2) để đưa cần về lại nấc 2 cho cột kế tiếp.']
+      goiY: ['Luna: Kỷ lục nhỏ nhất bắt đầu bằng số thật lớn, như 100. Mã nào cũng nhỏ hơn 100.', 'Luna: Gặp mã nhỏ hơn kỷ lục thì ghi kỷ lục mới.']
     }),
 
     manCangCu({

@@ -82,6 +82,63 @@
     };
   }
 
+  // DÃY NGANG (ghép nhịp 3f, 15/11): ray y = 3 từ x = 0, dãy bãi y = 4 từ x = 1, mỗi ô MỘT container (mọi ô đều lấy được).
+  // Cẩu quét dãy giữ KỶ LỤC (lớn nhất / nặng nhất), lùi về ô kỷ lục, đưa container sang ô bên kia ray (y = 2) ngay đối diện.
+  // Mỗi sân một bộ số, kỷ lục nằm chỗ khác nhau: dãy lệnh cố định thắng một sân thì thua sân khác.
+  var SAN_DAY = [
+    '~~~~~~~',
+    '~~~~~~~',
+    '~DDDDD~',
+    'RRRRRR.',
+    'DDDDDD.',
+    '.......',
+    '.......'
+  ];
+  var BD_DAY = { x: 0, y: 3, nac: 2, tam: 1 };
+  function dayNgang(ds) {
+    return ds.map(function (p, i) { return { x: i + 1, y: 4, cont: [{ so: p[0], tan: p[1] }] }; });
+  }
+  function chiSoKyLuc(ds, kieu) {
+    var k = 0;
+    for (var i = 1; i < ds.length; i++) {
+      if (kieu === 'lon' && ds[i][0] > ds[k][0]) k = i;
+      if (kieu === 'nang' && ds[i][1] > ds[k][1]) k = i;
+    }
+    return k;
+  }
+  function bmKyLuc(ds, kieu) {
+    var k = chiSoKyLuc(ds, kieu);
+    var chong = ds.map(function (p, i) { return { x: i + 1, y: 4, so: i === k ? [] : [p[0]] }; });
+    chong.push({ x: k + 1, y: 2, so: [ds[k][0]] });
+    return { x: k + 1, y: 3, chong: chong };
+  }
+  // [mã, tấn]; kỷ lục số và kỷ lục tấn mỗi sân chỉ có MỘT ô
+  var DAY_8A = [[12, 1], [35, 1], [7, 1], [28, 1], [19, 1]];
+  var DAY_8B = [[23, 1], [9, 1], [16, 1], [41, 1], [30, 1]];
+  var DAY_9A = [[18, 1], [6, 1], [27, 1], [11, 1], [44, 1]];
+  var DAY_9B = [[52, 1], [13, 1], [38, 1], [25, 1], [40, 1]];
+  var DAY_9C = [[9, 1], [21, 1], [36, 1], [14, 1], [30, 1]];
+  var DAY_C8A = [[31, 1], [14, 4], [45, 2], [22, 3], [9, 1]];
+  var DAY_C8B = [[27, 2], [38, 1], [12, 3], [50, 2], [16, 4]];
+  var DAY_C8C = [[40, 3], [19, 1], [33, 2], [8, 4], [25, 2]];
+  var T_TIM_LON = [
+    'lon = -1',
+    'for i in range(5):',
+    '    rail(1)',
+    '    c = read_code()',
+    '    if c > lon:',
+    '        lon = c',
+    'c = read_code()',
+    'while c != lon:',
+    '    rail(-1)',
+    '    c = read_code()',
+    'pick_up()',
+    'swing_left()',
+    'swing_left()',
+    'set_down()',
+    'wait()'
+  ];
+
   // Các hàm chế ở Gói 7 chương che-can-tai
   var T_SAFE_LIFT = [
     'w = weight()',
@@ -465,97 +522,47 @@
     }),
 
     manCanTai({
-      so: 8, ten: 'Tải trọng ở tầm xa', hang: 'bien-the',
-      taiToiDa: 6,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'reach_by', 'aim_crane'],
-      deBai: 'Sola nhờ bạn: màn này có taiToiDa = 6 và bệ cẩu bắt đầu ở (1, 3) hướng nấc 2, tầm 2 chỉ vào hàng bãi sâu y = 5. Ở tầm 2, cột nào có cặp kiện 1 tấn thì tổng tải đôi là (1 + 1) * 2 = 4 <= 6 nên gọi pick_up2() được; cột nào có kiện 3 tấn chỉ gọi pick_up() đơn (3 * 2 = 6 <= 6). Hãy quét 3 cột 2, 3, 4 và đưa hết hàng lên tàu.',
-      veMaMau: 'Trong vòng lặp 3 cột, đọc w = weight() rồi kiểm tra if w == 1: để chọn pick_up2() hay pick_up().',
-      san: SAN_TAI_1,
-      batDau: { x: 1, y: 3, nac: 2, tam: 2 },
-      chong: [CW(2, 5, [[21, 1], [11, 1]]), CW(3, 5, [[18, 3]]), CW(4, 5, [[29, 1], [19, 1]])],
-      tau: tauDon(27, 2),
-      giao: [{ tau: 0, so: [11, 18, 19, 21, 29] }],
-      maMau: bai([
-        'for i in range(3):',
-        '    rail(1)',
-        '    w = weight()',
-        '    if w == 1:',
-        '        pick_up2()',
-        '    else:',
-        '        pick_up()'
-      ]),
-      loiGiai: bai([
-        'for i in range(3):',
-        '    rail(1)',
-        '    w = weight()',
-        '    if w == 1:',
-        '        pick_up2()',
-        '    else:',
-        '        pick_up()',
-        '    aim_crane(2, -1)',
-        '    set_down()',
-        '    aim_crane(2, 1)'
-      ]),
-      sao: { o: 26, nhip: 27 },
-      loiGiaiKhac: {
-        moTa: 'Hỏi w == 3 trước để gọi pick_up()',
-        baiLam: bai([
-          'for i in range(3):',
-          '    rail(1)',
-          '    w = weight()',
-          '    if w == 3:',
-          '        pick_up()',
-          '    else:',
-          '        pick_up2()',
-          '    aim_crane(2, -1)',
-          '    set_down()',
-          '    aim_crane(2, 1)'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Mới nhấc kiện lên ở cột 2 mà chưa gọi aim_crane(2, -1), set_down(), aim_crane(2, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()']), phaiCoMa: ['dang-treo'] },
-        { moTa: 'Không thu cần về tầm 1 khi quay sang nấc 0 nên hạ hàng xuống nước ở (2, 1)', baiLam: bai(['for i in range(3):', '    rail(1)', '    w = weight()', '    if w == 1:', '        pick_up2()', '    else:', '        pick_up()', '    swing_by(2)', '    set_down()', '    swing_by(2)']), phaiCoMa: ['ha-bi-chan'] }
-      ],
-      goiY: ['Luna: Hàng đang ở y = 5 (tầm 2), còn boong tàu ở y = 2 (tầm 1) nên cần dùng aim_crane(2, -1) để vừa quay vừa thu cần.', 'Luna: Sau set_down(), gọi aim_crane(2, 1) để trở lại nấc 2, tầm 2 cho cột tiếp theo.']
+      so: 8, ten: 'Tìm container số lớn nhất', hang: 'bien-the',
+      chiChay: true, chinhCoDinh: true,
+      mucTieu: 'bong-mo',
+      khung: { chinh: 16, moiHam: 10 },
+      deBai: 'Sola làm mẫu: dãy bãi có 5 container, mỗi ô một cái. Cẩu chạy qua từng ô và đọc mã. Biến lon giữ số lớn nhất đã gặp: đó là kỷ lục. Gặp số lớn hơn kỷ lục thì ghi kỷ lục mới. Quét xong, cẩu lùi về ô có kỷ lục. Nó đưa container đó sang ô bên kia ray. Bấm Chạy, xem cả hai sân.',
+      veMaMau: 'Chương trình đã khóa. Để ý dòng lon = c: nó chỉ chạy khi c lớn hơn kỷ lục.',
+      san: [SAN_DAY, SAN_DAY],
+      batDau: [BD_DAY, BD_DAY],
+      chong: [dayNgang(DAY_8A), dayNgang(DAY_8B)],
+      bongMo: [bmKyLuc(DAY_8A, 'lon'), bmKyLuc(DAY_8B, 'lon')],
+      maMau: bai(T_TIM_LON),
+      loiGiai: bai(T_TIM_LON),
+      sao: { o: 15, nhip: 11 },
+      loiSai: [],
+      goiY: ['Luna: Kỷ lục bắt đầu là -1, nhỏ hơn mọi mã. Container đầu tiên luôn phá kỷ lục.', 'Luna: Vòng while lùi từng ô, tới khi mã ở đầu cần bằng kỷ lục thì dừng.']
     }),
 
     manCanTai({
-      so: 9, ten: 'Tháp nặng không thể nhấc đôi', hang: 'bien-the',
-      taiToiDa: 4,
-      luatThap: true,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'move_tower2'],
-      deBai: 'Sola nhờ bạn: tại (2, 4) có tháp 2 kiện [28, 14] với kiện đáy nặng 3 tấn và kiện đỉnh nặng 2 tấn. Vì tổng tải là 3 + 2 = 5 > taiToiDa (4) nên không thể dùng pick_up2() nhấc cả tháp cùng lúc! Hãy gọi hàm move_tower2(1, 2) để mượn bãi phụ nấc 3 (1, 3) dời từng kiện của tháp lên tàu ở nấc 0 đúng luật tháp.',
-      veMaMau: 'Sau khi dời tháp ở (2, 4) bằng move_tower2(1, 2), hãy trượt sang cột 3 và giao tiếp kiện ở (3, 4).',
-      san: SAN_TAI_3,
-      batDau: { x: 2, y: 3, nac: 2, tam: 1 },
-      chong: [CW(2, 4, [[28, 3], [14, 2]]), CW(3, 4, [[20, 2]])],
-      tau: tauDon(19, 2),
-      giao: [{ tau: 0, so: [14, 20, 28] }],
+      so: 9, ten: 'Container số lớn nhất', hang: 'bien-the',
+      mucTieu: 'bong-mo',
+      khung: { chinh: 16, moiHam: 10 },
+      deBai: 'Sola nhờ bạn: đưa container số lớn nhất sang ô bên kia ray, ngay đối diện chỗ nó nằm. Ba sân, mỗi sân một bộ số. Phải quét hết dãy mới biết số nào lớn nhất.',
+      veMaMau: 'Mã mẫu mới chạy qua từng ô và đọc mã. Hãy giữ kỷ lục, rồi quay về lấy container kỷ lục.',
+      san: [SAN_DAY, SAN_DAY, SAN_DAY],
+      batDau: [BD_DAY, BD_DAY, BD_DAY],
+      chong: [dayNgang(DAY_9A), dayNgang(DAY_9B), dayNgang(DAY_9C)],
+      bongMo: [bmKyLuc(DAY_9A, 'lon'), bmKyLuc(DAY_9B, 'lon'), bmKyLuc(DAY_9C, 'lon')],
       maMau: bai([
-        'move_tower2(1, 2)',
-        'rail(1)'
+        'lon = -1',
+        'for i in range(5):',
+        '    rail(1)',
+        '    c = read_code()'
       ]),
-      loiGiai: bai([
-        'move_tower2(1, 2)',
-        'rail(1)',
-        'swing_by(2)',
-        'carry_by(2)'
-      ]),
-      sao: { o: 23, nhip: 19 },
-      loiGiaiKhac: {
-        moTa: 'Quay về nấc 2 bằng swing_by(2) trước khi gọi rail(1)',
-        baiLam: bai([
-          'move_tower2(1, 2)',
-          'swing_by(2)',
-          'rail(1)',
-          'carry_by(2)'
-        ])
-      },
+      loiGiai: bai(T_TIM_LON),
+      sao: { o: 15, nhip: 12 },
       loiSai: [
-        { moTa: 'Dùng pick_up2() nhấc cả tháp 5 tấn (3 + 2 > 4) nên bị lỗi quá tải', baiLam: bai(['pick_up2()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['qua-tai'] },
-        { moTa: 'Mới dời xong tháp ở cột 2, chưa giao kiện 20 ở cột 3', baiLam: bai(['move_tower2(1, 2)', 'rail(1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Làm theo sân 1: số lớn nhất nằm ở ô cuối nên chạy thẳng tới đó. Sân 2 số lớn nhất ở ô đầu nên lấy nhầm', baiLam: bai(['rail(5)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Ghi lon = c ở mọi ô (không có if) nên lon là số cuối, không phải số lớn nhất', baiLam: bai(['lon = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    lon = c', 'c = read_code()', 'while c != lon:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Quên cập nhật kỷ lục: ghi c vào biến khác nên lon vẫn là -1, cẩu lùi tới ô trống', baiLam: bai(['lon = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c > lon:', '        m = c', 'c = read_code()', 'while c != lon:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['moc-hut'] }
       ],
-      goiY: ['Luna: Hàm move_tower2(1, 2) bắt đầu ở nấc 2 và kết thúc ở nấc 0 sau khi đã xếp xong tháp [28, 14] lên (2, 2).', 'Luna: Sau rail(1), gọi swing_by(2) rồi carry_by(2) để đưa kiện 20 từ (3, 4) lên (3, 2).']
+      goiY: ['Luna: Kỷ lục mới chỉ ghi khi c lớn hơn lon.', 'Luna: Quét xong, đọc lại c, rồi lùi bằng while tới khi c bằng lon.']
     }),
 
     manCanTai({
@@ -862,44 +869,44 @@
     }),
 
     manCheCanTai({
-      so: 8, ten: 'Dồn hàng nặng ra cầu cảng', hang: 'bien-the',
-      taiToiDa: 4,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry_n', 'carry2_by', 'safe_carry', 'rail_drop', 'heavy_rail'],
-      deBai: 'Sola nhờ bạn: phân loại chồng hàng ở cầu cảng (3, 2) lên hai tàu bằng heavy_rail(), sau đó quay sang nấc 2 (3, 4) gọi safe_carry(2) để chuyển cặp hàng ở bãi sau ra (3, 2) an toàn, rồi quay về nấc 0 gọi heavy_rail() lần nữa.',
-      veMaMau: 'Sau safe_carry(2) ở nấc 2, hãy quay về nấc 0 bằng swing_by(2) và gọi heavy_rail().',
-      san: SAN_TAI_2,
-      batDau: { x: 3, y: 3, nac: 0, tam: 1 },
-      chong: [CW(3, 2, [[26, 3], [14, 2]]), CW(3, 4, [[29, 3], [18, 3]])],
-      tau: tauDoi(28, 2),
-      giao: [{ tau: 0, so: [14] }, { tau: 1, so: [18, 26, 29] }],
+      so: 8, ten: 'Kiện nặng nhất', hang: 'bien-the',
+      mucTieu: 'bong-mo',
+      khung: { chinh: 16, moiHam: 10 },
+      deBai: 'Sola nhờ bạn: lần này tìm kiện NẶNG nhất, không phải số lớn nhất. Đưa nó sang ô bên kia ray, ngay đối diện chỗ nó nằm. Ba sân, mỗi sân một bộ kiện.',
+      veMaMau: 'weight() cho biết số tấn của kiện ở đầu cần. Hãy giữ kỷ lục số tấn.',
+      san: [SAN_DAY, SAN_DAY, SAN_DAY],
+      batDau: [BD_DAY, BD_DAY, BD_DAY],
+      chong: [dayNgang(DAY_C8A), dayNgang(DAY_C8B), dayNgang(DAY_C8C)],
+      bongMo: [bmKyLuc(DAY_C8A, 'nang'), bmKyLuc(DAY_C8B, 'nang'), bmKyLuc(DAY_C8C, 'nang')],
       maMau: bai([
-        'heavy_rail()',
-        'swing_by(2)',
-        'safe_carry(2)'
+        'nang = 0',
+        'for i in range(5):',
+        '    rail(1)'
       ]),
       loiGiai: bai([
-        'heavy_rail()',
-        'swing_by(2)',
-        'safe_carry(2)',
-        'swing_by(2)',
-        'heavy_rail()'
+        'nang = 0',
+        'for i in range(5):',
+        '    rail(1)',
+        '    w = weight()',
+        '    if w > nang:',
+        '        nang = w',
+        'w = weight()',
+        'while w != nang:',
+        '    rail(-1)',
+        '    w = weight()',
+        'pick_up()',
+        'swing_left()',
+        'swing_left()',
+        'set_down()',
+        'wait()'
       ]),
-      sao: { o: 38, nhip: 32 },
-      loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-2) khi quay về nấc 0',
-        baiLam: bai([
-          'heavy_rail()',
-          'swing_by(2)',
-          'safe_carry(2)',
-          'swing_by(-2)',
-          'heavy_rail()'
-        ])
-      },
+      sao: { o: 15, nhip: 11 },
       loiSai: [
-        { moTa: 'Mới phân loại chồng đầu tiên ở (3, 2)', baiLam: bai(['heavy_rail()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Đưa cặp ở (3, 4) ra (3, 2) nhưng quên gọi heavy_rail() lần hai', baiLam: bai(['heavy_rail()', 'swing_by(2)', 'safe_carry(2)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Vẫn tìm số lớn nhất bằng read_code() nên lấy kiện số lớn mà nhẹ', baiLam: bai(T_TIM_LON), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Làm theo sân 1: kiện nặng nhất ở ô 2 nên chạy thẳng tới đó. Sân khác lấy nhầm', baiLam: bai(['rail(2)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Quên cập nhật kỷ lục nên nang vẫn là 0, cẩu lùi tới ô trống', baiLam: bai(['nang = 0', 'for i in range(5):', '    rail(1)', '    w = weight()', '    if w > nang:', '        m = w', 'w = weight()', 'while w != nang:', '    rail(-1)', '    w = weight()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['moc-hut'] }
       ],
-      goiY: ['Luna: Sau safe_carry(2), cả 2 kiện từ (3, 4) đã nằm ở (3, 2) và đầu cần đang ở nấc 2.', 'Luna: Gọi swing_by(2) về nấc 0 rồi gọi heavy_rail() để phân loại nốt.']
+      goiY: ['Luna: Số trên container không cho biết nó nặng bao nhiêu. Hãy hỏi weight().', 'Luna: Kỷ lục số tấn bắt đầu là 0. Ô trống cũng cho weight() bằng 0.']
     }),
 
     manCheCanTai({
