@@ -3367,6 +3367,15 @@
       if (m.doi) m.doi.forEach(function (r) { if (r && r.canGatDoi === undefined) r.canGatDoi = true; });
       else if (m.canGatDoi === undefined) m.canGatDoi = true;
     });
+    // 15/11 (KE-HOACH-GHEP-NHIP.md mục 5a): CHÉO GHÉP mở từ gói 5 Đi chéo tới hết mùa Mỏ đá (gói 5–10): slide_* cùng nhịp hai bánh ĐI THẲNG (tiến hay lùi) = đi chéo 1 ô, giữ hướng mặt.
+    // Gói 1–4 không bật: slide + lệnh bánh vẫn là 'omni-khong-cheo'. Trượt + quay vẫn bỏ. Màn đội: cờ khai theo từng xe (chỉ xe omni dùng). Mùa 8, 9 không bật (màn nào cần thì tự đặt cheoGhep).
+    var GOI_CHEO_GHEP = ['di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni', 'may-mo-da'], chuongCheo = {};
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-7' && GOI_CHEO_GHEP.indexOf(g.ma) >= 0) g.chuong.forEach(function (c) { chuongCheo[c] = true; }); });
+    M.danhSach.forEach(function (m) {
+      if (!chuongCheo[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.loaiRobot === 'omni' && r.cheoGhep === undefined) r.cheoGhep = true; });
+      else if (m.cheoGhep === undefined) m.cheoGhep = true;
+    });
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.
