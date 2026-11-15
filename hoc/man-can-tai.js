@@ -128,12 +128,15 @@
     '    c = read_code()',
     '    if c > lon:',
     '        lon = c',
-    'while read_code() != lon:',
+    'c = read_code()',
+    'while c != lon:',
     '    rail(-1)',
+    '    c = read_code()',
     'pick_up()',
     'swing_left()',
     'swing_left()',
-    'set_down()'
+    'set_down()',
+    'wait()'
   ];
 
   // Các hàm chế ở Gói 7 chương che-can-tai
@@ -522,7 +525,7 @@
       so: 8, ten: 'Tìm container số lớn nhất', hang: 'bien-the',
       chiChay: true, chinhCoDinh: true,
       mucTieu: 'bong-mo',
-      khung: { chinh: 14, moiHam: 10 },
+      khung: { chinh: 16, moiHam: 10 },
       deBai: 'Sola làm mẫu: dãy bãi có 5 container, mỗi ô một cái. Cẩu chạy qua từng ô và đọc mã. Biến lon giữ số lớn nhất đã gặp: đó là kỷ lục. Gặp số lớn hơn kỷ lục thì ghi kỷ lục mới. Quét xong, cẩu lùi về ô có kỷ lục. Nó đưa container đó sang ô bên kia ray. Bấm Chạy, xem cả hai sân.',
       veMaMau: 'Chương trình đã khóa. Để ý dòng lon = c: nó chỉ chạy khi c lớn hơn kỷ lục.',
       san: [SAN_DAY, SAN_DAY],
@@ -531,7 +534,7 @@
       bongMo: [bmKyLuc(DAY_8A, 'lon'), bmKyLuc(DAY_8B, 'lon')],
       maMau: bai(T_TIM_LON),
       loiGiai: bai(T_TIM_LON),
-      sao: { o: 12, nhip: 12 },
+      sao: { o: 15, nhip: 11 },
       loiSai: [],
       goiY: ['Luna: Kỷ lục bắt đầu là -1, nhỏ hơn mọi mã. Container đầu tiên luôn phá kỷ lục.', 'Luna: Vòng while lùi từng ô, tới khi mã ở đầu cần bằng kỷ lục thì dừng.']
     }),
@@ -539,7 +542,7 @@
     manCanTai({
       so: 9, ten: 'Container số lớn nhất', hang: 'bien-the',
       mucTieu: 'bong-mo',
-      khung: { chinh: 14, moiHam: 10 },
+      khung: { chinh: 16, moiHam: 10 },
       deBai: 'Sola nhờ bạn: đưa container số lớn nhất sang ô bên kia ray, ngay đối diện chỗ nó nằm. Ba sân, mỗi sân một bộ số. Phải quét hết dãy mới biết số nào lớn nhất.',
       veMaMau: 'Mã mẫu mới chạy qua từng ô và đọc mã. Hãy giữ kỷ lục, rồi quay về lấy container kỷ lục.',
       san: [SAN_DAY, SAN_DAY, SAN_DAY],
@@ -553,13 +556,13 @@
         '    c = read_code()'
       ]),
       loiGiai: bai(T_TIM_LON),
-      sao: { o: 12, nhip: 13 },
+      sao: { o: 15, nhip: 12 },
       loiSai: [
-        { moTa: 'Làm theo sân 1: số lớn nhất nằm ở ô cuối nên chạy thẳng tới đó. Sân 2 số lớn nhất ở ô đầu nên lấy nhầm', baiLam: bai(['rail(5)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Ghi lon = c ở mọi ô (không có if) nên lon là số cuối, không phải số lớn nhất', baiLam: bai(['lon = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    lon = c', 'while read_code() != lon:', '    rail(-1)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Quên cập nhật kỷ lục: ghi c vào biến khác nên lon vẫn là -1, cẩu lùi tới ô trống', baiLam: bai(['lon = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c > lon:', '        m = c', 'while read_code() != lon:', '    rail(-1)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['moc-hut'] }
+        { moTa: 'Làm theo sân 1: số lớn nhất nằm ở ô cuối nên chạy thẳng tới đó. Sân 2 số lớn nhất ở ô đầu nên lấy nhầm', baiLam: bai(['rail(5)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Ghi lon = c ở mọi ô (không có if) nên lon là số cuối, không phải số lớn nhất', baiLam: bai(['lon = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    lon = c', 'c = read_code()', 'while c != lon:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Quên cập nhật kỷ lục: ghi c vào biến khác nên lon vẫn là -1, cẩu lùi tới ô trống', baiLam: bai(['lon = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c > lon:', '        m = c', 'c = read_code()', 'while c != lon:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['moc-hut'] }
       ],
-      goiY: ['Luna: Kỷ lục mới chỉ ghi khi c lớn hơn lon.', 'Luna: Quét xong, lùi bằng while tới khi read_code() bằng lon.']
+      goiY: ['Luna: Kỷ lục mới chỉ ghi khi c lớn hơn lon.', 'Luna: Quét xong, đọc lại c, rồi lùi bằng while tới khi c bằng lon.']
     }),
 
     manCanTai({
@@ -868,7 +871,7 @@
     manCheCanTai({
       so: 8, ten: 'Kiện nặng nhất', hang: 'bien-the',
       mucTieu: 'bong-mo',
-      khung: { chinh: 14, moiHam: 10 },
+      khung: { chinh: 16, moiHam: 10 },
       deBai: 'Sola nhờ bạn: lần này tìm kiện NẶNG nhất, không phải số lớn nhất. Đưa nó sang ô bên kia ray, ngay đối diện chỗ nó nằm. Ba sân, mỗi sân một bộ kiện.',
       veMaMau: 'weight() cho biết số tấn của kiện ở đầu cần. Hãy giữ kỷ lục số tấn.',
       san: [SAN_DAY, SAN_DAY, SAN_DAY],
@@ -887,18 +890,21 @@
         '    w = weight()',
         '    if w > nang:',
         '        nang = w',
-        'while weight() != nang:',
+        'w = weight()',
+        'while w != nang:',
         '    rail(-1)',
+        '    w = weight()',
         'pick_up()',
         'swing_left()',
         'swing_left()',
-        'set_down()'
+        'set_down()',
+        'wait()'
       ]),
-      sao: { o: 12, nhip: 12 },
+      sao: { o: 15, nhip: 11 },
       loiSai: [
         { moTa: 'Vẫn tìm số lớn nhất bằng read_code() nên lấy kiện số lớn mà nhẹ', baiLam: bai(T_TIM_LON), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Làm theo sân 1: kiện nặng nhất ở ô 2 nên chạy thẳng tới đó. Sân khác lấy nhầm', baiLam: bai(['rail(2)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Quên cập nhật kỷ lục nên nang vẫn là 0, cẩu lùi tới ô trống', baiLam: bai(['nang = 0', 'for i in range(5):', '    rail(1)', '    w = weight()', '    if w > nang:', '        m = w', 'while weight() != nang:', '    rail(-1)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['moc-hut'] }
+        { moTa: 'Làm theo sân 1: kiện nặng nhất ở ô 2 nên chạy thẳng tới đó. Sân khác lấy nhầm', baiLam: bai(['rail(2)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Quên cập nhật kỷ lục nên nang vẫn là 0, cẩu lùi tới ô trống', baiLam: bai(['nang = 0', 'for i in range(5):', '    rail(1)', '    w = weight()', '    if w > nang:', '        m = w', 'w = weight()', 'while w != nang:', '    rail(-1)', '    w = weight()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['moc-hut'] }
       ],
       goiY: ['Luna: Số trên container không cho biết nó nặng bao nhiêu. Hãy hỏi weight().', 'Luna: Kỷ lục số tấn bắt đầu là 0. Ô trống cũng cho weight() bằng 0.']
     }),

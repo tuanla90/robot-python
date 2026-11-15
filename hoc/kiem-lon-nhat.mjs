@@ -34,7 +34,8 @@ const DS_MAN = [
   { ma: 'can-tai.8', viec: 'lon' },
   { ma: 'can-tai.9', viec: 'lon', san: 3 },
   { ma: 'che-can-tai.8', viec: 'nang', san: 3 },
-  { ma: 'cang-cu.7', viec: 'nho', san: 3 }
+  { ma: 'cang-cu.7', viec: 'nho', san: 3 },
+  { ma: 'tong-hop-cang.9', viec: 'do-lon', san: 3 }      // gói 10: lớn nhất của một màu (đỏ = mã % 4 == 0); gói 10 mọi màn nhiều sân + nhipTheo 'tong'
 ];
 
 console.log('\n== 1. Lõi: ô trống, quét thắng mọi bộ số ==');
@@ -120,6 +121,12 @@ for (const d of DS_MAN) {
   const code = m.loiGiai.chinh.join('\n');
   kiem(d.ma + ': lời giải tự giữ kỷ lục (có if + gán), không max / min / list', /\bif \w+ [<>] \w+:/.test(code) && !/\b(max|min|list|sorted)\s*\(|\[/.test(code), code);
   kiem(d.ma + ': lời giải dùng ' + (d.viec === 'nang' ? 'weight()' : 'read_code()'), (d.viec === 'nang' ? /weight\(\)/ : /read_code\(\)/).test(code));
+  if (d.viec === 'do-lon') {
+    kiem(d.ma + ': lời giải lọc màu đỏ (c % 4 == 0) trước khi so kỷ lục', /% 4 == 0/.test(code));
+    kiem(d.ma + ': gói 10: nhipTheo tong', m.nhipTheo === 'tong');
+    const daySo = (m.chong || []).map((sn) => sn.map((c) => c.cont[0].so));
+    kiem(d.ma + ': ngày nào số lớn nhất cả dãy cũng KHÔNG phải đỏ (quên lọc màu thì thua)', daySo.every((ds) => Math.max(...ds) % 4 !== 0), J(daySo));
+  }
   if (d.san) {
     const n = soSan(m);
     const bo = n > 1 ? m.chong.map((c) => J(c)) : [];

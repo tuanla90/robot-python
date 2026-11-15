@@ -410,7 +410,7 @@
       so: 7, ten: 'Số nhỏ nhất sau hàng rào', hang: 'bien-the',
       taiToiDa: 6,
       mucTieu: 'bong-mo',
-      khung: { chinh: 14, moiHam: 10 },
+      khung: { chinh: 16, moiHam: 10 },
       deBai: 'Sola nhờ bạn: sau hàng rào và hố sâu có dãy 5 container. Lần này tìm container số NHỎ nhất. Đưa nó sang bãi bên kia mặt nước, ngay đối diện. Ba sân, mỗi sân một bộ số.',
       veMaMau: 'Cần đã vươn tầm 2, qua được rào. Hãy giữ kỷ lục nhỏ nhất.',
       san: [SAN_DAY_CU, SAN_DAY_CU, SAN_DAY_CU],
@@ -430,18 +430,21 @@
         '    c = read_code()',
         '    if c < nho:',
         '        nho = c',
-        'while read_code() != nho:',
+        'c = read_code()',
+        'while c != nho:',
         '    rail(-1)',
+        '    c = read_code()',
         'pick_up()',
         'swing_left()',
         'swing_left()',
-        'set_down()'
+        'set_down()',
+        'wait()'
       ]),
-      sao: { o: 12, nhip: 13 },
+      sao: { o: 15, nhip: 12 },
       loiSai: [
-        { moTa: 'Làm theo sân 1: số nhỏ nhất ở ô 3 nên chạy thẳng tới đó. Sân khác lấy nhầm', baiLam: bai(['rail(3)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Kỷ lục bắt đầu bằng -1 như bài lớn nhất: không mã nào nhỏ hơn -1 nên kỷ lục không đổi, cẩu lùi tới ô trống', baiLam: bai(['nho = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c < nho:', '        nho = c', 'while read_code() != nho:', '    rail(-1)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['moc-hut'] },
-        { moTa: 'Hỏi c > nho: không mã nào lớn hơn 100 nên kỷ lục không đổi, cẩu lùi tới hết ray', baiLam: bai(['nho = 100', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c > nho:', '        nho = c', 'while read_code() != nho:', '    rail(-1)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()']), phaiCoMa: ['het-ray'] }
+        { moTa: 'Làm theo sân 1: số nhỏ nhất ở ô 3 nên chạy thẳng tới đó. Sân khác lấy nhầm', baiLam: bai(['rail(3)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Kỷ lục bắt đầu bằng -1 như bài lớn nhất: không mã nào nhỏ hơn -1 nên kỷ lục không đổi, cẩu lùi tới ô trống', baiLam: bai(['nho = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c < nho:', '        nho = c', 'c = read_code()', 'while c != nho:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['moc-hut'] },
+        { moTa: 'Hỏi c > nho: không mã nào lớn hơn 100 nên kỷ lục không đổi, cẩu lùi tới hết ray', baiLam: bai(['nho = 100', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c > nho:', '        nho = c', 'c = read_code()', 'while c != nho:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['het-ray'] }
       ],
       goiY: ['Luna: Kỷ lục nhỏ nhất bắt đầu bằng số thật lớn, như 100. Mã nào cũng nhỏ hơn 100.', 'Luna: Gặp mã nhỏ hơn kỷ lục thì ghi kỷ lục mới.']
     }),

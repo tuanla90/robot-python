@@ -181,6 +181,48 @@
   ];
   function hPortStep(than) { return H('port_step', [], than || T_PORT_STEP_DUNG); }
 
+  // DÃY NGANG (ghép nhịp 3f, 15/11; cùng khuôn với man-can-tai.js): ray y = 3 từ x = 0, dãy bãi y = 4 từ x = 1, mỗi ô MỘT container.
+  // tong-hop-cang.9: tìm container ĐỎ (mã % 4 == 0) có số lớn nhất; ngày nào số lớn nhất của cả dãy cũng không phải đỏ, và ô đỏ lớn nhất mỗi ngày một chỗ.
+  var SAN_DAY_TH = [
+    '~~~~~~~',
+    '~~~~~~~',
+    '~DDDDD~',
+    'RRRRRR.',
+    'DDDDDD.',
+    '.......',
+    '.......'
+  ];
+  function dayNgangTH(ds) {
+    return ds.map(function (n, i) { return { x: i + 1, y: 4, cont: [{ so: n, tan: 1 }] }; });
+  }
+  function bmDoLon(ds) {
+    var k = -1;
+    for (var i = 0; i < ds.length; i++) if (ds[i] % 4 === 0 && (k < 0 || ds[i] > ds[k])) k = i;
+    var chong = ds.map(function (n, i) { return { x: i + 1, y: 4, so: i === k ? [] : [n] }; });
+    chong.push({ x: k + 1, y: 2, so: [ds[k]] });
+    return { x: k + 1, y: 3, chong: chong };
+  }
+  var DAY_9A = [8, 27, 20, 33, 12];      // đỏ lớn nhất 20 ở ô 3, lớn nhất 33 (xanh dương)
+  var DAY_9B = [36, 15, 41, 6, 9];       // đỏ lớn nhất 36 ở ô 1, lớn nhất 41 (xanh dương)
+  var DAY_9C = [5, 16, 30, 19, 28];      // đỏ lớn nhất 28 ở ô 5, lớn nhất 30 (vàng)
+  var T_TIM_LON_TH = [
+    'lon = -1',
+    'for i in range(5):',
+    '    rail(1)',
+    '    c = read_code()',
+    '    if c > lon:',
+    '        lon = c',
+    'c = read_code()',
+    'while c != lon:',
+    '    rail(-1)',
+    '    c = read_code()',
+    'pick_up()',
+    'swing_left()',
+    'swing_left()',
+    'set_down()',
+    'wait()'
+  ];
+
   function manCang(m) {
     m.chuong = m.chuong || 'tong-hop-cang';
     m.hang = m.hang || (m.so <= 3 ? 'lam-quen' : m.so <= 6 ? 'luyen' : m.so <= 9 ? 'bien-the' : 'trum');
@@ -497,36 +539,42 @@
     }),
 
     manCang({
-      so: 9, ten: 'Ba ngày quét dọc ba cột cảng',
+      so: 9, ten: 'Container đỏ lớn nhất',
       taiToiDa: 4,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry'],
-      deBai: 'Ba ngày làm việc liên tiếp! Trên mỗi sân, dọc 3 cột bãi (2, 4), (3, 4) và (4, 4) là các chồng 2 kiện (cặp 1 tấn hoặc cặp 3 tấn thay đổi vị trí mỗi ngày). R1 bắt đầu tại (1, 3): hãy lặp 3 lần trượt rail(1) và gọi safe_carry(2) để dọn sạch cả 3 cột trong cả 3 ngày!',
-      veMaMau: 'Lặp 3 lần: trượt rail(1) rồi gọi safe_carry(2).',
-      san: [SAN_CANG_1, SAN_CANG_1, SAN_CANG_1],
-      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
-      chong: [
-        [CW(2, 4, [[14, 1], [12, 1]]), CW(3, 4, [[26, 3], [25, 3]]), CW(4, 4, [[34, 1], [32, 1]])],
-        [CW(2, 4, [[18, 3], [16, 3]]), CW(3, 4, [[24, 1], [22, 1]]), CW(4, 4, [[38, 3], [36, 3]])],
-        [CW(2, 4, [[15, 1], [11, 1]]), CW(3, 4, [[28, 1], [21, 1]]), CW(4, 4, [[39, 3], [37, 3]])]
-      ],
-      tau: [tauDon(27, 2), tauDon(33, 2), tauDon(27, 2)],
-      giao: [
-        [{ tau: 0, so: [12, 14, 25, 26, 32, 34] }],
-        [{ tau: 0, so: [16, 18, 22, 24, 36, 38] }],
-        [{ tau: 0, so: [11, 15, 21, 28, 37, 39] }]
-      ],
-      maMau: B(['rail(1)', 'carry2_by(2)', 'swing_by(2)', 'rail(1)', 'carry_n(2, 2)', 'rail(1)', 'carry2_by(2)']),
+      mucTieu: 'bong-mo',
+      khung: { chinh: 18, moiHam: 10 },
+      deBai: 'Ba ngày làm việc. Khách chỉ cần hàng đỏ. Tìm container ĐỎ có số lớn nhất. Đưa nó sang ô bên kia ray, ngay đối diện. Màu = mã chia 4 dư mấy: dư 0 là đỏ.',
+      veMaMau: 'Mã mẫu là bài tìm số lớn nhất. Ngày nào số lớn nhất cũng không phải màu đỏ.',
+      san: [SAN_DAY_TH, SAN_DAY_TH, SAN_DAY_TH],
+      batDau: { x: 0, y: 3, nac: 2, tam: 1 },
+      chong: [dayNgangTH(DAY_9A), dayNgangTH(DAY_9B), dayNgangTH(DAY_9C)],
+      bongMo: [bmDoLon(DAY_9A), bmDoLon(DAY_9B), bmDoLon(DAY_9C)],
+      maMau: B(T_TIM_LON_TH),
       loiGiai: B([
-        'for i in range(3):',
+        'lon = -1',
+        'for i in range(5):',
         '    rail(1)',
-        '    safe_carry(2)'
+        '    c = read_code()',
+        '    if c % 4 == 0:',
+        '        if c > lon:',
+        '            lon = c',
+        'c = read_code()',
+        'while c != lon:',
+        '    rail(-1)',
+        '    c = read_code()',
+        'pick_up()',
+        'swing_left()',
+        'swing_left()',
+        'set_down()',
+        'wait()'
       ]),
-      sao: { o: 27, nhip: 87 },
+      sao: { o: 16, nhip: 30 },
       loiSai: [
-        cung('Viết cứng carry2_by ở cột 2 theo ngày 1: hỏng ngay ở ngày 2 khi cột 2 là cặp 3 tấn (quá tải)', B(['rail(1)', 'carry2_by(2)', 'swing_by(2)', 'rail(1)', 'carry_n(2, 2)', 'rail(1)', 'carry2_by(2)']), ['qua-tai']),
-        { moTa: 'Chỉ lặp 2 cột nên bỏ sót cột 4', baiLam: B(['for i in range(2):', '    rail(1)', '    safe_carry(2)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Quên lọc màu: lấy số lớn nhất, mà số đó không phải màu đỏ', baiLam: B(T_TIM_LON_TH), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Làm theo ngày 1: container đỏ lớn nhất ở ô 3 nên chạy thẳng tới đó. Ngày khác lấy nhầm', baiLam: B(['rail(3)', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] },
+        { moTa: 'Nhầm đỏ là dư 1 (c % 4 == 1 là xanh dương)', baiLam: B(['lon = -1', 'for i in range(5):', '    rail(1)', '    c = read_code()', '    if c % 4 == 1:', '        if c > lon:', '            lon = c', 'c = read_code()', 'while c != lon:', '    rail(-1)', '    c = read_code()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()', 'wait()']), phaiCoMa: ['chua-xep-chong'] }
       ],
-      goiY: ['Luna: Dù mỗi ngày thứ tự cột nhẹ và cột nặng khác nhau, safe_carry(2) đều tự động xử lý hết.', 'Luna: Dùng for i in range(3): gồm rail(1) và safe_carry(2).']
+      goiY: ['Luna: Hỏi màu trước: c % 4 == 0. Chỉ container đỏ mới được so với kỷ lục.', 'Luna: Kỷ lục chỉ đổi khi container vừa đỏ vừa lớn hơn lon.']
     }),
 
     manCang({
