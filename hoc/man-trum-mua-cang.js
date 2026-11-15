@@ -391,65 +391,103 @@
     }),
 
     manCang({
-      so: 7, ten: 'Dọn cọc phụ rồi chuyển tháp',
-      taiToiDa: 4, luatThap: true,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry', 'move_tower2'],
-      deBai: 'Hai ngày làm việc với quy tắc Tháp Hà Nội (luatThap = true): tại (2, 4) có tháp 2 tầng [11, 10] cần chuyển nguyên thứ tự lên tàu ở (2, 2) nhờ cọc phụ (1, 3) bên trái bệ. Nhưng trên cọc phụ (1, 3) đang có chồng 2 kiện (ngày 1 là cặp 3 tấn [15, 18], ngày 2 là cặp 1 tấn [14, 12])! R1 ở (2, 3) đang quay về cọc phụ (nấc 3): hãy gọi safe_carry(1) để dọn sạch ô (1, 3) lên tàu trước, rồi quay swing_by(-1) về tháp và gọi move_tower2(1, 2)!',
-      veMaMau: 'Gọi safe_carry(1) dọn ô (1, 3), sau đó quay swing_by(-1) về nấc 2 rồi gọi move_tower2(1, 2).',
-      san: [SAN_CANG_COC_TRAI, SAN_CANG_COC_TRAI],
-      batDau: { x: 2, y: 3, nac: 3, tam: 1 },
-      chong: [
-        [CW(1, 3, [[15, 3], [18, 3]]), CW(2, 4, [[11, 2], [10, 1]])],
-        [CW(1, 3, [[14, 1], [12, 1]]), CW(2, 4, [[11, 2], [10, 1]])]
-      ],
-      tau: [tauDon(21, 2), tauDon(17, 2)],
-      giao: [
-        [{ tau: 0, so: [10, 11, 15, 18] }],
-        [{ tau: 0, so: [10, 11, 12, 14] }]
-      ],
-      maMau: B(['carry2_by(1)', 'swing_by(2)', 'move_tower2(1, 2)']),
-      loiGiai: B(['safe_carry(1)', 'swing_by(-1)', 'move_tower2(1, 2)']),
-      sao: { o: 34, nhip: 38 },
-      loiSai: [
-        cung('Gọi cứng carry2_by(1) ở cọc phụ theo ngày 2: ở ngày 1 gặp cặp 3 tấn bị quá tải', B(['carry2_by(1)', 'swing_by(2)', 'move_tower2(1, 2)']), ['qua-tai']),
-        { moTa: 'Gọi move_tower2(1, 2) ngay mà quên dọn cọc phụ (1, 3) trước', baiLam: B(['swing_by(-1)', 'move_tower2(1, 2)']), phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: safe_carry(1) dọn sạch cả chồng ở (1, 3) lên tàu ở (2, 2) và quay cần về nấc 3.', 'Luna: Sau đó quay swing_by(-1) về tháp (2, 4) và gọi move_tower2(1, 2) là chuyển gọn tháp [11, 10] lên trên chồng hàng vừa dọn!']
+      so: 7, ten: 'Hai màu, hai biển luật',
+      chiChay: true, chinhCoDinh: true,
+      mucTieu: 'bong-mo',
+      khung: { chinh: 12, moiHam: 10 },
+      deBai: 'Sola làm mẫu: màu container = mã chia 4 dư mấy. Dư 0 đỏ, dư 1 xanh dương, dư 2 vàng, dư 3 xanh lá. Biển ở ô (3, 5): đỏ, số nhỏ ở trên. Biển ở ô (4, 4): xanh dương, số lớn ở trên. Bấm Chạy, xem từng container về đúng chồng.',
+      veMaMau: 'Mỗi lượt đọc mã ở đỉnh rồi tính m = c % 4. m bằng 0 là đỏ: vươn ra ô (3, 5). Còn lại là xanh dương: chạy ray sang ô (4, 4).',
+      san: SAN_CANG_1,
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
+      chong: [CW(3, 4, [[9, 1], [4, 1], [5, 1], [8, 1]])],
+      tau: tauDon(40, 2),
+      bongMo: { x: 3, y: 3, chongLuat: [{ x: 3, y: 5, luat: 'nho-tren', mau: 0 }, { x: 4, y: 4, luat: 'lon-tren', mau: 1 }] },
+      maMau: B([
+        'for i in range(4):',
+        '    c = read_code()',
+        '    m = c % 4',
+        '    pick_up()',
+        '    if m == 0:',
+        '        extend()',
+        '        set_down()',
+        '        retract()',
+        '    else:',
+        '        rail(1)',
+        '        set_down()',
+        '        rail(-1)'
+      ]),
+      loiGiai: B([
+        'for i in range(4):',
+        '    c = read_code()',
+        '    m = c % 4',
+        '    pick_up()',
+        '    if m == 0:',
+        '        extend()',
+        '        set_down()',
+        '        retract()',
+        '    else:',
+        '        rail(1)',
+        '        set_down()',
+        '        rail(-1)'
+      ]),
+      sao: { o: 12, nhip: 16 },
+      loiSai: [],
+      goiY: ['Luna: Đỏ ra theo thứ tự 8 rồi 4: số nhỏ nằm trên, đúng biển đỏ.', 'Luna: Xanh dương ra theo thứ tự 5 rồi 9: số lớn nằm trên, đúng biển xanh dương.']
     }),
 
     manCang({
-      so: 8, ten: 'Lọc kiện ưu tiên đuôi 9 và cân tải',
-      taiToiDa: 4,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry'],
-      deBai: 'Hai ngày làm việc tại bến phân loại: R1 đứng ở (2, 3) hướng nấc 2. Nếu kiện trên cùng ở (2, 4) có chữ số hàng đơn vị bằng 9 (c = read_code(), t = c % 10, t == 9) thì bốc ngay chồng hàng ở (2, 4) lên tàu bằng safe_carry(2); ngược lại phải bỏ qua kiện chờ ở (2, 4), trượt rail(1) sang cột 3 và gọi safe_carry(2) để bốc chồng hàng ở (3, 4)!',
-      veMaMau: 'Đọc c = read_code(), t = c % 10, kiểm tra if t == 9: gọi safe_carry(2), else: gọi rail(1) rồi safe_carry(2).',
-      san: [SAN_CANG_1, SAN_CANG_1],
-      batDau: { x: 2, y: 3, nac: 2, tam: 1 },
+      so: 8, ten: 'Mỗi màu một chiều',
+      mucTieu: 'bong-mo',
+      khung: { chinh: 14, moiHam: 10 },
+      deBai: 'Sola thử tài: chồng ở ô (3, 4) gồm hai cặp cùng màu. Cặp nào cũng có số nhỏ ở dưới, số lớn ở trên. Biển ở ô (3, 5): đỏ, số nhỏ ở trên. Biển ở ô (4, 4): xanh dương, số lớn ở trên. Mỗi sân một bộ số.',
+      veMaMau: 'Màu = mã chia 4 dư mấy: dư 0 đỏ, dư 1 xanh dương. Mã mẫu đã lo cặp xanh dương bằng móc đôi. Cặp đỏ phải đảo: hãy viết nhánh m == 0.',
+      san: [SAN_CANG_1, SAN_CANG_1, SAN_CANG_1],
+      batDau: { x: 3, y: 3, nac: 2, tam: 1 },
       chong: [
-        [CW(2, 4, [[15, 1], [19, 1]])],
-        [CW(2, 4, [[14, 2]]), CW(3, 4, [[28, 3], [26, 3]])]
+        [CW(3, 4, [[5, 1], [9, 1], [4, 1], [8, 1]])],
+        [CW(3, 4, [[4, 1], [8, 1], [5, 1], [9, 1]])],
+        [CW(3, 4, [[12, 1], [16, 1], [1, 1], [13, 1]])]
       ],
-      tau: [tauDon(6, 2), tauDon(13, 2)],
-      giao: [
-        [{ tau: 0, so: [15, 19] }],
-        [{ tau: 0, so: [26, 28] }]
+      tau: [tauDon(40, 2), tauDon(40, 2), tauDon(40, 2)],
+      bongMo: [
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 5, luat: 'nho-tren', mau: 0 }, { x: 4, y: 4, luat: 'lon-tren', mau: 1 }] },
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 5, luat: 'nho-tren', mau: 0 }, { x: 4, y: 4, luat: 'lon-tren', mau: 1 }] },
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 5, luat: 'nho-tren', mau: 0 }, { x: 4, y: 4, luat: 'lon-tren', mau: 1 }] }
       ],
-      maMau: B(['safe_carry(2)']),
-      loiGiai: B([
-        'c = read_code()',
-        't = c % 10',
-        'if t == 9:',
-        '    safe_carry(2)',
-        'else:',
-        '    rail(1)',
-        '    safe_carry(2)'
+      maMau: B([
+        'for i in range(2):',
+        '    c = read_code()',
+        '    m = c % 4',
+        '    if m == 0:',
+        '        wait()',
+        '    else:',
+        '        pick_up2()',
+        '        rail(1)',
+        '        set_down()',
+        '        rail(-1)'
       ]),
-      sao: { o: 31, nhip: 19 },
+      loiGiai: B([
+        'for i in range(2):',
+        '    c = read_code()',
+        '    m = c % 4',
+        '    if m == 0:',
+        '        for j in range(2):',
+        '            pick_up()',
+        '            extend()',
+        '            set_down()',
+        '            retract()',
+        '    else:',
+        '        pick_up2()',
+        '        rail(1)',
+        '        set_down()',
+        '        rail(-1)'
+      ]),
+      sao: { o: 14, nhip: 36 },
       loiSai: [
-        cung('Chỉ gọi cứng safe_carry(2) ở cột 2 theo ngày 1: sang ngày 2 bốc nhầm kiện chờ 14 ở cột 2', B(['safe_carry(2)']), ['chua-giao-tau']),
-        cung('Luôn trượt rail(1) sang cột 3 theo ngày 2: ở ngày 1 cột 3 trống nên móc hụt', B(['rail(1)', 'safe_carry(2)']), ['moc-hut'])
+        { moTa: 'Lọc đúng màu nhưng màu nào cũng bốc lẻ nên cặp xanh dương bị đảo sai luật', baiLam: B(['for i in range(4):', '    c = read_code()', '    m = c % 4', '    pick_up()', '    if m == 0:', '        extend()', '        set_down()', '        retract()', '    else:', '        rail(1)', '        set_down()', '        rail(-1)']), phaiCoMa: ['sai-luat-chong'] },
+        { moTa: 'Không đọc mã, làm theo thứ tự của sân 1 nên sân khác đặt nhầm màu', baiLam: B(['for j in range(2):', '    pick_up()', '    extend()', '    set_down()', '    retract()', 'pick_up2()', 'rail(1)', 'set_down()', 'rail(-1)']), phaiCoMa: ['sai-luat-chong'] }
       ],
-      goiY: ['Luna: Phép chia lấy dư t = c % 10 (c = read_code()) trả về chữ số hàng đơn vị của mã container.', 'Luna: Nếu t == 9 thì gọi safe_carry(2), ngược lại gọi rail(1) rồi safe_carry(2).']
+      goiY: ['Luna: Cặp xanh dương đã đúng chiều: nhấc đôi để giữ thứ tự.', 'Luna: Cặp đỏ phải đảo: bốc lẻ hai lần ra ô (3, 5).']
     }),
 
     manCang({

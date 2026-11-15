@@ -61,8 +61,7 @@ console.log('\n== 2. Chấm theo luật, không theo dãy số ==');
   kiem('đổi bộ số A [9, 2]: dãy lệnh bốc lẻ (thắng bộ [3, 7]) nay ra [2, 9] → thua', r.thang === false && J(chongO(r, 4, 3)) === J([2, 9]));
   r = chay(cau(A([9, 2]), C_NHO), DOI);
   kiem('A [9, 2] móc đôi → [9, 2] nhỏ ở trên → thắng (cùng một mục tiêu, hai bộ số)', r.thang === true);
-  const DOC = 'a = read_code()\npick_up()\nswing_left()\nset_down()\nswing_right()\nb = read_code()\nswing_left()\npick_up()\nswing_right()\nif a < b:\n    pick_up2()\nelse:\n    pick_up()\n';
-  kiem('bongMo.chongLuat giữ nguyên trên kết quả, du đã đếm (2)', r.bongMo.chongLuat.length === 1 && r.bongMo.chongLuat[0].du === 2 && r.bongMo.chongLuat[0].mau === null && r.bongMo.chongLuat[0].luat === 'nho-tren' && !!DOC);
+  kiem('bongMo.chongLuat giữ nguyên trên kết quả, du đã đếm (2)', r.bongMo.chongLuat.length === 1 && r.bongMo.chongLuat[0].du === 2 && r.bongMo.chongLuat[0].mau === null && r.bongMo.chongLuat[0].luat === 'nho-tren');
   r = chay(cau(A([5, 5]), C_NHO), LE);
   kiem('hai số bằng nhau: chiều nào cũng đạt', r.thang === true);
   r = chay(cau(A([4, 6, 9]), [{ x: 3, y: 2, luat: 'lon-tren' }]), 'pick_up()\nswing_left()\nswing_left()\nset_down()\nswing_right()\nswing_right()\npick_up()\nswing_left()\nswing_left()\nset_down()\nswing_right()\nswing_right()\npick_up()\nswing_left()\nset_down()\nswing_left()\npick_up()\nswing_right()\nset_down()\nswing_left()\npick_up()\nswing_right()\nset_down()\n');
@@ -155,7 +154,7 @@ function chamMan(m, lg) {                                  // như hoc/kiem-man-
   for (const h of lg.hamCuaEmMoi || m.loiGiai.hamCuaEmMoi || []) hs.set(h.ten, clone(h));
   return ChamHoc.cham(m, { chinh: lg.chinh, hamCuaMan: lg.hamCuaMan || [], doi: lg.doi }, [...hs.values()]);
 }
-const SO_MAN_TOI_THIEU = 0;                                // nâng lên 9 khi đủ màn (gói 2 ≥ 3, gói 6 ≥ 3, gói 8 ≥ 1, gói 10 ≥ 2)
+const SO_MAN_TOI_THIEU = 9;                                // gói 2 ≥ 3, gói 6 ≥ 3, gói 8 ≥ 1, gói 10 ≥ 2
 const dsMan = LoTrinh.danhSach.filter((m) => {
   const bm = Array.isArray(m.bongMo) ? m.bongMo : [m.bongMo];
   return m.loaiRobot === 'cau' && bm.some((b) => b && b.chongLuat);
@@ -174,7 +173,7 @@ console.log('\n== 7. Màn mùa 4 có luật xếp chồng (' + dsMan.length + ' 
 {
   kiem('lộ trình có ít nhất ' + SO_MAN_TOI_THIEU + ' màn chongLuat', dsMan.length >= SO_MAN_TOI_THIEU, 'đang có ' + dsMan.length);
   dsMan.forEach((m) => {
-    const giai = PHA && m === dsMan[0] ? trao(m.loiGiai) : m.loiGiai;
+    const giai = PHA && m === dsMan.find((q) => !q.chinhCoDinh) ? trao(m.loiGiai) : m.loiGiai;   // --pha: màn đầu tiên không khoá mã nộp lời giải bị tráo
     let r = chamMan(m, giai);
     kiem(m.ma + ' "' + m.ten + '": lời giải thắng mọi sân' + (Array.isArray(m.san[0]) ? ' (' + m.san.length + ' sân)' : ''), r.thang === true, J(cdMa(r)));
     const nhieuSan = Array.isArray(m.san[0]);
