@@ -78,6 +78,7 @@ Mùa 3, 6 không nằm trong kế hoạch này (đã ghép kiểu "kèm bước"
 - Chỗ dạy: gói 2 Móc cẩu container (đảo thứ tự khi bốc lẻ, luật một chiều), gói 6 Móc cẩu đôi (giữ hay đảo, chọn nhấc 1 / 2), gói 8, 10 dùng lại (gói 10 luật kép theo màu).
 
 ### 3d. Hàng đợi: hàng tàu nối đuôi một bến (gói 4 Tàu cập bến: LÀM LẠI một chương có sẵn, user chốt 13/11, mặc định chương 2; gói 10)
+- XONG 15/11 (5984c9a…2970a6e): lõi cfg.hangTau + hình hàng tàu chờ; chương 2 gói 4 che-ben-tau làm lại 10 màn (giữ move_tower2); trum-mua-cang.7 ghép ngăn xếp + hàng đợi. Chi tiết: hoc/ban-giao/BAN-GIAO-GHEP-NHIP.md mục 4.
 - Không thêm chương (khuôn 10 gói × 2 chương × 10 màn).
 - Lý do: tàu tới cảng xếp hàng chờ; tàu đầu hàng cập, nhận hàng, rời; tàu sau mới vào: **hàng đợi**, "vào trước ra trước".
 - Luật (lõi mới, gần tàu / `giao-tau` có sẵn): một bến có nhiều tàu nối đuôi; chỉ tàu đầu hàng ở ô boong `T`; mỗi tàu cần đúng MỘT số container (bảng ở mũi tàu). Đặt đúng lên tàu đầu hàng thì cuối nhịp tàu rời, tàu kế vào bến. Đặt sai: thua (`giao-nham`). Trẻ không chọn tàu.
@@ -94,6 +95,7 @@ Mùa 3, 6 không nằm trong kế hoạch này (đã ghép kiểu "kèm bước"
 - Hình: `hoc/game/san-ve.js` (vis.cau nội suy nac), VeVector.veCanCau, phim mùa cảng (`hoc/game/phim-mua-cang.js`) đổi về 4 hướng; máy kiểm vẽ `hoc/kiem-ve-mua-song-cang.mjs`.
 
 ### 3f. Tìm lớn nhất / nhỏ nhất theo hàng ngang (user chốt 13/11)
+- XONG 15/11 (db56389…ed6d2d6): 5 màn ở gói 7 (lớn nhất, nặng nhất), gói 8 (nhỏ nhất), gói 10 (đỏ lớn nhất); không sửa lõi; máy kiểm hoc/kiem-lon-nhat.mjs. Chi tiết: hoc/ban-giao/BAN-GIAO-GHEP-NHIP.md mục 4.
 - Chia việc: chồng DỌC = ngăn xếp (3c); dãy NGANG = tìm lớn nhất / nhỏ nhất; hàng tàu = hàng đợi (3d).
 - Sân: một dãy ô bãi song song ray, mỗi ô MỘT container (mọi ô đều lấy được, khác chồng). Cẩu chạy ray qua từng ô, `read_code()`, giữ biến kỷ lục, rồi mang container lớn nhất (nhỏ nhất, hay lớn nhất của một màu) đi giao. Số đổi theo sân (`duLieuSan`) nên phải quét thật.
 - Không sửa lõi (ray, `read_code`, `bongMo.chong` / `chongLuat` có sẵn). Chỗ dạy: gói 5 Đường ray chương 2 hay gói 7 (cùng `weight()`: nặng nhất), gói 8, 10 dùng lại.

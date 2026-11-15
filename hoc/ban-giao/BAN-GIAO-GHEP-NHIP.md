@@ -9,7 +9,7 @@ User dặn tối 13/11: "xong 1 mùa thì commit, làm dần các mùa khác r m
 |---|---|---|---|
 | 5 Bến sông (xuồng) | XONG | main | 69/200 (gói 5: 18, 6: 17, 7: 10, 8: 10, 9: 4, 10: 10); trước đợt là 0 |
 | 2 Nhà máy (xe cứu hỏa) | XONG, hụt chỉ tiêu | main 5107a78 | 11/200 (gói 6: 7/20, cần 15; gói 10: 4/20, cần 5) |
-| 4 Cảng sông (cần cẩu) | F1 cẩu 4 hướng XONG (main 9ebfa0c); F2 cần gạt đôi XONG (đã push ccaed8e); F3 xếp chồng theo luật XONG (main 63f480f+); F4 chưa | main | 25/200 (gói 5: 14, 6: 1, 7: 5, 8: 1, 9: 1, 10: 3); trước F2 là 0 |
+| 4 Cảng sông (cần cẩu) | F1 cẩu 4 hướng XONG (main 9ebfa0c); F2 cần gạt đôi XONG (đã push ccaed8e); F3 xếp chồng theo luật XONG (push 5e1e2a0); F4a lớn nhất hàng ngang + F4b hàng tàu XONG (main 2970a6e+). MÙA 4 XONG | main | 29/200 (sau F4a); trước F2 là 0 |
 | 7 Mỏ đá (xe omni) | CHƯA BẮT ĐẦU | — | 0/200 |
 
 **Đã đẩy GitHub** (origin/main d7c4e52, 14/11). Sáng 14/11 các lần đẩy trước đó lỗi `HTTP 503` phía GitHub lúc gửi gói (đăng nhập vẫn qua); thử lại sau ~1 giờ thì được. Mỗi mùa xong: `git push origin main` (user cho phép đợt này).
@@ -79,9 +79,18 @@ Thứ tự gói theo kế hoạch mục 3, 6:
   - Chờ user: (a) biển luật ở sân 7 cột (moc-cau.6, ô ~30 px trên điện thoại) chữ "nhỏ" / "lớn" quá bé, gần như không đọc được; (b) chồng chỉ hiện số trên cùng, gói 2 phải ghi số các tầng trong đề (agent đề xuất bảng "chồng này có gì" khi bấm vào chồng); (c) nhac-doi.8, .9 dựa vào câu "đáy luôn là 50" trong đề; (d) gói 10 mất hai màn nhắc lại cũ (tháp ở .7, lọc đuôi 9 + cân tải ở .8), agent nghiêng về để nguyên; (e) đề tong-hop-cang.7 dài (luật "chữ ít"); (f) chương chia-du gói 2 chưa có màn màu.
   - Chưa xem: moc-cau.5, .8, nhac-doi.7–.9, cang-cu.9, tong-hop-cang.8 trên trình duyệt; phim / hướng dẫn gói có thể còn nhắc tên màn cũ (tháp, đuôi 9).
   - Brief: `hoc/ban-giao/brief-ghep-nhip-F3-chong-luat.md`.
-- **F4** gồm hai phần:
-  - min/max theo hàng ngang (3f), chỉ làm màn;
-  - hàng tàu nối đuôi (3d): lõi mới, làm lại gói 4 chương 2.
+- **F4a** tìm lớn nhất / nhỏ nhất theo hàng ngang (3f). XONG 15/11: agent opus (một lần đứt mạng, cho chạy lại), nhánh claude/mua-4-lon-nhat db56389…ed6d2d6, merge e1fa8fa. Không sửa lõi / hình.
+  - 5 màn thay: can-tai.8 (trình diễn lớn nhất, 2 sân), .9 (ép, 3 sân), che-can-tai.8 (nặng nhất bằng weight(), 3 sân), cang-cu.7 (nhỏ nhất sau hàng rào, sân 8 cột, 3 sân), tong-hop-cang.9 (đỏ lớn nhất, c % 4 == 0, 3 sân). Trẻ tự viết vòng quét giữ kỷ lục, không max() / min(). Đích là bongMo.chong khai từng sân. Màn bị thay không có taoHam.
+  - Máy kiểm mới hoc/kiem-lon-nhat.mjs 66/0 (--pha hỏng đúng): lời sai "làm theo sân 1" và "quên cập nhật kỷ lục" đều thua. kiem-lo-trinh: thêm can-tai.8, .9, che-can-tai.8, cang-cu.7 vào NHIEU_SAN_KHONG_TRUM. Ghép nhịp mùa 4: 25 → 29/200 (quay lần hai + set_down() chung một wait()).
+  - Bài học: khay không chọn được hàm trong điều kiện while (kiem-nhap-mua-4-7 bắt): đọc c = read_code() trước while.
+  - Chờ user: bài "nặng nhất" nằm ở chương 2 (che-can-tai.8), tách khỏi lớn nhất ở cuối chương 1 (agent nghiêng về để nguyên); khi sai, lời chấm chỉ nói "chồng chưa giống bóng mờ", chưa nói "chưa phải số lớn nhất" (muốn có phải sửa cham.js).
+- **F4b** hàng tàu nối đuôi (3d). XONG 15/11: agent fable (dừng một lần vì hết hạn mức, cho chạy tiếp), nhánh claude/mua-4-hang-tau 5984c9a…2970a6e.
+  - Lõi: cfg.hangTau = { o, can, cho? } (mảng song song khi nhiều sân). Chỉ tàu đầu hàng ở boong, luôn có mặt. Cuối nhịp boong có đúng một container đúng số: 'tau-roi-hang' rồi 'tau-vao' / 'het-hang-tau' cùng nhịp. Sai số hay hạ đôi: 'giao-nham' { hang: true }, thua. read_code() ở boong trống trả số tàu đầu hàng cần, hết tàu −1; boong có container thì đọc container như cũ. Mục tiêu giao-tau thắng khi hết hàng. cfg.tau / cfg.giao cũ không đổi nghĩa. Lời chấm riêng cho giao-nham / chua-giao-tau ("tàu tới trước nhận trước"). man-choi.js thêm một dòng đưa hangTau xuống Field.
+  - Hình: bảng số ở bến ('bang-tau'), tàu chờ nối đuôi mang bảng số ('tau-cho', "+n" khi hết chỗ), tàu rời trôi xa mờ dần, cả hàng dồn lên.
+  - Chương 2 gói 4 làm lại, tên "Chế lệnh: hàng tàu nối đuôi" (mã chương / huy hiệu giữ che-ben-tau): .1 trình diễn, .2 ép thứ tự, .3 vòng lặp, .4 bãi tạm, .5 chế move_tower2 (giữ tên, chữ ký, thân; gói 7, 9, 10 vẫn gọi được), .6 hai tháp bốn tàu, .7 trình diễn read_code ở boong (2 sân), .8 ép (3 sân), .9 chế serve_ship(), .10 trùm while c != -1. Bỏ hàm wait_ticks, ship_pair, ship_all_pair, ship_tower2, filter_ship (không màn nào khác gọi). Gói 10: trum-mua-cang.7 "Ngăn xếp gặp hàng đợi" (3 sân, chồng A + bãi tạm + hàng tàu, đúng ví dụ 3d).
+  - Máy kiểm mới hoc/kiem-hang-tau.mjs 136/0 (--pha hỏng đúng); kiem-ve-mua-song-cang 52/0 (+9 ca). kiem-lo-trinh: thêm che-ben-tau.7, .8 vào NHIEU_SAN_KHONG_TRUM.
+  - Chờ user: (a) chương 2 gói 4 mới không còn dạy chờ tàu theo chu kỳ (wait_ticks); (b) trum-mua-cang.7 dài 20 dòng, ba tầng if: agent đề xuất tách thành trình diễn + ép; (c) phim gói 4 chưa có cảnh hàng tàu (luật "mọi gói có cảnh cơ chế"); (d) trùm che-ben-tau.10 không ép được while (for range(4) cũng thắng).
+- Nghiệm thu F4a + F4b (phiên chính, tuần tự, ở 2970a6e): kiem-hang-tau 136/0, kiem-lon-nhat 66/0, kiem-chong-luat 76/0, kiem-mua-cang 144/0, kiem-man-mua-cang 200/200, kiem-ve-mua-song-cang 52/0, kiem-cau-do-mua-9 27/0, kiem-lai-mua-9 170/0, kiem-nhap-mua-4-7 41, kiem-phim-goi 55/0, kiem-huong-dan 40/0, kiem-loi-giai 67/67, kiem-hoc 6716/0; do-ghep-nhip mua-4 29/200. Trình duyệt: cang-cu.7 thắng 3 sân 3 sao; che-ben-tau.6 bến có bảng số, ba tàu chờ nối đuôi rõ, thắng 3 sao; trum-mua-cang.7 thắng 3 sân (30 + 18 + 30 nhịp) 3 sao. Chưa xem: lúc thua giao-nham, che-ben-tau.7 (hộp nói khi read_code đọc boong), ảnh xem trước màn gói 4.
 
 Nghiệm thu F1: chạy lại các máy kiểm trong brief ở main sau khi ff-merge. Xem cần quay trên trình duyệt (`hoc/game/choi.html?debug=1`, cổng 4193 cấu hình "game-main"). Mở màn bằng JS: `GoLoi.vaoNgay(ManHoc.timMa('<mã>')); GoLoi.napLoiGiai(null,false)`; lớp phủ `.pclb` che màn thì ẩn đi.
 
