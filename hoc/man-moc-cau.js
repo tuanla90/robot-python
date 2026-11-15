@@ -52,6 +52,11 @@
     };
   }
 
+  // Luật xếp chồng (ghép nhịp 3c): bệ đứng yên ở (3, 3), chồng đích chấm theo LUẬT (nhỏ ở trên / lớn ở trên), không theo dãy số
+  function BML(luat) {
+    return { x: 3, y: 3, chongLuat: luat.map(function (q) { return Object.assign({}, q); }) };
+  }
+
   // Các hàm chế ở Gói 2 chương chia-du
   var T_TURN_CW = ['t = b - a', 'k = t % 4', 'swing_r(k)'];
   var T_CARRY_BY = ['pick_up()', 'swing_by(d)', 'set_down()'];
@@ -207,15 +212,22 @@
     }),
 
     manMocCau({
-      so: 5, ten: 'Đảo chồng hai kiện', hang: 'luyen',
+      so: 5, ten: 'Ngăn xếp: vào sau, ra trước', hang: 'luyen',
+      chiChay: true, chinhCoDinh: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: tại nấc 0 tầm 2 (3, 1) có chồng 2 container [10, 20] (10 ở đáy, 20 ở đỉnh). Nhấc từng kiện sang nấc 2 tầm 2 (3, 5) để đảo thành chồng [20, 10].',
-      veMaMau: 'Dùng vòng for lặp 2 lần: mỗi lần nhấc kiện trên đỉnh, quay sang nấc 2 hạ xuống rồi quay về nấc 0.',
+      deBai: 'Sola làm mẫu: chồng ở ô (3, 1) có 3 ở đáy, 7 ở đỉnh. Móc chỉ lấy được cái ở đỉnh. Bấm Chạy, xem chồng mới ở ô (3, 5) đổi thứ tự ra sao.',
+      veMaMau: 'Chồng container là một ngăn xếp: vào sau thì ra trước. Bốc lẻ từng cái sang chồng mới thì thứ tự đảo ngược.',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 0, tam: 2 },
-      chong: [C(3, 1, [10, 20])],
-      bongMo: BM([{ x: 3, y: 5, so: [20, 10] }]),
-      maMau: bai(['for i in range(2):', '    pick_up()', '    swing_by(2)']),
+      chong: [C(3, 1, [3, 7])],
+      bongMo: BML([{ x: 3, y: 5, luat: 'nho-tren' }]),
+      maMau: bai([
+        'for i in range(2):',
+        '    pick_up()',
+        '    swing_by(2)',
+        '    set_down()',
+        '    swing_by(-2)'
+      ]),
       loiGiai: bai([
         'for i in range(2):',
         '    pick_up()',
@@ -224,53 +236,40 @@
         '    swing_by(-2)'
       ]),
       sao: { o: 14, nhip: 12 },
-      loiGiaiKhac: {
-        moTa: 'Viết tách hai lượt nhấc và hạ nên không cần quay về ở lượt cuối',
-        baiLam: bai(['pick_up()', 'swing_by(2)', 'set_down()', 'swing_by(-2)', 'pick_up()', 'swing_by(2)', 'set_down()'])
-      },
-      loiSai: [
-        { moTa: 'Quên set_down() trong vòng lặp nên lượt thứ hai bị lỗi đang treo', baiLam: bai(['for i in range(2):', '    pick_up()', '    swing_by(2)', '    swing_by(-2)']), phaiCoMa: ['dang-treo', 'chua-xep-chong'] },
-        { moTa: 'Quên quay về nấc 0 sau khi hạ kiện đầu tiên nên móc hụt tại nấc 2', baiLam: bai(['for i in range(2):', '    pick_up()', '    swing_by(2)', '    set_down()']), phaiCoMa: ['chua-xep-chong'] }
-      ],
-      goiY: ['Luna: Móc cẩu đơn luôn nhấc kiện trên đỉnh trước (20 trước, 10 sau).', 'Luna: Trong vòng for, sau set_down() nhớ gọi swing_by(-2) để quay lại chồng gốc.']
+      loiSai: [],
+      goiY: ['Luna: 7 ra trước nên nằm dưới. 3 ra sau nên nằm trên.', 'Luna: Biển ở ô đích ghi luật: số nhỏ ở trên. Chồng mới đúng luật.']
     }),
 
     manMocCau({
-      so: 6, ten: 'Gom ba nấc vào một chồng', hang: 'luyen',
+      so: 6, ten: 'Biển luật: nhỏ ở trên', hang: 'luyen',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: gom ba container ở nấc 0 (3, 1), nấc 1 (5, 3) và nấc 2 (3, 5) về xếp chồng tại nấc 3 (1, 3) theo đúng thứ tự từ đáy lên đỉnh là [10, 20, 30].',
-      veMaMau: 'Duyệt danh sách khoảng cách [3, 2, 1] từ mỗi nấc tới nấc 3: nhấc hàng, quay k nấc tới nấc 3, hạ xuống rồi quay về nấc kế tiếp.',
+      deBai: 'Sola nhờ bạn: gom container 20 ở ô (3, 1) và container 30 ở ô (5, 3) về ô (1, 3). Biển ở đó ghi luật: số nhỏ ở trên.',
+      veMaMau: 'Cái hạ sau nằm trên. Mã mẫu đã hạ container 30 trước. Hãy mang nốt container 20 về.',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 0, tam: 2 },
-      chong: [C(3, 1, [10]), C(5, 3, [20]), C(3, 5, [30])],
-      bongMo: BM([{ x: 1, y: 3, so: [10, 20, 30] }]),
-      maMau: bai(['for k in [3, 2, 1]:', '    pick_up()', '    swing_by(k)']),
+      chong: [C(3, 1, [20]), C(5, 3, [30])],
+      bongMo: BML([{ x: 1, y: 3, luat: 'nho-tren' }]),
+      maMau: bai(['swing_by(1)', 'pick_up()', 'swing_by(2)', 'set_down()']),
       loiGiai: bai([
-        'for k in [3, 2, 1]:',
-        '    pick_up()',
-        '    swing_by(k)',
-        '    set_down()',
-        '    t = 1 - k',
-        '    swing_by(t)'
+        'swing_by(1)',
+        'pick_up()',
+        'swing_by(2)',
+        'set_down()',
+        'swing_by(1)',
+        'pick_up()',
+        'swing_by(-1)',
+        'set_down()'
       ]),
-      sao: { o: 15, nhip: 15 },
+      sao: { o: 17, nhip: 9 },
       loiGiaiKhac: {
-        moTa: 'Thêm dòng chú thích bên trong vòng for',
-        baiLam: bai([
-          'for k in [3, 2, 1]:',
-          '    # đưa kiện vào nấc 3',
-          '    pick_up()',
-          '    swing_by(k)',
-          '    set_down()',
-          '    t = 1 - k',
-          '    swing_by(t)'
-        ])
+        moTa: 'Quay vòng ba nấc để lấy container 20',
+        baiLam: bai(['swing_by(1)', 'pick_up()', 'swing_by(2)', 'set_down()', 'swing_by(-3)', 'pick_up()', 'swing_by(3)', 'set_down()'])
       },
       loiSai: [
-        { moTa: 'Duyệt ngược [1, 2, 3] nên móc sai nấc và sai thứ tự chồng', baiLam: bai(['for k in [1, 2, 3]:', '    pick_up()', '    swing_by(k)', '    set_down()', '    t = 1 - k', '    swing_by(t)']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Quay về bằng swing_by(-k) nên cả 3 lượt đều quay lại nấc 0 đã trống', baiLam: bai(['for k in [3, 2, 1]:', '    pick_up()', '    swing_by(k)', '    set_down()', '    swing_by(-k)']), phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
+        { moTa: 'Lấy container 20 ngay trước mặt rồi mới lấy 30 nên 30 nằm trên 20', baiLam: bai(['pick_up()', 'swing_by(-1)', 'set_down()', 'swing_by(2)', 'pick_up()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['sai-luat-chong'] },
+        { moTa: 'Mới hạ container 30, chưa mang container 20 về', baiLam: bai(['swing_by(1)', 'pick_up()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['sai-luat-chong'] }
       ],
-      goiY: ['Luna: Đang ở nấc 3 muốn lùi về nấc kế tiếp thì cần lệch (1 - k) nấc.', 'Luna: Sau set_down(), thêm t = 1 - k rồi swing_by(t) để sang đúng nấc tiếp theo.']
+      goiY: ['Luna: Số nhỏ ở trên thì số lớn phải hạ trước.', 'Luna: Từ ô đích quay 1 nấc là tới container 20. Nhấc lên rồi quay về hạ.']
     }),
 
     manMocCau({
@@ -303,47 +302,46 @@
     }),
 
     manMocCau({
-      so: 8, ten: 'Giữ nguyên thứ tự chồng', hang: 'bien-the',
+      so: 8, ten: 'Lớn ở trên: mượn chồng tạm', hang: 'bien-the',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: chuyển chồng [10, 20] từ nấc 1 (5, 3) sang nấc 3 (1, 3) sao cho thứ tự vẫn giữ nguyên [10, 20] (10 ở đáy, 20 ở đỉnh) bằng cách đảo tạm qua nấc 2 (3, 5).',
-      veMaMau: 'Đảo chồng từ nấc 1 sang nấc 2 sẽ thành [20, 10], rồi đảo tiếp từ nấc 2 sang nấc 3 sẽ trở lại [10, 20].',
+      deBai: 'Sola nhờ bạn: chồng ở ô (5, 3) có 4 ở đáy, 9 ở đỉnh. Dời cả hai về ô (1, 3). Biển ở đó ghi luật: số lớn ở trên. Ô (3, 5) trống, dùng làm chồng tạm.',
+      veMaMau: 'Bốc thẳng hai cái sang thì 9 nằm dưới: sai luật. Mã mẫu đã cất 9 sang chồng tạm.',
       san: SAN_CANG,
       batDau: { x: 3, y: 3, nac: 1, tam: 2 },
-      chong: [C(5, 3, [10, 20])],
-      bongMo: BM([{ x: 1, y: 3, so: [10, 20] }]),
-      maMau: bai([
-        'for step in range(2):',
-        '    for i in range(2):',
-        '        pick_up()',
-        '        swing_by(1)'
-      ]),
+      chong: [C(5, 3, [4, 9])],
+      bongMo: BML([{ x: 1, y: 3, luat: 'lon-tren' }]),
+      maMau: bai(['pick_up()', 'swing_by(1)', 'set_down()']),
       loiGiai: bai([
-        'for step in range(2):',
-        '    for i in range(2):',
-        '        pick_up()',
-        '        swing_by(1)',
-        '        set_down()',
-        '        swing_by(-1)',
-        '    swing_by(1)'
+        'pick_up()',
+        'swing_by(1)',
+        'set_down()',
+        'swing_by(-1)',
+        'pick_up()',
+        'swing_by(2)',
+        'set_down()',
+        'swing_by(-1)',
+        'pick_up()',
+        'swing_by(1)',
+        'set_down()'
       ]),
-      sao: { o: 16, nhip: 18 },
+      sao: { o: 20, nhip: 12 },
       loiGiaiKhac: {
-        moTa: 'Dùng danh sách [1, 1] cho vòng lặp ngoài',
+        moTa: 'Đảo cả chồng sang ô tạm rồi đảo lần nữa sang ô đích',
         baiLam: bai([
-          'for d in [1, 1]:',
+          'for step in range(2):',
           '    for i in range(2):',
           '        pick_up()',
-          '        swing_by(d)',
+          '        swing_by(1)',
           '        set_down()',
-          '        swing_by(-d)',
-          '    swing_by(d)'
+          '        swing_by(-1)',
+          '    swing_by(1)'
         ])
       },
       loiSai: [
-        { moTa: 'Chuyển thẳng từng kiện từ nấc 1 sang nấc 3 nên chồng bị ngược thành [20, 10]', baiLam: bai(['for i in range(2):', '    pick_up()', '    swing_by(2)', '    set_down()', '    swing_by(-2)']), phaiCoMa: ['chua-xep-chong'] },
-        { moTa: 'Quên swing_by(1) ở cuối chặng đầu nên chặng hai móc hụt ở nấc 1', baiLam: bai(['for step in range(2):', '    for i in range(2):', '        pick_up()', '        swing_by(1)', '        set_down()', '        swing_by(-1)']), phaiCoMa: ['moc-hut', 'chua-xep-chong'] }
+        { moTa: 'Bốc thẳng từng cái sang ô đích nên 4 nằm trên 9', baiLam: bai(['for i in range(2):', '    pick_up()', '    swing_by(2)', '    set_down()', '    swing_by(-2)']), phaiCoMa: ['sai-luat-chong'] },
+        { moTa: 'Cất 9 sang chồng tạm rồi quên lấy lại', baiLam: bai(['pick_up()', 'swing_by(1)', 'set_down()', 'swing_by(-1)', 'pick_up()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['sai-luat-chong'] }
       ],
-      goiY: ['Luna: Đảo chồng 2 lần liên tiếp sẽ trả lại đúng thứ tự ban đầu [10, 20].', 'Luna: Sau vòng for trong, gọi swing_by(1) để cần cẩu bước sang nấc 2 bắt đầu chặng thứ hai.']
+      goiY: ['Luna: Số lớn ở trên thì 9 phải hạ sau cùng.', 'Luna: Đưa 4 về ô đích trước. Rồi quay lại chồng tạm lấy 9.']
     }),
 
     manMocCau({
