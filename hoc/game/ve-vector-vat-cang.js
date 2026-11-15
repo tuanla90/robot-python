@@ -117,6 +117,38 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.duong(g, 'M80 22 V9 M76 13 L80 8 L84 13 M90 10 V23 M86 19 L90 24 L94 19'); H.vien(g, BM.vecVien, 2.4);
   } });
 
+  /* HÀNG TÀU NỐI ĐUÔI (ghép nhịp 3d, 15/11; lõi cfg.hangTau — hàng đợi, vào trước ra trước):
+       'bang-tau'  s: { so } — BẢNG SỐ ở mũi tàu đầu hàng (dải trên của ô bến): bảng kem, hình tàu nhỏ + mũi tên + container MÀU theo so % 4 mang SỐ tàu đang cần.
+       'tau-cho'   s: { so, them?, roi? } — MỘT TÀU ĐANG CHỜ trong hàng (ô nước): thân tàu nhìn từ trên (mũi nhọn bên trái, hướng về bến), boong thép viền đỏ,
+                   giữa boong là bảng kem ghi SỐ tàu đó cần (viền màu so % 4); them > 0: huy hiệu "+n" (còn n tàu nữa sau tàu này, hết chỗ vẽ); roi: tàu vừa rời bến (không bảng, chở container số đó). */
+  function veThanTau(g, H) {
+    H.duong(g, 'M6 50 L24 26 H88 Q95 26 95 33 V67 Q95 74 88 74 H24 Z'); H.to(g, BM.vecLuaDo); H.vien(g, BM.vecVien, 3);
+    H.duong(g, 'M19 50 L30 34 H84 Q87 34 87 37 V63 Q87 66 84 66 H30 Z'); g.fillStyle = H.gradDoc(g, 0, 34, 0, 66, [[0, BM.vecThepSang], [1, BM.vecThep]]); g.fill(); H.vien(g, BM.vecLuaVienToi, 1.8);
+  }
+  V.dangKy({ loai: 'vat', ma: 'tau-cho', ten: 'Tàu đang chờ trong hàng', cacTrangThai: [{ so: 8 }, { so: 25 }, { so: 5, them: 2 }, { so: 12, roi: true }], ve: function (g, s, H) {
+    s = s || {};
+    var so = soHop(s.so == null ? 1 : s.so), m = MAU[((so % 4) + 4) % 4], chu = String(so);
+    g.lineWidth = 1;
+    veThanTau(g, H);
+    if (s.roi) { veContainer(g, H, 36, 37, 42, 26, so, {}); return; }
+    H.bo(g, 34, 36, 46, 28, 5); H.to(g, BM.vecVo); H.vien(g, m.toi, 3);
+    H.bo(g, 37, 39, 8, 22, 2.5); H.to(g, m.chinh);                                                   // vạch màu của container cần (so % 4)
+    g.font = '800 ' + (chu.length > 1 ? 21 : 24) + 'px ' + PHONG; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = BM.vecVien; g.fillText(chu, 62, 51);
+    if (s.them > 0) {
+      H.tron(g, 84, 22, 14); H.to(g, BM.vecVien);
+      g.font = '800 16px ' + PHONG; g.fillStyle = BM.vecVo; g.fillText('+' + Math.min(9, Math.round(s.them)), 84, 23);
+    }
+  } });
+  V.dangKy({ loai: 'vat', ma: 'bang-tau', ten: 'Bảng số tàu đầu hàng cần', cacTrangThai: [{ so: 2 }, { so: 8 }, { so: 25 }, { so: 99 }], ve: function (g, s, H) {
+    s = s || {};
+    var so = soHop(s.so == null ? 1 : s.so);
+    g.lineWidth = 1;
+    H.bo(g, 8, 2, 84, 32, 7); H.to(g, BM.vecVo); H.vien(g, BM.vecVien, 2.4);
+    H.duong(g, 'M14 18 L20 11 H34 V25 H20 Z'); H.to(g, BM.vecLuaDo); H.vien(g, BM.vecVien, 1.8);                       // tàu nhỏ (mũi bên trái)
+    H.duong(g, 'M39 18 H49 M45 13 L50 18 L45 23'); H.vien(g, BM.vecVien, 2.6);                                         // mũi tên "cần"
+    veContainer(g, H, 54, 6, 34, 24, so, {});
+  } });
+
   var MAU_TEN = ['red', 'green', 'blue', 'yellow'];
   var MAU_DAI = { red: 'luatSanDo', green: 'luatSanXanhLa', blue: 'luatSanXanhDuong', yellow: 'luatSanVang' };
   // Vật cảng sông (o): KIỆN HÀNG CẢNG SÔNG 3D CAO (mặt trên tôn gân sóng sáng y = 16..54 + vách đứng trước thép sẫm y = 54..86 gắn đai màu cảng)

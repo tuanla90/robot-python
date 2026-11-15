@@ -141,6 +141,31 @@ console.log('\n== 7. Luật xếp chồng (bongMo.chongLuat): biển luật ở 
   kiem('man-choi.js đưa bongMo của từng sân xuống Field (chongLuat đi cùng)', co(mc, 'bongMo: Array.isArray(m.bongMo) ? m.bongMo[i] : m.bongMo'));
 }
 
+console.log('\n== 8. Hàng tàu nối đuôi (cfg.hangTau): bảng số tàu đầu hàng + tàu chờ trên làn + hoạt cảnh rời / vào ==');
+{
+  const V = require(path.join(day, 'game/ve-vector.js'));
+  require(path.join(day, 'game', 've-vector-vat-cang.js'));
+  const lenh = (ma, st) => { const cv = V.vat(ma, 60, st); return cv && cv.lenh ? JSON.stringify(cv.lenh) : ''; };
+  kiem("hình 'tau-cho' và 'bang-tau' có trong bộ vẽ và vẽ ra lệnh", V.ds('vat').includes('tau-cho') && V.ds('vat').includes('bang-tau') && lenh('tau-cho', { so: 8 }).length > 50 && lenh('bang-tau', { so: 8 }).length > 50);
+  kiem('tàu chờ mang SỐ nó cần (số 8 khác số 25, có chữ số trong lệnh vẽ); "+n" khi hết chỗ; tàu rời chở container', /"8"/.test(lenh('tau-cho', { so: 8 })) && /"25"/.test(lenh('tau-cho', { so: 25 })) && lenh('tau-cho', { so: 8 }) !== lenh('tau-cho', { so: 25 }) &&
+    /\+2/.test(lenh('tau-cho', { so: 8, them: 2 })) && lenh('tau-cho', { so: 8, roi: true }) !== lenh('tau-cho', { so: 8 }));
+  kiem('bảng số tàu đầu hàng đổi theo số cần (2 khác 8)', /"2"/.test(lenh('bang-tau', { so: 2 })) && lenh('bang-tau', { so: 2 }) !== lenh('bang-tau', { so: 8 }));
+  kiem('san-ve.js: cfg.hangTau xuống Field, dựng hang0 (ô bến, số cần, làn chờ; không khai cho thì nối ra phía sông), đặt lại hangT', co(sv, 'hangTau: cfg.hangTau && Array.isArray(cfg.hangTau.o)') && co(sv, 'this.hang0 = { o: hO, can: c.hangTau.can.slice(), cho: hCho }') && co(sv, 'this.hangT = { dau: 0, doi: 0, t0: 0, ms: 0 }') && co(sv, 'this.huongRoi(hO[0])'));
+  kiem('san-ve.js: veHangTau vẽ SAU veChong; ô bến hàng tàu vẽ boong khi còn tàu, mặt nước khi hết hàng', /this\.veChong\(g, now\);[^\n]*\n\s*this\.veBienLuat\(g, now\);[^\n]*\n\s*this\.veHangTau\(g, now\);/.test(sv) && co(sv, 'veHangTau: function') && co(sv, "this.hangCua[kO]") && co(sv, 'hT.dau < this.hang0.can.length') &&
+    co(sv, "VeVector.vat('tau-cho'") && co(sv, "VeVector.vat('bang-tau'"));
+  const NM = (sv.match(/var NHIP_MOI = \{([\s\S]*?)\};/) || [, ''])[1];
+  kiem('NHIP_MOI có tau-roi-hang / tau-vao / het-hang-tau; nhipMuaMoi có nhánh riêng, không treo (đều await ngu rồi return)', ['tau-roi-hang', 'tau-vao', 'het-hang-tau'].every((k) => NM.includes("'" + k + "'")) &&
+    /m === 'tau-roi-hang'[\s\S]{0,1300}await ngu\(per \* 0\.9\); return;/.test(sv) && /m === 'tau-vao' \|\| m === 'het-hang-tau'[\s\S]{0,700}await ngu\([^\n]*\); return;/.test(sv));
+  kiem('tàu rời: container trên boong trôi theo (giaoMo) + tàu nhỏ mờ dần (tauRoiMo), cả hàng dồn lên (hangT.t0, ms); đồng bộ vết hangTau.dau', /m === 'tau-roi-hang'[\s\S]{0,900}this\.giaoMo\.push[\s\S]{0,400}this\.tauRoiMo\.push[\s\S]{0,300}hT2\.t0 = t1/.test(sv) && co(sv, 'this.hangT.dau = e.hangTau.dau'));
+  kiem('man-choi.js và cham.js đưa hangTau của từng sân xuống (lopMauCuaSan có hangTau)', co(mc, 'hangTau: lm.hangTau || undefined') && (ch.match(/hangTau: lm\.hangTau \|\| undefined/g) || []).length === 2 &&
+    (() => { const l = SanHoc.lopMauCuaSan({ san: [['~'], ['~']], hangTau: [{ can: [1] }, { can: [2] }] }, 1); return l.hangTau.can[0] === 2; })() && SanHoc.lopMauCuaSan({ san: ['~'], hangTau: { can: [3] } }, 0).hangTau.can[0] === 3);
+  // lõi phát đủ ba sự kiện với một sân mẫu, tên nào cũng có trong san-ve.js
+  const r = SanHoc.chay({ loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'pick_up', 'set_down', 'read_code', 'wait'], camBien: [{ ma: 'quet-ma' }], san: ['~~~~~', '~~T~~', '.D.D.', '.....'], batDau: { x: 2, y: 2, nac: 1, tam: 1 },
+    chong: [{ x: 3, y: 2, cont: [{ so: 8 }, { so: 2 }] }], hangTau: { o: [{ x: 2, y: 1 }], can: [2, 8] }, mucTieu: 'giao-tau', nhipToiDa: 30 }, 'pick_up()\nswing_left()\nset_down()\nswing_right()\npick_up()\nswing_left()\nset_down()\n');
+  const ten = new Set(); r.vet.filter((e) => e.loai === 'nhip').forEach((e) => (e.suKien || []).forEach((q) => ten.add(q.ma)));
+  kiem('sân mẫu hàng tàu thắng và phát tau-roi-hang, tau-vao, het-hang-tau, xong-giao-tau; mọi tên có trong san-ve.js', r.thang === true && ['tau-roi-hang', 'tau-vao', 'het-hang-tau', 'xong-giao-tau'].every((k) => ten.has(k)) && [...ten].every((k) => co(sv, "'" + k + "'")), [...ten].join(' '));
+}
+
 console.log('\n---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);

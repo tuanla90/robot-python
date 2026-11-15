@@ -341,7 +341,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: m.mucBanDau,                          // máy sơn: hình mờ cần tô của sân này, màu sơn lúc đầu
       vo: m.vo,                                                                                  // vỏ hình của mùa (30/10: 'nong-trai' ở mùa 4)
       dong: lm.dong || undefined,                                                                // BẾN SÔNG (31/10): lớp dòng chảy của sân này
-      chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, hangTau: lm.hangTau || undefined, taiToiDa: m.taiToiDa, luatThap: m.luatThap, hamGoc: m.hamGoc,   // CẢNG SÔNG: chồng container, tàu, danh sách giao, luật tải / tháp; khay lệnh để hình biết nâng cấp (móc đôi, cân, ray, buộc đuôi, flow)
+      hangTau: lm.hangTau || undefined, chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: m.taiToiDa, luatThap: m.luatThap, hamGoc: m.hamGoc,   // CẢNG SÔNG: chồng container, tàu, danh sách giao, luật tải / tháp; khay lệnh để hình biết nâng cấp (móc đôi, cân, ray, buộc đuôi, flow)
       chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined, ngachHang: lm.ngachHang || undefined,     // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm của sân này
       doiKhang: !!m.doiKhang,
       doi: m.doi ? m.doi.map(function (r, k) {                                       // nhiều robot: hình xe, chỗ xuất phát của từng robot (san-ve.js vẽ đủ, R1 xanh lơ, R2 cam)
