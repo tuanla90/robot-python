@@ -170,7 +170,8 @@
    ray-sai / khong-ray (lỗi chạy rail(n) sai đối số / không có bánh ray), chua-giao-tau (chạy xong chưa giao đủ), chua-xep-chong (bong-mo: chồng container chưa đúng).
    LUẬT XẾP CHỒNG (ghép nhịp 3c, 15/11): man.bongMo.chongLuat (xem san-hoc.js phần CẢNG SÔNG) đi xuống cùng bongMo. Chạy xong mà chồng đích chưa đúng luật: 'sai-luat-chong' { kieu, x, y, … } (lỗi; chỉ chỗ sai ĐẦU TIÊN):
    kieu 'treo' (móc còn treo), 'la-mau' (chồng đích có container khác màu; nhắc màu = mã chia 4 dư mấy), 'thieu' / 'thua' (chưa đủ / quá số container, chỉ ô còn sót), 'sai-chieu' (cặp dưới / trên ngược luật nhỏ ở trên / lớn ở trên).
-   Sự kiện vết (hoạt cảnh): quay-can, vuon-can, thu-can, moc-cont, ha-cont, chay-ray, tau-cap, tau-roi, xong-giao-tau.
+   Sự kiện vết (hoạt cảnh): quay-can, vuon-can, thu-can, moc-cont, ha-cont, chay-ray, tau-cap, tau-roi, xong-giao-tau; hàng tàu nối đuôi (man.hangTau, 3d): tau-roi-hang, tau-vao, het-hang-tau
+   (giao-nham có hang: true; chua-giao-tau có hang: true khi còn tàu chờ).
    ========================================================================== */
 (function () {
   'use strict';
@@ -1245,7 +1246,11 @@
     var giaoNham = res.suKien.filter(function (e) { return e.ma === 'giao-nham'; });
     if (giaoNham.length) {
       var gn0 = giaoNham[0];
-      them('giao-nham', 'Ở nhịp ' + gn0.nhip + ', tàu ' + (gn0.tau + 1) + ' rời bến mang theo container số ' + gn0.so + ' đang nằm trên boong, nhưng tàu này ' +
+      if (gn0.hang) them('giao-nham', 'Ở nhịp ' + gn0.nhip + ', container số ' + gn0.so + ' nằm trên boong, nhưng tàu đầu hàng ' +
+        (gn0.thua ? 'chỉ cần MỘT container số ' + gn0.can[0] + ' (boong đang có thừa)' : 'cần container số ' + gn0.can[0]) + ': giao nhầm là thua, chương trình dừng ngay. ' +
+        'Hàng tàu nối đuôi là hàng đợi: tàu tới trước nhận trước, em không chọn được tàu. Nhìn bảng số ở tàu đầu hàng (hay đọc bằng read_code() lúc cần chĩa vào boong) rồi mới hạ.',
+        { nhip: gn0.nhip, hang: true, vt: gn0.vt, so: gn0.so, can: gn0.can, o: gn0.o });
+      else them('giao-nham', 'Ở nhịp ' + gn0.nhip + ', tàu ' + (gn0.tau + 1) + ' rời bến mang theo container số ' + gn0.so + ' đang nằm trên boong, nhưng tàu này ' +
         (gn0.can.length ? 'chỉ nhận các container số ' + gn0.can.join(', ') : 'không nhận container nào') + ': giao nhầm tàu là thua, chương trình dừng ngay. ' +
         'Đọc số bằng read_code() trước khi hạ xuống boong; container không thuộc tàu này thì đặt lại bãi.', { nhip: gn0.nhip, tau: gn0.tau, so: gn0.so, can: gn0.can, o: gn0.o });
     }
@@ -1411,7 +1416,12 @@
           { conLai: conLua.length, o: { x: conLua[0].x, y: conLua[0].y }, suc: conLua[0].suc });
       }
     } else if (!sanThu && !res.thang && !res.loi && man.mucTieu === 'giao-tau') {
-      if (!res.dungSom) {                                                   // CẢNG SÔNG: chạy xong mà container yêu cầu chưa theo tàu
+      if (!res.dungSom && res.hangTau && res.hangTau.dau < res.hangTau.can.length) {   // HÀNG TÀU NỐI ĐUÔI: chạy xong mà còn tàu chờ trong hàng
+        var hq = res.hangTau, conTau = hq.can.length - hq.dau;
+        them('chua-giao-tau', 'Chương trình chạy xong mà hàng tàu còn ' + conTau + ' tàu chưa nhận hàng. Tàu đầu hàng đang cần container số ' + hq.can[hq.dau] +
+          ((res.treo || []).length ? '. Móc vẫn đang treo container: hạ xuống boong bằng set_down()' : '') + '. Giao đúng số cho tàu đầu hàng thì tàu rời, tàu kế mới vào bến.',
+          { hang: true, conTau: conTau, can: hq.can[hq.dau], treo: (res.treo || []).length });
+      } else if (!res.dungSom) {                                            // CẢNG SÔNG: chạy xong mà container yêu cầu chưa theo tàu
         var thieuGiao = [];
         (man.giao && Array.isArray(man.giao) && !Array.isArray(man.giao[0]) ? man.giao : []).forEach(function (gq) {
           var da = ((res.daGiao || [])[gq.tau] || []).slice();
@@ -1656,7 +1666,7 @@
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
         ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         dong: lm.dong || undefined,                                         // BẾN SÔNG: lớp dòng chảy (san-hoc.js phần BẾN SÔNG)
-        chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
+        chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, hangTau: lm.hangTau || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1 người cần cứu, trạm cứu, thác
         damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
@@ -1669,7 +1679,7 @@
       ketQua.theoSan.push({ thang: res.thang, soNhip: res.nhip, chanDoan: cd, vet: vet, robot: res.robot, tay: res.tay, namCham: res.namCham, nem: res.nem, sung: res.sung, vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
         cong: res.cong, van: res.van, dongTat: res.dongTat, congBanDau: res.congBanDau, vanBanDau: res.vanBanDau, neo: res.neo, keo: res.keo,   // BẾN SÔNG (31/10)
-        chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
+        chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, hangTau: res.hangTau, daGiaoHang: res.daGiaoHang, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
         pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: res.bongMo, diQua: res.diQua, son: res.son, daSon: res.daSon, hinh: res.hinh, sonBanDau: res.sonBanDau,
         loa: res.loa, daChoi: res.daChoi, dieu: res.dieu, dieuDung: res.dieuDung, dieuBatDau: res.dieuBatDau,
         gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau,
@@ -1802,7 +1812,7 @@
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatDang: lm.vatDang || undefined, vatCan: man.vatCan, vat: lm.vatThem || undefined, dich: man.dich,
         cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined,
         dong: lm.dong || undefined,                                         // BẾN SÔNG
-        chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
+        chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, hangTau: lm.hangTau || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
         ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
@@ -1833,7 +1843,7 @@
         vat: res.vat, vatBanDau: res.vatBanDau, dich: res.dich, thung: res.thung, thungBanDau: res.thungBanDau, mauO: res.mauO,
         cua: res.cua, nut: res.nut, bangTat: res.bangTat, cuaBanDau: res.cuaBanDau, nutBanDau: res.nutBanDau,
         cong: res.cong, van: res.van, dongTat: res.dongTat, congBanDau: res.congBanDau, vanBanDau: res.vanBanDau, neo: res.neo, keo: res.keo,   // BẾN SÔNG (31/10)
-        chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
+        chong: res.chong, chongBanDau: res.chongBanDau, tau: res.tau, tauBanDau: res.tauBanDau, daGiao: res.daGiao, hangTau: res.hangTau, daGiaoHang: res.daGiaoHang, ray: res.ray, taiToiDa: res.taiToiDa, luatThap: res.luatThap, nac: res.nac, tam: res.tam, dau: res.dau, treo: res.treo,   // CẢNG SÔNG (31/10)
         pin: res.pin, pinToiDa: res.pinToiDa, sac: res.sac, bongMo: null, diQua: [], daSon: res.daSon, hinh: res.hinh,
         loa: res.loa, daChoi: res.daChoi, dieu: res.dieu, dieuDung: res.dieuDung, dieuBatDau: res.dieuBatDau,
         gai: res.gai, ngachHang: res.ngachHang, chuongDa: res.chuongDa, daChuong: res.daChuong, daChuongBanDau: res.daChuongBanDau,

@@ -496,6 +496,15 @@
           (trangThai 'giao', rời sân, ghi vào daGiao[tau]), boong trống, lượt sau tàu về boong trống. Container đang TREO trên ô T không rơi (ở móc, không thuộc boong). Vết nhịp có mucVet.tau [{ coMat }] (cuối nhịp) và mucVet.chong khi sân có container.
           MỤC TIÊU 'giao-tau' (MUC_TIEU): cfg.giao = [{ tau: i, so: [..] }] (mỗi tàu một mục; so phải có trên sân); thắng cuối nhịp mà mọi số yêu cầu đã theo đúng tàu ('xong-giao-tau'; trùng số thì đếm đủ số lần).
           Tàu rời mang container KHÔNG có trong danh sách của tàu đó (hay tàu không có danh sách): thua ngay, dungSom = 'giao-nham', sự kiện 'giao-nham' { tau, so, o, can }. Kết quả: chong, chongBanDau, tau [{ o, co, vang, pha, coMat }], tauBanDau, daGiao [[so]], ray, taiToiDa, luatThap.
+        - HÀNG TÀU NỐI ĐUÔI (ghép nhịp 3d, 15/11; HÀNG ĐỢI "vào trước ra trước"): cfg.hangTau = { o: [{x,y}], can: [số, số, …], cho?: [{x,y}] } (màn nhiều sân: mảng song song với san).
+          o = các ô boong T của MỘT bến (không được thuộc cfg.tau); can = số container MỖI TÀU cần, theo thứ tự hàng (1–HANG_TAU_TOI_DA = 8 tàu; mỗi số phải có đủ trên sân lúc đầu);
+          cho = các ô nước '~' vẽ tàu đang chờ (chỉ để vẽ, lõi không dùng). Chỉ TÀU ĐẦU HÀNG đậu ở boong (luôn có mặt, không chu kỳ); trẻ không chọn tàu.
+          Cuối nhịp (capNhatTau) boong có container: đúng MỘT cái và đúng số tàu đầu hàng cần → tàu rời mang nó đi 'tau-roi-hang' { o, oCont, vt, so, conLai } (trangThai 'giao', ghi daGiaoHang),
+          tàu kế vào bến NGAY cuối nhịp đó 'tau-vao' { o, vt, can } (hết hàng thì 'het-hang-tau' { o }, boong thành mặt nước: hạ → ha-bi-chan 'tau-vang', móc → moc-hut 'tau-vang').
+          Sai số, hay thừa container (hạ đôi): thua ngay, dungSom = 'giao-nham', sự kiện 'giao-nham' { hang: true, tau: null, vt, so, o, can: [số tàu đầu hàng cần], thua }.
+          read_code() chĩa vào boong bến hàng tàu lúc boong TRỐNG trả SỐ TÀU ĐẦU HÀNG ĐANG CẦN (sự kiện doc-cam-bien có hangTau: true, can), hết tàu trả −1; weight() không đổi (0).
+          Mục tiêu 'giao-tau' nhận cfg.hangTau thay cho (hay cùng với) cfg.tau + cfg.giao: thắng khi HẾT HÀNG TÀU (và mọi cfg.giao đã đủ). Kết quả: hangTau { o, can, cho, dau } | null (dau = số tàu đã rời),
+          daGiaoHang [so]; vết nhịp mucVet.hangTau { dau }.
         - BÓNG MỜ CHỒNG (mục tiêu bong-mo): cần cẩu không cần bongMo.huong; không khai x, y thì bệ ở nguyên chỗ xuất phát. bongMo.chong = [{ x, y, so: [đáy → đỉnh] }]: lúc chạy xong MỌI chồng trên sân phải đúng — ô khai phải đúng dãy số
           (so: [] = trống), ô không khai phải trống, móc không còn treo gì; sai thì không thắng (cham.js: chua-xep-chong). Dùng cho bài sắp xếp / Tháp Hà Nội (cùng luatThap).
         - LUẬT XẾP CHỒNG (ghép nhịp 3c, 15/11; mục tiêu bong-mo): bongMo.chongLuat = [{ x, y, luat: 'nho-tren' | 'lon-tren', mau?: 0..3 | [..], du?: n }]: chấm theo LUẬT, không theo dãy số cố định (mỗi sân một bộ số vẫn một
@@ -711,6 +720,7 @@
   var LUAT_CHONG = ['nho-tren', 'lon-tren'];      // bongMo.chongLuat: chiều xếp của chồng đích (số nhỏ ở trên / số lớn ở trên)
   var CHONG_TOI_DA = 4;                           // một chồng tối đa 4 container
   var RAY_TOI_DA = 9;                             // rail(n): abs(n) ≤ 9
+  var HANG_TAU_TOI_DA = 8;                        // hàng tàu nối đuôi: tối đa 8 tàu một bến
   var CONT_SO_TOI_DA = 99, CONT_TAN_TOI_DA = 4;   // số in trên container 1–99, tấn 1–4
   var CAU_LENH = { swing_left: 'quay', swing_right: 'quay', extend: 'vuon', retract: 'vuon' };   // lệnh thân cần cẩu, mỗi lệnh một nhịp (tự trôi)
   var TAY_MOC = ['pick_up', 'set_down', 'pick_up2'];      // móc cẩu: nhấc / hạ; pick_up2 (nâng cấp) nhấc đôi
@@ -942,7 +952,7 @@
     function layMang(l) { return l ? (nhieu && Array.isArray(l) && Array.isArray(l[0]) ? (l[i] || null) : l) : null; }
     var dieuSan = !m.dieu ? null : (nhieu && Array.isArray(m.dieu) && (Array.isArray(m.dieu[0]) || (typeof m.dieu[0] === 'string' && m.dieu[0].length > 1)) ? (m.dieu[i] || null) : m.dieu);
     return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatDang: lay(m.vatDang), vatThem: lay(m.vatThem), thungThem: lay(m.thungThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), lua: lay(m.lua), demTu: lay(m.demTu), sanDoc: lay(m.sanDoc), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau), dong: lay(m.dong),
-      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao), contTroi: lay(m.contTroi),
+      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao), hangTau: lay(m.hangTau), contTroi: lay(m.contTroi),
       nguoi: layMang(m.nguoi), tramCuu: layMang(m.tramCuu), thac: layMang(m.thac),   // M9C1: người cần cứu, trạm cứu, thác (một sân: mảng ô; nhiều sân: mảng song song)
       dieu: dieuSan, ngachHang: layMang(m.ngachHang), chuongDa: layMang(m.chuongDa || m.danDoi), daChuong: layMang(m.daChuong) };
   }
@@ -1988,16 +1998,48 @@
         taus.push(tau);
       });
     }
+    // HÀNG TÀU NỐI ĐUÔI (3d): một bến, chỉ tàu đầu hàng đậu ở boong; mỗi tàu cần đúng một số container
+    var hangTau = null, daGiaoHang = [];
+    if (cfg.hangTau !== undefined && cfg.hangTau !== null) {
+      var ht = cfg.hangTau;
+      if (!coCau) throw new Error('hangTau (hàng tàu nối đuôi) chỉ dùng cho màn có cần cẩu (loaiRobot "cau").');
+      if (typeof ht !== 'object' || Array.isArray(ht) || !Array.isArray(ht.o) || !ht.o.length) throw new Error('hangTau phải là { o: [{x,y}], can: [số, …] }: o là các ô boong T của bến (không rỗng).');
+      if (!Array.isArray(ht.can) || !ht.can.length || ht.can.length > HANG_TAU_TOI_DA) throw new Error('hangTau: can phải là mảng 1–' + HANG_TAU_TOI_DA + ' số (mỗi tàu trong hàng cần một container).');
+      if (!ht.can.every(function (n) { return laSoNguyen(n) && n >= 1 && n <= CONT_SO_TOI_DA; })) throw new Error('hangTau: mỗi số trong can phải là số container 1–' + CONT_SO_TOI_DA + '.');
+      hangTau = { i: null, hang: true, coMat: true, o: [], can: ht.can.slice(), cho: [], dau: 0 };
+      ht.o.forEach(function (q) {
+        if (!q || oTai(san, q.x, q.y) !== 'T') throw new Error('hangTau: ô (' + (q ? q.x + ', ' + q.y : '?') + ') không phải ô boong T.');
+        var k = q.x + ',' + q.y;
+        if (tauTai[k]) throw new Error('hangTau: ô boong (' + q.x + ', ' + q.y + ') đã thuộc một tàu trong cfg.tau (bến hàng tàu phải riêng).');
+        tauTai[k] = hangTau; hangTau.o.push({ x: q.x, y: q.y });
+      });
+      var demCan = {};
+      ht.can.forEach(function (n) { demCan[n] = (demCan[n] || 0) + 1; });
+      Object.keys(demCan).forEach(function (n) {
+        var co = conts.filter(function (c) { return c.so === +n; }).length;
+        if (co < demCan[n]) throw new Error('hangTau: hàng tàu cần ' + demCan[n] + ' container số ' + n + ' mà trên sân chỉ có ' + co + ' (cfg.chong).');
+      });
+      if (ht.cho !== undefined && ht.cho !== null) {
+        if (!Array.isArray(ht.cho)) throw new Error('hangTau: cho phải là mảng ô nước [{x,y}] (chỗ vẽ tàu đang chờ).');
+        ht.cho.forEach(function (q) {
+          if (!q || oTai(san, q.x, q.y) !== '~') throw new Error('hangTau: ô chờ (' + (q ? q.x + ', ' + q.y : '?') + ') phải là ô nước "~".');
+          hangTau.cho.push({ x: q.x, y: q.y });
+        });
+      }
+    }
+    function chupHangTau() { return hangTau ? { o: hangTau.o.slice(), can: hangTau.can.slice(), cho: hangTau.cho.slice(), dau: hangTau.dau } : null; }
     san.boong.forEach(function (q) { if (!tauTai[q.x + ',' + q.y]) throw new Error('Ô boong T (' + q.x + ', ' + q.y + ') không thuộc tàu nào: khai cfg.tau = [{ o: [{x,y}], co, vang }].'); });
     /** Tàu có mặt sau t nhịp đã trôi: (t + pha) mod (co + vang) < co (như cửa nhịp); vang 0 = tàu luôn ở bến. */
     function tauCoMat(t, nh) { return t.vang === 0 || ((nh + t.pha) % (t.co + t.vang)) < t.co; }
     /** Tàu đang ĐẬU ở ô (x, y) (ô T có tàu có mặt), hay null. */
     function tauDauTai(x, y) { var t = tauTai[x + ',' + y]; return t && t.coMat ? t : null; }
     if (mucTieu === 'giao-tau') {
-      if (!taus.length) throw new Error('Mục tiêu giao-tau cần cfg.tau (tàu cập / rời bến) và cfg.giao.');
-      if (!Array.isArray(cfg.giao) || !cfg.giao.length) throw new Error('Mục tiêu giao-tau cần cfg.giao = [{ tau: i, so: [..] }] (container nào lên tàu nào).');
+      var chiHang = !!hangTau && (cfg.giao === undefined || cfg.giao === null);     // chỉ có hàng tàu nối đuôi: không cần cfg.giao
+      if (!taus.length && !hangTau) throw new Error('Mục tiêu giao-tau cần cfg.tau (tàu cập / rời bến) và cfg.giao, hay cfg.hangTau (hàng tàu nối đuôi).');
+      if (!chiHang && !taus.length) throw new Error('giao cần cfg.tau (tàu cập / rời bến); bến hàng tàu nối đuôi khai số cần ở hangTau.can.');
+      if (!chiHang && (!Array.isArray(cfg.giao) || !cfg.giao.length)) throw new Error('Mục tiêu giao-tau cần cfg.giao = [{ tau: i, so: [..] }] (container nào lên tàu nào).');
       giaoDs = [];
-      cfg.giao.forEach(function (g) {
+      (chiHang ? [] : cfg.giao).forEach(function (g) {
         if (!g || !laSoNguyen(g.tau) || !taus[g.tau]) throw new Error('giao: tau phải là chỉ số tàu trong cfg.tau (0–' + (taus.length - 1) + ').');
         if (!Array.isArray(g.so) || !g.so.length || !g.so.every(function (n) { return laSoNguyen(n) && n >= 1 && n <= CONT_SO_TOI_DA; })) throw new Error('giao: so phải là mảng số container (1–' + CONT_SO_TOI_DA + ') không rỗng.');
         if (giaoDs.some(function (h) { return h.tau === g.tau; })) throw new Error('giao: tàu ' + g.tau + ' khai hai lần.');
@@ -2044,6 +2086,7 @@
     /** Mục tiêu giao-tau: mọi container yêu cầu đã giao đúng tàu (đếm theo số, trùng số thì đếm đủ số lần). */
     function giaoTauXong() {
       if (!giaoDs) return false;
+      if (hangTau && hangTau.dau < hangTau.can.length) return false;      // HÀNG TÀU: còn tàu chưa nhận hàng
       return giaoDs.every(function (g) {
         var con = daGiao[g.tau].slice();
         return g.so.every(function (n) { var i = con.indexOf(n); if (i < 0) return false; con.splice(i, 1); return true; });
@@ -3838,6 +3881,24 @@
       }
       /** Cuối nhịp: tàu cập / rời theo chu kỳ. Tàu rời: mọi container trên boong được GIAO theo tàu ('tau-roi'); giao sai danh sách (mục tiêu giao-tau) thì thua ngay ('giao-nham'). */
       function capNhatTau() {
+        if (hangTau && hangTau.coMat && !dungSom) {                              // HÀNG TÀU NỐI ĐUÔI: boong có hàng thì tàu đầu hàng rời (đúng một cái, đúng số) hay thua giao-nham
+          var tren = [];
+          hangTau.o.forEach(function (q) { (chongTai[q.x + ',' + q.y] || []).forEach(function (c) { tren.push(c); }); });
+          if (tren.length) {
+            var canSo = hangTau.can[hangTau.dau], saiC = tren.filter(function (c) { return c.so !== canSo; })[0] || (tren.length > 1 ? tren[1] : null);
+            if (saiC) {
+              dungSom = 'giao-nham';
+              var egh = { ma: 'giao-nham', nhip: nhip, hang: true, tau: null, vt: hangTau.dau, so: saiC.so, o: { x: saiC.x, y: saiC.y }, can: [canSo], thua: saiC.so === canSo }; sk.push(egh); suKienChan.push(egh);
+            } else {
+              var cg = tren[0], og = { x: cg.x, y: cg.y };
+              cg.trangThai = 'giao'; cg.tau = null; chongTai[og.x + ',' + og.y] = [];
+              daGiaoHang.push(cg.so); hangTau.dau++;
+              sk.push({ ma: 'tau-roi-hang', nhip: nhip, o: hangTau.o.slice(), oCont: og, vt: hangTau.dau - 1, so: cg.so, conLai: hangTau.can.length - hangTau.dau });
+              if (hangTau.dau < hangTau.can.length) sk.push({ ma: 'tau-vao', nhip: nhip, o: hangTau.o.slice(), vt: hangTau.dau, can: hangTau.can[hangTau.dau] });
+              else { hangTau.coMat = false; sk.push({ ma: 'het-hang-tau', nhip: nhip, o: hangTau.o.slice() }); }
+            }
+          }
+        }
         taus.forEach(function (t) {
           var muon = tauCoMat(t, nhip);
           if (muon === t.coMat) return;
@@ -4152,6 +4213,7 @@
         if (laCau) { r.nac = nac; r.tam = tam; r.dau = oDauCan(); r.treo = chupTreo(); r.doi = treo.length === 2; }   // CẢNG SÔNG: nấc, tầm, ô đầu cần, container đang treo (đáy → đỉnh), đang móc đôi
         if (coChong) mucVet.chong = chupChong();                                 // CẢNG SÔNG: mọi chồng container cuối nhịp [{x,y,cont:[{so,tan}]}]
         if (taus.length) mucVet.tau = taus.map(function (t) { return { coMat: t.coMat }; });
+        if (hangTau) mucVet.hangTau = { dau: hangTau.dau };
         if (coVatNoi) mucVet.vat = chupVat();
         if (congs.length) mucVet.cong = chupCong();
         if (vans.length) mucVet.van = chupVan();
@@ -4318,6 +4380,10 @@
         return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, huong: rb.huong, o: ot, so: coSo ? vn.so : -1, tan: coSo ? vn.tan : 0, idVat: vn ? vn.id : null, noi: vn ? vn.noi : null, trong: !coSo, nhip: nhip };
       }
       var o = oDauCan(), ch = oTai(san, o.x, o.y) === null ? [] : chongO(o.x, o.y), top = ch.length ? ch[ch.length - 1] : null;
+      if (!top && hangTau && tauTai[o.x + ',' + o.y] === hangTau) {                 // HÀNG TÀU: chĩa vào boong trống của bến → số tàu đầu hàng đang cần; hết tàu → −1
+        var canD = hangTau.coMat ? hangTau.can[hangTau.dau] : -1;
+        return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: o, so: canD, tan: treo.length ? tongTan(treo) : 0, treo: treo.length, trong: canD < 0, hangTau: true, can: canD, nhip: nhip };
+      }
       return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: o, so: top ? top.so : -1, tan: treo.length ? tongTan(treo) : top ? top.tan : 0, treo: treo.length, trong: !top, nhip: nhip };
     }
 
@@ -5099,7 +5165,7 @@
         daChoi: daChoi.slice(), dieu: dieuDoi, dieuDung: dieuDung, dieuBatDau: dieuBatDau,
         ngachHang: ngachs.slice(), chuongDa: chuongDas.slice(), daChuong: chupDaChuong(), daChuongBanDau: daChuongBanDau,
         cong: chupCong(), van: chupVan(), dongTat: chupDongTat(), congBanDau: congBanDau, vanBanDau: vanBanDau,
-        chong: chupChong(), chongBanDau: chongBanDau, tau: chupTau(), tauBanDau: tauBanDau, daGiao: chupDaGiao(), ray: rayO, taiToiDa: taiToiDa, luatThap: luatThap,
+        chong: chupChong(), chongBanDau: chongBanDau, tau: chupTau(), tauBanDau: tauBanDau, daGiao: chupDaGiao(), hangTau: chupHangTau(), daGiaoHang: daGiaoHang.slice(), ray: rayO, taiToiDa: taiToiDa, luatThap: luatThap,
         nguoi: chupNguoi(), nguoiBanDau: nguoiBanDau, tramCuu: tramCuu.slice()   // M9C1
       });
     }
@@ -5156,7 +5222,7 @@
       cong: chupCong(), van: chupVan(), dongTat: chupDongTat(), congBanDau: congBanDau, vanBanDau: vanBanDau,
       neo: laXuong ? neo : undefined, keo: laXuong ? chupKeo() : undefined,
       // CẢNG SÔNG: chồng container cuối / đầu, tàu (coMat cuối), container đã giao theo từng tàu, ray { doc, o }, luật tải / tháp; cần cẩu: nac, tam, dau, treo
-      chong: chupChong(), chongBanDau: chongBanDau, tau: chupTau(), tauBanDau: tauBanDau, daGiao: chupDaGiao(), ray: rayO, taiToiDa: taiToiDa, luatThap: luatThap,
+      chong: chupChong(), chongBanDau: chongBanDau, tau: chupTau(), tauBanDau: tauBanDau, daGiao: chupDaGiao(), hangTau: chupHangTau(), daGiaoHang: daGiaoHang.slice(), ray: rayO, taiToiDa: taiToiDa, luatThap: luatThap,
       nac: laCau ? nac : undefined, tam: laCau ? tam : undefined, dau: laCau ? oDauCan() : undefined, treo: laCau ? chupTreo() : undefined,
       nguoi: chupNguoi(), nguoiBanDau: nguoiBanDau, tramCuu: tramCuu.slice()   // M9C1
     };
@@ -5196,7 +5262,7 @@
     CHAN_LENH: CHAN_LENH,
     NUOC_KY: NUOC_KY, VAT_NOI_KY: VAT_NOI_KY, THAN_NEO: THAN_NEO, TAY_PHAO: TAY_PHAO, TOI_CUON: TOI_CUON, HUONG_LUOI: HUONG_LUOI, DAI_LUOI_MAC_DINH: DAI_LUOI_MAC_DINH, CAM_DONG_HAM: CAM_DONG_HAM, MA_CAM_DONG: MA_CAM_DONG, TAM_KEO: TAM_KEO, HUONG_TUONG_DOI: HUONG_TUONG_DOI, laNuoc: laNuoc,   // BẾN SÔNG
     CANG_KY: CANG_KY, NAC_VEC: NAC_VEC, SO_NAC: SO_NAC, TAM_CAU_TOI_DA: TAM_CAU_TOI_DA, CHONG_TOI_DA: CHONG_TOI_DA, RAY_TOI_DA: RAY_TOI_DA, CONT_SO_TOI_DA: CONT_SO_TOI_DA, CONT_TAN_TOI_DA: CONT_TAN_TOI_DA,
-    CAU_LENH: CAU_LENH, TAY_MOC: TAY_MOC, CAM_QUET_HAM: CAM_QUET_HAM, MA_CAM_QUET: MA_CAM_QUET, THAN_RAY: THAN_RAY,   // CẢNG SÔNG
+    HANG_TAU_TOI_DA: HANG_TAU_TOI_DA, CAU_LENH: CAU_LENH, TAY_MOC: TAY_MOC, CAM_QUET_HAM: CAM_QUET_HAM, MA_CAM_QUET: MA_CAM_QUET, THAN_RAY: THAN_RAY,   // CẢNG SÔNG
     LUAT_CHONG: LUAT_CHONG, soatChongLuat: soatChongLuat,   // CẢNG SÔNG: luật xếp chồng (bongMo.chongLuat)
     docSan: docSan, lyDoChan: lyDoChan, chay: chay
   };
