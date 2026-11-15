@@ -542,7 +542,7 @@
   "cang-cu.6": { "o": 18, "nhip": 7 },
   "cang-cu.7": { "o": 15, "nhip": 27 },
   "cang-cu.8": { "o": 29, "nhip": 16 },
-  "cang-cu.9": { "o": 20, "nhip": 15 },
+  "cang-cu.9": { "o": 13, "nhip": 7 },
   "cang-cu.10": { "o": 20, "nhip": 54 },
   "che-cang-cu.1": { "o": 20, "nhip": 6 },
   "che-cang-cu.2": { "o": 13, "nhip": 6 },

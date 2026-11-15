@@ -474,50 +474,46 @@
     }),
 
     manCangCu({
-      so: 9, ten: 'Chuyển tháp qua cửa đóng', hang: 'bien-the',
-      taiToiDa: 6, luatThap: true,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola thử tài: trên sân có luật tháp (luatThap = true), tại (3, 5) phía sau bãi trống (3, 4) là tháp 2 tầng [20, 10] (kiện 10 ở trên, kiện 20 ở dưới). Hai bên (2, 4) và (4, 4) đều bị chắn bởi cửa C và thùng H, nên chỉ có ô (3, 4) làm cọc trung gian! Hãy đưa kiện 10 về đặt tạm ở (3, 4), đưa kiện 20 từ (3, 5) thẳng lên tàu (3, 2), rồi chuyển kiện 10 từ (3, 4) chồng lên 20 ở (3, 2).',
-      veMaMau: 'Dùng ô bãi trống (3, 4) làm trung gian để giữ đúng thứ tự [20, 10] trên tàu.',
-      san: SAN_CU_3,
-      batDau: { x: 3, y: 3, nac: 2, tam: 2 },
-      chong: [CW(3, 5, [[20, 2], [10, 1]])],
-      tau: tauDon(15, 2),
-      giao: [{ tau: 0, so: [10, 20] }],
-      maMau: bai(['pick_up()', 'retract()', 'set_down()', 'extend()']),
-      loiGiai: bai([
-        'pick_up()',
-        'retract()',
-        'set_down()',
-        'extend()',
-        'pick_up()',
-        'retract()',
-        'swing_by(2)',
-        'set_down()',
-        'swing_by(2)',
-        'carry_by(2)'
-      ]),
-      sao: { o: 20, nhip: 15 },
-      loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-2) khi quay cần',
-        baiLam: bai([
-          'pick_up()',
-          'retract()',
-          'set_down()',
-          'extend()',
-          'pick_up()',
-          'retract()',
-          'swing_by(-2)',
-          'set_down()',
-          'swing_by(-2)',
-          'carry_by(2)'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Bỏ qua cọc trung gian (3, 4) nên đặt kiện 20 lên trên kiện 10 vi phạm luật tháp', baiLam: bai(['pick_up()', 'retract()', 'swing_by(2)', 'set_down()', 'swing_by(2)', 'extend()', 'pick_up()', 'retract()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['thap-sai'] },
-        { moTa: 'Mới giao kiện 20 lên tàu, quên đưa kiện 10 từ (3, 4) lên theo', baiLam: bai(['pick_up()', 'retract()', 'set_down()', 'extend()', 'pick_up()', 'retract()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['chua-giao-tau'] }
+      so: 9, ten: 'Biển luật sau cửa sắt', hang: 'bien-the',
+      khung: { chinh: 12, moiHam: 10 },
+      mucTieu: 'bong-mo',
+      deBai: 'Sola thử tài: sau cửa sắt và thùng sắt, chồng hai container nằm ở ô (3, 5). Dời cả hai về ô (3, 4). Biển ở đó ghi luật: số nhỏ ở trên. Mỗi sân một bộ số.',
+      veMaMau: 'Mã mẫu đọc mã ở đỉnh, nhấc lên rồi đọc tiếp mã bên dưới. Hãy so hai số để chọn giữ hay đảo.',
+      san: [SAN_CU_3, SAN_CU_3, SAN_CU_3],
+      batDau: [{ x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }, { x: 3, y: 3, nac: 2, tam: 2 }],
+      chong: [
+        [{ x: 3, y: 5, cont: [{ so: 20 }, { so: 10 }] }],
+        [{ x: 3, y: 5, cont: [{ so: 10 }, { so: 30 }] }],
+        [{ x: 3, y: 5, cont: [{ so: 35 }, { so: 8 }] }]
       ],
-      goiY: ['Luna: Sau khi đặt tạm kiện 10 ở (3, 4) và vươn extend() ra (3, 5), hãy nhấc kiện 20, retract(), swing_by(2), set_down() lên tàu (3, 2).', 'Luna: Cuối cùng gọi swing_by(2) về nấc 2 (tầm 1 đang trỏ vào kiện 10 ở (3, 4)) rồi gọi carry_by(2) để đặt 10 lên đỉnh 20.']
+      bongMo: [
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 4, luat: 'nho-tren' }] },
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 4, luat: 'nho-tren' }] },
+        { x: 3, y: 3, chongLuat: [{ x: 3, y: 4, luat: 'nho-tren' }] }
+      ],
+      tau: [tauDon(15, 2), tauDon(15, 2), tauDon(15, 2)],
+      maMau: bai(['b = read_code()', 'pick_up()', 'a = read_code()']),
+      loiGiai: bai([
+        'b = read_code()',
+        'pick_up()',
+        'a = read_code()',
+        'if a > b:',
+        '    set_down()',
+        '    pick_up2()',
+        'else:',
+        '    retract()',
+        '    set_down()',
+        '    extend()',
+        '    pick_up()',
+        'retract()',
+        'set_down()'
+      ]),
+      sao: { o: 13, nhip: 7 },
+      loiSai: [
+        { moTa: 'Sân nào cũng dùng móc đôi nên sân có số lớn ở đỉnh sai luật', baiLam: bai(['pick_up2()', 'retract()', 'set_down()']), phaiCoMa: ['sai-luat-chong'] },
+        { moTa: 'Sân nào cũng bốc lẻ nên sân có số nhỏ ở đỉnh bị đảo sai luật', baiLam: bai(['for i in range(2):', '    pick_up()', '    retract()', '    set_down()', '    extend()']), phaiCoMa: ['sai-luat-chong'] }
+      ],
+      goiY: ['Luna: a là số bên dưới, b là số ở đỉnh. a lớn hơn b thì chồng đã đúng luật: hạ lại rồi nhấc đôi.', 'Luna: Ngược lại thì phải đảo: đưa cái đang treo về trước, rồi vươn ra lấy cái còn lại.']
     }),
 
     manCangCu({
