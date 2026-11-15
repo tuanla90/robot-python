@@ -69,6 +69,20 @@
     };
   }
 
+  // Luật xếp chồng (ghép nhịp 3c): sân không tàu, chồng nguồn ở hàng y = 4 (tầm 1), chồng đích có biển luật ở hàng y = 5 (tầm 2)
+  var SAN_LUAT = [
+    '~~~~~~~',
+    '~~~~~~~',
+    '~DDDDD~',
+    '.RRRRR.',
+    '.DDDDD.',
+    '.DDDDD.',
+    '.......'
+  ];
+  function BML(x, y, luat) {
+    return { x: x, y: y, chongLuat: luat.map(function (q) { return Object.assign({}, q); }) };
+  }
+
   // Các hàm chế ở Gói 6 chương che-nhac-doi
   var T_CARRY2_BY = [
     'pick_up2()',
@@ -398,156 +412,153 @@
     }),
 
     manNhacDoi({
-      so: 7, ten: 'Giữ nguyên thứ tự tháp', hang: 'bien-the',
-      luatThap: true,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: màn này có luật tháp (kiện nhỏ đặt trên kiện lớn). Tại (2, 4) có tháp [24, 12] và tại (4, 4) có tháp [30, 15]. Vì pick_up2() giữ nguyên thứ tự [dưới, trên] nên bạn có thể nhấc thẳng từng tháp 2 kiện đặt lên tàu mà không cần mượn bãi phụ!',
-      veMaMau: 'Sau khi đặt tháp ở cột 2 lên tàu, hãy trượt rail(2) sang cột 4 và bốc tiếp tháp thứ hai.',
-      san: SAN_DOI_1,
+      so: 7, ten: 'Móc đôi giữ, bốc lẻ đảo', hang: 'bien-the',
+      chiChay: true, chinhCoDinh: true,
+      mucTieu: 'bong-mo',
+      deBai: 'Sola làm mẫu: hai chồng đều có số nhỏ ở đáy, số lớn ở đỉnh. Chồng trái đi bằng móc đôi. Chồng phải bốc lẻ từng cái. Bấm Chạy, xem chồng nào giữ thứ tự, chồng nào đảo.',
+      veMaMau: 'Chồng là ngăn xếp: vào sau, ra trước. pick_up2() nhấc cả hai nên giữ thứ tự. pick_up() hai lần thì đảo thứ tự.',
+      san: SAN_LUAT,
       batDau: { x: 2, y: 3, nac: 2, tam: 1 },
-      chong: [C(2, 4, [24, 12]), C(4, 4, [30, 15])],
-      tau: tauDon(12, 2),
-      giao: [{ tau: 0, so: [12, 15, 24, 30] }],
+      chong: [C(2, 4, [3, 7]), C(4, 4, [2, 6])],
+      bongMo: BML(4, 3, [{ x: 2, y: 5, luat: 'lon-tren', du: 2 }, { x: 4, y: 5, luat: 'nho-tren', du: 2 }]),
       maMau: bai([
         'pick_up2()',
-        'swing_by(2)',
+        'extend()',
         'set_down()',
-        'rail(2)'
+        'retract()',
+        'rail(2)',
+        'for i in range(2):',
+        '    pick_up()',
+        '    extend()',
+        '    set_down()',
+        '    retract()'
       ]),
       loiGiai: bai([
         'pick_up2()',
-        'swing_by(2)',
+        'extend()',
         'set_down()',
+        'retract()',
         'rail(2)',
-        'swing_by(2)',
-        'pick_up2()',
-        'swing_by(2)',
-        'set_down()'
+        'for i in range(2):',
+        '    pick_up()',
+        '    extend()',
+        '    set_down()',
+        '    retract()'
       ]),
-      sao: { o: 15, nhip: 12 },
-      loiGiaiKhac: {
-        moTa: 'Quay về nấc 2 bằng swing_by(2) trước khi trượt rail(2)',
-        baiLam: bai([
-          'pick_up2()',
-          'swing_by(2)',
-          'set_down()',
-          'swing_by(2)',
-          'rail(2)',
-          'pick_up2()',
-          'swing_by(2)',
-          'set_down()'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Bốc từng kiện bằng pick_up() nên thứ tự bị đảo ngược làm kiện 24 đè lên kiện 12', baiLam: bai(['pick_up()', 'swing_by(2)', 'set_down()', 'swing_by(2)', 'pick_up()', 'swing_by(2)', 'set_down()']), phaiCoMa: ['thap-sai'] },
-        { moTa: 'Mới giao tháp ở cột 2, chưa giao tháp ở cột 4', baiLam: bai(['pick_up2()', 'swing_by(2)', 'set_down()', 'rail(2)']), phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: Nhấc từng kiện bằng pick_up() sẽ làm đảo thứ tự tháp, còn pick_up2() giữ nguyên [dưới, trên].', 'Luna: Sau rail(2), gọi swing_by(2), pick_up2(), swing_by(2), set_down() để giao tháp thứ hai.']
+      sao: { o: 10, nhip: 14 },
+      loiSai: [],
+      goiY: ['Luna: Chồng trái vẫn 3 dưới, 7 trên. Biển ghi luật: số lớn ở trên.', 'Luna: Chồng phải thành 6 dưới, 2 trên. Biển ghi luật: số nhỏ ở trên.']
     }),
 
     manNhacDoi({
-      so: 8, ten: 'Đọc mã chọn móc đơn hay đôi', hang: 'bien-the',
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by'],
-      deBai: 'Sola nhờ bạn: dọc ba cột 2, 3, 4 ở hàng bãi y = 4, cột nào có kiện đỉnh mang chữ số hàng chục bằng 2 (c = read_code(), t = c // 10, t == 2) thì cột đó có cặp 2 kiện, ngược lại chỉ có 1 kiện lẻ. Hãy lặp 3 lần qua 3 cột, dùng if để chọn pick_up2() hoặc pick_up() cho đúng.',
-      veMaMau: 'Trong vòng lặp for i in range(3): đã có c = read_code(), t = c // 10 và if t == 2:. Thêm pick_up() cho nhánh else.',
-      san: SAN_DOI_1,
-      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
-      chong: [C(2, 4, [25, 21]), C(3, 4, [16]), C(4, 4, [29, 24])],
-      tau: tauDon(21, 2),
-      giao: [{ tau: 0, so: [16, 21, 24, 25, 29] }],
+      so: 8, ten: 'Giữ hay đảo?', hang: 'bien-the',
+      mucTieu: 'bong-mo',
+      deBai: 'Sola nhờ bạn: chồng ở ô (3, 4) có 50 ở đáy. Số ở đỉnh mỗi sân một khác. Dời cả chồng ra ô (3, 5). Biển ở đó ghi luật: số nhỏ ở trên.',
+      veMaMau: 'Mã mẫu đọc mã ở đỉnh. Đỉnh nhỏ hơn 50 thì giữ thứ tự bằng móc đôi. Hãy viết nhánh còn lại.',
+      san: [SAN_LUAT, SAN_LUAT, SAN_LUAT],
+      batDau: [{ x: 3, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, nac: 2, tam: 1 }],
+      chong: [
+        [C(3, 4, [50, 23])],
+        [C(3, 4, [50, 81])],
+        [C(3, 4, [50, 66])]
+      ],
+      bongMo: [
+        BML(3, 3, [{ x: 3, y: 5, luat: 'nho-tren' }]),
+        BML(3, 3, [{ x: 3, y: 5, luat: 'nho-tren' }]),
+        BML(3, 3, [{ x: 3, y: 5, luat: 'nho-tren' }])
+      ],
       maMau: bai([
-        'for i in range(3):',
-        '    rail(1)',
-        '    c = read_code()',
-        '    t = c // 10',
-        '    if t == 2:',
-        '        pick_up2()',
-        '    else:'
+        'c = read_code()',
+        'if c < 50:',
+        '    pick_up2()',
+        '    extend()',
+        '    set_down()'
       ]),
       loiGiai: bai([
-        'for i in range(3):',
+        'c = read_code()',
+        'if c < 50:',
+        '    pick_up2()',
+        '    extend()',
+        '    set_down()',
+        'else:',
+        '    for i in range(2):',
+        '        pick_up()',
+        '        extend()',
+        '        set_down()',
+        '        retract()'
+      ]),
+      sao: { o: 11, nhip: 8 },
+      loiGiaiKhac: {
+        moTa: 'Hỏi c > 50 trước để bốc lẻ',
+        baiLam: bai([
+          'c = read_code()',
+          'if c > 50:',
+          '    for i in range(2):',
+          '        pick_up()',
+          '        extend()',
+          '        set_down()',
+          '        retract()',
+          'else:',
+          '    pick_up2()',
+          '    extend()',
+          '    set_down()'
+        ])
+      },
+      loiSai: [
+        { moTa: 'Sân nào cũng dùng móc đôi nên sân có đỉnh lớn hơn 50 sai luật', baiLam: bai(['pick_up2()', 'extend()', 'set_down()']), phaiCoMa: ['sai-luat-chong'] },
+        { moTa: 'Sân nào cũng bốc lẻ nên sân có đỉnh nhỏ hơn 50 bị đảo sai luật', baiLam: bai(['for i in range(2):', '    pick_up()', '    extend()', '    set_down()', '    retract()']), phaiCoMa: ['sai-luat-chong'] }
+      ],
+      goiY: ['Luna: Đỉnh lớn hơn 50 thì phải đảo: số lớn xuống dưới.', 'Luna: Muốn đảo thì bốc lẻ hai lần. Mỗi lần xong nhớ retract() về chồng cũ.']
+    }),
+
+    manNhacDoi({
+      so: 9, ten: 'Hai chồng, hai lựa chọn', hang: 'bien-the', nhipTheo: 'tong',
+      khung: { chinh: 14, moiHam: 10 },
+      mucTieu: 'bong-mo',
+      deBai: 'Sola nhờ bạn: hai chồng ở ô (2, 4) và (3, 4), đáy đều là 50. Dời mỗi chồng ra ô ngay phía ngoài. Hai biển cùng ghi luật: số nhỏ ở trên. Mỗi sân một bộ số.',
+      veMaMau: 'Mã mẫu chạy ray tới từng chồng và đọc mã ở đỉnh. Hãy chọn nhấc 1 hay nhấc 2 cho từng chồng.',
+      san: [SAN_LUAT, SAN_LUAT],
+      batDau: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 1, y: 3, nac: 2, tam: 1 }],
+      chong: [
+        [C(2, 4, [50, 12]), C(3, 4, [50, 77])],
+        [C(2, 4, [50, 91]), C(3, 4, [50, 34])]
+      ],
+      bongMo: [
+        BML(3, 3, [{ x: 2, y: 5, luat: 'nho-tren', du: 2 }, { x: 3, y: 5, luat: 'nho-tren', du: 2 }]),
+        BML(3, 3, [{ x: 2, y: 5, luat: 'nho-tren', du: 2 }, { x: 3, y: 5, luat: 'nho-tren', du: 2 }])
+      ],
+      maMau: bai([
+        'for i in range(2):',
         '    rail(1)',
         '    c = read_code()',
-        '    t = c // 10',
-        '    if t == 2:',
+        '    if c < 50:',
+        '        pick_up2()',
+        '    extend()',
+        '    set_down()',
+        '    retract()'
+      ]),
+      loiGiai: bai([
+        'for i in range(2):',
+        '    rail(1)',
+        '    c = read_code()',
+        '    if c < 50:',
         '        pick_up2()',
         '    else:',
         '        pick_up()',
-        '    swing_by(2)',
+        '        extend()',
+        '        set_down()',
+        '        retract()',
+        '        pick_up()',
+        '    extend()',
         '    set_down()',
-        '    swing_by(2)'
+        '    retract()'
       ]),
-      sao: { o: 18, nhip: 21 },
-      loiGiaiKhac: {
-        moTa: 'Hỏi t == 1 trước để gọi pick_up()',
-        baiLam: bai([
-          'for i in range(3):',
-          '    rail(1)',
-          '    c = read_code()',
-          '    t = c // 10',
-          '    if t == 1:',
-          '        pick_up()',
-          '    else:',
-          '        pick_up2()',
-          '    swing_by(2)',
-          '    set_down()',
-          '    swing_by(2)'
-        ])
-      },
+      sao: { o: 14, nhip: 28 },
       loiSai: [
-        { moTa: 'Gọi pick_up2() ở mọi cột nên gặp cột 3 chỉ có 1 kiện bị lỗi móc thiếu', baiLam: bai(['for i in range(3):', '    rail(1)', '    pick_up2()', '    swing_by(2)', '    set_down()', '    swing_by(2)']), phaiCoMa: ['moc-thieu'] },
-        { moTa: 'Gọi pick_up() ở mọi cột nên bỏ sót kiện đáy ở cột 2 và cột 4', baiLam: bai(['for i in range(3):', '    rail(1)', '    pick_up()', '    swing_by(2)', '    set_down()', '    swing_by(2)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Chồng nào cũng dùng móc đôi nên chồng có đỉnh lớn hơn 50 sai luật', baiLam: bai(['for i in range(2):', '    rail(1)', '    pick_up2()', '    extend()', '    set_down()', '    retract()']), phaiCoMa: ['sai-luat-chong'] },
+        { moTa: 'Nhánh else chỉ nhấc một cái rồi đi tiếp, bỏ sót 50 ở đáy', baiLam: bai(['for i in range(2):', '    rail(1)', '    c = read_code()', '    if c < 50:', '        pick_up2()', '    else:', '        pick_up()', '    extend()', '    set_down()', '    retract()']), phaiCoMa: ['sai-luat-chong'] }
       ],
-      goiY: ['Luna: Nhánh else dành cho cột chỉ có 1 kiện nên gọi pick_up().', 'Luna: Sau khối if/else, gọi swing_by(2), set_down(), swing_by(2) để giao hàng lên tàu rồi quay về nấc 2.']
-    }),
-
-    manNhacDoi({
-      so: 9, ten: 'Ghép tháp bốn tầng trên tàu', hang: 'bien-the',
-      luatThap: true,
-      hamCuaEmCan: [],
-      deBai: 'Sola nhờ bạn: cần ghép tháp 4 tầng [40, 30, 20, 10] lên boong tàu tại (3, 2) đúng luật tháp. Cặp đáy [40, 30] đang ở (1, 2) và cặp đỉnh [20, 10] đang ở (5, 2). Bệ cẩu đứng ở (3, 3) hướng nấc 0. Hãy trượt sang (1, 2) dùng pick_up2() lấy cặp [40, 30] đặt lên (3, 2) trước, rồi mới sang (5, 2) lấy cặp [20, 10] đặt chồng lên trên.',
-      veMaMau: 'Lấy cặp lớn [40, 30] ở (1, 2) đặt xuống (3, 2) trước, sau đó lấy cặp nhỏ [20, 10] ở (5, 2).',
-      san: SAN_DOI_1,
-      batDau: { x: 3, y: 3, nac: 0, tam: 1 },
-      chong: [C(1, 2, [40, 30]), C(5, 2, [20, 10])],
-      tau: tauDon(12, 2),
-      giao: [{ tau: 0, so: [10, 20, 30, 40] }],
-      maMau: bai([
-        'rail(-2)',
-        'pick_up2()',
-        'rail(2)',
-        'set_down()'
-      ]),
-      loiGiai: bai([
-        'rail(-2)',
-        'pick_up2()',
-        'rail(2)',
-        'set_down()',
-        'rail(2)',
-        'pick_up2()',
-        'rail(-2)',
-        'set_down()'
-      ]),
-      sao: { o: 8, nhip: 12 },
-      loiGiaiKhac: {
-        moTa: 'Tách rail(2) đầu tiên thành hai bước rail(1)',
-        baiLam: bai([
-          'rail(-2)',
-          'pick_up2()',
-          'rail(1)',
-          'rail(1)',
-          'set_down()',
-          'rail(2)',
-          'pick_up2()',
-          'rail(-2)',
-          'set_down()'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Lấy cặp nhỏ [20, 10] ở (5, 2) đặt xuống trước nên khi đặt [40, 30] lên trên bị sai luật tháp', baiLam: bai(['rail(2)', 'pick_up2()', 'rail(-2)', 'set_down()', 'rail(-2)', 'pick_up2()', 'rail(2)', 'set_down()']), phaiCoMa: ['thap-sai'] },
-        { moTa: 'Mới chuyển cặp [40, 30] về (3, 2), chưa lấy cặp [20, 10] ở (5, 2)', baiLam: bai(['rail(-2)', 'pick_up2()', 'rail(2)', 'set_down()']), phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: Theo luật tháp, cặp số lớn [40, 30] phải nằm dưới đáy, cặp số nhỏ [20, 10] đặt lên trên.', 'Luna: Sau set_down() đầu tiên tại (3, 2), gọi tiếp rail(2), pick_up2(), rail(-2), set_down().']
+      goiY: ['Luna: Đỉnh nhỏ hơn 50 thì giữ thứ tự: pick_up2().', 'Luna: Đỉnh lớn hơn 50 thì đưa cái đỉnh ra trước, rồi quay lại nhấc 50.']
     }),
 
     manNhacDoi({
