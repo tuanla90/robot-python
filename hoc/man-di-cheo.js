@@ -1,14 +1,16 @@
 /* ============================================================================
-   man-di-cheo.js — Mùa 6 "Mỏ đá" · Gói 5 "Đi chéo" (20 màn)
-   - Chương 1: di-cheo (10 màn: di-cheo.1 .. di-cheo.10) — "Lách chéo vách đá"
-     Màn 1 trình diễn (chiChay: true), màn 2–9 luyện diag_left() / diag_right()
-     lách chéo 1 ô trong 1 nhịp không đổi hướng mặt, kết hợp máy hất đá (lob)
-     và radar tròn (radar), màn 10 trùm 2 sân.
-   - Chương 2: che-di-cheo (10 màn: che-di-cheo.1 .. che-di-cheo.10) — "Chế lệnh: đi chéo"
-     Chế 5 hàm mới: diag_r(n), diag_l(n), bypass_r(), diag_lob(), auto_bypass()
-     + 1 màn sửa hàm hỏng (che-di-cheo.8), màn 10 trùm 2 sân.
+   man-di-cheo.js — Mùa "Mỏ đá" · Gói 5 "Đi chéo" (20 màn) — LÀM LẠI 15/11 (ghép nhịp 5a, cfg.cheoGhep)
+   Bánh omni cộng hai chuyển động: tới và ngang. slide_* cùng nhịp với hai bánh ĐI THẲNG (tiến / lùi) = đi chéo 1 ô.
+   - Chương 1: di-cheo (di-cheo.1 .. .10) — "Lách chéo vách đá": ghép bằng LỆNH GỐC.
+     .1 trình diễn (khoá) · .2 ÉP: tách nhịp là rơi hố · .3 chéo trái + phải · .4 for · .5 chéo LÙI ·
+     .6 thả hàm cũ + lob() · .7 ziczac · .8 radar: thêm trượt vào nhịp tiến (2 sân) · .9 bàn xoay · .10 trùm (2 sân).
+     Màn 1–5 giấu hàm của em (camHamCuaEm) để em tự ghép; từ màn 6 thả.
+   - Chương 2: che-di-cheo (che-di-cheo.1 .. .10) — "Chế lệnh: đi chéo": bốn hàm của em
+     dir_fr() (trình diễn), dir_fl(), dir_br(), dir_bl() (em tự viết); .8 sửa hàm hỏng (trượt + quay không ghép được);
+     .7, .9 radar 2 sân; .10 trùm 2 sân.
+   diag_left() / diag_right() là LỆNH CŨ: gói này thôi dạy, khay không còn; lõi vẫn giữ cho mã cũ.
    Toàn bộ 20 màn chạy trên Máy khai mỏ R1 (loaiRobot: 'omni', tay: 'nem',
-   camBien: [{ ma: 'radar', o: 'tren' }], omniCheo: true, tamNemMacDinh: 2, daLapHo: true).
+   camBien: [{ ma: 'radar', o: 'tren' }], tamNemMacDinh: 2, daLapHo: true); cờ cheoGhep do lo-trinh-hoc.js bật cho gói 5–10.
    ========================================================================== */
 (function () {
   'use strict';
@@ -16,7 +18,8 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  var KHAY_DI_CHEO = ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait', 'load', 'throw', 'radar', 'diag_left', 'diag_right'];
+  /* Khay của gói 5 mới: KHÔNG còn diag_left / diag_right (lệnh cũ, thôi dạy; lõi vẫn giữ cho mã cũ). */
+  var KHAY_GHEP = ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait', 'load', 'throw', 'radar'];
   var ROBOT_DI_CHEO = { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }] };
   var CAU_TRUC = ['for', 'if', 'while', 'list'];
 
@@ -29,20 +32,14 @@
   }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than }; }
 
-  var T_DIAG_R = ['for i in range(n):', '    diag_right()'];
-  var T_DIAG_L = ['for i in range(n):', '    diag_left()'];
-  var T_BYPASS_R = ['diag_right()', 'diag_left()'];
-  var T_DIAG_LOB = ['diag_right()', 'lob()'];
-  var T_AUTO_BYPASS = ['g = radar()', 't = g[0][1]', 'if t == "#":', '    bypass_r()', 'else:', '    forward(2)'];
 
   function manDC(o) {
     return Object.assign({
       loaiRobot: 'omni',
       robot: ROBOT_DI_CHEO,
-      omniCheo: true,
       tamNemMacDinh: 2,
       daLapHo: true,
-      hamGoc: KHAY_DI_CHEO,
+      hamGoc: KHAY_GHEP,
       moXuong: true,
       mucTieu: 'toi-co',
       khung: { chinh: 10, moiHam: 10, cauTruc: CAU_TRUC },
@@ -62,11 +59,9 @@
   var BR = ['slide_right()', 'left_back()', 'right_back()', 'wait()'];
   var BL = ['slide_left()', 'left_back()', 'right_back()', 'wait()'];
   function thut(ds) { return ds.map(function (d) { return '    ' + d; }); }
-  /* Khay của gói 5 mới: KHÔNG còn diag_left / diag_right (lệnh cũ, thôi dạy; lõi vẫn giữ cho mã cũ). */
-  var KHAY_GHEP = ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait', 'load', 'throw', 'radar'];
   /* Màn chéo ghép: màn 1–5 chương 1 giấu hàm của em (camHamCuaEm) để em tự ghép bằng lệnh gốc; từ màn 6 thả (camHamCuaEm: false). */
   function manGhep(o) {
-    return manDC(Object.assign({ omniCheo: false, hamGoc: KHAY_GHEP, camHamCuaEm: true, phienBanNoiDung: 3 }, o));
+    return manDC(Object.assign({ camHamCuaEm: true, phienBanNoiDung: 3 }, o));
   }
 
   var DS = [
@@ -398,94 +393,150 @@
 
     /* ========================================================================
        CHƯƠNG 2: che-di-cheo — "Chế lệnh: đi chéo" (10 màn)
-       Hàm chế mới:
-       1. diag_r(n)       (che-di-cheo.1)
-       2. diag_l(n)       (che-di-cheo.2)
-       3. bypass_r()      (che-di-cheo.4)
-       4. diag_lob()      (che-di-cheo.5)
-       5. auto_bypass()   (che-di-cheo.6)
+       Bốn hàm của em, mỗi hàm một bước chéo (f = tới, b = lùi, l / r = trái / phải so với hướng mặt):
+       1. dir_fr()   (che-di-cheo.1, TRÌNH DIỄN, hàm viết sẵn)
+       2. dir_fl()   (che-di-cheo.2, em tự viết)
+       3. dir_br()   (che-di-cheo.3, em tự viết)
+       4. dir_bl()   (che-di-cheo.4, em tự viết)
        Sửa hàm hỏng:
-       - bypass_r()       (che-di-cheo.8)
+       - dir_bl()    (che-di-cheo.8: thiếu một bánh thì thành trượt + quay, không ghép được)
        ======================================================================== */
 
-    /* ---- Màn 11 (che-di-cheo.1): Chế hàm diag_r(n) ---- */
-    manDC({
+    /* ---- Màn 11 (che-di-cheo.1): TRÌNH DIỄN hàm dir_fr() ---- */
+    manGhep({
       id: 6511, chuong: 'che-di-cheo', so: 1, ma: 'che-di-cheo.1',
-      ten: 'Chế hàm lách phải n ô', hang: 'lam-quen',
-      canHam: 'tran-khung',
-      mucTieu: 'bong-mo',
-      bongMo: { x: 4, y: 1, huong: 0, diQua: [{ x: 2, y: 3 }] },
-      taoHam: ['diag_r'],
-      chinhCoDinh: true,
-      deBai: 'Hãy viết hàm `diag_r(n)` dùng vòng lặp `for` gọi `diag_right()` đúng `n` lần để R1 trượt chéo tiến-phải 3 ô liền nhau tới bóng mờ.',
-      veMaMau: 'Chương trình chính đã gọi sẵn diag_r(3). Hãy vào Xưởng hàm viết thân hàm diag_r(n).',
-      goiY: [
-        'Trong def diag_r(n):, viết for i in range(n): rồi gọi diag_right() bên trong.',
-        'Chương trình chính đã gọi sẵn diag_r(3).'
-      ],
+      ten: 'Gói bước chéo thành một lệnh', hang: 'lam-quen',
+      camHamCuaEm: false,
+      taoHam: ['dir_fr'],
+      chiChay: true, chinhCoDinh: true,
+      deBai: 'Mỗi bước chéo đang tốn bốn dòng lệnh. Sola gói bốn dòng đó vào hàm `dir_fr()`: một bước chéo tiến-phải. Bấm Chạy để xem R1 leo rãnh chéo bằng ba lần gọi.',
+      veMaMau: 'Chương trình và hàm dir_fr() đã viết sẵn và khóa. Bấm Chạy, rồi mở Xưởng hàm xem thân hàm.',
+      goiY: ['Bấm nút Chạy. Mỗi lần gọi dir_fr() là một nhịp: trượt phải cộng tiến.'],
       san: [
         '######',
-        '#....#',
+        '#...F#',
         '#.#..#',
         '##...#',
         '#....#',
         '######'
       ],
       batDau: { x: 1, y: 4, huong: 0 },
-      maMau: bai(['diag_r(3)'], { hamCuaEmMoi: [H('diag_r', ['n'], ['diag_right()'])] }),
-      loiGiai: bai(['diag_r(3)'], { hamCuaEmMoi: [H('diag_r', ['n'], T_DIAG_R)] }),
-      sao: { o: 3, nhip: 3 },
-      loiSai: [
-        { moTa: 'Trong diag_r(n) chỉ gọi diag_right() 1 lần không dùng vòng lặp for', baiLam: bai(['diag_r(3)']), hamCuaEmMoi: [H('diag_r', ['n'], ['diag_right()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Trong diag_r(n) gọi nhầm diag_left() nên đâm vào tường bên trái', baiLam: bai(['diag_r(3)']), hamCuaEmMoi: [H('diag_r', ['n'], ['for i in range(n):', '    diag_left()'])], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] }
-      ],
-      loiBinh: 'Hàm diag_r(n) đã lưu vào kho lệnh để em đi chéo phải bao nhiêu ô tùy ý.'
+      maMau: bai(['dir_fr()', 'dir_fr()', 'dir_fr()'], { hamCuaEmMoi: [H('dir_fr', [], FR)] }),
+      loiGiai: bai(['dir_fr()', 'dir_fr()', 'dir_fr()'], { hamCuaEmMoi: [H('dir_fr', [], FR)] }),
+      sao: { o: 7, nhip: 3 },
+      loiBinh: 'Tên hàm nói rõ ngả đi: f là tới, r là phải. dir_fr() đã vào kho lệnh của em.'
     }),
 
-    /* ---- Màn 12 (che-di-cheo.2): Chế hàm diag_l(n) ---- */
-    manDC({
+    /* ---- Màn 12 (che-di-cheo.2): em tự viết dir_fl() ---- */
+    manGhep({
       id: 6512, chuong: 'che-di-cheo', so: 2, ma: 'che-di-cheo.2',
-      ten: 'Chế hàm lách trái n ô', hang: 'lam-quen',
+      ten: 'Chế hàm chéo tiến-trái', hang: 'lam-quen',
+      camHamCuaEm: false,
       canHam: 'tran-khung',
-      mucTieu: 'bong-mo',
-      bongMo: { x: 1, y: 1, huong: 0, diQua: [{ x: 3, y: 3 }] },
-      taoHam: ['diag_l'],
+      taoHam: ['dir_fl'],
       chinhCoDinh: true,
-      deBai: 'Hãy viết hàm `diag_l(n)` dùng vòng lặp `for` gọi `diag_left()` đúng `n` lần để R1 trượt chéo tiến-trái 3 ô liền nhau tới bóng mờ.',
-      veMaMau: 'Chương trình chính đã gọi sẵn diag_l(3). Hãy vào Xưởng hàm viết thân hàm diag_l(n).',
+      deBai: 'Lối lên cờ chạy chéo sang trái, hố sâu nằm sát hai bên. Hãy viết hàm `dir_fl()`: một bước chéo tiến-trái trong một nhịp.',
+      veMaMau: 'Chương trình chính đã gọi sẵn dir_fl() ba lần. Thân hàm mới chỉ trượt trái. Hãy vào Xưởng hàm viết cho đủ.',
       goiY: [
-        'Trong def diag_l(n):, viết for i in range(n): rồi gọi diag_left() bên trong.',
-        'Chương trình chính đã gọi sẵn diag_l(3).'
+        'Hàm dir_fr() trong kho là mẫu: trượt, hai bánh tiến, rồi wait().',
+        'Trong def dir_fl(): viết slide_left(), left_move(), right_move(), rồi wait().'
       ],
       san: [
         '######',
-        '#....#',
-        '#..#.#',
-        '#...##',
-        '#....#',
+        '#Fu..#',
+        '#u.u.#',
+        '#.u.u#',
+        '#..u.#',
         '######'
       ],
       batDau: { x: 4, y: 4, huong: 0 },
-      maMau: bai(['diag_l(3)'], { hamCuaEmMoi: [H('diag_l', ['n'], ['diag_left()'])] }),
-      loiGiai: bai(['diag_l(3)'], { hamCuaEmMoi: [H('diag_l', ['n'], T_DIAG_L)] }),
-      sao: { o: 3, nhip: 3 },
+      maMau: bai(['dir_fl()', 'dir_fl()', 'dir_fl()'], { hamCuaEmMoi: [H('dir_fl', [], ['slide_left()', 'wait()'])] }),
+      loiGiai: bai(['dir_fl()', 'dir_fl()', 'dir_fl()'], { hamCuaEmMoi: [H('dir_fl', [], FL)] }),
+      sao: { o: 7, nhip: 3 },
       loiSai: [
-        { moTa: 'Trong diag_l(n) chỉ gọi diag_left() 1 lần không dùng vòng lặp for', baiLam: bai(['diag_l(3)']), hamCuaEmMoi: [H('diag_l', ['n'], ['diag_left()'])], phaiCoMa: ['lech-bong-mo'] },
-        { moTa: 'Trong diag_l(n) gọi nhầm diag_right() nên đâm vào tường bên phải', baiLam: bai(['diag_l(3)']), hamCuaEmMoi: [H('diag_l', ['n'], ['for i in range(n):', '    diag_right()'])], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] }
+        { moTa: 'Trong dir_fl() trượt trái một nhịp riêng rồi mới tiến nên rơi xuống hố', baiLam: bai(['dir_fl()', 'dir_fl()', 'dir_fl()']), hamCuaEmMoi: [H('dir_fl', [], ['slide_left()', 'wait()', 'left_move()', 'right_move()', 'wait()'])], phaiCoMa: ['roi-ho'] },
+        { moTa: 'Trong dir_fl() trượt nhầm sang phải nên đâm vào vách đá', baiLam: bai(['dir_fl()', 'dir_fl()', 'dir_fl()']), hamCuaEmMoi: [H('dir_fl', [], FR)], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      loiBinh: 'Có đủ cặp diag_r(n) và diag_l(n), R1 đã sẵn sàng lách chéo hai bên theo tham số.'
+      loiBinh: 'Cả hàm chỉ có một wait() ở cuối, nên trượt và tiến chung một nhịp.'
     }),
 
-    /* ---- Màn 13 (che-di-cheo.3): Luyện diag_r(n), diag_l(n) và lob() ---- */
-    manDC({
+    /* ---- Màn 13 (che-di-cheo.3): em tự viết dir_br() ---- */
+    manGhep({
       id: 6513, chuong: 'che-di-cheo', so: 3, ma: 'che-di-cheo.3',
-      ten: 'Đường chéo chữ V', hang: 'luyen',
-      hamCuaEmCan: ['move', 'forward', 'lob', 'diag_r', 'diag_l'],
-      deBai: 'Hãy gọi `diag_r(2)` rồi `diag_l(1)` để vòng qua vách đá vào ngay dưới viên đá tròn, sau đó gọi `lob()` hất đá lấp hố sâu rồi `forward(3)` tới cờ.',
-      veMaMau: 'Chương trình có sẵn đã lách qua vách đá bằng diag_r(2) và diag_l(1) nhưng thiếu lệnh lob() trước forward(3).',
+      ten: 'Chế hàm chéo lùi-phải', hang: 'lam-quen',
+      camHamCuaEm: false,
+      canHam: 'tran-khung',
+      taoHam: ['dir_br'],
+      chinhCoDinh: true,
+      deBai: 'Cờ nằm phía sau, lệch sang phải. Hãy viết hàm `dir_br()`: một bước chéo lùi-phải trong một nhịp. Chữ b là lùi.',
+      veMaMau: 'Chương trình chính đã gọi sẵn dir_br() ba lần. Thân hàm mới chỉ trượt phải. Hãy vào Xưởng hàm viết cho đủ.',
       goiY: [
-        'Từ (1, 7) gọi diag_r(2) tới (3, 5), rồi gọi diag_l(1) tới (2, 4) ngay dưới viên đá ở (2, 3).',
-        'Gọi lob() để lấp hố ở (2, 2), rồi forward(3) tiến thẳng lên cờ ở (2, 1).'
+        'Lùi thẳng là left_back() và right_back().',
+        'Trong def dir_br(): viết slide_right(), left_back(), right_back(), rồi wait().'
+      ],
+      san: [
+        '######',
+        '#.u..#',
+        '#u.u.#',
+        '#.u.u#',
+        '#..uF#',
+        '######'
+      ],
+      batDau: { x: 1, y: 1, huong: 0 },
+      maMau: bai(['dir_br()', 'dir_br()', 'dir_br()'], { hamCuaEmMoi: [H('dir_br', [], ['slide_right()', 'wait()'])] }),
+      loiGiai: bai(['dir_br()', 'dir_br()', 'dir_br()'], { hamCuaEmMoi: [H('dir_br', [], BR)] }),
+      sao: { o: 7, nhip: 3 },
+      loiSai: [
+        { moTa: 'Trong dir_br() ghép trượt phải với tiến nên đâm vào vách đá phía trên', baiLam: bai(['dir_br()', 'dir_br()', 'dir_br()']), hamCuaEmMoi: [H('dir_br', [], FR)], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Trong dir_br() trượt phải một nhịp riêng rồi mới lùi nên rơi xuống hố', baiLam: bai(['dir_br()', 'dir_br()', 'dir_br()']), hamCuaEmMoi: [H('dir_br', [], ['slide_right()', 'wait()', 'left_back()', 'right_back()', 'wait()'])], phaiCoMa: ['roi-ho'] }
+      ],
+      loiBinh: 'dir_br() đưa R1 lùi chéo sang phải. Mũi xe vẫn nhìn lên.'
+    }),
+
+    /* ---- Màn 14 (che-di-cheo.4): em tự viết dir_bl() — đủ bốn ngả ---- */
+    manGhep({
+      id: 6514, chuong: 'che-di-cheo', so: 4, ma: 'che-di-cheo.4',
+      ten: 'Chế hàm chéo lùi-trái', hang: 'luyen',
+      camHamCuaEm: false,
+      canHam: 'tran-khung',
+      taoHam: ['dir_bl'],
+      chinhCoDinh: true,
+      deBai: 'Còn thiếu một ngả chéo: lùi-trái. Hãy viết hàm `dir_bl()` để R1 lùi chéo sang trái ba bước tới cờ.',
+      veMaMau: 'Chương trình chính đã gọi sẵn dir_bl() trong vòng lặp. Thân hàm còn trống phần trượt và lùi. Hãy vào Xưởng hàm viết cho đủ.',
+      goiY: [
+        'Nhìn tên hàm: b là lùi, l là trái.',
+        'Trong def dir_bl(): viết slide_left(), left_back(), right_back(), rồi wait().'
+      ],
+      san: [
+        '######',
+        '#..u.#',
+        '#.u.u#',
+        '#u.u.#',
+        '#Fu..#',
+        '######'
+      ],
+      batDau: { x: 4, y: 1, huong: 0 },
+      maMau: bai(['for i in range(3):', '    dir_bl()'], { hamCuaEmMoi: [H('dir_bl', [], ['wait()'])] }),
+      loiGiai: bai(['for i in range(3):', '    dir_bl()'], { hamCuaEmMoi: [H('dir_bl', [], BL)] }),
+      sao: { o: 6, nhip: 3 },
+      loiSai: [
+        { moTa: 'Trong dir_bl() trượt nhầm sang phải nên đâm vào vách đá', baiLam: bai(['for i in range(3):', '    dir_bl()']), hamCuaEmMoi: [H('dir_bl', [], BR)], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Trong dir_bl() lùi một nhịp riêng rồi mới trượt nên rơi xuống hố', baiLam: bai(['for i in range(3):', '    dir_bl()']), hamCuaEmMoi: [H('dir_bl', [], ['left_back()', 'right_back()', 'wait()', 'slide_left()', 'wait()'])], phaiCoMa: ['roi-ho'] }
+      ],
+      loiBinh: 'Kho lệnh của em đã đủ bốn ngả chéo: dir_fl(), dir_fr(), dir_bl(), dir_br().'
+    }),
+
+    /* ---- Màn 15 (che-di-cheo.5): luyện dir_fr(), dir_fl() với lob() ---- */
+    manGhep({
+      id: 6515, chuong: 'che-di-cheo', so: 5, ma: 'che-di-cheo.5',
+      ten: 'Đường chéo chữ V', hang: 'luyen',
+      camHamCuaEm: false,
+      hamCuaEmCan: ['forward', 'lob', 'dir_fr', 'dir_fl'],
+      deBai: 'Vách đá chắn lối thẳng. Viên đá tròn nằm ở cột giữa, trước nó là hố sâu rồi tới cờ. Hãy đi chéo vòng qua vách đá vào ngay dưới viên đá, hất đá lấp hố, rồi tiến tới cờ.',
+      veMaMau: 'Chương trình có sẵn đã vòng qua vách đá và tiến 3 ô, nhưng quên hất đá lấp hố.',
+      goiY: [
+        'Sau ba bước chéo, R1 ở (2, 4), ngay dưới viên đá ở (2, 3).',
+        'Gọi lob() trước forward(3).'
       ],
       san: [
         '#####',
@@ -499,365 +550,224 @@
         '#####'
       ],
       batDau: { x: 1, y: 7, huong: 0 },
-      maMau: bai(['diag_r(2)', 'diag_l(1)', 'forward(3)']),
-      loiGiai: bai(['diag_r(2)', 'diag_l(1)', 'lob()', 'forward(3)']),
-      sao: { o: 17, nhip: 8 },
+      maMau: bai(['dir_fr()', 'dir_fr()', 'dir_fl()', 'forward(3)']),
+      loiGiai: bai(['dir_fr()', 'dir_fr()', 'dir_fl()', 'lob()', 'forward(3)']),
+      sao: { o: 22, nhip: 8 },
       loiSai: [
-        { moTa: 'Quên gọi lob() trước forward(3) nên đâm vào viên đá ở (2, 3)', baiLam: bai(['diag_r(2)', 'diag_l(1)', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Chỉ tiến 2 ô sau khi lấp hố nên dừng ở (2, 2) trước cờ', baiLam: bai(['diag_r(2)', 'diag_l(1)', 'lob()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Quên gọi lob() nên đâm vào viên đá ở (2, 3)', baiLam: bai(['dir_fr()', 'dir_fr()', 'dir_fl()', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Mới đi chéo phải một bước đã chéo trái nên đâm vào vách đá', baiLam: bai(['dir_fr()', 'dir_fl()', 'lob()', 'forward(3)']), phaiCoMa: ['dam-tuong'] }
       ],
-      loiBinh: 'Ghép diag_r(2) và diag_l(1) giúp R1 vòng qua vách đá chắn ngang và vào đúng vị trí hất đá.'
+      loiBinh: 'Ba lời gọi ngắn thay cho mười hai dòng lệnh gốc.'
     }),
 
-    /* ---- Màn 14 (che-di-cheo.4): Chế hàm bypass_r() ---- */
-    manDC({
-      id: 6514, chuong: 'che-di-cheo', so: 4, ma: 'che-di-cheo.4',
-      ten: 'Chế hàm lách trụ đá', hang: 'luyen',
-      canHam: 'tran-khung',
-      mucTieu: 'bong-mo',
-      bongMo: { x: 2, y: 1, huong: 0, diQua: [{ x: 3, y: 4 }, { x: 3, y: 2 }] },
-      taoHam: ['bypass_r'],
-      chinhCoDinh: true,
-      deBai: 'Trước mặt R1 có trụ đá chắn ngang cột. Hãy viết hàm `bypass_r()` gồm `diag_right()` rồi `diag_left()` để lách qua bên phải trụ đá và trở về đúng cột cũ chỉ trong 2 nhịp.',
-      veMaMau: 'Chương trình chính đã gọi bypass_r() 2 lần. Hãy hoàn thiện thân hàm bypass_r() trong Xưởng hàm.',
+    /* ---- Màn 16 (che-di-cheo.6): luyện đủ ngả tiến và lùi ---- */
+    manGhep({
+      id: 6516, chuong: 'che-di-cheo', so: 6, ma: 'che-di-cheo.6',
+      ten: 'Lên chéo, lùi chéo', hang: 'luyen',
+      camHamCuaEm: false,
+      hamCuaEmCan: ['dir_fr', 'dir_br', 'dir_bl'],
+      deBai: 'Lối đi gấp khúc giữa bãi hố: chéo lên phải, chéo lùi sang phải, rồi chéo lùi sang trái tới cờ. Mỗi đoạn dài 2 bước. Hãy chọn đúng hàm cho từng đoạn.',
+      veMaMau: 'Chương trình có sẵn mới đi hai đoạn đầu. Hãy viết thêm đoạn cuối.',
       goiY: [
-        'Trong def bypass_r():, gọi diag_right() rồi diag_left().',
-        'Chương trình chính gọi bypass_r() hai lần để vượt qua 2 trụ đá liên tiếp.'
-      ],
-      san: [
-        '#####',
-        '#...#',
-        '#.#.#',
-        '#...#',
-        '#.#.#',
-        '#...#',
-        '#####'
-      ],
-      batDau: { x: 2, y: 5, huong: 0 },
-      maMau: bai(['bypass_r()', 'bypass_r()'], { hamCuaEmMoi: [H('bypass_r', [], ['diag_right()'])] }),
-      loiGiai: bai(['bypass_r()', 'bypass_r()'], { hamCuaEmMoi: [H('bypass_r', [], T_BYPASS_R)] }),
-      sao: { o: 4, nhip: 4 },
-      loiSai: [
-        { moTa: 'Trong bypass_r() chỉ gọi diag_right() mà thiếu diag_left() nên đâm vào tường bên phải', baiLam: bai(['bypass_r()', 'bypass_r()']), hamCuaEmMoi: [H('bypass_r', [], ['diag_right()'])], phaiCoMa: ['dam-tuong', 'lech-bong-mo'] },
-        { moTa: 'Trong bypass_r() lách sang trái thay vì sang phải nên bỏ lỡ điểm mốc bên phải', baiLam: bai(['bypass_r()', 'bypass_r()']), hamCuaEmMoi: [H('bypass_r', [], ['diag_left()', 'diag_right()'])], phaiCoMa: ['chua-qua-diem'] }
-      ],
-      loiBinh: 'Với bánh omni đi chéo, bypass_r() vượt qua chướng ngại trước mặt chỉ mất 2 nhịp thay vì 4 nhịp.'
-    }),
-
-    /* ---- Màn 15 (che-di-cheo.5): Chế hàm diag_lob() ---- */
-    manDC({
-      id: 6515, chuong: 'che-di-cheo', so: 5, ma: 'che-di-cheo.5',
-      ten: 'Chế hàm lách phải hất đá', hang: 'luyen',
-      canHam: 'tran-khung',
-      mucTieu: 'dua-vat',
-      taoHam: ['diag_lob'],
-      chinhCoDinh: true,
-      hamCuaEmCan: ['lob'],
-      deBai: 'Ba viên đá nằm trên bậc thang chéo sang phải, mỗi viên cần hất xa 2 ô vào máng `D` phía trên. Hãy viết hàm `diag_lob()`: gọi `diag_right()` để lách vào ngay dưới viên đá rồi gọi `lob()` để hất đá vào máng.',
-      veMaMau: 'Chương trình chính đã lặp 3 lần diag_lob(). Hãy thêm lệnh lob() vào thân hàm diag_lob().',
-      goiY: [
-        'Trong def diag_lob():, gọi diag_right() rồi gọi lob().',
-        'Chương trình chính lặp 3 lần diag_lob() để hất đủ 3 viên đá vào 3 máng D.'
+        'Đoạn cuối đi về phía sau và sang trái.',
+        'Gọi dir_bl() hai lần.'
       ],
       san: [
         '#######',
-        '#...D.#',
-        '#..Do.#',
-        '#.Do..#',
-        '#.o...#',
-        '#.....#',
-        '#.....#',
+        '#.u.u.#',
+        '#u.u.u#',
+        '#.u.u.#',
+        '#..u.u#',
+        '#..Fu.#',
         '#######'
       ],
-      batDau: { x: 1, y: 6, huong: 0 },
-      maMau: bai(['for i in range(3):', '    diag_lob()'], { hamCuaEmMoi: [H('diag_lob', [], ['diag_right()'])] }),
-      loiGiai: bai(['for i in range(3):', '    diag_lob()'], { hamCuaEmMoi: [H('diag_lob', [], T_DIAG_LOB)] }),
-      sao: { o: 8, nhip: 9 },
+      batDau: { x: 1, y: 3, huong: 0 },
+      maMau: bai(['dir_fr()', 'dir_fr()', 'dir_br()', 'dir_br()']),
+      loiGiai: bai(['dir_fr()', 'dir_fr()', 'dir_br()', 'dir_br()', 'dir_bl()', 'dir_bl()']),
+      sao: { o: 18, nhip: 6 },
       loiSai: [
-        { moTa: 'Trong diag_lob() chỉ gọi diag_right() mà quên gọi lob() để hất đá', baiLam: bai(['for i in range(3):', '    diag_lob()']), hamCuaEmMoi: [H('diag_lob', [], ['diag_right()'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Trong diag_lob() gọi lob() trước diag_right() nên xúc hụt ngay từ bước đầu', baiLam: bai(['for i in range(3):', '    diag_lob()']), hamCuaEmMoi: [H('diag_lob', [], ['lob()', 'diag_right()'])], phaiCoMa: ['nap-hut', 'chua-dua-vat'] }
+        { moTa: 'Mới đi hai đoạn đầu nên dừng ở (5, 3)', baiLam: bai(['dir_fr()', 'dir_fr()', 'dir_br()', 'dir_br()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đoạn cuối gọi nhầm dir_fl() nên R1 quay ngược lên trên', baiLam: bai(['dir_fr()', 'dir_fr()', 'dir_br()', 'dir_br()', 'dir_fl()', 'dir_fl()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      loiBinh: 'Hàm diag_lob() gom thao tác lách chéo tới viên đá và hất đá vào một lệnh duy nhất.'
+      loiBinh: 'Sáu bước chéo, ba ngả khác nhau, R1 không quay xe lần nào.'
     }),
 
-    /* ---- Màn 16 (che-di-cheo.6): Chế hàm auto_bypass() (2 sân) ---- */
-    manDC({
-      id: 6516, chuong: 'che-di-cheo', so: 6, ma: 'che-di-cheo.6',
-      ten: 'Chế hàm tự lách trụ đá', hang: 'bien-the',
-      canHam: 'tran-khung',
-      taoHam: ['auto_bypass'],
-      chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'bypass_r'],
-      deBai: 'Mỗi chặng R1 cần tiến lên 2 hàng. Hãy viết hàm `auto_bypass()`: quét `g = radar()`, nếu ô ngay trước mặt là trụ đá (ô `g[0][1]` là `"#"`) thì gọi `bypass_r()`, ngược lại thì gọi `forward(2)`.',
-      veMaMau: 'Chương trình chính đã lặp 3 lần auto_bypass(). Hãy viết thân hàm auto_bypass() kiểm tra radar().',
-      goiY: [
-        'Trong def auto_bypass():, g = radar().',
-        'Đọc t = g[0][1]; nếu t == "#": gọi bypass_r(), else: gọi forward(2).'
-      ],
-      san: [
-        [
-          '#####',
-          '#.F.#',
-          '#.#.#',
-          '#...#',
-          '#...#',
-          '#.#.#',
-          '#...#',
-          '#####'
-        ],
-        [
-          '#####',
-          '#.F.#',
-          '#...#',
-          '#...#',
-          '#.#.#',
-          '#...#',
-          '#...#',
-          '#####'
-        ]
-      ],
-      batDau: [
-        { x: 2, y: 6, huong: 0 },
-        { x: 2, y: 6, huong: 0 }
-      ],
-      maMau: bai(['for i in range(3):', '    auto_bypass()'], { hamCuaEmMoi: [H('auto_bypass', [], ['g = radar()', 'forward(2)'])] }),
-      loiGiai: bai(['for i in range(3):', '    auto_bypass()'], { hamCuaEmMoi: [H('auto_bypass', [], T_AUTO_BYPASS)] }),
-      sao: { o: 14, nhip: 6 },
-      loiSai: [
-        { moTa: 'Trong auto_bypass() luôn gọi forward(2) nên đâm vào trụ đá', baiLam: bai(['for i in range(3):', '    auto_bypass()']), hamCuaEmMoi: [H('auto_bypass', [], ['g = radar()', 'forward(2)'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Thiếu nhánh else gọi forward(2) nên khi đường trống xe đứng yên', baiLam: bai(['for i in range(3):', '    auto_bypass()']), hamCuaEmMoi: [H('auto_bypass', [], ['g = radar()', 't = g[0][1]', 'if t == "#":', '    bypass_r()'])], phaiCoMa: ['chua-toi-co'] }
-      ],
-      loiBinh: 'Dù chặng đường trống hay có trụ đá chắn, auto_bypass() đều đưa R1 tiến 2 hàng trong đúng 2 nhịp.'
-    }),
-
-    /* ---- Màn 17 (che-di-cheo.7): Luyện auto_bypass() và diag_lob() (2 sân) ---- */
-    manDC({
+    /* ---- Màn 17 (che-di-cheo.7): radar — gặp vách đá thì dir_fr(), không thì move() (2 sân) ---- */
+    manGhep({
       id: 6517, chuong: 'che-di-cheo', so: 7, ma: 'che-di-cheo.7',
-      ten: 'Lách đá lấp hố dọc hầm', hang: 'bien-the',
-      hamCuaEmCan: ['move', 'forward', 'lob', 'bypass_r', 'diag_lob', 'auto_bypass'],
-      deBai: 'Hãy gọi `diag_lob()` để lách phải sang cột giữa và hất viên đá lấp hố sâu phía trên, sau đó gọi `auto_bypass()` 2 lần để vượt qua 2 chặng cuối tới cờ.',
-      veMaMau: 'Chương trình có sẵn mới gọi auto_bypass() 1 lần sau diag_lob(). Hãy gọi thêm auto_bypass() lần thứ hai.',
+      ten: 'Radar báo lách chéo', hang: 'bien-the',
+      camHamCuaEm: false,
+      hamCuaEmCan: ['move', 'dir_fr'],
+      deBai: 'Đường lên cờ dài 4 bước. Có bước bị vách đá `#` chắn ngay trước mặt. Mỗi bước hãy quét `g = radar()` và đọc `t = g[0][1]`. Nếu `t == "#"` thì đi chéo tiến-phải, còn không thì tiến thẳng.',
+      veMaMau: 'Chương trình có sẵn mới có nhánh if khi gặp vách đá. Hãy thêm nhánh else để tiến thẳng.',
       goiY: [
-        'Bắt đầu bằng diag_lob() để R1 từ (1, 6) lách lên (2, 5), nạp đá ở (2, 4) lấp hố ở (2, 3).',
-        'Sau đó gọi auto_bypass() 2 lần (hoặc dùng vòng for 2 lần) để từ (2, 5) tiến 4 hàng lên cờ ở (2, 1).'
+        'Thêm else: ngay dưới nhánh if.',
+        'Trong nhánh else gọi move().'
       ],
       san: [
         [
-          '#####',
-          '#.F.#',
-          '#.#.#',
-          '#.u.#',
-          '#.o.#',
-          '#...#',
-          '#...#',
-          '#####'
+          '######',
+          '#..F.#',
+          '#....#',
+          '###..#',
+          '#....#',
+          '#....#',
+          '######'
         ],
         [
-          '#####',
-          '#.F.#',
-          '#...#',
-          '#.u.#',
-          '#.o.#',
-          '#...#',
-          '#...#',
-          '#####'
+          '######',
+          '#..F.#',
+          '###..#',
+          '#....#',
+          '##...#',
+          '#....#',
+          '######'
         ]
       ],
       batDau: [
-        { x: 1, y: 6, huong: 0 },
-        { x: 1, y: 6, huong: 0 }
+        { x: 2, y: 5, huong: 0 },
+        { x: 1, y: 5, huong: 0 }
       ],
-      maMau: bai(['diag_lob()', 'auto_bypass()']),
-      loiGiai: bai(['diag_lob()', 'auto_bypass()', 'auto_bypass()']),
-      sao: { o: 21, nhip: 7 },
-      loiGiaiKhac: {
-        moTa: 'Dùng vòng lặp for 2 lần gọi auto_bypass()',
-        baiLam: bai(['diag_lob()', 'for i in range(2):', '    auto_bypass()'])
-      },
+      maMau: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "#":', '        dir_fr()']),
+      loiGiai: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "#":', '        dir_fr()', '    else:', '        move()']),
+      sao: { o: 14, nhip: 4 },
       loiSai: [
-        { moTa: 'Mới gọi auto_bypass() 1 lần nên dừng ở (2, 3) chưa tới cờ', baiLam: bai(['diag_lob()', 'auto_bypass()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên gọi diag_lob() ở đầu nên đi ở cột 1 không vào được cột cờ', baiLam: bai(['auto_bypass()', 'auto_bypass()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else nên gặp ô trống R1 đứng yên', baiLam: bai(['for i in range(4):', '    g = radar()', '    t = g[0][1]', '    if t == "#":', '        dir_fr()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Tiến thẳng cả 4 bước, không hỏi radar, nên đâm vào vách đá', baiLam: bai(['for i in range(4):', '    move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      loiBinh: 'Khi hố sâu đã được lấp thành sàn phẳng, auto_bypass() đi qua đoạn đó dễ dàng.'
+      loiBinh: 'Một chương trình chạy đúng trên cả hai sân vì radar quyết định từng bước.'
     }),
 
-    /* ---- Màn 18 (che-di-cheo.8): Sửa hàm hỏng bypass_r() ---- */
-    manDC({
+    /* ---- Màn 18 (che-di-cheo.8): SỬA HÀM HỎNG dir_bl() — thiếu một bánh thành trượt + quay, không ghép được ---- */
+    manGhep({
       id: 6518, chuong: 'che-di-cheo', so: 8, ma: 'che-di-cheo.8',
-      ten: 'Sửa hàm lách trụ đá', hang: 'bien-the',
-      mucTieu: 'bong-mo',
-      bongMo: { x: 2, y: 5, huong: 0, diQua: [{ x: 2, y: 1 }] },
-      suaHam: ['bypass_r'],
+      ten: 'Sửa hàm chéo lùi-trái', hang: 'bien-the',
+      camHamCuaEm: false,
+      suaHam: ['dir_bl'],
       chinhCoDinh: true,
-      khoaHamMan: ['quarry_back'],
-      hamCuaEmCan: ['back', 'bypass_r'],
-      deBai: 'Hàm `bypass_r()` đang bị viết nhầm thành 2 lần `diag_right()` nên R1 lệch hẳn khỏi làn đường. Hãy sửa lại `bypass_r()` thành `diag_right()` rồi `diag_left()` để R1 lách lên điểm mốc và lùi về bóng mờ.',
-      veMaMau: 'Mở hàm bypass_r() trong Xưởng hàm và đổi dòng thứ hai từ diag_right() thành diag_left().',
+      hamCuaEmCan: ['dir_bl'],
+      deBai: 'Luna sửa hàm `dir_bl()` và lỡ tay xóa mất một dòng. Giờ R1 chỉ trượt ngang, không lùi. Trượt chỉ ghép được với đi thẳng: cả hai bánh cùng lùi, hay cùng tiến. Hãy sửa lại hàm.',
+      veMaMau: 'Chương trình chính đã khóa. Mở hàm dir_bl() trong Xưởng hàm và tìm dòng bị thiếu.',
       goiY: [
-        'Sửa dòng thứ hai trong def bypass_r(): từ diag_right() thành diag_left().',
-        'Khi bypass_r() đúng, quarry_back() sẽ đưa R1 lùi về đúng bóng mờ ở (2, 5).'
+        'Trong hàm mới có left_back(). Một bánh lùi là quay xe, không phải đi thẳng.',
+        'Thêm right_back() vào trước wait().'
       ],
       san: [
-        '#####',
-        '#...#',
-        '#.#.#',
-        '#...#',
-        '#.#.#',
-        '#...#',
-        '#####'
+        '######',
+        '#....#',
+        '#....#',
+        '#....#',
+        '#F...#',
+        '######'
       ],
-      batDau: { x: 2, y: 5, huong: 0 },
-      maMau: bai(
-        ['bypass_r()', 'bypass_r()', 'quarry_back()'],
-        {
-          hamCuaMan: [H('quarry_back', [], ['slide_right()', 'wait()', 'back()', 'back()', 'back()', 'back()', 'slide_left()', 'wait()'])],
-          hamCuaEmMoi: [H('bypass_r', [], ['diag_right()', 'diag_right()'])]
-        }
-      ),
-      loiGiai: bai(
-        ['bypass_r()', 'bypass_r()', 'quarry_back()'],
-        {
-          hamCuaMan: [H('quarry_back', [], ['slide_right()', 'wait()', 'back()', 'back()', 'back()', 'back()', 'slide_left()', 'wait()'])],
-          hamCuaEmMoi: [H('bypass_r', [], T_BYPASS_R)]
-        }
-      ),
-      sao: { o: 16, nhip: 10 },
+      batDau: { x: 4, y: 1, huong: 0 },
+      maMau: bai(['for i in range(3):', '    dir_bl()'], { hamCuaEmMoi: [H('dir_bl', [], ['slide_left()', 'left_back()', 'wait()'])] }),
+      loiGiai: bai(['for i in range(3):', '    dir_bl()'], { hamCuaEmMoi: [H('dir_bl', [], BL)] }),
+      sao: { o: 6, nhip: 3 },
       loiSai: [
-        {
-          moTa: 'Không sửa hàm bypass_r(): hai lần diag_right() làm xe đâm vào tường bên phải',
-          baiLam: bai(['bypass_r()', 'bypass_r()', 'quarry_back()'], { hamCuaMan: [H('quarry_back', [], ['slide_right()', 'wait()', 'back()', 'back()', 'back()', 'back()', 'slide_left()', 'wait()'])] }),
-          hamCuaEmMoi: [H('bypass_r', [], ['diag_right()', 'diag_right()'])],
-          phaiCoMa: ['dam-tuong', 'chua-qua-diem']
-        },
-        {
-          moTa: 'Xóa mất dòng thứ hai trong bypass_r(): xe mới lệch sang cột 3 đã đâm tường',
-          baiLam: bai(['bypass_r()', 'bypass_r()', 'quarry_back()'], { hamCuaMan: [H('quarry_back', [], ['slide_right()', 'wait()', 'back()', 'back()', 'back()', 'back()', 'slide_left()', 'wait()'])] }),
-          hamCuaEmMoi: [H('bypass_r', [], ['diag_right()'])],
-          phaiCoMa: ['dam-tuong', 'chua-qua-diem']
-        }
+        { moTa: 'Không sửa dir_bl(): trượt ghép với một bánh lùi thì lệnh bánh bị bỏ, R1 chỉ trượt ngang', baiLam: bai(['for i in range(3):', '    dir_bl()']), hamCuaEmMoi: [H('dir_bl', [], ['slide_left()', 'left_back()', 'wait()'])], phaiCoMa: ['omni-khong-cheo', 'chua-toi-co'] },
+        { moTa: 'Thêm nhầm right_move(): một bánh lùi, một bánh tiến là quay đầu, vẫn không ghép được', baiLam: bai(['for i in range(3):', '    dir_bl()']), hamCuaEmMoi: [H('dir_bl', [], ['slide_left()', 'left_back()', 'right_move()', 'wait()'])], phaiCoMa: ['omni-khong-cheo', 'chua-toi-co'] }
       ],
-      loiBinh: 'Sửa lại bước thứ hai thành diag_left() giúp R1 giữ đúng trục đường sau mỗi lần né trụ đá.'
+      loiBinh: 'Trượt cộng đi thẳng thì thành chéo. Trượt cộng quay thì xe chỉ trượt.'
     }),
 
-    /* ---- Màn 19 (che-di-cheo.9): Tổng hợp hàm đi chéo và danh sách 2D ---- */
-    manDC({
+    /* ---- Màn 19 (che-di-cheo.9): radar nhìn góc SAU chọn dir_br() hay dir_bl() (2 sân) ---- */
+    manGhep({
       id: 6519, chuong: 'che-di-cheo', so: 9, ma: 'che-di-cheo.9',
-      ten: 'Bảng lộ trình chéo', hang: 'bien-the',
-      hamCuaEmCan: ['move', 'forward', 'lob', 'diag_r', 'diag_l'],
-      deBai: 'Danh sách 2 chiều `steps` ghi từng chặng, mỗi sân một bảng riêng (sân 1: `steps = [[2, 1], [1, 2]]`): `r[0]` bước chéo phải `diag_r(r[0])` rồi `r[1]` bước chéo trái `diag_l(r[1])`. Hãy duyệt `for r in steps:` thực hiện 2 bước đó, rồi gọi `lob()` lấp hố và `forward(3)` tới cờ.',
-      veMaMau: 'Chương trình có sẵn đã duyệt danh sách steps nhưng chưa gọi lob() và forward(3) ở cuối.',
+      ten: 'Lùi chéo theo radar', hang: 'bien-the',
+      camHamCuaEm: false,
+      hamCuaEmCan: ['dir_br', 'dir_bl'],
+      deBai: 'R1 phải lùi chéo 4 bước xuống cờ qua các khe đá. Hai sân có khe khác nhau. Mỗi bước hãy quét `g = radar()` và đọc `t = g[2][2]`, ô chéo lùi-phải. Ô đó không phải vách đá `#` thì lùi chéo sang phải, còn không thì lùi chéo sang trái.',
+      veMaMau: 'Chương trình có sẵn mới lùi chéo sang phải khi ô đó trống. Hãy thêm nhánh else.',
       goiY: [
-        'Trong vòng lặp for r in steps:, gọi diag_r(r[0]) rồi diag_l(r[1]).',
-        'Sau vòng lặp, R1 đứng ở (2, 4) ngay dưới viên đá (2, 3): gọi lob() lấp hố ở (2, 2) rồi forward(3) tới cờ.'
+        'Hàng g[2] là hàng phía sau R1. g[2][2] là góc sau bên phải.',
+        'Trong nhánh else gọi dir_bl().'
       ],
-      // dữ liệu theo sân: mỗi sân một bảng steps, điền thẳng số của sân 1 thì đâm tường ở sân 2 (và ngược lại)
-      san: [[
-        '######',
-        '#.F..#',
-        '#.u..#',
-        '#.o..#',
-        '#....#',
-        '#.#..#',
-        '#....#',
-        '###..#',
-        '#....#',
-        '#.#..#',
-        '#....#',
-        '######'
-      ], [
-        '######',
-        '#.F..#',
-        '#.u..#',
-        '#.o..#',
-        '#....#',
-        '#.#..#',
-        '#...##',
-        '#.#..#',
-        '#...##',
-        '#.#..#',
-        '#....#',
-        '######'
-      ]],
-      duLieuSan: ['steps = [[2, 1], [1, 2]]', 'steps = [[1, 2], [2, 1]]'],
-      batDau: { x: 2, y: 10, huong: 0 },
-      maMau: bai([
-        'steps = [[2, 1], [1, 2]]',
-        'for r in steps:',
-        '    diag_r(r[0])',
-        '    diag_l(r[1])'
-      ]),
-      loiGiai: bai([
-        'steps = [[2, 1], [1, 2]]',
-        'for r in steps:',
-        '    diag_r(r[0])',
-        '    diag_l(r[1])',
-        'lob()',
-        'forward(3)'
-      ]),
-      sao: { o: 19, nhip: 11 },
+      san: [
+        [
+          '######',
+          '#....#',
+          '#..###',
+          '#...##',
+          '#..###',
+          '#.F..#',
+          '######'
+        ],
+        [
+          '######',
+          '#....#',
+          '###..#',
+          '##...#',
+          '###..#',
+          '#..F.#',
+          '######'
+        ]
+      ],
+      batDau: [
+        { x: 2, y: 1, huong: 0 },
+        { x: 3, y: 1, huong: 0 }
+      ],
+      maMau: bai(['for i in range(4):', '    g = radar()', '    t = g[2][2]', '    if t != "#":', '        dir_br()']),
+      loiGiai: bai(['for i in range(4):', '    g = radar()', '    t = g[2][2]', '    if t != "#":', '        dir_br()', '    else:', '        dir_bl()']),
+      sao: { o: 15, nhip: 4 },
       loiSai: [
-        { moTa: 'Mới chạy xong vòng lặp steps mà chưa lấp hố và tiến lên cờ', baiLam: bai(['steps = [[2, 1], [1, 2]]', 'for r in steps:', '    diag_r(r[0])', '    diag_l(r[1])']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên gọi lob() trước forward(3) nên đâm vào viên đá ở (2, 3)', baiLam: bai(['steps = [[2, 1], [1, 2]]', 'for r in steps:', '    diag_r(r[0])', '    diag_l(r[1])', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 đường chéo khác nên đâm vách', baiLam: bai(['steps = [[2, 1], [1, 2]]', 'diag_r(2)', 'diag_l(1)', 'diag_r(1)', 'diag_l(2)', 'lob()', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Chưa có nhánh else gọi dir_bl() nên chưa xuống tới cờ', baiLam: bai(['for i in range(4):', '    g = radar()', '    t = g[2][2]', '    if t != "#":', '        dir_br()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bước nào cũng gọi dir_br(), không hỏi radar, nên đâm vào vách đá', baiLam: bai(['for i in range(4):', '    dir_br()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      loiBinh: 'Kết hợp danh sách 2 chiều với diag_r() và diag_l() giúp R1 uốn lượn qua dãy vách đá phức tạp.'
+      loiBinh: 'Radar nhìn được cả phía sau. R1 lùi chéo mà không cần quay đầu lại nhìn.'
     }),
 
-    /* ---- Màn 20 (che-di-cheo.10): Trùm chương 2 (2 sân) ---- */
-    manDC({
+    /* ---- Màn 20 (che-di-cheo.10): TRÙM chương 2 (2 sân): radar + fill_pit() + dir_fr() / dir_fl() ---- */
+    manGhep({
       id: 6520, chuong: 'che-di-cheo', so: 10, ma: 'che-di-cheo.10',
       ten: 'Trùm chế lệnh đi chéo', hang: 'trum',
-      huyHieu: { ma: 'che-di-cheo', ten: 'Kỹ Sư Lách Chéo' },
-      hamCuaEmCan: ['move', 'forward', 'lob', 'bypass_r', 'diag_lob', 'auto_bypass'],
-      deBai: 'Hành lang mỏ gồm 2 nhánh nối bằng bước lách chéo. Hãy gọi `auto_bypass()` để vượt chặng đầu ở nhánh trái, tiếp theo gọi `diag_lob()` để lách sang nhánh giữa và hất đá lấp hố, rồi gọi `auto_bypass()` 2 lần nữa để lên tới cờ.',
-      veMaMau: 'Chương trình có sẵn đã gọi auto_bypass() và diag_lob(). Hãy gọi thêm 2 lần auto_bypass() để lên tới cờ.',
+      camHamCuaEm: false,
+      huyHieu: { ma: 'che-di-cheo', ten: 'Thợ Chế Lệnh Chéo' },
+      hamCuaEmCan: ['move', 'fill_pit', 'dir_fr', 'dir_fl'],
+      deBai: 'Đường mỏ có 3 chặng, mỗi chặng 2 hàng, rồi thêm 1 ô cuối vào cờ. Đầu mỗi chặng hãy quét `g = radar()` và đọc `t = g[0][1]`. Trước mặt là đá tròn `"V"` thì hất đá lấp hố rồi đi qua. Còn không thì trước mặt là trụ đá: vòng qua bằng hai bước chéo.',
+      veMaMau: 'Chương trình có sẵn mới có nhánh if gọi fill_pit(). Hãy viết nhánh else và bước cuối vào cờ.',
       goiY: [
-        'Bước 1: gọi auto_bypass() đưa R1 từ (1, 8) lên (1, 6).',
-        'Bước 2: gọi diag_lob() để lách sang (2, 5) và hất viên đá ở (2, 4) lấp hố ở (2, 3).',
-        'Bước 3: gọi auto_bypass() 2 lần để từ (2, 5) vượt qua (2, 3) lên cờ ở (2, 1).'
+        'Vòng qua trụ đá: một bước chéo tiến-phải rồi một bước chéo tiến-trái.',
+        'Trong nhánh else gọi dir_fr() rồi dir_fl(). Sau vòng lặp gọi move().'
       ],
       san: [
         [
-          '######',
-          '#.F..#',
-          '#....#',
-          '#.u..#',
-          '#.o..#',
-          '#....#',
-          '#....#',
-          '#.#..#',
-          '#....#',
-          '######'
+          '#####',
+          '#.F.#',
+          '#...#',
+          '#.#.#',
+          '#...#',
+          '#.#.#',
+          '#.u.#',
+          '#.o.#',
+          '#...#',
+          '#####'
         ],
         [
-          '######',
-          '#.F..#',
-          '#.#..#',
-          '#.u..#',
-          '#.o..#',
-          '#....#',
-          '#....#',
-          '#....#',
-          '#....#',
-          '######'
+          '#####',
+          '#.F.#',
+          '#...#',
+          '#.#.#',
+          '#.u.#',
+          '#.o.#',
+          '#...#',
+          '#.#.#',
+          '#...#',
+          '#####'
         ]
       ],
       batDau: [
-        { x: 1, y: 8, huong: 0 },
-        { x: 1, y: 8, huong: 0 }
+        { x: 2, y: 8, huong: 0 },
+        { x: 2, y: 8, huong: 0 }
       ],
-      maMau: bai(['auto_bypass()', 'diag_lob()']),
-      loiGiai: bai(['auto_bypass()', 'diag_lob()', 'auto_bypass()', 'auto_bypass()']),
-      sao: { o: 22, nhip: 9 },
-      loiGiaiKhac: {
-        moTa: 'Dùng vòng lặp for 2 lần cho hai lệnh auto_bypass() cuối',
-        baiLam: bai(['auto_bypass()', 'diag_lob()', 'for i in range(2):', '    auto_bypass()'])
-      },
+      maMau: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        fill_pit()']),
+      loiGiai: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        fill_pit()', '    else:', '        dir_fr()', '        dir_fl()', 'move()']),
+      sao: { o: 28, nhip: 9 },
       loiSai: [
-        { moTa: 'Mới gọi 1 lần auto_bypass() ở nhánh giữa nên dừng ở (2, 3) chưa tới cờ', baiLam: bai(['auto_bypass()', 'diag_lob()', 'auto_bypass()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gọi diag_lob() ngay từ đầu trước khi qua chặng đầu nên xúc hụt', baiLam: bai(['diag_lob()', 'auto_bypass()', 'auto_bypass()']), phaiCoMa: ['nap-hut', 'chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else vòng qua trụ đá và lệnh move() cuối', baiLam: bai(['for i in range(3):', '    g = radar()', '    t = g[0][1]', '    if t == "V":', '        fill_pit()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chỉ đi chéo mà không lấp hố khi gặp đá nên rơi xuống hố sâu', baiLam: bai(['for i in range(3):', '    dir_fr()', '    dir_fl()', 'move()']), phaiCoMa: ['roi-ho'] }
       ],
-      loiBinh: 'Ghép auto_bypass() và diag_lob() giúp R1 tự thích ứng với trụ đá ở cả hai sân và về đích gọn gàng.'
+      loiBinh: 'Radar chọn việc, fill_pit() lấp hố, dir_fr() và dir_fl() vòng qua trụ đá. R1 qua được cả hai sân.'
     })
   ];
 
