@@ -66,6 +66,7 @@ Mùa 3, 6 không nằm trong kế hoạch này (đã ghép kiểu "kèm bước"
 - Lời dạy KHÔNG gọi móc đôi là "hàng đợi": móc đôi là cách **giữ nguyên thứ tự**, nhấc lẻ là cách **đảo thứ tự**; trẻ chọn nhấc 1 hay 2 (3c). Chữ "hàng đợi" chỉ dùng cho hàng tàu (3d).
 
 ### 3c. Ngăn xếp + xếp chồng theo luật màu + số (gọi đúng tên: **ngăn xếp**, "vào sau ra trước")
+- XONG 15/11 (eae67ae…63f480f): lõi bongMo.chongLuat + sai-luat-chong + hoc/kiem-chong-luat.mjs; biển luật + mũi tên đỉnh; 9 màn ở gói 2, 6, 8, 10. Chi tiết và việc chờ user: hoc/ban-giao/BAN-GIAO-GHEP-NHIP.md mục 4.
 - Mỗi chồng container là một ngăn xếp: chỉ lấy / đặt ở đỉnh. Lõi chồng không đổi.
 - Hai cách chuyển cho kết quả khác nhau: bốc lẻ từng cái (`pick_up` / `set_down` hai lần) thì thứ tự **đảo ngược**; móc đôi thì **giữ nguyên**. Ví dụ chồng [3, 7] (dưới → trên) sang chồng trống: bốc lẻ ra [7, 3], móc đôi ra [3, 7]. Đề bắt đảo hay giữ, trẻ chọn nhấc 1 hay 2.
 - LUẬT XẾP (user chốt 13/11): đề không cho dãy đích cố định mà cho LUẬT, chấm theo luật nên mỗi sân một bộ số (`duLieuSan`, như "dữ liệu theo sân" 82.2): trẻ phải `read_code()` và so sánh, không điền thẳng được.

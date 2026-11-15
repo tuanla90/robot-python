@@ -9,7 +9,7 @@ User dặn tối 13/11: "xong 1 mùa thì commit, làm dần các mùa khác r m
 |---|---|---|---|
 | 5 Bến sông (xuồng) | XONG | main | 69/200 (gói 5: 18, 6: 17, 7: 10, 8: 10, 9: 4, 10: 10); trước đợt là 0 |
 | 2 Nhà máy (xe cứu hỏa) | XONG, hụt chỉ tiêu | main 5107a78 | 11/200 (gói 6: 7/20, cần 15; gói 10: 4/20, cần 5) |
-| 4 Cảng sông (cần cẩu) | F1 cẩu 4 hướng XONG (main 9ebfa0c); F2 cần gạt đôi XONG (main a4e4482, chưa push); F3–F4 chưa | main | 25/200 (gói 5: 14, 6: 1, 7: 5, 8: 1, 9: 1, 10: 3); trước F2 là 0 |
+| 4 Cảng sông (cần cẩu) | F1 cẩu 4 hướng XONG (main 9ebfa0c); F2 cần gạt đôi XONG (đã push ccaed8e); F3 xếp chồng theo luật XONG (main 63f480f+); F4 chưa | main | 25/200 (gói 5: 14, 6: 1, 7: 5, 8: 1, 9: 1, 10: 3); trước F2 là 0 |
 | 7 Mỏ đá (xe omni) | CHƯA BẮT ĐẦU | — | 0/200 |
 
 **Đã đẩy GitHub** (origin/main d7c4e52, 14/11). Sáng 14/11 các lần đẩy trước đó lỗi `HTTP 503` phía GitHub lúc gửi gói (đăng nhập vẫn qua); thử lại sau ~1 giờ thì được. Mỗi mùa xong: `git push origin main` (user cho phép đợt này).
@@ -70,7 +70,15 @@ Thứ tự gói theo kế hoạch mục 3, 6:
   - Chờ user: (a) bỏ 3 màn cũ gói 5; (b) rail_pick / rail_drop đổi sang ghép ngay ở màn chế hàm, kho cũ bản 4 dòng sẽ thua "chua-giao-tau"; (c) bật cờ mùa 9 (lệch 0); (d) gói 6, 8, 9 mới 1/20 màn ghép: viết lại rail_carry2 / over_wall thành hàm ghép (~1–1,5 giờ); (e) đề duong-ray.5 viết sẵn từng nhịp (chữ nhiều, gần như cho lời giải).
   - Chưa xem trên trình duyệt: duong-ray.4 (khoá mã), .6 (giấu kho hàm), che-duong-ray.3, lời giải dài 16–18 dòng (.7, .8, .10). Chưa có ca kiểm riêng cho sửa vết lệnh nhiều robot. Bẫy: `pick_up(); rail(1); wait()` chạy ray trước rồi mới móc.
   - Brief: `hoc/ban-giao/brief-ghep-nhip-F2-can-gat-doi.md`.
-- **F3** xếp chồng theo luật màu + số (3c): `bongMo.chongLuat`, máy kiểm `hoc/kiem-chong-luat.mjs`, màn ở gói 2 / 6 / 8 / 10. Màu = `so % 4`, đã có sẵn trong hình.
+- **F3** xếp chồng theo luật màu + số (3c). XONG 15/11: agent fable (dừng một lần vì hết hạn mức 5 giờ, gửi tin cho chạy tiếp), nhánh claude/mua-4-chong-luat, commit eae67ae…63f480f, đã ff vào main.
+  - Lõi: `bongMo.chongLuat = [{ x, y, luat: 'nho-tren' | 'lon-tren', mau?, du? }]`, `SanHoc.soatChongLuat`, lỗi chấm `sai-luat-chong` (kieu treo / la-mau / thieu / thua / sai-chieu, chỉ chỗ sai đầu tiên). Ô không khai không xét. Không dùng chung với `bongMo.chong`. Lõi chồng, móc đôi, cần gạt đôi không đổi.
+  - Hình: biển luật ở chồng đích ('bien-luat-chong': mũi tên + "nhỏ" / "lớn" + ô màu khi lọc), huy hiệu mũi tên vào / ra ở đỉnh chồng ('dinh-chong'), khung nét đứt quanh ô đích. Chỉ vẽ ở màn có chongLuat.
+  - 9 màn thay: moc-cau.5 (trình diễn đảo khi bốc lẻ), .6 (luật nhỏ ở trên), .8 (ép, lớn ở trên, chồng tạm); nhac-doi.7 (trình diễn móc đôi giữ / bốc lẻ đảo), .8 (ép 3 sân, read_code chọn nhấc 1 hay 2), .9 (hai chồng); cang-cu.9 (3 sân, đọc hai mã so sánh); tong-hop-cang.7 (trình diễn luật kép theo màu, 2 sân), .8 (ép luật kép, 3 sân). Màn bị thay không có taoHam.
+  - kiem-lo-trinh.mjs: thêm nhac-doi.8, .9, cang-cu.9 vào NHIEU_SAN_KHONG_TRUM (màn cảm biến nhiều sân, như mùa hang động; duLieuSan không hợp với read_code).
+  - Nghiệm thu (phiên chính, tuần tự, sau commit cuối): kiem-chong-luat 76/0 (--pha: phải hỏng, hỏng đúng), kiem-mua-cang 144/0, kiem-man-mua-cang 200/200, kiem-ve-mua-song-cang 43/0, kiem-cau-do-mua-9 27/0, kiem-lai-mua-9 170/0, kiem-nhap-mua-4-7 41, kiem-phim-goi 55/0, kiem-huong-dan 40/0, kiem-loi-giai 67/67, kiem-hoc 6716/0; nền đỏ y nguyên (kiem-ve-vector 1/101 13a-v, kiem-lo-trinh 'combo'). do-ghep-nhip mua-4 25/200 (không tụt). do-meo-dien-so (agent chạy): không màn mới nào lách được. Trình duyệt: tong-hop-cang.7 thắng 2 sân 3 sao; biển luật đọc được ở sân 5 cột.
+  - Chờ user: (a) biển luật ở sân 7 cột (moc-cau.6, ô ~30 px trên điện thoại) chữ "nhỏ" / "lớn" quá bé, gần như không đọc được; (b) chồng chỉ hiện số trên cùng, gói 2 phải ghi số các tầng trong đề (agent đề xuất bảng "chồng này có gì" khi bấm vào chồng); (c) nhac-doi.8, .9 dựa vào câu "đáy luôn là 50" trong đề; (d) gói 10 mất hai màn nhắc lại cũ (tháp ở .7, lọc đuôi 9 + cân tải ở .8), agent nghiêng về để nguyên; (e) đề tong-hop-cang.7 dài (luật "chữ ít"); (f) chương chia-du gói 2 chưa có màn màu.
+  - Chưa xem: moc-cau.5, .8, nhac-doi.7–.9, cang-cu.9, tong-hop-cang.8 trên trình duyệt; phim / hướng dẫn gói có thể còn nhắc tên màn cũ (tháp, đuôi 9).
+  - Brief: `hoc/ban-giao/brief-ghep-nhip-F3-chong-luat.md`.
 - **F4** gồm hai phần:
   - min/max theo hàng ngang (3f), chỉ làm màn;
   - hàng tàu nối đuôi (3d): lõi mới, làm lại gói 4 chương 2.
