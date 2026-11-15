@@ -3376,6 +3376,19 @@
       if (m.doi) m.doi.forEach(function (r) { if (r && r.loaiRobot === 'omni' && r.cheoGhep === undefined) r.cheoGhep = true; });
       else if (m.cheoGhep === undefined) m.cheoGhep = true;
     });
+    // Hàm của em dir_fl / dir_fr / dir_bl / dir_br (chế ở che-di-cheo.1–.4) thay diag_left() / diag_right() trong lời giải các màn sau: màn nào lời giải gọi dir_*() mà không tự chế / sửa
+    // hàm đó thì ghi vào hamCuaEmCan (mọi mùa), để máy kiểm bắt màn dùng dir_*() đứng trước che-di-cheo.
+    var HAM_DIR = ['dir_fl', 'dir_fr', 'dir_bl', 'dir_br'];
+    M.danhSach.forEach(function (m) {
+      if (!m.loiGiai) return;
+      var chu = JSON.stringify([m.loiGiai.chinh, m.loiGiai.hamCuaMan, m.loiGiai.doi, m.loiGiai.hamCuaEmMoi]);
+      HAM_DIR.forEach(function (t) {
+        if (chu.indexOf(t + '(') < 0) return;
+        if ((m.taoHam || []).indexOf(t) >= 0 || (m.suaHam || []).indexOf(t) >= 0) return;
+        if (!m.hamCuaEmCan) m.hamCuaEmCan = [];
+        if (m.hamCuaEmCan.indexOf(t) < 0) m.hamCuaEmCan.push(t);
+      });
+    });
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.

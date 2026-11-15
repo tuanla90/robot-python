@@ -33,7 +33,7 @@
   var T_FILL_FAR = ['aim_lob(3)', 'forward(3)'];
   var T_LOB_STEP = ['slide_r(r[0])', 'aim_lob(r[1])'];
   var T_AUTO_AIM = ['g = radar()', 't = g[1][2]', 'if t == "#":', '    aim_lob(3)', 'else:', '    aim_lob(2)', 'forward(3)'];
-  var T_DIAG_AIM = ['diag_right()', 'aim_lob(n)'];
+  var T_DIAG_AIM = ['dir_fr()', 'aim_lob(n)'];
 
   function manCL(o) {
     return Object.assign({
@@ -197,12 +197,12 @@
     manCL({
       id: 6605, chuong: 'chinh-luc', so: 5, ma: 'chinh-luc.5',
       ten: 'Hất xa đè công tắc', hang: 'luyen',
-      hamCuaEmCan: ['move', 'lob', 'diag_r'],
-      deBai: 'Nút đè `M` nằm cách R1 tới 3 ô bên kia hàng rào. Hãy gọi `aim(3)` rồi `lob()` để hất viên đá đè lên nút `M` mở cửa `C`, sau đó gọi `diag_r(2)` lách chéo qua cửa rồi `move()` tới cờ.',
-      veMaMau: 'Chương trình có sẵn mới gọi diag_r(2) và move() khi cửa C còn đóng. Hãy hất đá tầm 3 đè lên nút M trước.',
+      hamCuaEmCan: ['move', 'lob', 'dir_fr'],
+      deBai: 'Nút đè `M` nằm cách R1 tới 3 ô bên kia hàng rào. Hãy gọi `aim(3)` rồi `lob()` để hất viên đá đè lên nút `M` mở cửa `C`, sau đó gọi `dir_fr()` hai lần lách chéo qua cửa rồi `move()` tới cờ.',
+      veMaMau: 'Chương trình có sẵn mới gọi dir_fr() hai lần và move() khi cửa C còn đóng. Hãy hất đá tầm 3 đè lên nút M trước.',
       goiY: [
         'Ở đầu chương trình, gọi aim(3) rồi lob() để viên đá ở (1, 4) bay 3 ô tới nút M ở (1, 2).',
-        'Khi cửa C ở (2, 4) đã mở, diag_r(2) và move() sẽ đưa R1 tới cờ ở (3, 2).'
+        'Khi cửa C ở (2, 4) đã mở, dir_fr() hai lần và move() sẽ đưa R1 tới cờ ở (3, 2).'
       ],
       san: [
         '#####',
@@ -214,12 +214,12 @@
         '#####'
       ],
       batDau: { x: 1, y: 5, huong: 0 },
-      maMau: bai(['diag_r(2)', 'move()']),
-      loiGiai: bai(['aim(3)', 'lob()', 'diag_r(2)', 'move()']),
+      maMau: bai(['dir_fr()', 'dir_fr()', 'move()']),
+      loiGiai: bai(['aim(3)', 'lob()', 'dir_fr()', 'dir_fr()', 'move()']),
       sao: { o: 13, nhip: 5 },
       loiSai: [
-        { moTa: 'Chưa hất đá đè lên nút M nên cửa C đóng chặn đường chéo', baiLam: bai(['diag_r(2)', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Quên gọi aim(3) nên đá chỉ bay 2 ô rơi vào hàng rào bị vỡ', baiLam: bai(['lob()', 'diag_r(2)', 'move()']), phaiCoMa: ['nem-vo'] }
+        { moTa: 'Chưa hất đá đè lên nút M nên cửa C đóng chặn đường chéo', baiLam: bai(['dir_fr()', 'dir_fr()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Quên gọi aim(3) nên đá chỉ bay 2 ô rơi vào hàng rào bị vỡ', baiLam: bai(['lob()', 'dir_fr()', 'dir_fr()', 'move()']), phaiCoMa: ['nem-vo'] }
       ],
       loiBinh: 'Nhờ aim(3), R1 có thể kích hoạt công tắc M nằm sâu bên kia hàng rào.'
     }),
@@ -229,10 +229,10 @@
       id: 6606, chuong: 'chinh-luc', so: 6, ma: 'chinh-luc.6',
       ten: 'Hai tầng hố lệch', hang: 'luyen',
       hamCuaEmCan: ['move', 'forward', 'lob'],
-      deBai: 'Ở nhánh trái, hố sâu cách R1 3 ô; sang nhánh phải, hố sâu cách R1 2 ô. Hãy gọi `aim(3)`, `lob()`, `forward(3)` để vượt nhánh trái, sau đó `diag_right()` sang nhánh phải, gọi `aim(2)`, `lob()`, `forward(3)` tới cờ.',
+      deBai: 'Ở nhánh trái, hố sâu cách R1 3 ô; sang nhánh phải, hố sâu cách R1 2 ô. Hãy gọi `aim(3)`, `lob()`, `forward(3)` để vượt nhánh trái, sau đó `dir_fr()` sang nhánh phải, gọi `aim(2)`, `lob()`, `forward(3)` tới cờ.',
       veMaMau: 'Chương trình có sẵn đã vượt qua nhánh trái và lách sang nhánh phải ở (2, 4). Hãy chỉnh tầm 2 ô, lấp hố và tiến lên cờ.',
       goiY: [
-        'Sau diag_right(), R1 đứng ở (2, 4), trước mặt là viên đá ở (2, 3) và hố ở (2, 2) (cách 2 ô).',
+        'Sau dir_fr(), R1 đứng ở (2, 4), trước mặt là viên đá ở (2, 3) và hố ở (2, 2) (cách 2 ô).',
         'Gọi aim(2), lob() để lấp hố ở (2, 2), rồi gọi forward(3) lên cờ ở (2, 1).'
       ],
       san: [
@@ -248,12 +248,12 @@
         '####'
       ],
       batDau: { x: 1, y: 8, huong: 0 },
-      maMau: bai(['aim(3)', 'lob()', 'forward(3)', 'diag_right()']),
-      loiGiai: bai(['aim(3)', 'lob()', 'forward(3)', 'diag_right()', 'aim(2)', 'lob()', 'forward(3)']),
+      maMau: bai(['aim(3)', 'lob()', 'forward(3)', 'dir_fr()']),
+      loiGiai: bai(['aim(3)', 'lob()', 'forward(3)', 'dir_fr()', 'aim(2)', 'lob()', 'forward(3)']),
       sao: { o: 16, nhip: 11 },
       loiSai: [
-        { moTa: 'Dừng lại ở (2, 4) chưa lấp hố nhánh phải', baiLam: bai(['aim(3)', 'lob()', 'forward(3)', 'diag_right()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên đổi về aim(2) ở nhánh phải nên hất đá vọt lên ô cờ còn hố vẫn mở', baiLam: bai(['aim(3)', 'lob()', 'forward(3)', 'diag_right()', 'lob()', 'forward(3)']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Dừng lại ở (2, 4) chưa lấp hố nhánh phải', baiLam: bai(['aim(3)', 'lob()', 'forward(3)', 'dir_fr()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên đổi về aim(2) ở nhánh phải nên hất đá vọt lên ô cờ còn hố vẫn mở', baiLam: bai(['aim(3)', 'lob()', 'forward(3)', 'dir_fr()', 'lob()', 'forward(3)']), phaiCoMa: ['roi-ho'] }
       ],
       loiBinh: 'Khi chuyển giữa các tầng mỏ có khoảng cách hố khác nhau, nhớ đặt lại aim(n) phù hợp.'
     }),
@@ -443,11 +443,11 @@
       id: 6610, chuong: 'chinh-luc', so: 10, ma: 'chinh-luc.10',
       ten: 'Trùm chỉnh lực mỏ đá', hang: 'trum',
       huyHieu: { ma: 'chinh-luc', ten: 'Tay Hất Chuẩn Tầm' },
-      hamCuaEmCan: ['move', 'forward', 'lob', 'diag_r'],
-      deBai: 'Từ cửa hầm bên trái, hãy gọi `diag_r(1)` để lách chéo vào trục chính ở `(2, 8)`. Sau đó lặp 2 chặng (`for i in range(2):`): quét `g = radar()`, đọc `t = g[1][2]`, nếu bên phải có cọc đá (`t == "#"`) thì `aim(3)`, ngược lại `aim(2)`, rồi gọi `lob()` và `forward(3)`. Cuối cùng gọi `move()` vào cờ.',
-      veMaMau: 'Chương trình có sẵn mới lách vào trục chính bằng diag_r(1). Hãy thêm vòng lặp 2 chặng và lệnh move() cuối.',
+      hamCuaEmCan: ['move', 'forward', 'lob', 'dir_fr'],
+      deBai: 'Từ cửa hầm bên trái, hãy gọi `dir_fr()` để lách chéo vào trục chính ở `(2, 8)`. Sau đó lặp 2 chặng (`for i in range(2):`): quét `g = radar()`, đọc `t = g[1][2]`, nếu bên phải có cọc đá (`t == "#"`) thì `aim(3)`, ngược lại `aim(2)`, rồi gọi `lob()` và `forward(3)`. Cuối cùng gọi `move()` vào cờ.',
+      veMaMau: 'Chương trình có sẵn mới lách vào trục chính bằng dir_fr(). Hãy thêm vòng lặp 2 chặng và lệnh move() cuối.',
       goiY: [
-        'Sau diag_r(1), viết for i in range(2): rồi quét g = radar().',
+        'Sau dir_fr(), viết for i in range(2): rồi quét g = radar().',
         'Đọc t = g[1][2]; nếu t == "#": aim(3), else: aim(2), tiếp theo gọi lob() và forward(3). Ngoài vòng lặp gọi move().'
       ],
       san: [
@@ -482,9 +482,9 @@
         { x: 1, y: 9, huong: 0 },
         { x: 1, y: 9, huong: 0 }
       ],
-      maMau: bai(['diag_r(1)']),
+      maMau: bai(['dir_fr()']),
       loiGiai: bai([
-        'diag_r(1)',
+        'dir_fr()',
         'for i in range(2):',
         '    g = radar()',
         '    t = g[1][2]',
@@ -498,8 +498,8 @@
       ]),
       sao: { o: 21, nhip: 12 },
       loiSai: [
-        { moTa: 'Mới lách vào trục chính mà chưa vượt qua 2 chặng hố sâu', baiLam: bai(['diag_r(1)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Không chỉnh aim(3) khi gặp cọc đá nên ném đá ngắn rơi chắn đường xe', baiLam: bai(['diag_r(1)', 'for i in range(2):', '    lob()', '    forward(3)', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Mới lách vào trục chính mà chưa vượt qua 2 chặng hố sâu', baiLam: bai(['dir_fr()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không chỉnh aim(3) khi gặp cọc đá nên ném đá ngắn rơi chắn đường xe', baiLam: bai(['dir_fr()', 'for i in range(2):', '    lob()', '    forward(3)', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       loiBinh: 'Kết hợp lách chéo, quét radar và chỉnh lực giúp R1 làm chủ toàn bộ tuyến hầm mỏ.'
     }),
@@ -587,15 +587,15 @@
       loiBinh: 'Trong khi fill_pit() lấp hố cách 2 ô, fill_far() giúp R1 bắc cầu qua những hố cách xa 3 ô.'
     }),
 
-    /* ---- Màn 13 (che-chinh-luc.3): Luyện fill_far(), diag_r() và aim_lob() ---- */
+    /* ---- Màn 13 (che-chinh-luc.3): Luyện fill_far(), dir_fr() và aim_lob() ---- */
     manCL({
       id: 6613, chuong: 'che-chinh-luc', so: 3, ma: 'che-chinh-luc.3',
       ten: 'Chuyển làn lấp hố xa gần', hang: 'luyen',
-      hamCuaEmCan: ['move', 'forward', 'lob', 'diag_r', 'aim_lob', 'fill_far'],
-      deBai: 'Hãy gọi `fill_far()` để vượt hố xa ở nhánh trái, tiếp theo gọi `diag_r(1)` lách sang nhánh phải, rồi gọi `aim_lob(2)` lấp hố gần và `forward(3)` tới cờ.',
-      veMaMau: 'Chương trình có sẵn đã gọi fill_far() và diag_r(1). Hãy thêm aim_lob(2) và forward(3) để về đích.',
+      hamCuaEmCan: ['move', 'forward', 'lob', 'dir_fr', 'aim_lob', 'fill_far'],
+      deBai: 'Hãy gọi `fill_far()` để vượt hố xa ở nhánh trái, tiếp theo gọi `dir_fr()` lách sang nhánh phải, rồi gọi `aim_lob(2)` lấp hố gần và `forward(3)` tới cờ.',
+      veMaMau: 'Chương trình có sẵn đã gọi fill_far() và dir_fr(). Hãy thêm aim_lob(2) và forward(3) để về đích.',
       goiY: [
-        'Sau fill_far() và diag_r(1), R1 đang đứng ở (2, 4) ngay dưới viên đá ở (2, 3) và hố ở (2, 2).',
+        'Sau fill_far() và dir_fr(), R1 đang đứng ở (2, 4) ngay dưới viên đá ở (2, 3) và hố ở (2, 2).',
         'Gọi aim_lob(2) để lấp hố ở (2, 2), rồi gọi forward(3) lên cờ ở (2, 1).'
       ],
       san: [
@@ -611,12 +611,12 @@
         '####'
       ],
       batDau: { x: 1, y: 8, huong: 0 },
-      maMau: bai(['fill_far()', 'diag_r(1)']),
-      loiGiai: bai(['fill_far()', 'diag_r(1)', 'aim_lob(2)', 'forward(3)']),
+      maMau: bai(['fill_far()', 'dir_fr()']),
+      loiGiai: bai(['fill_far()', 'dir_fr()', 'aim_lob(2)', 'forward(3)']),
       sao: { o: 19, nhip: 11 },
       loiSai: [
-        { moTa: 'Dừng lại ở (2, 4) chưa lấp hố nhánh phải và tiến lên cờ', baiLam: bai(['fill_far()', 'diag_r(1)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên gọi aim_lob(2) trước forward(3) ở nhánh phải nên đâm vào viên đá ở (2, 3)', baiLam: bai(['fill_far()', 'diag_r(1)', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Dừng lại ở (2, 4) chưa lấp hố nhánh phải và tiến lên cờ', baiLam: bai(['fill_far()', 'dir_fr()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên gọi aim_lob(2) trước forward(3) ở nhánh phải nên đâm vào viên đá ở (2, 3)', baiLam: bai(['fill_far()', 'dir_fr()', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       loiBinh: 'Nhờ có sẵn fill_far() và aim_lob(n), chương trình chính xử lý hai nhánh mỏ chỉ trong 4 dòng.'
     }),
@@ -730,10 +730,10 @@
       taoHam: ['diag_aim'],
       chinhCoDinh: true,
       hamCuaEmCan: ['lob', 'aim_lob'],
-      deBai: 'Ba viên đá nằm trên bậc thang chéo sang phải nhưng khoảng cách tới máng `D` khác nhau. Hãy viết hàm `diag_aim(n)`: gọi `diag_right()` để lách vào dưới viên đá, rồi gọi `aim_lob(n)` để hất đá bay `n` ô.',
+      deBai: 'Ba viên đá nằm trên bậc thang chéo sang phải nhưng khoảng cách tới máng `D` khác nhau. Hãy viết hàm `diag_aim(n)`: gọi `dir_fr()` để lách vào dưới viên đá, rồi gọi `aim_lob(n)` để hất đá bay `n` ô.',
       veMaMau: 'Chương trình chính đã gọi diag_aim(3), diag_aim(2), diag_aim(3). Hãy viết thân hàm diag_aim(n).',
       goiY: [
-        'Trong def diag_aim(n):, dòng đầu gọi diag_right(), dòng thứ hai gọi aim_lob(n).',
+        'Trong def diag_aim(n):, dòng đầu gọi dir_fr(), dòng thứ hai gọi aim_lob(n).',
         'Chương trình chính sẽ truyền tầm 3, 2, 3 cho 3 bậc đá.'
       ],
       san: [
@@ -750,7 +750,7 @@
       batDau: { x: 1, y: 7, huong: 0 },
       maMau: bai(
         ['diag_aim(3)', 'diag_aim(2)', 'diag_aim(3)'],
-        { hamCuaEmMoi: [H('diag_aim', ['n'], ['diag_right()'])] }
+        { hamCuaEmMoi: [H('diag_aim', ['n'], ['dir_fr()'])] }
       ),
       loiGiai: bai(
         ['diag_aim(3)', 'diag_aim(2)', 'diag_aim(3)'],
@@ -758,10 +758,10 @@
       ),
       sao: { o: 11, nhip: 9 },
       loiSai: [
-        { moTa: 'Trong diag_aim(n) chỉ lách chéo mà chưa gọi aim_lob(n)', baiLam: bai(['diag_aim(3)', 'diag_aim(2)', 'diag_aim(3)']), hamCuaEmMoi: [H('diag_aim', ['n'], ['diag_right()'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Trong diag_aim(n) gọi aim_lob(n) trước diag_right() nên xúc hụt', baiLam: bai(['diag_aim(3)', 'diag_aim(2)', 'diag_aim(3)']), hamCuaEmMoi: [H('diag_aim', ['n'], ['aim_lob(n)', 'diag_right()'])], phaiCoMa: ['nap-hut', 'nem-vo'] }
+        { moTa: 'Trong diag_aim(n) chỉ lách chéo mà chưa gọi aim_lob(n)', baiLam: bai(['diag_aim(3)', 'diag_aim(2)', 'diag_aim(3)']), hamCuaEmMoi: [H('diag_aim', ['n'], ['dir_fr()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Trong diag_aim(n) gọi aim_lob(n) trước dir_fr() nên xúc hụt', baiLam: bai(['diag_aim(3)', 'diag_aim(2)', 'diag_aim(3)']), hamCuaEmMoi: [H('diag_aim', ['n'], ['aim_lob(n)', 'dir_fr()'])], phaiCoMa: ['nap-hut', 'nem-vo'] }
       ],
-      loiBinh: 'Hàm diag_aim(n) nâng cấp diag_lob() bằng tham số tầm ném n.'
+      loiBinh: 'Hàm diag_aim(n) gộp một bước chéo với cú hất có tầm n.'
     }),
 
     /* ---- Màn 17 (che-chinh-luc.7): Luyện diag_aim(n) và auto_aim() (2 sân) ---- */
@@ -932,10 +932,10 @@
       ten: 'Trùm chế lệnh chỉnh lực', hang: 'trum',
       huyHieu: { ma: 'che-chinh-luc', ten: 'Bậc Thầy Chỉnh Lực' },
       hamCuaEmCan: ['move', 'forward', 'lob', 'aim_lob', 'fill_far', 'auto_aim'],
-      deBai: 'Từ `(1, 9)`, hãy gọi `fill_far()` để vượt hố xa ở nhánh trái lên `(1, 6)`, tiếp theo gọi `diag_right()` để lách sang trục chính ở `(2, 5)`, rồi gọi `auto_aim()` và `move()` để vượt chặng cuối tới cờ.',
-      veMaMau: 'Chương trình có sẵn đã gọi fill_far() và diag_right(). Hãy thêm auto_aim() và move() để về đích.',
+      deBai: 'Từ `(1, 9)`, hãy gọi `fill_far()` để vượt hố xa ở nhánh trái lên `(1, 6)`, tiếp theo gọi `dir_fr()` để lách sang trục chính ở `(2, 5)`, rồi gọi `auto_aim()` và `move()` để vượt chặng cuối tới cờ.',
+      veMaMau: 'Chương trình có sẵn đã gọi fill_far() và dir_fr(). Hãy thêm auto_aim() và move() để về đích.',
       goiY: [
-        'Bước 1: fill_far() đưa R1 từ (1, 9) lên (1, 6), rồi diag_right() lách sang (2, 5).',
+        'Bước 1: fill_far() đưa R1 từ (1, 9) lên (1, 6), rồi dir_fr() lách sang (2, 5).',
         'Bước 2: gọi auto_aim() để R1 tự chọn tầm lấp hố và tiến lên (2, 2), cuối cùng gọi move() vào cờ ở (2, 1).'
       ],
       san: [
@@ -970,14 +970,14 @@
         { x: 1, y: 9, huong: 0 },
         { x: 1, y: 9, huong: 0 }
       ],
-      maMau: bai(['fill_far()', 'diag_right()']),
-      loiGiai: bai(['fill_far()', 'diag_right()', 'auto_aim()', 'move()']),
+      maMau: bai(['fill_far()', 'dir_fr()']),
+      loiGiai: bai(['fill_far()', 'dir_fr()', 'auto_aim()', 'move()']),
       sao: { o: 23, nhip: 12 },
       loiSai: [
-        { moTa: 'Mới lách sang trục chính ở (2, 5) mà chưa gọi auto_aim() và move()', baiLam: bai(['fill_far()', 'diag_right()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Dùng fill_far() ở chặng cuối thay vì auto_aim() nên ở sân 2 đá bay vọt qua hố cách 2 ô', baiLam: bai(['fill_far()', 'diag_right()', 'fill_far()', 'move()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Mới lách sang trục chính ở (2, 5) mà chưa gọi auto_aim() và move()', baiLam: bai(['fill_far()', 'dir_fr()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Dùng fill_far() ở chặng cuối thay vì auto_aim() nên ở sân 2 đá bay vọt qua hố cách 2 ô', baiLam: bai(['fill_far()', 'dir_fr()', 'fill_far()', 'move()']), phaiCoMa: ['roi-ho'] }
       ],
-      loiBinh: 'Phối hợp fill_far(), diag_right() và auto_aim() giúp R1 chinh phục trọn vẹn gói Chỉnh lực hất.'
+      loiBinh: 'Phối hợp fill_far(), dir_fr() và auto_aim() giúp R1 chinh phục trọn vẹn gói Chỉnh lực hất.'
     })
   ];
 
