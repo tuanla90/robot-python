@@ -190,7 +190,7 @@ for (const d of DS_MAN) {
   }
   if (d.ghep) {
     kiem(d.ma + ': gói 10: nhipTheo tong, nhiều sân', m.nhipTheo === 'tong' && n >= 2);
-    kiem(d.ma + ': ghép ngăn xếp + hàng đợi: mỗi sân có chồng ≥ 3 container mà tàu đầu hàng KHÔNG cần cái trên cùng', [...Array(n).keys()].every((k) => {
+    kiem(d.ma + ': ghép ngăn xếp + hàng đợi: có sân mà chồng ≥ 3 container và tàu đầu hàng KHÔNG cần cái trên cùng (phải cất), có sân tàu cần ngay cái trên cùng', [...Array(n).keys()].some((k) => hangCua(m, k).can[0] === (n > 1 ? m.chong[k] : m.chong)[0].cont.slice(-1)[0].so) && [...Array(n).keys()].some((k) => {
       const ch = (n > 1 ? m.chong[k] : m.chong).filter((c) => c.cont.length >= 3);
       return ch.length >= 1 && ch.every((c) => c.cont[c.cont.length - 1].so !== hangCua(m, k).can[0]);
     }));

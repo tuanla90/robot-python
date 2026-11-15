@@ -590,7 +590,7 @@
   "trum-mua-cang.4": { "o": 32, "nhip": 30 },
   "trum-mua-cang.5": { "o": 29, "nhip": 54 },
   "trum-mua-cang.6": { "o": 40, "nhip": 74 },
-  "trum-mua-cang.7": { "o": 37, "nhip": 60 },
+  "trum-mua-cang.7": { "o": 30, "nhip": 78 },
   "trum-mua-cang.8": { "o": 38, "nhip": 66 },
   "trum-mua-cang.9": { "o": 44, "nhip": 51 },
   "trum-mua-cang.10": { "o": 42, "nhip": 112 },

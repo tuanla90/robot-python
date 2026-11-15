@@ -133,6 +133,43 @@
     return Object.assign({ moTa: moTa, baiLam: baiLam, phaiCoMa: phaiCoMa, cung: true }, them || {});
   }
 
+  /* --- Hàng tàu nối đuôi (ghép nhịp 3d, 15/11): boong rộng hai ô (3, 2), (4, 2) để bệ ở x = 3 hay x = 4 đều chĩa nấc 0 vào bến; tàu chờ nối đuôi bên phải --- */
+  var SAN_HANG_TAU = [
+    '#########',
+    '#~~~~~~~#',
+    '#~~TT~~~#',
+    '#RRRRRRR#',
+    '#DDDDDDD#',
+    '#DDDDDDD#',
+    '#########'
+  ];
+  function hangTau(can) {
+    return { o: [{ x: 3, y: 2 }, { x: 4, y: 2 }], can: can.slice(), cho: [{ x: 5, y: 2 }, { x: 6, y: 2 }, { x: 7, y: 2 }] };
+  }
+  // Ngăn xếp + hàng đợi: c = số tàu đầu hàng cần. Đỉnh chồng A đúng thì giao; không thì xem đỉnh bãi tạm B; không nữa thì cất đỉnh A sang B.
+  var T_NGAN_XEP_HANG_DOI = [
+    'c = read_code()',
+    'while c != -1:',
+    '    swing_by(2)',
+    '    a = read_code()',
+    '    if a == c:',
+    '        carry_by(2)',
+    '    else:',
+    '        rail(1)',
+    '        b = read_code()',
+    '        if b == c:',
+    '            carry_by(2)',
+    '            rail(-1)',
+    '        else:',
+    '            rail(-1)',
+    '            pick_up()',
+    '            rail(1)',
+    '            set_down()',
+    '            rail(-1)',
+    '            swing_by(2)',
+    '    c = read_code()'
+  ];
+
   /* --- Ham moi cua Chuong 2 (trum-mua-cang) --- */
   var T_SMART_SLIDE = ['rail(s)', 'safe_carry(2)'];
   var T_VAULT_RAIL = ['rail(s)', 'vault_stack(n, 2)'];
@@ -789,35 +826,33 @@
       goiY: ['Luna: port_sweep(2) đưa R1 quét qua cột 2 và cột 3 rồi dừng ở (3, 3) hướng nấc 2.', 'Luna: Từ (3, 3), gọi vault_rail(1, 2) sẽ trượt sang (4, 3) và bốc 2 kiện ở (4, 5) qua rào lên tàu!']
     }),
 
+    // 15/11 (ghép nhịp 3d): NGĂN XẾP + HÀNG ĐỢI. Chồng A ở (3, 4) chỉ lấy được kiện trên cùng; hàng tàu nối đuôi (boong rộng hai ô (3, 2), (4, 2)) nhận theo thứ tự hàng;
+    // bãi tạm B ở (4, 4). Mỗi sân một chồng, một hàng tàu: phải đọc số tàu cần rồi mới biết cất hay giao. (Thay màn "Nhấc qua hố sâu rồi lùi quét cột giữa".)
     manTrum({
-      so: 7, ten: 'Nhấc qua hố sâu rồi lùi quét cột giữa',
-      taiToiDa: 4,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'carry2_by', 'carry_n', 'safe_carry', 'over_wall', 'smart_slide', 'belt_rail'],
-      deBai: 'Hai ngày làm việc với hố sâu u ở (4, 4) chắn trước kiện hàng tại (4, 5): R1 bắt đầu tại (1, 3), hãy gọi smart_slide(1) để dọn cột 2, tiếp theo gọi belt_rail(2, 2) trượt sang cột 4 nhấc kiện hàng ở (4, 5) lên tàu, rồi gọi smart_slide(-1) lùi về cột 3 bốc nốt chồng hàng ở (3, 4)!',
-      veMaMau: 'Gọi smart_slide(1), belt_rail(2, 2) rồi smart_slide(-1).',
-      san: [SAN_CANG_BANG, SAN_CANG_BANG],
-      batDau: { x: 1, y: 3, nac: 2, tam: 1 },
+      so: 7, ten: 'Ngăn xếp gặp hàng đợi',
+      khung: { chinh: 18, moiHam: 10 },
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
+      deBai: 'Sola thử tài: ba ngày, mỗi ngày ba tàu nối đuôi. Hàng nằm trong một chồng ở ô (3, 4): chỉ lấy được kiện trên cùng. Tàu lại nhận theo thứ tự hàng. Kiện chưa tới lượt thì cất sang bãi tạm ở ô (4, 4). Mỗi ngày một bộ số.',
+      veMaMau: 'Mã mẫu đã lo hai trường hợp: tàu cần kiện trên cùng của chồng, hay kiện trên cùng của bãi tạm. Hãy viết nhánh cuối: cất kiện chưa tới lượt sang bãi tạm rồi quay cần về boong.',
+      san: [SAN_HANG_TAU, SAN_HANG_TAU, SAN_HANG_TAU],
+      batDau: { x: 3, y: 3, nac: 0, tam: 1 },
       chong: [
-        [CW(2, 4, [[14, 1], [12, 1]]), CW(3, 4, [[26, 3], [25, 3]]), CW(4, 5, [[38, 2]])],
-        [CW(2, 4, [[19, 3], [17, 3]]), CW(3, 4, [[24, 1], [22, 1]]), CW(4, 5, [[35, 2]])]
+        [CW(3, 4, [[5, 1], [2, 1], [8, 1]])],
+        [CW(3, 4, [[6, 1], [3, 1], [9, 1]])],
+        [CW(3, 4, [[4, 1], [7, 1], [1, 1]])]
       ],
-      tau: [tauDon(30, 2), tauDon(30, 2)],
-      giao: [
-        [{ tau: 0, so: [12, 14, 25, 26, 38] }],
-        [{ tau: 0, so: [17, 19, 22, 24, 35] }]
-      ],
-      maMau: B(['smart_slide(1)', 'belt_rail(2, 2)']),
-      loiGiai: B([
-        'smart_slide(1)',
-        'belt_rail(2, 2)',
-        'smart_slide(-1)'
-      ]),
-      sao: { o: 37, nhip: 60 },
+      hangTau: [hangTau([2, 8, 5]), hangTau([9, 3, 6]), hangTau([7, 1, 4])],
+      maMau: B(T_NGAN_XEP_HANG_DOI.slice(0, 13).concat(['            wait()', '    c = read_code()'])),
+      loiGiai: B(T_NGAN_XEP_HANG_DOI),
+      sao: { o: 30, nhip: 78 },
       loiSai: [
-        cung('Ở cột 3 dùng cứng carry2_by(2) theo ngày 2: ở ngày 1 gặp cặp 3 tấn bị quá tải', B(['smart_slide(1)', 'belt_rail(2, 2)', 'rail(-1)', 'carry2_by(2)']), ['qua-tai']),
-        { moTa: 'Quên gọi smart_slide(-1) để lùi về cột 3 bốc chồng hàng ở (3, 4)', baiLam: B(['smart_slide(1)', 'belt_rail(2, 2)']), phaiCoMa: ['chua-giao-tau'] }
+        cung('Làm theo ngày 1: cất kiện trên cùng, giao kiện giữa, lấy lại kiện đã cất, giao kiện dưới. Ngày 2 tàu đầu hàng cần ngay kiện trên cùng',
+          B(['swing_by(2)', 'pick_up()', 'rail(1)', 'set_down()', 'rail(-1)', 'carry_by(2)', 'rail(1)', 'swing_by(2)', 'carry_by(2)', 'rail(-1)', 'swing_by(2)', 'carry_by(2)']), ['giao-nham'], { theoSan1: true }),
+        { moTa: 'Không đọc bảng số: cứ lấy kiện trên cùng của chồng mà giao', baiLam: B(['for i in range(3):', '    swing_by(2)', '    carry_by(2)']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Quên xem bãi tạm: kiện tàu cần nằm ở bãi tạm mà vẫn cất thêm, tới lúc chồng trống thì móc hụt',
+          baiLam: B(['c = read_code()', 'while c != -1:', '    swing_by(2)', '    a = read_code()', '    if a == c:', '        carry_by(2)', '    else:', '        pick_up()', '        rail(1)', '        set_down()', '        rail(-1)', '        swing_by(2)', '    c = read_code()']), phaiCoMa: ['moc-hut'] }
       ],
-      goiY: ['Luna: Sau belt_rail(2, 2), R1 đang đứng ở (4, 3) hướng nấc 2.', 'Luna: Gọi smart_slide(-1) sẽ lùi R1 về (3, 3) và tự động cân tải bốc hết chồng hàng ở (3, 4)!']
+      goiY: ['Luna: Chồng hàng là ngăn xếp: vào sau ra trước. Hàng tàu là hàng đợi: tới trước nhận trước.', 'Luna: Nhánh cuối: rail(-1) về chồng, pick_up(), rail(1), set_down(), rail(-1), rồi swing_by(2) về boong.']
     }),
 
     manTrum({
