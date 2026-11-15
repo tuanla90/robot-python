@@ -1906,7 +1906,7 @@
     'can-cau': 'Quay cần vươn tầm', 'so-am': 'Số âm và khoảng cách',
     'moc-cau': 'Nhấc container', 'chia-du': 'Chia phần nguyên, phần dư',
     'quet-ma': 'Đọc mã số', 'che-quet-ma': 'Chế lệnh: phân loại theo mã',
-    'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: giao đúng tàu',
+    'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: hàng tàu nối đuôi',
     'duong-ray': 'Chạy dọc đường ray', 'che-duong-ray': 'Chế lệnh: dời bệ cẩu',
     'nhac-doi': 'Móc đôi hai tầng', 'che-nhac-doi': 'Chế lệnh: bốc nhanh',
     'can-tai': 'Đo sức nặng', 'che-can-tai': 'Chế lệnh: giữ cần an toàn',

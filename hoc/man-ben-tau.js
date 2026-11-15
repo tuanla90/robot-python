@@ -2,7 +2,7 @@
    man-ben-tau.js — "Robot Chấn Hưng": GÓI 4 MÙA 4 "CẢNG SÔNG" (BẾN TÀU & LUẬT THÁP)
    Gồm 20 màn mới trên Cần cẩu R1 gắn móc cẩu + đầu đọc mã (quet-ma):
    - ben-tau.1..10     (10 màn chương ben-tau "Tàu cập bến")
-   - che-ben-tau.1..10 (10 màn chương che-ben-tau "Chế lệnh: giao đúng tàu")
+   - che-ben-tau.1..10 (10 màn chương che-ben-tau "Chế lệnh: hàng tàu nối đuôi": hàng đợi, cfg.hangTau; 15/11 làm lại)
    ========================================================================== */
 (function () {
   'use strict';
@@ -76,27 +76,7 @@
     };
   }
 
-  // Các hàm chế ở Gói 4 chương che-ben-tau
-  var T_WAIT_TICKS = [
-    'for i in range(n):',
-    '    wait()'
-  ];
-  var T_SHIP_PAIR = [
-    'c = read_code()',
-    't = c // 10',
-    'if t == 1:',
-    '    carry_by(-1)',
-    '    swing_by(1)',
-    'else:',
-    '    carry_by(1)',
-    '    swing_by(-1)'
-  ];
-  var T_SHIP_ALL_PAIR = [
-    'c = read_code()',
-    'while c != -1:',
-    '    ship_pair()',
-    '    c = read_code()'
-  ];
+  // Hàm chế ở chương che-ben-tau (hàng tàu nối đuôi). move_tower2 giữ nguyên tên, chữ ký, thân: gói 7, 9, 10 còn gọi.
   var T_MOVE_TOWER2 = [
     'carry_by(d1)',
     'swing_by(-d1)',
@@ -106,41 +86,65 @@
     't = d2 - d1',
     'carry_by(t)'
   ];
-  var T_FILTER_SHIP_SAI = [
+  // serve_ship(): cần đang chĩa boong (nấc 0). Đọc số tàu đầu hàng cần, quay phải tìm kiện có số đó (đếm d nấc), mang về boong.
+  var T_SERVE_SHIP = [
     'c = read_code()',
-    'while c != -1:',
-    '    k = c % 10',
-    '    if k == t:',
-    '        carry_by(-1)',
-    '        swing_by(1)',
-    '    else:',
-    '        carry_by(1)',
-    '        swing_by(-1)',
-    '    c = read_code()'
+    'd = 1',
+    'swing_by(1)',
+    'k = read_code()',
+    'while k != c:',
+    '    swing_by(1)',
+    '    d = d + 1',
+    '    k = read_code()',
+    't = 0 - d',
+    'carry_by(t)'
   ];
-  var T_FILTER_SHIP_DUNG = [
+  // Màn 7 (trình diễn): kiện ở nấc 1 và nấc 3
+  var T_DOC_BANG_7 = [
     'c = read_code()',
-    'while c != -1:',
-    '    k = c // 10',
-    '    if k == t:',
-    '        carry_by(-1)',
-    '        swing_by(1)',
-    '    else:',
-    '        carry_by(1)',
-    '        swing_by(-1)',
-    '    c = read_code()'
+    'swing_by(1)',
+    'k = read_code()',
+    'if k == c:',
+    '    carry_by(-1)',
+    '    swing_by(-1)',
+    '    carry_by(1)',
+    'else:',
+    '    swing_by(2)',
+    '    carry_by(1)',
+    '    swing_by(1)',
+    '    carry_by(-1)'
   ];
-  var T_SHIP_TOWER2 = [
-    'wait_ticks(w)',
-    'move_tower2(d1, d2)'
+  // Màn 8 (ép): kiện ở nấc 1 và nấc 2
+  var T_DOC_BANG_8 = [
+    'c = read_code()',
+    'swing_by(1)',
+    'k = read_code()',
+    'if k == c:',
+    '    carry_by(-1)',
+    '    swing_by(2)',
+    '    carry_by(2)',
+    'else:',
+    '    swing_by(1)',
+    '    carry_by(2)',
+    '    swing_by(1)',
+    '    carry_by(-1)'
   ];
-
-  function hWaitTicks(than) { return H('wait_ticks', ['n'], than || T_WAIT_TICKS); }
-  function hShipPair(than) { return H('ship_pair', [], than || T_SHIP_PAIR); }
-  function hShipAllPair(than) { return H('ship_all_pair', [], than || T_SHIP_ALL_PAIR); }
   function hMoveTower2(than) { return H('move_tower2', ['d1', 'd2'], than || T_MOVE_TOWER2); }
-  function hFilterShip(than) { return H('filter_ship', ['t'], than || T_FILTER_SHIP_DUNG); }
-  function hShipTower2(than) { return H('ship_tower2', ['w', 'd1', 'd2'], than || T_SHIP_TOWER2); }
+  function hServeShip(than) { return H('serve_ship', [], than || T_SERVE_SHIP); }
+
+  // Bến hàng tàu nối đuôi: bệ (3, 3); boong (3, 2) ở nấc 0; bãi nấc 1 (4, 3), nấc 2 (3, 4), nấc 3 (2, 3); tàu chờ nối đuôi bên phải bến
+  var SAN_HANG = [
+    '~~~~~~~',
+    '~~~~~~~',
+    '~~~T~~~',
+    '.DD.DD.',
+    '...D...',
+    '...D...',
+    '.......'
+  ];
+  function hangTau(can) {
+    return { o: [{ x: 3, y: 2 }], can: can.slice(), cho: [{ x: 4, y: 2 }, { x: 5, y: 2 }, { x: 6, y: 2 }] };
+  }
 
   function manBenTau(cfg) {
     return ManHoc.chuanHoa(Object.assign({
@@ -570,192 +574,107 @@
     }),
 
     /* ========================================================================
-       CHƯƠNG 2: che-ben-tau (10 màn) — Chế lệnh: giao đúng tàu
+       CHƯƠNG 2: che-ben-tau (10 màn) — Chế lệnh: hàng tàu nối đuôi (HÀNG ĐỢI, kế hoạch ghép nhịp 3d, 15/11)
+       Một bến, nhiều tàu nối đuôi (cfg.hangTau). Chỉ tàu đầu hàng ở boong, mỗi tàu cần đúng một container.
+       1 trình diễn · 2 ép thứ tự · 3 vòng lặp · 4 bãi tạm · 5 move_tower2 (gói 7, 9, 10 còn gọi) · 6 hai tháp
+       7 trình diễn read_code() ở boong · 8 ép 3 sân · 9 serve_ship() · 10 trùm
        ======================================================================== */
     manCheBenTau({
-      so: 1, ten: 'Chế hàm wait_ticks(n)', hang: 'lam-quen',
-      taoHam: ['wait_ticks'],
+      so: 1, ten: 'Hàng tàu nối đuôi', hang: 'lam-quen',
+      chiChay: true, chinhCoDinh: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế wait_ticks(n) đứng chờ đúng n nhịp bằng vòng lặp for. Dùng hàm đó chờ 2 nhịp cho tàu cập bến, chuyển kiện 19 từ nấc 1 lên boong tàu ở nấc 0 rồi chờ thêm 2 nhịp cho tàu đi.',
-      veMaMau: 'Tạo hàm wait_ticks(n) rồi gọi wait_ticks(2), carry_by(-1), wait_ticks(2).',
-      san: SAN_BEN_1,
+      deBai: 'Sola làm mẫu: hôm nay bến có hai tàu nối đuôi. Tàu tới trước đỗ ở boong, bảng ghi số nó cần. Tàu sau chờ ngoài sông. Bấm Chạy để xem.',
+      veMaMau: 'Chương trình mẫu đã khóa. Bấm Chạy: tàu đầu nhận kiện 2 rồi rời bến, tàu sau mới vào.',
+      san: SAN_HANG,
       batDau: { x: 3, y: 3, nac: 1, tam: 1 },
-      chong: [C(4, 3, [19])],
-      tau: tauDon(4, 3, 4),
-      giao: [{ tau: 0, so: [19] }],
-      maMau: bai([
-        'wait_ticks(2)',
-        'carry_by(-1)',
-        'wait_ticks(2)'
-      ]),
-      loiGiai: bai(
-        ['wait_ticks(2)', 'carry_by(-1)', 'wait_ticks(2)'],
-        { hamCuaEmMoi: [hWaitTicks()] }
-      ),
+      chong: [C(4, 3, [8, 2])],
+      hangTau: hangTau([2, 8]),
+      maMau: bai(['carry_by(-1)', 'swing_by(1)', 'carry_by(-1)']),
+      loiGiai: bai(['carry_by(-1)', 'swing_by(1)', 'carry_by(-1)']),
       sao: { o: 15, nhip: 7 },
-      loiGiaiKhac: {
-        moTa: 'Gọi wait_ticks(1) hai lần ở đầu chương trình',
-        baiLam: bai(['wait_ticks(1)', 'wait_ticks(1)', 'carry_by(-1)', 'wait_ticks(2)']),
-        hamCuaEmMoi: [hWaitTicks()]
-      },
-      loiSai: [
-        { moTa: 'Chưa tạo hàm wait_ticks mà đã bấm Chạy', baiLam: bai(['wait_ticks(2)', 'carry_by(-1)', 'wait_ticks(2)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Chờ thiếu nhịp ở cuối nên tàu chưa rời bến', baiLam: bai(['wait_ticks(2)', 'carry_by(-1)', 'wait_ticks(1)']), hamCuaEmMoi: [hWaitTicks()], phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: Thân hàm wait_ticks(n) gồm for i in range(n): và wait().', 'Luna: Chương trình chính gọi wait_ticks(2), carry_by(-1), wait_ticks(2).']
+      loiSai: [],
+      goiY: ['Luna: Bấm nút Chạy để xem hai tàu lần lượt nhận hàng.', 'Luna: Đây là hàng đợi: tàu tới trước nhận trước.']
     }),
 
     manCheBenTau({
-      so: 2, ten: 'Đón hai chuyến tàu', hang: 'lam-quen',
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'wait_ticks'],
-      deBai: 'Sola nhờ bạn: tàu đỗ 3 nhịp rồi rời bến 2 nhịp mới quay lại. Hãy đưa kiện đầu tiên từ nấc 1 lên tàu ở nấc 0, quay về nấc 1 chờ tàu quay lại bằng wait_ticks(1), rồi đưa nốt kiện thứ hai lên tàu.',
-      veMaMau: 'Sau carry_by(-1) và swing_by(1), hãy gọi wait_ticks(1) rồi carry_by(-1).',
-      san: SAN_BEN_1,
+      so: 2, ten: 'Tàu tới trước nhận trước', hang: 'lam-quen',
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
+      deBai: 'Sola nhờ bạn: giao hàng cho hai tàu nối đuôi. Nhìn bảng số ở boong: tàu đầu hàng cần kiện nào thì giao kiện đó trước. Bạn không chọn được tàu. Giao nhầm là thua.',
+      veMaMau: 'Mã mẫu mới quay cần sang kiện 9. Hãy giao kiện 9, rồi giao kiện 3.',
+      san: SAN_HANG,
       batDau: { x: 3, y: 3, nac: 1, tam: 1 },
-      chong: [C(4, 3, [15, 25])],
-      tau: tauDon(3, 2),
-      giao: [{ tau: 0, so: [15, 25] }],
-      maMau: bai([
-        'carry_by(-1)',
-        'swing_by(1)'
-      ]),
-      loiGiai: bai([
-        'carry_by(-1)',
-        'swing_by(1)',
-        'wait_ticks(1)',
-        'carry_by(-1)'
-      ]),
-      sao: { o: 18, nhip: 8 },
+      chong: [C(4, 3, [3]), C(2, 3, [9])],
+      hangTau: hangTau([9, 3]),
+      maMau: bai(['swing_by(2)']),
+      loiGiai: bai(['swing_by(2)', 'carry_by(1)', 'swing_by(1)', 'carry_by(-1)']),
+      sao: { o: 16, nhip: 9 },
       loiGiaiKhac: {
-        moTa: 'Thêm chú thích cho hai chuyến tàu',
-        baiLam: bai([
-          '# chuyến 1 và chuyến 2',
-          'carry_by(-1)',
-          'swing_by(1)',
-          'wait_ticks(1)',
-          'carry_by(-1)'
-        ])
+        moTa: 'Thêm chú thích: tàu đầu hàng cần kiện 9',
+        baiLam: bai(['# kiện 9 trước, kiện 3 sau', 'swing_by(2)', 'carry_by(1)', 'swing_by(1)', 'carry_by(-1)'])
       },
       loiSai: [
-        { moTa: 'Không chờ tàu quay lại nên hạ kiện thứ hai lúc tàu còn vắng', baiLam: bai(['carry_by(-1)', 'swing_by(1)', ' pick_up()'.trim(), 'set_down()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Mới giao 1 kiện ở chuyến đầu tiên', baiLam: bai(['carry_by(-1)', 'swing_by(1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Giao kiện 3 ở gần trước: tàu đầu hàng cần kiện 9 nên giao nhầm', baiLam: bai(['carry_by(-1)', 'swing_by(-1)', 'carry_by(1)']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Mới giao kiện 9 cho tàu đầu, tàu sau còn chờ', baiLam: bai(['swing_by(2)', 'carry_by(1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Chuyến đầu rời bến ở cuối nhịp 3; nhịp 4 quay về nấc 1 bằng swing_by(1), nhịp 5 chờ bằng wait_ticks(1) để cuối nhịp 5 tàu cập lại.', 'Luna: Sau wait_ticks(1), gọi carry_by(-1) để giao kiện thứ hai ở nhịp 6..8.']
+      goiY: ['Luna: Tàu đầu hàng cần kiện 9. Kiện 9 nằm bên trái bệ, ở nấc 3.', 'Luna: Tàu đầu rời bến thì bảng số đổi sang 3. Lúc đó mới giao kiện 3.']
     }),
 
     manCheBenTau({
-      so: 3, ten: 'Chế hàm ship_pair()', hang: 'lam-quen',
-      taoHam: ['ship_pair'],
+      so: 3, ten: 'Ba tàu một chồng', hang: 'lam-quen',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_pair() đọc kiện hàng ở cầu cảng nấc 0: đọc c = read_code(), t = c // 10, nếu t == 1 thì carry_by(-1) rồi swing_by(1) sang Tàu 1, ngược lại thì carry_by(1) rồi swing_by(-1) sang Tàu 2.',
-      veMaMau: 'Tạo hàm ship_pair() rồi gọi 2 lần để giao 2 kiện ở cầu cảng nấc 0.',
-      san: SAN_BEN_3,
-      batDau: { x: 3, y: 3, nac: 0, tam: 1 },
-      chong: [C(3, 2, [27, 14])],
-      tau: tauHaiBen(8, 2),
-      giao: [{ tau: 0, so: [14] }, { tau: 1, so: [27] }],
-      maMau: bai([
-        'ship_pair()',
-        'ship_pair()'
-      ]),
-      loiGiai: bai(
-        ['ship_pair()', 'ship_pair()'],
-        { hamCuaEmMoi: [hShipPair()] }
-      ),
-      sao: { o: 22, nhip: 8 },
+      deBai: 'Sola nhờ bạn: ba tàu nối đuôi cần kiện 4, rồi 7, rồi 5. Chồng hàng ở nấc 1 xếp sẵn đúng thứ tự đó từ trên xuống. Hãy giao hết bằng một vòng lặp.',
+      veMaMau: 'Mã mẫu mới giao một kiện rồi quay về chồng. Hãy lặp lại cho đủ ba tàu.',
+      san: SAN_HANG,
+      batDau: { x: 3, y: 3, nac: 1, tam: 1 },
+      chong: [C(4, 3, [5, 7, 4])],
+      hangTau: hangTau([4, 7, 5]),
+      maMau: bai(['carry_by(-1)', 'swing_by(1)']),
+      loiGiai: bai(['for i in range(3):', '    carry_by(-1)', '    swing_by(1)']),
+      sao: { o: 15, nhip: 11 },
       loiGiaiKhac: {
-        moTa: 'Dùng vòng for 2 lần gọi ship_pair()',
-        baiLam: bai(['for i in range(2):', '    ship_pair()']),
-        hamCuaEmMoi: [hShipPair()]
+        moTa: 'Viết ba lần không dùng vòng lặp',
+        baiLam: bai(['carry_by(-1)', 'swing_by(1)', 'carry_by(-1)', 'swing_by(1)', 'carry_by(-1)'])
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm ship_pair mà đã bấm Chạy', baiLam: bai(['ship_pair()', 'ship_pair()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Mới gọi ship_pair() 1 lần nên còn 1 kiện chưa giao', baiLam: bai(['ship_pair()']), hamCuaEmMoi: [hShipPair()], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Vòng lặp mới chạy 2 lần nên tàu thứ ba còn chờ', baiLam: bai(['for i in range(2):', '    carry_by(-1)', '    swing_by(1)']), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Quên quay về chồng hàng nên lần sau móc vào boong trống', baiLam: bai(['for i in range(3):', '    carry_by(-1)']), phaiCoMa: ['moc-hut'] }
       ],
-      goiY: ['Luna: Đọc c = read_code(), t = c // 10. Nhánh if t == 1: gồm carry_by(-1) và swing_by(1).', 'Luna: Nhánh else: gồm carry_by(1) và swing_by(-1).']
+      goiY: ['Luna: Mỗi tàu cần hai việc: carry_by(-1) rồi swing_by(1).', 'Luna: Có ba tàu nên dùng for i in range(3):.']
     }),
 
     manCheBenTau({
-      so: 4, ten: 'Chế hàm ship_all_pair()', hang: 'luyen-tap',
-      taoHam: ['ship_all_pair'],
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'ship_pair'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_all_pair(): đọc c = read_code(), lặp while c != -1: gọi ship_pair() rồi đọc lại c, cho tới khi hết chồng hàng ở cầu cảng nấc 0.',
-      veMaMau: 'Tạo hàm ship_all_pair() rồi gọi ở chương trình chính.',
-      san: SAN_BEN_3,
-      batDau: { x: 3, y: 3, nac: 0, tam: 1 },
-      chong: [C(3, 2, [18, 23, 11, 29])],
-      tau: tauHaiBen(16, 2),
-      giao: [{ tau: 0, so: [11, 18] }, { tau: 1, so: [23, 29] }],
-      maMau: bai(['ship_all_pair()']),
-      loiGiai: bai(
-        ['ship_all_pair()'],
-        { hamCuaEmMoi: [hShipAllPair()] }
-      ),
-      sao: { o: 25, nhip: 16 },
+      so: 4, ten: 'Kiện chưa tới lượt', hang: 'luyen-tap',
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
+      deBai: 'Sola nhờ bạn: tàu đầu hàng cần kiện 6, nhưng kiện 3 đang đè lên trên. Kiện 3 chưa tới lượt. Hãy cất nó sang bãi trống ở nấc 2, giao kiện 6, rồi mới giao kiện 3.',
+      veMaMau: 'Mã mẫu mới cất kiện 3 sang bãi trống và quay về chồng. Hãy giao kiện 6, rồi lấy lại kiện 3.',
+      san: SAN_HANG,
+      batDau: { x: 3, y: 3, nac: 1, tam: 1 },
+      chong: [C(4, 3, [6, 3])],
+      hangTau: hangTau([6, 3]),
+      maMau: bai(['carry_by(1)', 'swing_by(-1)']),
+      loiGiai: bai(['carry_by(1)', 'swing_by(-1)', 'carry_by(-1)', 'swing_by(2)', 'carry_by(2)']),
+      sao: { o: 17, nhip: 13 },
       loiGiaiKhac: {
-        moTa: 'Thêm dòng chú thích trước khi gọi ship_all_pair()',
-        baiLam: bai(['# phân loại cả chồng lên hai tàu', 'ship_all_pair()']),
-        hamCuaEmMoi: [hShipAllPair()]
+        moTa: 'Thêm chú thích cho bước cất kiện 3 sang bãi tạm',
+        baiLam: bai(['# cất kiện 3 sang bãi tạm', 'carry_by(1)', 'swing_by(-1)', 'carry_by(-1)', 'swing_by(2)', 'carry_by(2)'])
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm ship_all_pair mà đã bấm Chạy', baiLam: bai(['ship_all_pair()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trong ship_all_pair thiếu vòng lặp while nên chỉ giao 1 kiện', baiLam: bai(['ship_all_pair()']), hamCuaEmMoi: [hShipAllPair(['ship_pair()'])], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Giao luôn kiện 3 đang ở trên cùng: tàu đầu hàng cần kiện 6', baiLam: bai(['carry_by(-1)', 'swing_by(1)', 'carry_by(-1)']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Giao kiện 6 xong thì quên lấy lại kiện 3 ở bãi tạm', baiLam: bai(['carry_by(1)', 'swing_by(-1)', 'carry_by(-1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: Thân hàm ship_all_pair() gồm 4 dòng: c = read_code(), while c != -1:, ship_pair() và c = read_code().', 'Luna: Chương trình chính gọi ship_all_pair().']
+      goiY: ['Luna: Chồng hàng chỉ lấy được kiện trên cùng. Tàu lại nhận theo thứ tự hàng.', 'Luna: Giao kiện 6 xong, cần đang ở boong. Bãi tạm cách đó 2 nấc.']
     }),
 
     manCheBenTau({
-      so: 5, ten: 'Đưa hàng ra cầu cảng', hang: 'luyen-tap',
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'clear_stack', 'ship_pair', 'ship_all_pair'],
-      deBai: 'Sola nhờ bạn: phân loại chồng hàng ở cầu cảng nấc 0 (3, 2) lên hai tàu bằng ship_all_pair(), sau đó quay sang nấc 2 (3, 4) chuyển chồng hàng 2 kiện ra nấc 0 bằng clear_stack(2), rồi quay về nấc 0 phân loại nốt.',
-      veMaMau: 'Sau clear_stack(2) ở nấc 2, hãy quay về nấc 0 và gọi ship_all_pair().',
-      san: SAN_BEN_3,
-      batDau: { x: 3, y: 3, nac: 0, tam: 1 },
-      chong: [C(3, 2, [25, 12]), C(3, 4, [16, 21])],
-      tau: tauHaiBen(32, 2),
-      giao: [{ tau: 0, so: [12, 16] }, { tau: 1, so: [21, 25] }],
-      maMau: bai([
-        'ship_all_pair()',
-        'swing_by(2)',
-        'clear_stack(2)'
-      ]),
-      loiGiai: bai([
-        'ship_all_pair()',
-        'swing_by(2)',
-        'clear_stack(2)',
-        'swing_by(2)',
-        'ship_all_pair()'
-      ]),
-      sao: { o: 34, nhip: 32 },
-      loiGiaiKhac: {
-        moTa: 'Dùng swing_by(-2) khi quay về nấc 0',
-        baiLam: bai([
-          'ship_all_pair()',
-          'swing_by(2)',
-          'clear_stack(2)',
-          'swing_by(-2)',
-          'ship_all_pair()'
-        ])
-      },
-      loiSai: [
-        { moTa: 'Mới giao chồng đầu tiên ở nấc 0, chưa lấy chồng ở nấc 2', baiLam: bai(['ship_all_pair()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Đưa chồng ở nấc 2 ra nấc 0 nhưng quên gọi ship_all_pair() lần hai', baiLam: bai(['ship_all_pair()', 'swing_by(2)', 'clear_stack(2)']), phaiCoMa: ['chua-giao-tau'] }
-      ],
-      goiY: ['Luna: Sau clear_stack(2) tại nấc 2, cần cẩu vẫn đứng ở nấc 2.', 'Luna: Gọi swing_by(2) để về nấc 0 rồi gọi ship_all_pair().']
-    }),
-
-    manCheBenTau({
-      so: 6, ten: 'Chế hàm move_tower2(d1, d2)', hang: 'luyen-tap',
+      so: 5, ten: 'Chế hàm move_tower2(d1, d2)', hang: 'luyen-tap',
       taoHam: ['move_tower2'],
-      luatThap: true,
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế move_tower2(d1, d2) dời tháp 2 kiện ở nấc hiện tại sang nấc cách d2, mượn bãi phụ cách d1 làm trung gian. Áp dụng gọi move_tower2(1, -1) để chuyển tháp [26, 13] từ nấc 1 lên tàu ở nấc 0.',
-      veMaMau: 'Hoàn thiện hàm move_tower2(d1, d2) rồi gọi move_tower2(1, -1).',
-      san: SAN_BEN_1,
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế move_tower2(d1, d2). Hàm dời tháp 2 kiện sang chỗ cách d2 nấc, mượn bãi tạm cách d1 nấc. Kiện dưới tới nơi trước, kiện trên tới sau. Dùng hàm đó giao tháp ở nấc 1 cho hai tàu: tàu đầu cần kiện dưới.',
+      veMaMau: 'Tạo hàm move_tower2(d1, d2) rồi gọi move_tower2(1, -1).',
+      san: SAN_HANG,
       batDau: { x: 3, y: 3, nac: 1, tam: 1 },
       chong: [C(4, 3, [26, 13])],
-      tau: tauDon(13, 2),
-      giao: [{ tau: 0, so: [13, 26] }],
+      hangTau: hangTau([26, 13]),
       maMau: bai(['move_tower2(1, -1)']),
       loiGiai: bai(
         ['move_tower2(1, -1)'],
@@ -764,181 +683,141 @@
       sao: { o: 20, nhip: 13 },
       loiGiaiKhac: {
         moTa: 'Thêm chú thích trước lệnh gọi move_tower2(1, -1)',
-        baiLam: bai(['# mượn nấc 3 để dời tháp sang nấc 1', 'move_tower2(1, -1)']),
+        baiLam: bai(['# bãi tạm ở nấc 2, tàu ở nấc 0', 'move_tower2(1, -1)']),
         hamCuaEmMoi: [hMoveTower2()]
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm move_tower2 mà đã bấm Chạy', baiLam: bai(['move_tower2(1, -1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Truyền ngược d1 và d2 nên dời tháp sang nấc 2 thay vì lên tàu ở nấc 0', baiLam: bai(['move_tower2(-1, 1)']), hamCuaEmMoi: [hMoveTower2()], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Truyền ngược d1 và d2 nên kiện trên (13) lên tàu trước: tàu đầu hàng cần 26', baiLam: bai(['move_tower2(-1, 1)']), hamCuaEmMoi: [hMoveTower2()], phaiCoMa: ['giao-nham'] }
       ],
-      goiY: ['Luna: Thân hàm move_tower2(d1, d2) gồm 7 dòng: carry_by(d1), swing_by(-d1), carry_by(d2), t = d1 - d2, swing_by(t), t = d2 - d1, carry_by(t).', 'Luna: Ở chương trình chính gọi move_tower2(1, -1).']
+      goiY: ['Luna: Thân hàm gồm 7 dòng: carry_by(d1), swing_by(-d1), carry_by(d2), t = d1 - d2, swing_by(t), t = d2 - d1, carry_by(t).', 'Luna: Bãi tạm cách 1 nấc, tàu cách -1 nấc: gọi move_tower2(1, -1).']
     }),
 
     manCheBenTau({
-      so: 7, ten: 'Sửa hàm filter_ship(t)', hang: 'bien-the',
-      chinhCoDinh: true,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
-      deBai: 'Sola nhờ bạn: hàm filter_ship(t) của màn cần lọc các kiện có chữ số hàng chục bằng t ở nấc 1 để đưa lên tàu ở nấc 0, còn kiện khác thì cất sang nấc 2. Nhưng hàm đang dùng nhầm % 10 thay vì // 10. Hãy sửa lại hàm filter_ship(t).',
-      veMaMau: 'Chương trình chính đã khóa. Hãy sửa % 10 thành // 10 trong hàm filter_ship(t).',
-      san: SAN_BEN_1,
-      batDau: { x: 3, y: 3, nac: 1, tam: 1 },
-      chong: [C(4, 3, [15, 24, 18])],
-      tau: tauDon(12, 2),
-      giao: [{ tau: 0, so: [15, 18] }],
-      maMau: bai(
-        ['filter_ship(1)'],
-        { hamCuaMan: [hFilterShip(T_FILTER_SHIP_SAI)] }
-      ),
-      loiGiai: bai(
-        ['filter_ship(1)'],
-        { hamCuaMan: [hFilterShip(T_FILTER_SHIP_DUNG)] }
-      ),
-      sao: { o: 23, nhip: 12 },
-      loiGiaiKhac: {
-        moTa: 'Đảo điều kiện if k != t lên trước',
-        baiLam: bai(
-          ['filter_ship(1)'],
-          {
-            hamCuaMan: [H('filter_ship', ['t'], [
-              'c = read_code()',
-              'while c != -1:',
-              '    k = c // 10',
-              '    if k != t:',
-              '        carry_by(1)',
-              '        swing_by(-1)',
-              '    else:',
-              '        carry_by(-1)',
-              '        swing_by(1)',
-              '    c = read_code()'
-            ])]
-          }
-        )
-      },
-      loiSai: [
-        { moTa: 'Để nguyên hàm mẫu dùng % 10 nên cất nhầm cả 3 kiện sang nấc 2', baiLam: bai(['filter_ship(1)'], { hamCuaMan: [hFilterShip(T_FILTER_SHIP_SAI)] }), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Đưa mọi kiện lên tàu nên kiện 24 bị lỗi giao nhầm', baiLam: bai(['filter_ship(1)'], { hamCuaMan: [hFilterShip(['c = read_code()', 'while c != -1:', '    carry_by(-1)', '    swing_by(1)', '    c = read_code()'])] }), phaiCoMa: ['giao-nham'] }
-      ],
-      goiY: ['Luna: Phép % 10 lấy chữ số hàng đơn vị nên không khớp chữ số hàng chục t = 1.', 'Luna: Đổi dòng k = c % 10 thành k = c // 10 là xong.']
-    }),
-
-    manCheBenTau({
-      so: 8, ten: 'Chế hàm ship_tower2(w, d1, d2)', hang: 'bien-the',
-      taoHam: ['ship_tower2'],
-      luatThap: true,
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'wait_ticks', 'move_tower2'],
-      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế ship_tower2(w, d1, d2) gọi wait_ticks(w) rồi gọi move_tower2(d1, d2). Áp dụng gọi ship_tower2(2, 1, -1) để đón tàu cập bến ở cuối nhịp 7 và xếp tháp [30, 15] lên tàu.',
-      veMaMau: 'Tạo hàm ship_tower2(w, d1, d2) rồi gọi ship_tower2(2, 1, -1).',
-      san: SAN_BEN_1,
-      batDau: { x: 3, y: 3, nac: 1, tam: 1 },
-      chong: [C(4, 3, [30, 15])],
-      tau: tauDon(8, 7, 8),
-      giao: [{ tau: 0, so: [15, 30] }],
-      maMau: bai(['ship_tower2(2, 1, -1)']),
-      loiGiai: bai(
-        ['ship_tower2(2, 1, -1)'],
-        { hamCuaEmMoi: [hShipTower2()] }
-      ),
-      sao: { o: 24, nhip: 15 },
-      loiGiaiKhac: {
-        moTa: 'Thêm dòng chú thích trước khi gọi ship_tower2(2, 1, -1)',
-        baiLam: bai(['# chờ 2 nhịp rồi dời tháp', 'ship_tower2(2, 1, -1)']),
-        hamCuaEmMoi: [hShipTower2()]
-      },
-      loiSai: [
-        { moTa: 'Chưa tạo hàm ship_tower2 mà đã bấm Chạy', baiLam: bai(['ship_tower2(2, 1, -1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Không chờ 2 nhịp đầu nên lúc hạ kiện lớn xuống boong thì tàu vẫn chưa cập bến', baiLam: bai(['ship_tower2(0, 1, -1)']), hamCuaEmMoi: [hShipTower2()], phaiCoMa: ['ha-bi-chan'] }
-      ],
-      goiY: ['Luna: Thân hàm ship_tower2(w, d1, d2) gồm wait_ticks(w) và move_tower2(d1, d2).', 'Luna: Gọi ship_tower2(2, 1, -1) ở chương trình chính.']
-    }),
-
-    manCheBenTau({
-      so: 9, ten: 'Hai bến dời tháp', hang: 'bien-the', nhipTheo: 'tong',
-      luatThap: true,
+      so: 6, ten: 'Hai tháp bốn tàu', hang: 'luyen-tap',
       hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'move_tower2'],
-      deBai: 'Sola nhờ bạn: trên hai sân, cần cẩu bắt đầu ở nấc 3 (2, 3). Hãy dời tháp 2 kiện ở nấc 3 lên Tàu 1 ở nấc 0 (3, 2), mượn bãi nấc 2. Sau đó quay sang nấc 1 và vươn ra tầm 2 (5, 3), dời tiếp tháp 2 kiện lên Tàu 2 ở nấc 0 tầm 2 (3, 1), cũng mượn bãi nấc 2.',
-      veMaMau: 'Sau move_tower2(-1, 1), swing_by(1) và extend(), hãy gọi move_tower2(1, -1).',
-      san: [SAN_BEN_4, SAN_BEN_4],
-      batDau: [{ x: 3, y: 3, nac: 3, tam: 1 }, { x: 3, y: 3, nac: 3, tam: 1 }],
-      chong: [
-        [C(2, 3, [22, 11]), C(5, 3, [28, 14])],
-        [C(2, 3, [34, 17]), C(5, 3, [26, 13])]
-      ],
-      tau: [tauHaiTam(28, 2), tauHaiTam(28, 2)],
-      giao: [
-        [{ tau: 0, so: [11, 22] }, { tau: 1, so: [14, 28] }],
-        [{ tau: 0, so: [17, 34] }, { tau: 1, so: [13, 26] }]
-      ],
-      maMau: bai([
-        'move_tower2(-1, 1)',
-        'swing_by(1)',
-        'extend()'
-      ]),
-      loiGiai: bai([
-        'move_tower2(-1, 1)',
-        'swing_by(1)',
-        'extend()',
-        'move_tower2(1, -1)'
-      ]),
-      sao: { o: 23, nhip: 56 },
+      deBai: 'Sola nhờ bạn: bốn tàu nối đuôi. Hai tàu đầu cần tháp bên phải, hai tàu sau cần tháp bên trái. Tàu nào cũng cần kiện dưới trước. Bãi tạm ở nấc 2. Hãy gọi move_tower2 hai lần.',
+      veMaMau: 'Mã mẫu đã giao tháp bên phải và quay sang tháp bên trái. Hãy gọi move_tower2 lần nữa với số âm.',
+      san: SAN_HANG,
+      batDau: { x: 3, y: 3, nac: 1, tam: 1 },
+      chong: [C(4, 3, [14, 31]), C(2, 3, [22, 9])],
+      hangTau: hangTau([14, 31, 22, 9]),
+      maMau: bai(['move_tower2(1, -1)', 'swing_by(-1)']),
+      loiGiai: bai(['move_tower2(1, -1)', 'swing_by(-1)', 'move_tower2(-1, 1)']),
+      sao: { o: 22, nhip: 27 },
       loiGiaiKhac: {
-        moTa: 'Thêm dòng chú thích cho hai lần dời tháp',
-        baiLam: bai([
-          '# dời tháp bên trái rồi bên phải',
-          'move_tower2(-1, 1)',
-          'swing_by(1)',
-          'extend()',
-          'move_tower2(1, -1)'
-        ])
+        moTa: 'Thêm chú thích cho hai lần dời tháp',
+        baiLam: bai(['# tháp phải rồi tháp trái', 'move_tower2(1, -1)', 'swing_by(-1)', 'move_tower2(-1, 1)'])
       },
       loiSai: [
-        { moTa: 'Mới dời tháp thứ nhất lên Tàu 1, chưa dời tháp thứ hai lên Tàu 2', baiLam: bai(['move_tower2(-1, 1)', 'swing_by(1)', 'extend()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Quên extend() nên đầu cần còn ở tầm 1, móc vào ô trống (4, 3)', baiLam: bai(['move_tower2(-1, 1)', 'swing_by(1)', 'move_tower2(1, -1)']), phaiCoMa: ['moc-hut'] }
+        { moTa: 'Gọi lại move_tower2(1, -1) ở tháp bên trái: bãi cách 1 nấc lúc này chính là boong tàu', baiLam: bai(['move_tower2(1, -1)', 'swing_by(-1)', 'move_tower2(1, -1)']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Mới giao tháp bên phải, hai tàu sau còn chờ', baiLam: bai(['move_tower2(1, -1)', 'swing_by(-1)']), phaiCoMa: ['chua-giao-tau'] }
       ],
-      goiY: ['Luna: move_tower2(-1, 1) bắt đầu ở nấc 3 và kết thúc tại nấc 0.', 'Luna: Từ nấc 0, gọi swing_by(1) và extend() để tới tháp thứ hai ở (5, 3) rồi gọi move_tower2(1, -1).']
+      goiY: ['Luna: Sau move_tower2(1, -1), cần đứng ở boong. Tháp bên trái ở nấc 3.', 'Luna: Từ nấc 3, bãi tạm cách -1 nấc, tàu cách 1 nấc.']
     }),
 
     manCheBenTau({
-      so: 10, ten: 'Trùm Chế lệnh: giao đúng tàu', hang: 'trum', nhipTheo: 'tong',
-      luatThap: true,
-      huyHieu: { ma: 'che-ben-tau', ten: 'Huy hiệu Chế lệnh: giao đúng tàu' },
-      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'ship_pair', 'ship_all_pair', 'move_tower2'],
-      deBai: 'Trùm chương 2: trên hai sân, hãy phân loại chồng 2 kiện ở cầu cảng nấc 0 (3, 2) lên hai tàu bằng ship_all_pair(). Sau đó quay sang nấc 2 (3, 4) dùng move_tower2(-2, -1) dời tháp 2 kiện lên Tàu 2 ở nấc 1 đúng luật tháp, mượn cầu cảng nấc 0 vừa trống làm bãi tạm.',
-      veMaMau: 'Kết hợp ship_all_pair(), swing_by(2) và move_tower2(-2, -1).',
-      san: [SAN_BEN_3, SAN_BEN_3],
+      so: 7, ten: 'Đọc bảng số của tàu', hang: 'bien-the', nhipTheo: 'tong',
+      chiChay: true, chinhCoDinh: true,
+      khung: { chinh: 14, moiHam: 10 },
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
+      deBai: 'Sola làm mẫu: hai ngày, hàng tàu mỗi ngày một khác. Cần chĩa vào boong thì read_code() đọc được số tàu đầu hàng cần. Bấm Chạy để xem một chương trình đúng cả hai ngày.',
+      veMaMau: 'Chương trình mẫu đã khóa. Xem c = read_code() ở boong: ngày 1 đọc ra 12, ngày 2 đọc ra 18.',
+      san: [SAN_HANG, SAN_HANG],
       batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
       chong: [
-        [C(3, 2, [28, 19]), C(3, 4, [24, 12])],
-        [C(3, 2, [17, 29]), C(3, 4, [26, 14])]
+        [C(4, 3, [12]), C(2, 3, [7])],
+        [C(4, 3, [5]), C(2, 3, [18])]
       ],
-      tau: [tauHaiBen(23, 2), tauHaiBen(23, 2)],
-      giao: [
-        [{ tau: 0, so: [19] }, { tau: 1, so: [12, 24, 28] }],
-        [{ tau: 0, so: [17] }, { tau: 1, so: [14, 26, 29] }]
+      hangTau: [hangTau([12, 7]), hangTau([18, 5])],
+      maMau: bai(T_DOC_BANG_7),
+      loiGiai: bai(T_DOC_BANG_7),
+      sao: { o: 24, nhip: 18 },
+      loiSai: [],
+      goiY: ['Luna: Bấm nút Chạy rồi xem từng ngày.', 'Luna: c là số tàu cần, k là số trên kiện. Bằng nhau thì giao kiện đó trước.']
+    }),
+
+    manCheBenTau({
+      so: 8, ten: 'Tàu đầu hàng cần gì?', hang: 'bien-the', nhipTheo: 'tong',
+      khung: { chinh: 14, moiHam: 10 },
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
+      deBai: 'Sola nhờ bạn: ba ngày, mỗi ngày hai tàu nối đuôi cần hai kiện theo thứ tự khác nhau. Một kiện ở nấc 1, một kiện ở nấc 2. Hãy đọc bảng số của tàu đầu hàng rồi mới quyết định giao kiện nào trước.',
+      veMaMau: 'Mã mẫu mới lo trường hợp tàu đầu hàng cần kiện ở nấc 1. Hãy thêm nhánh else cho trường hợp còn lại.',
+      san: [SAN_HANG, SAN_HANG, SAN_HANG],
+      batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
+      chong: [
+        [C(4, 3, [16]), C(3, 4, [3])],
+        [C(4, 3, [21]), C(3, 4, [10])],
+        [C(4, 3, [8]), C(3, 4, [27])]
       ],
-      maMau: bai([
-        'ship_all_pair()',
-        'swing_by(2)'
-      ]),
-      loiGiai: bai([
-        'ship_all_pair()',
-        'swing_by(2)',
-        'move_tower2(-2, -1)'
-      ]),
-      sao: { o: 34, nhip: 46 },
+      hangTau: [hangTau([16, 3]), hangTau([10, 21]), hangTau([27, 8])],
+      maMau: bai(T_DOC_BANG_8.slice(0, 7)),
+      loiGiai: bai(T_DOC_BANG_8),
+      sao: { o: 24, nhip: 30 },
+      loiSai: [
+        { moTa: 'Làm theo ngày 1: luôn giao kiện ở nấc 1 trước. Ngày 2 tàu đầu hàng cần kiện ở nấc 2', theoSan1: true, baiLam: bai(['swing_by(1)', 'carry_by(-1)', 'swing_by(2)', 'carry_by(2)']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Để nguyên mã mẫu, không có nhánh else: ngày 2 không giao được kiện nào', baiLam: bai(T_DOC_BANG_8.slice(0, 7)), phaiCoMa: ['chua-giao-tau'] }
+      ],
+      goiY: ['Luna: Trong nhánh else, kiện tàu cần nằm ở nấc 2. Cần đang ở nấc 1.', 'Luna: Nhánh else có 4 dòng: swing_by(1), carry_by(2), swing_by(1), carry_by(-1).']
+    }),
+
+    manCheBenTau({
+      so: 9, ten: 'Chế hàm serve_ship()', hang: 'bien-the', nhipTheo: 'tong',
+      taoHam: ['serve_ship'],
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by'],
+      deBai: 'Sola nhờ bạn: mở Xưởng hàm chế serve_ship() để phục vụ tàu đầu hàng. Hàm đọc số tàu cần, quay cần tìm kiện có số đó, đếm số nấc đã quay, rồi mang kiện về boong. Hai ngày, mỗi ngày ba tàu cần ba kiện theo thứ tự khác nhau.',
+      veMaMau: 'Tạo hàm serve_ship() rồi gọi 3 lần bằng vòng lặp.',
+      san: [SAN_HANG, SAN_HANG],
+      batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
+      chong: [
+        [C(4, 3, [15]), C(3, 4, [6]), C(2, 3, [24])],
+        [C(4, 3, [9]), C(3, 4, [30]), C(2, 3, [11])]
+      ],
+      hangTau: [hangTau([6, 24, 15]), hangTau([11, 9, 30])],
+      maMau: bai(['for i in range(3):', '    serve_ship()']),
+      loiGiai: bai(
+        ['for i in range(3):', '    serve_ship()'],
+        { hamCuaEmMoi: [hServeShip()] }
+      ),
+      sao: { o: 24, nhip: 36 },
       loiGiaiKhac: {
-        moTa: 'Thêm dòng chú thích cho hai giai đoạn giao tàu',
-        baiLam: bai([
-          '# phân tàu ở nấc 0 rồi dời tháp ở nấc 2',
-          'ship_all_pair()',
-          'swing_by(2)',
-          'move_tower2(-2, -1)'
-        ])
+        moTa: 'Gọi serve_ship() ba lần không dùng vòng lặp',
+        baiLam: bai(['serve_ship()', 'serve_ship()', 'serve_ship()']),
+        hamCuaEmMoi: [hServeShip()]
       },
       loiSai: [
-        { moTa: 'Mới phân loại chồng ở nấc 0, chưa dời tháp ở nấc 2', baiLam: bai(['ship_all_pair()']), phaiCoMa: ['chua-giao-tau'] },
-        { moTa: 'Dời tháp ở nấc 2 trước khi phân loại chồng ở nấc 0', baiLam: bai(['swing_by(2)', 'move_tower2(-2, -1)']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Chưa tạo hàm serve_ship mà đã bấm Chạy', baiLam: bai(['for i in range(3):', '    serve_ship()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Làm theo ngày 1: giao kiện ở nấc 2, nấc 3 rồi nấc 1. Ngày 2 hàng tàu cần thứ tự khác', theoSan1: true, baiLam: bai(['swing_by(2)', 'carry_by(2)', 'swing_by(-1)', 'carry_by(1)', 'swing_by(1)', 'carry_by(-1)']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Trong serve_ship thiếu vòng while tìm kiện: luôn lấy kiện ở nấc 1', baiLam: bai(['for i in range(3):', '    serve_ship()']), hamCuaEmMoi: [hServeShip(['c = read_code()', 'swing_by(1)', 'carry_by(-1)'])], phaiCoMa: ['giao-nham'] }
       ],
-      goiY: ['Luna: Gọi ship_all_pair() ở nấc 0 để giao 2 kiện đầu tiên lên Tàu 1 và Tàu 2. Cầu cảng nấc 0 trống ra.', 'Luna: Tiếp theo gọi swing_by(2) sang nấc 2 rồi gọi move_tower2(-2, -1): bãi tạm là nấc 0, tháp lên Tàu 2 ở nấc 1, trên kiện lớn.']
+      goiY: ['Luna: Thân hàm: c = read_code(), d = 1, swing_by(1), k = read_code(), rồi while k != c: quay thêm 1 nấc, d = d + 1, đọc lại k.', 'Luna: Tìm thấy rồi thì t = 0 - d và carry_by(t) để mang kiện về boong.']
+    }),
+
+    manCheBenTau({
+      so: 10, ten: 'Trùm Chế lệnh: hàng tàu nối đuôi', hang: 'trum', nhipTheo: 'tong',
+      huyHieu: { ma: 'che-ben-tau', ten: 'Huy hiệu Chế lệnh: hàng tàu nối đuôi' },
+      hamCuaEmCan: ['swing_l', 'swing_r', 'swing_by', 'carry_by', 'serve_ship'],
+      deBai: 'Trùm chương 2: hai ngày, hàng tàu dài ngắn khác nhau: ngày 1 có ba tàu, ngày 2 có bốn tàu. Hàng nằm trong ba chồng quanh bệ. Hết tàu thì read_code() ở boong trả về -1. Hãy phục vụ tới khi hết hàng tàu.',
+      veMaMau: 'Mã mẫu mới đọc số tàu đầu hàng cần. Hãy lặp serve_ship() tới khi c bằng -1.',
+      san: [SAN_HANG, SAN_HANG],
+      batDau: [{ x: 3, y: 3, nac: 0, tam: 1 }, { x: 3, y: 3, nac: 0, tam: 1 }],
+      chong: [
+        [C(4, 3, [5, 12]), C(3, 4, [20]), C(2, 3, [7, 33])],
+        [C(4, 3, [18, 4]), C(3, 4, [25, 9]), C(2, 3, [14])]
+      ],
+      hangTau: [hangTau([33, 12, 7]), hangTau([9, 25, 4, 14])],
+      maMau: bai(['c = read_code()']),
+      loiGiai: bai(['c = read_code()', 'while c != -1:', '    serve_ship()', '    c = read_code()']),
+      sao: { o: 26, nhip: 44 },
+      loiGiaiKhac: {
+        moTa: 'Thêm chú thích trước vòng while',
+        baiLam: bai(['# phục vụ tới khi hết hàng tàu', 'c = read_code()', 'while c != -1:', '    serve_ship()', '    c = read_code()'])
+      },
+      loiSai: [
+        { moTa: 'Làm theo ngày 1: giao kiện trên cùng ở nấc 3, nấc 1 rồi nấc 3. Ngày 2 hàng tàu cần thứ tự khác', theoSan1: true, baiLam: bai(['swing_by(-1)', 'carry_by(1)', 'swing_by(1)', 'carry_by(-1)', 'swing_by(-1)', 'carry_by(1)']), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Chỉ gọi serve_ship() 3 lần: ngày 2 có bốn tàu nên tàu cuối còn chờ', baiLam: bai(['for i in range(3):', '    serve_ship()']), phaiCoMa: ['chua-giao-tau'] }
+      ],
+      goiY: ['Luna: Còn tàu thì c là số tàu cần. Hết tàu thì c bằng -1.', 'Luna: Trong vòng while, gọi serve_ship() rồi đọc lại c = read_code().']
     })
   ];
 

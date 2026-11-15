@@ -156,6 +156,7 @@ const soSan = (m) => (Array.isArray(m.san[0]) ? m.san.length : 1);
 const hangCua = (m, k) => (Array.isArray(m.hangTau) ? m.hangTau[k] : m.hangTau);
 function motSan(m, k) {
   const n = soSan(m), q = clone(m);
+  q.taoHam = [];                                           // thử một sân: không đòi tạo hàm (chỉ xem dãy lệnh cố định có thắng sân đó không)
   for (const f of ['san', 'batDau', 'chong', 'bongMo', 'tau', 'giao', 'hangTau']) if (Array.isArray(q[f]) && q[f].length === n && n > 1) q[f] = [q[f][k]];
   return q;
 }

@@ -82,7 +82,7 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'doi-omni.16', 'doi-omni.17', 'che-doi-omni.15', 'che-doi-omni.16', 'che-doi-omni.18', 'che-doi-omni.19',      // gói 9 mùa 6: R2 ở mỏ đá (2 sân)
   'quet-ma.2', 'quet-ma.3', 'quet-ma.4', 'quet-ma.5', 'quet-ma.6', 'quet-ma.7', 'quet-ma.8', 'quet-ma.9',
   'che-quet-ma.1', 'che-quet-ma.2', 'che-quet-ma.3', 'che-quet-ma.4', 'che-quet-ma.5', 'che-quet-ma.6', 'che-quet-ma.7', 'che-quet-ma.8', 'che-quet-ma.9',
-  'ben-tau.7', 'che-ben-tau.9', 'che-duong-ray.9', 'che-nhac-doi.9', 'che-can-tai.9',
+  'ben-tau.7', 'che-ben-tau.7', 'che-ben-tau.8', 'che-ben-tau.9', 'che-duong-ray.9', 'che-nhac-doi.9', 'che-can-tai.9',
   'cang-cu.6', 'cang-cu.8', 'che-cang-cu.4', 'che-cang-cu.7', 'che-cang-cu.9',
   'doi-cang.6', 'doi-cang.8', 'che-doi-cang.2', 'che-doi-cang.5', 'che-doi-cang.7', 'che-doi-cang.9',      // gói 3–9 mùa cảng sông: đọc mã container, bến tàu, đường ray, móc đôi, cân tải, cảng cũ & đội cảng (2 sân)
   'dong-chay.2', 'dong-chay.3', 'dong-chay.4', 'dong-chay.5', 'dong-chay.6', 'dong-chay.7', 'dong-chay.8', 'dong-chay.9',
