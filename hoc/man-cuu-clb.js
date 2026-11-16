@@ -151,6 +151,15 @@
   var R2_16 = ['go_up()', 'pull_deliver("D")', 'go_right()', 'go_right()', 'go_up()', 'pull_deliver("D")'];
   function cc16(cho) { return ['wait_n(' + cho + ')', 'rail(-6)', 'pick_up()', 'rail(6)', 'swing_right()', 'swing_right()', 'set_down()']; }
 
+  /** lap-clb.7: bão làm hồ CLB tràn thành dòng xiết (hàng 3, hai ô mỗi nhịp) chảy ra thác (14, 3); bác bảo vệ rơi xuống ở (0, 3), trôi qua các cột chẵn.
+   *  R1 (đặt sẵn) xe tời bờ (hai bánh + tay lưới, lai L3) đứng trên hõm bắc (11, 2), dây chỉ với tới cột 11 (bác không bao giờ dừng ở cột lẻ): phải chờ tín hiệu bác bám phao.
+   *  R2 tự lắp: cách một drone + lưới (L10) bay ra (11, 3) thả phao rồi bay tránh; bác trôi tới bám phao, xe bờ kéo vào hõm, bác lên trạm bắc (10, 2).
+   *  Cách hai rẻ hơn: xe hai bánh + lưới chạy sang hõm nam, chờ bác trôi tới (12, 3) tời vào (12, 4); bác lên bờ đi bộ xa về trạm nam (7, 4) (chậm hơn). */
+  var XB_17 = may('CH', { x: 11, y: 1, huong: 2 }, { tay: 'day-keo', boHam: ['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'], themHam: ['cast_net', 'drop_net'] });
+  var XB_CHO_17 = ['wait_n(6)', 'cast_net()', 'wait()'];
+  var DR_17 = ['go_up()', 'go_up()', 'go_right()', 'cast_net()', 'wait()', 'go_down()'];
+  var BANH_17 = ['forward(2)', 'turn_left()', 'wait_n(2)', 'cast_net()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -569,6 +578,31 @@
       sao: { o: 35, nhip: 29 },
       goiY: ['pull_deliver("D"): hút sắt dưới bụng, bước xuống, thả.', 'rail(-6): số âm, bệ chạy sang trái.', 'Thanh sắt nằm trên ray thì bệ cẩu không chạy qua được.'],
       cauDo: { doi: null, lap: 'drone+nam-cham', coChe: ['sat', 'ray', 'container', 'ghe'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 17 · cứu người, chờ tín hiệu, R1 đặt sẵn xe tời bờ (L3, hai bánh + lưới); R2 lai L10 drone + lưới (thả phao), trộn Bến sông (dòng xiết, thác, phao) + Cảng (xe tời bờ):
+    //      bác bảo vệ trôi trong dòng xiết, R2 thả phao giữ bác lại đúng cột xe bờ với tới, xe bờ chờ bác bám phao rồi mới kéo.
+    man9('lap-clb', 7, 'luyen', {
+      ten: 'Bác bảo vệ trôi trong hồ',
+      mucTieu: 'cuu-nguoi', vo: 'song',
+      deBai: 'Hồ CLB tràn thành dòng xiết. Bác bảo vệ rơi xuống, trôi hai ô mỗi nhịp ra thác. Xe bờ chỉ kéo được ở cột của nó. Lắp cho Luna một robot giữ bác lại, hay tự kéo bác vào bờ.',
+      veMaMau: 'Xe bờ tung lưới khi bác chưa tới.',
+      san: ['###############', '###########.###', '##########.~###', '~~~~~~~~~~~~~~~', '#######.....~##', '##########...##', '###############'],
+      doi: [XB_17, khe({ x: 10, y: 5, huong: 1 }, { son: 'lam' })],
+      them: { nguoi: [{ x: 0, y: 3 }], tramCuu: [{ x: 10, y: 2 }, { x: 7, y: 4 }], thac: [{ x: 14, y: 3 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map(function (x) { return { x: x, y: 3, huong: 1, suc: 2 }; }) },
+      lapRap: lapR2(['drone', 'hai-banh', 'nhen'], ['day-keo', 'kep', 'nam-cham'], [], 8, [
+        cach('drone', 'day-keo', null, [XB_CHO_17, DR_17]),
+        cach('hai-banh', 'day-keo', null, [[], BANH_17])
+      ], { moLai: ['L10', 'L3'] }),
+      maMau: doiBai([['cast_net()', 'wait()'], []]),
+      loiSai: [
+        { moTa: 'Xe bờ tung lưới ngay: bác chưa tới, lưới hụt; bác bám phao giữa dòng không ai kéo', baiLam: doiBai([['cast_net()', 'wait()'], DR_17]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Drone bay ra nhưng không thả phao: bác trôi qua', baiLam: doiBai([XB_CHO_17, ['go_up()', 'go_up()', 'go_right()', 'wait()', 'go_down()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Drone thả phao ở cột 12: bác bám phao ngoài tầm dây xe bờ', baiLam: doiBai([['wait_n(7)', 'cast_net()', 'wait()'], ['go_up()', 'go_up()', 'go_right()', 'go_right()', 'cast_net()', 'wait()', 'go_down()']]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 13, nhip: 9 },
+      goiY: ['Bác trôi hai ô mỗi nhịp, chỉ dừng ở cột chẵn. Xe bờ ở cột 11.', 'Phao thả xuống ô dưới bụng drone; bác trôi tới thì bám, thôi trôi.', 'Xe bờ chờ bác bám phao rồi mới tung lưới.'],
+      cauDo: { doi: null, lap: 'drone+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'phao', 'thac', 'bo', 'xe-bo'], cuu: 'nguoi', meo: 'cho-tin-hieu' }
     })
   ];
 
