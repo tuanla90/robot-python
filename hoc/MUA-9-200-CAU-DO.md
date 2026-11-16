@@ -312,6 +312,20 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨nhện, xuồng⟩ + ⟨mic, loa⟩ | hai cách: đường ngách khô (nhện) hay sông ngầm (xuồng) | hàng | đọc rồi chọn |
 | 20 | ⟨xuồng, gai⟩ + loa | song ca: xuồng hát trên sông ngầm, tiếng vang đổi nhịp | — | song ca |
 
+> **Đã dựng 17/11 (M9M8, hoc/man-cuu-hang-dong.js viết lại theo khuôn G6 / G7, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt).** Lệch so với bảng:
+> - Hàm của em: KHÔNG tạo lại `bat_wait_crack`, `bat_dict_crack`, `bat_set_march`, `echo_glide_pass`, `cave_team_clear` của G8 cũ (G9, G10 sẽ dựng lại; G9 / G10 cũ còn gọi nên đỏ). Màn mới gọi `clear_iron` (G3) ở #9, lap #12, `sonic_rail` (G4) ở lap #19, `play_part` (G1) ở #10, #20.
+> - Lõi: màn đội mục tiêu `toi-co` bắt MỌI xe tới ô F, phao Q không tính, nên màn có xuồng dùng `cuu-nguoi` / `dua-vat`. Lõi cho mọi robot có loa mà không phát trong nhịp đặt `daNgan` của đá chuông về 0: đá dày (`ben` > 1) chỉ vỡ khi chỉ một robot có loa.
+> - #2 ba sân, sổ `d = {2: 5, 4: 7, 6: 3}` (nốt chuông → nốt đá), nhện co chân chui gầm (không ngách hẹp). #3 hai hố + sàn đá ướt, bẫy drone. #4 ngách hang một cặp miệng (không "cặp màu").
+> - #5 người dưới vách đá cuối luồng (không đảo), mẹo cứu kịp. #6 thành cứu người: xuồng kéo bè vào bến q làm cầu phao, xe lên cầu hát vỡ đá bờ bên kia.
+> - #7 R3 là xe hang động, khe trên ray (bẫy cần cẩu). #9 đổi: R3 xuồng khách (khoá) kéo bè, đội HD + PL, ba sân, nhện `clear_iron("U")` dọn thang sắt, xe tra sổ `dict`; mẹo dọn lối.
+> - #10 nhện lắp loa hát bè 2 (không nhảy, không `set`, không tiếng vang); bè đoạn 8 (4 4 3 3 2 2 1 1 | 6 6 5 5 4 4 3 3) do M9M8 chọn.
+> - lap #11 `hear()` đo khoảng cách tới chuông (hòm ở ô hear() - 1). #12 ba sân, hai cách mic / cảm biến từ. #13 ba sân, `dict` nốt → hướng (`go(d[n])`), có bật hố; không `set` ngách. #14 hai cách (mic / không mic), không khoá; cứu người, xe hang động giữ nút; xuồng lắp loa khai `chinhLuoi: false`.
+> - lap #15 R1 là nhện nam châm (không loa, xem dòng lõi), hòm sắt sau đá dày `ben` 3; mẹo dọn lối (bộ dò cứu kịp cần người). #16 ba sân, người không phát tiếng: chuông đá trên vách cạnh người; cách hai hồng ngoại `distance()`; nhện R1 giữ nút cửa.
+> - lap #17 đá chuông đè nút cửa: mẹo giữ cửa (bộ dò dọn lối cần robot khác đứng lên ô đá). #18 hai sân, R1 xe chở hàng chạy theo lịch, `set` nhớ nốt đã hát (đá cùng nốt liền nhau vỡ cùng lúc); cách hai bánh gai.
+> - lap #19 ba sân, cứu thợ mỏ: nhện (bật hố, chui ngách) rẻ hơn, xuồng (`sonic_rail()`) nhanh hơn; cả hai cần mic. #20 R2 hát tại chỗ (xuồng hay bánh gai; drone bẫy); không "tiếng vang đổi nhịp" (lõi không có).
+> - Song ca #10, #20 khai mẹo song song. Mọi màn chương 2 có ≥ 2 cách lắp thắng; sao = cách đầu + 15–25 %.
+> - **Nhiều sân** (`NHIEU_SAN_KHONG_TRUM` ở kiem-lo-trinh): cuu-hang-dong.2, .9, lap-hang-dong.2, .3, .6, .8, .9; mỗi màn có loiSai "điền thẳng dữ liệu sân 1".
+
 ## G9 CLB sau bão (trộn mọi Python) · bão: sân bùn, hồ CLB tràn, kho đổ, bác bảo vệ kẹt
 
 Chương 1 bảng 3–4 cỗ máy, dùng các cặp còn lại. Chương 2: robot đặt sẵn đổi mỗi màn, bảng thẻ 3–4 mỗi khe, không gợi ý tổ hợp.
