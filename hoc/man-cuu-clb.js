@@ -135,6 +135,16 @@
   var CAM_14 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(3)', 'forward(4)', 'turn_left()', 'if color() == "red":', '    turn_right()', '    turn_right()', 'forward(4)', 'drop_net()', 'wait()'];
   var RADAR_14 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(3)', 'forward(4)', 'g = radar()', 'if g[1][0] == "#":', '    turn_right()', 'else:', '    turn_left()', 'forward(4)', 'drop_net()', 'wait()'];
 
+  /** lap-clb.5 (ba sân): hai tượng đá chuông đổ chắn lối hàng 1 của nhện R1 (đặt sẵn, đứng trên thanh sắt, mang vào kho D). Mỗi sân hai tượng một cặp nốt.
+   *  R2 tự lắp xe có loa + mic chạy dọc hàng 3 (cách tượng 2 ô), tới dưới từng tượng nghe nốt, hát lại: tượng vỡ (dọn lối). Danh sách khoảng cách [2, 3] (list).
+   *  Cách một: omni + loa + mic (trượt ngang, không quay; ngắn). Cách hai rẻ hơn: hai bánh + loa + mic (quay phải rồi tiến; dài hơn). */
+  function san15() { return ['###########', '#o.......D#', '###########', '#.........#', '###########']; }
+  function da15(a, b) { return [{ x: 3, y: 1, not: a }, { x: 6, y: 1, not: b }]; }
+  var CHAT_15 = ['...........', '.s.........', '...........', '...........', '...........'];
+  var PL_15 = ['pull_s()', 'for i in range(8):', '    go_right()', 'magnet_off()', 'wait()'];
+  var OMNI_15 = ['for d in [2, 3]:', '    slide_r(d)', '    play_note(listen())'];
+  var BANH_15 = ['turn_right()', 'for d in [2, 3]:', '    forward(d)', '    play_note(listen())'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -504,6 +514,30 @@
       sao: { o: 40, nhip: 18 },
       goiY: ['color(): màu phao ở ô trước mũi xuồng. Đỏ là bãi cạn.', 'g = radar(): lưới 3×3, g[1][0] là ô bên trái xuồng, "#" là bờ.', 'cast_net() trúng van V thì van gạt, cống mở.'],
       cauDo: { doi: null, lap: 'xuong+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'van', 'cong', 'nhieu-san'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 15 · dọn lối, ba sân (nốt tượng do sân cấp qua listen()), R1 đặt sẵn nhện + nam châm; R2 xe có loa + mic, trộn Hang động (đá chuông, listen) + Bãi tái chế (nhện, sắt)
+    //      + list: hai tượng đá chuông chắn lối nhện, R2 chạy dọc hàng dưới hát vỡ từng tượng.
+    man9('lap-clb', 5, 'luyen', {
+      ten: 'Hai tượng đá chuông',
+      mucTieu: 'dua-vat',
+      deBai: 'Ba sân. Hai tượng đá chuông đổ chắn lối nhện mang thanh sắt vào kho; mỗi sân hai tượng một cặp nốt. Lắp cho Luna một robot chạy hàng dưới, nghe nốt từng tượng rồi hát lại.',
+      veMaMau: 'R2 mới có danh sách khoảng cách.',
+      san: [san15(), san15(), san15()],
+      doi: [may('PL', { x: 1, y: 1 }), khe({ x: 1, y: 3, huong: 0 }, { son: 'lam' })],
+      them: { vatChat: [CHAT_15, CHAT_15, CHAT_15], daChuong: [da15(5, 2), da15(3, 7), da15(6, 4)] },
+      lapRap: lapR2(['omni', 'hai-banh', 'nhen'], ['loa', 'kep', 'nam-cham'], ['am-thanh', 'khoang-cach', 'camera'], 9, [
+        cach('omni', 'loa', 'am-thanh', [PL_15, OMNI_15]),
+        cach('hai-banh', 'loa', 'am-thanh', [PL_15, BANH_15])
+      ]),
+      maMau: doiBai([PL_15, ['for d in [2, 3]:']]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (nốt 5 rồi 2): sân 2, 3 tượng không vỡ', baiLam: doiBai([PL_15, ['slide_r(2)', 'play_note(5)', 'slide_r(3)', 'play_note(2)']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'play_note(listen()) nằm ngoài vòng for: chỉ hát một lần ở cuối, tượng đầu còn nguyên', baiLam: doiBai([PL_15, ['for d in [2, 3]:', '    slide_r(d)', 'play_note(listen())']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Hát trước khi trượt: mới vỡ tượng đầu khi còn ở xa', baiLam: doiBai([PL_15, ['for d in [2, 3]:', '    play_note(listen())', '    slide_r(d)']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 18, nhip: 21 },
+      goiY: ['listen(): nốt của tượng gần nhất.', 'for d in [2, 3]: lần lượt d = 2 rồi d = 3.', 'Omni trượt ngang bằng slide_r(d), không phải quay.'],
+      cauDo: { doi: null, lap: 'omni+loa+am-thanh', coChe: ['da-chuong', 'loa', 'sat', 'kho', 'list', 'nhieu-san'], cuu: 'hang', meo: 'don-loi' }
     })
   ];
 
