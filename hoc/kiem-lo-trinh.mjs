@@ -116,6 +116,7 @@ NHIEU_SAN_KHONG_TRUM.push('cuu-ben-song.4', 'lap-ben-song.3', 'lap-ben-song.4', 
 NHIEU_SAN_KHONG_TRUM.push('cuu-nong-trai.6');
 NHIEU_SAN_KHONG_TRUM.push('lap-nong-trai.4');
 NHIEU_SAN_KHONG_TRUM.push('lap-nong-trai.5');
+NHIEU_SAN_KHONG_TRUM.push('lap-nong-trai.7');
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c / PDM8c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach), gói 10 mùa 6 (may-mo-da), gói 10 mùa cảng, gói 10 mùa sông và gói 10 mùa hang (tong-hop-hang) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song', 'tong-hop-hang', 'ngay-hoi-clb'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));

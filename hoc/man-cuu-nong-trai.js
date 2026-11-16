@@ -122,6 +122,16 @@
   var DR_16 = ['ink("red")', 'pen_down()', 'for i in range(6):', '    go_right()', 'land()', 'take_off()', 'pen_down()', 'for i in range(3):', '    go_right()', 'land()'];
   /** R2 lap-nong-trai.6: bật nam châm, lên hút cày sắt trên ô sạc, lùi một ô, thả cày ra khỏi luống. */
   var HUT_16 = ['magnet_n()', 'go_up()', 'go_up()', 'go_down()', 'magnet_off()', 'wait()'];
+  /** lap-nong-trai.7 (ba sân): mê cung cây đổ; R2 đứng giữa khúc quanh hình chữ U của lối bác nông dân; bao hạt chắn lối ở ô dưới / trên / phải của R2, mỗi sân một chỗ. */
+  function san17(b) {
+    var s = ['#########', '#......H#', '#HHHH..H#', '#.......#', '#....HH.#', '#########'].map(function (d) { return d.split(''); });
+    s[b.y][b.x] = 'o';
+    return s.map(function (d) { return d.join(''); });
+  }
+  /** R1 xe cứu hỏa (xích) chờ một nhịp cho R2 gắp bao, tiến ba ô dọc lối dưới, ủi cây đổ sang bên, lùi ba ô ra khỏi lối. */
+  var CU_17 = ['wait()', 'move()', 'move()', 'move()', 'back()', 'back()', 'back()'];
+  /** R2 lap-nong-trai.7: đọc radar, quay về phía có bao hạt (V), gắp. */
+  var KEP_17 = ['r = radar()', 'if r[0][1] == "V":', '    turn_left()', 'elif r[2][1] == "V":', '    turn_right()', 'pick()', 'wait()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -534,6 +544,32 @@
       sao: { o: 19, nhip: 13 },
       goiY: ['Nam châm treo hút sắt ở ô ngay dưới robot.', 'magnet_off() thả cày ở ô dưới robot: thả ra ngoài luống.'],
       cauDo: { doi: null, lap: 'drone+nam-cham', coChe: ['sat', 'sac', 'pin', 'gieo'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 17 · dọn lối, cứu người, đọc dữ liệu (ba sân, luật 13/11): bác nông dân đi lối chữ U quanh R2 trong mê cung cây đổ. Bao hạt chắn lối ở ô trên / dưới / phải của R2, mỗi sân một chỗ.
+    //      R2 đọc radar() tìm bao (V), quay về phía bao, gắp. R1 xe cứu hỏa (xích) chờ R2 gắp, tiến dọc lối dưới (qua ô bao sân 1 vừa dọn), ủi cây đổ sang bên rồi lùi ra.
+    //      Cách một omni + kẹp + radar. Cách hai hai bánh + kẹp + radar (rẻ hơn, cùng lời giải).
+    man9('lap-nong-trai', 7, 'luyen', {
+      ten: 'Bác nông dân trong mê cung cây đổ',
+      mucTieu: 'cuu-nguoi',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Bác nông dân đi lối vòng quanh R2 về trạm cứu. Bao hạt chắn lối, mỗi sân một chỗ: trên, dưới hay bên phải R2. Lắp robot nhìn quanh, tìm bao rồi gắp đi.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san17({ x: 5, y: 3 }), san17({ x: 5, y: 1 }), san17({ x: 6, y: 2 })],
+      them: { thungThem: [[{ x: 4, y: 3 }], [{ x: 4, y: 3 }], [{ x: 4, y: 3 }]], tramCuu: [{ x: 3, y: 4 }],
+        nguoi: [{ x: 1, y: 1, duong: [{ x: 2, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 }, { x: 5, y: 1 }, { x: 6, y: 1 }, { x: 6, y: 2 }, { x: 6, y: 3 }, { x: 5, y: 3 }, { x: 4, y: 3 }, { x: 4, y: 4 }, { x: 3, y: 4 }] }] },
+      doi: [may('CU', { x: 7, y: 3, huong: 3 }), khe({ x: 5, y: 2, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['omni', 'hai-banh', 'drone'], ['kep', 'son'], ['radar', 'camera'], 9, [
+        cach('omni', 'kep', 'radar', [CU_17, KEP_17]),
+        cach('hai-banh', 'kep', 'radar', [CU_17, KEP_17])
+      ]),
+      maMau: doiBai([CU_17, ['r = radar()']]),
+      loiSai: [
+        { moTa: 'Điền thẳng chỗ bao của sân 1 (phía dưới): sân 2, 3 bác vẫn kẹt', baiLam: doiBai([CU_17, ['turn_right()', 'pick()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe cứu hỏa không ủi cây: đoạn lối cuối còn cây đổ', baiLam: doiBai([[], KEP_17]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 34, nhip: 13 },
+      goiY: ['radar(): lưới 3×3 quanh robot. r[0][1] ô trên, r[2][1] ô dưới, r[1][2] ô phải.', '"V" là vật nằm đất (bao hạt).', 'pick(): gắp vật trước mũi xe.'],
+      cauDo: { doi: null, lap: 'omni+kep+radar', coChe: ['cay-do', 'bao-hat', 'nguoi', 'radar'], cuu: 'nguoi', meo: 'don-loi' }
     }),
   ];
 })();
