@@ -65,7 +65,7 @@
   var T_FIX_QUARRY_SAI = ['s = shape("front")', 'if s == "ore":', '    fill_pit()', 'else:', '    move()'];
 
   var T_ORE_PAD = ['pad_kind()', 'forward(2)'];
-  var T_DIAG_FILL = ['diag_right()', 'fill_pit()'];
+  var T_DIAG_FILL = ['dir_fr()', 'fill_pit()'];
   var T_BELT_PAD = ['belt_lob(n)', 'forward(2)'];
   var T_PIT_STEP = ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'];
   var T_PIT_STEP_SAI = ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(2)'];
@@ -147,22 +147,22 @@
 
     man({
       so: 4, ten: 'Dò trụ đá lách chéo',
-      hamCuaEmCan: ['auto_bypass'],
-      deBai: 'Hai ca làm việc có trụ đá # chắn ở chặng đầu hoặc chặng sau theo hướng Bắc. Mỗi lần gọi auto_bypass() giúp R1 quét radar phía trước: nếu gặp trụ đá # thì lách chéo bypass_r(), nếu trống thì tiến thẳng 2 ô. Gọi auto_bypass() hai lần để về cờ F.',
+      hamCuaEmCan: ['forward', 'dir_fr', 'dir_fl'],
+      deBai: 'Đường về cờ có 2 chặng, mỗi chặng 2 hàng. Hai ca làm việc có trụ đá `#` chắn ở chặng khác nhau. Đầu mỗi chặng hãy quét `g = radar()` và đọc `t = g[0][1]`. Trước mặt là trụ đá thì vòng qua bằng hai bước chéo, còn không thì tiến thẳng 2 ô.',
       veMaMau: 'Chương trình mẫu lách chéo cứng ở chặng đầu nên đâm vào trụ đá ở ca 2.',
       san: [
         ['####', '#F.#', '#..#', '#..#', '##.#', '#..#', '####'],
         ['####', '#F.#', '##.#', '#..#', '#..#', '#..#', '####']
       ],
       batDau: { x: 1, y: 5, huong: 0 },
-      maMau: bai(['bypass_r()', 'forward(2)']),
-      loiGiai: bai(['auto_bypass()', 'auto_bypass()']),
+      maMau: bai(['dir_fr()', 'dir_fl()', 'forward(2)']),
+      loiGiai: bai(['for i in range(2):', '    g = radar()', '    t = g[0][1]', '    if t == "#":', '        dir_fr()', '        dir_fl()', '    else:', '        forward(2)']),
       sao: { o: 14, nhip: 8 },
       loiSai: [
-        cung('Lách chéo cứng ở chặng đầu rồi đi thẳng theo ca 1: đâm vào trụ đá ở ca 2', bai(['bypass_r()', 'forward(2)']), ['dam-tuong']),
-        { moTa: 'Chỉ gọi auto_bypass() một lần nên dừng giữa đường', baiLam: bai(['auto_bypass()']), phaiCoMa: ['chua-toi-co'] }
+        cung('Lách chéo cứng ở chặng đầu rồi đi thẳng theo ca 1: đâm vào trụ đá ở ca 2', bai(['dir_fr()', 'dir_fl()', 'forward(2)']), ['dam-tuong']),
+        { moTa: 'Chỉ làm một chặng nên dừng giữa đường', baiLam: bai(['g = radar()', 't = g[0][1]', 'if t == "#":', '    dir_fr()', '    dir_fl()', 'else:', '    forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Mỗi lần gọi auto_bypass() đưa R1 tiến lên 2 hàng.', 'Gọi auto_bypass() 2 lần liên tiếp để đi từ (1,5) lên F(1,1).']
+      goiY: ['Vòng qua trụ đá: dir_fr() rồi dir_fl(). R1 lên 2 hàng và về đúng cột cũ.', 'Dùng for i in range(2): bên trong quét radar, if t == "#": gọi dir_fr() rồi dir_fl(), else: gọi forward(2).']
     }),
 
     man({
@@ -211,7 +211,7 @@
       loiGiai: bai(['belt_lob(3)', 'forward(2)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']),
       sao: { o: 28, nhip: 22 },
       loiSai: [
-        cung('Dùng fill_pit() cứng ở hàng 2 theo ca 1: hỏng ở ca 2 khi gặp quặng và cổng sắt', bai(['belt_lob(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)']), ['roi-ho']),
+        cung('Dùng fill_pit() cứng ở hàng 2 theo ca 1: hỏng ở ca 2 khi gặp quặng và cổng sắt', bai(['belt_lob(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)']), ['dam-tuong']),
         { moTa: 'Dùng belt_lob(2) ở hàng 1 nên đá rơi vào ô cổng C(5,1) thay vì nút M(6,1)', baiLam: bai(['belt_lob(2)', 'forward(2)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Hàng 1: belt_lob(3) rồi forward(2) đưa R1 tới (5,1).', 'Trượt xuống (5,2) bằng slide_r(1), gọi smart_pad() để tới (7,2), rồi gọi slide_r(1) vào F(7,3).']
@@ -318,7 +318,7 @@
       loiGiai: bai(['open_dock(3)', 'forward(2)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']),
       sao: { o: 32, nhip: 57 },
       loiSai: [
-        cung('Tầng 2 dùng fill_pit() cứng và tầng 3 dùng lob_pad(3) cứng theo ca 1: hỏng ở ca 2', bai(['open_dock(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['roi-ho']),
+        cung('Tầng 2 dùng fill_pit() cứng và tầng 3 dùng lob_pad(3) cứng theo ca 1: hỏng ở ca 2', bai(['open_dock(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['dam-tuong']),
         { moTa: 'Quên gọi forward(2) sau open_dock(3) nên trượt xuống khi chưa tới cột 5', baiLam: bai(['open_dock(3)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']), phaiCoMa: ['nap-hut', 'chua-toi-co'] }
       ],
       goiY: ['open_dock(3) dừng ở (3,1) và mở cổng C(5,1); gọi forward(2), slide_r(1) để tới (5,2).', 'Từ (5,2) gọi smart_pad(), slide_r(1) tới (7,3), rồi gọi smart_pad(), slide_r(1) lần nữa tới F(9,4).']
@@ -356,7 +356,7 @@
     manChe({
       so: 2, ten: 'Chế hàm lách chéo lấp hố', taoHam: ['diag_fill'],
       hamCuaEmCan: ['fill_pit', 'auto_fill'],
-      deBai: 'Hai ca làm việc: trụ đá # chắn ngay trước mặt R1 ở (1,7), còn ở cột bên phải (cột 2) có đá tròn và hố sâu u. Hãy tạo hàm diag_fill() gồm: diag_right() lách chéo sang phải, rồi gọi fill_pit() lấp hố và tiến lên 2 ô. Chương trình chính đã khoá.',
+      deBai: 'Hai ca làm việc: trụ đá # chắn ngay trước mặt R1 ở (1,7), còn ở cột bên phải (cột 2) có đá tròn và hố sâu u. Hãy tạo hàm diag_fill() gồm: dir_fr() lách chéo sang phải, rồi gọi fill_pit() lấp hố và tiến lên 2 ô. Chương trình chính đã khoá.',
       veMaMau: 'Bấm "+ Hàm mới" tạo hàm diag_fill() không có đối số.',
       san: [
         ['####', '#.F#', '#..#', '#.u#', '#.o#', '#.u#', '#.o#', '##.#', '#..#', '####'],
@@ -372,9 +372,9 @@
       sao: { o: 20, nhip: 22 },
       loiSai: [
         { moTa: 'Gọi diag_fill() mà chưa tạo hàm', baiLam: bai(['diag_fill()', 'for i in range(4):', '    auto_fill()']), phaiCoMa: ['ham-chua-co'] },
-        cung('Trong diag_fill() lấp thêm cả hố thứ hai ở (2,3) theo ca 1: hỏng ở ca 2', bai(['diag_fill()', 'for i in range(4):', '    auto_fill()']), ['nap-hut', 'dam-tuong'], { hamCuaEmMoi: [H('diag_fill', [], ['diag_right()', 'fill_pit()', 'fill_pit()'])] })
+        cung('Trong diag_fill() lấp thêm cả hố thứ hai ở (2,3) theo ca 1: hỏng ở ca 2', bai(['diag_fill()', 'for i in range(4):', '    auto_fill()']), ['nap-hut', 'dam-tuong'], { hamCuaEmMoi: [H('diag_fill', [], ['dir_fr()', 'fill_pit()', 'fill_pit()'])] })
       ],
-      goiY: ['diag_right() đưa R1 từ (1,8) chéo lên (2,7) ngay trước viên đá tròn (2,6).', 'Sau đó fill_pit() hất đá lấp hố (2,5) và bước tới (2,5) để vòng lặp auto_fill() lo phần còn lại.']
+      goiY: ['dir_fr() đưa R1 từ (1,8) chéo lên (2,7) ngay trước viên đá tròn (2,6).', 'Sau đó fill_pit() hất đá lấp hố (2,5) và bước tới (2,5) để vòng lặp auto_fill() lo phần còn lại.']
     }),
 
     manChe({
@@ -540,7 +540,7 @@
       sao: { o: 31, nhip: 32 },
       loiSai: [
         { moTa: 'Quên gọi slide_r(1) sau belt_pad(3) nên gọi quarry_run(2) ngay ở hàng 1', baiLam: bai(['belt_pad(3)', 'quarry_run(2)']), phaiCoMa: ['dam-tuong'] },
-        cung('Viết cứng fill_pit() rồi lob_pad(3) theo ca 1: hỏng ở ca 2', bai(['belt_pad(3)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['roi-ho'])
+        cung('Viết cứng fill_pit() rồi lob_pad(3) theo ca 1: hỏng ở ca 2', bai(['belt_pad(3)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['dam-tuong'])
       ],
       goiY: ['belt_pad(3) đưa R1 tới (5,1); gọi slide_r(1) để xuống (5,2).', 'Tại (5,2), gọi quarry_run(2) để vượt tầng 2 và tầng 3 vào F(9,4).']
     }),

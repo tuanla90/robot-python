@@ -533,6 +533,7 @@ console.log('\n== 9. HuongDan: chuỗi bước, sự kiện, hạn, cờ đã xe
     { // lời giải / công thức khác / lời giải khác của MỌI màn gõ được theo thứ tự từ trên xuống mà không bị chặn (không có hai lệnh cùng bộ phận trong một nhịp)
       const nap = (arr, man) => { const loi = []; (arr || []).forEach((d, i) => { const m = /^\s*([A-Za-z_]\w*)\s*\([^()]*\)\s*(#.*)?$/.exec(d); if (!m) return; const ly = C(m[1], L(arr.slice(0, i), i, TP.bacCua(d)), man); if (ly) loi.push((i + 1) + ':' + m[1]); }); return loi; };
       const sai = [];
+      // CHÉO GHÉP (ghép nhịp 5a): gói 5–10 mùa Mỏ đá (lo-trinh-hoc.js bật man.cheoGhep) thì khung cho slide_* chung nhịp với lệnh bánh: kieuDiGhep(man) xét qua C(…, m)
       ManHoc.danhSach.forEach((m) => {
         [['loiGiai', m.loiGiai], ['loiGiaiKhac', m.loiGiaiKhac && m.loiGiaiKhac.baiLam]].concat((m.congThucKhac || []).map((c, i) => ['congThucKhac' + i, c.baiLam || c])).forEach(([ten, b]) => {
           if (!b) return;
@@ -540,6 +541,14 @@ console.log('\n== 9. HuongDan: chuỗi bước, sự kiện, hạn, cờ đã xe
         });
       });
       kiem('lời giải, lời giải khác, công thức khác của mọi màn không có hai lệnh cùng bộ phận (hay khác kiểu đi) trong một nhịp — người chơi gõ được', sai.length === 0, sai.slice(0, 6).join(' · '));
+      const saiCheo = sai.filter((x) => /^(che-)?di-cheo\./.test(x));
+      kiem('CHÉO GHÉP: lời giải 20 màn gói 5 Đi chéo (slide_* chung nhịp với hai bánh) gõ được vào khung khi màn có cờ cheoGhep', saiCheo.length === 0, saiCheo.slice(0, 6).join(' · '));
+      kiem('CHÉO GHÉP (kieuDiGhep cặp banh|truot): có cờ thì slide_* + lệnh bánh chung nhịp được, hai lệnh trượt / hai lệnh một bánh / bánh + phun vẫn cấm; tắt cờ thì bánh + trượt lại bị cấm (tự chứng minh); màn đội có xe cheoGhep cũng được', (() => {
+        const M = { loaiRobot: 'omni', cheoGhep: true }, D = { doi: [{}, { loaiRobot: 'omni', cheoGhep: true }] };
+        const co = C('left_move', ['slide_left'], M) === null && C('slide_right', ['right_back', 'left_back'], M) === null && !!C('slide_left', ['slide_right'], M) && !!C('left_back', ['left_move', 'slide_left'], M) && !!C('left_move', ['spray'], M) && !!C('spray', ['slide_left'], M) && C('left_move', ['slide_left'], D) === null;
+        return co && !!C('left_move', ['slide_left'], { loaiRobot: 'omni' }) && !!C('slide_right', ['right_move'], null) && !!C('slide_right', ['right_move']);
+      })());
+      kiem('TP.coCheoGhepCua: màn có cheoGhep, hay màn đội có xe cheoGhep; không còn biến chung CHEO_GHEP / TP.datCheoGhep (luật hỏi qua tuyChon.man())', TP.coCheoGhepCua({ cheoGhep: true }) && TP.coCheoGhepCua({ doi: [{}, { cheoGhep: true }] }) && !TP.coCheoGhepCua({}) && !TP.coCheoGhepCua(null) && TP.datCheoGhep === undefined && !/datCheoGhep|CHEO_GHEP/.test(nTP + nC + nX));
     }
     kiem('mọi lệnh gốc trong một nhịp (LENH_NHIP) đều thuộc một bộ phận', lenhNhip.every((l) => bp.has(l)), lenhNhip.filter((l) => !bp.has(l)).join(', '));
     kiem('Editor.chenTai kiểm trước khi chèn (khiCamNhip, trả null), render báo khay (khiNhip → Palette.datCamNhip); khung chính và Xưởng đều nối; khung chính chỉ báo "đầy khung" khi chen() === false',

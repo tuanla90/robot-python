@@ -286,7 +286,7 @@
     man({
       so: 20, ten: 'Trùm: Đội dò vách đá', hang: 'trum',
       hamCuaEmCan: ['sort_lob', 'slide_r', 'aim_lob', 'wait_n', 'fly_right', 'span_sow'],
-      deBai: 'Ba sân trùm thử thách toàn diện đội mỏ đá. Ở cột 2, R1 dùng sort_lob() nhận dạng đá tròn/quặng để hất đúng lên nút M mở cổng đầu C(2,1). Sau đó R1 trượt ngang slide_r(3) sang cột 5, tiến 1 ô lên (5,4) rồi gọi aim_lob(2) hất viên đá màu ở (5,3) lên nút M(5,2) mở cổng hai C(5,1). R2 chờ 2 nhịp, bay 3 ô qua cổng đầu, chờ 3 nhịp cho cổng hai mở, bay 1 ô vào (5,1) đọc c = color("down"), rồi bay 1 ô sang (6,1) gieo 2 bông hoa màu c.',
+      deBai: 'Ba sân trùm thử thách toàn diện đội mỏ đá. Ở cột 2, R1 dùng sort_lob() nhận dạng đá tròn/quặng để hất đúng lên nút M mở cổng đầu C(2,1). Sau đó R1 trượt ngang slide_r(3) sang cột 5, tiến 1 ô lên (5,4) rồi gọi aim_lob(2) hất viên đá màu ở (5,3) lên nút M(5,2) mở cổng hai C(5,1). R2 chờ 2 nhịp, bay 3 ô qua cổng đầu, chờ 4 nhịp cho cổng hai mở, bay 1 ô vào (5,1) đọc c = color("down"), rồi bay 1 ô sang (6,1) gieo 2 bông hoa màu c.',
       veMaMau: 'Kết hợp sort_lob(), slide_r(3), aim_lob(2) của R1 với camera đọc màu của R2.',
       san: [
         ['#########', '#.C..C..#', '#....M..#', '#.M..o..#', '#.o.....#', '#.......#', '#########'],
@@ -315,13 +315,13 @@
       ],
       bd: [{ x: 2, y: 5, huong: 0 }, { x: 1, y: 1 }],
       maMau: B([], []),
-      loiGiai: B(['sort_lob()', 'slide_r(3)', 'move()', 'aim_lob(2)'], ['wait_n(2)', 'fly_right(3)', 'wait_n(3)', 'go_right()', 'c = color("down")', 'go_right()', 'span_sow(c, 1)']),
+      loiGiai: B(['sort_lob()', 'slide_r(3)', 'move()', 'aim_lob(2)'], ['wait_n(2)', 'fly_right(3)', 'wait_n(4)', 'go_right()', 'c = color("down")', 'go_right()', 'span_sow(c, 1)']),
       sao: { o: 36, nhip: 33 },
       loiSai: [
-        { moTa: 'R1 gọi lob() ở cột 5 mà không gọi aim_lob(2): ở sân 2 tầm ném còn giữ 3 nên ném vọt qua M(5,2)', baiLam: B(['sort_lob()', 'slide_r(3)', 'move()', 'lob()'], ['wait_n(2)', 'fly_right(3)', 'wait_n(3)', 'go_right()', 'c = color("down")', 'go_right()', 'span_sow(c, 1)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'R2 gieo cứng màu đỏ: hỏng ở sân 2 và sân 3', baiLam: B(['sort_lob()', 'slide_r(3)', 'move()', 'aim_lob(2)'], ['wait_n(2)', 'fly_right(3)', 'wait_n(3)', 'fly_right(2)', 'span_sow("red", 1)']), phaiCoMa: ['chua-to-hinh'] }
+        { moTa: 'R1 gọi lob() ở cột 5 mà không gọi aim_lob(2): ở sân 2 aim_lob(3) đã đặt tầm 1 nên đá rơi ngắn, chưa tới M(5,2)', baiLam: B(['sort_lob()', 'slide_r(3)', 'move()', 'lob()'], ['wait_n(2)', 'fly_right(3)', 'wait_n(4)', 'go_right()', 'c = color("down")', 'go_right()', 'span_sow(c, 1)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'R2 gieo cứng màu đỏ: hỏng ở sân 2 và sân 3', baiLam: B(['sort_lob()', 'slide_r(3)', 'move()', 'aim_lob(2)'], ['wait_n(2)', 'fly_right(3)', 'wait_n(4)', 'fly_right(2)', 'span_sow("red", 1)']), phaiCoMa: ['chua-to-hinh'] }
       ],
-      goiY: ['Sau sort_lob() ở sân 2, tầm ném đang là 3, nên ở cột 5 R1 phải gọi aim_lob(2) để ném đúng 2 ô lên M(5,2).', 'R2 bay vào ô cổng C(5,1) ở nhịp 9 sẽ đứng ngay trên M(5,2) để đọc c = color("down").']
+      goiY: ['Sau sort_lob() ở sân 2, tầm ném đang là 1 (aim_lob(3) chạy đà với tầm 1), nên ở cột 5 R1 phải gọi aim_lob(2) để ném đúng 2 ô lên M(5,2).', 'Ở sân 2, R1 chạy đà nên mất thêm 1 nhịp: R2 chờ 4 nhịp rồi mới bay vào ô cổng C(5,1).']
     }),
 
     /* ================================================= chương che-doi-omni "Chế lệnh: đội mỏ đá" ================================================= */
@@ -487,7 +487,7 @@
     che({
       so: 18, ten: 'Hai cổng lọc đá', hang: 'bien-the',
       hamCuaEmCan: ['pad_kind', 'slide_r', 'wait_n', 'fly_right', 'span_sow'],
-      deBai: 'Hai sân có hai cổng C(2,1) và C(5,1). Ở dưới, R1 đứng ở (1,3) quay mặt sang Đông: gọi pad_kind() mở cổng đầu (3 nhịp), trượt xuống hàng 4 bằng slide_r(1) rồi gọi pad_kind() lần nữa mở cổng thứ hai ở cuối nhịp 7. R2 chờ 3 nhịp, bay 3 ô qua cổng đầu, chờ 1 nhịp cho cổng hai mở rồi bay 2 ô qua cổng hai gieo 2 bông hoa xanh lá.',
+      deBai: 'Hai sân có hai cổng C(2,1) và C(5,1). Ở dưới, R1 đứng ở (1,3) quay mặt sang Đông: gọi pad_kind() mở cổng đầu, trượt xuống hàng 4 bằng slide_r(1) rồi gọi pad_kind() lần nữa mở cổng thứ hai (cuối nhịp 7 ở sân 1, nhịp 8 ở sân 2 vì quặng phải chạy đà). R2 chờ 3 nhịp, bay 3 ô qua cổng đầu, chờ 2 nhịp cho cổng hai mở rồi bay 2 ô qua cổng hai gieo 2 bông hoa xanh lá.',
       veMaMau: 'R1 dùng pad_kind(), slide_r(1), pad_kind() để mở lần lượt hai cổng.',
       san: [
         ['#########', '#.C..C..#', '#########', '#..oM...#', '#...o=M.#', '#########'],
@@ -507,13 +507,13 @@
       ],
       bd: [{ x: 1, y: 3, huong: 1 }, { x: 1, y: 1 }],
       maMau: B([], []),
-      loiGiai: B(['pad_kind()', 'slide_r(1)', 'pad_kind()'], ['wait_n(3)', 'fly_right(3)', 'wait_n(1)', 'fly_right(2)', 'span_sow("green", 1)']),
+      loiGiai: B(['pad_kind()', 'slide_r(1)', 'pad_kind()'], ['wait_n(3)', 'fly_right(3)', 'wait_n(2)', 'fly_right(2)', 'span_sow("green", 1)']),
       sao: { o: 35, nhip: 20 },
       loiSai: [
-        { moTa: 'R1 quên slide_r(1) xuống hàng 4 trước khi gọi pad_kind() lần hai', baiLam: B(['pad_kind()', 'pad_kind()'], ['wait_n(3)', 'fly_right(3)', 'wait_n(1)', 'fly_right(2)', 'span_sow("green", 1)']), phaiCoMa: ['nap-hut', 'dam-tuong'] },
+        { moTa: 'R1 quên slide_r(1) xuống hàng 4 trước khi gọi pad_kind() lần hai', baiLam: B(['pad_kind()', 'pad_kind()'], ['wait_n(3)', 'fly_right(3)', 'wait_n(2)', 'fly_right(2)', 'span_sow("green", 1)']), phaiCoMa: ['nap-hut', 'dam-tuong'] },
         { moTa: 'R2 không chờ cổng hai mở mà bay thẳng qua (5,1)', baiLam: B(['pad_kind()', 'slide_r(1)', 'pad_kind()'], ['wait_n(3)', 'fly_right(5)', 'span_sow("green", 1)']), phaiCoMa: ['dam-tuong'] }
       ],
-      goiY: ['R1: pad_kind() (3 nhịp), slide_r(1) xuống (2,4) (1 nhịp), pad_kind() (3 nhịp) -> cổng hai mở ở cuối nhịp 7.', 'R2: wait_n(3), fly_right(3) tới (4,1) ở nhịp 6, wait_n(1) tới nhịp 7, rồi fly_right(2) và span_sow("green", 1).']
+      goiY: ['R1: pad_kind() với đá tròn tốn 3 nhịp, với quặng tốn 4 nhịp (chạy đà rồi lùi). Cổng hai mở muộn nhất ở cuối nhịp 8.', 'R2: wait_n(3), fly_right(3) tới (4,1) ở nhịp 6, wait_n(2) tới nhịp 8, rồi fly_right(2) và span_sow("green", 1).']
     }),
 
     che({
