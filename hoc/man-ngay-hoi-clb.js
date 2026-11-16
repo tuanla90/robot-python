@@ -123,6 +123,19 @@
   function san9(dai) { var h = '#' + '.'.repeat(dai) + '#'.repeat(9 - dai); return ['##########', '#........#', '##########', h, '#.########', '##########']; }
   function hinh9(dai) { var h = '.'; for (var x = 1; x <= 8; x++) h += (x <= dai && x % 2 === 1) ? 'g' : '.'; return ['..........', '.rrrrrrrr.', '..........', h + '.', '..........', '..........']; }
 
+  /** Đoạn song ca của từng gói (màn 10 G1–G9), bè 1 | bè 2: ghép thành bài "Kìa con bướm vàng". */
+  var B1 = { 1: '1 1 5 5 6 6 5 5', 2: '4 4 3 3 2 2 1 1', 3: '5 5 4 4 3 3 2 2', 4: '5 5 4 4 3 3 2 2', 5: '1 1 5 5 6 6 5 5', 6: '4 4 3 3 2 2 1 1', 7: '1 1 5 5 6 6 5 5', 8: '4 4 3 3 2 2 1 1', 9: '5 5 4 4 3 3 2 2' };
+  var B2 = { 1: '1 3 5 3 4 4 1 1', 2: '2 4 1 3 5 5 1 1', 3: '3 1 2 4 1 3 5 5', 4: '1 3 2 4 3 5 4 2', 5: '3 1 3 5 4 6 5 3', 6: '6 2 5 1 4 5 3 1', 7: '3 3 1 3 4 4 3 3', 8: '6 6 5 5 4 4 3 3', 9: '7 7 6 6 5 5 4 4' };
+  function ds(chuoi) { return '[' + chuoi.split(' ').join(', ') + ']'; }
+  /** Dòng Python khai list đoạn: ten = [..]. */
+  function khaiDoan(ten, chuoi) { return ten + ' = ' + ds(chuoi); }
+  function noiDieu(be, ds) { return ds.map(function (g) { return be[g]; }).join(' '); }
+
+  /** tong-hop-clb.10 (hai sân, song ca, trùm chương 1): tập ghép bốn đoạn đầu (G1 Kho, G2 Nhà máy, G3 Bãi, G4 Cảng). Mỗi bè: bốn list đoạn, nối list (d1 + d2 + d3 + d4) rồi play_part. */
+  function be10(be) { return [khaiDoan('d1', be[1]), khaiDoan('d2', be[2]), khaiDoan('d3', be[3]), khaiDoan('d4', be[4]), 'play_part(d1 + d2 + d3 + d4)']; }
+  var BE1_10 = be10(B1), BE2_10 = be10(B2);
+  var SAN_10 = ['#######', '#RRRRR#', '#~~~~~#', '#######'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -367,6 +380,33 @@
       sao: { o: 30, nhip: 22 },
       goiY: ['i % 2: số dư khi chia i cho 2; i % 2 == 0 là i chẵn: 0, 2, 4…', 'while front_clear(): đi tới khi trước mặt không còn trống.', 'Omni trượt ngang được, không cần quay.'],
       cauDo: { doi: null, lap: 'hai-banh+son+khoang-cach', coChe: ['gieo', 'vach', 'luong', 'chia-du', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
+    }),
+    // 10 · song ca (trùm chương 1), hai sân (sân Kho và sân Nhà máy, đá chuông mỗi sân một nốt để nhìn): tập ghép bốn đoạn đầu của bài (đoạn Kho, Nhà máy, Bãi tái chế, Cảng).
+    //      Bảng đủ 8 cỗ máy, chọn trùng được: chỉ xe hang động có loa. Ôn list: mỗi đoạn một list, nối list bằng +. Hát tại chỗ (màn choi-dieu có ô F thì lõi không cho thắng).
+    //      Nốt: bè 1 = 1 1 5 5 6 6 5 5 | 4 4 3 3 2 2 1 1 | 5 5 4 4 3 3 2 2 | 5 5 4 4 3 3 2 2, bè 2 = 1 3 5 3 4 4 1 1 | 2 4 1 3 5 5 1 1 | 3 1 2 4 1 3 5 5 | 1 3 2 4 3 5 4 2 (bảng B1 / B2 đầu tệp). Mọi khe trên dải ray, dưới mỗi khe là ô nước.
+    man9('tong-hop-clb', 10, 'trum', {
+      ten: 'Tập song ca bốn đoạn đầu',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      khung: { chinh: 12, moiHam: 8 },
+      deBai: 'Tổng duyệt ngày hội! Hai sân: Kho và Nhà máy. Ghép bốn đoạn đầu của bài (đoạn Kho, Nhà máy, Bãi tái chế, Cảng). Chọn hai bạn hát được; mỗi bè khai bốn list đoạn, nối lại rồi play_part.',
+      veMaMau: 'Hai bè mới hát đoạn 1.',
+      san: [SAN_10, SAN_10],
+      doi: [khe({ x: 1, y: 1, huong: 0, nac: 2, tam: 1 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } }), khe({ x: 3, y: 1, huong: 0, nac: 2, tam: 1 }, { batDauNuoc: { x: 3, y: 2, huong: 1 } })],
+      them: { dieu: { r1: noiDieu(B1, [1, 2, 3, 4]), r2: noiDieu(B2, [1, 2, 3, 4]) }, daChuong: [[{ x: 2, y: 2, not: 6, ben: 1 }, { x: 5, y: 2, not: 3, ben: 1 }], [{ x: 2, y: 2, not: 2, ben: 1 }]] },
+      chonDoi: {
+        menu: ['CH', 'CU', 'PL', 'CC', 'XU', 'DR', 'KT', 'HD'], trung: true,
+        cachMau: [{ chon: ['HD', 'HD'], ghiChu: 'đôi tốt: chỉ xe hang động có loa', loiGiai: doiBai([BE1_10, BE2_10]) }]
+      },
+      maMau: doiBai([BE1_10.slice(0, 4).concat(['play_part(d1)']), BE2_10.slice(0, 4).concat(['play_part(d1)'])]),
+      loiSai: [
+        { moTa: 'Bè 2 mới hát đoạn 1', baiLam: doiBai([BE1_10, BE2_10.slice(0, 4).concat(['play_part(d1)'])]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Ghép sai thứ tự (d2 + d1 + d3 + d4)', baiLam: doiBai([BE1_10.slice(0, 4).concat(['play_part(d2 + d1 + d3 + d4)']), BE2_10]), phaiCoMa: ['sai-not'] },
+        { moTa: 'Cộng từng số thay vì nối list: play_note(d1[0] + d2[0]) ra nốt 5', baiLam: doiBai([BE1_10.slice(0, 4).concat(['play_note(d1[0] + d2[0])']), BE2_10]), phaiCoMa: ['sai-not'] }
+      ],
+      sao: { o: 17, nhip: 77 },
+      goiY: ['Nối hai list bằng dấu +: [1, 2] + [3] là [1, 2, 3].', 'play_part(notes): hát lần lượt từng nốt trong list.', 'Hai bạn bắt đầu cùng một nhịp.'],
+      cauDo: { doi: ['HD', 'HD'], lap: null, coChe: ['loa', 'da-chuong', 'ghep-bai', 'list', 'nhieu-san'], cuu: null, meo: 'song-song' }
     })
   ];
 
