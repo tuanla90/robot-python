@@ -96,7 +96,7 @@
       loiGiai: bai(['note(5)', 'wait()', 'forward(4)', 'turn_right()', 'forward(2)']),
       loiSai: [
         { moTa: 'Để nguyên note(2): đá chuông nốt 5 không vỡ, R1 đâm vào đá', baiLam: bai(['note(2)', 'wait()', 'forward(4)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Quên wait(): nốt chưa kịp vang thì R1 đã đi', baiLam: bai(['note(5)', 'forward(4)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Phát nốt 3 (số ô tới đá): đá chuông nốt 5 không vỡ', baiLam: bai(['note(3)', 'wait()', 'forward(4)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
       sao: { o: 12, nhip: 8 },
       goiY: [
@@ -184,7 +184,7 @@
     manLoa(6, 'luyen', {
       ten: 'Lặp nốt bốn nhịp',
       hamCuaEmCan: ['play_note', 'forward', 'turn_right'],
-      deBai: 'Giúp Sola với! Khối đá chuông bốn vạch chắn lối rẽ xuống. Dùng vòng lặp để phát đủ bốn nhịp.',
+      deBai: 'Giúp Sola với! Khối đá chuông bốn vạch chắn lối rẽ xuống. Đi tới chỗ rẽ, quay mũi về phía đá rồi dùng vòng lặp phát đủ bốn nhịp.',
       veMaMau: 'Sola lặp ba lần. Chạy thử xem còn thiếu mấy vạch.',
       san: [
         '#######',
@@ -196,16 +196,17 @@
       ],
       batDau: { x: 1, y: 1, huong: 1 },
       daChuong: [da(4, 2, 7, 4)],
-      maMau: bai(['for i in range(3):', '    play_note(7)', 'forward(3)', 'turn_right()', 'forward(3)']),
-      loiGiai: bai(['for i in range(4):', '    play_note(7)', 'forward(3)', 'turn_right()', 'forward(3)']),
+      maMau: bai(['forward(3)', 'turn_right()', 'for i in range(3):', '    play_note(7)', 'forward(3)']),
+      loiGiai: bai(['forward(3)', 'turn_right()', 'for i in range(4):', '    play_note(7)', 'forward(3)']),
       loiSai: [
-        { moTa: 'Lặp ba lần: đá còn một vạch, R1 đâm vào đá', baiLam: bai(['for i in range(3):', '    play_note(7)', 'forward(3)', 'turn_right()', 'forward(3)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Viết bốn dòng play_note(7) thay vì lặp: tới cờ nhưng tốn ô', baiLam: bai(['play_note(7)', 'play_note(7)', 'play_note(7)', 'play_note(7)', 'forward(3)', 'turn_right()', 'forward(3)']) }
+        { moTa: 'Lặp ba lần: đá còn một vạch, R1 đâm vào đá', baiLam: bai(['forward(3)', 'turn_right()', 'for i in range(3):', '    play_note(7)', 'forward(3)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Phát ngay từ chỗ xuất phát: đá cách 4 ô, không nghe thấy', baiLam: bai(['for i in range(4):', '    play_note(7)', 'forward(3)', 'turn_right()', 'forward(3)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Viết bốn dòng play_note(7) thay vì lặp: tới cờ nhưng tốn ô', baiLam: bai(['forward(3)', 'turn_right()', 'play_note(7)', 'play_note(7)', 'play_note(7)', 'play_note(7)', 'forward(3)']) }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 14, nhip: 11 },
       goiY: [
-        'Luna: Đá ở ngay dưới chỗ rẽ. Từ chỗ R1 đứng tới đá là 4 ô theo đường đi, nhưng tính thẳng chỉ 3 + 1 = 4… thử xem đá có nghe không.',
-        'Luna: Đá cách R1 quá 3 ô thì phải đi lại gần trước khi phát.'
+        'Luna: Từ chỗ xuất phát tới đá là 3 + 1 = 4 ô, xa hơn 3 ô nên đá không nghe. Đi tới chỗ rẽ trước.',
+        'Luna: Vạch nào cũng phải nghe một nhịp: for i in range(4): rồi play_note(7) thụt vào.'
       ]
     }),
 
@@ -289,7 +290,8 @@
     manLoa(10, 'trum', {
       ten: 'Trùm: Hành lang đá chuông',
       hamCuaEmCan: ['play_note', 'forward', 'move', 'turn_right'],
-      deBai: 'Giúp Sola với! Hành lang dài có ba khối đá chuông. Phá hết để tới cờ, càng ít nhịp càng tốt: vừa đi vừa gõ khi được. Chương trình chỉ được 10 ô.',
+      khung: { chinh: 12, moiHam: 8, cauTruc: ['for'] },
+      deBai: 'Giúp Sola với! Hành lang dài có ba khối đá chuông. Phá hết để tới cờ, càng ít nhịp càng tốt: vừa đi vừa gõ khi được.',
       veMaMau: 'Sola mới phá được khối đầu.',
       san: [
         '########',
@@ -302,13 +304,13 @@
       batDau: { x: 1, y: 1, huong: 1 },
       daChuong: [da(3, 1, 2, 2), da(5, 3, 6, 1), da(2, 4, 4, 2)],
       maMau: bai(['for i in range(2):', '    note(2)', '    move()']),
-      loiGiai: bai(['for i in range(2):', '    note(2)', '    move()', 'forward(2)', 'turn_right()', 'note(6)', 'forward(2)', 'turn_right()', 'for i in range(2):', '    note(4)', '    move()', 'forward(2)']),
+      loiGiai: bai(['for i in range(2):', '    note(2)', '    move()', 'forward(2)', 'turn_right()', 'note(6)', 'forward(3)', 'turn_right()', 'for i in range(2):', '    note(4)', '    move()', 'forward(2)']),
       loiSai: [
         { moTa: 'Chỉ phá khối đầu: R1 dừng giữa đường', baiLam: bai(['for i in range(2):', '    note(2)', '    move()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Khối cuối chỉ gõ một nhịp: R1 đâm vào đá', baiLam: bai(['for i in range(2):', '    note(2)', '    move()', 'forward(2)', 'turn_right()', 'note(6)', 'forward(2)', 'turn_right()', 'note(4)', 'forward(4)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Dừng lại gõ từng khối: tới cờ nhưng nhiều nhịp', baiLam: bai(['play_note(2)', 'play_note(2)', 'forward(4)', 'turn_right()', 'play_note(6)', 'forward(2)', 'turn_right()', 'play_note(4)', 'play_note(4)', 'forward(4)']) }
+        { moTa: 'Khối cuối chỉ gõ một nhịp: R1 đâm vào đá', baiLam: bai(['for i in range(2):', '    note(2)', '    move()', 'forward(2)', 'turn_right()', 'note(6)', 'forward(3)', 'turn_right()', 'note(4)', 'forward(4)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Dừng lại gõ từng khối: tới cờ nhưng nhiều nhịp', baiLam: bai(['play_note(2)', 'play_note(2)', 'forward(4)', 'turn_right()', 'play_note(6)', 'forward(3)', 'turn_right()', 'play_note(4)', 'play_note(4)', 'forward(4)']) }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 19, nhip: 13 },
       goiY: [
         'Luna: note(6) viết ngay trước forward(2) thì nốt vang trong bước đầu của forward.',
         'Luna: Khối hai vạch thì vừa đi vừa gõ hai bước liền.'
@@ -371,8 +373,9 @@
     manTapHop(3, 'lam-quen', {
       ten: 'Túi nhớ qua vòng lặp',
       hamCuaEmCan: ['ring_once', 'move'],
-      deBai: 'Giúp Sola với! Bốn khối đá nốt 4 nằm sát nhau. Trong vòng lặp, R1 tiến một ô rồi gọi ring_once(4, s). Túi s nhớ nốt 4 đã gõ nên chỉ lần đầu là phát.',
-      veMaMau: 'Sola tạo túi mới trong mỗi vòng. Chạy thử: R1 gõ lại mỗi bước.',
+      deBai: 'Giúp Sola với! Bốn khối đá nốt 4 nằm sát nhau, nước đang dâng: R1 chỉ có 6 nhịp. Trong vòng lặp, R1 gọi ring_once(4, s) rồi tiến một ô. Túi s nhớ nốt 4 đã gõ nên chỉ lần đầu là phát.',
+      veMaMau: 'Sola tạo túi mới trong mỗi vòng. Chạy thử: R1 gõ lại mỗi bước nên hết nhịp.',
+      nhipToiDa: 6,
       san: [
         '########',
         '#.IIIIF#',
@@ -383,7 +386,7 @@
       maMau: bai(['for i in range(5):', '    s = set()', '    ring_once(4, s)', '    move()']),
       loiGiai: bai(['s = set()', 'for i in range(5):', '    ring_once(4, s)', '    move()']),
       loiSai: [
-        { moTa: 'Tạo túi mới trong vòng: túi quên nốt cũ, R1 gõ lại mỗi bước', baiLam: bai(['for i in range(5):', '    s = set()', '    ring_once(4, s)', '    move()']) },
+        { moTa: 'Tạo túi mới trong vòng: túi quên nốt cũ, R1 gõ lại mỗi bước nên hết nhịp', baiLam: bai(['for i in range(5):', '    s = set()', '    ring_once(4, s)', '    move()']), phaiCoMa: ['qua-nhieu-nhip'] },
         { moTa: 'Đi trước rồi mới gõ: R1 đâm vào khối đầu', baiLam: bai(['s = set()', 'for i in range(5):', '    move()', '    ring_once(4, s)']), phaiCoMa: ['dam-tuong'] }
       ],
       sao: { o: 12, nhip: 6 },
@@ -394,31 +397,39 @@
     }),
 
     manTapHop(4, 'luyen', {
-      ten: 'Đếm nốt đã gõ',
+      ten: 'Đếm nốt trong túi',
       hamCuaEmCan: ['ring_once', 'forward', 'turn_right'],
-      deBai: 'Giúp Sola với! Luna dặn: gõ xong ba khối đá thì đi xuống đúng bằng số nốt khác nhau đã gõ. Dùng len(s) làm số bước.',
-      veMaMau: 'Sola đi xuống 2 ô cố định. Chạy thử rồi đổi số bước thành len(s).',
+      deBai: 'Giúp Sola với! Mỗi sân, Luna để lại một túi s ghi các nốt đã gõ. R1 gõ thêm khối đá nốt 7 rồi tiến đúng len(s) ô (số nốt khác nhau trong túi) mới tới chỗ rẽ xuống cờ.',
+      veMaMau: 'Sola đếm túi ở sân 1 rồi viết thẳng forward(3). Chạy thử: sân 2 túi khác nên R1 rẽ sớm.',
       san: [
-        '#######',
-        '#.III##',
-        '#uuuI##',
-        '#uuuI##',
-        '#uuuI##',
-        '####F##',
-        '#######'
+        [
+          '#######',
+          '#.III##',
+          '####I##',
+          '####F##',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.IIII#',
+          '#####I#',
+          '#####F#',
+          '#######'
+        ]
       ],
+      duLieuSan: ['s = {2, 6}', 's = {1, 4, 8}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì sân 2 rẽ sớm
       batDau: { x: 1, y: 1, huong: 1 },
-      daChuong: [da(2, 1, 2), da(3, 1, 6), da(4, 2, 2)],
-      maMau: bai(['s = set()', 'ring_once(2, s)', 'ring_once(6, s)', 'ring_once(2, s)', 'forward(3)', 'turn_right()', 'forward(2)']),
-      loiGiai: bai(['s = set()', 'ring_once(2, s)', 'ring_once(6, s)', 'ring_once(2, s)', 'forward(3)', 'turn_right()', 'forward(len(s) + 2)']),
+      daChuong: [da(2, 1, 7)],
+      maMau: bai(['s = {2, 6}', 'ring_once(7, s)', 'forward(3)', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['s = {2, 6}', 'ring_once(7, s)', 'forward(len(s))', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Đi xuống 2 ô: R1 dừng giữa đường', baiLam: bai(['s = set()', 'ring_once(2, s)', 'ring_once(6, s)', 'ring_once(2, s)', 'forward(3)', 'turn_right()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đi xuống len(s) ô: thiếu hai ô đá ướt phía trên', baiLam: bai(['s = set()', 'ring_once(2, s)', 'ring_once(6, s)', 'ring_once(2, s)', 'forward(3)', 'turn_right()', 'forward(len(s))']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Viết thẳng forward(3): đúng ở sân 1, sân 2 rẽ sớm vào vách', baiLam: bai(['s = {2, 6}', 'ring_once(7, s)', 'forward(3)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đi len(s) ô trước rồi mới gõ: R1 đâm vào đá chuông', baiLam: bai(['s = {2, 6}', 'forward(len(s))', 'ring_once(7, s)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 17, nhip: 8 },
       goiY: [
-        'Luna: Gõ 2, 6, 2 thì túi có hai nốt khác nhau: len(s) là 2.',
-        'Luna: Từ góc rẽ tới cờ là 4 ô: len(s) + 2.'
+        'Luna: ring_once(7, s) bỏ nốt 7 vào túi, nên len(s) tính cả nốt vừa gõ.',
+        'Luna: Đổi forward(3) thành forward(len(s)): sân nào túi cũng tự đếm đúng.'
       ]
     }),
 
@@ -435,7 +446,7 @@
         '#######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      daChuong: [da(3, 1, 7), da(3, 3, 7), da(2, 3, 1)],
+      daChuong: [da(3, 1, 7), da(2, 3, 7), da(3, 3, 1)],
       maMau: bai(['s = set()', 'ring_check(7, s)', 'forward(3)', 'turn_right()', 'forward(2)', 'turn_right()', 'ring_check(7, s)', 'ring_check(1, s)', 'forward(3)'],
         [ham('ring_check', ['if n in s:', '    s.add(n)', '    play_note(n)'], ['n', 's'])]),
       loiGiai: bai(['s = set()', 'ring_check(7, s)', 'forward(3)', 'turn_right()', 'forward(2)', 'turn_right()', 'ring_check(7, s)', 'ring_check(1, s)', 'forward(3)'],
@@ -444,10 +455,10 @@
         { moTa: 'Để nguyên if n in s: túi rỗng nên không bao giờ gõ, R1 đâm vào đá', baiLam: bai(['s = set()', 'ring_check(7, s)', 'forward(3)', 'turn_right()', 'forward(2)', 'turn_right()', 'ring_check(7, s)', 'ring_check(1, s)', 'forward(3)'], [ham('ring_check', ['if n in s:', '    s.add(n)', '    play_note(n)'], ['n', 's'])]), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Bỏ hẳn câu hỏi: lần nào cũng gõ, thừa một nhịp', baiLam: bai(['s = set()', 'ring_check(7, s)', 'forward(3)', 'turn_right()', 'forward(2)', 'turn_right()', 'ring_check(7, s)', 'ring_check(1, s)', 'forward(3)'], [ham('ring_check', ['s.add(n)', 'play_note(n)'], ['n', 's'])]) }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 21, nhip: 12 },
       goiY: [
         'Luna: n in s đúng khi túi đã có n. Lúc đầu túi rỗng nên điều kiện sai mãi.',
-        'Luna: Đổi thành n not in s: chưa có thì mới gõ.'
+        'Luna: Đổi thành n not in s: chưa có thì mới gõ. Nốt 7 đầu tiên làm vỡ cả hai khối nốt 7.'
       ]
     }),
 
@@ -455,25 +466,24 @@
       ten: 'Sổ đá và túi nốt',
       khoaTD: ['dau', 'giua', 'cuoi'],
       hamCuaEmCan: ['ring_once', 'rim'],
-      deBai: 'Giúp Sola với! Sổ d ghi nốt của khối đá ở đầu mỗi đoạn đường. Lật từng trang sổ: gõ nốt đó (nốt đã gõ thì thôi) rồi đi rim(3).',
+      deBai: 'Giúp Sola với! Sổ d ghi nốt của khối đá ở đầu mỗi đoạn đường. Lật từng trang sổ: gõ nốt đó (nốt đã gõ thì thôi) rồi đi rim(2).',
       veMaMau: 'Sola viết vòng lặp nhưng quên tạo túi s. Chạy thử xem báo lỗi gì.',
       san: [
-        '######',
-        '#.III#',
-        '#uuuI#',
-        '#uuuI#',
-        '#FIII#',
-        '######'
+        '#####',
+        '#.II#',
+        '#uuI#',
+        '#FII#',
+        '#####'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      daChuong: [da(2, 1, 5), da(4, 2, 5), da(3, 4, 8)],
-      maMau: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 'for k in d:', '    ring_once(d[k], s)', '    rim(3)']),
-      loiGiai: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 's = set()', 'for k in d:', '    ring_once(d[k], s)', '    rim(3)']),
+      daChuong: [da(2, 1, 5), da(3, 2, 5), da(2, 3, 8)],
+      maMau: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 'for k in d:', '    ring_once(d[k], s)', '    rim(2)']),
+      loiGiai: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 's = set()', 'for k in d:', '    ring_once(d[k], s)', '    rim(2)']),
       loiSai: [
-        { moTa: 'Chưa tạo túi s: chương trình dừng ngay lần gọi đầu', baiLam: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 'for k in d:', '    ring_once(d[k], s)', '    rim(3)']), phaiCoMa: ['loi-chay'] },
-        { moTa: 'Gõ mọi trang không hỏi túi: tới cờ nhưng thừa một nhịp', baiLam: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 'for k in d:', '    play_note(d[k])', '    rim(3)']) }
+        { moTa: 'Chưa tạo túi s: chương trình dừng ngay lần gọi đầu', baiLam: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 'for k in d:', '    ring_once(d[k], s)', '    rim(2)']), phaiCoMa: ['loi-chay'] },
+        { moTa: 'Gõ mọi trang không hỏi túi: tới cờ nhưng thừa một nhịp', baiLam: bai(['d = {"dau": 5, "giua": 5, "cuoi": 8}', 'for k in d:', '    play_note(d[k])', '    rim(2)']) }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 19, nhip: 10 },
       goiY: [
         'Luna: Thêm dòng s = set() trước vòng lặp.',
         'Luna: Hai khối nốt 5 vỡ cùng lúc ở lần gõ đầu, trang "giua" khỏi gõ lại.'
@@ -483,6 +493,7 @@
     manTapHop(7, 'bien-the', {
       ten: 'Đá hai vạch, gõ một lần',
       taoHam: ['ring_twice'], chinhCoDinh: true,
+      khung: { chinh: 14, moiHam: 8, cauTruc: ['for', 'if', 'else', 'dict', 'set'] },
       hamCuaEmCan: ['play_note', 'forward', 'turn_right', 'turn_left'],
       deBai: 'Giúp Sola với! Mọi khối đá ở đây đều hai vạch. Chế ring_twice(n, s): nốt n chưa có trong túi thì bỏ vào túi rồi phát nốt n hai nhịp liền. Chương trình chính đã khoá.',
       veMaMau: 'Chương trình chính gọi ring_twice ở bốn chỗ. Chế ring_twice(n, s).',
@@ -496,7 +507,7 @@
         '########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      daChuong: [da(3, 1, 2, 2), da(4, 3, 2, 2), da(6, 3, 6, 2), da(6, 4, 6, 2)],
+      daChuong: [da(3, 1, 2, 2), da(4, 2, 2, 2), da(6, 3, 6, 2), da(6, 4, 6, 2)],
       maMau: bai(['s = set()', 'move()', 'ring_twice(2, s)', 'forward(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'ring_twice(2, s)', 'ring_twice(6, s)', 'forward(2)', 'turn_right()', 'ring_twice(6, s)', 'forward(2)']),
       loiGiai: bai(['s = set()', 'move()', 'ring_twice(2, s)', 'forward(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'ring_twice(2, s)', 'ring_twice(6, s)', 'forward(2)', 'turn_right()', 'ring_twice(6, s)', 'forward(2)'], [], [
         ham('ring_twice', ['if n not in s:', '    s.add(n)', '    for i in range(2):', '        play_note(n)'], ['n', 's'])
@@ -506,7 +517,7 @@
         { moTa: 'Chỉ phát một nhịp: đá hai vạch không vỡ', baiLam: bai(['s = set()', 'move()', 'ring_twice(2, s)', 'forward(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'ring_twice(2, s)', 'ring_twice(6, s)', 'forward(2)', 'turn_right()', 'ring_twice(6, s)', 'forward(2)']), hamCuaEmMoi: [ham('ring_twice', ['if n not in s:', '    s.add(n)', '    play_note(n)'], ['n', 's'])], phaiCoMa: ['dam-tuong'] },
         { moTa: 'Không hỏi túi: tới cờ nhưng gõ lại cả nốt 2 lẫn nốt 6', baiLam: bai(['s = set()', 'move()', 'ring_twice(2, s)', 'forward(2)', 'turn_right()', 'forward(2)', 'turn_left()', 'ring_twice(2, s)', 'ring_twice(6, s)', 'forward(2)', 'turn_right()', 'ring_twice(6, s)', 'forward(2)']), hamCuaEmMoi: [ham('ring_twice', ['for i in range(2):', '    play_note(n)'], ['n', 's'])] }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 28, nhip: 16 },
       goiY: [
         'Luna: Giống ring_once, chỉ khác phần gõ: lặp play_note(n) hai lần.',
         'Luna: Vòng for i in range(2): thụt vào dưới if, cùng hàng với s.add(n).'
@@ -531,7 +542,7 @@
       maMau: bai(['s = set()', 'ring_once(1, s)', 'ring_once(3, s)', 'ring_once(8, s)', 'forward(4)', 'turn_right()', 'forward(2)']),
       loiGiai: bai(['s = {1, 8}', 'ring_once(1, s)', 'ring_once(3, s)', 'ring_once(8, s)', 'forward(4)', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Túi rỗng: R1 gõ cả nốt 1 và 8, hết nhịp trước khi tới cờ', baiLam: bai(['s = set()', 'ring_once(1, s)', 'ring_once(3, s)', 'ring_once(8, s)', 'forward(4)', 'turn_right()', 'forward(2)']), phaiCoMa: ['het-nhip'] },
+        { moTa: 'Túi rỗng: R1 gõ cả nốt 1 và 8, hết nhịp trước khi tới cờ', baiLam: bai(['s = set()', 'ring_once(1, s)', 'ring_once(3, s)', 'ring_once(8, s)', 'forward(4)', 'turn_right()', 'forward(2)']), phaiCoMa: ['qua-nhieu-nhip'] },
         { moTa: 'Bỏ cả nốt 3 vào túi: khối nốt 3 không được gõ, R1 đâm vào đá', baiLam: bai(['s = {1, 3, 8}', 'ring_once(1, s)', 'ring_once(3, s)', 'ring_once(8, s)', 'forward(4)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
       sao: { o: 19, nhip: 8 },
@@ -544,30 +555,32 @@
     manTapHop(9, 'bien-the', {
       ten: 'Hai đoạn chung một túi',
       khoaTD: ['dau', 'giua', 'cuoi'],
-      hamCuaEmCan: ['ring_once', 'rim'],
-      deBai: 'Giúp Sola với! Hai cuốn sổ cho hai vòng quanh hai hố. Dùng chung một túi s cho cả hai vòng để nốt đã gõ ở vòng đầu không phải gõ lại.',
-      veMaMau: 'Sola viết xong vòng đầu. Chạy thử rồi viết vòng sau với sổ b.',
+      khung: { chinh: 12, moiHam: 8, cauTruc: ['for', 'if', 'else', 'dict', 'set'] },
+      hamCuaEmCan: ['ring_once', 'move', 'turn_right'],
+      deBai: 'Giúp Sola với! Hai cuốn sổ ghi nốt của từng ô đá trên hai đoạn hang. Lật sổ a rồi sổ b: mỗi trang gõ nốt đó (nốt đã gõ thì thôi) rồi tiến một ô. Dùng chung một túi s cho cả hai đoạn.',
+      veMaMau: 'Sola viết xong đoạn đầu. Chạy thử rồi viết đoạn sau với sổ b.',
       san: [
-        '#######',
-        '#.III##',
-        '#uuuI##',
-        '#uIII##',
-        '#uIuuu#',
-        '#uIIIF#',
-        '#######'
+        '######',
+        '#.III#',
+        '#uuuI#',
+        '#uuuI#',
+        '#uuuI#',
+        '####F#',
+        '######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      daChuong: [da(2, 1, 4), da(4, 2, 7), da(3, 3, 4), da(2, 4, 7), da(3, 5, 2)],
-      maMau: bai(['a = {"dau": 3, "giua": 2}', 's = set()', 'for k in a:', '    ring_once(a[k], s)', '    rim(a[k])']),
-      loiGiai: bai(['a = {"dau": 3, "giua": 2}', 'b = {"dau": 2, "giua": 3}', 's = set()', 'for k in a:', '    ring_once(a[k] + 1, s)', '    rim(a[k])', 'u_turn()', 'for k in b:', '    ring_once(b[k] + 2, s)', '    rim(b[k])']),
+      daChuong: [da(2, 1, 4), da(3, 1, 7), da(4, 1, 4), da(4, 2, 7), da(4, 3, 2), da(4, 4, 5)],
+      maMau: bai(['a = {"dau": 4, "giua": 7, "cuoi": 4}', 's = set()', 'for k in a:', '    ring_once(a[k], s)', '    move()']),
+      loiGiai: bai(['a = {"dau": 4, "giua": 7, "cuoi": 4}', 'b = {"dau": 7, "giua": 2, "cuoi": 5}', 's = set()', 'for k in a:', '    ring_once(a[k], s)', '    move()', 'turn_right()', 'for k in b:', '    ring_once(b[k], s)', '    move()', 'move()']),
       loiSai: [
-        { moTa: 'Mới có vòng đầu: R1 dừng giữa đường', baiLam: bai(['a = {"dau": 3, "giua": 2}', 's = set()', 'for k in a:', '    ring_once(a[k], s)', '    rim(a[k])']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Tạo túi mới cho vòng sau: tới cờ nhưng gõ lại nốt 4 và 7', baiLam: bai(['a = {"dau": 3, "giua": 2}', 'b = {"dau": 2, "giua": 3}', 's = set()', 'for k in a:', '    ring_once(a[k] + 1, s)', '    rim(a[k])', 'u_turn()', 's = set()', 'for k in b:', '    ring_once(b[k] + 2, s)', '    rim(b[k])']) }
+        { moTa: 'Mới có đoạn đầu: R1 dừng ở góc', baiLam: bai(['a = {"dau": 4, "giua": 7, "cuoi": 4}', 's = set()', 'for k in a:', '    ring_once(a[k], s)', '    move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Tạo túi mới cho đoạn sau: tới cờ nhưng gõ lại nốt 7', baiLam: bai(['a = {"dau": 4, "giua": 7, "cuoi": 4}', 'b = {"dau": 7, "giua": 2, "cuoi": 5}', 's = set()', 'for k in a:', '    ring_once(a[k], s)', '    move()', 'turn_right()', 's = set()', 'for k in b:', '    ring_once(b[k], s)', '    move()', 'move()']) },
+        { moTa: 'Tiến trước rồi mới gõ: R1 đâm vào khối đầu', baiLam: bai(['a = {"dau": 4, "giua": 7, "cuoi": 4}', 'b = {"dau": 7, "giua": 2, "cuoi": 5}', 's = set()', 'for k in a:', '    move()', '    ring_once(a[k], s)', 'turn_right()', 'for k in b:', '    move()', '    ring_once(b[k], s)', 'move()']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 21, nhip: 12 },
       goiY: [
-        'Luna: Không tạo lại túi giữa hai vòng.',
-        'Luna: Đá ở đầu mỗi đoạn có nốt bằng số bước của đoạn đó cộng thêm.'
+        'Luna: Đoạn sau giống hệt đoạn đầu, chỉ đổi sổ a thành sổ b. Không tạo lại túi giữa hai đoạn.',
+        'Luna: Nốt 7 ở đoạn đầu vang tới cả khối nốt 7 ngay góc rẽ, nên trang "dau" của sổ b khỏi gõ.'
       ]
     }),
 
@@ -575,33 +588,32 @@
       ten: 'Trùm: Mê cung đá chuông',
       taoHam: ['ring_book'], chinhCoDinh: true,
       khoaTD: ['dau', 'giua', 'cuoi'],
-      hamCuaEmCan: ['ring_once', 'rim'],
-      deBai: 'Giúp Sola với! Hai sổ, mỗi trang ghi số bước của một đoạn; đá ở đầu đoạn có nốt bằng đúng số bước đó. Chế ring_book(book, s): lật từng trang, gõ nốt đó nếu chưa gõ, rồi rim(số bước). Chương trình chính đã khoá.',
-      veMaMau: 'Chương trình chính dùng chung túi s cho hai lần ring_book. Chế ring_book(book, s).',
+      hamCuaEmCan: ['ring_once', 'move', 'turn_right'],
+      deBai: 'Giúp Sola với! Ba cuốn sổ cho ba đoạn hang, mỗi trang ghi nốt của một ô đá. Chế ring_book(book, s): lật từng trang, gõ nốt đó nếu chưa gõ, rồi tiến một ô. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính dùng chung túi s cho ba lần ring_book. Chế ring_book(book, s).',
       san: [
-        '########',
-        '#.IIII##',
-        '#uuuuI##',
-        '#uIIII##',
-        '#uIuuuu#',
-        '#uIIIIF#',
-        '########'
+        '######',
+        '#.III#',
+        '#uuuI#',
+        '#uuuI#',
+        '#FIII#',
+        '######'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      daChuong: [da(2, 1, 4), da(5, 2, 2), da(2, 5, 4), da(3, 5, 4)],
-      maMau: bai(['a = {"dau": 4, "giua": 2, "cuoi": 3}', 'b = {"dau": 2, "giua": 4}', 's = set()', 'ring_book(a, s)', 'u_turn()', 'turn_left()', 'ring_book(b, s)']),
-      loiGiai: bai(['a = {"dau": 4, "giua": 2, "cuoi": 3}', 'b = {"dau": 2, "giua": 4}', 's = set()', 'ring_book(a, s)', 'u_turn()', 'turn_left()', 'ring_book(b, s)'], [], [
-        ham('ring_book', ['for k in book:', '    ring_once(book[k], s)', '    rim(book[k])'], ['book', 's'])
+      daChuong: [da(2, 1, 3), da(3, 1, 6), da(4, 1, 3), da(4, 2, 6), da(4, 3, 2), da(4, 4, 8), da(3, 4, 2), da(2, 4, 5)],
+      maMau: bai(['a = {"dau": 3, "giua": 6, "cuoi": 3}', 'b = {"dau": 6, "giua": 2, "cuoi": 8}', 'c = {"dau": 2, "giua": 5, "cuoi": 8}', 's = set()', 'ring_book(a, s)', 'turn_right()', 'ring_book(b, s)', 'turn_right()', 'ring_book(c, s)']),
+      loiGiai: bai(['a = {"dau": 3, "giua": 6, "cuoi": 3}', 'b = {"dau": 6, "giua": 2, "cuoi": 8}', 'c = {"dau": 2, "giua": 5, "cuoi": 8}', 's = set()', 'ring_book(a, s)', 'turn_right()', 'ring_book(b, s)', 'turn_right()', 'ring_book(c, s)'], [], [
+        ham('ring_book', ['for k in book:', '    ring_once(book[k], s)', '    move()'], ['book', 's'])
       ]),
       loiSai: [
-        { moTa: 'Chưa chế hàm ring_book', baiLam: bai(['a = {"dau": 4, "giua": 2, "cuoi": 3}', 'b = {"dau": 2, "giua": 4}', 's = set()', 'ring_book(a, s)', 'u_turn()', 'turn_left()', 'ring_book(b, s)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Gõ mọi trang không hỏi túi: tới cờ nhưng thừa nhịp', baiLam: bai(['a = {"dau": 4, "giua": 2, "cuoi": 3}', 'b = {"dau": 2, "giua": 4}', 's = set()', 'ring_book(a, s)', 'u_turn()', 'turn_left()', 'ring_book(b, s)']), hamCuaEmMoi: [ham('ring_book', ['for k in book:', '    play_note(book[k])', '    rim(book[k])'], ['book', 's'])] },
-        { moTa: 'Đi trước rồi mới gõ: R1 đâm vào khối đầu', baiLam: bai(['a = {"dau": 4, "giua": 2, "cuoi": 3}', 'b = {"dau": 2, "giua": 4}', 's = set()', 'ring_book(a, s)', 'u_turn()', 'turn_left()', 'ring_book(b, s)']), hamCuaEmMoi: [ham('ring_book', ['for k in book:', '    rim(book[k])', '    ring_once(book[k], s)'], ['book', 's'])], phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Chưa chế hàm ring_book', baiLam: bai(['a = {"dau": 3, "giua": 6, "cuoi": 3}', 'b = {"dau": 6, "giua": 2, "cuoi": 8}', 'c = {"dau": 2, "giua": 5, "cuoi": 8}', 's = set()', 'ring_book(a, s)', 'turn_right()', 'ring_book(b, s)', 'turn_right()', 'ring_book(c, s)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Gõ mọi trang không hỏi túi: tới cờ nhưng thừa nhịp', baiLam: bai(['a = {"dau": 3, "giua": 6, "cuoi": 3}', 'b = {"dau": 6, "giua": 2, "cuoi": 8}', 'c = {"dau": 2, "giua": 5, "cuoi": 8}', 's = set()', 'ring_book(a, s)', 'turn_right()', 'ring_book(b, s)', 'turn_right()', 'ring_book(c, s)']), hamCuaEmMoi: [ham('ring_book', ['for k in book:', '    play_note(book[k])', '    move()'], ['book', 's'])] },
+        { moTa: 'Tiến trước rồi mới gõ: R1 đâm vào khối đầu', baiLam: bai(['a = {"dau": 3, "giua": 6, "cuoi": 3}', 'b = {"dau": 6, "giua": 2, "cuoi": 8}', 'c = {"dau": 2, "giua": 5, "cuoi": 8}', 's = set()', 'ring_book(a, s)', 'turn_right()', 'ring_book(b, s)', 'turn_right()', 'ring_book(c, s)']), hamCuaEmMoi: [ham('ring_book', ['for k in book:', '    move()', '    ring_once(book[k], s)'], ['book', 's'])], phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 0, nhip: 0 },
+      sao: { o: 22, nhip: 16 },
       goiY: [
-        'Luna: Thân hàm: for k in book: rồi hai dòng thụt vào ring_once(book[k], s) và rim(book[k]).',
-        'Luna: Túi s đi theo cả hai lần gọi nên nốt 4 gõ ở sổ a không phải gõ lại ở sổ b.'
+        'Luna: Thân hàm: for k in book: rồi hai dòng thụt vào ring_once(book[k], s) và move().',
+        'Luna: Túi s đi theo cả ba lần gọi nên nốt đã gõ ở sổ trước không phải gõ lại ở sổ sau.'
       ]
     })
   ];

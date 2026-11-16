@@ -977,6 +977,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`, biểu thức distance()): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi dài tự rút gọn bằng "…" (CSS .num.chuoi), chuỗi ngắn giữ nguyên và dòng xuống hai dòng. */
   function vuaDong(el) {
     el.style.fontSize = '';
+    var hang = el.parentElement && el.parentElement.classList.contains('row') ? el.parentElement : null;
+    if (hang) hang.style.flexGrow = '';
     if (!el.clientWidth || !el.querySelector('.chuoi, .dkc, .ptu, .lsten, .bth, .bt')) return;       // .bth: biểu thức dài (range(distance()), forward(distance() + n))
     // chuỗi ngắn ("R", "back", "left") không bao giờ rút gọn: dòng chỉ thiếu 1 px ở cỡ 9px cũng đủ làm "R" thành "…" (2/11, màn dong-chay.3)
     el.querySelectorAll('.chuoi').forEach(function (c) { c.classList.toggle('ngan', (c.textContent || '').length <= 14); });  // ≤ 12 ký tự, gồm 2 dấu nháy
@@ -988,6 +990,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (tran && el.querySelector('.chuoi.ngan')) { el.classList.add('chat'); tran = el.scrollWidth > el.clientWidth + 1; if (tran) el.classList.remove('chat'); }   // thiếu vài px: bóp đệm các chip trước khi xuống hai dòng
     el.classList.remove('ko-cat');
     if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
+    // mùa 8: từ điển ba cặp (a = {"dau": 3, "giua": 6, "cuoi": 3}) ở khung hẹp cần ba hàng nhỏ: hàng code này cao hơn các hàng khác (flex-grow), tối đa 2,2 lần
+    if (hang && el.classList.contains('hai') && el.querySelector('.pg')) for (var g = 1.1; el.scrollHeight > el.clientHeight + 1 && g <= 2.2; g += 0.1) hang.style.flexGrow = g.toFixed(1);
   }
 
   /* ------------------------------------------------------------- Editor */

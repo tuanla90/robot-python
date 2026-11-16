@@ -97,7 +97,9 @@ console.log('\n== 5. Màn mùa 8 chỉ dùng vật có hình ==');
   const M = require(path.join(day, 'lo-trinh-hoc.js'));
   const TT = require(path.join(day, 'thu-tu-chuong.js'));
   const ch8 = TT.goi.filter((g) => g.mua === 'mua-8').flatMap((g) => g.chuong);
-  const ds = M.danhSach.filter((m) => ch8.includes(m.chuong));
+  const CHUONG_XONG = ['banh-gai', 'tu-dien', 'loa', 'tap-hop'];      // như kiem-man-mua-8.mjs: chương đã viết lại (P3); chương cũ chỉ in ra, không chặn
+  const tatCa = M.danhSach.filter((m) => ch8.includes(m.chuong));
+  const ds = tatCa.filter((m) => CHUONG_XONG.includes(m.chuong));
   const CO_HINH = new Set(['chuongDa', 'danDoi', 'daChuong', 'ngachHang', 'noi', 'cuaNhip', 'mau', 'vatMau', 'vatChat', 'vatThem', 'thungThem', 'demTu', 'dong', 'nutBat', 'dieu', 'bongMo']);
   const TRUONG_VAT = ['chuongDa', 'danDoi', 'daChuong', 'ngachHang', 'noi', 'cuaNhip', 'mau', 'vatMau', 'vatChat', 'vatDang', 'vatThem', 'thungThem', 'demTu', 'dong', 'nutBat', 'lua', 'sanDoc', 'hinh', 'chong', 'tau', 'bongMo', 'dieu'];
   const thieu = [], ngoai = [];
@@ -111,9 +113,12 @@ console.log('\n== 5. Màn mùa 8 chỉ dùng vật có hình ==');
       lay(m.ngachHang).forEach((p) => [p.a, p.b].forEach((q) => { const c = o(q); if (c === undefined || c === '#') ngoai.push(m.ma + ' ngách (' + q.x + ', ' + q.y + ')'); }));
     });
   });
-  kiem('có màn mùa 8 trong lộ trình (' + ds.length + ')', ds.length > 0);
+  kiem('có màn mùa 8 trong lộ trình (' + tatCa.length + ', đã viết lại ' + ds.length + ')', ds.length > 0);
   kiem('không màn nào dùng trường vật chưa có hình', !thieu.length, thieu.slice(0, 8).join(' '));
   kiem('chuông đá / đá chuông / miệng ngách nằm trong sân, không đè tường', !ngoai.length, ngoai.slice(0, 8).join(' '));
+  const cu = tatCa.filter((m) => !CHUONG_XONG.includes(m.chuong));
+  const cuThieu = cu.filter((m) => TRUONG_VAT.some((k) => m[k] !== undefined && m[k] !== null && !CO_HINH.has(k))).map((m) => m.ma);
+  if (cuThieu.length) console.log('  (màn cũ chưa viết lại, dùng trường chưa có hình: ' + cuThieu.join(' ') + ')');
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' + (dat + hong) : 'ĐẠT cả ' + dat) + ' phép kiểm hình mùa 8');

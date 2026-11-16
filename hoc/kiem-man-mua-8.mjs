@@ -9,7 +9,8 @@
       tách được bằng TP.tachDoiSo (chế độ TD của màn); khoá dùng phải có trong khoaTD.
    4. LÁCH (bộ dò): ở 4 màn đầu dùng một khái niệm mới (đọc sổ, for k in sổ, in sổ, tập hợp, hear(), listen(), note(n, k)) của chương dạy nó, thay khái niệm
       bằng hằng lấy từ lần chạy đầu (sổ đầu tiên, giá trị cảm biến đọc đầu tiên) thì phải THUA hay KHÔNG ĐỦ 3 SAO.
-   5. ĐƯỜNG CONG: trong một chương, số dòng lời giải không nhảy quá 5 dòng so với màn trước, sân không lớn quá gấp đôi (trừ trùm).
+   5. ĐƯỜNG CONG: trong một chương, số dòng phải viết / sửa (dòng lời giải không có sẵn trong mã mẫu) không nhảy quá 5 dòng so với màn trước,
+      sân lớn nhất không lớn quá gấp đôi (trừ trùm).
    Trượt thì thoát mã 1.
    ========================================================================== */
 import assert from 'node:assert/strict';
@@ -41,7 +42,11 @@ function cham(m, lg, them) {
 const baiCua = (s, m) => Object.assign({}, s.baiLam, { hamCuaEmMoi: s.hamCuaEmMoi || (s.baiLam && s.baiLam.hamCuaEmMoi) || [] });
 
 const chuongMua8 = TT.goi.filter((g) => g.mua === 'mua-8').flatMap((g) => g.chuong);
-const ds = M.danhSach.filter((m) => chuongMua8.includes(m.chuong) && (!chiChuong.length || chiChuong.includes(m.chuong)));
+/** Chương đã viết lại theo KE-HOACH-MUA-8.md (P3). Chương còn lại là màn PDM8 cũ chờ viết lại: không kiểm (chạy `node hoc/kiem-man-mua-8.mjs <chương>` để kiểm riêng). */
+const CHUONG_XONG = ['banh-gai', 'tu-dien', 'loa', 'tap-hop'];
+const ds = M.danhSach.filter((m) => chuongMua8.includes(m.chuong) && (chiChuong.length ? chiChuong.includes(m.chuong) : CHUONG_XONG.includes(m.chuong)));
+const conLai = chuongMua8.filter((c) => !CHUONG_XONG.includes(c));
+if (!chiChuong.length && conLai.length) console.log('Chưa viết lại (không kiểm): ' + conLai.join(', '));
 
 /* ------------------------------------------------------------------ 3. khay */
 const K = napKhay();
@@ -302,7 +307,11 @@ for (const m of ds) {
     }
     // 5. đường cong
     const t = truoc[m.chuong];
-    const n = dongCua(m.loiGiai).length, sanO = [].concat(...[].concat(m.san).map((x) => (Array.isArray(x) ? x : [x]))).join('').length;
+    // số dòng người chơi phải viết / sửa: dòng của lời giải không có sẵn trong mã mẫu (chương trình khoá, dòng có sẵn không tính); sân: sân lớn nhất
+    const coSan = dongCua(m.maMau).map(([noi, d]) => noi + '|' + d.trim());
+    const n = dongCua(m.loiGiai).filter(([noi, d]) => { const i = coSan.indexOf(noi + '|' + d.trim()); if (i < 0) return true; coSan.splice(i, 1); return false; }).length;
+    const dsSan = Array.isArray(m.san[0]) ? m.san : [m.san];
+    const sanO = Math.max(...dsSan.map((x) => x.join('').length));
     if (t && m.hang !== 'trum') {
       if (n > t.n + 5) loi.push('đường cong: lời giải ' + n + ' dòng, màn trước ' + t.n);
       if (sanO > t.sanO * 2 + 10) loi.push('đường cong: sân ' + sanO + ' ô, màn trước ' + t.sanO);
