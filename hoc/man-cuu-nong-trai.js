@@ -334,5 +334,28 @@
       goiY: ['grab_clear(): gắp vật trước mũi rồi lùi một ô.', 'clear_iron(d): hút sắt dưới bụng nhện rồi bước theo hướng d.'],
       cauDo: { doi: ['CH', 'PL'], lap: null, coChe: ['bao-hat', 'sat', 'sac', 'pin', 'gieo', 'list', 'r3'], cuu: 'may', meo: 'song-song' }
     }),
+    // 10 · song ca đoạn 6 "Kìa con bướm vàng" (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 6 2 5 1 4 5 3 1), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Drone không gắn loa (chở nhẹ): xe cứu hỏa lắp loa hát bè 1, xe chở hàng lắp loa hát bè 2 (bảng ghi "drone lượn theo nhịp": choi-dieu chỉ chấm hai robot hát).
+    //      Hai đá chuông bão cuốn vào luống vỡ khi nghe nốt cuối mỗi bè. Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-nong-trai', 10, 'trum', {
+      ten: 'Song ca nông trại',
+      mucTieu: 'choi-dieu',
+      deBai: 'Nông trại đã gieo xong! Drone không mang được loa: xe cứu hỏa và xe chở hàng song ca đoạn 6. Mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      san: ['######', '#....#', '#....#', '######'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['spray', 'spray_back'], themHam: ['note', 'beat'], phatNot: true }),
+        may('CH', { x: 1, y: 2, huong: 1 }, { son: 'lam', tay: 'loa', boHam: ['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'], themHam: ['note', 'beat'], phatNot: true })],
+      them: { dieu: { r1: '4 4 3 3 2 2 1 1', r2: '6 2 5 1 4 5 3 1' }, daChuong: [{ x: 4, y: 1, not: 1, ben: 1 }, { x: 4, y: 2, not: 1, ben: 1 }] },
+      maMau: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(6)']]),
+      loiGiai: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([6, 2, 5, 1, 4, 5, 3, 1])']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(6)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 đảo hai nốt đầu', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([2, 6, 5, 1, 4, 5, 3, 1])']]), phaiCoMa: ['sai-not'] }
+      ],
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([6, 2, 5, 1, 4, 5, 3, 1]).'],
+      cauDo: { doi: ['CU', 'CH'], lap: null, coChe: ['loa', 'da-chuong', 'nong-trai'], cuu: null, meo: 'song-song' }
+    }),
   ];
 })();
