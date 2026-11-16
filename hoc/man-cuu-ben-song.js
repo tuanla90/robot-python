@@ -435,7 +435,7 @@
         { moTa: 'R2 đứng yên: bè trong lạch chưa vào bến', baiLam: doiBai([XU_12, []]), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Xe tung lưới ở chỗ xuất phát: dây không trúng lạch', baiLam: doiBai([XU_12, ['cast_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 16, nhip: 5 },
+      sao: { o: 25, nhip: 7 },                         // trần theo cách chậm nhất (hai bánh 22 ô, 6 nhịp) + ~15 %: mọi cách lắp đều 3 sao (như G3, G4)
       goiY: ['Xuồng không qua cống kẹt: lắp thân đi trên bờ.', 'Xe trên bờ tung lưới: bè về ô nước sát mũi xe.'],
       cauDo: { doi: null, lap: 'omni+day-keo', coChe: ['nuoc', 'be', 'luoi', 'cong', 'bo', 'lach'], cuu: 'hang', meo: 'song-song' }
     }),
@@ -579,7 +579,7 @@
         { moTa: 'Xe dừng lệch một cột: lưới hụt bè, không có cầu phao', baiLam: doiBai([KT_18_GAI, ['turn_right()', 'forward(1)', 'turn_left()', 'forward(2)', 'cast_net("right")', 'wait()', 'forward(1)']]), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Không có cầu phao: máy khai thác dừng ở mép bùn, ném đá trúng bè giữa sông, vỡ', baiLam: doiBai([KT_18_GAI, []]), phaiCoMa: ['nem-vo'] }
       ],
-      sao: { o: 28, nhip: 13 },
+      sao: { o: 36, nhip: 16 },                        // trần theo cách chậm nhất (hai bánh 32 ô, 14 nhịp) + ~15 %
       goiY: ['Bánh gai bung gai thì bám bùn, dừng đúng ô.', 'Xe thường đi lên bùn từ bãi khô: trượt tới mép nước thì dừng.'],
       cauDo: { doi: null, lap: 'gai+day-keo', coChe: ['nuoc', 'be', 'luoi', 'bun', 'nem', 'bo'], cuu: 'hang', meo: 'lam-cau' }
     }),
@@ -605,7 +605,7 @@
         { moTa: 'Xe chở hàng không dọn thùng gỗ: xe bờ đâm thùng mãi, vòng while không dừng', baiLam: doiBai([[], R2_19_OMNI, DR_19]), phaiCoMa: ['vong-vo-han'] },
         { moTa: 'Drone không rắc cát: sân 2 xe bờ lên bùn trượt quá phao xanh, không bao giờ thấy', baiLam: doiBai([CH_19, R2_19_OMNI, []]), phaiCoMa: ['vong-vo-han'] }
       ],
-      sao: { o: 34, nhip: 11 },
+      sao: { o: 45, nhip: 11 },                        // trần ô theo cách chậm nhất (hai bánh + camera bốn hướng 39 ô) + ~15 %
       goiY: ['grab_clear(): gắp vật trước mũi rồi lùi một ô.', 'while color() != "blue": trượt tiếp. Thấy phao xanh thì tung lưới.', 'Drone rắc cát (dot) lên ô bùn: xe đi qua không trượt.'],
       cauDo: { doi: null, lap: 'omni+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'thung-go', 'bun', 'rac-cat', 'bo'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
