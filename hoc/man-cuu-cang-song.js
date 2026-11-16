@@ -181,6 +181,9 @@
     loaiRobot: 'xuong', chinhLuoi: true, robot: { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'quet-ma', o: 'tren' }], son: 'lam' },
     hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'read_code', 'weight']
   };
+  /** Chương trình cẩu của lap-cang-song.3: hai lần chờ số dưới móc, nhấc, quay phải hạ lên boong; giữa hai lần quay về, thu cần, chạy ray. */
+  var CAU_13 = ['for k in range(2):', '    while read_code() == -1:', '        wait()', '    wait()', '    pick_up()', '    swing_right()', '    set_down()', '    if k == 0:',
+    '        swing_left()', '        retract()', '        retract()', '        rail(2)'];
   /** Xuồng lắp loa thay tay lưới: bỏ cờ chỉnh dây lưới (set_length chỉ là nâng cấp của tay lưới). */
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
   function man9(chuong, so, hang, cfg) {
@@ -529,24 +532,39 @@
       cauDo: { doi: null, lap: 'xuong+day-keo+dong-chay', coChe: ['nuoc', 'dong', 'cont-troi', 'luoi', 'tau'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
 
-    manCS('lap-cang-song', 3, 'luyen', {
-      ten: 'Tái sử dụng sonic_rail phá 2 lớp đá trên ray',
-      r2: R_GAI,
-      hamCuaEmCan: ['slide_load2', 'play_note', 'back', 'wait_n', 'sonic_rail'],
-      deBai: 'Trên đường ray có tảng đá chuông ở (3, 3), còn R2 đứng ở (4, 3) hướng trái. Hãy gọi sonic_rail() cho R2 để phá đá chuông ở (3, 3) và lùi sang (5, 3), giúp R1 ở (1, 3) chờ 2 nhịp rồi gọi slide_load2(3, 2) trượt 3 ô sang cột 4 bốc đôi cặp kiện [20, 40] ở (4, 4) lên tàu!',
-      veMaMau: 'Gọi sonic_rail() cho R2 và slide_load2(3, 2) cho R1.',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 4, y: 3, huong: 3 }],
-      chong: [CW(4, 4, [[20, 1], [40, 2]])],
-      daChuong: [{ x: 3, y: 3, not: 7, ben: 1 }],
-      tau: tauDon(9, 2),
-      giao: [{ tau: 0, so: [20, 40] }],
-      maMau: baiDoi(['wait_n(2)', 'slide_load2(3, 2)'], ['wait()']),
-      loiGiai: baiDoi(['wait_n(2)', 'slide_load2(3, 2)'], ['sonic_rail()']),
+    // 13 · đọc rồi chọn, ôn //: hai luồng nước, mỗi luồng một container nổi. Số container chia lấy phần nguyên cho 10 là số ô phải kéo về dưới móc cẩu:
+    //      15 // 10 = 1, 37 // 10 = 3. Xuồng đọc số ô trước mũi, tung lưới, lùi c // 10 ô, nhả; quay xuống luồng dưới (đi thêm c // 10 ô về cột cũ), làm tiếp.
+    //      Hai tàu nối đuôi ở một bến: tàu đầu cần 15, tàu sau cần 37. Cẩu chờ có số dưới móc, nhấc, quay phải hạ lên boong; quay về, thu cần, chạy ray, làm tiếp.
+    //      Cách hai rẻ hơn: xuồng + lưới không đầu đọc mã, đếm sẵn 1 + 2 * i (1 rồi 3).
+    //      Bảng ghi "so // 10 là tàu, đưa container về đúng bến của tàu": giao nhiều tàu (cfg.tau) cần tàu rời đúng nhịp lời giải xong; ô q thì dua-vat đếm cả
+    //      container cẩu đã nhấc lên bờ. Đổi thành: số chục là số ô kéo, hàng tàu nối đuôi (hangTau) nhận đúng thứ tự.
+    man9('lap-cang-song', 3, 'luyen', {
+      ten: 'Số chục là số ô',
+      mucTieu: 'giao-tau', khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Số chục của container là số ô phải kéo về dưới móc cẩu: c // 10. Tàu đầu cần 15, tàu sau cần 37.',
+      veMaMau: 'Xuồng kéo luồng nào cũng một ô.',
+      san: ['########', '#~B~~~~#', '####~###', '#~B~~~~#', '#RRRRRT#', '########'],
+      doi: [may('CC', { x: 3, y: 4, huong: 0, nac: 0, tam: 3 }), khe({ x: 1, y: 4, huong: 0 }, { son: 'lam', batDauNuoc: { x: 3, y: 1, huong: 3 } })],
+      them: { contTroi: [{ x: 2, y: 1, so: 15 }, { x: 2, y: 3, so: 37 }], hangTau: { o: [{ x: 6, y: 4 }], can: [15, 37] } },
+      lapRap: lapR2(['xuong'], ['day-keo'], ['quet-ma', 'dong-chay'], 10, [
+        cach('xuong', 'day-keo', 'quet-ma', [CAU_13,
+          ['for i in range(2):', '    set_length(1)', '    c = read_code()', '    cast_net()', '    wait()', '    for j in range(c // 10):', '        back()', '    drop_net()', '    wait()',
+            '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()', '        forward(c // 10)']]),
+        cach('xuong', 'day-keo', null, [CAU_13,
+          ['for i in range(2):', '    set_length(1)', '    cast_net()', '    wait()', '    for j in range(1 + 2 * i):', '        back()', '    drop_net()', '    wait()',
+            '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()', '        move()']])
+      ], { moLai: ['L2'] }),
+      maMau: doiBai([CAU_13, ['for i in range(2):', '    set_length(1)', '    cast_net()', '    wait()', '    back()', '    drop_net()', '    wait()',
+        '    turn_left()', '    forward(2)', '    turn_right()', '    move()']]),
       loiSai: [
-        { moTa: 'R2 đứng yên không gọi sonic_rail() nên R1 vướng cả đá chuông (3, 3) lẫn R2 (4, 3)', baiLam: baiDoi(['wait_n(2)', 'slide_load2(3, 2)'], ['wait()']), phaiCoMa: ['het-ray'] }
+        { moTa: 'Luồng nào cũng kéo một ô: container 37 không tới dưới móc', baiLam: doiBai([CAU_13, ['for i in range(2):', '    set_length(1)', '    cast_net()', '    wait()', '    back()', '    drop_net()', '    wait()',
+          '    turn_left()', '    forward(2)', '    turn_right()', '    move()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Quên set_length(1) trong vòng lặp: nhả lưới xong dây về dài 2, lần sau tung hụt', baiLam: doiBai([CAU_13, ['set_length(1)', 'for i in range(2):', '    c = read_code()', '    cast_net()', '    wait()', '    for j in range(c // 10):', '        back()', '    drop_net()', '    wait()',
+          '    turn_left()', '    forward(2)', '    turn_right()', '    forward(c // 10)']]), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 24, nhip: 9 },
-      goiY: ['Thay wait() của R2 bằng sonic_rail().']
+      sao: { o: 45, nhip: 19 },
+      goiY: ['c // 10: số chục của c (37 // 10 = 3).', 'Nhả lưới xong, dây lưới về dài 2: đặt lại set_length(1).'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+quet-ma', coChe: ['nuoc', 'cont-troi', 'luoi', 'doc-ma', 'hang-tau'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
     manCS('lap-cang-song', 4, 'luyen', {
@@ -613,24 +631,33 @@
       goiY: ['Trong wait_slide_load(t, s) thêm slide_load(s, 2); ở R2 sửa clear_rail("L") thành clear_rail("R") để bước sang (3, 3).']
     }),
 
-    manCS('lap-cang-song', 7, 'van-dung', {
-      ten: 'Kết hợp wait_slide_load và sonic_rail',
-      r2: R_GAI,
-      hamCuaEmCan: ['slide_load', 'wait_n', 'sonic_rail', 'wait_slide_load'],
-      deBai: 'Tảng đá chuông nốt 2 nằm ở (2, 3) và R2 (bánh gai) đứng ở (3, 3) hướng trái. Hãy cho R2 gọi sonic_rail() để phá đá chuông ở (2, 3) và lùi sang (4, 3); cùng lúc đó R1 ở (1, 3) gọi wait_slide_load(2, 2) để chờ 2 nhịp rồi trượt 2 ô sang cột 3 bốc kiện 52 ở (3, 4) lên tàu!',
-      veMaMau: 'Gọi wait_slide_load(2, 2) cho R1 và sonic_rail() cho R2.',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, huong: 3 }],
-      chong: [CW(3, 4, [[52, 2]])],
-      daChuong: [{ x: 2, y: 3, not: 2, ben: 1 }],
-      tau: tauDon(8, 2),
-      giao: [{ tau: 0, so: [52] }],
-      maMau: baiDoi(['wait_slide_load(2, 1)'], ['sonic_rail()']),
-      loiGiai: baiDoi(['wait_slide_load(2, 2)'], ['sonic_rail()']),
+    // 17 · cứu người + tạo hàm sonic_rail(): thủy thủ đã lên bờ phải đi dọc lối về trạm cứu. Container đổ chắn lối (cẩu nhấc, quay cần xuống bãi dưới),
+    //      tảng đá chuông chắn lối: robot gắn mic (cảm biến âm thanh) nghe nốt bằng listen(), loa hát lại play_note(listen()), đá vỡ; rồi back() lùi khỏi lối.
+    //      Cách một: bánh gai + loa + mic (như xe hang động); cách hai rẻ hơn: hai bánh + loa + mic. Gói sau (cuu-ben-song) gọi sonic_rail.
+    //      Bảng ghi "omni + nam châm + radar hút sắt trên ray": trùng việc dọn sắt trên ray của cuu-cang-song.7 / .8, và gói phải tạo sonic_rail, nên đổi.
+    //      Mẹo khai cứu kịp (người, không phải robot, đi lên ô đá chuông đã vỡ nên bộ dò dọn lối không thấy).
+    man9('lap-cang-song', 7, 'van-dung', {
+      ten: 'Đá chuông chắn lối',
+      mucTieu: 'cuu-nguoi',
+      taoHam: ['sonic_rail'],
+      hamCuaEmCan: HAM_EM.concat(['play_note']),
+      deBai: 'Container và đá chuông chắn lối về trạm cứu. Lắp robot nghe được nốt, hát lại để phá đá. Viết sonic_rail(): hát lại nốt nghe được, rồi lùi.',
+      veMaMau: 'Hàm sonic_rail chưa có. Thủy thủ đứng chờ.',
+      san: ['#########', '######.##', '#.......#', '#RRRR####', '#....####', '#########'],
+      doi: [may('CC', { x: 3, y: 3, huong: 0, nac: 0, tam: 1 }), khe({ x: 6, y: 2, huong: 3 }, { son: 'lam' })],
+      them: { contChan: true, chong: [{ x: 3, y: 2, cont: [{ so: 31 }] }], nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 6, y: 1 }], daChuong: [{ x: 5, y: 2, not: 6, ben: 1 }] },
+      lapRap: lapR2(['gai', 'hai-banh'], ['loa'], ['am-thanh'], 9, [
+        cach('gai', 'loa', 'am-thanh', [['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']], [H_SONIC_RAIL]),
+        cach('hai-banh', 'loa', 'am-thanh', [['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']], [H_SONIC_RAIL])
+      ]),
+      maMau: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], []]),
       loiSai: [
-        { moTa: 'Truyền nhầm wait_slide_load(2, 1) nên R1 dừng ở cột 2, không có hàng để nhấc', baiLam: baiDoi(['wait_slide_load(2, 1)'], ['sonic_rail()']), phaiCoMa: ['moc-hut', 'chua-giao-tau'] }
+        { moTa: 'Thân sonic_rail thiếu back(): robot còn đứng chắn lối', baiLam: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']]), hamCuaEmMoi: [{ ten: 'sonic_rail', thamSo: [], than: ['play_note(listen())'] }], phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Hát sai nốt: đá chuông không vỡ', baiLam: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']]), hamCuaEmMoi: [{ ten: 'sonic_rail', thamSo: [], than: ['play_note(5)', 'back()'] }], phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 25, nhip: 8 },
-      goiY: ['Sửa wait_slide_load(2, 1) thành wait_slide_load(2, 2) ở chương trình R1.']
+      sao: { o: 14, nhip: 7 },
+      goiY: ['listen() trả nốt của đá chuông gần nhất.', 'sonic_rail(): play_note(listen()) rồi back().'],
+      cauDo: { doi: null, lap: 'gai+loa+am-thanh', coChe: ['da-chuong', 'loa', 'container', 'nguoi'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
     manCS('lap-cang-song', 8, 'van-dung', {
