@@ -175,6 +175,15 @@
   /** Cách hai: bánh gai + loa + mic, quay phải một lần rồi tiến (chậm hơn một nhịp). */
   var GAI_18 = ['s = set()', 'turn_right()', 'for i in range(9):', '    forward(1)', '    n = listen()', '    if n not in s:', '        s.add(n)', '        play_note(n)', 'forward(1)'];
 
+  /** lap-hang-dong.9 (ba sân): thợ mỏ kẹt cuối hang trên (10, 1) sau đá chuông B (9, 1), mỗi sân một nốt (3 / 5 / 7); đá chuông A (3, 1) nốt 2 chắn gần trạm cứu (1, 1).
+   *  Xe hang động R1 đứng trong hốc (3, 2) ngay dưới A, hát vỡ A; B xa xe 7 ô. Hai lối tới tầm 3 ô của B:
+   *  - ngách khô (hàng 3): nhện bước, bật qua hố (3, 3), vào miệng ngách (5, 3) chui ra (7, 3), bước tới (8, 3) (cách B 3 ô), nghe rồi hát;
+   *  - sông ngầm (hàng 4): xuồng chạy tới (9, 4) ngay dưới B (cách 3 ô), sonic_rail() (gói 4: hát lại nốt nghe được, lùi). */
+  function san19() { return ['############', '#..........#', '###.########', '#..u..#....#', '#~~~~~~~~~~#', '############']; }
+  var HD_19 = ['play_note(listen())'];
+  var NHEN_19 = ['go_right()', 'jump("R")', 'go_right()', 'go_right()', 'play_note(listen())'];
+  var XUONG_19 = ['forward(8)', 'sonic_rail()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -633,6 +642,34 @@
       sao: { o: 26, nhip: 19 },
       goiY: ['s = set(), s.add(n), n not in s: túi nhớ nốt đã hát.', 'Đá cùng nốt trong tầm 3 ô vỡ cùng một lúc.', 'slide_r(1): omni trượt sang phải một ô, mặt vẫn nhìn lên đá.'],
       cauDo: { doi: null, lap: 'omni+loa+am-thanh', coChe: ['da-chuong', 'chuong-da', 'not', 'set'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 19 · đọc rồi chọn (ba sân), phong phú: thợ mỏ kẹt sau đá chuông xa; hai lối tới tầm hát: ngách khô (nhện: bật hố, chui ngách, gói 3 + #4) hay sông ngầm
+    //      (xuồng: sonic_rail() của gói 4). Nhện rẻ hơn, xuồng nhanh hơn. Nốt đá mỗi sân một khác: phải nghe bằng mic. Xe hang động R1 hát vỡ đá gần trạm.
+    man9('lap-hang-dong', 9, 'van-dung', {
+      ten: 'Ngách khô hay sông ngầm',
+      mucTieu: 'cuu-nguoi',
+      hamCuaEmCan: HAM_EM.concat(['sonic_rail']),
+      deBai: 'Ba sân, mỗi sân đá chuông một nốt. Thợ mỏ kẹt sau đá chuông xa. Tới gần đá bằng ngách khô (có hố, có ngách) hay bằng sông ngầm? Lắp robot đi được một lối, nghe rồi hát.',
+      veMaMau: 'Robot R2 chưa có chương trình.',
+      san: [san19(), san19(), san19()],
+      them: {
+        ngachHang: [{ a: { x: 5, y: 3 }, b: { x: 7, y: 3 } }],
+        daChuong: [[{ x: 3, y: 1, not: 2, ben: 1 }, { x: 9, y: 1, not: 3, ben: 1 }], [{ x: 3, y: 1, not: 2, ben: 1 }, { x: 9, y: 1, not: 5, ben: 1 }], [{ x: 3, y: 1, not: 2, ben: 1 }, { x: 9, y: 1, not: 7, ben: 1 }]],
+        nguoi: [{ x: 10, y: 1 }], tramCuu: [{ x: 1, y: 1 }]
+      },
+      doi: [may('HD', { x: 3, y: 2, huong: 0 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', chinhLuoi: false, batDauNuoc: { x: 1, y: 4, huong: 1 } })],
+      lapRap: lapR2(['nhen', 'xuong', 'gai'], ['loa'], ['am-thanh'], 10, [
+        cach('nhen', 'loa', 'am-thanh', [HD_19, NHEN_19]),
+        cach('xuong', 'loa', 'am-thanh', [HD_19, XUONG_19])
+      ], { moLai: ['L7', 'L4', 'L5'] }),
+      maMau: doiBai([HD_19, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(3)): sân 2, 3 đá không vỡ', baiLam: doiBai([HD_19, ['go_right()', 'jump("R")', 'go_right()', 'go_right()', 'play_note(3)']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Nhện hát ngay sau ngách (7, 3): đá cách 4 ô, ngoài tầm', baiLam: doiBai([HD_19, ['go_right()', 'jump("R")', 'go_right()', 'play_note(listen())']]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 24, nhip: 21 },
+      goiY: ['Loa vang trong 3 ô quanh robot (ngang + dọc).', 'Ngách: bước vào một miệng, chui ra miệng kia, giữ hướng.', 'sonic_rail(): hát lại nốt nghe được rồi lùi (gói 4).'],
+      cauDo: { doi: null, lap: 'nhen+loa+am-thanh', coChe: ['ngach', 'ho', 'song-ngam', 'da-chuong', 'nguoi', 'mic'], cuu: 'nguoi', meo: 'doc-roi-chon' }
     })
   ];
 
