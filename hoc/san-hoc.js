@@ -481,7 +481,7 @@
           pick_up(): nhấc container TRÊN CÙNG ở ô đầu cần ('moc-cont' { o, cont, doi, tau }); ô không có container: 'moc-hut' { o, vat: 'trong' | 'tau-vang' | 'ngoai-san' } (lỗi); đang treo: 'dang-treo' { o, cont } (lỗi).
           CONTAINER TRÔI (16/11, mùa 9 G4; lớp cfg.contTroi): ô đầu cần không có chồng mà có container trôi thì pick_up() nhấc nó lên ('moc-cont' như trên, thêm troi: id vật nổi;
             vật nổi thành trangThai 'moc', container thành bản ghi treo mới); xe đứng trên / xuồng khác đang giữ trong lưới: 'moc-hut' vat 'co-xe' | 'dang-keo'; pick_up2: 'moc-thieu' co 1.
-            read_code() / weight() đọc container trôi ở đầu cần như container trên cùng.
+            read_code() / weight() đọc container trôi ở đầu cần như container trên cùng. cfg.giao, hangTau.can, bongMo.chongLuat (du) đếm cả số của container trôi.
           pick_up2(): nhấc HAI container trên cùng một lần, giữ thứ tự (treo = [dưới, trên]); chồng chỉ có 1: 'moc-thieu' { o, co } (lỗi, không nhấc); chồng trống: moc-hut.
           set_down(): hạ MỌI container đang treo lên ĐỈNH chồng ở ô đầu cần ('ha-cont' { o, cont, doi, tau }); không treo gì: 'khong-treo' (lỗi). Không hạ được → 'ha-bi-chan' { o, vat, cont } (lỗi), container vẫn treo; vat:
             'ngoai-san' | 'tau-vang' (ô T lúc tàu vắng) | 'nuoc' | 'tuong' | 'rao' | 'ray' (không đặt lên ray) | 'bac-thang' | 'nut' | 'ho' | 'gam-thap' | 'cua' | 'bang' | 'vat-can' | 'robot' (ô bệ / robot khác dưới đất) | 'thung-nang' | 'vat' | 'chong-day' (chồng + số hạ > 4).
@@ -2037,6 +2037,8 @@
       });
     }
     // HÀNG TÀU NỐI ĐUÔI (3d): một bến, chỉ tàu đầu hàng đậu ở boong; mỗi tàu cần đúng một số container
+    /** Số container mang số n trên sân lúc dựng: trong chồng (cfg.chong) và trôi trên nước (cfg.contTroi; 16/11 mùa 9 G4: cẩu móc lên bãi / boong được). */
+    function soContSan(n) { return conts.filter(function (c) { return c.so === n; }).length + vats.filter(function (v) { return v.noi === 'container' && v.so === n; }).length; }
     var hangTau = null, daGiaoHang = [];
     if (cfg.hangTau !== undefined && cfg.hangTau !== null) {
       var ht = cfg.hangTau;
@@ -2054,8 +2056,8 @@
       var demCan = {};
       ht.can.forEach(function (n) { demCan[n] = (demCan[n] || 0) + 1; });
       Object.keys(demCan).forEach(function (n) {
-        var co = conts.filter(function (c) { return c.so === +n; }).length;
-        if (co < demCan[n]) throw new Error('hangTau: hàng tàu cần ' + demCan[n] + ' container số ' + n + ' mà trên sân chỉ có ' + co + ' (cfg.chong).');
+        var co = soContSan(+n);
+        if (co < demCan[n]) throw new Error('hangTau: hàng tàu cần ' + demCan[n] + ' container số ' + n + ' mà trên sân chỉ có ' + co + ' (cfg.chong, cfg.contTroi).');
       });
       if (ht.cho !== undefined && ht.cho !== null) {
         if (!Array.isArray(ht.cho)) throw new Error('hangTau: cho phải là mảng ô nước [{x,y}] (chỗ vẽ tàu đang chờ).');
@@ -2081,7 +2083,7 @@
         if (!g || !laSoNguyen(g.tau) || !taus[g.tau]) throw new Error('giao: tau phải là chỉ số tàu trong cfg.tau (0–' + (taus.length - 1) + ').');
         if (!Array.isArray(g.so) || !g.so.length || !g.so.every(function (n) { return laSoNguyen(n) && n >= 1 && n <= CONT_SO_TOI_DA; })) throw new Error('giao: so phải là mảng số container (1–' + CONT_SO_TOI_DA + ') không rỗng.');
         if (giaoDs.some(function (h) { return h.tau === g.tau; })) throw new Error('giao: tàu ' + g.tau + ' khai hai lần.');
-        g.so.forEach(function (n) { if (!conts.some(function (c) { return c.so === n; })) throw new Error('giao: không có container số ' + n + ' nào trên sân (cfg.chong).'); });
+        g.so.forEach(function (n) { if (!soContSan(n)) throw new Error('giao: không có container số ' + n + ' nào trên sân (cfg.chong, cfg.contTroi).'); });
         giaoDs.push({ tau: g.tau, so: g.so.slice() });
       });
     } else if (cfg.giao !== undefined && cfg.giao !== null) throw new Error('giao chỉ dùng với mục tiêu "giao-tau".');
@@ -2140,7 +2142,7 @@
           if (mauDaNhan[m]) throw new Error('bongMo.chongLuat: hai chồng đích cùng nhận màu ' + m + ' (so % 4) mà không khai du: không biết chia thế nào.');
           mauDaNhan[m] = true;
         });
-        q.du = conts.filter(function (c) { return !q.mau || q.mau.indexOf(c.so % 4) >= 0; }).length;
+        q.du = conts.concat(vats.filter(function (v) { return v.noi === 'container'; })).filter(function (c) { return !q.mau || q.mau.indexOf(c.so % 4) >= 0; }).length;   // 16/11: kể cả container trôi
         if (q.du < 1) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): trên sân không có container nào hợp màu.');
         if (q.du > CHONG_TOI_DA) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): có ' + q.du + ' container hợp màu, chồng cao tối đa ' + CHONG_TOI_DA + '.');
       });

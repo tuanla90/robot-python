@@ -797,6 +797,15 @@ console.log('\nT6 cẩu móc container trôi');
   const skD = d ? d.doi[1].suKien : [];
   kiem('T6 d: xuồng đang giữ container trong lưới — cẩu moc-hut dang-keo; xuồng nhả lưới rồi cẩu nhấc được (moc-cont)',
     d && !d.loi && skD.some((e) => e.ma === 'moc-hut' && e.vat === 'dang-keo') && (d.doi[1].vet || []).some((v) => v.loai === 'nhip' && (v.suKien || []).some((e) => e.ma === 'moc-cont')), d && (d.loi ? J(d.loi) : J(skD.map((e) => e.nhip + ':' + e.ma + ':' + (e.vat || '')))));
+  // giao container trôi lên tàu: cfg.giao / hangTau.can đếm cả số của container trôi (trước 16/11 lõi ném "không có container số … (cfg.chong)")
+  const SAN6T = ['~~~B~~~', '~~~~~~~', '~~~T~~~', '.......'], LEN6 = 'pick_up()\nretract()\nretract()\nset_down()\n';
+  const tau6 = (them, code) => thu(() => SanHoc.chay(Object.assign(cau6({ x: 3, y: 3, nac: 0, tam: 3 }), { san: SAN6T, nhipToiDa: 40, mucTieu: 'giao-tau' }, them), code));
+  const e6 = tau6({ contTroi: [{ x: 3, y: 0, so: 7 }], hangTau: { o: [{ x: 3, y: 2 }], can: [7], cho: [{ x: 4, y: 2 }] } }, LEN6);
+  kiem('T6 e: hàng tàu cần container số 7 đang trôi — cẩu móc lên boong: thắng (xong-giao-tau), daGiaoHang [7]', e6 && !e6.loi && e6.thang === true && J(e6.daGiaoHang) === '[7]', e6 && (e6.loi ? J(e6.loi) : skNg(e6)));
+  const f6 = tau6({ contTroi: [{ x: 3, y: 0, so: 12 }], tau: [{ o: [{ x: 3, y: 2 }], co: 6, vang: 4 }], giao: [{ tau: 0, so: [12] }] }, LEN6 + 'wait()\nwait()\nwait()\n');
+  kiem('T6 f: tàu chu kỳ (đậu 6 nhịp) + giao [12] đang trôi — hạ kịp lên boong, tàu rời mang đi: thắng', f6 && !f6.loi && f6.thang === true && coSk(f6, 'tau-roi'), f6 && (f6.loi ? J(f6.loi) : skNg(f6)));
+  const g6 = tau6({ contTroi: [{ x: 3, y: 0, so: 12 }], tau: [{ o: [{ x: 3, y: 2 }], co: 3, vang: 4 }], giao: [{ tau: 0, so: [12] }] }, LEN6 + 'wait()\nwait()\nwait()\n');
+  kiem('T6 g: tàu chỉ đậu 3 nhịp — rời trước khi hạ (ha-bi-chan tau-vang): không thắng (phép f đỏ khi trễ)', g6 && !g6.loi && g6.thang === false && coSk(g6, 'ha-bi-chan'), g6 && (g6.loi ? J(g6.loi) : skNg(g6)));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
