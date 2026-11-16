@@ -10,7 +10,7 @@ User dặn tối 13/11: "xong 1 mùa thì commit, làm dần các mùa khác r m
 | 5 Bến sông (xuồng) | XONG | main | 69/200 (gói 5: 18, 6: 17, 7: 10, 8: 10, 9: 4, 10: 10); trước đợt là 0 |
 | 2 Nhà máy (xe cứu hỏa) | XONG, hụt chỉ tiêu | main 5107a78 | 11/200 (gói 6: 7/20, cần 15; gói 10: 4/20, cần 5) |
 | 4 Cảng sông (cần cẩu) | F1 cẩu 4 hướng XONG (main 9ebfa0c); F2 cần gạt đôi XONG (đã push ccaed8e); F3 xếp chồng theo luật XONG (push 5e1e2a0); F4a lớn nhất hàng ngang + F4b hàng tàu XONG (main 2970a6e+). MÙA 4 XONG | main | 29/200 (sau F4a); trước F2 là 0 |
-| 7 Mỏ đá (xe omni) | CHƯA BẮT ĐẦU | — | 0/200 |
+| 7 Mỏ đá (xe omni) | XONG 16/11: G1 chéo ghép + G2 ném đà, gộp main a32cfe4 | main | 98/200 (gói 5: 20, 6: 13, 7: 16, 8: 17, 9: 14, 10: 18); trước đợt là 0 |
 
 **Đã đẩy GitHub** (origin/main d7c4e52, 14/11). Sáng 14/11 các lần đẩy trước đó lỗi `HTTP 503` phía GitHub lúc gửi gói (đăng nhập vẫn qua); thử lại sau ~1 giờ thì được. Mỗi mùa xong: `git push origin main` (user cho phép đợt này).
 
@@ -94,13 +94,42 @@ Thứ tự gói theo kế hoạch mục 3, 6:
 
 Nghiệm thu F1: chạy lại các máy kiểm trong brief ở main sau khi ff-merge. Xem cần quay trên trình duyệt (`hoc/game/choi.html?debug=1`, cổng 4193 cấu hình "game-main"). Mở màn bằng JS: `GoLoi.vaoNgay(ManHoc.timMa('<mã>')); GoLoi.napLoiGiai(null,false)`; lớp phủ `.pclb` che màn thì ẩn đi.
 
-## 5. Mùa 7 Mỏ đá: chưa làm
+## 5. Mùa 7 Mỏ đá: đã làm (16/11)
 
-Theo kế hoạch mục 5:
-- Lõi: cờ `cheoGhep` (trượt + đi thẳng = chéo 1 ô) và cờ `nemDa` (ngắm 1–2, ném + tiến = tầm + 1, sự kiện `khong-co-da`).
-- Màn gói 5: hàm em `dir_fl` / `dir_fr` / `dir_bl` / `dir_br` thay `diag_*`.
-- Màn gói 6: ném đà.
-- Sửa các màn đang dùng aim(3): gói 6 có 8 màn, gói 8 và gói 9 mỗi gói 1, mùa ẩn 7. Sửa thêm 11 màn chéo ở các gói sau.
+Nhánh claude/mua-7-nem-da (chứa trọn claude/ban-giao-ghep-nhip-8ada93 và claude/mua-7-cheo-ghep), gộp main a32cfe4.
+
+### G1 chéo ghép (5a) — agent, commit 223b4db…67685ac
+- Lõi `cfg.cheoGhep` (xe omni): `slide_*` cùng nhịp hai bánh đi thẳng (tiến / lùi) = đi chéo 1 ô giữ hướng mặt, đủ 4 hướng. Ô đích chặn thì đứng yên; khe góc hai ô kề đều tường thì không lách (như `diag_*`). Trượt + quay vẫn bỏ (`omni-khong-cheo`). Bật gói 5–10 mùa 7 (lo-trinh-hoc.js), R2 omni mùa 8 gói 9 và R1 omni `cuu-mo-da`.
+- Gói 5 làm lại 20 màn: di-cheo .1 trình diễn (khoá), .2 ép tách nhịp thì rơi hố, …, .10 trùm radar chọn ngả trượt (2 sân); che-di-cheo chế `dir_fr()`, `dir_fl()`, `dir_br()`, `dir_bl()` (.4 em tự viết), .8 sửa hàm hỏng, .10 trùm 2 sân. Bỏ hàm `diag_r`, `diag_l`, `bypass_r`, `diag_lob`, `auto_bypass`.
+- Màn gói sau đổi `diag_*` sang `dir_fr()` / `dir_fl()` (gói 6: 7, gói 7: 7, gói 8: 5, gói 9: 1, gói 10: 5, mùa 8 gói 9: 5, mùa 9: 1). `diag_*` gốc thôi dạy, lõi giữ.
+- Khung soạn lệnh: lúc gộp main, chéo ghép thành cặp `banh|truot` trong `kieuDiGhep(man)` (thanh-phan.js, hỏi qua `tuyChon.man()` như mùa 2); bỏ `CHEO_GHEP` / `TP.datCheoGhep`.
+
+### G2 ném đà (5b) — lõi agent 21beded, màn phiên này edc2ebc
+- Lõi `cfg.nemDa`: `aim(n)` chỉ còn 1, 2 (`TAM_NEM_DA`); `throw()` cùng nhịp TIẾN THẲNG: xe tiến 1 ô, vật rời tay ở ô mới, bay tầm + 1. Ô trước chặn: đứng yên, ném tầm thường, `khong-co-da`. Lùi / quay / trượt + ném, bánh + `load()`: vẫn `nem-dung-yen`. Máy kiểm kiem-may-nem thêm 34 ca (tắt cờ thì hỏng). Khay: `aim` chỉ chọn 1–2 ở màn nemDa.
+- Cờ bật gói 6–10 mùa 7 VÀ mùa 8, 9: màn ở đó không gõ `aim(3)` mà gọi hàm em `aim_lob(3)` / `lob_step` chế ở gói 6; thân hàm mới cần cờ để chạy đúng. Gói 1–5 mùa 7 và mùa ẩn giữ luật cũ (aim tới 3).
+- Gói 6 làm lại 20 màn:
+  - chinh-luc "Hất gần, hất xa" (đứng yên, tầm 1 và 2): .1 trình diễn aim(1), .2 ép aim(1) (aim(3) là `tam-sai`), .3 đổi tầm 2 → 1, .4 danh sách tầm (2 sân), .5 đè nút + đi chéo, .6 đổi 1 → 2, .7 radar chọn tầm (2 sân), .8 cọc báo tầm (2 sân), .9 bảng trượt + tầm (2 sân), .10 trùm (2 sân).
+  - che-chinh-luc "Chế lệnh: chạy đà": .1 trình diễn (khoá), .2 ép đứng yên không tới (giấu hàm em), .3 `run_throw()`, .4 `run_lob()`, .5 `aim_lob(n)` (n = 3: `aim(1)`, `run_lob()`, `back()`), .6 `fill_far()`, .7 `lob_step(r)`, .8 `auto_aim()` (2 sân), .9 `diag_aim(n)`, .10 trùm (2 sân). Giữ tên + chữ ký mọi hàm gói sau gọi.
+- Gói 8: mo-cu.7 chạy đà trên bàn xoay (`aim(1)`, `run_throw()`); che-mo-cu.4 `spin_pad(2)` sân mới (cờ sau lưng, lùi 2 ô qua cổng, chạy được cả `@` và `%`, không đi tắt được); che-mo-cu.5 `spin_pad(2)` rồi `move()`, `slide_l(1)`.
+- Gói 9: doi-omni.20 và che-doi-omni.18: R2 chờ thêm 1 nhịp (ở sân có quặng, R1 chạy đà mất thêm 1 nhịp).
+- Sao: đo lại từng màn rồi sửa đúng mục trong lo-trinh-sao.js (không chạy --ghi-sao): 81 màn mùa 7; 49 màn mùa 8, 9 chỉ tăng số ô (thân `aim_lob` dài hơn), số nhịp không đổi.
+- Phim gói 6 (phim-mua-6.js + chu.js pg.chinh-luc.*): 4 khung theo luật mới (đứng yên không tới, cần gạt 1–2, chạy đà, code). Sổ part máy ném ghi luật mới.
+
+### Nghiệm thu (phiên G2, tuần tự)
+- Trên nhánh, sau edc2ebc: kiem-man-mua-6 200/200, kiem-omni 239/0, kiem-che-omni 234/0, kiem-doi-omni 80/0, kiem-may-nem 190/0, kiem-che-may-nem 226/0, kiem-doi-gap-nem 59/0, kiem-loi-mua-6 17/0, kiem-mua-hang 14/0, kiem-lai-mua-9 170/0, kiem-nhap-mua-4-7 41, kiem-phim-goi 55/0, kiem-huong-dan 40/0, kiem-loi-giai 67/67, kiem-hoc 6716/0, kiem-khay 185/2 (2 ca hỏng sẵn).
+- Trên main sau gộp a32cfe4: kiem-khay 187/1 (ca còn lại `TP.tachHamKhac tay-gap.10`, hỏng sẵn). npm test trên a32cfe4: 119/131. Ba bộ do mùa 7 gây ra, đã sửa trong commit sau gộp: kiem-che-xe (moTa diag_* quá 80 chữ), kiem-gioi-thieu-part (ngoặc trong câu omni / nem), kiem-phim-goi (pg.chinh-luc.4 15 từ). Sau sửa: kiem-gioi-thieu-part 1376/0, kiem-phim-goi 55/0. Hỏng sẵn, chạy lại ở bản sao main cũ bf718c0 ra y hệt: kiem-che-xe 271/1 (moTa brace_spray, boost của mùa 2 dài hơn 80 chữ), kiem-bang-mau 1/16, kiem-dong-goi-artifact 12/2, kiem-huy-hieu-phim-vector 10/2, kiem-ve-vector 1/101 (13a-v), kiem-trum-mua-1 81/1, kiem-ve-mua-8 2/26, kiem-lo-trinh (combo), kiem-khay 187/1 (tachHamKhac). kiem-lap-rap-sao hỏng trong npm test vì hết RAM; chạy riêng với --max-old-space-size=4096 thì 512/0.
+- do-ghep-nhip mua-7: 98/200 màn có ghép ngoài hai bánh, nhịp ghép 43,2%. mua-9: 100/200.
+- Trình duyệt (cổng 4231, cấu hình game-nem-da): che-chinh-luc.2 thắng 3 sao (6 ô, 2 nhịp); mo-cu.7 tới cờ 3 sao (19 ô, 6 nhịp), xe chạy đà khỏi bàn xoay rồi qua cổng; console không lỗi game.
+
+### Chờ user quyết (mùa 7)
+1. Cờ nemDa bật cả mùa 8, 9 (brief cũ dặn giữ trần cũ ở đó). Lý do: hàm em `aim_lob(3)` dùng chung. Hệ quả: 49 màn mùa 8, 9 đổi ngưỡng ô. Phương án khác: giữ thân `aim_lob` cũ cho mùa 8, 9 là không làm được vì kho hàm là một.
+2. `aim_lob(3)` chạy đà rồi `back()` nên tốn thêm 1 nhịp mỗi lần gọi; số ô các màn gói 7–10 tăng 11–15 (thân hàm em được đếm). Người chơi giữ kho hàm cũ (bản `aim(3)`) sẽ bị `tam-sai` ở gói 7–10 cho tới khi sửa lại hàm.
+3. Gói 6 mới 13/20 màn có ghép (chương 1 cố ý đứng yên, đúng kế hoạch "chương 1 tầm 1–2 đứng yên").
+4. Mùa 8 gói 9 (doi-hang-dong.*) và mùa 9 (cuu-*, lap-*, tong-hop-clb.4, trum-mua-clb.*) đổi sao trong lo-trinh-sao.js: nhánh mùa 8 / mùa 9 đang làm dở sẽ xung đột nhẹ ở tệp này khi gộp (lấy số đo mới).
+
+### Rủi ro còn lại (mùa 7)
+- Chưa xem trên trình duyệt: che-chinh-luc.1 (trình diễn khoá), che-chinh-luc.5 (aim_lob chạy đà rồi lùi), che-mo-cu.4 sân mới, phim gói 6 khung 3 (đá bay từ ô mới), lúc thua `khong-co-da`.
+- Bản lưu cũ của người chơi: hàm `aim_lob` bản cũ trong kho, hàm `diag_*` cũ.
 
 ## 6. Nền đỏ có sẵn (không do đợt này)
 - `hoc/kiem-lo-trinh.mjs`: AssertionError ở thứ tự gói mùa 1 ('combo' / 'hai-robot'). Lỗi dừng ở mục đầu nên các mục mùa 2 phía sau của máy kiểm này KHÔNG chạy. Agent E2 phải kiểm bằng một bản tạm.

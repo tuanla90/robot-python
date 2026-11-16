@@ -691,7 +691,7 @@
       'pg.chinh-luc.1': 'Hố sâu cách xe ba ô. Đứng yên hất thì không tới.',
       'pg.chinh-luc.2': 'Sola lắp cần gạt chỉnh tầm: gần 1 ô, xa 2 ô.',
       'pg.chinh-luc.3': 'Chạy đà: tiến và hất cùng một nhịp. Đá bay thêm 1 ô!',
-      'pg.chinh-luc.4': 'aim(n) chỉ nhận 1 hoặc 2. Tiến cùng nhịp throw() thì bay thêm 1 ô.',
+      'pg.chinh-luc.4': 'aim(n) chỉ nhận 1, 2. Tiến cùng nhịp throw(): bay thêm 1 ô.',
       'pg.nhan-dang.1': 'Đá tròn, đá vuông và quặng quý nằm lẫn lộn trên vách mỏ.',
       'pg.nhan-dang.2': 'Sola gắn thấu kính nhận dạng đá và quặng vào vòm Radar tròn.',
       'pg.nhan-dang.3': 'R1 soi biết ngay đá tròn để lấp hố, quặng quý vào máng xa!',

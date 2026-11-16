@@ -69,7 +69,7 @@
         { lenh: ['slide_left', 'wait'], ra: 'Trượt sang trái 1 ô, mặt giữ nguyên', ket: { x: 1, y: 2, huong: 0 } }
       ],
       gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh',
-        { chu: 'Đi chéo: slide_*() cùng nhịp với hai bánh đi thẳng (từ gói Đi chéo). Lệnh cũ: diag_left(), diag_right()', can: ['diag_left', 'diag_right'] }],
+        { chu: 'Đi chéo: trượt cùng nhịp với hai bánh đi thẳng, từ gói Đi chéo. Lệnh cũ: diag_left(), diag_right()', can: ['diag_left', 'diag_right'] }],
       khong: [{ chu: 'Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', khongCan: ['diag_left'] }, 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
       luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.',
         { chu: 'Lệnh cũ diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
@@ -153,7 +153,7 @@
       lenh: ['aim', 'load', 'throw'],
       ghep: [{ lenh: ['aim', 'load', 'wait', 'throw', 'wait'], ra: 'Chọn tầm, nạp vật, ném' }],
       gioi: ['Vật bay qua hàng rào, tường, băng chuyền', 'Rơi đúng n ô phía trước'],
-      khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên (trừ chạy đà: tiến thẳng cùng nhịp throw())'],
+      khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên, trừ chạy đà: tiến thẳng cùng nhịp throw()'],
       luuY: ['aim(n) chọn tầm, đổi ngay, không tốn nhịp. Từ gói Chỉnh lực hất: tầm 1 hoặc 2, chạy đà thì bay thêm 1 ô.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
     },
     'son': {
