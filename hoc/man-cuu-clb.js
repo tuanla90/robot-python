@@ -64,6 +64,11 @@
   var CU_4 = ['forward(2)', 'back()', 'back()', 'tr_right()', 'forward(5)'];
   var HD_4 = ['wait_n(2)', 'forward(3)', 'play_note(listen())', 'forward(4)'];
 
+  /** cuu-clb.5: bão thổi khung sắt của sân khấu rơi xuống đảo nhỏ giữa hồ CLB; đảo có một hố sụt. Xuồng buộc bè sau đuôi (lưới dài 1), chạy năm ô kéo bè vào bến q nối bờ với đảo.
+   *  Nhện chờ cầu, lên đảo, bật qua hố đáp lên khung sắt, hút, bước vào kho dụng cụ sân khấu D, thả. */
+  var XU_5 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(5)', 'drop_net()', 'wait()'];
+  var PL_5 = ['wait_n(6)', 'go_up()', 'go_up()', 'go_right()', 'jump("R")', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -176,6 +181,32 @@
       sao: { o: 29, nhip: 13 },
       goiY: ['Xích tiến vào thùng nặng thì đẩy thùng đi một ô.', 'listen(): nốt của đá chuông gần nhất; loa phá đá trong tầm 3 ô.', 'Hai bạn làm cùng lúc thì mới kịp.'],
       cauDo: { doi: ['HD', 'CU'], lap: null, coChe: ['thung-nang', 'da-chuong', 'not', 'hoc'], cuu: 'hang', meo: 'song-song' }
+    }),
+    // 5 · làm cầu, cặp #15 Phân loại + Xuồng, trộn Bến sông (bè, cầu phao) + Bãi tái chế (sắt, hố): khung sắt sân khấu rơi xuống đảo giữa hồ CLB, đảo có hố sụt.
+    //     Xuồng buộc bè sau đuôi kéo vào bến q làm cầu; nhện qua cầu, bật qua hố, hút khung sắt, mang về kho. Bẫy: drone (bay qua hồ, qua hố, nhưng không có nam châm).
+    man9('cuu-clb', 5, 'luyen', {
+      ten: 'Khung sắt trên đảo',
+      vo: 'song',
+      mucTieu: 'dua-vat',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Khung sắt sân khấu rơi xuống đảo giữa hồ CLB, đảo có hố sụt. Chọn hai bạn: ai làm cầu sang đảo, ai mang khung sắt vào kho D trên đảo?',
+      veMaMau: 'Chưa có cầu sang đảo.',
+      san: ['#########', '##..uoD##', '#~q~~~~B#', '#......##', '#########'],
+      them: { vatChat: ['.........', '.....s...', '.........', '.........', '.........'] },
+      doi: [khe({ x: 2, y: 3, huong: 0 }, { batDauNuoc: { x: 5, y: 2, huong: 3 } }), khe({ x: 6, y: 3, huong: 3 }, { batDauNuoc: { x: 6, y: 2, huong: 3 } })],
+      chonDoi: {
+        menu: ['PL', 'XU', 'DR'],
+        cachMau: [{ chon: ['PL', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([PL_5, XU_5]) }]
+      },
+      maMau: doiBai([['wait_n(6)'], ['set_length(1)']]),
+      loiSai: [
+        { moTa: 'Lưới dài 2 (quên set_length(1)): lưới vươn quá bè, không bắt được', baiLam: doiBai([PL_5, ['cast_net("back")', 'wait()', 'forward(5)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nhện đi bộ qua hố: rơi hố', baiLam: doiBai([['wait_n(6)', 'go_up()', 'go_up()', 'go_right()', 'go_right()'], XU_5]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Nhện lên cầu khi bè chưa tới: nhện không bơi', baiLam: doiBai([['wait_n(2)'].concat(PL_5.slice(1)), XU_5]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 43, nhip: 23 },
+      goiY: ['set_length(1): lưới dài 1 ô; cast_net("back"): tung lưới ra sau đuôi.', 'Bè nằm trên bến q là cầu phao.', 'jump("R"): nhện bật qua một ô (qua được hố).'],
+      cauDo: { doi: ['PL', 'XU'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'dao', 'ho', 'nhay', 'sat'], cuu: 'hang', meo: 'lam-cau' }
     })
   ];
 
