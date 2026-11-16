@@ -183,6 +183,14 @@
   var NHEN_19 = ['jump("R")', 'd, n = hear(), listen()', 'k = max(d - 3, 0)', 'for i in range(k):', '    go_right()', 'play_note(n)', 'for i in range(3 - k):', '    go_right()'];
   var BANH_19 = ['turn_right()', 'forward(1)', 'turn_left()', 'd, n = hear(), listen()', 'forward(d - 3)', 'play_note(n)', 'forward(8 - d)', 'turn_left()', 'forward(1)'];
 
+  /** lap-clb.10: song ca đoạn 9 (giữ đúng bè của cuu-clb.10 để gói 10 ghép bài). Xe hang động R1 (đặt sẵn) hát bè 1 trên bờ.
+   *  R2 Luna tự lắp robot có loa hát bè 2 tại chỗ; bè 2 = bè 1 nâng hai bậc: em tạo hàm quang_ba(a) trả về danh sách mới (def, for, append, return).
+   *  Lõi chỉ cho tự lắp MỘT robot mỗi màn (lapRap.robot là một số): Sola dùng robot đặt sẵn, chỉ Luna tự lắp (lệch bảng: "cả hai robot tự lắp").
+   *  Cách một: hai bánh + loa (rẻ nhất), tạo hàm quang_ba. Cách hai: xuồng + loa (L5) hát dưới hồ, viết thẳng bè 2 (ít ô hơn, đắt hơn). Hát tại chỗ nên nhịp như nhau. */
+  var H_QUANG_BA = { ten: 'quang_ba', thamSo: ['a'], than: ['b = []', 'for n in a:', '    b.append(n + 2)', 'return b'] };
+  var HD_20 = [BE1_9];
+  var R2_20 = ['b = quang_ba([5, 5, 4, 4, 3, 3, 2, 2])', 'play_part(b)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -676,6 +684,31 @@
       sao: { o: 52, nhip: 20 },
       goiY: ['d, n = hear(), listen(): một dòng lấy hai giá trị (tuple).', 'max(d - 3, 0): tượng đã đủ gần thì không đi thêm.', 'Robot cũ đi từng ô, bị chắn thì chờ: chỉ cần mở lối cho nó.'],
       cauDo: { doi: null, lap: 'nhen+loa+am-thanh', coChe: ['da-chuong', 'nut', 'cua', 'ho', 'r3', 'tuple', 'nhieu-san'], cuu: 'may', meo: 'giu-cua' }
+    }),
+    // 20 · song ca (trùm), đoạn 9; R1 đặt sẵn xe hang động hát bè 1, R2 tự lắp robot có loa hát bè 2 tại chỗ; tạo hàm quang_ba(a) (def, list, return), gọi play_part (gói 1).
+    man9('lap-clb', 10, 'trum', {
+      ten: 'Song ca sân CLB',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      deBai: 'Màn cuối CLB: song ca đoạn 9. Xe hang động hát bè 1. Lắp cho Luna một robot có loa hát bè 2: bè 2 là bè 1 nâng hai bậc, tạo hàm quang_ba(a) trả về danh sách mới.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      san: ['#######', '#.....#', '#~~~~~#', '#######'],
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 3, y: 1, huong: 1 }, { son: 'lam', batDauNuoc: { x: 3, y: 2, huong: 1 } })],
+      them: { dieu: { r1: '5 5 4 4 3 3 2 2', r2: '7 7 6 6 5 5 4 4' }, daChuong: [{ x: 5, y: 2, not: 2, ben: 1 }] },
+      lapRap: lapR2(['hai-banh', 'xuong', 'drone'], ['loa', 'kep', 'son'], [], 8, [
+        cach('hai-banh', 'loa', null, [HD_20, R2_20], [H_QUANG_BA]),
+        cach('xuong', 'loa', null, [HD_20, [BE2_9]])
+      ], { moLai: ['L5'] }),
+      maMau: doiBai([HD_20, ['play_note(7)']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([HD_20, ['play_note(7)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'quang_ba quên return: play_part không có danh sách nốt để lặp', baiLam: doiBai([HD_20, R2_20], [], [{ ten: 'quang_ba', thamSo: ['a'], than: ['b = []', 'for n in a:', '    b.append(n + 2)'] }]), hamCuaEmMoi: [{ ten: 'quang_ba', thamSo: ['a'], than: ['b = []', 'for n in a:', '    b.append(n + 2)'] }], phaiCoMa: ['loi-chay'] },
+        { moTa: 'Nâng một bậc (n + 1): bè 2 sai nốt', baiLam: doiBai([HD_20, R2_20], [], [{ ten: 'quang_ba', thamSo: ['a'], than: ['b = []', 'for n in a:', '    b.append(n + 1)', 'return b'] }]), hamCuaEmMoi: [{ ten: 'quang_ba', thamSo: ['a'], than: ['b = []', 'for n in a:', '    b.append(n + 1)', 'return b'] }], phaiCoMa: ['sai-not'] },
+        { moTa: 'R2 chờ một nhịp rồi mới hát: lệch nhịp với bè 1', baiLam: doiBai([HD_20, ['wait()', BE2_9]]), phaiCoMa: ['lo-nhip'] }
+      ],
+      sao: { o: 9, nhip: 10 },
+      goiY: ['Bè 2 là bè 1 nâng hai bậc: 5 thành 7, 4 thành 6.', 'Hàm quang_ba(a): tạo danh sách b, thêm n + 2 cho từng n, return b.', 'Hai bạn bắt đầu cùng một nhịp.'],
+      cauDo: { doi: null, lap: 'hai-banh+loa', coChe: ['loa', 'da-chuong', 'clb', 'ham-tra-ve'], cuu: null, meo: 'song-song' }
     })
   ];
 
