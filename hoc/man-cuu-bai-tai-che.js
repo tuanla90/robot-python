@@ -69,119 +69,6 @@
     return ManHoc.chuanHoa(m);
   }
 
-  /* ---- BẢN CŨ: khung màn cũ (xoá khi dựng xong 20 màn) ---- */
-  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
-  var HAM_XICH = BANH.concat(['spray', 'spray_back', 'distance', 'warm']);
-  var HAM_XICH_LOA = BANH.concat(['beat', 'note', 'distance', 'warm']);
-  var HAM_BANH = BANH.concat(['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear']);
-  var HAM_OMNI = BANH.concat(['slide_left', 'slide_right', 'load', 'throw', 'radar', 'diag_left', 'diag_right', 'aim', 'shape']);
-  var HAM_GAI = BANH.concat(['retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen']);
-
-  var R1_NHEN = {
-    loaiRobot: 'nhen',
-    robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
-    hamGoc: HAM_NHEN
-  };
-  var R1_LOA = {
-    loaiRobot: 'xich', phatNot: true,
-    robot: { than: 'xich', tay: 'loa', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] },
-    hamGoc: HAM_XICH_LOA
-  };
-  var R_XICH = {
-    loaiRobot: 'xich', xichDay: true, lucBan: true,
-    robot: { than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }], son: 'lam' },
-    hamGoc: HAM_XICH
-  };
-  var R_BANH = {
-    loaiRobot: 'banh',
-    robot: { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_BANH
-  };
-  var R_OMNI = {
-    loaiRobot: 'omni', omniCheo: true, chinhLuc: true, nhanDang: true, tamNemMacDinh: 2, daLapHo: true,
-    robot: { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
-    hamGoc: HAM_OMNI
-  };
-  var R_GAI = {
-    loaiRobot: 'gai', thuGai: true, phatNot: true, phanAm: true,
-    robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }], son: 'lam' },
-    hamGoc: HAM_GAI
-  };
-
-  var H_CLEAR_IRON = {
-    ten: 'clear_iron', thamSo: ['d'],
-    than: ['pull_s()', 'go(d)']
-  };
-  var H_HOP_OVER = {
-    ten: 'hop_over', thamSo: ['d'],
-    than: ['jump(d)', 'go(d)']
-  };
-  var H_PULL_DELIVER = {
-    ten: 'pull_deliver', thamSo: ['d'],
-    than: ['pull_s()', 'go(d)', 'magnet_off()', 'wait()']
-  };
-
-
-  function baiDoi(r1Chinh, r2Chinh, hamEm, hamMan) {
-    return {
-      doi: [{ chinh: r1Chinh.slice() }, { chinh: r2Chinh.slice() }],
-      hamCuaMan: hamMan ? clone(hamMan) : [],
-      hamCuaEmMoi: hamEm ? clone(hamEm) : []
-    };
-  }
-
-  function manTC(chuong, so, hang, cfg) {
-    var r1 = clone(cfg.r1 || R1_NHEN);
-    var r2 = clone(cfg.r2 || R_XICH);
-    r1.batDau = cfg.bd[0];
-    r2.batDau = cfg.bd[1];
-    if (cfg.coDinhR1) r1.coDinh = true;
-    if (cfg.coDinhR2) r2.coDinh = true;
-    if (cfg.co) {
-      r1.co = cfg.co[0];
-      r2.co = cfg.co[1];
-    }
-    var m = {
-      chuong: chuong,
-      so: so,
-      ten: cfg.ten,
-      hang: hang,
-      vo: 'tai-che',
-      loaiRobot: r1.loaiRobot,
-      daLapHo: true,
-      robot: clone(r1.robot),
-      hamGoc: r1.hamGoc.slice(),
-      cauTruc: cfg.cauTruc || ['for', 'if', 'while', 'list'],
-      vaHoac: true,
-      moXuong: true,
-      camHamCuaEm: false,
-      hamCuaEmCan: cfg.hamCuaEmCan || ['go', 'walk', 'wait_n'],
-      taoHam: cfg.taoHam || [],
-      khung: cfg.khung || { chinh: 10, moiHam: 8 },
-      mucTieu: cfg.mucTieu || 'toi-co',
-      deBai: cfg.deBai,
-      veMaMau: cfg.veMaMau || '',
-      san: cfg.san,
-      batDau: cfg.bd[0],
-      doi: [r1, r2],
-      maMau: cfg.maMau,
-      loiGiai: cfg.loiGiai,
-      loiSai: cfg.loiSai || [],
-      sao: cfg.sao || { o: 16, nhip: 10 },
-      goiY: cfg.goiY || []
-    };
-    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
-    if (cfg.vatCan) m.vatCan = cfg.vatCan;
-    if (cfg.noi) m.noi = cfg.noi;
-    if (cfg.dieu) m.dieu = cfg.dieu;
-    if (cfg.vatChat) m.vatChat = cfg.vatChat;
-    if (cfg.vatThem) m.vatThem = cfg.vatThem;
-    if (cfg.chuongDa) m.chuongDa = cfg.chuongDa;
-    if (cfg.daChuong) m.daChuong = cfg.daChuong;
-    return ManHoc.chuanHoa(m);
-  }
-
   ManHoc.manCuuBaiTaiChe = [
     /* ========================================================================
        CHƯƠNG 1: cuu-bai-tai-che (10 màn)
@@ -551,95 +438,123 @@
       cauDo: { doi: null, lap: 'hai-banh+nam-cham+tu', coChe: ['nam-cham', 'sat', 'day-tu-xa'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    /* ---- BẢN CŨ (xoá dần khi dựng lại) ---- */
-    manTC('lap-bai-tai-che', 6, 'cung-co', {
-      ten: 'Chế tạo hàm pull_deliver giao sắt vào đích',
-      r2: R_OMNI, mucTieu: 'dua-vat', vatCan: 'sat',
-      taoHam: ['pull_deliver'],
-      hamCuaEmCan: ['go', 'walk', 'pull_s', 'wait_n', 'slide_r'],
-      deBai: 'Hãy chế tạo hàm pull_deliver(d) cho R1 gồm 4 lệnh: pull_s(), go(d), magnet_off(), wait() để hút mẩu sắt dưới bụng, bước 1 ô theo hướng d tới ô đích D rồi tắt nam châm thả sắt xuống! Ở chương trình chính, R2 (omni) gọi slide_r(1) đè nút M(2, 2) mở cửa C(2, 1), còn R1 chờ 2 nhịp, gọi walk("RR") qua cửa C(2, 1) tới ô (3, 1) có mẩu sắt rồi gọi pull_deliver("R") giao sắt vào D(4, 1)!',
-      veMaMau: 'Hoàn thiện hàm pull_deliver(d) cho R1.',
-      san: ['######', '#.C.D#', '#.M..#', '######'],
-      noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 2, y: 1 }] }],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 2, huong: 0 }],
-      vatThem: [{ x: 3, y: 1, chat: 'sat' }],
-      maMau: baiDoi(['wait_n(2)', 'walk("RR")', 'pull_deliver("R")'], ['slide_r(1)']),
-      loiGiai: baiDoi(['wait_n(2)', 'walk("RR")', 'pull_deliver("R")'], ['slide_r(1)'], [H_PULL_DELIVER]),
+    // 16 · lai L1 cẩu + nam châm: thanh sắt thứ hai nằm trên ô đích của robot phân loại; ô đích của nó là hốc kín sau tường cao (nhện không với tới).
+    //      Cẩu vươn cần hút sắt, quay cần thả vào hốc kín. (Một cách lắp: khe cẩu cần nac nên không đổi thân được; kẹp thì rẻ hơn mà làm y hệt nên bỏ.)
+    man9('lap-bai-tai-che', 6, 'cung-co', {
+      ten: 'Hốc sau tường cao',
+      mucTieu: 'dua-vat',
+      deBai: 'Một thanh sắt chiếm ô đích của robot phân loại. Chỗ của nó là hốc kín sau tường cao. Lắp robot đưa sắt vào hốc.',
+      veMaMau: 'Cẩu mới vươn cần.',
+      san: ['########', '#.o.X###', '########', '####.#D#', '########'],
+      doi: [may('PL', { x: 1, y: 1, huong: 1 }), khe({ x: 4, y: 3, huong: 0, nac: 0 }, { son: 'lam' })],
+      them: { vatChat: ['........', '..s.s...', '........', '........', '........'] },
+      lapRap: lapR2(['cau'], ['nam-cham'], [], 9, [
+        cach('cau', 'nam-cham', null, [['walk("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['extend()', 'magnet_n()', 'swing_right()', 'magnet_off()']])
+      ], { moLai: ['L1'] }),
+      maMau: doiBai([['walk("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['extend()']]),
       loiSai: [
-        { moTa: 'Hàm pull_deliver(d) thiếu magnet_off() và wait() nên sắt vẫn dính dưới bụng R1', baiLam: baiDoi(['wait_n(2)', 'walk("RR")', 'pull_deliver("R")'], ['slide_r(1)']), hamCuaEmMoi: [{ ten: 'pull_deliver', thamSo: ['d'], than: ['pull_s()', 'go(d)'] }], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Hút sắt mà chưa quay cần: thả lại chỗ cũ', baiLam: doiBai([['walk("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['extend()', 'magnet_n()', 'magnet_off()']]), phaiCoMa: ['tha-bi-chan'] }
       ],
-      sao: { o: 19, nhip: 9 },
-      goiY: ['Trong hàm pull_deliver(d), thêm magnet_off() và wait() sau go(d).']
+      sao: { o: 25, nhip: 10 },
+      goiY: ['Nam châm trên đầu cần hút sắt ở ô dưới đầu cần.', 'swing_right() quay cần sang phải.'],
+      cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'qua-tuong', 'hoc-kin'], cuu: 'hang', meo: 'don-loi' }
     }),
-    manTC('lap-bai-tai-che', 7, 'van-dung', {
-      ten: 'Kết hợp lob_clear và pull_deliver qua hố sâu',
-      r2: R_OMNI, mucTieu: 'dua-vat', vatCan: 'sat',
-      hamCuaEmCan: ['go', 'pull_s', 'lob_clear', 'pull_deliver'],
-      deBai: 'Mẩu sắt nằm ở (1, 1) dưới bụng R1, còn ô đích D ở (3, 1) bên kia hố sâu u(2, 1). Hãy cho R2 (robot omni) ở (2, 3) gọi lob_clear(2) để hất đá o(2, 2) lấp hố u(2, 1) rồi trượt sang phải; R1 chờ 2 nhịp cho hố lấp xong, gọi clear_iron("R") mang sắt lên (2, 1) rồi gọi pull_deliver("R") giao sắt vào D(3, 1)!',
-      veMaMau: 'Phối hợp lob_clear(2) của R2 cùng clear_iron("R") và pull_deliver("R") của R1.',
-      san: ['#####', '#.uD#', '##o##', '##..#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      vatThem: [{ x: 1, y: 1, chat: 'sat' }],
-      maMau: baiDoi(['wait_n(2)', 'clear_iron("R")'], ['lob_clear(2)']),
-      loiGiai: baiDoi(['wait_n(2)', 'clear_iron("R")', 'pull_deliver("R")'], ['lob_clear(2)']),
+
+    // 17 · lai L6 nhện + gieo hạt: dải bùn trơn trước lối robot phân loại, cuối dải là hố. Nhện gieo hạt leo lên ô rẽ (trên là tường nên dừng được trên bùn),
+    //      rắc cát ô đó rồi lui về; robot phân loại đi theo đúng vết: trượt tới ô cát, rẽ xuống về cờ. Cách hai đắt hơn: drone + gieo hạt bay (nhanh hơn).
+    man9('lap-bai-tai-che', 7, 'van-dung', {
+      ten: 'Cát dẫn lối',
+      deBai: 'Bùn trơn: robot phân loại vào dải là trượt tới hố. Rắc cát ô rẽ cho nó dừng, rồi tránh đường. Hai bạn về cờ.',
+      veMaMau: 'Robot phân loại chờ ô cát.',
+      san: ['########', '#.IIIu##', '###.####', '###.F###', '###F####', '########'],
+      doi: [may('PL', { x: 1, y: 1, huong: 1 }, { co: [{ x: 3, y: 4 }] }), khe({ x: 3, y: 3, huong: 0 }, { son: 'lam', co: [{ x: 4, y: 3 }] })],
+      lapRap: lapR2(['nhen', 'drone'], ['son'], [], 8, [
+        cach('nhen', 'son', null, [['wait_n(7)', 'walk("RDDD")'], ['go_up()', 'go_up()', 'dot()', 'go_down()', 'go_down()', 'go_right()']]),
+        cach('drone', 'son', null, [['wait_n(3)', 'walk("RDDD")'], ['go_up()', 'go_up()', 'dot()', 'go_down()', 'go_down()', 'go_right()']])
+      ], { moLai: ['L6'] }),
+      maMau: doiBai([['wait_n(7)', 'walk("RDDD")'], ['go_up()', 'go_up()']]),
       loiSai: [
-        { moTa: 'R1 mới mang sắt tới (2, 1), chưa gọi pull_deliver("R") giao vào D(3, 1)', baiLam: baiDoi(['wait_n(2)', 'clear_iron("R")'], ['lob_clear(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không rắc cát: robot phân loại trượt rơi hố', baiLam: doiBai([['wait_n(7)', 'walk("RDDD")'], ['go_up()', 'go_up()', 'go_down()', 'go_down()', 'go_right()']]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 29, nhip: 9 },
-      goiY: ['Ở chương trình R1, thêm pull_deliver("R") sau clear_iron("R").']
+      sao: { o: 24, nhip: 18 },
+      goiY: ['dot(): rắc cát ô bùn dưới bụng.', 'walk("RDDD"): một chuỗi, mỗi chữ một bước.'],
+      cauDo: { doi: null, lap: 'nhen+son', coChe: ['bun', 'rac-cat', 'ho'], cuu: null, meo: 'dan-duong' }
     }),
-    manTC('lap-bai-tai-che', 8, 'van-dung', {
-      ten: 'Xe kho chuyền kiện gỗ và nhện giao sắt',
-      r2: R_BANH, mucTieu: 'dua-vat',
-      hamCuaEmCan: ['go', 'pull_s', 'pick', 'drop_right', 'pull_deliver'],
-      deBai: 'Màn này yêu cầu đưa cả mẩu sắt ở (1, 1) và kiện gỗ o ở (3, 2) về 2 ô đích D! R1 đứng ở (1, 1) gọi pull_deliver("R") để giao mẩu sắt vào D(2, 1). Cùng lúc đó, R2 (xe hai bánh gắn tay xoay) ở (3, 3) hướng lên hãy gọi pick(), wait() rồi gọi drop_right() thả kiện gỗ o(3, 2) vào D(4, 3)!',
-      veMaMau: 'R2 chưa gọi wait() và drop_right() để thả kiện gỗ vào D(4, 3).',
-      san: ['######', '#.D###', '###o##', '###.D#', '######'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 3, huong: 0 }],
-      vatThem: [{ x: 1, y: 1, chat: 'sat' }],
-      maMau: baiDoi(['pull_deliver("R")'], ['pick()']),
-      loiGiai: baiDoi(['pull_deliver("R")'], ['pick()', 'wait()', 'drop_right()']),
+
+    // 18 · cứu người: người kẹt sau thanh sắt và thùng gỗ. Robot phân loại dọn sắt (clear_iron). Nhện + kẹp nhảy khe, gắp thùng gỗ từ dưới lên (nhanh, đắt);
+    //      xích + kẹp đi vòng bên phải rồi gắp (rẻ, chậm). (Bảng có thùng nặng: bỏ, xích không ủi được thùng nặng.)
+    man9('lap-bai-tai-che', 8, 'van-dung', {
+      ten: 'Người sau đống phế liệu',
+      mucTieu: 'cuu-nguoi',
+      hamCuaEmCan: HAM_EM.concat(['clear_iron']),
+      deBai: 'Người kẹt sau thanh sắt và thùng gỗ. Robot phân loại dọn sắt. Lắp robot gắp thùng gỗ cho người đi ra trạm cứu.',
+      veMaMau: 'Thùng gỗ còn chắn lối.',
+      san: ['##########', '#..o.o...#', '###.#..###', '#####u.###', '#####..###', '##########'],
+      doi: [may('PL', { x: 3, y: 2, huong: 0 }), khe({ x: 5, y: 4, huong: 0 }, { son: 'lam' })],
+      them: { vatChat: ['..........', '...s.g....', '..........', '..........', '..........', '..........'],
+        nguoi: [{ x: 1, y: 1, duong: [{ x: 2, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 }, { x: 5, y: 1 }, { x: 6, y: 1 }, { x: 7, y: 1 }, { x: 8, y: 1 }] }], tramCuu: [{ x: 8, y: 1 }] },
+      lapRap: lapR2(['nhen', 'xich'], ['kep'], [], 6, [
+        cach('nhen', 'kep', null, [['go("U")', 'clear_iron("D")'], ['jump("U")', 'pick()']]),
+        cach('xich', 'kep', null, [['go("U")', 'clear_iron("D")'], ['tr_right()', 'move()', 'tr_left()', 'forward(2)', 'tr_left()', 'move()', 'tr_right()', 'pick()']])
+      ]),
+      maMau: doiBai([['go("U")', 'clear_iron("D")'], []]),
       loiSai: [
-        { moTa: 'R2 chỉ gắp kiện gỗ o(3, 2) mà chưa gọi wait(), drop_right() thả vào D(4, 3)', baiLam: baiDoi(['pull_deliver("R")'], ['pick()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Nhảy khe rồi không gắp: thùng gỗ còn chắn người', baiLam: doiBai([['go("U")', 'clear_iron("D")'], ['jump("U")']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 22, nhip: 5 },
-      goiY: ['Thêm wait() và drop_right() sau pick() ở chương trình R2.']
+      sao: { o: 30, nhip: 12 },
+      goiY: ['Nhện nhảy khe: jump("U").', 'Xích không qua hố: đi vòng bên phải.'],
+      cauDo: { doi: null, lap: 'nhen+kep', coChe: ['go', 'sat', 'ho', 'nguoi'], cuu: 'nguoi', meo: 'don-loi' }
     }),
-    manTC('lap-bai-tai-che', 9, 'bien-the', {
-      ten: 'Tổng duyệt Bãi tái chế - Hang động',
-      r2: R_GAI,
-      hamCuaEmCan: ['jump', 'go', 'play_note', 'echo_glide', 'hop_over', 'clear_iron'],
-      deBai: 'Tổng duyệt trước màn hợp tấu! R1 đứng trên mẩu sắt ở (2, 2) chắn đầu dải băng I(2, 2) của R2 (bánh gai ở (2, 3) hướng lên). Hãy cho R1 ở (2, 2) gọi clear_iron("R") sang (3, 2) rồi gọi hop_over("R") nhảy qua hố u(4, 2) và bước vào cờ F(6, 2); còn R2 chờ 3 nhịp cho R1 dọn sắt khỏi (2, 2) rồi gọi echo_glide() phá đá chuông ở (2, 1) và trượt qua I(2, 2) lên F(2, 1)!',
-      veMaMau: 'Phối hợp clear_iron("R"), hop_over("R") của R1 và echo_glide() của R2.',
-      san: ['########', '##F#####', '##I.u.F#', '##.#####', '########'],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 2, y: 3, huong: 0 }],
-      co: [[{ x: 6, y: 2 }], [{ x: 2, y: 1 }]],
-      vatThem: [{ x: 2, y: 2, chat: 'sat' }],
-      daChuong: [{ x: 2, y: 1, not: 5, ben: 1 }],
-      maMau: baiDoi(['clear_iron("R")'], ['wait_n(3)']),
-      loiGiai: baiDoi(['clear_iron("R")', 'hop_over("R")'], ['wait_n(3)', 'echo_glide()']),
+
+    // 19 · ⟨nhện, omni⟩ + kẹp, đọc rồi chọn: thùng gỗ phải qua cửa C vào ô đích; robot phân loại đứng giữ nút M. Nhện nhảy khe (lệnh ngắn, chậm hơn);
+    //      omni trượt xuống hành lang dưới rồi trượt lên (nhanh hơn, lệnh dài hơn). Hai cách cùng giá: chọn theo nhịp hay theo số ô lệnh.
+    man9('lap-bai-tai-che', 9, 'bien-the', {
+      ten: 'Nhảy khe hay trượt',
+      mucTieu: 'dua-vat',
+      deBai: 'Thùng gỗ phải qua cửa C vào ô đích. Nhện nhảy khe hay omni trượt hành lang? Cùng giá: xem nhịp, xem số ô lệnh.',
+      veMaMau: 'Robot chưa làm gì.',
+      san: ['#########', '#..M#####', '#########', '#.u.oCD##', '#...#####', '#########'],
+      noi: [{ nut: { x: 3, y: 1 }, cua: [{ x: 5, y: 3 }] }],
+      doi: [may('PL', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['nhen', 'omni'], ['kep'], [], 6, [
+        cach('omni', 'kep', null, [['walk("RR")'], ['slide_r(1)', 'forward(2)', 'slide_left()', 'wait()', 'pick()', 'forward(2)', 'drop()']]),
+        cach('nhen', 'kep', null, [['walk("RR")'], ['jump("R")', 'pick()', 'walk("RR")', 'drop()']])
+      ]),
+      hamCuaEmCan: HAM_EM.concat(['slide_r']),
+      maMau: doiBai([['walk("RR")'], []]),
       loiSai: [
-        { moTa: 'R1 chưa gọi hop_over("R") và R2 chưa gọi echo_glide()', baiLam: baiDoi(['clear_iron("R")'], ['wait_n(3)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Robot phân loại không giữ nút: cửa đóng', baiLam: doiBai([['walk("R")'], ['slide_r(1)', 'forward(2)', 'slide_left()', 'wait()', 'pick()', 'forward(2)', 'drop()']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 28, nhip: 8 },
-      goiY: ['R1 gọi clear_iron("R") rồi hop_over("R"); R2 gọi wait_n(3) rồi echo_glide().']
+      sao: { o: 43, nhip: 11 },
+      goiY: ['Omni quay mặt sang phải: slide_r(1) trượt xuống, slide_left() trượt lên.'],
+      cauDo: { doi: null, lap: 'omni+kep', coChe: ['go', 'ho', 'nut-de', 'cua', 'truot-ngang'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
-    manTC('lap-bai-tai-che', 10, 'trum', {
-      ten: 'Hợp tấu hàm play_part: Đoạn 3 Kìa con bướm vàng',
-      r1: R1_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '5 5 4 4 3 3 2 2', r2: '3 1 2 4 1 3 5 5' },
-      hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Màn kết Gói 3: Hãy dùng hàm play_part(notes) cho cả R1 và R2 để biểu diễn Đoạn 3 bài "Kìa con bướm vàng" ("Xoè đôi cánh, xoè đôi cánh") với 2 bè 8 nhịp: R1 gọi play_part([5, 5, 4, 4, 3, 3, 2, 2]), còn R2 gọi play_part([3, 1, 2, 4, 1, 3, 5, 5])!',
-      veMaMau: 'Gọi play_part([3, 1, 2, 4, 1, 3, 5, 5]) cho R2 để hoàn thành bản hợp tấu.',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([3, 1, 2, 4])']),
-      loiGiai: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([3, 1, 2, 4, 1, 3, 5, 5])']),
+
+    // 20 · lai L7 nhện + loa, song ca đoạn 3 "Kìa con bướm vàng" (play_part, cuu-kho-hang.10 tạo): đá chuông nốt 1 chắn lối xe chở hàng (đặt sẵn, lắp loa, hát bè 1);
+    //      chỉ bè 2 có nốt 1. Nhện hát lần đầu: nhảy khe vào tầm 3 ô quanh nó (không cần mũi). Xe hai bánh + loa phải đi vòng, quay mũi về đá (rẻ hơn, chậm hơn).
+    //      Xe chở hàng chờ đúng số nhịp Luna di chuyển để hai bè vào cùng lúc, hát xong đi qua chỗ đá vỡ về cờ. (Đội choi-dieu có cờ thì lõi chưa cho thắng: dùng toi-co như G1, G2.)
+    man9('lap-bai-tai-che', 10, 'trum', {
+      ten: 'Nhện hát lần đầu',
+      hamCuaEmCan: HAM_EM.concat(['play_note', 'play_part']),
+      deBai: 'Bãi gọn rồi! Song ca đoạn 3. Đá chuông nốt 1 chắn lối xe chở hàng: phải hát nốt 1 ở gần đá.',
+      veMaMau: 'Xe chở hàng đã có bè 1.',
+      san: ['#########', '#......F#', '#########', '#.u...F##', '#.....###', '#########'],
+      them: { daChuong: [{ x: 5, y: 1, not: 1, ben: 1 }] },
+      doi: [may('CH', { x: 1, y: 1, huong: 1 }, { co: [{ x: 7, y: 1 }], tay: 'loa', boHam: ['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'], themHam: ['note', 'beat'], phatNot: true }),
+        khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', co: [{ x: 6, y: 3 }] })],
+      lapRap: lapR2(['nhen', 'hai-banh'], ['loa'], [], 7, [
+        cach('nhen', 'loa', null, [['wait_n(5)', 'play_part([5, 5, 4, 4, 3, 3, 2, 2])', 'forward(6)'], ['jump("R")', 'go("R")', 'play_part([3, 1, 2, 4, 1, 3, 5, 5])', 'walk("RR")']]),
+        cach('hai-banh', 'loa', null, [['wait_n(8)', 'play_part([5, 5, 4, 4, 3, 3, 2, 2])', 'forward(6)'],
+          ['turn_right()', 'move()', 'turn_left()', 'forward(4)', 'turn_left()', 'play_part([3, 1, 2, 4, 1, 3, 5, 5])', 'move()', 'turn_right()', 'move()']])
+      ], { moLai: ['L7'] }),
+      maMau: doiBai([['wait_n(5)', 'play_part([5, 5, 4, 4, 3, 3, 2, 2])', 'forward(6)'], ['jump("R")']]),
       loiSai: [
-        { moTa: 'Danh sách nốt của R2 mới có 4 nốt, thiếu 4 nốt cuối [1, 3, 5, 5]', baiLam: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([3, 1, 2, 4])']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Nhện hát ngay sau khi nhảy: đá chuông xa quá, không vỡ', baiLam: doiBai([['wait_n(5)', 'play_part([5, 5, 4, 4, 3, 3, 2, 2])', 'forward(6)'], ['jump("R")', 'play_part([3, 1, 2, 4, 1, 3, 5, 5])', 'walk("RRR")']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Nhện hát nhầm bè 1 (không có nốt 1): đá chuông còn', baiLam: doiBai([['wait_n(5)', 'play_part([5, 5, 4, 4, 3, 3, 2, 2])', 'forward(6)'], ['jump("R")', 'go("R")', 'play_part([5, 5, 4, 4, 3, 3, 2, 2])', 'walk("RR")']]), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Điền đủ 8 nốt [3, 1, 2, 4, 1, 3, 5, 5] vào lệnh play_part(...) của R2.']
+      sao: { o: 38, nhip: 23 },
+      goiY: ['Bè 2: play_part([3, 1, 2, 4, 1, 3, 5, 5]).', 'Nhện hát vang quanh nó tới 3 ô.'],
+      cauDo: { doi: null, lap: 'nhen+loa', coChe: ['loa', 'da-chuong', 'ho', 'nhay'], cuu: null, meo: 'song-song' }
     }),
   ];
 })();
