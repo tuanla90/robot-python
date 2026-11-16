@@ -62,6 +62,14 @@
   var TAU_2 = { o: [{ x: 1, y: 1 }], co: 47, vang: 60 };
   function sat2(a, b) { return [{ x: a, y: 2, chat: 'sat' }, { x: b, y: 2, chat: 'sat' }]; }
 
+  /** tong-hop-clb.3 (hai sân: Bến sông + Nông trại): sân 1 sông, sân 2 mương tưới giữa hai luống; cả hai sân có bè B trôi ở cuối kênh, bến q trước mũi khe A.
+   *  Xuồng (khe B) buộc bè sau đuôi (lưới dài 1), chạy năm ô kéo bè vào bến q: cầu phao. Xe cứu hỏa (khe A) chờ cầu, qua cầu, quay phải.
+   *  Cây đổ / kiện rơm (thùng nặng H) nằm trên lối, mỗi sân cách một khác: k = distance() (hồng ngoại đếm ô trống) rồi forward(k + 1) ủi thùng vào ô D. */
+  var CU_3 = ['wait_n(6)', 'forward(2)', 'tr_right()', 'k = distance()', 'forward(k + 1)'];
+  var XU_3 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(5)', 'drop_net()', 'wait()'];
+  var SAN_3_BEN = ['#########', '##..HD###', '#~q~~~~B#', '#......##', '#########'];
+  var SAN_3_NT = ['#########', '##....HD#', '#~q~~~~B#', '#.gggg.##', '#########'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -135,6 +143,30 @@
       sao: { o: 35, nhip: 112 },
       goiY: ['front_metal(): ô bên phải nhện có sắt không.', 'pull_deliver("D"): hút sắt dưới bụng, bước xuống, thả.', 'Thanh sắt nằm trên ray thì bệ cẩu không chạy qua được.'],
       cauDo: { doi: ['CC', 'PL'], lap: null, coChe: ['sat', 'ray', 'container', 'ghe', 'cam-bien', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
+    }),
+    // 3 · nhiều sân, hai sân Bến sông (G5: bè, bến q, cầu phao) + Nông trại (G6: mương tưới, luống, cây đổ). Xuồng kéo bè làm cầu ở cả hai sân;
+    //     xe cứu hỏa qua cầu, đo bằng hồng ngoại (distance()) xem kiện rơm (thùng nặng) cách mấy ô, ủi vào ô D. Bẫy: xe chở hàng (không ủi được thùng nặng).
+    man9('tong-hop-clb', 3, 'lam-quen', {
+      ten: 'Cầu phao và kiện rơm',
+      vo: 'song',
+      mucTieu: 'day-thung',
+      deBai: 'Hai sân: Bến sông và mương tưới ở Nông trại. Cả hai có bè trôi ở cuối kênh; bên kia kênh có một kiện rơm nặng chắn lối, mỗi sân một chỗ. Chọn hai bạn: ai kéo bè làm cầu, ai qua cầu ủi kiện rơm vào ô D?',
+      veMaMau: 'Xuồng chưa kéo bè.',
+      san: [SAN_3_BEN, SAN_3_NT],
+      doi: [khe({ x: 2, y: 3, huong: 0 }, { batDauNuoc: { x: 5, y: 2, huong: 3 } }), khe({ x: 6, y: 3, huong: 3 }, { batDauNuoc: { x: 6, y: 2, huong: 3 } })],
+      chonDoi: {
+        menu: ['XU', 'CU', 'CH'],
+        cachMau: [{ chon: ['CU', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_3, XU_3]) }]
+      },
+      maMau: doiBai([['wait_n(6)', 'forward(2)', 'tr_right()'], ['set_length(1)']]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (forward(2)): sân 2 kiện rơm cách 3 ô, chưa vào D', baiLam: doiBai([['wait_n(6)', 'forward(2)', 'tr_right()', 'forward(2)'], XU_3]), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Xe lên cầu khi bè chưa tới: đâm mặt nước', baiLam: doiBai([['wait_n(2)', 'forward(2)', 'tr_right()', 'k = distance()', 'forward(k + 1)'], XU_3]), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Lưới dài 2 (quên set_length(1)): lưới vươn quá bè, không bắt được', baiLam: doiBai([CU_3, ['cast_net("back")', 'wait()', 'forward(5)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-day-thung'] }
+      ],
+      sao: { o: 25, nhip: 32 },
+      goiY: ['set_length(1): lưới dài 1 ô; cast_net("back"): tung lưới ra sau đuôi.', 'Bè nằm trên bến q là cầu phao.', 'distance(): số ô trống trước mũi; xích tiến vào thùng nặng thì đẩy thùng đi một ô.'],
+      cauDo: { doi: ['CU', 'XU'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'thung-nang', 'hong-ngoai', 'luong', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
     })
   ];
 
