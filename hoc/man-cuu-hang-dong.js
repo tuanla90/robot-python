@@ -225,7 +225,7 @@
       veMaMau: 'Đá chuông còn chắn luồng.',
       san: ['##########', '#.....####', '#~~~~~~~~#', '#.########', '##########'],
       them: { daChuong: [{ x: 4, y: 2, not: 6, ben: 1 }], nguoi: [{ x: 7, y: 2 }], tramCuu: [{ x: 3, y: 1 }] },
-      doi: [khe({ x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { batDauNuoc: { x: 3, y: 2, huong: 1 } }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
       chonDoi: {
         menu: ['HD', 'XU', 'PL'],
         cachMau: [{ chon: ['HD', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_5, XU_5]) }]
@@ -249,7 +249,7 @@
       veMaMau: 'Bè còn trôi giữa sông.',
       san: ['##########', '####....##', '#~~~q~B~##', '#....#####', '##########'],
       them: { daChuong: [{ x: 2, y: 2, not: 2, ben: 1 }, { x: 6, y: 1, not: 7, ben: 1 }], nguoi: [{ x: 7, y: 1 }], tramCuu: [{ x: 4, y: 1 }] },
-      doi: [khe({ x: 2, y: 3, huong: 1 }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      doi: [khe({ x: 2, y: 3, huong: 1 }, { batDauNuoc: { x: 3, y: 2, huong: 1 } }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
       chonDoi: {
         menu: ['HD', 'XU', 'CH'],
         cachMau: [{ chon: ['HD', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_6, XU_6]) }]
