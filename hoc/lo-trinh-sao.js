@@ -944,7 +944,7 @@
   "cuu-hang-dong.8": { "o": 40, "nhip": 7 },
   "cuu-hang-dong.9": { "o": 30, "nhip": 11 },
   "cuu-hang-dong.10": { "o": 6, "nhip": 24 },
-  "lap-hang-dong.1": { "o": 48, "nhip": 9 },
+  "lap-hang-dong.1": { "o": 49, "nhip": 9 },
   "lap-hang-dong.2": { "o": 19, "nhip": 6 },
   "lap-hang-dong.3": { "o": 29, "nhip": 10 },
   "lap-hang-dong.4": { "o": 30, "nhip": 13 },
