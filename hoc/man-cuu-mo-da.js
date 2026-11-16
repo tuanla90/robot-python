@@ -105,6 +105,12 @@
   var GAI_11 = ['forward(2)', 'turn_left()', 'aim(2)', 'lob()', 'back()'];
   var KT_11 = ['wait_n(5)', 'forward(6)'];
 
+  /** Hàm em radar_front_lob(n) (tạo ở lap-mo-da.2; gói 8, 9 gọi lại: man-cuu-hang-dong, man-cuu-clb): quét radar, ô ngay trên (g[0][1]) có vật thì hất xa n ô, rồi trượt phải 1 cột. */
+  var H_RFL = { ten: 'radar_front_lob', thamSo: ['n'], than: ['g = radar()', 'if g[0][1] == "V":', '    aim_lob(n)', 'slide_r(1)'] };
+  /** lap-mo-da.2: máy khai thác R1 lấp hố cột 6 bằng radar_front_lob(2), trượt về cờ. R2 bánh gai đi vào dốc bùn, dừng ở cột 4, quay lên hất đá lấp hố giếng, rồi lên qua hai hố đã lấp tới cờ. */
+  var KT_12 = ['radar_front_lob(2)'];
+  var GAI_12 = ['forward(3)', 'turn_left()', 'aim_lob(2)', 'forward(3)', 'turn_right()', 'forward(3)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -394,6 +400,30 @@
       sao: { o: 27, nhip: 13 },
       goiY: ['Bánh gai bung gai thì bám bùn: dừng được giữa dốc.', 'lob(): xúc đá trước mũi, hất xa 2 ô.'],
       cauDo: { doi: null, lap: 'gai+nem+radar', coChe: ['bun', 'ho', 'da-tron', 'nem'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 12 · ép đổi thân (làm cầu) + tạo hàm radar_front_lob(n): hai giếng hẹp, mỗi giếng một viên đá tròn nằm dưới hố. Máy khai thác R1 đứng dưới giếng cột 6,
+    //      radar thấy đá (g[0][1] == "V") thì hất xa 2 ô lấp hố, trượt phải về cờ. Giếng cột 4 chỉ vào được từ dốc bùn: R2 lắp thân omni (như R1) thì vào bùn trượt tới cuối dốc;
+    //      bánh gai bám bùn, dừng đúng cột 4, quay lên hất đá lấp hố, rồi lên qua giếng, rẽ phải qua hố R1 vừa lấp tới cờ.
+    man9('lap-mo-da', 2, 'lam-quen', {
+      ten: 'Giếng hẹp dưới dốc bùn',
+      taoHam: ['radar_front_lob'],
+      deBai: 'Hai giếng hẹp, mỗi giếng có hố và một viên đá tròn. Máy khai thác lấp giếng cột 6. Tạo hàm radar_front_lob(n): g = radar(), nếu g[0][1] == "V" thì aim_lob(n), rồi slide_r(1). Lắp R2 lấp giếng cột 4: lối vào là dốc bùn.',
+      veMaMau: 'Hàm radar_front_lob chưa có. R2 chưa có chương trình.',
+      san: ['#########', '#.....uF#', '####u#o##', '####o#.F#', '#.IIIIII#', '#########'],
+      them: { vatDang: ['.........', '.........', '......r..', '....r....', '.........', '.........'] },
+      doi: [may('KT', { x: 6, y: 3, huong: 0 }, { co: [{ x: 7, y: 3 }] }), khe({ x: 1, y: 4, huong: 1 }, { son: 'lam', co: [{ x: 7, y: 1 }] })],
+      lapRap: lapR2(['omni', 'gai'], ['nem'], ['radar'], 10, [
+        cach('gai', 'nem', null, [KT_12, GAI_12], [H_RFL]),
+        cach('gai', 'nem', 'radar', [KT_12, GAI_12], [H_RFL])
+      ]),
+      maMau: doiBai([KT_12, []]),
+      loiSai: [
+        { moTa: 'radar_front_lob quên slide_r(1): máy khai thác đứng dưới giếng, chưa tới cờ', baiLam: doiBai([KT_12, GAI_12], [], [{ ten: 'radar_front_lob', thamSo: ['n'], than: ['g = radar()', 'if g[0][1] == "V":', '    aim_lob(n)'] }]), hamCuaEmMoi: [{ ten: 'radar_front_lob', thamSo: ['n'], than: ['g = radar()', 'if g[0][1] == "V":', '    aim_lob(n)'] }], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'R2 quên aim(2), hất tầm 1: đá rơi lại ngay trước mũi, chắn giếng', baiLam: doiBai([KT_12, ['forward(3)', 'turn_left()', 'lob()', 'forward(3)', 'turn_right()', 'forward(3)']], [], [H_RFL]), hamCuaEmMoi: [H_RFL], phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 40, nhip: 16 },
+      goiY: ['g[0][1] là ô ngay phía trên robot. "V" là có vật.', 'Thân omni vào bùn là trượt tới cuối dốc. Bánh gai bám bùn.'],
+      cauDo: { doi: null, lap: 'gai+nem', coChe: ['bun', 'ho', 'da-tron', 'nem', 'radar'], cuu: 'hang', meo: 'lam-cau' }
     }),
     /* HẾT MOI */
   ];
