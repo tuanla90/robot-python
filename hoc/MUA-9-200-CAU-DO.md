@@ -353,6 +353,19 @@ Chương 1 bảng 3–4 cỗ máy, dùng các cặp còn lại. Chương 2: robo
 | 19 | R3 + đặt sẵn + lắp tự do (ba robot) | robot cũ CLB kẹt sau đá chuông: nhện + loa phá, đặt sẵn giữ cửa | máy | giữ cửa |
 | 20 | cả hai robot tự lắp | song ca: Sola và Luna mỗi bạn tự lắp robot hát cho sân của mình | — | song ca |
 
+> **Đã dựng 17/11 (M9M9, hoc/man-cuu-clb.js viết lại theo khuôn G7 / G8, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt).** Lệch so với bảng:
+> - Hàm của em: KHÔNG tạo lại `clb_spray_open`, `clb_magnet_hold`, `clb_sonic_clear`, `clb_lob_bridge` của G9 cũ (G10 cũ còn gọi nên tong-hop-clb.*, trum-mua-clb.* đỏ; G10 dựng lại sau). Màn mới gọi `clear_iron` (G3) ở lap #12, `pull_deliver` (G3) ở lap #16, `play_part` (G1) ở #10, #20; #20 tạo `quang_ba(a)` (def, for, append, return).
+> - #1 cẩu hạ container lấp hố (T2). #2 thêm hố + đá tròn trên lối máy khai thác (khác chuỗi cuu-bai-tai-che.6). #5 kho trên đảo, nhện bật hố. #6 máy khai thác hất đá lấp hố (không omni).
+> - #7 mẹo ghi `don-loi` (thứ tự không có trong 12 mẹo; giữ trong `coChe`). #8 không "dẫn bác theo tiếng" (lõi chưa có người đi theo tiếng): gai hát vỡ tượng chắn lối, bác tự về trạm.
+> - #9 bảng CH, CU, PL, XU (XU bẫy: sân không nước); R3 xe chở hàng cũ `while not front_clear()`. #10 đôi tốt hai xe hang động (chỉ xe hang động có loa), chọn trùng.
+> - lap #11 thùng loa kéo vào hốc D2. #12 đổi R1 với #14: KT đặt sẵn, R2 cẩu + gầu ngoạm (L8) hay nhện + `clear_iron` lấy sắt khỏi hốc kín cho KT ném. #13 vạch trong phòng sau gầm (gầm `n` không mang hình), `dict` màu + chuỗi mã.
+> - lap #14 R1 xuồng còn kéo lục bình vào bến (tránh trùng thật lap-ben-song.4); camera hay radar `g[1][0]`. #15 R1 nhện mang sắt; R2 omni / hai bánh + loa + mic, `for d in [2, 3]`.
+> - lap #16 thành giao tàu: sắt trên ray chắn bệ cẩu, R2 drone / nhện + nam châm `pull_deliver`, cẩu `rail(-6)` mang container lên ghe. #17 R1 xe bờ = xe chở hàng + tay lưới (CH + `day-keo`), khoá.
+> - lap #18 R1 xe hang động hát vỡ tượng đè thùng rồi rời đi; cẩu + nam châm + cảm biến từ, cách hai drone. Cẩu không đọc cảm biến vẫn thắng nhưng không đủ 3 sao.
+> - lap #19 R1 xe cứu hỏa giữ nút, R3 xe chở hàng cũ; tuple `d, n = hear(), listen()`, `max(d - 3, 0)`. #20 lõi chỉ cho tự lắp MỘT robot: R1 xe hang động đặt sẵn hát bè 1, Luna tự lắp (hai bánh hay xuồng + loa) hát bè 2.
+> - Song ca #10, #20 đoạn 9 (bè 1 5 5 4 4 3 3 2 2 | bè 2 7 7 6 6 5 5 4 4), chờ user duyệt. Mọi màn chương 2 có 2 cách lắp thắng mọi sân, không cách nào hơn hẳn (kiemCanMan rỗng); sao = cách đầu + 15–25 %.
+> - **Nhiều sân** (`NHIEU_SAN_KHONG_TRUM` ở kiem-lo-trinh): lap-clb.4, .5, .8, .9; mỗi màn có loiSai "điền thẳng dữ liệu sân 1".
+
 ## G10 Ngày hội (tổng hợp) · mỗi màn 2–3 sân, một chương trình chạy đúng mọi sân
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |
