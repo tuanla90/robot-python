@@ -14,6 +14,7 @@
      kho.sua('move', [dòng…])    → thay thân hàm (tham số thứ ba tuỳ chọn: thamSo mới)
      kho.doiTen('cu', 'moi', tuyChon)  → đổi tên + sửa chỗ gọi trong thân các hàm khác của kho
      kho.xoa('move')             → { ok, conDung: [hàm khác còn gọi nó] }
+     kho.coAiGoi('move')         → [hàm khác còn gọi nó] (như xoa() trả về nhưng không xóa, để kiểm trước khi dọn tự động)
      kho.datTenCoDinh([tên…])    → khóa tên các hàm THEO CỐT TRUYỆN (tên nằm trong taoHam của một màn nào đó):
                                    không đổi tên được, không xóa được (mã 'ten-co-dinh'); thân vẫn sửa tự do.
                                    Lõi không tự biết danh sách màn, nên giao diện gọi lúc khởi động (ung-dung.js).
@@ -46,7 +47,7 @@
     'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right',
     'slide_left', 'slide_right', 'diag_left', 'diag_right', 'front_clear', 'left_clear', 'right_clear', 'color', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'battery', 'look', 'ink', 'dot', 'pen_down', 'pen_up', 'distance', 'warm', 'radar', 'shape',
     'go_up', 'land', 'take_off', 'go_down', 'go_left', 'go_right', 'crouch', 'stand',
-    'anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'flow_dir', 'flow',      // Bến sông (mùa 5): neo, tay lưới, chong chóng dòng chảy của xuồng
+    'anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out', 'flow_dir', 'flow',      // Bến sông (mùa 5): neo, tay lưới (tời cuộn reel_in / reel_out), chong chóng dòng chảy của xuồng
     'swing_left', 'swing_right', 'extend', 'retract', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail',   // Cảng sông (mùa 4): cần cẩu quay / vươn, móc cẩu, máy quét mã, ray
     'note', 'beat', 'retract_spikes', 'extend_spikes', 'hear', 'listen',                    // Hang động đá vôi (mùa 8): loa phát nhạc, thu/bật gai bánh gai, cảm biến âm thanh
     'print', 'range', 'len', 'str', 'int'];                                                  // (min / max / abs của nhân chưa đưa vào đây: kiem-che-xe đòi mọi tên trong HAM_GOC_MAC_DINH phải có khối kéo-thả; khi thêm khối vào the-lenh.js ở SM3-D sẽ đưa vào)
@@ -261,6 +262,7 @@
       tao: tao, sua: sua, doiTen: doiTen, xoa: xoa, ds: ds, kiemTen: kiemTen,
       datTenCoDinh: datTenCoDinh, tenCoDinh: tenCoDinh, dsTenCoDinh: function () { return coDinh.slice(); },
       tim: function (ten) { var h = tim(ten); return h ? saoChep(h) : null; },
+      coAiGoi: aiGoi,
       soHam: function () { return ham.length; },
       soHamToiDa: function () { return toiDa; },
       soHamTuDat: soTuDat,

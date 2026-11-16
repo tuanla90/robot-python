@@ -801,13 +801,14 @@
       id: 6519, chuong: 'che-di-cheo', so: 9, ma: 'che-di-cheo.9',
       ten: 'Bảng lộ trình chéo', hang: 'bien-the',
       hamCuaEmCan: ['move', 'forward', 'lob', 'diag_r', 'diag_l'],
-      deBai: 'Danh sách 2 chiều `steps = [[2, 1], [1, 2]]` ghi từng chặng: `r[0]` bước chéo phải `diag_r(r[0])` rồi `r[1]` bước chéo trái `diag_l(r[1])`. Hãy duyệt `for r in steps:` thực hiện 2 bước đó, rồi gọi `lob()` lấp hố và `forward(3)` tới cờ.',
+      deBai: 'Danh sách 2 chiều `steps` ghi từng chặng, mỗi sân một bảng riêng (sân 1: `steps = [[2, 1], [1, 2]]`): `r[0]` bước chéo phải `diag_r(r[0])` rồi `r[1]` bước chéo trái `diag_l(r[1])`. Hãy duyệt `for r in steps:` thực hiện 2 bước đó, rồi gọi `lob()` lấp hố và `forward(3)` tới cờ.',
       veMaMau: 'Chương trình có sẵn đã duyệt danh sách steps nhưng chưa gọi lob() và forward(3) ở cuối.',
       goiY: [
         'Trong vòng lặp for r in steps:, gọi diag_r(r[0]) rồi diag_l(r[1]).',
         'Sau vòng lặp, R1 đứng ở (2, 4) ngay dưới viên đá (2, 3): gọi lob() lấp hố ở (2, 2) rồi forward(3) tới cờ.'
       ],
-      san: [
+      // dữ liệu theo sân: mỗi sân một bảng steps, điền thẳng số của sân 1 thì đâm tường ở sân 2 (và ngược lại)
+      san: [[
         '######',
         '#.F..#',
         '#.u..#',
@@ -815,12 +816,26 @@
         '#....#',
         '#.#..#',
         '#....#',
-        '#.#..#',
+        '###..#',
         '#....#',
         '#.#..#',
         '#....#',
         '######'
-      ],
+      ], [
+        '######',
+        '#.F..#',
+        '#.u..#',
+        '#.o..#',
+        '#....#',
+        '#.#..#',
+        '#...##',
+        '#.#..#',
+        '#...##',
+        '#.#..#',
+        '#....#',
+        '######'
+      ]],
+      duLieuSan: ['steps = [[2, 1], [1, 2]]', 'steps = [[1, 2], [2, 1]]'],
       batDau: { x: 2, y: 10, huong: 0 },
       maMau: bai([
         'steps = [[2, 1], [1, 2]]',
@@ -839,7 +854,8 @@
       sao: { o: 19, nhip: 11 },
       loiSai: [
         { moTa: 'Mới chạy xong vòng lặp steps mà chưa lấp hố và tiến lên cờ', baiLam: bai(['steps = [[2, 1], [1, 2]]', 'for r in steps:', '    diag_r(r[0])', '    diag_l(r[1])']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên gọi lob() trước forward(3) nên đâm vào viên đá ở (2, 3)', baiLam: bai(['steps = [[2, 1], [1, 2]]', 'for r in steps:', '    diag_r(r[0])', '    diag_l(r[1])', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Quên gọi lob() trước forward(3) nên đâm vào viên đá ở (2, 3)', baiLam: bai(['steps = [[2, 1], [1, 2]]', 'for r in steps:', '    diag_r(r[0])', '    diag_l(r[1])', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 đường chéo khác nên đâm vách', baiLam: bai(['steps = [[2, 1], [1, 2]]', 'diag_r(2)', 'diag_l(1)', 'diag_r(1)', 'diag_l(2)', 'lob()', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       loiBinh: 'Kết hợp danh sách 2 chiều với diag_r() và diag_l() giúp R1 uốn lượn qua dãy vách đá phức tạp.'
     }),

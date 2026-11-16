@@ -9,7 +9,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    trên sân veBeCau bỏ qua, veCanCau vẽ cạnh ròng rọc đầu cần thật (veCamDauCan), mặt đọc chĩa ra ngoài theo cần. Tay lai (gầu L8, nam châm L1, giỏ L9): s.trenCan chỉ vẽ tời. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
-  var NAC = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
+  var NAC = [[0, -1], [1, 0], [0, 1], [-1, 0]];      // 4 hướng cần (14/11, thay 8 nấc): 0 lên, 1 phải, 2 xuống, 3 trái (khớp SanHoc.NAC_VEC)
   V.NAC_CAU = NAC;
 
   /** Giàn cần nằm dọc trục +x từ 0 tới L, bề ngang w (đang ở hệ đã xoay). */
@@ -100,10 +100,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   var TAY_THAY_MOC = ['nam-cham', 'kep', 'day-keo'];       // M9H2: tay lai của cần cẩu treo ở đầu cáp thay cho móc (bảng ghép: ★ L1, L8, L9)
   V.TAY_THAY_MOC_CAU = TAY_THAY_MOC;
-  function gocNac(nac) { return (((+nac || 0) % 8) + 8) % 8 * Math.PI / 4; }      // 0 = lên, tăng theo chiều kim đồng hồ
-  /** Véc-tơ (ô) tới đầu cần ở nấc (cho phép lẻ: nội suy theo góc, độ dài như nấc gần nhất chéo / thẳng để quay mượt mà đầu cần vẫn đi qua tâm ô ở nấc nguyên). */
+  function gocNac(nac) { return (((+nac || 0) % 4) + 4) % 4 * Math.PI / 2; }      // 0 = lên, tăng theo chiều kim đồng hồ
+  /** Véc-tơ (ô) tới đầu cần ở nấc (cho phép lẻ: nội suy theo góc; 4 hướng nên cần luôn dài đúng 1 ô × tầm, quay 90° theo cung tròn). */
   function vecNac(nac) {
-    var n = (((+nac || 0) % 8) + 8) % 8, a = Math.floor(n), b = (a + 1) % 8, t = n - a;
+    var n = (((+nac || 0) % 4) + 4) % 4, a = Math.floor(n), b = (a + 1) % 4, t = n - a;
     var A = NAC[a], B = NAC[b];
     if (t === 0) return { x: A[0], y: A[1] };
     var la = Math.hypot(A[0], A[1]), lb = Math.hypot(B[0], B[1]), L = la + (lb - la) * t, ang = gocNac(n);

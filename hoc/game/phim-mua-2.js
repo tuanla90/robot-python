@@ -379,6 +379,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         c.sau(2200, function () { tia.classList.add('pg-an-ngay'); r.ve(BAN); });
         banBong(k, c, 3, 190, Y, 247, Y, 2220, 0.25);
         c.sau(2500, function () { nut.innerHTML = ''; nut.appendChild(veNut(c, true, 3)); r.ve(YEN); r.mat('vui'); c.keu('thang'); });
+      },
+      // 4 · ghì xích (14/11, ghép nhịp): phun mạnh cùng nhịp hai xích tiến, nước đẩy lùi và xích đẩy tới triệt tiêu, xe đứng vững (không trượt như khung 1)
+      function (k, c) {
+        c.nen(k, 'md-san');
+        c.code(k, ['spray("high")', 'left_move()', 'right_move()', 'wait()'], 10, 14);
+        var nut = c.dat(c.h('div'), 226, Y - 21); nut.appendChild(veNut(c, false, 3)); k.appendChild(nut);
+        var r = c.xe(XHN, YEN, 1, 3, 150, Y); k.appendChild(r);
+        c.sau(1200, function () { r.ve(BAN); c.keu('buoc'); });
+        banBong(k, c, 3, 190, Y, 247, Y, 1220, 0.25);
+        c.sau(1600, function () { nut.innerHTML = ''; nut.appendChild(veNut(c, true, 3)); r.ve(YEN); r.mat('vui'); c.keu('thang'); });
       }
     ],
 

@@ -152,20 +152,29 @@
       ten: 'Dãy máng ba tầm', hang: 'luyen',
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['slide_r', 'lob'],
-      deBai: 'Ba cột đá liên tiếp có máng nhận `D` ở khoảng cách lần lượt theo danh sách `dists = [2, 3, 2]`. Hãy duyệt `for d in dists:`: mỗi lượt trượt phải 1 ô `slide_r(1)`, đặt tầm `aim(d)` rồi gọi `lob()`.',
-      veMaMau: 'Chương trình có sẵn đã khai báo dists = [2, 3, 2]. Hãy viết vòng lặp for d in dists để trượt và hất từng viên đá.',
+      deBai: 'Ba cột đá liên tiếp có máng nhận `D` ở khoảng cách lần lượt theo danh sách `dists`. Mỗi sân có một danh sách `dists` riêng (sân 1: `dists = [2, 3, 2]`). Hãy duyệt `for d in dists:`: mỗi lượt trượt phải 1 ô `slide_r(1)`, đặt tầm `aim(d)` rồi gọi `lob()`.',
+      veMaMau: 'Chương trình có sẵn đã khai báo danh sách dists của từng sân. Hãy viết vòng lặp for d in dists để trượt và hất từng viên đá.',
       goiY: [
         'Trong vòng lặp for d in dists:, gọi slide_r(1) để sang cột đá kế tiếp.',
         'Tiếp theo gọi aim(d) rồi lob() để hất viên đá đúng tầm d.'
       ],
-      san: [
+      // dữ liệu theo sân: mỗi sân một danh sách dists, điền thẳng số của sân 1 thì vỡ đá ở sân 2 (và ngược lại)
+      san: [[
         '######',
         '###D##',
         '##D=D#',
         '##ooo#',
         '#....#',
         '######'
-      ],
+      ], [
+        '######',
+        '##D#D#',
+        '##=D=#',
+        '##ooo#',
+        '#....#',
+        '######'
+      ]],
+      duLieuSan: ['dists = [2, 3, 2]', 'dists = [3, 2, 3]'],
       batDau: { x: 1, y: 4, huong: 0 },
       maMau: bai(['dists = [2, 3, 2]']),
       loiGiai: bai([
@@ -178,7 +187,8 @@
       sao: { o: 12, nhip: 9 },
       loiSai: [
         { moTa: 'Chưa viết vòng lặp duyệt danh sách dists', baiLam: bai(['dists = [2, 3, 2]']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi aim(d) trong vòng lặp nên cột giữa chỉ ném xa 2 ô trúng hàng rào', baiLam: bai(['dists = [2, 3, 2]', 'for d in dists:', '    slide_r(1)', '    lob()']), phaiCoMa: ['nem-vo'] }
+        { moTa: 'Quên gọi aim(d) trong vòng lặp nên cột tầm 3 chỉ ném xa 2 ô trúng hàng rào', baiLam: bai(['dists = [2, 3, 2]', 'for d in dists:', '    slide_r(1)', '    lob()']), phaiCoMa: ['nem-vo'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng tầm của sân 1: sang sân 2 cột đầu cần tầm 3 nên đá trúng hàng rào', baiLam: bai(['dists = [2, 3, 2]', 'slide_r(1)', 'aim(2)', 'lob()', 'slide_r(1)', 'aim(3)', 'lob()', 'slide_r(1)', 'aim(2)', 'lob()']), phaiCoMa: ['nem-vo'] }
       ],
       loiBinh: 'Lưu tầm ném vào danh sách giúp R1 tự điều chỉnh lực hất cho cả dãy máng khác tầm.'
     }),
@@ -387,20 +397,29 @@
       ten: 'Bảng phối tầm hất', hang: 'bien-the',
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['slide_r', 'lob'],
-      deBai: 'Bảng `plan = [[1, 3], [2, 2], [1, 3]]` ghi từng bước: `r[0]` là số ô trượt phải `slide_r(r[0])`, `r[1]` là tầm ném `aim(r[1])`. Hãy duyệt `for r in plan:` để trượt, chỉnh tầm và gọi `lob()` đưa cả 3 viên đá vào đúng máng `D`.',
-      veMaMau: 'Chương trình có sẵn đã khai báo bảng plan. Hãy viết vòng lặp for r in plan để thực hiện từng bước.',
+      deBai: 'Bảng `plan` ghi từng bước, mỗi sân một bảng riêng (sân 1: `plan = [[1, 3], [2, 2], [1, 3]]`): `r[0]` là số ô trượt phải `slide_r(r[0])`, `r[1]` là tầm ném `aim(r[1])`. Hãy duyệt `for r in plan:` để trượt, chỉnh tầm và gọi `lob()` đưa cả 3 viên đá vào đúng máng `D`.',
+      veMaMau: 'Chương trình có sẵn đã khai báo bảng plan của từng sân. Hãy viết vòng lặp for r in plan để thực hiện từng bước.',
       goiY: [
         'Trong vòng lặp for r in plan:, gọi slide_r(r[0]), rồi aim(r[1]), rồi lob().',
         'Mỗi hàng r trong plan sẽ xử lý trọn vẹn một viên đá.'
       ],
-      san: [
+      // dữ liệu theo sân: mỗi sân một bảng plan, điền thẳng số của sân 1 thì xúc hụt ở sân 2 (và ngược lại)
+      san: [[
         '#######',
         '##D##D#',
         '##=#D=#',
         '##o#oo#',
         '#.....#',
         '#######'
-      ],
+      ], [
+        '#######',
+        '####D##',
+        '###D=D#',
+        '###ooo#',
+        '#.....#',
+        '#######'
+      ]],
+      duLieuSan: ['plan = [[1, 3], [2, 2], [1, 3]]', 'plan = [[2, 2], [1, 3], [1, 2]]'],
       batDau: { x: 1, y: 4, huong: 0 },
       maMau: bai(['plan = [[1, 3], [2, 2], [1, 3]]']),
       loiGiai: bai([
@@ -413,7 +432,8 @@
       sao: { o: 12, nhip: 10 },
       loiSai: [
         { moTa: 'Chưa viết vòng lặp duyệt bảng plan', baiLam: bai(['plan = [[1, 3], [2, 2], [1, 3]]']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi aim(r[1]) nên hai cột tầm 3 ném trúng hàng rào bị vỡ đá', baiLam: bai(['plan = [[1, 3], [2, 2], [1, 3]]', 'for r in plan:', '    slide_r(r[0])', '    lob()']), phaiCoMa: ['nem-vo'] }
+        { moTa: 'Quên gọi aim(r[1]) nên cột tầm 3 ném trúng hàng rào bị vỡ đá', baiLam: bai(['plan = [[1, 3], [2, 2], [1, 3]]', 'for r in plan:', '    slide_r(r[0])', '    lob()']), phaiCoMa: ['nem-vo'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 tảng đá đầu ở cột khác nên xúc hụt, rồi đá trúng hàng rào', baiLam: bai(['plan = [[1, 3], [2, 2], [1, 3]]', 'slide_r(1)', 'aim(3)', 'lob()', 'slide_r(2)', 'aim(2)', 'lob()', 'slide_r(1)', 'aim(3)', 'lob()']), phaiCoMa: ['nap-hut', 'nem-vo'] }
       ],
       loiBinh: 'Dùng danh sách 2 chiều giúp ghép cặp khoảng trượt và tầm ném rất rõ ràng.'
     }),
@@ -860,13 +880,14 @@
       id: 6619, chuong: 'che-chinh-luc', so: 9, ma: 'che-chinh-luc.9',
       ten: 'Mở cổng và bắc cầu theo bảng', hang: 'bien-the',
       hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'lob_step'],
-      deBai: 'Bảng `plan = [[1, 3], [2, 2]]` điều khiển R1: bước đầu trượt sang cột 2 và hất đá xa 3 ô đè lên nút `M` mở cửa `C`; bước hai trượt sang cột 4 và hất đá xa 2 ô lấp hố sâu `u`. Hãy duyệt `for r in plan:` gọi `lob_step(r)`, rồi gọi `forward(4)` tiến thẳng qua cửa `C` tới cờ.',
+      deBai: 'Bảng `plan` điều khiển R1, mỗi sân một bảng riêng (sân 1: `plan = [[1, 3], [2, 2]]`). Mỗi hàng `r` là một bước: trượt phải `r[0]` ô rồi hất đá xa `r[1]` ô. Bước đầu hất đá đè lên nút `M` mở cửa `C`; bước hai hất đá lấp hố sâu `u` ở cột 4. Hãy duyệt `for r in plan:` gọi `lob_step(r)`, rồi gọi `forward(4)` tiến thẳng qua cửa `C` tới cờ.',
       veMaMau: 'Chương trình có sẵn đã duyệt bảng plan bằng lob_step(r). Hãy thêm lệnh forward(4) ở cuối để tiến lên cờ.',
       goiY: [
         'Sau vòng lặp for r in plan: lob_step(r), R1 đang đứng ở (4, 5), hố ở (4, 3) đã lấp và cửa C ở (4, 2) đã mở.',
         'Gọi forward(4) ở ngoài vòng lặp để đưa R1 từ (4, 5) lên thẳng cờ ở (4, 1).'
       ],
-      san: [
+      // dữ liệu theo sân: mỗi sân một bảng plan, điền thẳng số của sân 1 thì xúc hụt, cửa C không mở ở sân 2 (và ngược lại)
+      san: [[
         '######',
         '####F#',
         '##M#C#',
@@ -874,7 +895,16 @@
         '##o#o#',
         '#....#',
         '######'
-      ],
+      ], [
+        '######',
+        '####F#',
+        '###MC#',
+        '###=u#',
+        '###oo#',
+        '#....#',
+        '######'
+      ]],
+      duLieuSan: ['plan = [[1, 3], [2, 2]]', 'plan = [[2, 3], [1, 2]]'],
       batDau: { x: 1, y: 5, huong: 0 },
       maMau: bai([
         'plan = [[1, 3], [2, 2]]',
@@ -890,7 +920,8 @@
       sao: { o: 20, nhip: 11 },
       loiSai: [
         { moTa: 'Mới mở cửa và lấp hố xong mà chưa gọi forward(4) lên cờ', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'for r in plan:', '    lob_step(r)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đặt nhầm forward(4) vào bên trong vòng lặp for nên đâm vào hàng rào ở cột 2', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'for r in plan:', '    lob_step(r)', '    forward(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Đặt nhầm forward(4) vào bên trong vòng lặp for nên đâm vào hàng rào', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'for r in plan:', '    lob_step(r)', '    forward(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Bỏ vòng lặp, điền thẳng số của sân 1: sang sân 2 xúc hụt ở cột 2, cửa C không mở nên xe đâm cửa', baiLam: bai(['plan = [[1, 3], [2, 2]]', 'slide_r(1)', 'aim_lob(3)', 'slide_r(2)', 'aim_lob(2)', 'forward(4)']), phaiCoMa: ['nap-hut', 'dam-tuong', 'chua-toi-co'] }
       ],
       loiBinh: 'Một bảng 2 chiều kết hợp lob_step(r) giải quyết cùng lúc cả việc đè nút mở cửa lẫn việc lấp hố bắc cầu.'
     }),

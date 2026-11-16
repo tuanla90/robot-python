@@ -344,16 +344,27 @@
     manThuGai(8, 'bien-the', {
       ten: 'Sổ tay chọn chế độ gai',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step'],
-      deBai: 'Từ điển d = {"ngang": 1, "doc": 2} ghi cách đi cho 2 chặng: chặng "ngang" có mã 1 (dùng glide_step() để trượt hết dải băng và rẽ phải), còn chặng "doc" có mã 2 (đã bung gai nên gọi forward(d["doc"]) để bước đúng 2 ô vào cờ trước hố sụt). Hãy hoàn thành chương trình.',
+      deBai: 'Mỗi sân có một từ điển d riêng ghi cách đi cho 2 chặng. Chặng "ngang" có mã 1: dùng glide_step() để trượt hết dải băng và rẽ phải. Chặng "doc" ghi số ô cần bước tiếp vào cờ: gai đã bung nên gọi forward(d["doc"]). Sân 1 là d = {"ngang": 1, "doc": 2}. Hãy hoàn thành chương trình.',
       veMaMau: 'Mã mẫu mới thực hiện chặng ngang, chưa đi chặng dọc vào cờ.',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '#####F#',
-        '#####u#',
-        '#######'
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '#####F#',
+          '#####u#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.II.##',
+          '####I##',
+          '####I##',
+          '####F##',
+          '#######'
+        ]
       ],
+      duLieuSan: ['d = {"ngang": 1, "doc": 2}', 'd = {"ngang": 1, "doc": 3}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì dừng trước cờ ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'd = {"ngang": 1, "doc": 2}',
@@ -368,29 +379,41 @@
       ]),
       loiSai: [
         { moTa: 'Chưa viết lệnh đi xuống cờ', baiLam: bai(['d = {"ngang": 1, "doc": 2}', 'if d["ngang"] == 1:', '    glide_step()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gọi glide_step() lần hai thay vì forward(d["doc"]): trượt qua cờ xuống hố', baiLam: bai(['d = {"ngang": 1, "doc": 2}', 'if d["ngang"] == 1:', '    glide_step()', 'glide_step()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Điền thẳng số của sân 1: forward(2) dừng trước cờ 1 ô ở sân 2', baiLam: bai(['d = {"ngang": 1, "doc": 2}', 'if d["ngang"] == 1:', '    glide_step()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 15, nhip: 4 },
+      sao: { o: 15, nhip: 5 },
       goiY: [
-        'Sau glide_step(), R1 đã đứng ở (5, 1), hướng xuống Nam và đinh gai đã bung.',
-        'Thêm dòng forward(d["doc"]) ở cuối chương trình để bước 2 ô xuống cờ (5, 3).'
+        'Sau glide_step(), R1 đã đứng ở cuối dải băng, hướng xuống Nam và đinh gai đã bung.',
+        'Thêm dòng forward(d["doc"]) ở cuối chương trình. Điền thẳng số thì chỉ đúng ở một sân.'
       ]
     }),
 
     manThuGai(9, 'bien-the', {
       ten: 'Tập hợp nhịp bước sau trượt',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step', 'count_unique'],
-      deBai: 'Sau khi gọi glide_step() để trượt hết hành lang ngang và rẽ phải tại (5, 1), số bước cần đi tiếp xuống cờ đúng bằng số mẫu đá phân biệt trong danh sách a = [4, 7, 4, 9, 7]. Hãy dùng count_unique(a) và forward() để đi tới cờ.',
-      veMaMau: 'Mã mẫu đang đi cứng 2 bước nên dừng trước cờ 1 ô.',
+      deBai: 'Mỗi sân có một danh sách a riêng. Sau khi gọi glide_step() để trượt hết hành lang ngang và rẽ phải, số bước cần đi tiếp xuống cờ đúng bằng số mẫu đá phân biệt trong a. Sân 1 là a = [4, 7, 4, 9, 7]. Hãy dùng count_unique(a) và forward() để đi tới cờ.',
+      veMaMau: 'Mã mẫu đang đi cứng 2 bước nên dừng trước cờ.',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '#####I#',
-        '#####F#',
-        '#####u#',
-        '#######'
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '#####I#',
+          '#####F#',
+          '#####u#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.II.##',
+          '####I##',
+          '####I##',
+          '####I##',
+          '####F##',
+          '#######'
+        ]
       ],
+      duLieuSan: ['a = [4, 7, 4, 9, 7]', 'a = [6, 2, 6, 8, 3, 2]'],      // dữ liệu theo sân: sân 1 cần 3 bước, sân 2 cần 4; điền thẳng số của sân 1 thì dừng trước cờ ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'a = [4, 7, 4, 9, 7]',
@@ -403,13 +426,13 @@
         'forward(count_unique(a))'
       ]),
       loiSai: [
-        { moTa: 'Để nguyên forward(2): dừng ở (5, 3) trước cờ', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'glide_step()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Truyền len(a) thay vì count_unique(a): đi 5 bước rơi xuống hố sụt', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'glide_step()', 'forward(len(a))']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Để nguyên forward(2): dừng trước cờ', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'glide_step()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: forward(3) dừng trước cờ 1 ô ở sân 2', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'glide_step()', 'forward(3)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 14, nhip: 5 },
+      sao: { o: 14, nhip: 6 },
       goiY: [
-        'Danh sách a = [4, 7, 4, 9, 7] có 3 giá trị phân biệt nên count_unique(a) trả về 3.',
-        'Đổi forward(2) thành forward(count_unique(a)).'
+        'Ở sân 1, a = [4, 7, 4, 9, 7] có 3 giá trị phân biệt nên count_unique(a) trả về 3. Ở sân 2 thì khác.',
+        'Đổi forward(2) thành forward(count_unique(a)). Điền thẳng số thì chỉ đúng ở một sân.'
       ]
     }),
 
@@ -749,16 +772,27 @@
     manCheThuGai(8, 'bien-the', {
       ten: 'Bản đồ trượt từ điển',
       hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'glide_step', 'glide_left'],
-      deBai: 'Từ điển d = {"a": "R", "b": "L", "c": "R"} lưu hướng rẽ ở cuối mỗi dải đá ướt. Hãy duyệt for k in d:, nếu d[k] == "R" thì gọi glide_step(), ngược lại gọi glide_left(). Sau vòng lặp, bước 1 ô vào cờ.',
+      deBai: 'Mỗi sân có một từ điển d riêng lưu hướng rẽ ở cuối mỗi dải đá ướt. Sân 1 là d = {"a": "R", "b": "L", "c": "R"}. Hãy duyệt for k in d:, nếu d[k] == "R" thì gọi glide_step(), ngược lại gọi glide_left(). Sau vòng lặp, bước 1 ô vào cờ.',
       veMaMau: 'Hoàn thành nhánh else trong vòng lặp for k in d: và thêm move() ở cuối.',
       san: [
-        '#######',
-        '#.II###',
-        '###I###',
-        '###.I.#',
-        '#####F#',
-        '#######'
+        [
+          '#######',
+          '#.II###',
+          '###I###',
+          '###.I.#',
+          '#####F#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '##.II.#',
+          '##F####',
+          '#######'
+        ]
       ],
+      duLieuSan: ['d = {"a": "R", "b": "L", "c": "R"}', 'd = {"a": "R", "b": "R", "c": "L"}'],      // dữ liệu theo sân: thứ tự rẽ khác nhau nên điền thẳng lệnh của sân này thì đâm tường ở sân kia
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'd = {"a": "R", "b": "L", "c": "R"}',
@@ -776,13 +810,14 @@
         'move()'
       ]),
       loiSai: [
-        { moTa: 'Thiếu nhánh else và lệnh move() cuối', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Quên lệnh move() sau vòng lặp: dừng ở (5, 3) sát trước cờ', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()', '    else:', '        glide_left()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else và lệnh move() cuối', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên lệnh move() sau vòng lặp: dừng sát trước cờ', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()', '    else:', '        glide_left()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng lệnh của sân 1: glide_step(), glide_left(), glide_step() rồi move() đâm tường ở sân 2', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'glide_step()', 'glide_left()', 'glide_step()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 22, nhip: 7 },
       goiY: [
         'Thêm else: rồi thụt lề glide_left() bên trong vòng lặp for k in d:.',
-        'Ngoài vòng lặp, gọi move() để bước xuống cờ (5, 4).'
+        'Ngoài vòng lặp, gọi move() để bước vào cờ. Viết thẳng các lệnh rẽ thì chỉ đúng ở một sân.'
       ]
     }),
 

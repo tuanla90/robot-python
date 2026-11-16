@@ -267,21 +267,21 @@ const sk1 = (k, ma) => { for (const v of k.vet) if (v.loai === 'nhip') for (cons
 
 /* L1 cần cẩu + nam châm: magnet_* hút / thả vật sắt ở ô đầu cần (thay chỗ móc), qua tường */
 {
-  // bệ (0, 2), nấc 2 (phải) tầm 1: đầu cần trên tường (1, 2); extend → (2, 2) sau tường; magnet_n hút; quay lên-phải → (2, 0); magnet_off thả
+  // bệ (0, 2), nấc 1 (phải; 14/11 cần 4 hướng) tầm 1: đầu cần trên tường (1, 2); extend → (2, 2) sau tường; magnet_n hút; quay trái 90° lên → (0, 0); magnet_off thả
   const SAN = ['.....', '.....', '.#o..', '....F'];
   const L1 = (cach, chat) => {
-    const k = chay('L1', cach, SAN, { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\nmagnet_n()\nswing_left()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..' + chat + '..', '.....'] });
+    const k = chay('L1', cach, SAN, { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\nmagnet_n()\nswing_left()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..' + chat + '..', '.....'] });
     return { k, v: k.vat[0], hut: sk1(k, 'cau-hut'), tha: sk1(k, 'cau-tha') };
   };
-  const ok1 = (cach) => { const r = L1(cach, 's'); return !r.k.loi && r.hut && J(r.hut.o) === J({ x: 2, y: 2 }) && r.tha && r.v.x === 2 && r.v.y === 0 && r.v.trangThai === 'dat' && r.k.vet.filter((v) => v.loai === 'nhip')[2].robot.dangMang === 1; };
-  kiem('L1 b: cẩu + nam châm hút thanh sắt sau tường ở ô đầu cần ("cau-hut"), quay cần mang theo, magnet_off thả ở ô đầu cần mới (2, 0) ("cau-tha")', thu(() => ok1({ than: 'cau', tay: 'nam-cham' })));
+  const ok1 = (cach) => { const r = L1(cach, 's'); return !r.k.loi && r.hut && J(r.hut.o) === J({ x: 2, y: 2 }) && r.tha && r.v.x === 0 && r.v.y === 0 && r.v.trangThai === 'dat' && r.k.vet.filter((v) => v.loai === 'nhip')[2].robot.dangMang === 1; };
+  kiem('L1 b: cẩu + nam châm hút thanh sắt sau tường ở ô đầu cần ("cau-hut"), quay cần mang theo, magnet_off thả ở ô đầu cần mới (0, 0) ("cau-tha")', thu(() => ok1({ than: 'cau', tay: 'nam-cham' })));
   const go = thu(() => L1({ than: 'cau', tay: 'nam-cham' }, 'g'));
   kiem('L1 b: thùng gỗ ở ô đầu cần KHÔNG bị hút ("hut-go"), vẫn nằm ở (2, 2)', go && !go.hut && go.v.x === 2 && go.v.y === 2 && go.k.suKien.some((e) => e.ma === 'hut-go'));
-  const tuong = thu(() => chay('L1', { than: 'cau', tay: 'nam-cham' }, SAN, { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\nmagnet_n()\nretract()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..s..', '.....'] }));
+  const tuong = thu(() => chay('L1', { than: 'cau', tay: 'nam-cham' }, SAN, { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\nmagnet_n()\nretract()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..s..', '.....'] }));
   kiem('L1 b: thả lên ô tường → "tha-bi-chan" (vật vẫn dính ở đầu cần)', tuong && tuong.suKien.some((e) => e.ma === 'tha-bi-chan' && e.vat === 'tuong' && e.kieu === 'nam-cham') && tuong.vat[0].trangThai === 'cam');
   kiem('L1 d: cẩu KHÔNG gắn nam châm → phép b đỏ', !thu(() => ok1({ than: 'cau', tay: null })));
   kiem('L1 d: drone + nam châm cùng sân (nam châm dưới bụng, không ở đầu cần) → phép b đỏ', !thu(() => ok1({ than: 'drone', tay: 'nam-cham' })));
-  let motTay = null; try { SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0, nac: 2, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'magnet_n', 'magnet_s', 'magnet_off'] }, 'wait()\n'); } catch (e) { motTay = e.message; }
+  let motTay = null; try { SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0, nac: 1, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'magnet_n', 'magnet_s', 'magnet_off'] }, 'wait()\n'); } catch (e) { motTay = e.message; }
   kiem('L1: một tay — móc cẩu không đi chung nam châm trên đầu cần (lõi báo)', /móc cẩu không đi chung/.test(motTay || ''), motTay);
 }
 
@@ -289,17 +289,17 @@ const sk1 = (k, ma) => { for (const v of k.vet) if (v.loai === 'nhip') for (cons
 {
   const SAN = ['.....', '.....', '.#o..', '....F'];
   const L8 = (cach) => {
-    const k = chay('L8', cach, SAN, { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\nswing_left()\nrelease()\n');
+    const k = chay('L8', cach, SAN, { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\ngrab()\nswing_left()\nrelease()\n');
     const v = k.vat[0], ng = sk1(k, 'gau-ngoam'), th = sk1(k, 'gau-tha');
-    return !k.loi && ng && J(ng.o) === J({ x: 2, y: 2 }) && th && J(th.o) === J({ x: 2, y: 0 }) && v.x === 2 && v.y === 0 && v.trangThai === 'dat';
+    return !k.loi && ng && J(ng.o) === J({ x: 2, y: 2 }) && th && J(th.o) === J({ x: 0, y: 0 }) && v.x === 0 && v.y === 0 && v.trangThai === 'dat';
   };
-  kiem('L8 b: cẩu + gầu ngoạm ngoạm thùng gỗ sau tường ở ô đầu cần ("gau-ngoam"), quay cần, thả ở (2, 0) ("gau-tha")', thu(() => L8({ than: 'cau', tay: 'kep' })));
-  const nang = thu(() => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#H..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\n'));
+  kiem('L8 b: cẩu + gầu ngoạm ngoạm thùng gỗ sau tường ở ô đầu cần ("gau-ngoam"), quay cần, thả ở (0, 0) ("gau-tha")', thu(() => L8({ than: 'cau', tay: 'kep' })));
+  const nang = thu(() => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#H..', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\ngrab()\n'));
   kiem('L8 b: thùng nặng ở ô đầu cần: gầu không nhấc nổi ("gau-hut" lyDo qua-nang)', nang && nang.suKien.some((e) => e.ma === 'gau-hut' && e.lyDo === 'qua-nang'));
-  const cont = thu(() => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#...', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\n', { chong: [{ x: 2, y: 2, cont: [{ so: 3 }] }] }));
+  const cont = thu(() => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#...', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\ngrab()\n', { chong: [{ x: 2, y: 2, cont: [{ so: 3 }] }] }));
   kiem('L8 b: container ở ô đầu cần: gầu không ngoạm, phải dùng móc ("gau-hut" lyDo container)', cont && cont.suKien.some((e) => e.ma === 'gau-hut' && e.lyDo === 'container'));
   const khay = LapRap.apDung({ ma: 't', san: SAN, batDau: { x: 0, y: 2 }, lapRap: { moLai: ['L8'] } }, { than: 'cau', tay: 'kep' }).hamGoc;
-  let arm = null; try { SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0, nac: 2, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'grab', 'release', 'arm_down'] }, 'wait()\n'); } catch (e) { arm = e.message; }
+  let arm = null; try { SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0, nac: 1, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'grab', 'release', 'arm_down'] }, 'wait()\n'); } catch (e) { arm = e.message; }
   kiem('L8: khay cẩu + gầu chỉ có grab / release (không arm_down / arm_up); lõi báo lỗi nếu khay có arm_down', khay.includes('grab') && khay.includes('release') && !khay.includes('arm_down') && !khay.includes('arm_up') && /Gầu ngoạm của cần cẩu chỉ có grab/.test(arm || ''), J({ khay, arm }));
   kiem('L8 d: cẩu KHÔNG gắn gầu → phép b đỏ', !thu(() => L8({ than: 'cau', tay: null })));
   kiem('L8 d: cẩu gắn nam châm thay gầu (gọi grab) → phép b đỏ', !thu(() => L8({ than: 'cau', tay: 'nam-cham' })));
@@ -307,16 +307,16 @@ const sk1 = (k, ma) => { for (const v of k.vet) if (v.loai === 'nhip') for (cons
 
 /* L13 cần cẩu + cảm biến từ / camera bụng: đọc Ô ĐẦU CẦN (từ: front_metal / front_pole; camera bụng: look() như drone đọc ô dưới bụng) */
 {
-  // bệ (0, 2) nấc 1 (lên-phải) tầm 2 → (2, 0) vật nam châm N; swing_right → nấc 2 → (2, 2) sắt sau tường (1, 2); retract → (1, 2) tường
-  const SAN = ['..o..', '.....', '.#o..', '....F'], CHAT = ['..N..', '.....', '..s..', '.....'];
+  // bệ (0, 2) nấc 0 (lên) tầm 2 → (0, 0) vật nam châm N; swing_right → nấc 1 (phải) → (2, 2) sắt sau tường (1, 2); retract → (1, 2) tường
+  const SAN = ['o....', '.....', '.#o..', '....F'], CHAT = ['N....', '.....', '..s..', '.....'];
   const L13tu = (cach) => {
-    const k = chay('L13', cach, SAN, { x: 0, y: 2, nac: 1, tam: 2 }, 'a = front_metal()\nb = front_pole()\nswing_right()\nc = front_metal()\nd = front_pole()\nretract()\ne = front_metal()\n', { vatChat: CHAT });
+    const k = chay('L13', cach, SAN, { x: 0, y: 2, nac: 0, tam: 2 }, 'a = front_metal()\nb = front_pole()\nswing_right()\nc = front_metal()\nd = front_pole()\nretract()\ne = front_metal()\n', { vatChat: CHAT });
     const d = doc(k);
     return !k.loi && J(d.map((e) => e.trong)) === J([false, true, true, false, false]) && d[1].cuc === 'N' && J(d[2].o) === J({ x: 2, y: 2 });
   };
   kiem('L13 b: cẩu + cảm biến từ: ô đầu cần có vật nam châm → front_pole "N", front_metal False; quay sang sắt sau tường → True; đầu cần trên tường → False', thu(() => L13tu({ than: 'cau', camBien: 'tu' })));
   const L13cam = (cach) => {
-    const k = chay('L13', cach, ['..r..', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 1, tam: 2 }, 'a = look()\nswing_right()\nb = look()\nretract()\nc = look()\n', { vatMau: ['.....', '.....', '..y..', '.....'] });
+    const k = chay('L13', cach, ['r....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 0, tam: 2 }, 'a = look()\nswing_right()\nb = look()\nretract()\nc = look()\n', { vatMau: ['.....', '.....', '..y..', '.....'] });
     const d = doc(k);
     return !k.loi && J(d.map((e) => e.mau)) === J(['red', 'yellow', 'none']) && J(d.map((e) => e.nguon)) === J(['san', 'vat', 'chan']) && d[1].cam === 'camera-bay';
   };
@@ -351,18 +351,18 @@ const sk1 = (k, ma) => { for (const v of k.vet) if (v.loai === 'nhip') for (cons
 /* T2 container lấp hố: cfg.contLapHo, set_down() lên ô hố 'u' → container thành sàn, xe dưới đất đi qua được */
 {
   const SAN = ['.....', '.#u#.', '.....', '....F'], DI = 'left_move()\nright_move()\nwait()\n';
-  // cẩu (2, 0) nấc 5 tầm 2 nhấc container ở (0, 2), quay về nấc 4 → (2, 2), thu cần → (2, 1) hố, hạ; xe hai bánh (2, 3) chờ 4 nhịp rồi tiến 2 ô vào (2, 1)
+  // cẩu (2, 0) nấc 1 (phải) tầm 2 nhấc container ở (4, 0), quay phải 90° về nấc 2 (xuống) → (2, 2), thu cần → (2, 1) hố, hạ; xe hai bánh (2, 3) chờ 4 nhịp rồi tiến 2 ô vào (2, 1)
   const T2 = (lap, codeCau) => {
-    const k = SanHoc.chay({ san: SAN, contLapHo: lap, chong: [{ x: 0, y: 2, cont: [{ so: 5 }] }], doi: [
-      { batDau: { x: 2, y: 0, nac: 5, tam: 2 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'] },
+    const k = SanHoc.chay({ san: SAN, contLapHo: lap, chong: [{ x: 4, y: 0, cont: [{ so: 5 }] }], doi: [
+      { batDau: { x: 2, y: 0, nac: 1, tam: 2 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'] },
       { batDau: { x: 2, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait'] }] },
-      [codeCau || 'pick_up()\nswing_left()\nretract()\nset_down()\n', 'wait()\nwait()\nwait()\nwait()\n' + DI + DI]);
+      [codeCau || 'pick_up()\nswing_right()\nretract()\nset_down()\n', 'wait()\nwait()\nwait()\nwait()\n' + DI + DI]);
     return { k, ok: !k.loi && J(k.lapHo) === J([{ x: 2, y: 1, so: 5, tan: 1 }]) && J(k.doi[1].robot) === J({ x: 2, y: 1, huong: 0 }) && !k.doi[1].suKien.some((e) => e.ma === 'roi-ho') && k.dungSom !== 'roi-ho' };
   };
   kiem('T2 b: cẩu hạ container lên ô hố ("lap-ho"): hố thành sàn, xe hai bánh đi vào ô đó KHÔNG rơi', thu(() => T2(true).ok));
   const khong = thu(() => T2(false).k);
   kiem('T2 d: màn không khai contLapHo (như Cảng sông cũ): hạ lên hố bị chặn ("ha-bi-chan" vat ho), xe rơi hố (phép b đỏ)', khong && !T2(false).ok && khong.suKien.some((e) => e.ma === 'ha-bi-chan' && e.vat === 'ho') && khong.dungSom === 'roi-ho');
-  const KHONG_HA = 'pick_up()\nswing_left()\nretract()\nwait()\n', khongHa = thu(() => T2(true, KHONG_HA).k);
+  const KHONG_HA = 'pick_up()\nswing_right()\nretract()\nwait()\n', khongHa = thu(() => T2(true, KHONG_HA).k);
   kiem('T2 d: có contLapHo nhưng cẩu không set_down() → xe rơi hố (phép b đỏ)', khongHa && khongHa.dungSom === 'roi-ho' && !T2(true, KHONG_HA).ok);
 }
 
@@ -581,7 +581,7 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
   kiem('P b: nam châm bật nhắm ô có người: lỗi "Không hút người bằng nam châm!"', hut && hut.loi && hut.loi.ma === 'cham-nguoi' && /nam châm/.test(hut.loi.thongDiep), hut && J(hut.loi));
   const nem = thu(() => SanHoc.chay({ san: ['o....', '....F'], batDau: { x: 1, y: 0, huong: 1 }, hamGoc: BANH.concat(['load', 'throw']), mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 4, y: 1 }], roBanDau: true }, 'throw()\nwait()\n'));
   kiem('P b: throw() rơi vào ô có người: lỗi "Không ném vào người!", vật vẫn trong rổ', nem && nem.loi && nem.loi.ma === 'cham-nguoi' && /ném/.test(nem.loi.thongDiep) && nem.vat.some((v) => v.trangThai === 'ro'), nem && J(nem.loi));
-  const moc = thu(() => SanHoc.chay({ san: ['.....', '.....', '....F'], batDau: { x: 0, y: 0, nac: 2, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'], mucTieu: 'cuu-nguoi', nguoi: [{ x: 1, y: 0 }], tramCuu: [{ x: 4, y: 1 }] }, 'pick_up()\n'));
+  const moc = thu(() => SanHoc.chay({ san: ['.....', '.....', '....F'], batDau: { x: 0, y: 0, nac: 1, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'], mucTieu: 'cuu-nguoi', nguoi: [{ x: 1, y: 0 }], tramCuu: [{ x: 4, y: 1 }] }, 'pick_up()\n'));
   kiem('P b: pick_up() đầu cần trên ô có người: lỗi "Không móc cẩu vào người!"', moc && moc.loi && moc.loi.ma === 'cham-nguoi' && /móc cẩu/.test(moc.loi.thongDiep), moc && J(moc.loi));
   // kết hợp với toi-co: robot tới cờ mà người chưa tới trạm thì chưa thắng; người tới rồi thì thắng
   const ketHop = thu(() => SanHoc.chay({ san: ['.....', '.F...'], batDau: { x: 0, y: 1, huong: 1 }, hamGoc: BANH, nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }] }, TIEN));
@@ -670,22 +670,22 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
 {
   const GIO = { than: 'cau', tay: 'day-keo' };
   const SAN9 = ['~~~~~', '.....', '.....'];
-  const VOT = 'cast_net()\nswing_left()\nswing_left()\ndrop_net()\n';           // vớt ở (2, 0), quay cần 2 nấc trái (lên-trái rồi trái), đặt ở (1, 1)
+  const VOT = 'cast_net()\nswing_left()\ndrop_net()\n';           // vớt ở (2, 0), quay cần trái 90° (14/11: 4 hướng), đặt ở (1, 1)
   const L9 = (cach, code, them) => chay('L9', cach, SAN9, { x: 2, y: 1, nac: 0, tam: 1 }, code, Object.assign({ mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }, them || {}));
   const l9 = thu(() => L9(GIO, VOT));
   const n9 = l9 && vetNhip(l9);
-  kiem('L9 b: cẩu vớt người ở ô nước đầu cần (2, 0) ("gio-vot" nguoi), quay cần: người treo theo đầu cần (1, 0) rồi (1, 1), drop_net() đặt lên bờ ("gio-dat") → người tự đi về trạm (0, 2) → thắng',
-    l9 && l9.thang && coSk(l9, 'gio-vot') && sk1(l9, 'gio-vot').nguoi === true && J([n9[1].nguoi[0].x, n9[1].nguoi[0].y]) === J([1, 0]) && J([n9[2].nguoi[0].x, n9[2].nguoi[0].y]) === J([1, 1]) && coSk(l9, 'gio-dat') && l9.nguoi[0].toiTram && !coSk(l9, 'cham-nguoi'),
+  kiem('L9 b: cẩu vớt người ở ô nước đầu cần (2, 0) ("gio-vot" nguoi), quay cần: người treo theo đầu cần sang (1, 1), drop_net() đặt lên bờ ("gio-dat") → người tự đi về trạm (0, 2) → thắng',
+    l9 && l9.thang && coSk(l9, 'gio-vot') && sk1(l9, 'gio-vot').nguoi === true && J([n9[0].nguoi[0].x, n9[0].nguoi[0].y]) === J([2, 0]) && J([n9[1].nguoi[0].x, n9[1].nguoi[0].y]) === J([1, 1]) && coSk(l9, 'gio-dat') && l9.nguoi[0].toiTram && !coSk(l9, 'cham-nguoi'),
     l9 && (J(l9.loi) + ' ' + skNg(l9)));
   kiem('L9 d: cẩu KHÔNG gắn tay lưới (cast_net không có) → phép b đỏ', !thu(() => L9({ than: 'cau', tay: null }, VOT).thang));
-  kiem('L9 d: cùng sân không cast_net() (chỉ quay cần) → người vẫn nổi ở (2, 0), không thắng (phép b đỏ)', !thu(() => L9(GIO, 'swing_left()\nswing_left()\ndrop_net()\n').thang));
-  const nuoc = thu(() => L9(GIO, 'cast_net()\nswing_right()\ndrop_net()\n'));
-  kiem('L9 b: drop_net() khi đầu cần trên mặt nước (3, 0) → "gio-hut" nuoc lời Việt ("phải đặt lên ô bờ"), người vẫn trong giỏ', nuoc && !nuoc.loi && nuoc.suKien.some((e) => e.ma === 'gio-hut' && e.lyDo === 'nuoc' && /ô bờ/.test(e.thongDiep)) && nuoc.vat[0].trangThai === 'gio', nuoc && skNg(nuoc));
-  const be = thu(() => chay('L9', GIO, ['~B~~~', '.....', '....F'], { x: 2, y: 1, nac: 7, tam: 1 }, 'cast_net()\nswing_left()\ndrop_net()\n'));
-  kiem('L9 b: giỏ vớt vật nổi (bè B ở (1, 0)) rồi đặt lên bờ (1, 1): "gio-vot" nguoi false, bè nằm trên bờ', be && !be.loi && sk1(be, 'gio-vot') && sk1(be, 'gio-vot').nguoi === false && be.vat[0].trangThai === 'dat' && J([be.vat[0].x, be.vat[0].y]) === J([1, 1]), be && skNg(be));
-  const vDat = thu(() => chay('L9', GIO, ['~~~~~', '.o...', '....F'], { x: 2, y: 1, nac: 6, tam: 1 }, 'cast_net()\n'));
+  kiem('L9 d: cùng sân không cast_net() (chỉ quay cần) → người vẫn nổi ở (2, 0), không thắng (phép b đỏ)', !thu(() => L9(GIO, 'swing_left()\ndrop_net()\n').thang));
+  const nuoc = thu(() => L9(GIO, 'cast_net()\ndrop_net()\n'));
+  kiem('L9 b: drop_net() khi đầu cần trên mặt nước (2, 0) → "gio-hut" nuoc lời Việt ("phải đặt lên ô bờ"), người vẫn trong giỏ', nuoc && !nuoc.loi && nuoc.suKien.some((e) => e.ma === 'gio-hut' && e.lyDo === 'nuoc' && /ô bờ/.test(e.thongDiep)) && nuoc.vat[0].trangThai === 'gio', nuoc && skNg(nuoc));
+  const be = thu(() => chay('L9', GIO, ['~~B~~', '.....', '....F'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_left()\ndrop_net()\n'));
+  kiem('L9 b: giỏ vớt vật nổi (bè B ở (2, 0)) rồi đặt lên bờ (1, 1): "gio-vot" nguoi false, bè nằm trên bờ', be && !be.loi && sk1(be, 'gio-vot') && sk1(be, 'gio-vot').nguoi === false && be.vat[0].trangThai === 'dat' && J([be.vat[0].x, be.vat[0].y]) === J([1, 1]), be && skNg(be));
+  const vDat = thu(() => chay('L9', GIO, ['~~~~~', '.o...', '....F'], { x: 2, y: 1, nac: 3, tam: 1 }, 'cast_net()\n'));
   kiem('L9 b: giỏ không nhặt vật nằm đất (thùng gỗ o) → "gio-hut" vat-dat', vDat && vDat.suKien.some((e) => e.ma === 'gio-hut' && e.lyDo === 'vat-dat') && vDat.vat[0].trangThai === 'dat', vDat && skNg(vDat));
-  const can = thu(() => chay('L9', GIO, SAN9, { x: 2, y: 1, nac: 6, tam: 1 }, 'cast_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 0, y: 2 }] }));
+  const can = thu(() => chay('L9', GIO, SAN9, { x: 2, y: 1, nac: 3, tam: 1 }, 'cast_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 0, y: 2 }] }));
   kiem('L9 b: người trên cạn ở đầu cần → không vớt ("gio-hut" nguoi-tren-can)', can && can.suKien.some((e) => e.ma === 'gio-hut' && e.lyDo === 'nguoi-tren-can'), can && skNg(can));
   let mt9 = null; try { SanHoc.chay({ san: SAN9, batDau: { x: 2, y: 1, nac: 0, tam: 1 }, loaiRobot: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down', 'cast_net', 'drop_net'] }, 'wait()\n'); } catch (e) { mt9 = e.message; }
   kiem('L9: một tay — giỏ cứu hộ không đi chung móc cẩu trên đầu cần (lõi báo)', /giỏ cứu hộ .* không đi chung móc cẩu/.test(mt9 || ''), mt9);

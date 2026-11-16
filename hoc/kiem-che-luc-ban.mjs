@@ -185,7 +185,9 @@ for (const m of DS) {
   bang[m.ma] = {};
   kiem(m.ma + ': đủ trường, robot xe xích + vòi phun (PDM2b 31/10, trước: hai bánh), lực bắn, khay, một sân', () => {
     for (const k of ['ten', 'deBai', 'san', 'batDau', 'mucTieu', 'hamGoc', 'robot', 'sao', 'maMau', 'loiGiai', 'loiGiaiKhac', 'goiY', 'hamCuaEmCan', 'yMoi']) assert.ok(m[k] !== undefined && m[k] !== '', m.ma + ' thiếu ' + k);
-    assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
+    // 14/11 ghép nhịp: màn TRÌNH DIỄN (chiChay + khoá, bấm Chạy là thấy) không có lời sai, mã mẫu chính là lời giải
+    if (m.chiChay) assert.ok(m.chinhCoDinh && m.loiSai.length === 0, m.ma + ' màn trình diễn phải khoá chương trình và không có lời sai');
+    else assert.ok(m.loiSai.length >= 2, m.ma + ' cần ít nhất 2 lời sai');
     for (const ls of m.loiSai) assert.ok(ls.moTa && ls.phaiCoMa && ls.phaiCoMa.length, m.ma + ' lời sai thiếu moTa / phaiCoMa');
     assert.ok(m.goiY.length >= 1);
     assert.equal(m.loaiRobot, 'xich');       // PDM2b 31/10: R1 xe cứu hỏa (thân xích)
@@ -242,10 +244,10 @@ for (const m of DS) {
     assert.deepEqual(r.chanDoan.map((c) => c.ma), [], m.ma + ' lời giải có chẩn đoán');
     assert.ok(r.theoSan.length === soSan(m) && r.theoSan.every((s) => s.thang));
     const rm = cham(m, m.maMau);
-    assert.equal(rm.thang, false, m.ma + ' mã mẫu đã thắng sẵn');
+    assert.equal(rm.thang, !!m.chiChay, m.ma + (m.chiChay ? ' màn trình diễn: mã mẫu phải thắng' : ' mã mẫu đã thắng sẵn'));
     const rk = cham(m, m.loiGiaiKhac.baiLam, m.loiGiaiKhac.hamCuaEmMoi);
     assert.ok(rk.thang, m.ma + ' lời giải khác thua: ' + JSON.stringify(rk.chanDoan.map((c) => c.ma)));
-    assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');
+    if (!m.chiChay) assert.equal(rk.sao, 2, m.ma + ' lời giải khác sao=' + rk.sao + ' (ô ' + rk.soO + ', nhịp ' + rk.soNhip + ')');
     (m.congThucKhac || []).forEach((c, i) => { const rc = cham(m, c.baiLam, c.hamCuaEmMoi); assert.ok(rc.thang, m.ma + ' công thức khác ' + i + ' "' + c.moTa + '" thua'); });
     m.loiSai.forEach((ls, i) => {
       const rl = cham(m, ls.baiLam, ls.hamCuaEmMoi);
@@ -272,6 +274,7 @@ for (const m of DS) {
       bang[m.ma].ne = 'không có dãy chung ≤ ' + m.sao.nhip + ' nhịp';
       return;
     }
+    if (m.chiChay) { bang[m.ma].ne = 'màn trình diễn (bấm Chạy)'; return; }
     if (m.chinhCoDinh) {
       const hm = (m.loiGiai.hamCuaEmMoi || [])[0] || (m.loiGiai.hamCuaMan || [])[0];
       assert.ok(hm, m.ma + ' khóa chương trình chính mà không có hàm để viết / sửa');
@@ -343,6 +346,19 @@ kiem('có màn sửa hàm lỗi (tên "Sửa…", hàm của màn) và màn đ�
 });
 
 /* ------------------------------------------------------------------ bảng */
+// 14/11 ghép nhịp 2b (vừa chạy vừa phun, cờ phunKhiChay bật từ màn 6): màn 6 trình diễn, màn 9 ÉP: tách nhịp thì không thắng
+kiem('ghép nhịp 2b: phunKhiChay bật từ màn 6; màn 6 trình diễn có nhịp phun + xích; màn 9 ép: tách hai nhịp (cả hai thứ tự) đều thua, bỏ cờ thì lời giải thua', () => {
+  for (const m of DS) assert.equal(!!m.phunKhiChay, m.so >= 6, m.ma + ' phunKhiChay');
+  const ghep = (m) => cham(m, m.loiGiai, m.loiGiai.hamCuaEmMoi).theoSan.some((s) => s.vet.some((v) => { const e = (v.suKien || []).map((x) => x.ma); return e.includes('ban') && e.includes('tien'); }));
+  const d = DS[5], e = DS[8];
+  assert.ok(d.chiChay && d.chinhCoDinh && ghep(d), 'màn 6 không phải màn trình diễn có nhịp ghép');
+  assert.ok(ghep(e) && e.loiSai.length >= 2, 'màn 9 lời giải không có nhịp ghép');
+  const h = (than) => cham(e, { chinh: e.loiGiai.chinh, hamCuaMan: [Object.assign({}, e.loiGiai.hamCuaMan[0], { than })] }, []);
+  assert.equal(h(['spray()', 'wait()', 'left_move()', 'right_move()', 'wait()']).thang, false, 'phun rồi chạy (hai nhịp) lại thắng');
+  assert.equal(h(['left_move()', 'right_move()', 'wait()', 'spray()', 'wait()']).thang, false, 'chạy rồi phun (hai nhịp) lại thắng');
+  assert.equal(cham(e, e.loiGiai, [], { phunKhiChay: false }).thang, false, 'bỏ cờ phunKhiChay mà lời giải màn 9 vẫn thắng');
+});
+
 console.log('số | mã | tên | điều mới (yMoi) | dòng | nhịp | ô không tường | ô code | BFS | lời cố định / thân cố định | recall');
 for (const m of DS) {
   const b = bang[m.ma] || {};

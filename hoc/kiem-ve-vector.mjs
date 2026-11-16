@@ -239,7 +239,7 @@ console.log('\n== 6. Màu đội: kính + mắt + chấm ăng-ten ==');
   kiem('mauDoi: R1 = vecDoiR1 / vecDoiR1Toi, R2 = vecDoiR2 / vecDoiR2Toi, hai bộ khác nhau', M1.chinh === BM.vecDoiR1 && M1.toi === BM.vecDoiR1Toi && M2.chinh === BM.vecDoiR2 && M2.toi === BM.vecDoiR2Toi && M1.chinh !== M2.chinh && M1.toi !== M2.toi);
   const khac = [];
   for (let i = 0; i < Math.max(r1.length, r2.length); i++) if (r1[i] !== r2[i]) khac.push(i);
-  const doiMau = (s) => s.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb);      // 29/10: lõi / quầng mắt cũng theo đội
+  const doiMau = (s) => s.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb).split(M2.trong).join(M1.trong).split(M2.trongToi).join(M1.trongToi).split(M2.dongTu).join(M1.dongTu);      // 29/10: lõi / quầng mắt cũng theo đội; 13/11: tròng / đồng tử mắt ba vòng cũng theo đội
   const chiMau = khac.every((i) => doiMau(r2[i]) === r1[i]);
   const loaiKhac = khac.map((i) => r2[i].split(' ')[0]).sort();
   kiem('R1 và R2: cùng độ dài luồng (' + r1.length + '), chỉ khác ở màu đội; chỗ khác = ' + J(loaiKhac),
@@ -522,7 +522,7 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
 
   /* e. màu đội: mọi tổ hợp R1 ↔ R2 chỉ khác màu đội, đúng ba chỗ (kính 1 gradient, mắt 2 viền, chấm ăng-ten 1 tô) */
   const M1 = V.mauDoi('vang'), M2 = V.mauDoi('lam'), doiSai = [];
-  const doiMau = (x) => x.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb);      // 29/10: lõi / quầng mắt cũng theo đội
+  const doiMau = (x) => x.split(M2.chinh).join(M1.chinh).split(M2.toi).join(M1.toi).split(M2.mat).join(M1.mat).split(M2.matRgb).join(M1.matRgb).split(M2.trong).join(M1.trong).split(M2.trongToi).join(M1.trongToi).split(M2.dongTu).join(M1.dongTu);      // 29/10: lõi / quầng mắt cũng theo đội; 13/11: tròng / đồng tử mắt ba vòng cũng theo đội
   for (const cfg of hopLe.filter((c, i) => i % 3 === 0)) {
     V.xoaDem();
     const st = { tay: cfg.tay ? ST[cfg.tay] : undefined, camBien: { bat: true, mat: true }, than: { quat: true, doc: true } };

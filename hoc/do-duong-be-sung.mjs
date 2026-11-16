@@ -74,11 +74,17 @@ export function laDich(ctx, S) {
   return S.f.every((k) => k === 0) && (!co || (S.x === co.x && S.y === co.y));
 }
 export const HANH_DONG = ['M', 'B', 'R', 'L', 'W', 'c', 'h', 'f', 'g'];
-export const GIA = { M: 1, B: 1, R: 2, L: 2, W: 1, c: 1, h: 1, f: 1, g: 1 };
+export const GIA = { M: 1, B: 1, R: 2, L: 2, W: 1, c: 1, h: 1, f: 1, g: 1, x: 1, y: 1, p: 1, q: 1, a: 1, b: 1, d: 1, e: 1 };
+/** GHÉP NHỊP mùa 2 (14/11; san-hoc.js mục GHÉP NHỊP VÒI PHUN + XÍCH): phun + hai xích đi thẳng CÙNG nhịp, mỗi tổ hợp một chữ: [phát, hướng xích].
+ *  ghiXich (+ lucBan): x = c+M ghì, y = h+B ghì, p = h+M phóng tới 2 ô, q = c+B phóng lùi 2 ô. phunKhiChay: a = f+M, b = f+B, d = g+M, e = g+B. */
+export const GHEP = { x: ['c', 1], y: ['h', -1], p: ['h', 1], q: ['c', -1], a: ['f', 1], b: ['f', -1], d: ['g', 1], e: ['g', -1] };
 /** Các hành động màn cho phép (phun mạnh c / h chỉ khi lucBan, phun nhẹ f / g luôn có (29/10: mặc định); phun ra sau khi khay có spray_back). */
 export function hanhDong(m) {
   const hg = m.hamGoc || [];
-  return HANH_DONG.filter((a) => !((a === 'c' || a === 'h') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('spray_back')) && !((a === 'c' || a === 'f') && !hg.includes('spray')));
+  const coPhat = (a) => !((a === 'c' || a === 'h') && !m.lucBan) && !((a === 'h' || a === 'g') && !hg.includes('spray_back')) && !((a === 'c' || a === 'f') && !hg.includes('spray'));
+  const kq = HANH_DONG.filter(coPhat);
+  for (const [a, [f]] of Object.entries(GHEP)) if (coPhat(f) && ((f === 'c' || f === 'h') ? !!m.ghiXich : !!m.phunKhiChay)) kq.push(a);
+  return kq;
 }
 
 function coThungKet(ctx, S) {
@@ -113,8 +119,26 @@ function motNhip(ctx, S, a, tuy) {
     return N.x === x && N.y === y;
   };
   let doiCua = 0;
-  if (a === 'c' || a === 'h' || a === 'f' || a === 'g') {
-    const sau = a === 'h' || a === 'g', nhanh = a === 'f' || a === 'g';
+  /** Xích đi một ô theo trục mũi (s = +1 tiến / −1 lùi), luật M / B dưới đây. Trả true nếu đi được. */
+  const diMot = (s) => {
+    const v = VEC[N.h], nx = N.x + v[0] * s, ny = N.y + v[1] * s;
+    if (!ctx.trongSan(nx, ny)) return false;
+    const cell = ny * rong + nx, i = N.p.indexOf(cell);
+    if (i >= 0) {
+      if (s === 1 && tuy.xichDay) {
+        const sx = nx + v[0], sy = ny + v[1];
+        if (!thungChan(sx, sy)) { N.p[i] = sy * rong + sx; N.e[i] = 0; N.x = nx; N.y = ny; return true; }
+      }
+      return false;
+    }
+    if (!ctx.chan[cell] && !cuaDong(cell) && !luaChay(cell)) { N.x = nx; N.y = ny; return true; }
+    return false;
+  };
+  const gh = GHEP[a] || null;                                             // ghép nhịp: [phát, xích ±1]
+  if (gh && (gh[0] === 'f' || gh[0] === 'g')) diMot(gh[1]);              // 2b: (a) xích đi 1 ô (bị chặn thì đứng) → (b) tia nhẹ từ ô MỚI
+  const aP = gh ? gh[0] : a;
+  if (aP === 'c' || aP === 'h' || aP === 'f' || aP === 'g') {
+    const sau = aP === 'h' || aP === 'g', nhanh = aP === 'f' || aP === 'g';
     const hb = sau ? (N.h + 2) % 4 : N.h, v = VEC[hb];
     let x = N.x, y = N.y, d = 0;
     for (;;) {                                                            // (a) bóng bay tới vật cản đầu tiên (bắn nhanh: rơi sau 2 ô)
@@ -138,7 +162,10 @@ function motNhip(ctx, S, a, tuy) {
         break;
       }
     }
-    if (!nhanh && !tuy.beSung) {                                          // (b) giật: chỉ khi không bệ súng
+    if (gh && !nhanh) {                                                   // 2a: (b) xích ±1 + giật (∓1; 0 khi bệ súng): 0 ghì, ±1 đi 1 ô, ±2 phóng từng ô
+      const tong = gh[1] + (tuy.beSung ? 0 : (sau ? 1 : -1)), s = tong > 0 ? 1 : -1;
+      for (let k = 0; k < Math.abs(tong); k++) if (!diMot(s)) break;
+    } else if (!nhanh && !tuy.beSung) {                                   // (b) giật: chỉ khi không bệ súng
       const hg = (hb + 2) % 4, vg = VEC[hg], nx = N.x + vg[0], ny = N.y + vg[1];
       if (ctx.trongSan(nx, ny)) {
         const cell = ny * rong + nx;
@@ -300,6 +327,8 @@ export function chuoiThanhMa(chuoi, m) {
     R: ['right_back()', 'wait()', 'right_back()', 'wait()'], L: ['right_move()', 'wait()', 'right_move()', 'wait()'], W: ['wait()'],
     c: ['spray("high")', 'wait()'], h: ['spray_back("high")', 'wait()'], f: ['spray()', 'wait()'], g: ['spray_back()', 'wait()']
   };
+  const PHAT = { c: 'spray("high")', h: 'spray_back("high")', f: 'spray()', g: 'spray_back()' };
+  for (const [a, [f, s]] of Object.entries(GHEP)) MA[a] = [PHAT[f]].concat(s > 0 ? ['left_move()', 'right_move()'] : ['left_back()', 'right_back()'], ['wait()']);
   return [...chuoi].flatMap((a) => MA[a]).join('\n') + '\n';
 }
 function rng(hat) { let s = hat >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
@@ -359,6 +388,8 @@ function bangDong(m, kho) {
   const ds = [['move()', 'M'], ['back()', 'B'], ['tr_right()', 'R'], ['tr_left()', 'L'], ['spin()', 'RR'], ['sidestep()', 'RML'], ['wait()', 'W'],
     ['forward(2)', 'MM'], ['forward(3)', 'MMM']];
   if (m.lucBan) ds.push(['squirt("high")', 'c'], ['squirt("low")', 'f'], ['squirt_back("high")', 'h'], ['squirt_back("low")', 'g']);
+  if (m.ghiXich && m.lucBan) ds.push(['brace_spray()', 'x'], ['boost()', 'p']);              // ghép nhịp 2a (hàm của em gói 6 / 10)
+  if (m.phunKhiChay) ds.push(['run_spray()', 'a']);                                           // ghép nhịp 2b (hàm của em gói 10)
   return ds.filter(([l, a]) => {
     const t = l.match(/^(\w+)\(/)[1];
     if (!(hg.includes(t) || ten.has(t))) return false;

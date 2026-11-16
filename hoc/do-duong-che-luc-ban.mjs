@@ -5,6 +5,7 @@
    Một hành động mỗi nhịp, viết bằng một chữ:
        M tiến   B lùi   R quay phải   L quay trái   U quay đầu   W đứng yên
        f bắn nhanh ra trước   c bắn tụ ra trước   g bắn nhanh ra sau   h bắn tụ ra sau
+       ghép nhịp (14/11, màn ghiXich / phunKhiChay): x y ghì · p q phóng · a b d e phun nhẹ khi chạy (GHEP_CHU)
    Chương trình KHÔNG đọc cảm biến chạy ra MỘT DÃY CỐ ĐỊNH. Bộ dò:
      1. dsDay: liệt kê MỌI dãy thắng sân (một sân) với tổng nhịp ≤ giới hạn (đồ thị trạng thái + khoảng cách còn lại tới đích để cắt nhánh).
      2. moRong: mở thân hàm của em / chương trình thành dãy chữ (for với số cố định, tham số số hay chuỗi; gặp if / while / cảm biến / biến thì không mở được).
@@ -22,8 +23,18 @@ import * as Bo from './do-duong-sung-hoi.mjs';
 const require = createRequire(import.meta.url);
 const SanHoc = require('./san-hoc.js');
 
+/** GHÉP NHỊP mùa 2 (14/11, cờ ghiXich / phunKhiChay, chỉ xích): phun + hai xích đi thẳng cùng nhịp, mỗi tổ hợp MỘT chữ.
+ *  x = c+M ghì (spray("high") + tiến)   y = h+B ghì (spray_back("high") + lùi)   p = h+M phóng tới   q = c+B phóng lùi
+ *  a = f+M  b = f+B  d = g+M  e = g+B   (phun nhẹ + đi thẳng: xích đi 1 ô rồi tia phun từ ô mới) */
+export const GHEP_CHU = { cM: 'x', hB: 'y', hM: 'p', cB: 'q', fM: 'a', fB: 'b', gM: 'd', gB: 'e' };
+/** Cờ ghép của màn đang dò (moRong / nenDay không nhận màn nên đọc ở đây; các hàm dò nhận màn đặt rồi trả lại). */
+let GHEP = { g: false, p: false };
+const ghepCua = (m) => ({ g: m.loaiRobot === 'xich' && !!m.ghiXich && !!m.lucBan, p: m.loaiRobot === 'xich' && !!m.phunKhiChay });
+function voiGhep(m, f) { const cu = GHEP; GHEP = ghepCua(m); try { return f(); } finally { GHEP = cu; } }
+
 /** Chữ của một hành động BFS. */
 export function CHU(a) {
+  if (a.ban && a.banh) return GHEP_CHU[(a.ban === 'truoc' ? (a.luc === 'low' ? 'f' : 'c') : (a.luc === 'low' ? 'g' : 'h')) + (a.banh === 'tien' ? 'M' : 'B')];
   if (a.ban) return a.ban === 'truoc' ? (a.luc === 'low' ? 'f' : 'c') : (a.luc === 'low' ? 'g' : 'h');
   return { cho: 'W', tien: 'M', lui: 'B', phai: 'R', trai: 'L', dau: 'U' }[a.banh];
 }
@@ -88,7 +99,8 @@ function doThi(m, gioiHan, tuy = {}) {
   return { P, k0, canh, con, dichTai, catNgang };
 }
 /** Mọi dãy thắng sân (một sân) với tổng nhịp ≤ gioiHan; tối đa tuy.tran dãy. Trả { ds, catNgang }. */
-export function dsDay(m, gioiHan, tuy = {}) {
+export function dsDay(m, gioiHan, tuy = {}) { return voiGhep(m, () => dsDay0(m, gioiHan, tuy)); }
+function dsDay0(m, gioiHan, tuy = {}) {
   const tran = tuy.tran || 3000;
   const { P, k0, canh, con, dichTai, catNgang } = doThi(m, gioiHan, tuy);
   const kq = [];
@@ -202,7 +214,11 @@ export function moRong(dong, kho, env = {}, tenX = null, sau = 0) {
         sung = (ten === 'spray' ? 'truoc' : 'sau') + ':' + luc; continue;
       }
       if (ten === 'wait') {
-        if (sung) { const [h, lc] = sung.split(':'); kq += h === 'truoc' ? (lc === 'low' ? 'f' : 'c') : (lc === 'low' ? 'g' : 'h'); }
+        if (sung) {
+          const [h, lc] = sung.split(':'), ch = h === 'truoc' ? (lc === 'low' ? 'f' : 'c') : (lc === 'low' ? 'g' : 'h');
+          const thang = banh[0] === banh[1] && banh[0] !== 0, coGhep = lc === 'low' ? GHEP.p : GHEP.g;   // ghép nhịp: phun + hai xích đi thẳng (màn có cờ); không thì bánh bị bỏ
+          kq += thang && coGhep ? GHEP_CHU[ch + (banh[0] > 0 ? 'M' : 'B')] : ch;
+        }
         else kq += hieuQua(banh[0], banh[1]);
         banh = [0, 0]; sung = null; continue;
       }
@@ -225,13 +241,18 @@ export function moRong(dong, kho, env = {}, tenX = null, sau = 0) {
 const RAW = {
   M: ['left_move()', 'right_move()', 'wait()'], B: ['left_back()', 'right_back()', 'wait()'], R: ['left_move()', 'wait()'], L: ['right_move()', 'wait()'],
   U: ['left_move()', 'right_back()', 'wait()'], W: ['wait()'],
-  f: ['spray("low")', 'wait()'], c: ['spray("high")', 'wait()'], g: ['spray_back("low")', 'wait()'], h: ['spray_back("high")', 'wait()']
+  f: ['spray("low")', 'wait()'], c: ['spray("high")', 'wait()'], g: ['spray_back("low")', 'wait()'], h: ['spray_back("high")', 'wait()'],
+  x: ['spray("high")', 'left_move()', 'right_move()', 'wait()'], y: ['spray_back("high")', 'left_back()', 'right_back()', 'wait()'],
+  p: ['spray_back("high")', 'left_move()', 'right_move()', 'wait()'], q: ['spray("high")', 'left_back()', 'right_back()', 'wait()'],
+  a: ['spray("low")', 'left_move()', 'right_move()', 'wait()'], b: ['spray("low")', 'left_back()', 'right_back()', 'wait()'],
+  d: ['spray_back("low")', 'left_move()', 'right_move()', 'wait()'], e: ['spray_back("low")', 'left_back()', 'right_back()', 'wait()']
 };
+const RAW_GHEP = new Set(['x', 'y', 'p', 'q', 'a', 'b', 'd', 'e']);
 const GIA_TRI_THU = [1, 2, 3, 4, 5, 6, 7, 8, 'low', 'high'];
 /** Các "viên gạch" dùng được: [dòng gọi, dãy chữ, tên hàm của em dùng]. bo: tên hàm không được dùng. */
 function gach(kho, bo, them) {
   const kq = [];
-  for (const [a, dong] of Object.entries(RAW)) kq.push([dong, a, null]);
+  for (const [a, dong] of Object.entries(RAW)) if (!RAW_GHEP.has(a) || ('xypq'.includes(a) ? GHEP.g : GHEP.p)) kq.push([dong, a, null]);
   for (const h of kho) {
     if (bo.has(h.ten)) continue;
     if (!h.thamSo.length) { const e = moRong(h.than, kho); if (e) kq.push([[h.ten + '()'], e, h.ten]); continue; }
@@ -333,9 +354,10 @@ function hamPhu(kho, khoi) {
   return { hamMoi: [{ ten: 'g', thamSo: ['p'], than }], them: [[['g("low")'], khoi.replace('?', 'f'), 'g'], [['g("high")'], khoi.replace('?', 'c'), 'g']] };
 }
 /** cham(dong, hamMoi) → kết quả cham.js. Trả lời cố định rẻ nhất theo ô (thắng) hay null. */
-export function timLoiNe(m, kho, cham, tuy = {}) {
+export function timLoiNe(m, kho, cham, tuy = {}) { return voiGhep(m, () => timLoiNe0(m, kho, cham, tuy)); }
+function timLoiNe0(m, kho, cham, tuy = {}) {
   const tranF = tuy.tranF || 40;
-  const { ds, catNgang } = dsDay(m, m.sao.nhip, tuy);
+  const { ds, catNgang } = dsDay0(m, m.sao.nhip, tuy);
   let tot = null;
   const da = new Map();
   const chiKho = new Set(kho.map((h) => h.ten));
@@ -385,7 +407,8 @@ function chayDay(P, day) {
  * sau lần gọi X đầu tiên) sao cho cả chương trình thắng trong sao.nhip; nén x thành thân ít dòng rồi chấm thật bằng chamThan(than).
  * Trả { soO, soNhip, than, x } rẻ nhất (theo ô) hay { khong: true, soX } (soX: số thân cố định thắng được).
  */
-export function timLoiNeKhoa(m, tenX, kho, chamThan, tuy = {}) {
+export function timLoiNeKhoa(m, tenX, kho, chamThan, tuy = {}) { return voiGhep(m, () => timLoiNeKhoa0(m, tenX, kho, chamThan, tuy)); }
+function timLoiNeKhoa0(m, tenX, kho, chamThan, tuy = {}) {
   if (Array.isArray(m.san[0])) throw new Error(m.ma + ': bộ dò màn khóa chỉ cho một sân');
   const mau = moRong(m.loiGiai.chinh, kho, {}, tenX);
   if (mau === null) throw new Error(m.ma + ': không mở được chương trình chính khóa thành dãy mẫu');

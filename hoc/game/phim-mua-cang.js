@@ -25,7 +25,7 @@
 
   /* ================================================================ 1. can-cau — Quay cần vươn tầm */
   PG.dangKy('can-cau', [
-    { Chu: ['Bến cảng sông tấp nập container chờ bốc dỡ.', 'Đội Chấn Hưng dựng CẦN CẨU CẢNG xoay 8 nấc quanh trụ!'],
+    { Chu: ['Bến cảng sông tấp nập container chờ bốc dỡ.', 'Đội Chấn Hưng dựng CẦN CẨU CẢNG quay 4 hướng quanh trụ!'],
       ve: function (m) {
         nen(m);
         var s = sanCang(m, 3, 5);
@@ -36,19 +36,19 @@
         }, 420);
       }
     },
-    { Chu: ['swing_left() và swing_right() xoay cần qua 8 nấc quanh trụ.', 'extend() và retract() vươn thu đầu cần từ tầm 1 tới tầm 3.'],
+    { Chu: ['swing_left() và swing_right() quay cần qua 4 hướng: lên, phải, xuống, trái.', 'extend() và retract() vươn thu đầu cần từ tầm 1 tới tầm 3.'],
       ve: function (m) {
         nen(m);
         var s = sanCang(m, 3, 5);
-        dat(s, may(CAU_CO_BAN, { nac: 2, tam: 2 }, 0), 2, 1);
-        m.appendChild(code('swing_right()\nswing_right()\nextend()'));
+        dat(s, may(CAU_CO_BAN, { nac: 1, tam: 2 }, 0), 2, 1);
+        m.appendChild(code('swing_right()\nextend()'));
       }
     },
     { Chu: ['Hiệu hai nấc d = b - a có thể mang dấu âm khi đích ở bên trái.', 'Dùng abs(d) để lấy số bước dương và điều khiển cần cẩu chính xác!'],
       ve: function (m) {
         nen(m);
         var s = sanCang(m, 3, 5);
-        dat(s, may(CAU_CO_BAN, { nac: 6, tam: 2 }, 0), 2, 1);
+        dat(s, may(CAU_CO_BAN, { nac: 3, tam: 2 }, 0), 2, 1);
         m.appendChild(code('d = b - a\nif d < 0:\n    swing_l(abs(d))'));
       }
     }
@@ -63,11 +63,11 @@
         dat(s, veO('bai-cang'), 1, 1);
         dat(s, veO('bai-cang'), 3, 1);
         var ct = dat(s, veV('container', { so: 12, mau: 'cam' }, 1.5), 1, 1);
-        var rb = dat(s, may(CAU_MOC, { nac: 6, tam: 1, tay: { kep: false, cam: false } }, 0), 2, 1);
+        var rb = dat(s, may(CAU_MOC, { nac: 3, tam: 1, tay: { kep: false, cam: false } }, 0), 2, 1);
         hen(function () {
           ct.remove();
           rb.remove();
-          dat(s, may(CAU_MOC, { nac: 6, tam: 1, tay: { kep: true, cam: true } }, 0), 2, 1);
+          dat(s, may(CAU_MOC, { nac: 3, tam: 1, tay: { kep: true, cam: true } }, 0), 2, 1);
         }, 420);
       }
     },
@@ -77,17 +77,17 @@
         var s = sanCang(m, 3, 5);
         dat(s, veO('bai-cang'), 1, 1);
         dat(s, veO('bai-cang'), 3, 1);
-        dat(s, may(CAU_MOC, { nac: 2, tam: 1, tay: { kep: false, cam: false } }, 0), 2, 1);
+        dat(s, may(CAU_MOC, { nac: 1, tam: 1, tay: { kep: false, cam: false } }, 0), 2, 1);
         dat(s, veV('container', { so: 12, mau: 'cam' }, 1.5), 3, 1);
-        m.appendChild(code('pick_up()\nswing_by(4)\nset_down()'));
+        m.appendChild(code('pick_up()\nswing_by(2)\nset_down()'));
       }
     },
-    { Chu: ['Phép chia lấy dư (b - a) % 8 giúp tính số nấc xoay phải ngắn gọn.', 'Phép chia nguyên // giúp chia đều chồng container sang hai bãi!'],
+    { Chu: ['Phép chia lấy dư (b - a) % 4 cho số nấc quay phải ngắn gọn.', 'Phép chia nguyên // giúp chia đều chồng container sang hai bãi!'],
       ve: function (m) {
         nen(m);
         var s = sanCang(m, 3, 5);
-        dat(s, may(CAU_MOC, { nac: 2, tam: 2, tay: { kep: true, cam: true } }, 0), 2, 1);
-        m.appendChild(code('steps = (b - a) % 8\nhalf = n // 2\nrem = n % 2'));
+        dat(s, may(CAU_MOC, { nac: 1, tam: 2, tay: { kep: true, cam: true } }, 0), 2, 1);
+        m.appendChild(code('steps = (b - a) % 4\nhalf = n // 2\nrem = n % 2'));
       }
     }
   ]);
@@ -100,7 +100,7 @@
         var s = sanCang(m, 3, 5);
         dat(s, veO('bai-cang'), 1, 1);
         dat(s, veV('container', { so: 24, mau: 'lam' }, 1.5), 1, 1);
-        dat(s, may(CAU_QUET, { nac: 6, tam: 1, camBien: { bat: true } }, 0), 2, 1);
+        dat(s, may(CAU_QUET, { nac: 3, tam: 1, camBien: { bat: true } }, 0), 2, 1);
         hen(function () {
           var b = h('div', 'pg-buble');
           b.appendChild(chu('read_code() = 24', 'pg-nhan-nho'));
@@ -115,7 +115,7 @@
         dat(s, veO('bai-cang'), 1, 1);
         dat(s, veO('bai-cang'), 3, 1);
         dat(s, veV('container', { so: 35, mau: 'tim' }, 1.5), 3, 1);
-        dat(s, may(CAU_QUET, { nac: 2, tam: 1, camBien: { bat: true } }, 0), 2, 1);
+        dat(s, may(CAU_QUET, { nac: 1, tam: 1, camBien: { bat: true } }, 0), 2, 1);
         m.appendChild(code('while read_code() != -1:\n    c = read_code()\n    pick_up()'));
       }
     }
@@ -136,10 +136,10 @@
       ve: function (m) {
         nen(m);
         var s = sanCang(m, 3, 5);
-        dat(s, veO('boong-tau', { co: true }), 1, 0);
-        dat(s, veO('boong-tau', { co: true }), 3, 0);
-        dat(s, may(CAU_QUET, { nac: 1, tam: 1, tay: { kep: true, cam: true } }, 0), 2, 1);
-        m.appendChild(code('wait()\npick_up()\nswing_by(2)\nset_down()'));
+        dat(s, veO('boong-tau', { co: true }), 2, 0);
+        dat(s, veO('bai-cang'), 1, 1);
+        dat(s, may(CAU_QUET, { nac: 3, tam: 1, tay: { kep: true, cam: true } }, 0), 2, 1);
+        m.appendChild(code('wait()\npick_up()\nswing_by(1)\nset_down()'));
       }
     }
   ]);
@@ -166,7 +166,7 @@
         dat(s, veO('boong-tau', { co: true }), 3, 0);
         dat(s, veV('container', { so: 15, mau: 'cam' }, 1.5), 3, 0);
         dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 3, 1);
-        m.appendChild(code('pick_up()\nrail(2)\nswing_by(4)\nset_down()'));
+        m.appendChild(code('pick_up()\nrail(2)\nswing_by(2)\nset_down()'));
       }
     }
   ]);
@@ -180,11 +180,11 @@
         for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
         dat(s, veO('bai-cang'), 2, 2);
         var ct = dat(s, veV('container', { so: 24, mau: 'cam' }, 1.5), 2, 2);
-        var rb = dat(s, may(CAU_QUET, { nac: 4, tam: 1, tay: { kep: false, cam: false }, camBien: { bat: true } }, 0), 2, 1);
+        var rb = dat(s, may(CAU_QUET, { nac: 2, tam: 1, tay: { kep: false, cam: false }, camBien: { bat: true } }, 0), 2, 1);
         hen(function () {
           ct.remove();
           rb.remove();
-          dat(s, may(CAU_QUET, { nac: 4, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
+          dat(s, may(CAU_QUET, { nac: 2, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
         }, 420);
       }
     },
@@ -196,7 +196,7 @@
         dat(s, veO('boong-tau', { co: true }), 2, 0);
         dat(s, veV('container', { so: 12, mau: 'lam' }, 1.5), 2, 0);
         dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
-        m.appendChild(code('pick_up2()\nswing_by(4)\nset_down()'));
+        m.appendChild(code('pick_up2()\nswing_by(2)\nset_down()'));
       }
     }
   ]);
@@ -210,7 +210,7 @@
         for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
         dat(s, veO('bai-cang'), 2, 2);
         dat(s, veV('container', { so: 28, mau: 'do' }, 1.5), 2, 2);
-        dat(s, may(CAU_QUET, { nac: 4, tam: 1, camBien: { bat: true } }, 0), 2, 1);
+        dat(s, may(CAU_QUET, { nac: 2, tam: 1, camBien: { bat: true } }, 0), 2, 1);
         hen(function () {
           var b = h('div', 'pg-buble');
           b.appendChild(chu('weight() = 3', 'pg-nhan-nho'));
@@ -238,9 +238,10 @@
         nen(m);
         var s = sanCang(m, 3, 5);
         for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
-        dat(s, veO('rao', { mask: 0 }), 2, 2);
-        dat(s, veV('container', { so: 15, mau: 'cam' }, 1.5), 3, 2);
-        dat(s, may(CAU_QUET, { nac: 3, tam: 1, camBien: { bat: true } }, 0), 2, 1);
+        dat(s, veO('rao', { mask: 0 }), 1, 2);
+        dat(s, veO('rao', { mask: 0 }), 3, 2);
+        dat(s, veV('container', { so: 15, mau: 'cam' }, 1.5), 2, 2);
+        dat(s, may(CAU_QUET, { nac: 2, tam: 1, camBien: { bat: true } }, 0), 2, 1);
       }
     },
     { Chu: ['Đầu cần không thể hạ container xuống tường, rào, hố hay cửa đóng.', 'Hãy vươn nhấc hàng, thu cần về tầm 1 rồi quay giao lên boong tàu!'],
@@ -251,7 +252,7 @@
         dat(s, veO('boong-tau', { co: true }), 2, 0);
         dat(s, veV('container', { so: 15, mau: 'cam' }, 1.5), 2, 0);
         dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
-        m.appendChild(code('extend()\npick_up()\nretract()\nswing_by(4)\nset_down()'));
+        m.appendChild(code('extend()\npick_up()\nretract()\nswing_by(2)\nset_down()'));
       }
     }
   ]);
@@ -265,7 +266,7 @@
         var s = sanCang(m, 3, 5);
         for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
         dat(s, veV('container', { so: 18, mau: 'cam' }, 1.5), 1, 2);
-        dat(s, may(CAU_QUET, { nac: 4, tam: 1, camBien: { bat: true } }, 0), 1, 1);
+        dat(s, may(CAU_QUET, { nac: 2, tam: 1, camBien: { bat: true } }, 0), 1, 1);
         dat(s, may(NHEN_R2, { camBien: { bat: true } }, 1), 2, 1);
       }
     },
@@ -278,7 +279,7 @@
         dat(s, veV('container', { so: 18, mau: 'cam' }, 1.5), 2, 0);
         dat(s, may(CAU_QUET, { nac: 0, tam: 1, tay: { kep: true, cam: true }, camBien: { bat: true } }, 0), 2, 1);
         dat(s, may(NHEN_R2, { camBien: { bat: true } }, 1), 3, 2);
-        m.appendChild(code('clear_rail("D")\nslide_load(1, 4)'));
+        m.appendChild(code('clear_rail("D")\nslide_load(1, 2)'));
       }
     }
   ]);
@@ -292,7 +293,7 @@
         for (var j = 1; j <= 3; j++) dat(s, veO('ray'), j, 1);
         dat(s, veV('container', { so: 14, mau: 'cam' }, 1.5), 1, 2);
         dat(s, veV('container', { so: 28, mau: 'do' }, 1.5), 2, 2);
-        dat(s, may(CAU_QUET, { nac: 4, tam: 1, camBien: { bat: true }, mat: 'vui' }, 0), 1, 1);
+        dat(s, may(CAU_QUET, { nac: 2, tam: 1, camBien: { bat: true }, mat: 'vui' }, 0), 1, 1);
       }
     },
     { Chu: ['Kết hợp quét mã, cân tải, nhấc đôi và trượt ray trong một chương trình tổng quát.', 'Bốc dỡ hết mọi chuyến tàu để hoàn thành Mùa 4 Cảng sông!'],

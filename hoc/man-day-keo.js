@@ -397,16 +397,27 @@
     manBoCoDinh(1, 'lam-quen', {
       ten: 'Bộ hai số cố định và hàm tow_grab',
       taoHam: ['tow_grab'],
-      deBai: 'Trong Python, một bộ cố định (tuple) viết trong ngoặc tròn như p = (2, 3) giữ một cặp giá trị không đổi; ta lấy phần tử đầu bằng p[0] và phần tử sau bằng p[1]. Hãy tạo hàm tow_grab() trong Xưởng hàm gồm 2 dòng cast_net() và wait() để tung lưới bắt bè gọn trong 1 lệnh, rồi chạy chương trình dùng cặp bước p = (2, 3) kéo bè qua góc cua.',
-      veMaMau: 'Tạo hàm tow_grab() không tham số gồm cast_net() và wait(). Chương trình chính đã dùng p[0] và p[1].',
+      deBai: 'Trong Python, một bộ cố định (tuple) viết trong ngoặc tròn như p = (2, 3) giữ một cặp giá trị không đổi; ta lấy phần tử đầu bằng p[0] và phần tử sau bằng p[1]. Hãy tạo hàm tow_grab() trong Xưởng hàm gồm 2 dòng cast_net() và wait() để tung lưới bắt bè gọn trong 1 lệnh, rồi chạy chương trình dùng cặp bước p kéo bè qua góc cua. Mỗi sân có một cặp p riêng: sân 1 là p = (2, 3), sân 2 là p = (1, 4).',
+      veMaMau: 'Tạo hàm tow_grab() không tham số gồm cast_net() và wait(). Chương trình chính đã dùng p[0] và p[1], nên chạy đúng ở cả hai sân.',
       san: [
-        '.......',
-        '~~~~~B.',
-        '...q...',
-        '...~...',
-        '...~...',
-        '...~...'
+        [
+          '.......',
+          '~~~~~B.',
+          '...q...',
+          '...~...',
+          '...~...',
+          '...~...'
+        ],
+        [
+          '.......',
+          '~~~~B..',
+          '..~....',
+          '..q....',
+          '..~....',
+          '..~....'
+        ]
       ],
+      duLieuSan: ['p = (2, 3)', 'p = (1, 4)'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì hỏng ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai(['p = (2, 3)', 'forward(p[0])', 'tow_grab()', 'turn_right()', 'forward(p[1])']),
       loiGiai: bai(
@@ -417,12 +428,13 @@
       loiSai: [
         { moTa: 'Chưa tạo hàm tow_grab trong Xưởng hàm', baiLam: bai(['p = (2, 3)', 'forward(p[0])', 'tow_grab()', 'turn_right()', 'forward(p[1])']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Trong tow_grab() chỉ viết wait() mà quên gọi cast_net(): xuồng không bắt được bè B', baiLam: bai(['p = (2, 3)', 'forward(p[0])', 'tow_grab()', 'turn_right()', 'forward(p[1])']), hamCuaEmMoi: [ham('tow_grab', ['wait()'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Dùng p[0] cho cả hai đoạn: đoạn sau chỉ đi 2 ô thay vì 3 ô nên bè chưa tới bến q', baiLam: bai(['p = (2, 3)', 'forward(p[0])', 'tow_grab()', 'turn_right()', 'forward(p[0])']), hamCuaEmMoi: [ham('tow_grab', ['cast_net()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Dùng p[0] cho cả hai đoạn: ở sân 1 đoạn sau chỉ đi 2 ô thay vì 3 ô nên bè chưa tới bến q', baiLam: bai(['p = (2, 3)', 'forward(p[0])', 'tow_grab()', 'turn_right()', 'forward(p[0])']), hamCuaEmMoi: [ham('tow_grab', ['cast_net()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Điền thẳng số của sân 1: forward(2) rồi forward(3) đâm vào bè ở sân 2', baiLam: bai(['p = (2, 3)', 'forward(2)', 'tow_grab()', 'turn_right()', 'forward(3)']), hamCuaEmMoi: [ham('tow_grab', ['cast_net()', 'wait()'])], phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
       sao: { o: 14, nhip: 8 },
       goiY: [
         'Mở Xưởng hàm, tạo hàm tow_grab() có 2 dòng: cast_net() và wait().',
-        'Với p = (2, 3), p[0] là 2 (tiến tới ngã rẽ (3, 1)) và p[1] là 3 (tiến xuống nhánh dọc kéo bè vào bến (3, 2)).'
+        'Ở sân 1, p = (2, 3): p[0] là 2 (tiến tới ngã rẽ) và p[1] là 3 (tiến xuống nhánh dọc kéo bè vào bến). Sân 2 có cặp khác nên phải đọc p[0], p[1].'
       ]
     }),
 
@@ -430,17 +442,29 @@
       ten: 'Gỡ cặp giá trị và hàm tow_drop',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'back', 'tow_grab'],
       taoHam: ['tow_drop'],
-      deBai: 'Thay vì viết p[0], p[1], Python cho phép gỡ cặp trực tiếp: a, b = (2, 3) sẽ gán a = 2 và b = 3 cùng lúc. Hãy tạo hàm tow_drop() gồm 2 dòng drop_net() và wait() để tháo lưới gọn trong 1 lệnh, rồi dùng a, b = (2, 3) kéo 2 chiếc bè qua 2 ngã rẽ vào 2 bến q.',
-      veMaMau: 'Tạo hàm tow_drop() gồm drop_net() và wait(). Chương trình chính gỡ cặp a, b = (2, 3).',
+      deBai: 'Thay vì viết p[0], p[1], Python cho phép gỡ cặp trực tiếp: a, b = (2, 3) sẽ gán a = 2 và b = 3 cùng lúc. Hãy tạo hàm tow_drop() gồm 2 dòng drop_net() và wait() để tháo lưới gọn trong 1 lệnh, rồi dùng a, b kéo 2 chiếc bè qua 2 ngã rẽ vào 2 bến q. Mỗi sân có một cặp riêng: sân 1 là a, b = (2, 3), sân 2 là a, b = (3, 2).',
+      veMaMau: 'Tạo hàm tow_drop() gồm drop_net() và wait(). Chương trình chính đã gỡ cặp a, b và dùng a, b, nên chạy đúng ở cả hai sân.',
       san: [
-        '......',
-        '~~q~B.',
-        '..~...',
-        '..~ ~B.'.replace(' ', ''),
-        '..q...',
-        '..~...',
-        '..~...'
+        [
+          '......',
+          '~~q~B.',
+          '..~...',
+          '..~~B.',
+          '..q...',
+          '..~...',
+          '..~...'
+        ],
+        [
+          '......',
+          '~~~~B.',
+          '..q...',
+          '..~...',
+          '..q~B.',
+          '..~...',
+          '..~...'
+        ]
       ],
+      duLieuSan: ['a, b = (2, 3)', 'a, b = (3, 2)'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì hỏng ở sân 2
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'a, b = (2, 3)',
@@ -471,12 +495,14 @@
       loiSai: [
         { moTa: 'Chưa tạo hàm tow_drop', baiLam: bai(['a, b = (2, 3)', 'tow_grab()', 'turn_right()', 'forward(a)', 'tow_drop()', 'turn_left()', 'tow_grab()', 'turn_right()', 'forward(b)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Trong tow_drop() gọi cast_net() thay vì drop_net(): báo lỗi đang giữ lưới', baiLam: bai(['a, b = (2, 3)', 'tow_grab()', 'turn_right()', 'forward(a)', 'tow_drop()', 'turn_left()', 'tow_grab()', 'turn_right()', 'forward(b)']), hamCuaEmMoi: [ham('tow_drop', ['cast_net()', 'wait()'])], phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
-        { moTa: 'Ở đoạn cuối dùng forward(a) thay vì forward(b): bè thứ hai dừng ở (2, 3), thiếu 1 ô tới bến (2, 4)', baiLam: bai(['a, b = (2, 3)', 'tow_grab()', 'turn_right()', 'forward(a)', 'tow_drop()', 'turn_left()', 'tow_grab()', 'turn_right()', 'forward(a)']), hamCuaEmMoi: [ham('tow_drop', ['drop_net()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Ở đoạn cuối dùng forward(a) thay vì forward(b): ở sân 1 bè thứ hai dừng ở (2, 3), thiếu 1 ô tới bến (2, 4)', baiLam: bai(['a, b = (2, 3)', 'tow_grab()', 'turn_right()', 'forward(a)', 'tow_drop()', 'turn_left()', 'tow_grab()', 'turn_right()', 'forward(a)']), hamCuaEmMoi: [ham('tow_drop', ['drop_net()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Điền thẳng số của sân 1: forward(2) rồi forward(3) để bè đầu lệch bến ở sân 2', baiLam: bai(['a, b = (2, 3)', 'tow_grab()', 'turn_right()', 'forward(2)', 'tow_drop()', 'turn_left()', 'tow_grab()', 'turn_right()', 'forward(3)']), hamCuaEmMoi: [ham('tow_drop', ['drop_net()', 'wait()'])], phaiCoMa: ['chua-dua-vat'] }
       ],
       sao: { o: 24, nhip: 13 },
       goiY: [
         'Tạo hàm tow_drop() trong Xưởng hàm với 2 dòng: drop_net() và wait().',
-        'Khi a, b = (2, 3), biến a = 2 kéo bè đầu vào bến (2, 1) và đưa xuồng tới (2, 3); biến b = 3 kéo bè thứ hai vào bến (2, 4).'
+        'Ở sân 1, a, b = (2, 3): a = 2 kéo bè đầu vào bến (2, 1) và đưa xuồng tới (2, 3); b = 3 kéo bè thứ hai vào bến (2, 4).',
+        'Sân 2 có cặp khác, nên hãy giữ forward(a) và forward(b), đừng điền thẳng số.'
       ]
     }),
 
@@ -484,13 +510,21 @@
       ten: 'Hàm kéo lùi pull_back',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'back', 'tow_grab', 'tow_drop'],
       taoHam: ['pull_back'],
-      deBai: 'Nhiều khi xuồng cần tung lưới bắt bè phía trước rồi lùi thẳng n ô để kéo bè về sau. Hãy tạo hàm pull_back(n) gồm: gọi tow_grab(), rồi lặp n lần lệnh back(). Sau đó dùng cặp bước a, b = (2, 3) để tiến a ô tới (4, 1), rồi kéo lùi bè b ô về đúng bến q ở (3, 1).',
-      veMaMau: 'Tạo hàm pull_back(n) gọi tow_grab() rồi lặp n lần back().',
+      deBai: 'Nhiều khi xuồng cần tung lưới bắt bè phía trước rồi lùi thẳng n ô để kéo bè về sau. Hãy tạo hàm pull_back(n) gồm: gọi tow_grab(), rồi lặp n lần lệnh back(). Sau đó dùng cặp bước a, b để tiến a ô, rồi kéo lùi bè b ô về đúng bến q. Mỗi sân có một cặp riêng: sân 1 là a, b = (2, 3), sân 2 là a, b = (3, 2).',
+      veMaMau: 'Tạo hàm pull_back(n) gọi tow_grab() rồi lặp n lần back(). Chương trình chính đã dùng a và b, nên chạy đúng ở cả hai sân.',
       san: [
-        '........',
-        '~~~q~~B~',
-        '........'
+        [
+          '........',
+          '~~~q~~B~',
+          '........'
+        ],
+        [
+          '........',
+          '~~~~~q~B',
+          '........'
+        ]
       ],
+      duLieuSan: ['a, b = (2, 3)', 'a, b = (3, 2)'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì hỏng ở sân 2
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'a, b = (2, 3)',
@@ -509,28 +543,41 @@
       loiSai: [
         { moTa: 'Chưa tạo hàm pull_back', baiLam: bai(['a, b = (2, 3)', 'forward(a)', 'pull_back(b)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Trong pull_back(n) quên gọi tow_grab() trước khi lùi: xuồng chỉ lùi một mình, bỏ lại bè B', baiLam: bai(['a, b = (2, 3)', 'forward(a)', 'pull_back(b)']), hamCuaEmMoi: [ham('pull_back', ['for i in range(n):', '    back()'], ['n'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Truyền a (bằng 2) thay vì b (bằng 3) vào pull_back: bè dừng ở (4, 1), cách bến q 1 ô', baiLam: bai(['a, b = (2, 3)', 'forward(a)', 'pull_back(a)']), hamCuaEmMoi: [ham('pull_back', ['tow_grab()', 'for i in range(n):', '    back()'], ['n'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Truyền a thay vì b vào pull_back: ở sân 1 bè dừng ở (4, 1), cách bến q 1 ô', baiLam: bai(['a, b = (2, 3)', 'forward(a)', 'pull_back(a)']), hamCuaEmMoi: [ham('pull_back', ['tow_grab()', 'for i in range(n):', '    back()'], ['n'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Điền thẳng số của sân 1: forward(2) rồi pull_back(3) thì ở sân 2 lưới không tới bè', baiLam: bai(['a, b = (2, 3)', 'forward(2)', 'pull_back(3)']), hamCuaEmMoi: [ham('pull_back', ['tow_grab()', 'for i in range(n):', '    back()'], ['n'])], phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       sao: { o: 16, nhip: 6 },
       goiY: [
         'Thân hàm pull_back(n) viết: tow_grab(), dòng dưới là for i in range(n):, thụt lề back().',
-        'Xuồng tiến a = 2 ô từ (2, 1) lên (4, 1), rồi pull_back(3) bắt bè ở (6, 1) và lùi 3 bước kéo bè về bến q ở (3, 1).'
+        'Ở sân 1, xuồng tiến a = 2 ô từ (2, 1) lên (4, 1), rồi pull_back(3) bắt bè ở (6, 1) và lùi 3 bước kéo bè về bến q ở (3, 1).',
+        'Sân 2 có cặp khác, nên hãy giữ forward(a) và pull_back(b), đừng điền thẳng số.'
       ]
     }),
 
     manBoCoDinh(4, 'lam-quen', {
       ten: 'Duyệt qua từng phần tử của bộ cố định',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'back', 'tow_grab', 'tow_drop', 'pull_back'],
-      deBai: 'Vòng lặp for cũng duyệt trực tiếp qua từng phần tử của một tuple: với steps = (1, 2), viết for a in steps: thì vòng đầu a = 1, vòng hai a = 2. Ở mỗi nhánh dọc (cột 2 và cột 5), hãy rẽ phải, tiến a ô xuống nhánh, gọi pull_back(a) để kéo bè lùi về bến q ở hàng 3, rồi tháo lưới bằng tow_drop(), rẽ trái và tiến 3 ô sang nhánh tiếp theo.',
+      deBai: 'Vòng lặp for cũng duyệt trực tiếp qua từng phần tử của một tuple: với steps = (1, 2), viết for a in steps: thì vòng đầu a = 1, vòng hai a = 2. Mỗi sân có một bộ steps riêng: sân 1 là (1, 2), sân 2 là (2, 1). Ở mỗi nhánh dọc (cột 2 và cột 5), hãy rẽ phải, tiến a ô xuống nhánh, gọi pull_back(a) để kéo bè lùi về bến q ở hàng 3, rồi tháo lưới bằng tow_drop(), rẽ trái và tiến 3 ô sang nhánh tiếp theo.',
       veMaMau: 'Trong vòng lặp for a in steps:, sau pull_back(a) hãy tháo lưới, rẽ trái và tiến 3 ô.',
       san: [
-        '.........',
-        '~~~~~~~~~',
-        '..~..~...',
-        '..q..q...',
-        '..B..~...',
-        '.....B...'
+        [
+          '.........',
+          '~~~~~~~~~',
+          '..~..~...',
+          '..q..q...',
+          '..B..~...',
+          '.....B...'
+        ],
+        [
+          '.........',
+          '~~~~~~~~~',
+          '..~..~...',
+          '..q..q...',
+          '..~..B...',
+          '..B......'
+        ]
       ],
+      duLieuSan: ['steps = (1, 2)', 'steps = (2, 1)'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì lưới hụt ở sân 2
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'steps = (1, 2)',
@@ -552,11 +599,12 @@
       loiSai: [
         { moTa: 'Để nguyên mã mẫu: chưa thả lưới và chưa rẽ trái sang nhánh thứ hai', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)']), phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
         { moTa: 'Quên gọi tow_drop() sau pull_back(a): khi đi sang nhánh thứ hai bè đầu bị kéo tuột khỏi bến q', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)', '    turn_left()', '    forward(3)']), phaiCoMa: ['dang-keo', 'chua-dua-vat'] },
-        { moTa: 'Cuối vòng lặp dùng forward(2) thay vì forward(3): xuồng dừng ở cột 4 thay vì cột 5', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)', '    tow_drop()', '    turn_left()', '    forward(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Cuối vòng lặp dùng forward(2) thay vì forward(3): xuồng dừng ở cột 4 thay vì cột 5', baiLam: bai(['steps = (1, 2)', 'for a in steps:', '    turn_right()', '    forward(a)', '    pull_back(a)', '    tow_drop()', '    turn_left()', '    forward(2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Điền thẳng số của sân 1: for a in (1, 2): thì ở sân 2 nhánh đầu lưới không tới bè', baiLam: bai(['steps = (1, 2)', 'for a in (1, 2):', '    turn_right()', '    forward(a)', '    pull_back(a)', '    tow_drop()', '    turn_left()', '    forward(3)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       sao: { o: 27, nhip: 15 },
       goiY: [
-        'Sau pull_back(a), xuồng đã lùi về hàng 1 và bè đã nằm đúng trên bến q ở hàng 3: hãy gọi tow_drop() để tháo lưới.',
+        'Sau pull_back(a), xuồng đã lùi về hàng 1 và bè đã nằm đúng trên bến q ở hàng 3: hãy gọi tow_drop() để tháo lưới. Ở sân nào cũng vậy.',
         'Tiếp theo gọi turn_left() và forward(3) để đi dọc hàng 1 từ cột 2 sang nhánh thứ hai ở cột 5.'
       ]
     }),
@@ -654,13 +702,21 @@
     manBoCoDinh(7, 'luyen', {
       ten: 'So sánh hai bộ cố định',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'back', 'tow_grab', 'tow_drop', 'pull_back', 'pair_step'],
-      deBai: 'Trong Python, hai tuple được so sánh lần lượt từ phần tử đầu tiên: (3, 1) > (2, 5) là đúng vì 3 > 2; nếu phần tử đầu bằng nhau thì mới so tới phần tử thứ hai. Hàm max(p1, p2) cũng chọn bộ lớn hơn theo đúng quy tắc đó. Hãy dùng a, b = max((2, 1), (2, 3)) để lấy cặp bước lớn hơn, tiến a ô rồi gọi pull_back(b) kéo bè vào bến.',
-      veMaMau: 'Dùng a, b = max((2, 1), (2, 3)) để lấy a = 2 và b = 3.',
+      deBai: 'Trong Python, hai tuple được so sánh lần lượt từ phần tử đầu tiên: (3, 1) > (2, 5) là đúng vì 3 > 2; nếu phần tử đầu bằng nhau thì mới so tới phần tử thứ hai. Hàm max(p1, p2) cũng chọn bộ lớn hơn theo đúng quy tắc đó. Mỗi sân có một dòng a, b = max(...) riêng: sân 1 là max((2, 1), (2, 3)), sân 2 là max((3, 2), (1, 4)). Hãy dùng cặp a, b lớn hơn đó, tiến a ô rồi gọi pull_back(b) kéo bè vào bến.',
+      veMaMau: 'Ở sân 1, a, b = max((2, 1), (2, 3)) cho a = 2 và b = 3. Ở sân 2, max((3, 2), (1, 4)) chọn (3, 2) vì 3 > 1.',
       san: [
-        '........',
-        '~~~q~~B.',
-        '........'
+        [
+          '........',
+          '~~~q~~B.',
+          '........'
+        ],
+        [
+          '........',
+          '~~~~~q~B',
+          '........'
+        ]
       ],
+      duLieuSan: ['a, b = max((2, 1), (2, 3))', 'a, b = max((3, 2), (1, 4))'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì lưới hụt ở sân 2
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'a, b = max((2, 1), (2, 3))',
@@ -673,13 +729,13 @@
       ]),
       loiSai: [
         { moTa: 'Để nguyên mã mẫu: mới tiến a ô, chưa gọi pull_back(b) để kéo bè', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(a)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Dùng min thay vì max: b nhận 1 thay vì 3 nên kéo bè thiếu 2 ô', baiLam: bai(['a, b = min((2, 1), (2, 3))', 'forward(a)', 'pull_back(b)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Kéo bè bằng pull_back(a) thay vì pull_back(b): mới lùi 2 ô, thiếu 1 ô tới bến q', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(a)', 'pull_back(a)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Kéo bè bằng pull_back(a) thay vì pull_back(b): ở sân 1 mới lùi 2 ô, thiếu 1 ô tới bến q', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(a)', 'pull_back(a)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Điền thẳng số của sân 1: forward(2) rồi pull_back(3) thì ở sân 2 lưới không tới bè', baiLam: bai(['a, b = max((2, 1), (2, 3))', 'forward(2)', 'pull_back(3)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       sao: { o: 16, nhip: 6 },
       goiY: [
         'Hai bộ (2, 1) và (2, 3) có cùng phần tử đầu là 2, nên max chọn (2, 3) vì 3 > 1.',
-        'Thêm dòng pull_back(b) ở cuối chương trình để bắt bè ở (6, 1) và kéo lùi 3 ô về bến (3, 1).'
+        'Thêm dòng pull_back(b) ở cuối chương trình. Ở sân 1 nó bắt bè ở (6, 1) và kéo lùi 3 ô về bến (3, 1).'
       ]
     }),
 

@@ -356,14 +356,22 @@
     manPhatNot(9, 'bien-the', {
       ten: 'Hợp âm không trùng lặp',
       hamCuaEmCan: ['play_note'],
-      dieu: '264',
-      deBai: 'Bản nhạc yêu cầu 3 nốt phân biệt 264 theo đúng thứ tự xuất hiện đầu tiên trong danh sách khảo sát a = [2, 6, 2, 4, 6]. Hãy dùng tập hợp s = set() để chỉ gọi play_note(x) khi x chưa có trong s (x not in s).',
+      dieu: ['264', '537'],      // điệu theo sân (SanHoc.lopMauCuaSan)
+      deBai: 'Mỗi sân có một danh sách khảo sát a riêng. Bản nhạc gồm các nốt phân biệt trong a, theo đúng thứ tự xuất hiện đầu tiên. Sân 1 là a = [2, 6, 2, 4, 6] nên bản nhạc là 264. Hãy dùng tập hợp s = set() để chỉ gọi play_note(x) khi x chưa có trong s (x not in s).',
       veMaMau: 'Mã mẫu phát mọi phần tử trong a nên bị thừa các nốt trùng.',
       san: [
-        '#####',
-        '#...#',
-        '#####'
+        [
+          '#####',
+          '#...#',
+          '#####'
+        ],
+        [
+          '#####',
+          '#...#',
+          '#####'
+        ]
       ],
+      duLieuSan: ['a = [2, 6, 2, 4, 6]', 'a = [5, 3, 5, 3, 7]'],      // dữ liệu theo sân: sân 2 cần bản nhạc 537; điền thẳng nốt của sân 1 thì sai nốt ở sân 2
       batDau: { x: 2, y: 1, huong: 1 },
       maMau: bai([
         'a = [2, 6, 2, 4, 6]',
@@ -380,11 +388,12 @@
       ]),
       loiSai: [
         { moTa: 'Không lọc trùng bằng set: phát 5 nốt thay vì 3 nốt 264', baiLam: bai(['a = [2, 6, 2, 4, 6]', 'for x in a:', '    play_note(x)']), phaiCoMa: ['sai-not'] },
-        { moTa: 'Quên s.add(x) trong nhánh if: vẫn phát lại các nốt trùng', baiLam: bai(['a = [2, 6, 2, 4, 6]', 's = set()', 'for x in a:', '    if x not in s:', '        play_note(x)']), phaiCoMa: ['sai-not'] }
+        { moTa: 'Quên s.add(x) trong nhánh if: vẫn phát lại các nốt trùng', baiLam: bai(['a = [2, 6, 2, 4, 6]', 's = set()', 'for x in a:', '    if x not in s:', '        play_note(x)']), phaiCoMa: ['sai-not'] },
+        { moTa: 'Điền thẳng nốt của sân 1: play_note(2), play_note(6), play_note(4) sai nốt ở sân 2', baiLam: bai(['a = [2, 6, 2, 4, 6]', 'play_note(2)', 'play_note(6)', 'play_note(4)']), phaiCoMa: ['sai-not'] }
       ],
       sao: { o: 8, nhip: 3 },
       goiY: [
-        'Khởi tạo s = set() trước vòng lặp.',
+        'Khởi tạo s = set() trước vòng lặp. Điền thẳng nốt thì chỉ đúng ở một sân.',
         'Trong vòng lặp, kiểm tra if x not in s: rồi thụt lề cả s.add(x) và play_note(x).'
       ]
     }),

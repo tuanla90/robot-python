@@ -41,8 +41,8 @@
       hamCuaEmCan: [],
       taoHam: [],
       bienDem: true,
-      cauTruc: ['for', 'if', 'return', 'list'],
-      khung: { chinh: 12, moiHam: 10, cauTruc: ['for', 'if', 'return', 'list'] },
+      cauTruc: ['for', 'if', 'return', 'list', 'dict'],
+      khung: { chinh: 12, moiHam: 10, cauTruc: ['for', 'if', 'return', 'list', 'dict'] },
       mucTieu: 'toi-co'
     }, ds);
   }
@@ -377,16 +377,27 @@
     manTuDien(2, 'lam-quen', {
       ten: 'Tra đúng khóa bản đồ',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Bản đồ từ điển d = {"dong": 4, "nam": 3} ghi chặng hướng đông dài 4 bước và chặng hướng nam dài 3 bước. Mã mẫu đang tra nhầm d["dong"] cho cả hai chặng khiến robot đâm vào vách đá. Hãy sửa khóa ở dòng cuối.',
-      veMaMau: 'Chạy thử: forward(d["dong"]) đi 4 bước nên đâm tường dưới. Đổi khóa thành "nam".',
+      deBai: 'Mỗi sân có một bản đồ từ điển d riêng. Sân 1 là d = {"dong": 4, "nam": 3}: chặng hướng đông dài 4 bước, chặng hướng nam dài 3 bước. Mã mẫu đang tra nhầm d["dong"] cho cả hai chặng. Hãy sửa khóa ở dòng cuối.',
+      veMaMau: 'Chạy thử: ở sân 2, forward(d["dong"]) chỉ đi 2 bước nên dừng trước cờ. Đổi khóa thành "nam".',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '####uI#',
-        '#....F#',
-        '#######'
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '####uI#',
+          '#....F#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.I...#',
+          '###I###',
+          '###I###',
+          '###F###',
+          '#######'
+        ]
       ],
+      duLieuSan: ['d = {"dong": 4, "nam": 3}', 'd = {"dong": 2, "nam": 3}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm tường ở sân 2; ở sân 2 tra nhầm "dong" thì thiếu bước
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'd = {"dong": 4, "nam": 3}',
@@ -399,12 +410,13 @@
         'forward(d["nam"])'
       ]),
       loiSai: [
-        { moTa: 'Đổi cả hai dòng thành "nam": rẽ sớm rơi xuống hố', baiLam: bai(['d = {"dong": 4, "nam": 3}', 'spike_step(d["nam"])', 'forward(d["nam"])']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Đổi cả hai dòng thành "nam": rẽ sớm rơi xuống hố', baiLam: bai(['d = {"dong": 4, "nam": 3}', 'spike_step(d["nam"])', 'forward(d["nam"])']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(4) rồi forward(3) đâm tường ở sân 2', baiLam: bai(['d = {"dong": 4, "nam": 3}', 'spike_step(4)', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 12, nhip: 8 },
       goiY: [
-        'Chặng đi xuống từ (5, 1) tới cờ (5, 4) dài 3 bước, ứng với khóa "nam".',
-        'Sửa dòng cuối thành forward(d["nam"]).'
+        'Chặng đi xuống ứng với khóa "nam". Chặng đi ngang ứng với khóa "dong".',
+        'Sửa dòng cuối thành forward(d["nam"]). Điền thẳng số thì chỉ đúng ở một sân.'
       ]
     }),
 
@@ -450,15 +462,25 @@
     manTuDien(4, 'lam-quen', {
       ten: 'Kiểm tra khóa trong từ điển',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Tra một khóa chưa có trong từ điển sẽ gây lỗi. Ta dùng "b" in d để kiểm tra khóa có tồn tại hay không, và "b" not in d để kiểm tra khóa chưa có. Hãy hoàn thành nhánh if để đi nốt chặng thứ hai.',
+      deBai: 'Tra một khóa chưa có trong từ điển sẽ gây lỗi. Ta dùng "b" in d để kiểm tra khóa có tồn tại hay không, và "b" not in d để kiểm tra khóa chưa có. Mỗi sân có một từ điển d riêng: sân 1 chưa có khóa "b", sân 2 đã có sẵn. Hãy hoàn thành nhánh if để đi nốt chặng thứ hai.',
       veMaMau: 'Nếu "b" not in d thì gán d["b"] = 2; sau đó kiểm tra nếu "b" in d thì tiến d["b"] bước.',
       san: [
-        '######',
-        '#.II.#',
-        '####I#',
-        '####F#',
-        '######'
+        [
+          '######',
+          '#.II.#',
+          '####I#',
+          '####F#',
+          '######'
+        ],
+        [
+          '######',
+          '#.I..#',
+          '###F##',
+          '######',
+          '######'
+        ]
       ],
+      duLieuSan: ['d = {"a": 3}', 'd = {"a": 2, "b": 1}'],      // dữ liệu theo sân: sân 2 đã có khóa "b" nên nhánh not in bị bỏ qua; điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'd = {"a": 3}',
@@ -476,11 +498,12 @@
       ]),
       loiSai: [
         { moTa: 'Chưa viết đoạn đi xuống: dừng ở góc (4, 1)', baiLam: bai(['d = {"a": 3}', 'if "b" not in d:', '    d["b"] = 2', 'spike_step(d["a"])']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gán d["b"] = 1: đi thiếu 1 ô tới cờ', baiLam: bai(['d = {"a": 3}', 'if "b" not in d:', '    d["b"] = 1', 'spike_step(d["a"])', 'if "b" in d:', '    forward(d["b"])']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Gán d["b"] = 1: ở sân 1 đi thiếu 1 ô tới cờ', baiLam: bai(['d = {"a": 3}', 'if "b" not in d:', '    d["b"] = 1', 'spike_step(d["a"])', 'if "b" in d:', '    forward(d["b"])']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(3) rồi forward(2) đâm tường ở sân 2', baiLam: bai(['d = {"a": 3}', 'spike_step(3)', 'forward(2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 15, nhip: 6 },
       goiY: [
-        'Sau spike_step(d["a"]), robot đã ở góc (4, 1) và quay mặt xuống dưới.',
+        'Sau spike_step(d["a"]), robot đã ở góc và quay mặt xuống dưới. Ở sân 2, khóa "b" có sẵn nên d["b"] giữ số của sân.',
         'Thêm if "b" in d: rồi thụt lề forward(d["b"]) (hoặc gọi thẳng forward(d["b"])).'
       ]
     }),
@@ -527,17 +550,29 @@
     manTuDien(6, 'luyen', {
       ten: 'Cập nhật số bước trong sổ',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step', 'dict_step'],
-      deBai: 'Ta có thể cộng thêm vào giá trị đang lưu trong từ điển bằng d["x"] = d["x"] + 2. Hãy tăng d["x"] thêm 2 bước trước khi gọi dict_step cho chặng thứ hai.',
-      veMaMau: 'Chặng đầu đi 2 bước (d["x"] == 2), chặng sau đi xuống dài hơn 2 bước (tức 4 bước).',
+      deBai: 'Ta có thể cộng thêm vào giá trị đang lưu trong từ điển bằng d["x"] = d["x"] + 2. Mỗi sân có một từ điển d riêng, nhưng ở sân nào chặng đi xuống cũng dài hơn chặng đầu 2 bước. Hãy tăng d["x"] thêm 2 bước sau khi đi chặng đầu bằng dict_step.',
+      veMaMau: 'Ở sân 1, chặng đầu đi 2 bước (d["x"] == 2), chặng sau đi xuống dài hơn 2 bước (tức 4 bước).',
       san: [
-        '#####',
-        '#.I.#',
-        '###I#',
-        '###I#',
-        '###I#',
-        '###F#',
-        '#####'
+        [
+          '#####',
+          '#.I.#',
+          '###I#',
+          '###I#',
+          '###I#',
+          '###F#',
+          '#####'
+        ],
+        [
+          '#####',
+          '#...#',
+          '##I##',
+          '##I##',
+          '##F##',
+          '#####',
+          '#####'
+        ]
       ],
+      duLieuSan: ['d = {"x": 2}', 'd = {"x": 1}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'd = {"x": 2}',
@@ -552,11 +587,12 @@
         'forward(d["x"])'
       ]),
       loiSai: [
-        { moTa: 'Chỉ cộng 1: đi xuống 3 bước, dừng trước cờ 1 ô', baiLam: bai(['d = {"x": 2}', 'dict_step(d, "x")', 'd["x"] = d["x"] + 1', 'forward(d["x"])']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chỉ cộng 1: đi xuống thiếu 1 bước, dừng trước cờ 1 ô', baiLam: bai(['d = {"x": 2}', 'dict_step(d, "x")', 'd["x"] = d["x"] + 1', 'forward(d["x"])']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(2) rồi forward(4) đâm tường ở sân 2', baiLam: bai(['d = {"x": 2}', 'spike_step(2)', 'forward(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 14, nhip: 7 },
       goiY: [
-        'Ban đầu d["x"] bằng 2. Muốn chặng dọc đi 4 bước thì cần cộng thêm 2.',
+        'Ở sân 1, d["x"] bằng 2. Muốn chặng dọc đi 4 bước thì cần cộng thêm 2. Sân 2 bắt đầu bằng số khác nhưng vẫn cộng thêm 2.',
         'Sửa d["x"] = d["x"] + 1 thành d["x"] = d["x"] + 2.'
       ]
     }),
@@ -604,16 +640,27 @@
     manTuDien(8, 'bien-the', {
       ten: 'Duyệt mọi khóa trong từ điển',
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step', 'dict_step'],
-      deBai: 'Vòng lặp for k in d: sẽ duyệt lần lượt từng khóa k trong từ điển d theo thứ tự đã tạo. Hãy dùng vòng lặp for k in d: gọi dict_step(d, k) để đi qua cả 3 cạnh quanh hố sụt.',
+      deBai: 'Vòng lặp for k in d: sẽ duyệt lần lượt từng khóa k trong từ điển d theo thứ tự đã tạo. Mỗi sân có một từ điển d riêng ghi độ dài 3 cạnh quanh hố sụt. Hãy dùng vòng lặp for k in d: gọi dict_step(d, k) để đi qua cả 3 cạnh.',
       veMaMau: 'Thay vì gọi dict_step 3 lần rời rạc, hãy viết for k in d: rồi gọi dict_step(d, k).',
       san: [
-        '#######',
-        '#.III.#',
-        '#.uuuI#',
-        '#.uuuI#',
-        '#FIII.#',
-        '#######'
+        [
+          '#######',
+          '#.III.#',
+          '#.uuuI#',
+          '#.uuuI#',
+          '#FIII.#',
+          '#######'
+        ],
+        [
+          '#######',
+          '#.II..#',
+          '#.uuI##',
+          '#FII.##',
+          '#######',
+          '#######'
+        ]
       ],
+      duLieuSan: ['d = {"a": 4, "b": 3, "c": 4}', 'd = {"a": 3, "b": 2, "c": 3}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
         'd = {"a": 4, "b": 3, "c": 4}',
@@ -626,8 +673,8 @@
         '    dict_step(d, k)'
       ]),
       loiSai: [
-        { moTa: 'Để nguyên mã mẫu: mới đi 2 cạnh, dừng ở (5, 4)', baiLam: bai(['d = {"a": 4, "b": 3, "c": 4}', 'dict_step(d, "a")', 'dict_step(d, "b")']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Sửa giá trị "b" thành 2: rẽ sớm rơi vào hố sụt', baiLam: bai(['d = {"a": 4, "b": 2, "c": 4}', 'for k in d:', '    dict_step(d, k)']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Để nguyên mã mẫu: mới đi 2 cạnh, dừng trước cạnh cuối', baiLam: bai(['d = {"a": 4, "b": 3, "c": 4}', 'dict_step(d, "a")', 'dict_step(d, "b")']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(4), spike_step(3), spike_step(4) đâm tường ở sân 2', baiLam: bai(['d = {"a": 4, "b": 3, "c": 4}', 'spike_step(4)', 'spike_step(3)', 'spike_step(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 13, nhip: 13 },
       goiY: [
@@ -680,8 +727,8 @@
       huyHieu: { ma: 'tu-dien', ten: 'Huy hiệu Từ điển tra cứu' },
       hamCuaEmCan: ['move', 'forward', 'turn_right', 'turn_left', 'spike_step', 'dict_step', 'safe_lookup', 'walk_dict'],
       nhipTheo: 'tong',
-      deBai: 'Chinh phục bản đồ địa chất của 2 khoang hang. Khởi tạo d = {"a": 3, "b": 2}, gọi n = walk_dict(d) để đi 2 cạnh đầu và nhận n = 2, sau đó tiến forward(safe_lookup(d, "c", n)) bước sang trái, rẽ trái bằng turn_left() và tiến n bước xuống cờ.',
-      veMaMau: 'Kết hợp walk_dict(d), safe_lookup(d, "c", n), turn_left() và forward(n).',
+      deBai: 'Chinh phục bản đồ địa chất của 2 khoang hang. Mỗi khoang có một từ điển d riêng (sân 1: d = {"a": 3, "b": 2}). Gọi n = walk_dict(d) để đi 2 cạnh đầu và nhận n = 2, sau đó tiến forward(safe_lookup(d, "c", n)) bước sang trái, rẽ trái bằng turn_left() và tiến n bước xuống cờ.',
+      veMaMau: 'Dòng d đã có sẵn theo từng sân. Kết hợp walk_dict(d), safe_lookup(d, "c", n), turn_left() và forward(n).',
       san: [
         [
           '######',
@@ -694,19 +741,20 @@
         ],
         [
           '######',
-          '#..I.#',
-          '#uuu.#',
-          '#..I.#',
-          '#.I###',
-          '#.F###',
+          '#.I..#',
+          '#..I##',
+          '#I####',
+          '#F####',
+          '######',
           '######'
         ]
       ],
+      duLieuSan: ['d = {"a": 3, "b": 2}', 'd = {"a": 2, "b": 1}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì đâm tường ở sân 2
       batDau: [
         { x: 1, y: 1, huong: 1 },
         { x: 1, y: 1, huong: 1 }
       ],
-      maMau: bai([]),
+      maMau: bai(['d = {"a": 3, "b": 2}']),
       loiGiai: bai([
         'd = {"a": 3, "b": 2}',
         'n = walk_dict(d)',
@@ -716,12 +764,13 @@
       ]),
       loiSai: [
         { moTa: 'Quên rẽ trái turn_left() trước đoạn cuối: đâm tường bên trái', baiLam: bai(['d = {"a": 3, "b": 2}', 'n = walk_dict(d)', 'forward(safe_lookup(d, "c", n))', 'forward(n)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Đoạn cuối chỉ đi 1 bước: dừng trên ô (2, 4) trước cờ', baiLam: bai(['d = {"a": 3, "b": 2}', 'n = walk_dict(d)', 'forward(safe_lookup(d, "c", n))', 'turn_left()', 'move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Đoạn cuối chỉ đi 1 bước: dừng trước cờ 1 ô', baiLam: bai(['d = {"a": 3, "b": 2}', 'n = walk_dict(d)', 'forward(safe_lookup(d, "c", n))', 'turn_left()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: spike_step(3), spike_step(2), forward(2), turn_left(), forward(2) đâm tường ở sân 2', baiLam: bai(['d = {"a": 3, "b": 2}', 'spike_step(3)', 'spike_step(2)', 'forward(2)', 'turn_left()', 'forward(2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 20, nhip: 24 },
       goiY: [
-        'n = walk_dict(d) đưa robot tới (4, 3) hướng sang trái và trả về n = 2.',
-        'Tiếp theo gọi forward(safe_lookup(d, "c", n)) để sang (2, 3), rồi turn_left() và forward(n) xuống cờ (2, 5).'
+        'n = walk_dict(d) đi hết các cạnh trong d, để robot hướng sang trái và trả về n = 2.',
+        'Tiếp theo gọi forward(safe_lookup(d, "c", n)), rồi turn_left() và forward(n) xuống cờ. Điền thẳng số thì chỉ đúng ở một sân.'
       ]
     })
   ];
