@@ -236,7 +236,7 @@
         { moTa: 'Xe cứu hỏa không mở cửa: drone đâm cửa đóng', baiLam: doiBai([DR_3, ['move()', 'back()']]), phaiCoMa: ['dam-tuong'] },
         { moTa: 'Drone chờ trên ô sạc mà không đáp: hết pin trong nhà kính', baiLam: doiBai([DR_3.map(function (d) { return d === 'land()' || d === 'take_off()' ? 'wait()' : d; }), CU_3]), phaiCoMa: ['het-pin'] }
       ],
-      sao: { o: 28, nhip: 17 },
+      sao: { o: 31, nhip: 14 },
       goiY: ['Tia nước trúng nút N: cửa nhà kính mở.', 'Đi qua ô sạc thì đáp sạc: land(), rồi take_off().'],
       cauDo: { doi: ['DR', 'CU'], lap: null, coChe: ['cay-do', 'gieo', 'sac', 'pin', 'list', 'cua', 'phun'], cuu: 'hang', meo: 'don-loi' }
     }),
@@ -286,7 +286,7 @@
         { moTa: 'Xích không ủi cây: xe chở hàng không tới được cửa', baiLam: doiBai([CH_5, []]), phaiCoMa: ['chua-cuu-nguoi'] },
         { moTa: 'Xe chở hàng gắp xong đứng lại trên lối: bác phải chờ', baiLam: doiBai([CH_5.slice(0, 4), CU_5]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 30, nhip: 16 },
+      sao: { o: 30, nhip: 17 },
       goiY: ['pick(): gắp vật trước mũi xe.', 'Bác chỉ bước khi ô kế trên lối trống: robot đứng trên lối thì bác chờ.'],
       cauDo: { doi: ['CH', 'CU'], lap: null, coChe: ['nha-kinh', 'bao-hat', 'cay-do', 'nguoi'], cuu: 'nguoi', meo: 'don-loi' }
     }),
@@ -437,7 +437,7 @@
       doi: [may('DR', { x: 2, y: 1, huong: 1 }, { pin: 10 }), Object.assign({ batDau: { x: 2, y: 3, huong: 1 } }, clone(XICH_GIEO))],
       maMau: doiBai([hang('green', 4), hangXe('yellow', 4)]),
       loiGiai: doiBai([hang('green', 4), hangXe('yellow', 4)]),
-      sao: { o: 16, nhip: 7 },
+      sao: { o: 18, nhip: 5 },
       goiY: ['pen_down(): xe chạy tới đâu gieo hạt tới đó.', 'Xích tiến vào ô cây đổ thì đẩy cây đi một ô.'],
       cauDo: { doi: null, lap: 'xich+son+camera', coChe: ['cay-do', 'gieo', 'pin'], cuu: 'hang', meo: 'song-song' }
     }),
@@ -460,7 +460,7 @@
         { moTa: 'R2 đứng yên: luống dưới chưa gieo', baiLam: doiBai([DR_12, []]), phaiCoMa: ['chua-to-hinh'] },
         { moTa: 'Drone R1 gieo luôn luống dưới: hết pin', baiLam: doiBai([hang('red', 4).concat(['go_down()', 'go_down()', 'ink("blue")', 'pen_down()', 'for i in range(6):', '    go_left()']), []]), phaiCoMa: ['het-pin'] }
       ],
-      sao: { o: 20, nhip: 9 },
+      sao: { o: 20, nhip: 7 },
       goiY: ['Drone bay qua cây đổ. Xích ủi cây đi trước.', 'Hai bánh gặp cây đổ thì đứng im.'],
       cauDo: { doi: null, lap: 'drone+son', coChe: ['cay-do', 'gieo', 'pin'], cuu: 'hang', meo: 'song-song' }
     }),
@@ -484,7 +484,7 @@
         { moTa: 'Nhện bước thẳng vào mương: rơi hố', baiLam: doiBai([DR_12, ['ink("green")', 'for i in range(4):', '    dot()', '    go_right()']]), phaiCoMa: ['roi-ho'] },
         { moTa: 'Nhện quên co chân trước khi chui: đâm nhà kính đổ', baiLam: doiBai([DR_12, NHEN_13.slice(0, 10).concat(['for i in range(3):', '    go_right()'])]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 34, nhip: 23 },
+      sao: { o: 30, nhip: 20 },
       goiY: ['Nhện gieo ô dưới bụng: dot() rồi mới bước.', 'Nhảy: crouch(), wait(), stand() cùng go_right(). Chui gầm: co chân rồi đi.'],
       cauDo: { doi: null, lap: 'nhen+son', coChe: ['gieo', 'ho', 'gam-thap', 'nha-kinh', 'pin'], cuu: 'hang', meo: 'song-song' }
     }),
@@ -508,7 +508,7 @@
         { moTa: 'Điền thẳng màu của sân 1: sân 2, 3 gieo sai màu', baiLam: doiBai([DR_14, ['a = ["red", "green", "blue", "yellow"]', 'for i in range(4):', '    go_right()', 'crouch()', 'wait()', 'stand()', 'go_right()'].concat(GIEO_14)]), phaiCoMa: ['chua-to-hinh'] },
         { moTa: 'Nhện bước thẳng vào mương: rơi hố', baiLam: doiBai([DR_14, DOC_14.concat(['go_right()'], GIEO_14)]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 30, nhip: 27 },
+      sao: { o: 22, nhip: 22 },
       goiY: ['a.append(x): thêm x vào cuối danh sách a.', 'color("up"): màu ô phía trên robot (camera bốn hướng).', 'for c in a: lần lượt từng màu đã nhớ.'],
       cauDo: { doi: null, lap: 'nhen+son+camera-4', coChe: ['gieo', 'mau', 'ho', 'list', 'pin'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
