@@ -136,6 +136,17 @@
   var BE1_10 = be10(B1), BE2_10 = be10(B2);
   var SAN_10 = ['#######', '#RRRRR#', '#~~~~~#', '#######'];
 
+  /** Robot hát đặt sẵn (R1): xe hang động (bánh gai + loa). hat(g, be) = play_part đoạn g của bè be. */
+  function hat(g, be) { return 'play_part(' + ds((be === 2 ? B2 : B1)[g]) + ')'; }
+
+  /** trum-mua-clb.1 (hai sân Kho, không dùng xe chở hàng: bảng thân không có hai bánh): xe hang động R1 hát đoạn Kho (bè 1 đoạn 1) trên hành lang trên.
+   *  Thùng quà đổ trên lối dưới, mỗi sân cách một khác. R2 tự lắp đi tới khi trước mặt hết trống (while front_clear()), gắp thùng, quay trái, đặt lên kệ D.
+   *  Cách một: omni + kẹp + khoảng cách (quay một nhịp, nhanh). Cách hai: xích + kẹp + khoảng cách (rẻ, quay hai nhịp). */
+  var HD_11 = [hat(1, 1)];
+  var OMNI_11 = ['while front_clear():', '    forward(1)', 'pick()', 'turn_left()', 'drop()'];
+  var XICH_11 = ['while front_clear():', '    forward(1)', 'pick()', 'tr_left()', 'drop()'];
+  function san11(x) { var h = '#........#'.split(''); h[x] = 'o'; return ['##########', '#........#', '#DDDDDDDD#', h.join(''), '##########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -407,6 +418,34 @@
       sao: { o: 17, nhip: 77 },
       goiY: ['Nối hai list bằng dấu +: [1, 2] + [3] là [1, 2, 3].', 'play_part(notes): hát lần lượt từng nốt trong list.', 'Hai bạn bắt đầu cùng một nhịp.'],
       cauDo: { doi: ['HD', 'HD'], lap: null, coChe: ['loa', 'da-chuong', 'ghep-bai', 'list', 'nhieu-san'], cuu: null, meo: 'song-song' }
+    }),
+    /* ========================================================================
+       CHƯƠNG 2: trum-mua-clb (10 màn) · R1 đặt sẵn (hát đoạn của nơi đó), R2 Luna tự lắp, mỗi màn 2–3 sân. #11–#18: làm việc của cỗ máy nhà mà KHÔNG có cỗ máy đó.
+       ======================================================================== */
+    // 11 · đổi vai, hai sân Kho (G1), không dùng xe chở hàng (bảng thân không có hai bánh): R1 xe hang động hát đoạn Kho (bè 1 đoạn 1: 1 1 5 5 6 6 5 5), tượng nhỏ nốt 6 vỡ khi hát tới.
+    //      R2 tự lắp làm việc của xe chở hàng: tìm thùng quà (while front_clear()), gắp, đặt lên kệ. Cách một omni + kẹp (nhanh), cách hai xích + kẹp (rẻ).
+    man9('trum-mua-clb', 1, 'lam-quen', {
+      ten: 'Kho không có xe chở hàng',
+      mucTieu: 'dua-vat',
+      hamCuaEmCan: HAM_EM.concat(['play_part']),
+      deBai: 'Hai sân Kho. Xe chở hàng về nhà sửa! Xe hang động hát đoạn Kho. Lắp cho Luna một robot làm việc của xe chở hàng: tìm thùng quà trên lối dưới (mỗi sân một chỗ), đặt lên kệ.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san11(4), san11(7)],
+      them: { daChuong: [{ x: 3, y: 1, not: 6, ben: 1 }] },
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['omni', 'xich', 'nhen'], ['kep', 'nam-cham', 'day-keo'], ['khoang-cach', 'camera', 'tu'], 7, [
+        cach('omni', 'kep', 'khoang-cach', [HD_11, OMNI_11]),
+        cach('xich', 'kep', 'khoang-cach', [HD_11, XICH_11])
+      ]),
+      maMau: doiBai([HD_11, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (forward(2)): sân 2 thùng xa hơn, gắp hụt', baiLam: doiBai([HD_11, ['forward(2)', 'pick()', 'turn_left()', 'drop()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên quay: thả thùng lại trước mũi, trên lối', baiLam: doiBai([HD_11, ['while front_clear():', '    forward(1)', 'pick()', 'drop()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quay phải: thùng rơi vào tường, không đặt được', baiLam: doiBai([HD_11, ['while front_clear():', '    forward(1)', 'pick()', 'turn_right()', 'drop()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 33, nhip: 18 },
+      goiY: ['while front_clear(): forward(1): đi tới khi trước mặt có vật.', 'Kệ D ở hàng trên lối: quay trái rồi đặt.', 'play_part(notes): hát lần lượt từng nốt trong list.'],
+      cauDo: { doi: null, lap: 'omni+kep+khoang-cach', coChe: ['thung', 'kho', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     })
   ];
 
