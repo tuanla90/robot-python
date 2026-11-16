@@ -189,6 +189,10 @@
   /** Chương trình xuồng khách khoá của lap-cang-song.5: lưới dài 1, chờ 2 nhịp tung lần một; sang phải một ô (ba nhịp), tung lần hai. */
   var XU_15 = ['set_length(1)', 'wait_n(2)', 'cast_net()', 'wait()', 'turn_left()', 'move()', 'turn_right()', 'set_length(1)', 'cast_net()', 'wait()'];
   /** Xuồng lắp loa thay tay lưới: bỏ cờ chỉnh dây lưới (set_length chỉ là nâng cấp của tay lưới). */
+  /** lap-cang-song.8: cẩu khách R1 cuối ray nhấc container 44, quay hai nấc, vươn hạ lên tàu xanh. Thân vòng lặp của R2: nhấc, nhìn màu ô bãi, hạ đúng tàu, quay về, chạy ray. */
+  var CAU_R1_18 = ['pick_up()', 'swing_right()', 'swing_right()', 'extend()', 'set_down()'];
+  var CAU_18_THAN = ['pick_up()', 'mau = look()', 'swing_right()', 'swing_right()', 'if mau == "blue":', '    extend()', '    set_down()', '    retract()', 'else:', '    set_down()',
+    'swing_right()', 'swing_right()', 'rail(1)'];
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
@@ -678,24 +682,36 @@
       cauDo: { doi: null, lap: 'gai+loa+am-thanh', coChe: ['da-chuong', 'loa', 'container', 'nguoi'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
-    manCS('lap-cang-song', 8, 'van-dung', {
-      ten: 'Dây chuyền 2 nhịp với wait_slide_load và grab_clear',
-      r2: R_BANH,
-      hamCuaEmCan: ['swing_by', 'slide_load', 'wait_n', 'grab_clear', 'wait_slide_load'],
-      deBai: 'Trên đường ray có kiện gỗ o ở (2, 3), còn R2 (xe hai bánh) đứng ở (3, 3) hướng trái. R1 cần bốc lần lượt kiện 23 ở (2, 4) rồi kiện 37 ở (3, 4) lên tàu! Hãy cho R2 gọi grab_clear() để gắp kiện gỗ ở (2, 3) và lùi sang (4, 3); còn R1 gọi wait_slide_load(3, 1) để bốc kiện 23 ở cột 2, gọi swing_by(2) quay cần về hướng Nam rồi gọi tiếp slide_load(1, 2) sang cột 3 bốc nốt kiện 37!',
-      veMaMau: 'Thêm swing_by(2) và slide_load(1, 2) cho R1 để giao kiện thứ hai ở cột 3.',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, huong: 3 }],
-      chong: [CW(2, 4, [[23, 1]]), CW(3, 4, [[37, 2]])],
-      vatThem: [{ x: 2, y: 3 }],
-      tau: tauDon(15, 2),
-      giao: [{ tau: 0, so: [23, 37] }],
-      maMau: baiDoi(['wait_slide_load(3, 1)'], ['grab_clear()']),
-      loiGiai: baiDoi(['wait_slide_load(3, 1)', 'swing_by(2)', 'slide_load(1, 2)'], ['grab_clear()']),
+    // 18 · đọc rồi chọn, lai L13 (cẩu + móc + camera bụng): bão làm mờ số trên container, chỉ còn màu sơn trên ô bãi dưới mỗi chồng (đỏ / xanh).
+    //      Container tự không có màu (lõi: chồng không màu) nên đổi so với bảng: cẩu nhấc container trước, camera ở đầu cần nhìn xuống ô bãi vừa trống, look() trả màu ô.
+    //      Đỏ: quay hai nấc hạ lên tàu đỏ sát ray; xanh: quay hai nấc, vươn thêm một ô hạ lên tàu xanh ngoài xa. Tàu xanh đậu 13 nhịp, tàu đỏ 21 nhịp rồi rời.
+    //      Cẩu khách R1 ở cuối ray giao container 44 lên tàu xanh. Cách hai rẻ hơn: cẩu + móc, không camera, nhìn bản đồ ghi sẵn danh sách màu.
+    man9('lap-cang-song', 8, 'van-dung', {
+      ten: 'Số mờ, đọc màu ô bãi',
+      mucTieu: 'giao-tau',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Bão làm mờ số container. Ô bãi dưới mỗi container sơn màu tàu: đỏ hay xanh. Nhấc lên, nhìn màu ô, hạ lên đúng tàu.',
+      veMaMau: 'Cẩu R2 chưa có chương trình. Camera ở đầu cần đọc màu ô bãi bằng look().',
+      san: ['########', '#......#', '#RRRRRR#', '~TTTT~~~', '~TTTTTT~', '########'],
+      doi: [may('CC', { x: 6, y: 2, huong: 0, nac: 0, tam: 1 }), khe({ x: 1, y: 2, huong: 0, nac: 0, tam: 1 }, { son: 'lam' })],
+      them: {
+        chong: [{ x: 1, y: 1, cont: [{ so: 12 }] }, { x: 2, y: 1, cont: [{ so: 27 }] }, { x: 3, y: 1, cont: [{ so: 31 }] }, { x: 6, y: 1, cont: [{ so: 44 }] }],
+        sonBanDau: ['........', '.rbr....', '........', '........', '........', '........'],
+        tau: [{ o: [1, 2, 3, 4].map(function (x) { return { x: x, y: 3 }; }), co: 21, vang: 40 }, { o: [1, 2, 3, 4, 5, 6].map(function (x) { return { x: x, y: 4 }; }), co: 13, vang: 40 }],
+        giao: [{ tau: 0, so: [12, 31] }, { tau: 1, so: [27, 44] }]
+      },
+      lapRap: lapR2(['cau'], ['moc-cau'], ['camera-bay'], 12, [
+        cach('cau', 'moc-cau', 'camera-bay', [CAU_R1_18, ['for k in range(3):'].concat(CAU_18_THAN.map(function (d) { return '    ' + d; }))]),
+        cach('cau', 'moc-cau', null, [CAU_R1_18, ['for mau in ["red", "blue", "red"]:'].concat([CAU_18_THAN[0]].concat(CAU_18_THAN.slice(2)).map(function (d) { return '    ' + d; }))])
+      ], { moLai: ['L13'] }),
+      maMau: doiBai([CAU_R1_18, []]),
       loiSai: [
-        { moTa: 'R1 mới giao kiện 23 ở cột 2, chưa quay cần và gọi slide_load(1, 2) để giao kiện 37 ở cột 3', baiLam: baiDoi(['wait_slide_load(3, 1)'], ['grab_clear()']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Không đọc màu: container nào cũng hạ lên tàu đỏ', baiLam: doiBai([CAU_R1_18, ['for k in range(3):', '    pick_up()', '    swing_right()', '    swing_right()', '    set_down()', '    swing_right()', '    swing_right()', '    rail(1)']]), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Cẩu R2 đứng yên: tàu rời thiếu hàng', baiLam: doiBai([CAU_R1_18, []]), phaiCoMa: ['chua-giao-tau'] }
       ],
-      sao: { o: 30, nhip: 15 },
-      goiY: ['Ở chương trình R1, thêm swing_by(2) và slide_load(1, 2) ngay dưới wait_slide_load(3, 1).']
+      sao: { o: 23, nhip: 25 },
+      goiY: ['Nhấc container lên trước: ô bãi trống thì camera mới thấy màu sơn.', 'mau = look(); xanh thì extend() rồi set_down(), hạ xong retract().'],
+      cauDo: { doi: null, lap: 'cau+moc-cau+camera-bay', coChe: ['ray', 'tau', 'son', 'container', 'camera'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
     manCS('lap-cang-song', 9, 'bien-the', {
