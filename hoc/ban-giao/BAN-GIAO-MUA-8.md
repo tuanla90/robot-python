@@ -14,6 +14,7 @@ Kế hoạch: [KE-HOACH-MUA-8.md](../KE-HOACH-MUA-8.md). Nhánh `claude/mua-8-ha
 | P3 gói 2 Loa: `loa` Gõ đá chuông, `tap-hop` Không gõ trùng | xong, 20/20 màn đạt máy kiểm | nhánh |
 | P3 gói 3 Cảm biến âm thanh: `am-thanh` Nghe tiếng vang, `che-am-thanh` Chế lệnh: dò tiếng vang | xong, 20/20 màn đạt máy kiểm | nhánh |
 | P3 gói 4 Ngách hang: `san-hang-dong` Chui ngách ngầm, `che-hang-dong` Chế lệnh: vượt ngách | xong, 20/20 màn đạt máy kiểm | nhánh |
+| P3 gói 5 Thu gai: `thu-gai` Lướt đá ướt, `che-thu-gai` Chế lệnh: lướt rồi bám | xong, 20/20 màn đạt máy kiểm | nhánh feb24e1 |
 
 Gói 2 sửa ở phiên này: loa.2 (lời sai thứ hai thắng 3 sao), loa.6 (đá cách 4 ô không nghe: đi tới chỗ rẽ rồi mới lặp), loa.10 (đường sai, khung 12 dòng),
 tap-hop.3 (nước dâng 6 nhịp: tạo túi trong vòng là hết nhịp), tap-hop.4 viết lại "Đếm nốt trong túi" (2 sân, `duLieuSan` cho `s`, `forward(len(s))`),
@@ -34,6 +35,12 @@ Lưu ý: chương trình có `while` (kể cả trong hàm như `wait_echo`) mà
 Lõi: ngách không kiểm đá chuông ở miệng ra (`ngach-chan` chỉ xét thùng / vật / cửa / đồng đội), nên không đặt đá chuông lên miệng ngách.
 Soát trên trình duyệt: san-hang-dong.10, che-hang-dong.6 (3 sao).
 
+Gói 5: lướt dừng ở ô đầu tiên không phải đá ướt (cờ cũng dừng cú lướt), nên muốn ép bung gai thì đặt hố ngay sau ô đá ướt phải bám và cho rẽ ở đó.
+Đi bộ (gai bung) vẫn tới đích nếu đủ nhịp, nên màn chương 1 có trần nhịp (không `while`) để chỉ lướt mới kịp. Cờ nằm thẳng trước hố thì `forward(hear())` chạm cờ trước khi rơi: cho cờ ở bên cạnh.
+Sân tầng đá ướt + ngách dựng bằng `tangLuot(cuoi, duoi, rong)` (đá chuông ở x = 3, cách R1 ở tầng trên đúng 3 ô nên `ring_once` có tác dụng).
+Hàm chế: `slide_stop()`, `glide_step()`, `glide_tunnel()` (thân giống `slide_stop`), `echo_glide()` (if / else). Bỏ `glide_left`, `glide_beat`, `unique_glide` của bản cũ.
+Soát trên trình duyệt: thu-gai.10, che-thu-gai.6 (3 sao; màn đầu chương có phim "Chỉ đường cho R1!" phải bấm qua).
+
 Khay: dòng từ điển ba cặp (`a = {"dau": 3, "giua": 6, "cuoi": 3}`) tràn ô ở khung hẹp; nay hàng code đó tự cao lên (flex-grow tới 2,2 lần, `vuaDong` trong thanh-phan.js), các hàng khác thấp đi một chút.
 
 Máy kiểm:
@@ -47,10 +54,8 @@ Nhánh thêm đỏ `kiem-loi-giai` (và `kiem-lo-trinh` dừng sớm hơn, ở a
 
 ## Còn lại
 
-1. **P3 gói 5–10 (120 màn)** vẫn là bản PDM8 cũ: đề chưa mở bằng "Giúp Sola", gợi ý chưa "Luna:", nhiều dòng không lắp được bằng khay, nhiều màn chỉ một lời sai.
-2. **Màn cũ gói 3–8 gọi hàm của gói 1–2 cũ** mà bản viết lại đã bỏ: `spike_step` (thu-gai.4),
-   `count_unique` (4 màn), `drum_hit` (4 màn). Vì vậy `hoc/kiem-lo-trinh.mjs` và `hoc/kiem-loi-giai.mjs` đỏ trên nhánh này. Gộp main trước khi viết lại các gói đó thì cần cầu tạm
-   (cấp 4 hàm đó làm hàm của màn cho các màn cũ) hay viết lại gói 3–4 trước.
+1. **P3 gói 6–10 (100 màn)** vẫn là bản PDM8 cũ: đề chưa mở bằng "Giúp Sola", gợi ý chưa "Luna:", nhiều dòng không lắp được bằng khay, nhiều màn chỉ một lời sai.
+2. **Màn cũ gói 8 (hang-cu, 4 màn) gọi `drum_hit`** của gói 2 cũ mà bản viết lại đã bỏ. Vì vậy `hoc/kiem-lo-trinh.mjs` và `hoc/kiem-loi-giai.mjs` đỏ trên nhánh này; hết khi viết lại gói 8.
 3. Hàm mùa 9 phải giữ (tên, tham số, thân): `play_note` (đã có ở loa.5), `go_echo` (gói 3), `glide_step`, `glide_tunnel`, `slide_stop`, `echo_glide` (gói 5), `crack_glide` (gói 6),
    `crack_tunnel`, `decode_glide`, `listen_unique_step` (gói 7), `crack_switch` (gói 8), `fill_for_mate`, `crack_for_mate`, `aim_lob`, `slide_r` (gói 9), `echo_crack_step`, `tunnel_crack_glide` (gói 10).
 4. Màn cũ có lỗi dữ liệu: tong-hop-hang.9 miệng ngách (3, 1), (4, 1) đè tường; doi-hang-dong.9, che-doi-hang-dong.5–.8, .10 dùng `vatDang` chưa có hình.
