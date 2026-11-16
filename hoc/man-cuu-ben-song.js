@@ -311,5 +311,32 @@
       goiY: ['Cẩu: pick_up(), quay một nấc, set_down() lên ô bãi trống.', 'Đá lấp hố thì không cần về đích.'],
       cauDo: { doi: ['CC', 'KT'], lap: null, coChe: ['nuoc', 'container', 'ray', 'nem', 'ho', 'be', 'r3'], cuu: 'may', meo: 'tiep-suc' }
     }),
+    // 10 · song ca đoạn 5 "Kìa con bướm vàng" (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 3 1 3 5 4 6 5 3), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Xuồng lắp loa (L5 dùng sớm, như G4) hát bè 1 dưới nước; máy khai thác lắp loa hát bè 2 trên bờ (bảng ghi "omni đi chéo theo nhịp": choi-dieu chỉ chấm hai robot hát).
+    //      Hai đá chuông lũ cuốn về bến vỡ khi nghe nốt cuối mỗi bè. Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-ben-song', 10, 'trum', {
+      ten: 'Song ca bến sông',
+      mucTieu: 'choi-dieu',
+      deBai: 'Bến sông đã thông! Xuồng hát dưới nước, máy khai thác hát trên bờ: song ca đoạn 5. Mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      san: ['######', '~~~~.#', '#....#', '######'],
+      doi: [xuongLoa(may('XU', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out'], themHam: ['note', 'beat'], phatNot: true })),
+        may('KT', { x: 1, y: 2, huong: 1 }, { son: 'lam', tay: 'loa', boHam: ['load', 'throw', 'aim'], themHam: ['note', 'beat'], phatNot: true })],
+      them: { dieu: { r1: '1 1 5 5 6 6 5 5', r2: '3 1 3 5 4 6 5 3' }, daChuong: [{ x: 4, y: 1, not: 5, ben: 1 }, { x: 4, y: 2, not: 3, ben: 1 }] },
+      maMau: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_note(3)']]),
+      loiGiai: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 1, 3, 5, 4, 6, 5, 3])']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_note(3)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 đảo hai nốt đầu', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 3, 5, 4, 6, 5, 3])']]), phaiCoMa: ['sai-not'] }
+      ],
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([3, 1, 3, 5, 4, 6, 5, 3]).'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['loa', 'da-chuong', 'nuoc', 'bo'], cuu: null, meo: 'song-song' }
+    }),
+
+    /* ========================================================================
+       CHƯƠNG 2: lap-ben-song (10 màn)
+       ======================================================================== */
   ];
 })();
