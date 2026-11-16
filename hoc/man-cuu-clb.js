@@ -69,6 +69,11 @@
   var XU_5 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(5)', 'drop_net()', 'wait()'];
   var PL_5 = ['wait_n(6)', 'go_up()', 'go_up()', 'go_right()', 'jump("R")', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()'];
 
+  /** cuu-clb.6: sân khấu CLB đổ, cửa kho đạo cụ C đóng; nút giữ cửa M nằm dưới gầm sân khấu (chỉ nhện co chân chui được). Hố sụt trên lối máy khai thác.
+   *  Máy khai thác hất đá tròn lấp hố, chạy qua cửa về cờ. Nhện co chân chui gầm, đứng lên nút, giữ tới khi máy khai thác qua cửa, sang cờ. */
+  var KT_6 = ['lob()', 'forward(7)'];
+  var PL_6 = ['crouch()', 'go_right()', 'go_right()', 'stand()', 'wait_n(2)', 'go_right()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -207,6 +212,31 @@
       sao: { o: 43, nhip: 23 },
       goiY: ['set_length(1): lưới dài 1 ô; cast_net("back"): tung lưới ra sau đuôi.', 'Bè nằm trên bến q là cầu phao.', 'jump("R"): nhện bật qua một ô (qua được hố).'],
       cauDo: { doi: ['PL', 'XU'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'dao', 'ho', 'nhay', 'sat'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 6 · giữ cửa, cặp #17 Phân loại + Khai thác, trộn Mỏ đá (đá tròn lấp hố) + Bãi tái chế / Hang (gầm thấp, nút đè): sân khấu CLB đổ, nút giữ cửa kho đạo cụ nằm dưới gầm sân khấu.
+    //     Máy khai thác hất đá lấp hố sụt rồi chạy qua cửa; nhện co chân chui gầm, đứng giữ nút. Bẫy: xe chở hàng (không chui gầm, không lấp hố).
+    man9('cuu-clb', 6, 'cung-co', {
+      ten: 'Nút dưới gầm sân khấu',
+      vo: 'mo-da',
+      deBai: 'Sân khấu CLB đổ. Nút giữ cửa kho đạo cụ nằm dưới gầm sân khấu, lối trên có hố sụt. Chọn hai bạn: ai lấp hố và qua cửa, ai chui gầm giữ nút?',
+      veMaMau: 'Cửa kho còn đóng.',
+      san: ['##########', '#.ou..C.F#', '##########', '#.nMF#####', '##########'],
+      noi: [{ nut: { x: 3, y: 3 }, cua: [{ x: 6, y: 1 }] }],
+      them: { vatDang: ['..........', '..r.......', '..........', '..........', '..........'] },
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 4, y: 3 }] })],
+      chonDoi: {
+        menu: ['KT', 'PL', 'CH'],
+        cachMau: [{ chon: ['KT', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([KT_6, PL_6]) }]
+      },
+      maMau: doiBai([['lob()'], ['crouch()']]),
+      loiSai: [
+        { moTa: 'Nhện quên co chân: đâm gầm sân khấu', baiLam: doiBai([KT_6, ['go_right()', 'go_right()', 'wait_n(2)', 'go_right()']]), phaiCoMa: ['gam-thap'] },
+        { moTa: 'Nhện rời nút ngay: cửa đóng trước mũi máy khai thác', baiLam: doiBai([KT_6, ['crouch()', 'go_right()', 'go_right()', 'stand()', 'go_right()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không hất đá: máy khai thác vướng đá, hố còn đó', baiLam: doiBai([['wait()', 'forward(7)'], PL_6]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 23, nhip: 11 },
+      goiY: ['crouch(): nhện co chân chui gầm thấp; stand(): đứng lên.', 'lob(): hất vật trước mũi xa 2 ô; đá rơi xuống hố thì lấp hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
+      cauDo: { doi: ['KT', 'PL'], lap: null, coChe: ['gam', 'nut-de', 'cua', 'ho', 'da-tron', 'san-khau'], cuu: 'hang', meo: 'giu-cua' }
     })
   ];
 
