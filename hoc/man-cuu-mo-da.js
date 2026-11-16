@@ -132,6 +132,13 @@
   /** Drone + nam châm: hạ xuống trên mũi khoan, hút, bay lên hốc chứa, thả. */
   var DRONE_14 = ['go_down()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'];
 
+  /** lap-mo-da.5: máy khai thác chờ hố trên lối được lấp rồi chạy tới cờ. */
+  var KT_15 = ['wait_n(8)', 'forward(6)'];
+  /** Xích + máy ném: tiến bốn ô ủi khối đá vuông dạt sang, quay lên, hất đá tròn xa 2 ô lấp hố trên lối máy khai thác, quay lại ủi tiếp một ô tới cờ. */
+  var XICH_15 = ['forward(4)', 'tr_left()', 'aim_lob(2)', 'tr_right()', 'forward(1)'];
+  /** Cách hai: thêm cảm biến hồng ngoại, tiến tới khi khối đá vuông đã dạt khỏi cột đá tròn. */
+  var XICH_HN_15 = ['for i in range(4):', '    forward(1)', 'tr_left()', 'if distance() == 0:', '    aim_lob(2)', 'tr_right()', 'forward(1)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -492,6 +499,28 @@
       sao: { o: 22, nhip: 11 },
       goiY: ['Nam châm trên đầu cần hút sắt ở ô dưới đầu cần.', 'swing_left() hai lần: cần quay nửa vòng.'],
       cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'ho', 'nem', 'mui-khoan'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 15 · dọn lối + làm cầu, xích + máy ném (một xe làm cả hai): hố trên lối máy khai thác; viên đá tròn duy nhất nằm trong khe dưới hố, chỉ hất được từ hành lang dưới.
+    //      Khối đá vuông (thùng nặng H) bít hành lang dưới: xích tiến là ủi khối đá dạt đi, tới dưới khe thì quay lên hất đá tròn xa 2 ô lấp hố. Bánh omni, bánh gai vướng khối đá vuông.
+    man9('lap-mo-da', 5, 'luyen', {
+      ten: 'Khối đá vuông và hố',
+      deBai: 'Hố chắn lối máy khai thác. Đá tròn nằm trong khe, chỉ hất được từ hành lang dưới. Khối đá vuông bít hành lang. Lắp một xe làm cả hai việc.',
+      veMaMau: 'Máy khai thác chờ hố được lấp.',
+      san: ['#########', '#....u.F#', '#####o###', '#.....F.#', '#########'],
+      them: { xichDay: true, thungThem: [{ x: 3, y: 3 }], vatDang: ['.........', '.........', '.....r...', '.........', '.........'] },
+      doi: [may('KT', { x: 1, y: 1, huong: 1 }, { co: [{ x: 7, y: 1 }] }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', co: [{ x: 6, y: 3 }] })],
+      lapRap: lapR2(['xich', 'omni', 'gai'], ['nem'], ['hong-ngoai'], 8, [
+        cach('xich', 'nem', null, [KT_15, XICH_15]),
+        cach('xich', 'nem', 'hong-ngoai', [KT_15, XICH_HN_15])
+      ]),
+      maMau: doiBai([KT_15, []]),
+      loiSai: [
+        { moTa: 'Xích ủi khối đá nhưng quên quay lên: đá tròn không tới hố', baiLam: doiBai([KT_15, ['forward(4)', 'aim_lob(2)']]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Xích hất tầm 1: đá rơi lại khe, hố còn đó', baiLam: doiBai([KT_15, ['forward(4)', 'tr_left()', 'aim(1)', 'lob()', 'tr_right()', 'forward(1)']]), phaiCoMa: ['roi-ho'] }
+      ],
+      sao: { o: 37, nhip: 17 },
+      goiY: ['Xích tiến vào khối đá vuông là đẩy nó đi một ô.', 'tr_left(): xích quay trái tại chỗ.'],
+      cauDo: { doi: null, lap: 'xich+nem', coChe: ['thung-nang', 'ho', 'da-tron', 'nem'], cuu: 'hang', meo: 'lam-cau' }
     }),
     /* HẾT MOI */
   ];
