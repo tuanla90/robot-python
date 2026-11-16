@@ -198,6 +198,17 @@
   function san16(dai) { return ['###########', '#.........#', '###########', '#' + '.'.repeat(dai) + '#'.repeat(9 - dai) + '#', '#.#########', '###########']; }
   function hinh16(dai) { var h = '...........'.split(''); h[1 + Math.floor((dai - 1) / 2)] = 'g'; return ['...........', '...........', '...........', h.join(''), '...........', '...........']; }
 
+  /** trum-mua-clb.7 (hai sân Mỏ, không dùng máy khai thác: bảng thân không có omni): xe cứu hỏa lắp loa R1 hát đoạn Mỏ (bè 1 đoạn 7) trên lối trên.
+   *  Lối mỏ: đá tròn ở đầu lối, ô kế là đá ướt I, rồi hố (mỗi sân cách một khác: 2 ô, 3 ô), sau hố là vách. R2 tự lắp xe máy ném + hồng ngoại: đứng trên ô đá ướt, nạp đá tròn,
+   *  quay về phía hố, k = distance() (ô trống tới vách, kể cả hố), aim(k), ném lấp hố. Màn này tắt ném đà (khe nemDa: false) để aim tới 3.
+   *  Cách một: bánh gai + máy ném + hồng ngoại: đi thẳng lên ô đá ướt, gai bám, đứng lại được (nhanh). Cách hai: hai bánh + máy ném + hồng ngoại (rẻ): đi thẳng lên đá ướt thì trượt quá,
+   *  phải vòng sang phải rồi lăn vào đá ướt từ phía hố (trượt tới đá tròn thì dừng). */
+  var CU_17 = [hat(7, 1)];
+  var NEM_17 = ['load()', 'wait()', 'turn_right()', 'turn_right()', 'k = distance()', 'aim(k)', 'throw()', 'wait()'];
+  var GAI_17 = ['forward(1)', 'turn_left()'].concat(NEM_17);
+  var BANH_17 = ['turn_right()', 'forward(1)', 'turn_left()', 'forward(1)', 'turn_left()', 'forward(1)'].concat(NEM_17);
+  function san17(ho) { var a = '#oI.######'.split(''); a[ho] = 'u'; for (var x = 4; x < ho; x++) a[x] = '.'; return ['##########', '#........#', '##.#######', a.join(''), '##..######', '##########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -623,6 +634,31 @@
       sao: { o: 26, nhip: 18 },
       goiY: ['k // 2: chia k cho 2, bỏ phần lẻ: 6 // 2 = 3, 7 // 2 = 3.', 'distance(): số ô trống trước mặt.', 'Omni trượt ngang được, không cần quay.'],
       cauDo: { doi: null, lap: 'omni+son+hong-ngoai', coChe: ['gieo', 'luong', 'hong-ngoai', 'chia-nguyen', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
+    }),
+    // 17 · đổi vai, hai sân Mỏ (G7), không dùng máy khai thác (bảng thân không có omni): R1 xe cứu hỏa lắp loa hát đoạn Mỏ (bè 1 đoạn 7: 1 1 5 5 6 6 5 5).
+    //      R2 tự lắp xe máy ném + hồng ngoại: hố mỗi sân một chỗ, đo distance() rồi aim(k) ném đá lấp hố. Ôn biến, cảm biến làm đối số.
+    man9('trum-mua-clb', 7, 'lam-quen', {
+      ten: 'Mỏ không có máy khai thác',
+      mucTieu: 'dua-vat', vo: 'mo-da',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['play_part']),
+      deBai: 'Hai sân Mỏ. Máy khai thác về nhà sửa! Xe cứu hỏa hát đoạn Mỏ. Lối mỏ có một hố, mỗi sân một chỗ, sau hố là vách đá. Lắp cho Luna một robot ném đá tròn lấp hố. Ô vào lối là đá ướt.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san17(4), san17(5)],
+      doi: [xeLoa('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 2, y: 4, huong: 0 }, { son: 'lam', nemDa: false })],
+      lapRap: lapR2(['gai', 'hai-banh', 'nhen'], ['nem', 'kep', 'nam-cham'], ['hong-ngoai', 'khoang-cach', 'radar'], 9, [
+        cach('gai', 'nem', 'hong-ngoai', [CU_17, GAI_17]),
+        cach('hai-banh', 'nem', 'hong-ngoai', [CU_17, BANH_17])
+      ]),
+      maMau: doiBai([CU_17, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (aim(2)): sân 2 hố xa 3 ô, đá rơi trước hố', baiLam: doiBai([CU_17, ['forward(1)', 'turn_left()', 'load()', 'wait()', 'turn_right()', 'turn_right()', 'aim(2)', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đo khi còn quay mặt về chỗ đá tròn: distance() = 1, đá rơi trước hố', baiLam: doiBai([CU_17, ['forward(1)', 'turn_left()', 'load()', 'wait()', 'k = distance()', 'turn_right()', 'turn_right()', 'aim(k)', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Ném quá một ô (aim(k + 1)): đá đập vách vỡ', baiLam: doiBai([CU_17, GAI_17.slice(0, 7).concat(['aim(k + 1)', 'throw()', 'wait()'])]), phaiCoMa: ['nem-vo'] }
+      ],
+      sao: { o: 33, nhip: 24 },
+      goiY: ['distance(): số ô trống tới vật cản (hố cũng tính là ô trống).', 'aim(k): tầm ném k ô, đổi ngay, không tốn nhịp.', 'Bánh gai đứng lại được trên đá ướt; xe khác trượt tới khi gặp vật cản.'],
+      cauDo: { doi: null, lap: 'gai+nem+hong-ngoai', coChe: ['ho', 'da-tron', 'nem', 'da-uot', 'hong-ngoai', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     })
   ];
 
