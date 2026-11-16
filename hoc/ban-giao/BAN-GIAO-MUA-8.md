@@ -17,6 +17,7 @@ Kế hoạch: [KE-HOACH-MUA-8.md](../KE-HOACH-MUA-8.md). Nhánh `claude/mua-8-ha
 | P3 gói 5 Thu gai: `thu-gai` Lướt đá ướt, `che-thu-gai` Chế lệnh: lướt rồi bám | xong, 20/20 màn đạt máy kiểm | nhánh feb24e1 |
 | P3 gói 6 Ngân dài: `phat-not` Vừa đi vừa ngân, `che-phat-not` Chế lệnh: tấu phá đá | xong, 20/20 màn đạt máy kiểm | nhánh 14105db |
 | P3 gói 7 Nghe nốt: `nghe-not` Bắt nốt chuông đá, `che-nghe-not` Chế lệnh: giải mã giai điệu | xong, 20/20 màn đạt máy kiểm | nhánh 58aa658 |
+| P3 gói 8 Hang có dấu cũ: `hang-cu` Gặp dấu cũ trong hang, `che-hang-cu` Chế lệnh: qua hang cũ | xong, 20/20 màn đạt máy kiểm | nhánh 98dd5c2 |
 
 Gói 2 sửa ở phiên này: loa.2 (lời sai thứ hai thắng 3 sao), loa.6 (đá cách 4 ô không nghe: đi tới chỗ rẽ rồi mới lặp), loa.10 (đường sai, khung 12 dòng),
 tap-hop.3 (nước dâng 6 nhịp: tạo túi trong vòng là hết nhịp), tap-hop.4 viết lại "Đếm nốt trong túi" (2 sân, `duLieuSan` cho `s`, `forward(len(s))`),
@@ -56,6 +57,13 @@ Khay chưa chạm được `d[listen()]` (chip chỉ có `d["a"]`, `d[k]`), nên
 Hàm chế: `crack_tunnel()`, `decode_glide(d, k)`, `listen_unique_step(s)`. Bỏ `listen_step` và các hàm cũ của bản PDM8.
 Soát trên trình duyệt: nghe-not.8, che-nghe-not.10 (3 sao).
 
+Gói 8: đo lõi với bánh gai: bàn xoay `@` `%` (Mỏ đá; lướt dừng trên bàn thì bị quay), cổng nhịp `C` + `cuaNhip` (Nhà máy), cổng dịch chuyển `1 1` chạy được;
+thùng `H` không đẩy được, nút bắn `N` không bắn được, băng chuyền đẩy cách nhịp (khó đoán) nên không dùng. Cổng nhịp đóng đè lên xe thì giữ mở (`cua-ket`, thông tin):
+hang-cu.8 dùng điều này (cổng chỉ mở đúng một nhịp, ngân thừa một nhịp là lỡ cổng), nên lời giải thắng kèm "Lưu ý" cửa giữ mở.
+`extend_spikes()` rồi `retract_spikes()` liền nhau (chưa qua nhịp nào) thì lệnh trước mất (`gai-goi-lai`): hàm lướt mà gọi nối nhau phải kết thúc bằng lệnh tốn nhịp.
+Hàm chế: `crack_switch()` (thân mùa 9), `spin_crack()`, `ring_gate(n, k)`. Bỏ `echo_gate`, `belt_echo`, `dict_gate`, `unique_echo_step` và `spin_crack` cũ (gói 9, 10 cũ còn gọi).
+Soát trên trình duyệt: hang-cu.8, hang-cu.10, che-hang-cu.10 (3 sao).
+
 Khay: dòng từ điển ba cặp (`a = {"dau": 3, "giua": 6, "cuoi": 3}`) tràn ô ở khung hẹp; nay hàng code đó tự cao lên (flex-grow tới 2,2 lần, `vuaDong` trong thanh-phan.js), các hàng khác thấp đi một chút.
 
 Máy kiểm:
@@ -69,8 +77,8 @@ Nhánh thêm đỏ `kiem-loi-giai` (và `kiem-lo-trinh` dừng sớm hơn, ở a
 
 ## Còn lại
 
-1. **P3 gói 8–10 (60 màn)** vẫn là bản PDM8 cũ: đề chưa mở bằng "Giúp Sola", gợi ý chưa "Luna:", nhiều dòng không lắp được bằng khay, nhiều màn chỉ một lời sai.
-2. **Màn cũ gói 8, 10 gọi hàm cũ đã bỏ**: `drum_hit` (gói 2 cũ), `crack_step`, `unique_notes`, `march_note(n)` một đối số (gói 6 cũ). Vì vậy `hoc/kiem-lo-trinh.mjs` và `hoc/kiem-loi-giai.mjs` đỏ trên nhánh này; hết khi viết lại các gói đó.
+1. **P3 gói 9–10 (40 màn)** vẫn là bản PDM8 cũ: đề chưa mở bằng "Giúp Sola", gợi ý chưa "Luna:", nhiều dòng không lắp được bằng khay, nhiều màn chỉ một lời sai.
+2. **Màn cũ gói 9, 10 gọi hàm cũ đã bỏ**: `drum_hit` (gói 2 cũ), `crack_step`, `unique_notes`, `march_note(n)` một đối số (gói 6 cũ). Vì vậy `hoc/kiem-lo-trinh.mjs` và `hoc/kiem-loi-giai.mjs` đỏ trên nhánh này; hết khi viết lại các gói đó.
 3. Hàm mùa 9 phải giữ (tên, tham số, thân): `play_note` (đã có ở loa.5), `go_echo` (gói 3), `glide_step`, `glide_tunnel`, `slide_stop`, `echo_glide` (gói 5), `crack_glide` (gói 6),
    `crack_tunnel`, `decode_glide` (thân nay hai dòng, cùng hành vi), `listen_unique_step` (gói 7), `crack_switch` (gói 8), `fill_for_mate`, `crack_for_mate`, `aim_lob`, `slide_r` (gói 9), `echo_crack_step`, `tunnel_crack_glide` (gói 10).
 4. Màn cũ có lỗi dữ liệu: tong-hop-hang.9 miệng ngách (3, 1), (4, 1) đè tường; doi-hang-dong.9, che-doi-hang-dong.5–.8, .10 dùng `vatDang` chưa có hình.
