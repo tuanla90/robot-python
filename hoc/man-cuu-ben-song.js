@@ -56,6 +56,10 @@
   var CU_8 = ['wait_n(3)', 'move()', 'spray()', 'wait()'];
   var DR_8 = ['go_down()', 'dot()', 'go_up()', 'land()'];
   var XU_R3_8 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(7)', 'forward(5)', 'drop_net()', 'wait()'];
+  /** cuu-ben-song.9: cẩu nhấc container chắn lối bờ, quay trái một nấc hạ lên bãi. Máy khai thác xuống bờ, chạy dọc lối, quay xuống nạp đá giữa luồng, quay trái ném lấp hố. Xuồng khách khoá. */
+  var CC_9 = ['pick_up()', 'swing_left()', 'set_down()'];
+  var KT_9 = ['turn_right()', 'turn_right()', 'move()', 'turn_left()', 'forward(5)', 'turn_right()', 'load()', 'wait()', 'turn_left()', 'throw()', 'wait()'];
+  var XU_R3_9 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(8)', 'forward(7)', 'drop_net()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -279,6 +283,33 @@
       sao: { o: 26, nhip: 15 },
       goiY: ['dot() trên ô bùn: rắc cát, ô thành sàn thường.', 'Xe trượt trên bùn tới ô không còn bùn thì dừng.'],
       cauDo: { doi: ['CU', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'van', 'cong', 'phun', 'ho', 'r3'], cuu: 'may', meo: 'lam-cau' }
+    }),
+    // 9 · cứu máy, tiếp sức, nhắc lại G2–G4 (container chắn lối, ray cẩu, máy ném lấp hố): xuồng khách (R3, khoá) kéo bè hàng, chờ rồi chạy thẳng vào bến q.
+    //     Tảng đá lũ cuốn nằm giữa luồng chắn xuồng khách; máy khai thác phải ra bờ sông nạp đá, nhưng container đổ chắn lối bờ duy nhất.
+    //     Cẩu nhấc container, quay sang hạ lên bãi trống; máy khai thác xuống bờ, chạy dọc lối qua chỗ container vừa dọn, quay xuống nạp đá, quay phải ném lấp hố.
+    //     Bẫy: robot phân loại (không nhấc đá, không nhấc container). Bảng ghi "song song": container trôi cẩu nhấc lên bờ không về đích được (lõi: dua-vat đếm
+    //     container đã nhấc), nên đổi thành chuỗi tiếp sức cẩu → máy khai thác → xuồng khách.
+    man9('cuu-ben-song', 9, 'bien-the', {
+      ten: 'Mở luồng cho xuồng khách',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Xuồng khách chờ rồi chạy thẳng vào bến. Đá chắn luồng, container chắn lối ra bờ sông. Ai dọn gì trước?',
+      veMaMau: 'Đọc chương trình của xuồng khoá: chờ 9 nhịp rồi forward(7).',
+      san: ['###########', '#RRRR.....#', '#.......u.#', '#B~~~~~~q~#', '###########'],
+      doi: [khe({ x: 3, y: 1, huong: 0, nac: 2, tam: 1 }), khe({ x: 1, y: 1, huong: 0 }),
+        may('XU', { x: 2, y: 3, huong: 1 }, { son: 'tim', coDinh: true })],
+      them: { contChan: true, chong: [{ x: 3, y: 2, cont: [{ so: 17 }] }], vatThem: [{ x: 6, y: 3 }] },
+      chonDoi: {
+        menu: ['KT', 'PL', 'CC'],
+        cachMau: [{ chon: ['CC', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([CC_9, KT_9, XU_R3_9]) }]
+      },
+      maMau: doiBai([[], [], XU_R3_9]),
+      loiSai: [
+        { moTa: 'Cẩu không dọn container: máy khai thác kẹt trên lối bờ', baiLam: doiBai([[], KT_9, XU_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác quên quay trước khi ném: đá ném vào bờ đá, vỡ', baiLam: doiBai([CC_9, KT_9.filter(function (d, i) { return i !== KT_9.length - 3; }), XU_R3_9]), phaiCoMa: ['nem-vo'] }
+      ],
+      sao: { o: 37, nhip: 19 },
+      goiY: ['Cẩu: pick_up(), quay một nấc, set_down() lên ô bãi trống.', 'Đá lấp hố thì không cần về đích.'],
+      cauDo: { doi: ['CC', 'KT'], lap: null, coChe: ['nuoc', 'container', 'ray', 'nem', 'ho', 'be', 'r3'], cuu: 'may', meo: 'tiep-suc' }
     }),
   ];
 })();
