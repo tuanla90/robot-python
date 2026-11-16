@@ -137,6 +137,16 @@
   /** Cách hai rẻ hơn: xuồng + loa (không mic), hát thẳng nốt hai đá (4 rồi 7). */
   var XUONG_LOA_14 = ['play_note(4)', 'forward(5)', 'play_note(7)'];
 
+  /** lap-hang-dong.5: hòm hàng của đội khảo sát kẹt sau đá chuông dày (8, 1) (ben 3: phải ngân 3 nhịp liền). Sông ngầm hàng 3 chảy sang phải (sức 1),
+   *  xuồng không đứng lại được: chỉ ba ô (7..9, 3) ở trong tầm 3 ô của đá. R1 nhện nam châm (PL) bò qua đá vừa vỡ, hút hòm sắt (9, 1) về hốc D (1, 1).
+   *  R1 KHÔNG có loa: lõi (apLoa) cho mọi robot có loa mà không phát trong nhịp đó đặt daNgan của đá về 0, nên đá ben > 1 chỉ vỡ khi chỉ một robot có loa. */
+  var DONG_15 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (x) { return { x: x, y: 3, huong: 1, suc: 1 }; });
+  /** Xuồng + loa: trôi theo dòng, vừa tới ô (7, 3) thì ngân nốt 6 ba nhịp liền: note(6, 3). */
+  var XUONG_15 = ['wait_n(6)', 'note(6, 3)', 'wait()'];
+  var PL_15 = ['for i in range(7):', '    go_right()', 'pull_s()', 'for i in range(8):', '    go_left()', 'magnet_off()', 'wait()'];
+  /** Cách hai: xuồng + loa + mic, nghe nốt đá rồi ngân: n = listen(), note(n, 3). */
+  var XUONG_MIC_15 = ['wait_n(6)', 'n = listen()', 'note(n, 3)', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -497,6 +507,30 @@
       sao: { o: 13, nhip: 15 },
       goiY: ['Xuồng + loa: hát như xe có bánh, đá chuông trên mặt nước vỡ thì thành nước đi được.', 'Loa phá đá trong tầm 3 ô quanh xuồng.', 'Người chỉ bước khi ô kế trên lối trống.'],
       cauDo: { doi: null, lap: 'xuong+loa+am-thanh', coChe: ['song-ngam', 'da-chuong', 'not', 'nguoi', 'nut-de', 'cua'], cuu: 'nguoi', meo: 'cuu-kip' }
+    }),
+    // 15 · dọn lối kịp lúc, ngân dài note(n, k): hòm sắt của đội khảo sát kẹt sau một khối đá chuông dày (phải ngân ba nhịp liền mới vỡ). Sông ngầm bên dưới chảy xiết sang phải,
+    //      xuồng không dừng được: chỉ trong ba nhịp trôi ngang qua đá là trong tầm. Xuồng + loa ngân note(6, 3) đúng lúc, trước khi nhện (R1) bò tới đá.
+    //      Cách hai: thêm mic, nghe nốt rồi ngân (đắt hơn). R1 là nhện nam châm, không phải xe hang động: xem chú thích DONG_15.
+    man9('lap-hang-dong', 5, 'luyen', {
+      ten: 'Ngân dài khi trôi',
+      mucTieu: 'dua-vat',
+      deBai: 'Đá chuông dày chắn hòm sắt: phải ngân 3 nhịp liền mới vỡ. Sông ngầm chảy xiết, xuồng trôi qua đá chỉ trong 3 nhịp. Lắp xuồng có loa, ngân dài đúng lúc: note(n, k).',
+      veMaMau: 'Xuồng trôi qua đá mà chưa hát.',
+      san: ['##############', '#D.......o...#', '##############', '#~~~~~~~~~~~~#', '##############'],
+      them: { dong: DONG_15, daChuong: [{ x: 8, y: 1, not: 6, ben: 3 }], vatChat: ['..............', '.........s....', '..............', '..............', '..............'] },
+      doi: [may('PL', { x: 2, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', chinhLuoi: false })],
+      lapRap: lapR2(['xuong'], ['loa'], ['am-thanh'], 9, [
+        cach('xuong', 'loa', null, [PL_15, XUONG_15]),
+        cach('xuong', 'loa', 'am-thanh', [PL_15, XUONG_MIC_15])
+      ], { moLai: ['L5'] }),
+      maMau: doiBai([PL_15, ['wait_n(6)']]),
+      loiSai: [
+        { moTa: 'Ngân một nhịp (note(6)): đá dày chưa vỡ', baiLam: doiBai([PL_15, ['wait_n(6)', 'note(6)', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Ngân sớm một nhịp (wait_n(5)): nhịp đầu đá còn ngoài tầm', baiLam: doiBai([PL_15, ['wait_n(5)', 'note(6, 3)', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 17, nhip: 38 },
+      goiY: ['note(n, k): ngân nốt n trong k nhịp liền; xuồng vẫn trôi trong lúc ngân.', 'Đá dày phải nghe đúng nốt 3 nhịp liền, trong tầm 3 ô.', 'Dòng chảy đẩy xuồng mỗi nhịp một ô.'],
+      cauDo: { doi: null, lap: 'xuong+loa', coChe: ['song-ngam', 'dong', 'da-chuong', 'ngan-dai'], cuu: 'hang', meo: 'don-loi' }
     })
   ];
 
