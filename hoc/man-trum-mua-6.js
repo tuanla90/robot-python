@@ -211,7 +211,7 @@
       loiGiai: bai(['belt_lob(3)', 'forward(2)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']),
       sao: { o: 28, nhip: 22 },
       loiSai: [
-        cung('Dùng fill_pit() cứng ở hàng 2 theo ca 1: hỏng ở ca 2 khi gặp quặng và cổng sắt', bai(['belt_lob(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)']), ['roi-ho']),
+        cung('Dùng fill_pit() cứng ở hàng 2 theo ca 1: hỏng ở ca 2 khi gặp quặng và cổng sắt', bai(['belt_lob(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)']), ['dam-tuong']),
         { moTa: 'Dùng belt_lob(2) ở hàng 1 nên đá rơi vào ô cổng C(5,1) thay vì nút M(6,1)', baiLam: bai(['belt_lob(2)', 'forward(2)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']), phaiCoMa: ['dam-tuong'] }
       ],
       goiY: ['Hàng 1: belt_lob(3) rồi forward(2) đưa R1 tới (5,1).', 'Trượt xuống (5,2) bằng slide_r(1), gọi smart_pad() để tới (7,2), rồi gọi slide_r(1) vào F(7,3).']
@@ -318,7 +318,7 @@
       loiGiai: bai(['open_dock(3)', 'forward(2)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']),
       sao: { o: 32, nhip: 57 },
       loiSai: [
-        cung('Tầng 2 dùng fill_pit() cứng và tầng 3 dùng lob_pad(3) cứng theo ca 1: hỏng ở ca 2', bai(['open_dock(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['roi-ho']),
+        cung('Tầng 2 dùng fill_pit() cứng và tầng 3 dùng lob_pad(3) cứng theo ca 1: hỏng ở ca 2', bai(['open_dock(3)', 'forward(2)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['dam-tuong']),
         { moTa: 'Quên gọi forward(2) sau open_dock(3) nên trượt xuống khi chưa tới cột 5', baiLam: bai(['open_dock(3)', 'slide_r(1)', 'smart_pad()', 'slide_r(1)', 'smart_pad()', 'slide_r(1)']), phaiCoMa: ['nap-hut', 'chua-toi-co'] }
       ],
       goiY: ['open_dock(3) dừng ở (3,1) và mở cổng C(5,1); gọi forward(2), slide_r(1) để tới (5,2).', 'Từ (5,2) gọi smart_pad(), slide_r(1) tới (7,3), rồi gọi smart_pad(), slide_r(1) lần nữa tới F(9,4).']
@@ -540,7 +540,7 @@
       sao: { o: 31, nhip: 32 },
       loiSai: [
         { moTa: 'Quên gọi slide_r(1) sau belt_pad(3) nên gọi quarry_run(2) ngay ở hàng 1', baiLam: bai(['belt_pad(3)', 'quarry_run(2)']), phaiCoMa: ['dam-tuong'] },
-        cung('Viết cứng fill_pit() rồi lob_pad(3) theo ca 1: hỏng ở ca 2', bai(['belt_pad(3)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['roi-ho'])
+        cung('Viết cứng fill_pit() rồi lob_pad(3) theo ca 1: hỏng ở ca 2', bai(['belt_pad(3)', 'slide_r(1)', 'fill_pit()', 'slide_r(1)', 'lob_pad(3)', 'slide_r(1)']), ['dam-tuong'])
       ],
       goiY: ['belt_pad(3) đưa R1 tới (5,1); gọi slide_r(1) để xuống (5,2).', 'Tại (5,2), gọi quarry_run(2) để vượt tầng 2 và tầng 3 vào F(9,4).']
     }),

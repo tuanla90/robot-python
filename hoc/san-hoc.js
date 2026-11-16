@@ -298,7 +298,7 @@
         - load() và throw() chỉ RA LỆNH (wait() cho nhịp trôi). Mỗi nhịp tay nhận MỘT lệnh (hai lệnh: lệnh sau bị bỏ, 'nem-goi-lai', lỗi). Nhịp có load() hay
           throw() thì xe ĐỨNG YÊN, lệnh bánh / trượt cùng nhịp bị bỏ ('nem-dung-yen', thông tin). throw() nhớ tầm đang đặt LÚC GỌI (throw(); aim(3); wait()
           ném bằng tầm cũ).
-        - NÉM ĐÀ (cfg.nemDa, ghép nhịp 5b, 16/11; bật từ gói 6 Chỉnh lực hất tới hết mùa Mỏ đá; nơi khác không bật): ném lao phải chạy đà mới xa.
+        - NÉM ĐÀ (cfg.nemDa, ghép nhịp 5b, 16/11; bật từ gói 6 Chỉnh lực hất tới hết mùa Mỏ đá và cả mùa 8, 9 vì màn ở đó gọi hàm em aim_lob(3) / lob_step chế ở gói 6; gói 1–5 mùa 7 và mùa ẩn không bật): ném lao phải chạy đà mới xa.
           Màn có cờ: aim(n) chỉ nhận n = 1 hoặc 2 (TAM_NEM_DA; aim(3) là 'tam-sai'). throw() cùng nhịp với TIẾN THẲNG (left_move + right_move; xe bánh / omni,
           không tính xích): (a) xe tiến 1 ô, (b) vật rời tay ở ô MỚI, bay tầm + 1 ô ('nem-vat' có da: true, tam = tầm thật). Ô trước bị chặn (tường, rào, vật,
           thùng, đồng đội, cửa đóng): xe đứng yên, ném tầm thường, sự kiện 'khong-co-da' {nhip, o, den, vat, lenh, nem} (thông tin, thay cho 'dam-tuong').

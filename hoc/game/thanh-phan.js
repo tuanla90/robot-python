@@ -2420,19 +2420,21 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   /**
-   * Số lớn nhất chọn được cho đối số k của lệnh / hàm `ten`: aim(n) chỉ nhận 1–3 (tầm ném), hàm nào đưa đối số k thẳng vào aim(...) (vd. toss(n) = aim(n); throw(); wait())
+   * Số lớn nhất chọn được cho đối số k của lệnh / hàm `ten`: aim(n) chỉ nhận 1–3 (tầm ném; màn nemDa 1–2), hàm nào đưa đối số k thẳng vào aim(...) (vd. toss(n) = aim(n); throw(); wait())
    * cũng chỉ 1–3; còn lại 9. layCtx() trả { man, hamCuaMan: [f], kho: [f] } như taoKieu.
    */
   function taoSoToiDa(layCtx) {
     return function (ten, k) {
-      if (ten === 'aim') return 3;
       if (ten === 'ink') return 9;
       var cx = layCtx() || {}, l = [(cx.hamCuaMan || []), (cx.kho || [])], i, j, f = null;
+      // màn NÉM ĐÀ (cfg.nemDa, ghép nhịp 5b): aim(n) chỉ còn 1 hoặc 2 (muốn xa thì chạy đà)
+      var m = cx.man, tamMax = (m && (m.nemDa || (m.doi || []).some(function (r) { return r && r.nemDa; }))) ? 2 : 3;
+      if (ten === 'aim') return tamMax;
       for (i = 0; i < l.length && !f; i++) for (j = 0; j < l[i].length && !f; j++) if (l[i][j].ten === ten) f = l[i][j];
       var p = f && f.thamSo ? f.thamSo[k] : null;
       if (!p) return SO_TOI_DA;
       var re = new RegExp('^\\s*aim\\(\\s*' + p + '\\s*\\)');
-      return (f.than || []).some(function (d) { return re.test(String(d)); }) ? 3 : SO_TOI_DA;
+      return (f.than || []).some(function (d) { return re.test(String(d)); }) ? tamMax : SO_TOI_DA;
     };
   }
   /* ------------------------------------------------------------ Palette */

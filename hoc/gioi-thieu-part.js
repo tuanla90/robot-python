@@ -153,8 +153,8 @@
       lenh: ['aim', 'load', 'throw'],
       ghep: [{ lenh: ['aim', 'load', 'wait', 'throw', 'wait'], ra: 'Chọn tầm, nạp vật, ném' }],
       gioi: ['Vật bay qua hàng rào, tường, băng chuyền', 'Rơi đúng n ô phía trước'],
-      khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên'],
-      luuY: ['aim(n) chọn tầm 1, 2 hoặc 3 ô, đổi ngay, không tốn nhịp.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
+      khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên (trừ chạy đà: tiến thẳng cùng nhịp throw())'],
+      luuY: ['aim(n) chọn tầm, đổi ngay, không tốn nhịp. Từ gói Chỉnh lực hất: tầm 1 hoặc 2, chạy đà thì bay thêm 1 ô.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
     },
     'son': {
       khe: 'tay', ten: 'Bộ gieo hạt',      // 30/10 vỏ Nông trại hoa (mùa 4): trước là Máy sơn, luật giữ nguyên

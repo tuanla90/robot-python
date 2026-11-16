@@ -1778,7 +1778,7 @@
     'radar-tron': 'Quét quanh một vòng', 'che-radar-tron': 'Chế lệnh: quét mỏ',
     'ban-xoay': 'Lấp hố, trượt dốc', 'che-ban-xoay': 'Chế lệnh: vượt mỏ đá',
     'di-cheo': 'Lách chéo vách đá', 'che-di-cheo': 'Chế lệnh: đi chéo',
-    'chinh-luc': 'Hất gần, hất xa', 'che-chinh-luc': 'Chế lệnh: hất đúng tầm',
+    'chinh-luc': 'Hất gần, hất xa', 'che-chinh-luc': 'Chế lệnh: chạy đà',
     'nhan-dang': 'Đá tròn hay quặng?', 'che-nhan-dang': 'Chế lệnh: lọc quặng',
     'mo-cu': 'Vượt mỏ đá cũ', 'che-mo-cu': 'Chế lệnh: mở cổng mỏ',
     'doi-omni': 'Drone dò vách đá', 'che-doi-omni': 'Chế lệnh: đội mỏ đá',
@@ -3375,6 +3375,17 @@
       if (!chuongCheo[m.chuong]) return;
       if (m.doi) m.doi.forEach(function (r) { if (r && r.loaiRobot === 'omni' && r.cheoGhep === undefined) r.cheoGhep = true; });
       else if (m.cheoGhep === undefined) m.cheoGhep = true;
+    });
+    // 16/11 (KE-HOACH-GHEP-NHIP.md mục 5b): NÉM ĐÀ mở từ gói 6 Chỉnh lực hất tới hết mùa Mỏ đá (gói 6–10), và cả mùa 8, 9 (mọi màn có tay hất sau gói 6):
+    // aim(n) chỉ còn 1, 2; throw() cùng nhịp TIẾN THẲNG = xe tiến 1 ô, đá rời tay ở ô mới, bay tầm + 1. Gói 1–5 mùa 7 và mùa ẩn không bật (ném là đứng yên, aim tới 3).
+    // Mùa 8, 9 phải bật theo: màn ở đó không gõ aim(3) mà gọi hàm em aim_lob(3) / lob_step chế ở gói 6 (che-chinh-luc.5, .7); aim_lob(3) bây giờ tự chạy đà rồi lùi về chỗ cũ,
+    // nên sân không đổi. Màn nào cần luật cũ thì tự đặt nemDa: false. Màn đội: cờ khai theo từng xe (lõi chỉ dùng ở xe có tay hất).
+    var GOI_NEM_DA = ['chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni', 'may-mo-da'], chuongNemDa = {};
+    TT.goi.forEach(function (g) { if ((g.mua === 'mua-7' && GOI_NEM_DA.indexOf(g.ma) >= 0) || g.mua === 'mua-8' || g.mua === 'mua-9') g.chuong.forEach(function (c) { chuongNemDa[c] = true; }); });
+    M.danhSach.forEach(function (m) {
+      if (!chuongNemDa[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.nemDa === undefined) r.nemDa = true; });
+      else if (m.nemDa === undefined) m.nemDa = true;
     });
     // Hàm của em dir_fl / dir_fr / dir_bl / dir_br (chế ở che-di-cheo.1–.4) thay diag_left() / diag_right() trong lời giải các màn sau: màn nào lời giải gọi dir_*() mà không tự chế / sửa
     // hàm đó thì ghi vào hamCuaEmCan (mọi mùa), để máy kiểm bắt màn dùng dir_*() đứng trước che-di-cheo.
