@@ -46,6 +46,16 @@
   var KT_1 = ['lob()', 'slide_r(2)', 'lob()', 'wait()', 'forward(3)'];
   var HD_1 = ['note(5)', 'wait()', 'wait_n(2)', 'forward(6)'];
 
+  /** cuu-mo-da.2 (ba sân): dốc bùn hàng 2, hố ở cột 3 / 5 / 4 tuỳ sân; cuối dốc nút đè M (giữ ba cửa hầm C hàng 6) rồi cờ của xe hang động; ba cờ của máy khai thác ở hàng 7. */
+  function san2(xHo) { var h = '#.'; for (var x = 2; x <= 5; x++) h += x === xHo ? 'u' : 'I'; return ['##########', '#........#', h + 'IMF#', '#........#', '#...o....#', '#........#', '#..CCC...#', '#..FFF...#', '##########']; }
+  var NOI_2 = [{ nut: { x: 7, y: 2 }, cua: [{ x: 3, y: 6 }, { x: 4, y: 6 }, { x: 5, y: 6 }] }];
+  var VD_2 = ['..........', '..........', '..........', '..........', '....r.....', '..........', '..........', '..........', '..........'];
+  /** Máy khai thác cuu-mo-da.2: xúc đá, tiến sát dốc, đọc radar g, hố ở cột nào (g[0][0] trái, g[0][1] trước, g[0][2] phải) thì trượt sang đó, hất 1 ô; lùi, chờ cửa hầm mở, lùi qua cửa về cờ. */
+  var KT_2 = ['load()', 'wait()', 'forward(2)', 'g = radar()', 'if g[0][0] == "u":', '    slide_left()', '    wait()', 'if g[0][2] == "u":', '    slide_right()', '    wait()',
+    'aim(1)', 'throw()', 'wait()', 'back()', 'back()', 'wait_n(4)', 'back()', 'back()'];
+  /** Xe hang động cuu-mo-da.2: chờ hố được lấp, bám bùn đi ngang dốc tới nút đè (cửa hầm mở), giữ nút chờ máy khai thác qua cửa, rồi tới cờ. */
+  var HD_2 = ['wait_n(3)', 'forward(6)', 'wait_n(2)', 'forward(1)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -86,6 +96,33 @@
       goiY: ['lob(): xúc đá trước mũi rồi hất xa 2 ô. Đá tròn rơi xuống hố thì lấp phẳng hố.', 'Bánh gai bung gai thì bám bùn trơn, không trượt.', 'note(5): phát nốt 5. Đá rỗng nghe đúng nốt của nó thì nứt vỡ.'],
       cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem', 'da-rong'], cuu: 'hang', meo: 'lam-cau' }
     }),
+    // 2 · đọc rồi chọn, ôn lưới grid[r][c] (ba sân, luật 13/11): hố giữa dốc bùn mỗi sân một cột. Máy khai thác xúc đá, tiến sát dốc, đọc radar() thành lưới g:
+    //     hàng 0 là hàng trước mặt, cột 0 trái, cột 2 phải. Hố ở g[0][0] thì trượt trái, g[0][2] thì trượt phải, rồi hất 1 ô lấp hố, lùi về cờ.
+    //     Xe hang động chờ, bám bùn đi qua hố đã lấp tới nút đè, giữ nút cho cửa hầm mở tới khi máy khai thác lùi qua cửa về cờ. Điền thẳng cột của sân 1 thì sân 2, 3 đá rơi lệch, xe rơi hố. Bảng 2 cỗ máy (đúng đôi tốt).
+    man9('cuu-mo-da', 2, 'lam-quen', {
+      ten: 'Hố ở cột nào',
+      khung: { chinh: 20, moiHam: 8 },
+      deBai: 'Ba sân, mỗi sân hố ở một cột. Máy khai thác đọc radar(): lưới 3×3, g[0][0] ô trước bên trái, g[0][1] ô trước, g[0][2] ô trước bên phải. Hố ở đâu thì trượt tới đó hất đá lấp. Xe hang động qua dốc giữ nút cho cửa hầm mở.',
+      veMaMau: 'Máy khai thác chưa biết hố ở cột nào.',
+      san: [san2(3), san2(5), san2(4)],
+      noi: [NOI_2, NOI_2, NOI_2],
+      them: { vatDang: [VD_2, VD_2, VD_2] },
+      doi: [khe({ x: 4, y: 5, huong: 0 }, { co: [{ x: 3, y: 7 }, { x: 4, y: 7 }, { x: 5, y: 7 }] }), khe({ x: 1, y: 2, huong: 1 }, { co: [{ x: 8, y: 2 }] })],
+      chonDoi: {
+        menu: ['KT', 'HD'],
+        cachMau: [{ chon: ['KT', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([KT_2, HD_2]) }]
+      },
+      maMau: doiBai([['load()', 'wait()', 'forward(2)', 'g = radar()'], HD_2]),
+      loiSai: [
+        { moTa: 'Điền thẳng cột của sân 1 (trượt trái): sân 2, 3 đá rơi lệch, xe hang động rơi hố', baiLam: doiBai([['load()', 'wait()', 'forward(2)', 'slide_left()', 'wait()', 'aim(1)', 'throw()', 'wait()', 'back()', 'back()', 'wait_n(4)', 'back()', 'back()'], HD_2]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đọc nhầm hàng: g[2][0] là hàng sau lưng', baiLam: doiBai([KT_2.map(function (d) { return d.replace('g[0][0]', 'g[2][0]').replace('g[0][2]', 'g[2][2]'); }), HD_2]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Xe hang động không giữ nút: chạy thẳng tới cờ, cửa hầm đóng lại', baiLam: doiBai([KT_2, ['wait_n(3)', 'forward(7)']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 38, nhip: 15 },
+      goiY: ['g = radar(): g[r][c] là ô hàng r cột c quanh máy. Hàng 0 trước mặt (khi quay lên).', '"u" là hố.', 'aim(1) rồi throw(): đá rơi ô ngay trước mũi.'],
+      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem', 'nut-de', 'cua', 'radar'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    /* HẾT MOI */
   ];
 
   var R1_OMNI = {
