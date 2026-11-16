@@ -90,6 +90,12 @@
   var CU_8 = ['forward(1)', 'back()', 'back()'];
   var CH_8 = ['pick()', 'back()'];
 
+  /** Máy khai thác khách khoá cuu-mo-da.9: chờ, tiến vào dốc bùn (ô cát (4, 1) thì dừng), quay xuống, qua chỗ đá rỗng (4, 2), xúc quặng (4, 4), hất 2 ô lên xe goòng (4, 5). */
+  var KT_R3_9 = ['wait_n(7)', 'forward(1)', 'turn_right()', 'forward(2)', 'load()', 'wait()', 'throw()', 'wait()'];
+  /** Drone: bay lên ba ô, sang phải ba ô tới đầu ngã rẽ trên dốc bùn, rắc cát. Xe hang động: sonic_rail() (G4) nghe nốt đá rỗng, hát lại, lùi khỏi ray. */
+  var DR_9 = ['for i in range(3):', '    go_up()', 'for i in range(3):', '    go_right()', 'dot()', 'wait()'];
+  var HD_9 = ['sonic_rail()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -309,6 +315,34 @@
       sao: { o: 26, nhip: 12 },
       goiY: ['Đọc chương trình của máy khách: nó đi qua khối đá lúc nào?', 'Xích tiến vào ô thùng nặng thì đẩy thùng đi một ô.', 'pick(): gắp vật trước mũi xe.'],
       cauDo: { doi: ['CU', 'CH'], lap: null, coChe: ['thung-nang', 'hom', 'nuoc', 'r3'], cuu: 'may', meo: 'don-loi' }
+    }),
+    // 9 · cứu máy, làm cầu, nhắc lại G4 (sonic_rail): máy khai thác khách (R3, khoá) chạy vào dốc bùn định rẽ xuống ở cột 4 để xúc quặng lên xe goòng; bùn trơn làm nó trượt quá chỗ rẽ,
+    //     và khối đá rỗng chắn ngay dưới chỗ rẽ. Drone bay tới rắc cát ô rẽ (máy dừng đúng chỗ); xe hang động gọi sonic_rail(): nghe nốt, hát lại phá đá rỗng, lùi.
+    //     Bẫy: cần cẩu (không rắc cát, không hát). Bảng có cẩu nên mọi khe trên dải ray.
+    man9('cuu-mo-da', 9, 'bien-the', {
+      ten: 'Chỗ rẽ trên dốc bùn',
+      mucTieu: 'dua-vat',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['sonic_rail', 'play_note']),
+      deBai: 'Máy khai thác khách định rẽ xuống ở cột 4 để xúc quặng lên xe goòng, nhưng dốc bùn trơn làm nó trượt quá chỗ rẽ, và đá rỗng chắn dưới chỗ rẽ. Chọn hai bạn: ai rắc cát, ai hát vỡ đá? Nhớ sonic_rail().',
+      veMaMau: 'Đọc chương trình của máy khách: chờ 7 nhịp, tiến một bước vào bùn rồi quay xuống.',
+      san: ['#########', '#.IIIII.#', '#.......#', '#.......#', '#RRRo...#', '#...D...#', '#########'],
+      them: { vatDang: ['.........', '.........', '.........', '.........', '....q....', '.........', '.........'], daChuong: [{ x: 4, y: 2, not: 7, ben: 1 }] },
+      doi: [khe({ x: 1, y: 4, huong: 0 }), khe({ x: 3, y: 4, huong: 0 }),
+        may('KT', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true })],
+      chonDoi: {
+        menu: ['DR', 'HD', 'CC'],
+        cachMau: [{ chon: ['DR', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([DR_9, HD_9, KT_R3_9]) }]
+      },
+      maMau: doiBai([[], [], KT_R3_9]),
+      loiSai: [
+        { moTa: 'Không rắc cát: máy khách trượt quá chỗ rẽ', baiLam: doiBai([DR_9.slice(0, 4), HD_9, KT_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không phá đá rỗng: máy khách vướng đá dưới chỗ rẽ', baiLam: doiBai([DR_9, [], KT_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Drone rắc cát lệch một ô (cột 3): máy khách vẫn trượt quá', baiLam: doiBai([['for i in range(3):', '    go_up()', 'for i in range(2):', '    go_right()', 'dot()', 'wait()'], HD_9, KT_R3_9]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 37, nhip: 16 },
+      goiY: ['Đọc chương trình của máy khách: nó rẽ ở ô nào?', 'dot() trên bùn trơn: rắc cát, ô thành sàn thường; xe trượt tới ô cát thì dừng.', 'sonic_rail(): nghe nốt, hát lại, lùi.'],
+      cauDo: { doi: ['DR', 'HD'], lap: null, coChe: ['bun', 'rac-cat', 'da-rong', 'not', 'xe-goong', 'ray', 'r3'], cuu: 'may', meo: 'lam-cau' }
     }),
     /* HẾT MOI */
   ];
