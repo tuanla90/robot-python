@@ -269,6 +269,24 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨gai, nhện⟩ + ⟨máy ném, nam châm⟩ | hai cách: gai + ném hay nhện + nam châm | hàng | đọc rồi chọn |
 | 20 | ⟨gai, omni⟩ + loa | song ca trên dốc: robot hát phải đứng vững không trượt | — | song ca |
 
+> **Đã dựng 16/11 (M9M7, hoc/man-cuu-mo-da.js viết lại theo khuôn G5 / G6, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt).** Lệch so với bảng:
+> - Lõi không có "đẩy đá lăn": đá tròn chỉ lấp hố khi bị **ném** (máy khai thác `lob()` / `aim_lob(2)`, bánh gai hay xích lắp máy ném). Mọi dòng "đẩy đá, đá lăn" đổi thành ném đá.
+> - Hàm của em: tạo lại `radar_front_lob(n)` ở lap-mo-da.2 (cùng tên, cùng thân `g = radar()`, `if g[0][1] == "V": aim_lob(n)`, `slide_r(1)`; gói 8, 9 còn gọi). Bỏ `quarry_wait_lob`, `radar_side_lob`, `shape_bridge_lob`, `grid_clear_pass` (không gói nào gọi). #9 gọi `sonic_rail()` (G4), lap #19 gọi `clear_iron("U")` (G3), song ca #10, #20 gọi `play_part`.
+> - #1 hai hố + một khối đá rỗng (nốt 5) để chuỗi khác các màn đội cũ của Hang động. #2 ba sân: máy khai thác đọc radar `g[0][0]` / `g[0][2]` rồi trượt tới cột có đá; xe hang động đè nút M giữ cửa (không đẩy đá).
+> - #3 thành đưa vật (nút M, cửa C), bẫy xe cứu hỏa trượt trên bùn. #4 ba sân, đá rỗng nốt 3 / 6 / 8: xe hang động `play_note(listen())`, máy khai thác hất quặng qua cửa (mẹo dọn lối như bảng).
+> - #5 xe hang động hát vỡ đá rỗng, máy khai thác hất đá lở xuống hố ngách rồi lùi vào ngách nhường lối (người không đi qua hố đã lấp hay bùn). #6 cẩu đặt container lấp hố (T2, `contLapHo`), xích ủi khối đá: mẹo làm cầu thay tiếp sức.
+> - #8 xuồng trong menu đặt trên nước (bẫy). #9 đội drone + xe hang động: drone rắc cát một ô bùn, xe hang động `sonic_rail()`; cẩu là bẫy. #10 máy khai thác lắp loa hát bè 1, xe hang động hát bè 2 (không "gõ nhịp"); bè đoạn 7 (1 1 5 5 6 6 5 5 | 3 3 1 3 4 4 3 3) do M9M7 tự chọn.
+> - lap #11 bánh gai mặc định tầm 1: lời giải gọi `aim(2)` trước `lob()`. #12 hai cách: bánh gai + máy ném (có / không radar); thân omni vào bùn trượt tới cuối dốc.
+> - lap #13 ba sân: mũi khoan ở một ngách phía trên hành lang, đọc `g[0][1]` (không có "lưới khoảng cách bốn hướng"); cuối hành lang gầm thấp, nhện co chân. Cách hai nhện + cảm biến từ (`front_metal()`). Máy khai thác hất quặng vào máng song song.
+> - lap #14 mũi khoan nằm giữa lối hầm hẹp (không "hố sâu"); cẩu hút, quay nửa vòng thả vào hốc chứa D; cách hai drone + nam châm. #15 cách hai thêm hồng ngoại (`distance() == 0`): hai cách cùng thân.
+> - lap #16 giỏ cứu hộ L9 chỉ vớt người **dưới nước**, nên hố sâu ngập nước; `r, c = ho`, quay `abs(r - 2)` nấc; cách hai xe tời bờ L3; máy khai thác lấp hố trên lối về trạm.
+> - lap #17 bỏ "đá tròn lăn" (lõi không có): một nút hai cửa (cửa trước đang mở, cửa sau đang đóng). R2 chờ `warm()` của hồng ngoại thấy máy khai thác rồi `spray_back()` trúng nút. Cách hai hai bánh.
+> - lap #18 ba sân, mũi khoan ngay trên hay ngay dưới (đọc `g[0][1]`, không "gần nhất"). Rào thấp `=` và gầm thấp `n` chặn xe có bánh (xe + kẹp từng thắng được). Cách hai nhện L12 vòng gầm.
+> - lap #19 ba sân: gai đọc `g[2][1]` rồi xúc mũi khoan vào rổ, hay nhện quay mặt xuống `front_metal()` rồi `clear_iron("U")`. Máy khai thác chờ 16 nhịp cho cả hai cách.
+> - lap #20 R2 đứng hát tại chỗ (cách gai + loa, omni + loa; drone bẫy). Ý "vừa đi vừa hát trên dốc, tới cờ" chưa làm được: màn đội `choi-dieu` có ô F thì lõi bắt mọi xe tới cờ (`dieuToiCo`) nhưng chỉ ghi `xeToiCo` khi mục tiêu là `toi-co`, nên không bao giờ thắng.
+> - Song ca #10, #20 khai mẹo song song như G5, G6. Mọi màn chương 2 có ≥ 2 cách lắp thắng; sao = cách đầu + 15–25 %.
+> - **Nhiều sân** (`NHIEU_SAN_KHONG_TRUM` ở kiem-lo-trinh): cuu-mo-da.2, .4, lap-mo-da.3, .8, .9; mỗi màn có loiSai "điền thẳng dữ liệu sân 1".
+
 ## G8 Hang động sau bão (ôn `dict`, `set`) · bão: hố sụt mới, cửa đá, sông ngầm dâng
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |
