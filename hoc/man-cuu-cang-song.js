@@ -1,10 +1,9 @@
 /* ============================================================================
-   man-cuu-cang-song.js - Mùa 9 CLB Sáng Tạo: Gói 4 "Cứu hộ Cảng sông"
-   20 màn (10 màn cuu-cang-song + 10 màn lap-cang-song):
-   - R1 (.1..9): Cần cẩu Cảng sông Mùa 4 (than: 'cau', tay: 'moc-cau', camBien: quet-ma)
-   - R2: Robot các mùa khác đến chi viện (nhen, banh, xich, omni, gai)
-   - Màn 10 mỗi chương (hang: 'trum'): Hợp tấu 2 bè Đoạn 4 "Kìa con bướm vàng"
-     (Bè 1: 5 5 4 4 3 3 2 2 | Bè 2: 1 3 2 4 3 5 4 2)
+   man-cuu-cang-song.js - Mùa 9 CLB Sáng Tạo: Gói 4 "Cảng sông sau bão" (dựng lại 16/11, M9M4, theo khuôn G2 / G3)
+   20 màn: cuu-cang-song (chọn đội trong menu cỗ máy) + lap-cang-song (R1 cần cẩu đặt sẵn, R2 tự lắp; lai L2 L3 L5 L9 L10 L13).
+   Ôn Python: số âm (rail(-3)), abs, %, //. Gói tạo hàm grab_clear() [pick(), back()] (cuu-cang-song.6) và sonic_rail() [play_note(listen()), back()] (lap-cang-song.7).
+   Màn 10 mỗi chương: song ca đoạn 4 "Kìa con bướm vàng" (bè 1: 5 5 4 4 3 3 2 2 | bè 2: 1 3 2 4 3 5 4 2), gọi play_part.
+   Câu đố: hoc/MUA-9-200-CAU-DO.md mục G4 (ghi chú "Đã dựng 16/11 (M9M4)": các chỗ lệch so với bảng).
    ========================================================================== */
 (function () {
   'use strict';
@@ -12,74 +11,7 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var CAU_HAM = ['swing_left', 'swing_right', 'extend', 'retract', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail', 'wait'];
-  var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
-  var HAM_BANH = BANH.concat(['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear']);
-  var HAM_XICH = BANH.concat(['spray', 'spray_back', 'distance', 'warm']);
-  var HAM_XICH_LOA = BANH.concat(['beat', 'note', 'distance', 'warm']);
-  var HAM_OMNI = BANH.concat(['slide_left', 'slide_right', 'load', 'throw', 'radar', 'diag_left', 'diag_right', 'aim', 'shape']);
-  var HAM_GAI = BANH.concat(['retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen']);
-
-  var R1_CAU = {
-    loaiRobot: 'cau',
-    robot: { than: 'cau', tay: 'moc-cau', camBien: [{ ma: 'quet-ma', o: 'tren' }] },
-    hamGoc: CAU_HAM
-  };
-  var R1_LOA = {
-    loaiRobot: 'xich', phatNot: true,
-    robot: { than: 'xich', tay: 'loa', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] },
-    hamGoc: HAM_XICH_LOA
-  };
-  var R_NHEN = {
-    loaiRobot: 'nhen',
-    robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_NHEN
-  };
-  var R_BANH = {
-    loaiRobot: 'banh',
-    robot: { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_BANH
-  };
-  var R_XICH = {
-    loaiRobot: 'xich', xichDay: true, lucBan: true,
-    robot: { than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }], son: 'lam' },
-    hamGoc: HAM_XICH
-  };
-  var R_OMNI = {
-    loaiRobot: 'omni', omniCheo: true, chinhLuc: true, nhanDang: true, tamNemMacDinh: 2, daLapHo: true,
-    robot: { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
-    hamGoc: HAM_OMNI
-  };
-  var R_GAI = {
-    loaiRobot: 'gai', thuGai: true, phatNot: true, phanAm: true,
-    robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }], son: 'lam' },
-    hamGoc: HAM_GAI
-  };
-
-  var SAN_CANG = [
-    '~~~~~~~',
-    '~~~~~~~',
-    '~DTTTD~',
-    '.RRRRR.',
-    '.DDDDD.',
-    '.DDDDD.',
-    '.......'
-  ];
-
-  var O_TAU_1 = [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }];
-
-  function tauDon(co, vang) {
-    return [{ o: O_TAU_1, co: co, vang: vang }];
-  }
-  function CW(x, y, ds) {
-    return {
-      x: x, y: y,
-      cont: ds.map(function (p) { return { so: p[0], tan: p[1] }; })
-    };
-  }
   function VS(x, y) { return { x: x, y: y, chat: 'sat' }; }
-  function VN(x, y, cuc) { return { x: x, y: y, chat: 'nam-cham', cuc: cuc }; }
 
   var H_SONIC_RAIL = {
     ten: 'sonic_rail', thamSo: [],
@@ -89,68 +21,8 @@
     ten: 'grab_clear', thamSo: [],
     than: ['pick()', 'back()']
   };
-  var H_WAIT_SLIDE_LOAD = {
-    ten: 'wait_slide_load', thamSo: ['t', 's'],
-    than: ['wait_n(t)', 'slide_load(s, 2)']
-  };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-
-  function baiDoi(r1Chinh, r2Chinh, hamEm, hamMan) {
-    return {
-      doi: [{ chinh: r1Chinh.slice() }, { chinh: r2Chinh.slice() }],
-      hamCuaMan: hamMan ? clone(hamMan) : [],
-      hamCuaEmMoi: hamEm ? clone(hamEm) : []
-    };
-  }
-
-  function manCS(chuong, so, hang, cfg) {
-    var r1 = clone(cfg.r1 || R1_CAU);
-    var r2 = clone(cfg.r2 || R_NHEN);
-    r1.batDau = cfg.bd[0];
-    r2.batDau = cfg.bd[1];
-    if (cfg.coDinhR1) r1.coDinh = true;
-    if (cfg.coDinhR2) r2.coDinh = true;
-    var m = {
-      chuong: chuong,
-      so: so,
-      ten: cfg.ten,
-      hang: hang,
-      vo: 'cang',
-      loaiRobot: r1.loaiRobot,
-      daLapHo: true,
-      robot: clone(r1.robot),
-      hamGoc: r1.hamGoc.slice(),
-      cauTruc: cfg.cauTruc || ['for', 'if', 'while', 'list'],
-      vaHoac: true,
-      moXuong: true,
-      camHamCuaEm: false,
-      hamCuaEmCan: cfg.hamCuaEmCan || ['swing_by', 'carry_by', 'wait_n'],
-      taoHam: cfg.taoHam || [],
-      khung: cfg.khung || { chinh: 10, moiHam: 8 },
-      mucTieu: cfg.mucTieu || 'giao-tau',
-      deBai: cfg.deBai,
-      veMaMau: cfg.veMaMau || '',
-      san: cfg.san || SAN_CANG,
-      batDau: cfg.bd[0],
-      doi: [r1, r2],
-      maMau: cfg.maMau,
-      loiGiai: cfg.loiGiai,
-      loiSai: cfg.loiSai || [],
-      sao: cfg.sao || { o: 16, nhip: 10 },
-      goiY: cfg.goiY || []
-    };
-    if (r1.loaiRobot === 'cau') m.taiToiDa = cfg.taiToiDa || 6;
-    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
-    if (cfg.chong) m.chong = cfg.chong;
-    if (cfg.vatThem) m.vatThem = cfg.vatThem;
-    if (cfg.tau) m.tau = cfg.tau;
-    if (cfg.giao) m.giao = cfg.giao;
-    if (cfg.dieu) m.dieu = cfg.dieu;
-    if (cfg.chuongDa) m.chuongDa = cfg.chuongDa;
-    if (cfg.daChuong) m.daChuong = cfg.daChuong;
-    return ManHoc.chuanHoa(m);
-  }
 
   /* ---- M9M4: khung màn mùa 9 (chép từ man-cuu-bai-tai-che.js) ------------------------------------------ */
   var CoMay = laNode ? require('./co-may.js') : window.CoMay;
@@ -743,22 +615,30 @@
       cauDo: { doi: null, lap: 'xuong+day-keo', coChe: ['nuoc', 'cont-troi', 'luoi', 'hang-tau', 'chong'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manCS('lap-cang-song', 10, 'trum', {
-      ten: 'Hợp tấu hàm play_part: Đoạn 4 Kìa con bướm vàng',
-      r1: R1_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '5 5 4 4 3 3 2 2', r2: '1 3 2 4 3 5 4 2' },
+    // 20 · song ca đoạn 4 (gói 10 ghép bài): bè 1 5 5 4 4 3 3 2 2, bè 2 1 3 2 4 3 5 4 2. Mục tiêu choi-dieu cần đúng hai robot cùng hát, mà cần cẩu không gắn loa,
+    //      nên R1 là xe hang động (loa + mic, đặt sẵn trên bờ, hát bè 1), không phải cẩu. R2 tự lắp loa: xuồng hát dưới nước hay xe hai bánh hát trên bờ (rẻ hơn).
+    //      Đá chuông nốt 2 ở cuối bến vỡ khi bài hát vang tới.
+    man9('lap-cang-song', 10, 'trum', {
+      ten: 'Song ca trên nước, trên bờ',
+      mucTieu: 'choi-dieu',
       hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Màn kết Gói 4: Hãy dùng hàm play_part(notes) cho cả R1 và R2 để biểu diễn trọn vẹn Đoạn 4 bài "Kìa con bướm vàng" ("Bươm bướm bay, đôi ba vòng") với 2 bè 8 nhịp: R1 gọi play_part([5, 5, 4, 4, 3, 3, 2, 2]), còn R2 gọi play_part([1, 3, 2, 4, 3, 5, 4, 2])!',
-      veMaMau: 'Gọi play_part([1, 3, 2, 4, 3, 5, 4, 2]) cho R2 để hoàn thành bản hợp tấu.',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4])']),
-      loiGiai: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4, 3, 5, 4, 2])']),
+      deBai: 'Màn cuối cảng sông: song ca đoạn 4. Xe hang động hát bè 1 trên bờ. Lắp loa cho bạn hát bè 2: xuồng dưới nước hay xe trên bờ.',
+      veMaMau: 'Bè 2 mới có bốn nốt.',
+      san: ['#######', '#.....#', '~~~~~.#', '#.....#', '#######'],
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', chinhLuoi: false, batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      them: { dieu: { r1: '5 5 4 4 3 3 2 2', r2: '1 3 2 4 3 5 4 2' }, daChuong: [{ x: 5, y: 2, not: 2, ben: 1 }] },
+      lapRap: lapR2(['xuong', 'hai-banh'], ['loa'], [], 8, [
+        cach('xuong', 'loa', null, [['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4, 3, 5, 4, 2])']]),
+        cach('hai-banh', 'loa', null, [['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4, 3, 5, 4, 2])']])
+      ], { moLai: ['L5'] }),
+      maMau: doiBai([['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4])']]),
       loiSai: [
-        { moTa: 'Danh sách nốt của R2 mới có 4 nốt, thiếu 4 nốt cuối [3, 5, 4, 2]', baiLam: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4])']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 mới có bốn nốt', baiLam: doiBai([['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4])']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'R2 hát nhầm bè 1', baiLam: doiBai([['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([5, 5, 4, 4, 3, 3, 2, 2])']]), phaiCoMa: ['sai-not'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Điền đủ 8 nốt [1, 3, 2, 4, 3, 5, 4, 2] vào lệnh play_part(...) của R2.']
-    })
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([1, 3, 2, 4, 3, 5, 4, 2]).', 'Hai bạn bắt đầu cùng một nhịp.'],
+      cauDo: { doi: null, lap: 'xuong+loa', coChe: ['loa', 'nuoc', 'bo', 'da-chuong'], cuu: null, meo: 'song-song' }
+    }),
   ];
 })();
