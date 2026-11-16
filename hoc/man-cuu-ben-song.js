@@ -65,6 +65,8 @@
   var CC_9 = ['pick_up()', 'swing_left()', 'set_down()'];
   var KT_9 = ['turn_right()', 'turn_right()', 'move()', 'turn_left()', 'forward(5)', 'turn_right()', 'load()', 'wait()', 'turn_left()', 'throw()', 'wait()'];
   var XU_R3_9 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(8)', 'forward(7)', 'drop_net()', 'wait()'];
+  /** lap-ben-song.2: xuồng R1 tung lưới sang trái bắt bè thứ nhất, lùi một ô kéo bè vào bến q, nhả. */
+  var XU_12 = ['cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -358,6 +360,28 @@
       sao: { o: 27, nhip: 6 },
       goiY: ['Xe trên bờ tung lưới: vật bắt được về ô nước sát xe.', 'cast_net("right"): tung lưới sang bên phải xe.'],
       cauDo: { doi: null, lap: 'omni+day-keo+radar', coChe: ['nuoc', 'be', 'luoi', 'cong', 'bo', 'thung-go'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 12 · ép đổi thân (song song): bè thứ hai nằm trong lạch sau cống kẹt, xuồng không vào được. Xuồng R1 kéo bè thứ nhất vào bến q ngoài sông;
+    //      R2 tự lắp xe có bánh + tay lưới đứng trên bờ dưới lạch, tung lưới tời bè thứ hai về bến q trong lạch. Lắp xuồng thì kẹt ngoài cống.
+    //      Cách một omni + lưới (trượt ngang, nhanh). Cách hai hai bánh + lưới (rẻ hơn, phải quay, chậm hơn).
+    man9('lap-ben-song', 2, 'lam-quen', {
+      ten: 'Bè sau cống kẹt',
+      deBai: 'Bè thứ hai kẹt trong lạch sau cống, xuồng không vào được. Lắp thân nào để tới gần lạch? Tung lưới từ bờ tời bè vào bến.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['#########', '#~Bq~~KB#', '#######q#', '#.......#', '#########'],
+      doi: [may('XU', { x: 4, y: 1, huong: 3 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam', batDauNuoc: { x: 1, y: 1, huong: 1 } })],
+      lapRap: lapR2(['xuong', 'omni', 'hai-banh'], ['day-keo'], [], 8, [
+        cach('omni', 'day-keo', null, [XU_12, ['for i in range(3):', '    slide_right()', '    wait()', 'cast_net()', 'wait()']]),
+        cach('hai-banh', 'day-keo', null, [XU_12, ['turn_right()', 'forward(3)', 'turn_left()', 'cast_net()', 'wait()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([XU_12, []]),
+      loiSai: [
+        { moTa: 'R2 đứng yên: bè trong lạch chưa vào bến', baiLam: doiBai([XU_12, []]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe tung lưới ở chỗ xuất phát: dây không trúng lạch', baiLam: doiBai([XU_12, ['cast_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 16, nhip: 5 },
+      goiY: ['Xuồng không qua cống kẹt: lắp thân đi trên bờ.', 'Xe trên bờ tung lưới: bè về ô nước sát mũi xe.'],
+      cauDo: { doi: null, lap: 'omni+day-keo', coChe: ['nuoc', 'be', 'luoi', 'cong', 'bo', 'lach'], cuu: 'hang', meo: 'song-song' }
     }),
   ];
 })();
