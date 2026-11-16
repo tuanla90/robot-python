@@ -117,6 +117,9 @@ console.log('\n== 4. Thêm / bỏ / thay ô ==');
 {
   kiem('themTDDong từ điển: thêm cặp sau cặp đang chạm, khoá chưa dùng của màn', TP.themTDDong('d = {"ngang": 3}', 2) === 'd = {"ngang": 3, "doc": 1}');
   kiem('themTDDong từ điển rỗng → khoá đầu của màn', TP.themTDDong('d = {}', 0) === 'd = {"ngang": 1}');
+  TP.datCheTD(true, ['2', '4'], ['hear', 'listen']);
+  kiem('khoá số (sổ ám hiệu gói 7: d = {2: 5}): thêm cặp giữ khoá số, không bọc "…"', TP.themTDDong('d = {2: 5}', 2) === 'd = {2: 5, 4: 1}' && TP.themTDDong('d = {}', 0) === 'd = {2: 1}', TP.themTDDong('d = {2: 5}', 2));
+  TP.datCheTD(true, KHOA, ['hear', 'listen']);
   kiem('themTDDong tập hợp: set() → {1}; {1, 2} → thêm số nhỏ nhất chưa có', TP.themTDDong('s = set()', 0) === 's = {1}' && TP.themTDDong('s = {1, 2}', 2) === 's = {1, 2, 3}');
   kiem('tối đa 5 cặp / phần tử', TP.themTDDong('s = {1, 2, 3, 4, 5}', 5) === 's = {1, 2, 3, 4, 5}');
   kiem('boTDDong: bỏ cả cặp khi chạm khoá hay giá trị; tập hợp hết phần tử → set()', TP.boTDDong('d = {"ngang": 3, "doc": 2}', 2) === 'd = {"doc": 2}' && TP.boTDDong('d = {"ngang": 3, "doc": 2}', 3) === 'd = {"ngang": 3}' && TP.boTDDong('s = {1}', 1) === 's = set()');
@@ -207,6 +210,23 @@ console.log('\n== 6. Khung chương trình: chạm ô của dòng mùa 8 ==');
   E3.ed.chenTai('s.add(1)', 1, 0);
   E3.ed.chenTai('if 1 not in s:', 2, 0);
   kiem('chèn s.add / if … not in s dưới `da_go = set()` → dùng da_go', E3.arr[1] === 'da_go.add(1)' && /not in da_go:$/.test(E3.arr[2]), J(E3.arr));
+
+  // Xưởng hàm: đối số là sổ (follow(book), walk_book(book) của gói 1): kiểu 'td' suy từ lời giải của màn
+  const E4 = K.dungEditor(['forward(1)', 'for k in book:', '    rim(1)'], { bienDuoc: () => ['book'], kieuBien: (t) => (t === 'book' ? 'td' : 'so') });
+  E4.cham(0, '.num');
+  kiem('thân hàm có đối số sổ book: chạm số trong forward(1) → chip book["ngang"], book["doc"]', ['book["ngang"]', 'book["doc"]'].every((x) => nutBien(E4).includes(x)), J(nutBien(E4)));
+  E4.dongBang();
+  E4.cham(2, '.num');
+  kiem('dưới for k in book: chạm số trong rim(1) → chip book[k]', nutBien(E4).includes('book[k]'), J(nutBien(E4)));
+  E4.dongBang();
+  const E5 = K.dungEditor(['a = {"ngang": 2}', 'b = {"ngang": 3}', 'follow(a)'], { kieuDoiSo: (ten) => (ten === 'follow' ? 'td' : 'so') });
+  E5.cham(2, '.num');
+  kiem('chạm đối số của follow(a) (đối số là sổ) → chọn tên sổ a, b', ['a', 'b'].every((x) => nutBien(E5).includes(x)) && !nutBien(E5).includes('1'), J(nutBien(E5)));
+  E5.dongBang();
+  const E6 = K.dungEditor(['d = {2: 5, 4: 7}', 'for i in range(2):', '    n = listen()', '    play_note(1)']);
+  E6.cham(3, '.num');
+  kiem('chạm số trong play_note(1) (dưới d = {...} và n = listen()) → chip có d[n] (tra sổ bằng nốt vừa nghe)', ['n', 'd[n]', 'd[2]'].every((x) => nutBien(E6).includes(x)), J(nutBien(E6)));
+  E6.dongBang();
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' + (dat + hong) : 'ĐẠT cả ' + dat) + ' phép kiểm nhập liệu mùa 8');

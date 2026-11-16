@@ -126,6 +126,7 @@ Lõi đã đúng thứ tự (a) neo → (b) lưới → (c) chân vịt → (d) 
 ## 5. Mùa 7 Mỏ đá (xe omni)
 
 ### 5a. Đi chéo = trượt + đi thẳng (gói 5 Đi chéo; cờ `cfg.cheoGhep`)
+- XONG 16/11 (223b4db…67685ac, gộp main a32cfe4): lõi cheoGhep bật gói 5–10 mùa 7; gói 5 làm lại 20 màn (dir_fl / dir_fr / dir_bl / dir_br), màn gói sau đổi diag_* sang dir_*; khung chéo ghép = cặp 'banh|truot' trong kieuDiGhep. Đo: gói 5 20/20.
 - Lý do: bánh omni đi chéo chính là nhờ cộng chuyển động tới và ngang.
 - Luật: bỏ `omni-khong-cheo` khi có cờ: `slide_*` cùng nhịp với đi thẳng (tiến / lùi) = đi chéo 1 ô, giữ hướng mặt; trượt + quay vẫn bỏ. Được cả 4 hướng chéo (`diag_*` chỉ có 2 hướng tới).
 - `slide_left(); left_move(); right_move(); wait()` chéo tiến-trái; `slide_right(); left_back(); right_back(); wait()` chéo lùi-phải.
@@ -133,6 +134,7 @@ Lõi đã đúng thứ tự (a) neo → (b) lưới → (c) chân vịt → (d) 
 - Màn cũ: `diag_*` có trong 15 màn gói 5 và 11 màn gói sau (gói 6: 3, gói 7: 2, gói 8: 2, gói 10: 1, mùa 8 gói 9: 2, mùa 9 gói 7: 1). Làm lại gói 5; 11 màn sau đổi lời giải sang hàm của em `dir_*` (lấy từ kho hàm, không dựng lại sân). `diag_*` gốc thôi dạy, lõi giữ để không vỡ mã cũ.
 
 ### 5b. Ném đà (gói 6 Chỉnh lực hất; cờ `cfg.nemDa`)
+- XONG 16/11 (lõi 21beded, màn edc2ebc, gộp main a32cfe4): cờ nemDa bật gói 6–10 mùa 7 và mùa 8, 9 (màn ở đó gọi aim_lob(3) chế ở gói 6); gói 6 làm lại 20 màn (chương 2 run_throw, run_lob, aim_lob(3) = chạy đà rồi back()); mo-cu.7, che-mo-cu.4, .5 bỏ aim(3). Đo mùa 7: 98/200 màn có ghép ngoài hai bánh (gói 5 20, 6 13, 7 16, 8 17, 9 14, 10 18). Chi tiết: hoc/ban-giao/BAN-GIAO-GHEP-NHIP.md mục 5.
 - Lý do: ném lao, ném biên phải chạy đà mới ném xa được; đứng tại chỗ thì không.
 - Luật (user chốt 13/11): `aim(n)` chỉ còn n = 1, 2 (TAM_NEM_TOI_DA = 2). `throw()` cùng nhịp với TIẾN THẲNG: (a) xe tiến 1 ô → (b) vật rời tay ở ô MỚI, bay `tầm + 1` ô (tới 3). Ô trước bị chặn: xe đứng yên, ném tầm thường, sự kiện `khong-co-da`. Lùi / quay / trượt + ném: vẫn bỏ lệnh bánh (`nem-dung-yen`). `load()` vẫn đứng yên.
 - Vì sao có nghĩa: tầm đo TỪ Ô THẢ VẬT. Đứng ở mép bờ thì dù bao nhiêu nhịp cũng chỉ vượt mép 2 ô; chạy vào ô mép và ném cùng nhịp thì vượt 3 ô.

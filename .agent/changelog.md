@@ -1,3 +1,9 @@
+## 2026-11-16 — Thiết Kế Lại Bản Đồ Chọn Mùa, Hộp Gói Cut the Rope, Điều Khiển Phim CLB & Sửa Chấm Vàng Cẩu 4 Hướng
+- `hoc/game/man-mua.js`, `hoc/game/choi.css`, `hoc/game/choi-vector.css`: Thay 9 đĩa tròn xám xếp chồng cột phải bằng 9 **Biển Trạm Chiến Dịch (`.m-tram`)** nổi khối 3D che khít biển trắng gốc trên `the-gioi.webp`, hiển thị chân dung nhân vật + số mùa + tên địa điểm + sao/khoá; đưa nút `Sổ lệnh` về góc dưới-trái nổi bật; nâng cấp popup **Nhiệm Vụ Mùa (`.hop-mua-ct`)** với chân dung người nhờ, quy mô gói/màn, thanh tiến độ sao ngang hàng, nút đóng góc phải và đóng khi chạm nền ngoài.
+- `hoc/game/man-goi.js`, `hoc/game/chu.js`, `hoc/kiem-phim-goi.mjs`: Khôi phục và nâng cấp bố cục **Hộp Gói Lướt Ngang kiểu Cut the Rope (`.g-day` / `.g-the`)** đậm chất game (gờ nổi 3D, bệ trưng bày huy hiệu có quầng sáng, nhãn loại gói, thanh tiến độ sao, nút hành động `CHƠI!` / tiến độ sao mở khoá, sửa độ ưu tiên màu nền nút khoá `.g-cta-khoa` trên thẻ `thu-thach`) đặt trên toàn bộ 9 tranh nền môi trường dọc riêng từng mùa (`phim-clb/a/nen-doc/mua-*.webp`).
+- `phim-clb/src/web/entry.tsx`, `hoc/game/phim-clb/phim-clb.js`: Tắt thao tác chạm màn hình gây tạm dừng phim ở chế độ tự phát và bổ sung nút **Bỏ qua** kèm biểu tượng SVG góc dưới-phải xuyên suốt thời gian chiếu phim mở đầu / phim gói.
+- `hoc/man-can-cau.js`, `hoc/man-moc-cau.js`, `hoc/man-quet-ma.js`, `hoc/man-ben-tau.js`: Xoá các chấm vàng (`D`) ở 4 phương chéo trên các sân cẩu cố định Gói 1–4 Mùa Cảng sông (màn `101.1` trở đi), chỉ giữ đúng chữ thập 4 hướng vuông góc mà cần cẩu vươn tới được.
+
 ## 2026-11-02 — Nhánh `main` (Phim Gói Mùa 1: Góp Ý Đợt 1 Của User — Đuôi Bóng, Chuyển Cảnh, Part Riêng, Góc Ngang 3D)
 - `phim-clb/src/doc/kit-doc.tsx`: đuôi bóng thoại người nhờ (`Nguoi`) cùng kiểu Mascot (to, bóng cứng, liền viền), hết tam giác nhỏ bản cũ.
 - `phim-clb/src/d10.tsx`: `Whip` cắt cảnh cũ ngay khi đoạn chồng bắt đầu, cảnh mới hiện dần 10 khung (user: chuyển cảnh thấy hai xe đè nhau).

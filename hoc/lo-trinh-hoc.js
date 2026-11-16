@@ -1778,7 +1778,7 @@
     'radar-tron': 'Quét quanh một vòng', 'che-radar-tron': 'Chế lệnh: quét mỏ',
     'ban-xoay': 'Lấp hố, trượt dốc', 'che-ban-xoay': 'Chế lệnh: vượt mỏ đá',
     'di-cheo': 'Lách chéo vách đá', 'che-di-cheo': 'Chế lệnh: đi chéo',
-    'chinh-luc': 'Hất gần, hất xa', 'che-chinh-luc': 'Chế lệnh: hất đúng tầm',
+    'chinh-luc': 'Hất gần, hất xa', 'che-chinh-luc': 'Chế lệnh: chạy đà',
     'nhan-dang': 'Đá tròn hay quặng?', 'che-nhan-dang': 'Chế lệnh: lọc quặng',
     'mo-cu': 'Vượt mỏ đá cũ', 'che-mo-cu': 'Chế lệnh: mở cổng mỏ',
     'doi-omni': 'Drone dò vách đá', 'che-doi-omni': 'Chế lệnh: đội mỏ đá',
@@ -2055,38 +2055,38 @@
   })();
   // ========================================================================= MÙA HANG ĐỘNG (mua-8, Robot thám hiểm hang động R1)
   var MUA_HANG = [
-    { ma: 'banh-gai', ten: 'Bánh gai leo vách', loai: 'bo-phan', hinh: 'banh-gai',
+    { ma: 'banh-gai', ten: 'Bánh gai', loai: 'bo-phan', hinh: 'banh-gai',
       chuong: [['banh-gai', []], ['tu-dien', []]] },
-    { ma: 'loa', ten: 'Loa cộng hưởng', loai: 'bo-phan', hinh: 'loa',
+    { ma: 'loa', ten: 'Loa', loai: 'bo-phan', hinh: 'loa',
       chuong: [['loa', []], ['tap-hop', []]] },
     { ma: 'am-thanh', ten: 'Cảm biến âm thanh', loai: 'bo-phan', hinh: 'am-thanh',
       chuong: [['am-thanh', []], ['che-am-thanh', []]] },
-    { ma: 'san-hang-dong', ten: 'Ngách hang đá vôi', hinh: 'san-hang-dong',
+    { ma: 'san-hang-dong', ten: 'Ngách hang ngầm', hinh: 'san-hang-dong',
       chuong: [['san-hang-dong', []], ['che-hang-dong', []]] },
-    { ma: 'thu-gai', ten: 'Thu gai trượt đá', loai: 'bo-phan', hinh: 'thu-gai',
+    { ma: 'thu-gai', ten: 'Thu gai', loai: 'bo-phan', hinh: 'thu-gai',
       chuong: [['thu-gai', []], ['che-thu-gai', []]] },
-    { ma: 'phat-not', ten: 'Phát nốt cộng hưởng', loai: 'bo-phan', hinh: 'phat-not',
+    { ma: 'phat-not', ten: 'Ngân dài', loai: 'bo-phan', hinh: 'phat-not',
       chuong: [['phat-not', []], ['che-phat-not', []]] },
-    { ma: 'nghe-not', ten: 'Thẩm âm chuông đá', loai: 'bo-phan', hinh: 'nghe-not',
+    { ma: 'nghe-not', ten: 'Nghe nốt', loai: 'bo-phan', hinh: 'nghe-not',
       chuong: [['nghe-not', []], ['che-nghe-not', []]] },
-    { ma: 'hang-cu', ten: 'Hang đá cổ', loai: 'thu-thach', hinh: 'hang-cu',
+    { ma: 'hang-cu', ten: 'Hang có dấu cũ', loai: 'thu-thach', hinh: 'hang-cu',
       chuong: [['hang-cu', []], ['che-hang-cu', []]] },
     { ma: 'doi-hang-dong', ten: 'Đội thám hiểm hang', loai: 'doi', hinh: 'doi-hang-dong',
       chuong: [['doi-hang-dong', []], ['che-doi-hang-dong', []]] },
-    { ma: 'tong-hop-hang', ten: 'Robot hang động R1', loai: 'thu-thach', hinh: 'tong-hop-hang',
+    { ma: 'tong-hop-hang', ten: 'Cứu hộ hang sâu', loai: 'thu-thach', hinh: 'tong-hop-hang',
       chuong: [['tong-hop-hang', []], ['trum-mua-hang', []]] }
   ];
   var TEN_MUA_HANG = {
-    'banh-gai': 'Bánh gai bám đá', 'tu-dien': 'Từ điển tra cứu',
-    'loa': 'Gõ nhịp cộng hưởng', 'tap-hop': 'Tập hợp không trùng',
-    'am-thanh': 'Lắng nghe tiếng vang', 'che-am-thanh': 'Chế lệnh: dò sóng âm',
-    'san-hang-dong': 'Ngách hang đá vôi', 'che-hang-dong': 'Chế lệnh: vượt ngách hang',
-    'thu-gai': 'Thu gai trượt băng', 'che-thu-gai': 'Chế lệnh: lướt đá ướt',
-    'phat-not': 'Cộng hưởng thạch nhũ', 'che-phat-not': 'Chế lệnh: tấu khúc phá đá',
-    'nghe-not': 'Thẩm âm chuông đá', 'che-nghe-not': 'Chế lệnh: giải mã giai điệu',
-    'hang-cu': 'Khám phá hang cổ', 'che-hang-cu': 'Chế lệnh: giải cứu hang sâu',
-    'doi-hang-dong': 'Đội thám hiểm hang', 'che-doi-hang-dong': 'Chế lệnh: cùng vượt hang',
-    'tong-hop-hang': 'Tổng hợp hang động', 'trum-mua-hang': 'Trùm mùa hang động'
+    'banh-gai': 'Bám đá ướt', 'tu-dien': 'Sổ tay đường hang',
+    'loa': 'Gõ đá chuông', 'tap-hop': 'Không gõ trùng',
+    'am-thanh': 'Nghe tiếng vang', 'che-am-thanh': 'Chế lệnh: dò tiếng vang',
+    'san-hang-dong': 'Chui ngách ngầm', 'che-hang-dong': 'Chế lệnh: vượt ngách',
+    'thu-gai': 'Lướt đá ướt', 'che-thu-gai': 'Chế lệnh: lướt rồi bám',
+    'phat-not': 'Vừa đi vừa ngân', 'che-phat-not': 'Chế lệnh: tấu phá đá',
+    'nghe-not': 'Bắt nốt chuông đá', 'che-nghe-not': 'Chế lệnh: giải mã giai điệu',
+    'hang-cu': 'Qua máy cũ trong hang', 'che-hang-cu': 'Chế lệnh: qua máy cũ',
+    'doi-hang-dong': 'Lấp hố, phá đá cho nhau', 'che-doi-hang-dong': 'Chế lệnh: cùng vượt hang',
+    'tong-hop-hang': 'Một chương trình, mọi sân', 'trum-mua-hang': 'Chế lệnh: cứu hộ hang sâu'
   };
   var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong', 'manThuGai', 'manPhatNot', 'manNgheNot', 'manHangCu', 'manDoiHangDong', 'manTrumMuaHang'];
   (function () {
@@ -3366,6 +3366,39 @@
       if (!chuongGat[m.chuong]) return;
       if (m.doi) m.doi.forEach(function (r) { if (r && r.canGatDoi === undefined) r.canGatDoi = true; });
       else if (m.canGatDoi === undefined) m.canGatDoi = true;
+    });
+    // 15/11 (KE-HOACH-GHEP-NHIP.md mục 5a): CHÉO GHÉP mở từ gói 5 Đi chéo tới hết mùa Mỏ đá (gói 5–10): slide_* cùng nhịp hai bánh ĐI THẲNG (tiến hay lùi) = đi chéo 1 ô, giữ hướng mặt.
+    // Gói 1–4 không bật: slide + lệnh bánh vẫn là 'omni-khong-cheo'. Trượt + quay vẫn bỏ. Màn đội: cờ khai theo từng xe (chỉ xe omni dùng). Mùa 8, 9 không bật (màn nào cần thì tự đặt cheoGhep).
+    var GOI_CHEO_GHEP = ['di-cheo', 'chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni', 'may-mo-da'], chuongCheo = {};
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-7' && GOI_CHEO_GHEP.indexOf(g.ma) >= 0) g.chuong.forEach(function (c) { chuongCheo[c] = true; }); });
+    M.danhSach.forEach(function (m) {
+      if (!chuongCheo[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.loaiRobot === 'omni' && r.cheoGhep === undefined) r.cheoGhep = true; });
+      else if (m.cheoGhep === undefined) m.cheoGhep = true;
+    });
+    // 16/11 (KE-HOACH-GHEP-NHIP.md mục 5b): NÉM ĐÀ mở từ gói 6 Chỉnh lực hất tới hết mùa Mỏ đá (gói 6–10), và cả mùa 8, 9 (mọi màn có tay hất sau gói 6):
+    // aim(n) chỉ còn 1, 2; throw() cùng nhịp TIẾN THẲNG = xe tiến 1 ô, đá rời tay ở ô mới, bay tầm + 1. Gói 1–5 mùa 7 và mùa ẩn không bật (ném là đứng yên, aim tới 3).
+    // Mùa 8, 9 phải bật theo: màn ở đó không gõ aim(3) mà gọi hàm em aim_lob(3) / lob_step chế ở gói 6 (che-chinh-luc.5, .7); aim_lob(3) bây giờ tự chạy đà rồi lùi về chỗ cũ,
+    // nên sân không đổi. Màn nào cần luật cũ thì tự đặt nemDa: false. Màn đội: cờ khai theo từng xe (lõi chỉ dùng ở xe có tay hất).
+    var GOI_NEM_DA = ['chinh-luc', 'nhan-dang', 'mo-cu', 'doi-omni', 'may-mo-da'], chuongNemDa = {};
+    TT.goi.forEach(function (g) { if ((g.mua === 'mua-7' && GOI_NEM_DA.indexOf(g.ma) >= 0) || g.mua === 'mua-8' || g.mua === 'mua-9') g.chuong.forEach(function (c) { chuongNemDa[c] = true; }); });
+    M.danhSach.forEach(function (m) {
+      if (!chuongNemDa[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.nemDa === undefined) r.nemDa = true; });
+      else if (m.nemDa === undefined) m.nemDa = true;
+    });
+    // Hàm của em dir_fl / dir_fr / dir_bl / dir_br (chế ở che-di-cheo.1–.4) thay diag_left() / diag_right() trong lời giải các màn sau: màn nào lời giải gọi dir_*() mà không tự chế / sửa
+    // hàm đó thì ghi vào hamCuaEmCan (mọi mùa), để máy kiểm bắt màn dùng dir_*() đứng trước che-di-cheo.
+    var HAM_DIR = ['dir_fl', 'dir_fr', 'dir_bl', 'dir_br'];
+    M.danhSach.forEach(function (m) {
+      if (!m.loiGiai) return;
+      var chu = JSON.stringify([m.loiGiai.chinh, m.loiGiai.hamCuaMan, m.loiGiai.doi, m.loiGiai.hamCuaEmMoi]);
+      HAM_DIR.forEach(function (t) {
+        if (chu.indexOf(t + '(') < 0) return;
+        if ((m.taoHam || []).indexOf(t) >= 0 || (m.suaHam || []).indexOf(t) >= 0) return;
+        if (!m.hamCuaEmCan) m.hamCuaEmCan = [];
+        if (m.hamCuaEmCan.indexOf(t) < 0) m.hamCuaEmCan.push(t);
+      });
     });
   })();
 

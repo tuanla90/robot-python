@@ -74,7 +74,7 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'radar-tron.2', 'radar-tron.3', 'radar-tron.4', 'radar-tron.5', 'radar-tron.6', 'radar-tron.7', 'radar-tron.8', 'radar-tron.9',
   'che-radar-tron.1', 'che-radar-tron.2', 'che-radar-tron.3', 'che-radar-tron.4', 'che-radar-tron.5', 'che-radar-tron.6', 'che-radar-tron.7', 'che-radar-tron.8', 'che-radar-tron.9',      // gói 3 mùa 6: radar tròn (2 sân)
   'ban-xoay.18', 'che-ban-xoay.12', 'che-ban-xoay.17', 'che-ban-xoay.18',      // gói 4 mùa 6: dò đá lấp hố bằng radar (2 sân)
-  'di-cheo.7', 'di-cheo.8', 'che-di-cheo.6', 'che-di-cheo.7',      // gói 5 mùa 6: đi chéo kết hợp radar (2 sân)
+  'di-cheo.8', 'che-di-cheo.7', 'che-di-cheo.9',      // gói 5 mùa 6 (làm lại 15/11, chéo ghép): đi chéo kết hợp radar (2 sân)
   'chinh-luc.7', 'chinh-luc.8', 'che-chinh-luc.5', 'che-chinh-luc.7',      // gói 6 mùa 6: chỉnh lực hất kết hợp radar (2 sân)
   'nhan-dang.2', 'nhan-dang.3', 'nhan-dang.4', 'nhan-dang.5', 'nhan-dang.6', 'nhan-dang.7', 'nhan-dang.8', 'nhan-dang.9',
   'che-nhan-dang.1', 'che-nhan-dang.2', 'che-nhan-dang.3', 'che-nhan-dang.4', 'che-nhan-dang.5', 'che-nhan-dang.6', 'che-nhan-dang.7', 'che-nhan-dang.9',      // gói 7 mùa 6: nhận dạng đá / quặng (2 sân)
@@ -95,17 +95,20 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'ben-cu.3', 'ben-cu.5', 'ben-cu.6', 'ben-cu.7', 'ben-cu.8', 'ben-cu.9',
   'che-ben-cu.1', 'che-ben-cu.3', 'che-ben-cu.5', 'che-ben-cu.6', 'che-ben-cu.7', 'che-ben-cu.8', 'che-ben-cu.9',
   'doi-xuong.6', 'doi-xuong.8', 'che-doi-xuong.2', 'che-doi-xuong.5', 'che-doi-xuong.7', 'che-doi-xuong.9',      // gói 3–9 mùa bến sông: đo dòng chảy, cống thủy lợi, thả neo, buộc đuôi, đo sức nước, bến cũ & đội xuồng (2 sân)
-  'am-thanh.2', 'am-thanh.3', 'am-thanh.4', 'am-thanh.5', 'am-thanh.6', 'am-thanh.7', 'am-thanh.8', 'am-thanh.9',
-  'che-am-thanh.1', 'che-am-thanh.2', 'che-am-thanh.3', 'che-am-thanh.4', 'che-am-thanh.5', 'che-am-thanh.6', 'che-am-thanh.7', 'che-am-thanh.8', 'che-am-thanh.9',
-  'san-hang-dong.6', 'san-hang-dong.7', 'san-hang-dong.8', 'san-hang-dong.9',
-  'che-hang-dong.1', 'che-hang-dong.2', 'che-hang-dong.3', 'che-hang-dong.4', 'che-hang-dong.5', 'che-hang-dong.6', 'che-hang-dong.7', 'che-hang-dong.8', 'che-hang-dong.9',
-  'thu-gai.4', 'che-thu-gai.5', 'phat-not.8', 'che-phat-not.7',
-  'nghe-not.2', 'nghe-not.4', 'nghe-not.5', 'nghe-not.6', 'nghe-not.8', 'nghe-not.9',
-  'che-nghe-not.1', 'che-nghe-not.2', 'che-nghe-not.3', 'che-nghe-not.4', 'che-nghe-not.5', 'che-nghe-not.6', 'che-nghe-not.9',
-  'hang-cu.3', 'hang-cu.5', 'hang-cu.7', 'hang-cu.9',
-  'che-hang-cu.2', 'che-hang-cu.4', 'che-hang-cu.6', 'che-hang-cu.8',
-  'doi-hang-dong.3', 'doi-hang-dong.6', 'doi-hang-dong.8',
-  'che-doi-hang-dong.2', 'che-doi-hang-dong.4', 'che-doi-hang-dong.6', 'che-doi-hang-dong.8',
+  'am-thanh.2', 'am-thanh.3', 'am-thanh.4', 'am-thanh.5', 'am-thanh.6', 'am-thanh.7', 'am-thanh.8', 'am-thanh.9',      // mùa 8 viết lại 16/11 (hoc/kiem-man-mua-8.mjs): màn nhiều sân để chặn mẹo đếm ô / điền thẳng số
+  'che-am-thanh.1', 'che-am-thanh.2', 'che-am-thanh.3', 'che-am-thanh.4', 'che-am-thanh.5', 'che-am-thanh.7', 'che-am-thanh.8', 'che-am-thanh.9',
+  'san-hang-dong.6', 'san-hang-dong.7', 'san-hang-dong.8',
+  'che-hang-dong.3', 'che-hang-dong.7',
+  'thu-gai.2', 'thu-gai.3', 'thu-gai.4', 'thu-gai.5', 'thu-gai.6', 'thu-gai.7', 'thu-gai.8',
+  'che-thu-gai.1', 'che-thu-gai.2', 'che-thu-gai.3', 'che-thu-gai.4', 'che-thu-gai.5', 'che-thu-gai.6', 'che-thu-gai.7',
+  'phat-not.5',
+  'che-phat-not.1', 'che-phat-not.6', 'che-phat-not.7', 'che-phat-not.9',
+  'nghe-not.2', 'nghe-not.3', 'nghe-not.4', 'nghe-not.5', 'nghe-not.6', 'nghe-not.7', 'nghe-not.8', 'nghe-not.9',
+  'che-nghe-not.1', 'che-nghe-not.2', 'che-nghe-not.3', 'che-nghe-not.5', 'che-nghe-not.6', 'che-nghe-not.7', 'che-nghe-not.8', 'che-nghe-not.9',
+  'hang-cu.2', 'hang-cu.3', 'hang-cu.4', 'hang-cu.5', 'hang-cu.6', 'hang-cu.7', 'hang-cu.8', 'hang-cu.9',
+  'che-hang-cu.1', 'che-hang-cu.2', 'che-hang-cu.4', 'che-hang-cu.6', 'che-hang-cu.7', 'che-hang-cu.8', 'che-hang-cu.9',
+  'doi-hang-dong.3', 'doi-hang-dong.5', 'doi-hang-dong.9',
+  'che-doi-hang-dong.3', 'che-doi-hang-dong.4', 'che-doi-hang-dong.5', 'che-doi-hang-dong.6', 'che-doi-hang-dong.8', 'che-doi-hang-dong.9',
   'nhac-doi.8', 'nhac-doi.9', 'cang-cu.9',
   'can-tai.8', 'can-tai.9', 'che-can-tai.8', 'cang-cu.7');      // 15/11 dãy ngang (ghép nhịp 3f): mỗi sân một bộ số, kỷ lục ở ô khác nhau, trẻ quét read_code() / weight() giữ kỷ lục (hoc/kiem-lon-nhat.mjs kiểm riêng) ·      // 15/11 (ba mã dòng trên) luật xếp chồng bongMo.chongLuat: mỗi sân một bộ số container, trẻ phải read_code() rồi chọn giữ hay đảo (hoc/kiem-chong-luat.mjs kiểm riêng) ·      // gói 3–9 mùa hang động: cảm biến âm thanh, sân hang động, thu gai, phát nốt, nghe nốt, hang cổ & đội hang động (2 sân)
 // 16/11 (M9M4, mùa 9 G4 Cảng sông, màn đội): màn dạy ĐỌC cảm biến nhiều sân, mỗi sân một bộ dữ liệu (số container, sức dòng, màu ô bãi) — luật 13/11; duLieuSan chỉ cho màn một robot nên khai ở đây.

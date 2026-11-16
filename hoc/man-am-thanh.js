@@ -1,7 +1,10 @@
 /* ============================================================================
-   man-am-thanh.js — Mùa 8 (Hang động đá vôi) · Gói 3: Cảm biến âm thanh
-   Chương 1: am-thanh (10 màn) — Lắng nghe tiếng vang (hear, chuongDa)
-   Chương 2: che-am-thanh (10 màn) — Chế lệnh: dò sóng âm
+   man-am-thanh.js — Mùa 8 Hang động · Gói 3: Cảm biến âm thanh (viết lại 16/11, KE-HOACH-MUA-8.md)
+   Chương 1: am-thanh "Nghe tiếng vang" (10 màn): chuông đá chuongDa {x, y, not, phamVi} treo trên trần, tự ngân; hear() là số ô (Manhattan) tới
+             nguồn gần nhất trong tầm (chuông đá, đá chuông chưa vỡ), bỏ qua chuông ngay trên đầu, không nghe gì thì 0.
+             forward(hear()), rim(hear()), n = hear(), forward(hear() - 1), while hear() == 0, while hear() > 0, đo trước khi phá đá.
+   Chương 2: che-am-thanh "Chế lệnh: dò tiếng vang" (10 màn): go_echo() (mùa 9 gọi, giữ thân), wait_echo(), crack_rim(n), echo_spiral().
+   Lời: "Giúp Sola với!", gợi ý của Luna, gọi người chơi là "bạn".
    ========================================================================== */
 (function () {
   'use strict';
@@ -9,7 +12,8 @@
   var M = (typeof window !== 'undefined' && window.ManHoc) ||
     (typeof require === 'function' ? require('./man-chuoi-1.js') : null);
 
-  var GOC_AM_THANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'beat', 'hear'];
+  var GOC_AM_THANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'note', 'beat', 'hear'];
+  var ROBOT_AM_THANH = { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] };
 
   function bai(chinh, ham, moi) {
     return { chinh: chinh, hamCuaMan: ham || [], hamCuaEmMoi: moi || [] };
@@ -17,18 +21,20 @@
   function ham(ten, than, thamSo) {
     return { ten: ten, than: than, thamSo: thamSo || [] };
   }
+  function cd(x, y, not, phamVi) { return phamVi ? { x: x, y: y, not: not, phamVi: phamVi } : { x: x, y: y, not: not }; }
+  function da(x, y, not, ben) { return { x: x, y: y, not: not, ben: ben || 1 }; }
+  function hai(a) { return [a, a]; }
 
   function manAmThanh(so, hang, ds) {
     return Object.assign({
       chuong: 'am-thanh', so: so, hang: hang,
       vo: 'hang', loaiRobot: 'gai',
-      robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] },
+      robot: ROBOT_AM_THANH,
       hamGoc: GOC_AM_THANH.slice(),
       hamCuaEmCan: [],
       taoHam: [],
-      bienDem: true,
-      cauTruc: ['for', 'if', 'while'],
-      khung: { chinh: 10, moiHam: 10, cauTruc: ['for', 'if', 'while'] },
+      cauTruc: ['for', 'while'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while'] },
       mucTieu: 'toi-co'
     }, ds);
   }
@@ -37,591 +43,829 @@
     return Object.assign({
       chuong: 'che-am-thanh', so: so, hang: hang,
       vo: 'hang', loaiRobot: 'gai',
-      robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] },
+      robot: ROBOT_AM_THANH,
       hamGoc: GOC_AM_THANH.slice(),
       hamCuaEmCan: [],
       taoHam: [],
-      bienDem: true,
-      cauTruc: ['for', 'if', 'while', 'return', 'list'],
-      khung: { chinh: 12, moiHam: 10, cauTruc: ['for', 'if', 'while', 'return', 'list'] },
+      cauTruc: ['for', 'while', 'dict'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while', 'dict'] },
       mucTieu: 'toi-co'
     }, ds);
   }
 
+  var GO_ECHO = ham('go_echo', ['forward(hear())']);
+  var WAIT_ECHO = ham('wait_echo', ['while hear() == 0:', '    move()']);
+  var CRACK_RIM = ham('crack_rim', ['gap = hear()', 'play_note(n)', 'rim(gap)'], ['n']);
+  var ECHO_SPIRAL = ham('echo_spiral', ['while hear() > 0:', '    go_echo()', '    turn_right()']);
+
   var DS = [
     /* ========================================================================
-       CHƯƠNG 1: am-thanh — Lắng nghe tiếng vang (10 màn)
+       CHƯƠNG 1: am-thanh — Nghe tiếng vang
        ====================================================================== */
     manAmThanh(1, 'lam-quen', {
-      ten: 'Lắng nghe chuông đá',
+      ten: 'Chuông đá gọi về',
       chiChay: true, chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward'],
-      deBai: 'R1 vừa lắp cảm biến âm thanh trên đỉnh đầu. Lệnh hear() trả về số bước từ R1 tới chuông đá gần nhất trong tầm vang. Bấm Chạy để xem R1 tự đo khoảng cách và đi tới cờ.',
-      veMaMau: 'n = hear() lưu khoảng cách tới chuông đá ở ô cờ vào n, rồi forward(n) đưa R1 đi đúng số bước đó.',
-      san: ['#######', '#.IIIF#', '#######'],
+      hamCuaEmCan: ['forward'],
+      deBai: 'Sola làm mẫu. R1 lắp thêm cảm biến âm thanh trên nóc. Chuông đá treo trên trần hang, tự ngân mãi. hear() là số ô từ R1 tới chuông đá gần nhất. forward(hear()) đi đúng bấy nhiêu ô. Bấm Chạy để xem.',
+      veMaMau: 'Chương trình Sola viết sẵn và đã khoá: nghe chuông ở ô cờ rồi đi tới đó.',
+      san: [
+        '########',
+        '#.IIIIF#',
+        '########'
+      ],
       batDau: { x: 1, y: 1, huong: 1 },
-      chuongDa: [{ x: 5, y: 1, not: 1, phamVi: 8 }],
-      maMau: bai(['n = hear()', 'forward(n)']),
-      loiGiai: bai(['n = hear()', 'forward(n)']),
-      sao: { o: 7, nhip: 4 },
+      chuongDa: [cd(6, 1, 3)],
+      maMau: bai(['forward(hear())']),
+      loiGiai: bai(['forward(hear())']),
+      sao: { o: 6, nhip: 5 },
       goiY: [
-        'Bấm nút Chạy để quan sát hear() trả về khoảng cách tới chuông đá.',
-        'Màn 1 chỉ cần chạy thử, chưa cần sửa mã.'
+        'Luna: R1 cách chuông 5 ô nên hear() là 5, forward(hear()) thành forward(5).',
+        'Luna: hear() không tốn nhịp. Chỉ bánh xe lăn mới tốn nhịp.'
       ]
     }),
 
     manAmThanh(2, 'lam-quen', {
-      ten: 'Hai hầm khác độ dài',
-      hamCuaEmCan: ['move', 'forward'],
-      deBai: 'Có 2 đường hầm dài ngắn khác nhau, nhưng cuối mỗi hầm đều có chuông đá tại ô cờ. Hãy dùng hear() để đi thẳng tới cờ ở cả 2 sân.',
-      veMaMau: 'Mã mẫu dùng số cứng 3 nên chỉ tới cờ ở sân 1 và dừng thiếu ở sân 2.',
+      ten: 'Mỗi hầm một độ dài',
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Giúp Sola với! Hai hầm, chuông đá treo ở chỗ rẽ, qua chỗ rẽ là hố sụt. Hầm dài ngắn khác nhau. Một chương trình phải đi đúng cả hai hầm.',
+      veMaMau: 'Sola đếm ô ở hầm 1 rồi viết forward(4). Chạy thử: sang hầm 2 R1 rẽ sớm.',
       san: [
-        ['######', '#.IIF#', '######'],
-        ['#########', '#.IIIIIF#', '#########']
+        [
+          '########',
+          '#.III.u#',
+          '#####I##',
+          '#####F##',
+          '########'
+        ],
+        [
+          '##########',
+          '#.IIIII.u#',
+          '#######I##',
+          '#######F##',
+          '##########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 8 }],
-        [{ x: 7, y: 1, not: 1, phamVi: 8 }]
-      ],
-      maMau: bai(['forward(3)']),
-      loiGiai: bai(['forward(hear())']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(5, 1, 2)], [cd(7, 1, 2)]],
+      maMau: bai(['forward(4)', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['forward(hear())', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Giữ nguyên forward(3): sân 2 dừng thiếu trước cờ', baiLam: bai(['forward(3)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Để forward(4): hầm 2 dài 6 ô, R1 rẽ sớm rồi đâm vách', baiLam: bai(['forward(4)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Viết forward(6): hầm 1 chỉ dài 4 ô, R1 lăn xuống hố sau chỗ rẽ', baiLam: bai(['forward(6)', 'turn_right()', 'forward(2)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 6, nhip: 6 },
+      sao: { o: 10, nhip: 9 },
       goiY: [
-        'Đổi forward(3) thành forward(hear()).',
-        'Khi dùng hear(), R1 tự đo đúng số bước ở cả 2 sân.'
+        'Luna: Chuông đá ở ngay chỗ rẽ. hear() đo giùm bạn hầm dài bao nhiêu.',
+        'Luna: Đổi forward(4) thành forward(hear()).'
       ]
     }),
 
     manAmThanh(3, 'lam-quen', {
-      ten: 'Chuông đá ở góc cua',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Chuông đá đặt ngay tại góc rẽ phải. Ở cả 2 sân, sau khi rẽ phải tại chuông đá, cờ đều cách đúng 2 bước về phía Nam.',
-      veMaMau: 'Mã mẫu chưa rẽ phải và đi nốt 2 bước tới cờ.',
+      ten: 'Nghe chuông kế tiếp',
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Giúp Sola với! Mỗi chỗ rẽ có một chuông đá. Đứng ngay dưới chuông này, hear() bỏ qua nó và nghe chuông kế tiếp.',
+      veMaMau: 'Đoạn thứ hai Sola viết số 2. Chạy thử: hầm 2 đoạn đó dài 3 ô.',
       san: [
-        ['######', '#.II.#', '####I#', '####F#', '######'],
-        ['########', '#.IIII.#', '######I#', '######F#', '########']
+        [
+          '#######',
+          '#.II.u#',
+          '####I##',
+          '##FI.##',
+          '####u##',
+          '#######'
+        ],
+        [
+          '#########',
+          '#.IIII.u#',
+          '######I##',
+          '######I##',
+          '####FI.##',
+          '######u##',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 4, y: 1, not: 2, phamVi: 8 }],
-        [{ x: 6, y: 1, not: 2, phamVi: 8 }]
-      ],
-      maMau: bai(['forward(hear())']),
-      loiGiai: bai(['spike_step(hear())', 'forward(2)']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(4, 1, 2), cd(4, 3, 5)], [cd(6, 1, 2), cd(6, 4, 5)]],
+      maMau: bai(['forward(hear())', 'turn_right()', 'forward(2)', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['forward(hear())', 'turn_right()', 'forward(hear())', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Chưa rẽ phải và đi xuống cờ', baiLam: bai(['forward(hear())']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Để forward(2) ở đoạn hai: hầm 2 đoạn đó dài 3 ô, R1 rẽ sớm', baiLam: bai(['forward(hear())', 'turn_right()', 'forward(2)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Viết forward(3) ở đoạn hai: hầm 1 đoạn đó chỉ dài 2 ô, R1 lăn xuống hố', baiLam: bai(['forward(hear())', 'turn_right()', 'forward(3)', 'turn_right()', 'forward(2)']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 11, nhip: 8 },
+      sao: { o: 12, nhip: 12 },
       goiY: [
-        'Dùng spike_step(hear()) để đi tới chuông đá ở góc cua và rẽ phải.',
-        'Sau đó gọi forward(2) để tới cờ.'
+        'Luna: Tới chuông thứ nhất rồi, hear() nghe chuông thứ hai.',
+        'Luna: Đoạn thứ hai cũng là forward(hear()).'
       ]
     }),
 
-    manAmThanh(4, 'lam-quen', {
-      ten: 'Hai trạm chuông vang',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Khi R1 đứng ngay trên một chuông đá, hear() sẽ bỏ qua chuông dưới chân và lắng nghe chuông đá tiếp theo. Hãy dùng tính chất này để đi qua góc rẽ tới cờ ở cả 2 sân.',
-      veMaMau: 'Mã mẫu mới đi hết chặng thứ nhất và rẽ phải tại chuông đầu tiên.',
+    manAmThanh(4, 'luyen', {
+      ten: 'Đo một lần, đi hai lần',
+      hamCuaEmCan: ['move', 'forward', 'turn_left', 'rim'],
+      bienDem: true,
+      deBai: 'Giúp Sola với! R1 đi tới chuông, vòng xuống, rồi quay về đúng một quãng dài như lúc đi, tới chỗ rẽ xuống cờ. Ở hàng dưới, chuông đã ở sau lưng. Nhớ số đo vào biến n ngay từ đầu.',
+      veMaMau: 'Sola đo lại ở hàng dưới. Chạy thử: lúc đó chuông chỉ cách 2 ô.',
       san: [
-        ['######', '#.II.#', '####I#', '####F#', '######'],
-        ['########', '#.IIII.#', '######I#', '######I#', '######F#', '########']
+        [
+          '########',
+          '##.II.u#',
+          '#####I##',
+          '#u.II.##',
+          '##F#####',
+          '########'
+        ],
+        [
+          '##########',
+          '##.IIII.u#',
+          '#######I##',
+          '#u.IIII.##',
+          '##F#######',
+          '##########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 8 }, { x: 4, y: 3, not: 3, phamVi: 3 }],
-        [{ x: 6, y: 1, not: 1, phamVi: 8 }, { x: 6, y: 4, not: 3, phamVi: 3 }]
-      ],
-      maMau: bai(['spike_step(hear())']),
-      loiGiai: bai(['spike_step(hear())', 'forward(hear())']),
+      batDau: hai({ x: 2, y: 1, huong: 1 }),
+      chuongDa: [[cd(5, 1, 6)], [cd(7, 1, 6)]],
+      maMau: bai(['n = hear()', 'rim(n)', 'rim(2)', 'forward(hear())', 'turn_left()', 'move()']),
+      loiGiai: bai(['n = hear()', 'rim(n)', 'rim(2)', 'forward(n)', 'turn_left()', 'move()']),
       loiSai: [
-        { moTa: 'Mới đi hết chặng đầu tiên', baiLam: bai(['spike_step(hear())']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Đo lại ở hàng dưới: chuông chỉ cách 2 ô nên R1 rẽ giữa đường', baiLam: bai(['n = hear()', 'rim(n)', 'rim(2)', 'forward(hear())', 'turn_left()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Viết forward(5) ở hàng dưới: hầm 1 chỉ dài 3 ô, R1 lăn xuống hố', baiLam: bai(['n = hear()', 'rim(n)', 'rim(2)', 'forward(5)', 'turn_left()', 'move()']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 11, nhip: 9 },
+      sao: { o: 17, nhip: 16 },
       goiY: [
-        'Chuông thứ hai ở ô cờ có tầm vang 3 bước nên khi đứng ở góc rẽ, hear() đo đúng khoảng cách tới cờ.',
-        'Thêm forward(hear()) ở dòng thứ hai.'
+        'Luna: n = hear() ghi số đo lúc R1 còn ở đầu hầm. Về sau n vẫn giữ số đó.',
+        'Luna: Dòng cuối dùng n: forward(n).'
       ]
     }),
 
     manAmThanh(5, 'luyen', {
-      ten: 'Chế lệnh: tiến theo tiếng vang',
-      taoHam: ['go_echo'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward'],
-      deBai: 'Chế tạo hàm go_echo() không tham số: đo khoảng cách bằng hear() rồi tiến thẳng bấy nhiêu bước bằng forward(hear()).',
-      veMaMau: 'Chương trình chính đã gọi go_echo() cố định. Em hãy viết phần thân hàm go_echo().',
+      ten: 'Chuông treo trên hố',
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Giúp Sola với! Chuông đá treo ngay trên hố sụt. R1 phải dừng trước hố một ô rồi mới rẽ.',
+      veMaMau: 'Sola đi thẳng tới chuông. Chạy thử: R1 lăn xuống hố.',
       san: [
-        ['#######', '#.IIIF#', '#######'],
-        ['#########', '#.IIIIIF#', '#########']
+        [
+          '#######',
+          '#.IIu##',
+          '###I###',
+          '###F###',
+          '#######'
+        ],
+        [
+          '#########',
+          '#.IIIIu##',
+          '#####I###',
+          '#####F###',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 5, y: 1, not: 1, phamVi: 8 }],
-        [{ x: 7, y: 1, not: 1, phamVi: 8 }]
-      ],
-      maMau: bai(['go_echo()']),
-      loiGiai: bai(['go_echo()'], [], [ham('go_echo', ['forward(hear())'])]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(4, 1, 4)], [cd(6, 1, 4)]],
+      maMau: bai(['forward(hear())', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['forward(hear() - 1)', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm go_echo', baiLam: bai(['go_echo()']), phaiCoMa: ['ham-chua-co'] }
+        { moTa: 'Đi đủ forward(hear()): R1 lăn xuống hố dưới chuông', baiLam: bai(['forward(hear())', 'turn_right()', 'forward(2)']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Viết forward(2): hầm 2 dài hơn, R1 rẽ sớm', baiLam: bai(['forward(2)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 7, nhip: 6 },
+      sao: { o: 10, nhip: 7 },
       goiY: [
-        'Trong thân hàm go_echo(), viết forward(hear()).',
-        'Hàm này sẽ mở khóa trong mục Hàm của em cho các màn sau.'
+        'Luna: Chuông ở trên hố. Ô cần dừng gần hơn chuông 1 ô.',
+        'Luna: forward(hear() - 1).'
       ]
     }),
 
     manAmThanh(6, 'luyen', {
-      ten: 'Lần theo tiếng vang đôi',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'go_echo'],
-      deBai: 'Dùng hàm go_echo() vừa chế để đi tới góc rẽ, xoay phải, rồi gọi go_echo() lần nữa để tới cờ ở cả 2 sân.',
-      veMaMau: 'Mã mẫu mới đi tới chuông thứ nhất và rẽ phải.',
+      ten: 'Chưa nghe thì đi tiếp',
+      hamCuaEmCan: ['move', 'forward', 'turn_right'],
+      deBai: 'Giúp Sola với! Chuông đá trong ngách này ngân khẽ, chỉ nghe được khi đứng ngay miệng ngách. hear() còn là 0 thì R1 còn đi tiếp.',
+      veMaMau: 'Sola viết điều kiện ngược. Chạy thử: vòng lặp không chạy lần nào.',
       san: [
-        ['#######', '#.III.#', '#####I#', '#####I#', '#####F#', '#######'],
-        ['#########', '#.IIIII.#', '#######I#', '#######F#', '#########']
+        [
+          '#########',
+          '#.IIIIII#',
+          '##.#I####',
+          '####F####',
+          '#########'
+        ],
+        [
+          '#########',
+          '#.IIIIII#',
+          '###.##I##',
+          '######F##',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 5, y: 1, not: 1, phamVi: 8 }, { x: 5, y: 4, not: 2, phamVi: 3 }],
-        [{ x: 7, y: 1, not: 1, phamVi: 8 }, { x: 7, y: 3, not: 2, phamVi: 3 }]
-      ],
-      maMau: bai(['go_echo()', 'turn_right()']),
-      loiGiai: bai(['go_echo()', 'turn_right()', 'go_echo()']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(4, 3, 6, 2)], [cd(6, 3, 6, 2)]],
+      maMau: bai(['while hear() > 0:', '    move()', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['while hear() == 0:', '    move()', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Chưa gọi go_echo() lần thứ hai sau khi rẽ phải', baiLam: bai(['go_echo()', 'turn_right()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'while hear() > 0: lúc đầu chưa nghe gì nên R1 rẽ ngay, đâm vách', baiLam: bai(['while hear() > 0:', '    move()', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đếm ô ở hầm 1 rồi viết forward(3): hầm 2 ngách xa hơn', baiLam: bai(['forward(3)', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 11, nhip: 9 },
+      sao: { o: 11, nhip: 8 },
       goiY: [
-        'Sau turn_right(), gọi thêm go_echo() để đi tới chuông thứ hai tại ô cờ.'
+        'Luna: Còn chưa nghe (hear() == 0) thì move(). Nghe thấy rồi là đang đứng ở miệng ngách.',
+        'Luna: Đổi > 0 thành == 0.'
       ]
     }),
 
-    manAmThanh(7, 'luyen', {
-      ten: 'Chế lệnh: vang âm rẽ góc',
-      taoHam: ['echo_turn'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'go_echo'],
-      deBai: 'Chế tạo hàm echo_turn() không tham số: gọi go_echo() để đi tới chuông đá ở góc cua rồi turn_right().',
-      veMaMau: 'Chương trình chính gọi echo_turn() rồi go_echo(). Hãy hoàn thiện thân hàm echo_turn().',
+    manAmThanh(7, 'bien-the', {
+      ten: 'Chuỗi chuông xoáy ốc',
+      hamCuaEmCan: ['forward', 'rim'],
+      deBai: 'Giúp Sola với! Chuông đá treo ở mọi chỗ rẽ, đường cuộn vào trong như vỏ ốc. Còn nghe chuông là còn đi tới chuông rồi rẽ phải. Hầm 1 có năm chuông, hầm 2 có bốn.',
+      veMaMau: 'Sola mới viết hai đoạn. Chạy thử: R1 dừng giữa đường.',
       san: [
-        ['######', '#.II.#', '####I#', '####I#', '####F#', '######'],
-        ['########', '#.IIII.#', '######I#', '######F#', '########']
+        [
+          '#########',
+          '#.IIIII.#',
+          '#######I#',
+          '###.IF#I#',
+          '###I###I#',
+          '###I###I#',
+          '###.III.#',
+          '#########'
+        ],
+        [
+          '########',
+          '#.IIII.#',
+          '######I#',
+          '###F##I#',
+          '###I##I#',
+          '###.II.#',
+          '########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
       chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 8 }, { x: 4, y: 4, not: 2, phamVi: 3 }],
-        [{ x: 6, y: 1, not: 1, phamVi: 8 }, { x: 6, y: 3, not: 2, phamVi: 3 }]
+        [cd(7, 1, 1, 6), cd(7, 6, 3, 5), cd(3, 6, 5, 4), cd(3, 3, 7, 3), cd(5, 3, 8, 2)],
+        [cd(6, 1, 1, 5), cd(6, 5, 3, 4), cd(3, 5, 5, 3), cd(3, 3, 7, 2)]
       ],
-      maMau: bai(['echo_turn()', 'go_echo()']),
-      loiGiai: bai(['echo_turn()', 'go_echo()'], [], [ham('echo_turn', ['go_echo()', 'turn_right()'])]),
+      maMau: bai(['rim(hear())', 'rim(hear())']),
+      loiGiai: bai(['while hear() > 0:', '    rim(hear())']),
       loiSai: [
-        { moTa: 'Quên gọi turn_right() trong echo_turn', baiLam: bai(['echo_turn()', 'go_echo()']), hamCuaEmMoi: [ham('echo_turn', ['go_echo()'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Viết hai lần rim(hear()): còn chuông chưa tới', baiLam: bai(['rim(hear())', 'rim(hear())']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lặp for 4 lần: hầm 1 có năm chuông', baiLam: bai(['for i in range(4):', '    rim(hear())']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lặp forward(hear()) mà quên rẽ: R1 đâm vách ở chỗ rẽ đầu', baiLam: bai(['while hear() > 0:', '    forward(hear())']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 12, nhip: 8 },
+      sao: { o: 11, nhip: 24 },
       goiY: [
-        'Trong echo_turn(), gọi go_echo() ở dòng 1 và turn_right() ở dòng 2.'
+        'Luna: while hear() > 0: còn nghe thấy chuông là còn lặp.',
+        'Luna: Trong vòng lặp chỉ một dòng: rim(hear()).'
       ]
     }),
 
     manAmThanh(8, 'bien-the', {
-      ten: 'Vừa đi vừa gõ theo vang',
-      mucTieu: 'choi-dieu', dieuToiCo: true,
-      dieu: ['xxx', 'xxxxx'],
-      hamCuaEmCan: ['move', 'forward', 'march_beat', 'go_echo'],
-      deBai: 'Trong hầm này có giai điệu cần gõ mỗi bước đi tới chuông đá. Hãy đo số bước bằng hear() rồi gọi march_beat(...) để vừa tiến vừa phát xung âm ở cả 2 sân.',
-      veMaMau: 'Mã mẫu chỉ dùng go_echo() nên không phát xung âm theo giai điệu.',
+      ten: 'Đo trước khi gõ',
+      hamCuaEmCan: ['forward', 'rim'],
+      bienDem: true,
+      deBai: 'Giúp Sola với! Đá chuông ở chỗ rẽ cũng vang, hear() nghe được nó. Gõ vỡ rồi thì đá hết vang. Đo trước, gõ sau.',
+      veMaMau: 'Sola gõ vỡ đá trước rồi mới đo. Chạy thử xem hear() còn nghe gì.',
       san: [
-        ['######', '#.IIF#', '######'],
-        ['########', '#.IIIIF#', '########']
+        [
+          '#######',
+          '#.II.u#',
+          '####I##',
+          '####I##',
+          '####F##',
+          '#######'
+        ],
+        [
+          '#########',
+          '#.IIII.u#',
+          '######I##',
+          '######I##',
+          '######F##',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 8 }],
-        [{ x: 6, y: 1, not: 1, phamVi: 8 }]
-      ],
-      maMau: bai(['go_echo()']),
-      loiGiai: bai(['march_beat(hear())']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(4, 1, 5)], [da(6, 1, 5)]],
+      maMau: bai(['note(5)', 'wait()', 'rim(hear())', 'forward(3)']),
+      loiGiai: bai(['n = hear()', 'note(5)', 'wait()', 'rim(n)', 'forward(3)']),
       loiSai: [
-        { moTa: 'Dùng go_echo() mà không gõ trống', baiLam: bai(['go_echo()']), phaiCoMa: ['chua-du-dieu'] }
+        { moTa: 'Gõ trước rồi mới đo: đá đã vỡ nên hear() là 0, R1 rẽ ngay chỗ cũ', baiLam: bai(['note(5)', 'wait()', 'rim(hear())', 'forward(3)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đo rồi đi luôn, quên gõ: R1 đâm vào đá chuông', baiLam: bai(['n = hear()', 'rim(n)', 'forward(3)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 6, nhip: 5 },
+      sao: { o: 14, nhip: 10 },
       goiY: [
-        'Thay go_echo() bằng march_beat(hear()).',
-        'march_beat(n) vừa tiến n bước vừa gõ beat() mỗi bước.'
+        'Luna: n = hear() ở dòng đầu, khi đá còn nguyên.',
+        'Luna: Gõ note(5), wait() rồi rim(n).'
       ]
     }),
 
     manAmThanh(9, 'bien-the', {
-      ten: 'Chế lệnh: hành quân theo vang',
-      taoHam: ['echo_beat'], chinhCoDinh: true,
-      mucTieu: 'choi-dieu', dieuToiCo: true,
-      dieu: ['xxx', 'xx'],
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'march_beat', 'go_echo', 'echo_turn'],
-      deBai: 'Chế tạo hàm echo_beat() không tham số: gọi march_beat(hear()) để tiến tới chuông đá đồng thời gõ nhịp mỗi bước.',
-      veMaMau: 'Chương trình chính gọi echo_turn() rồi echo_beat(). Hãy hoàn thiện thân hàm echo_beat().',
+      ten: 'Dãy đá chuông',
+      hamCuaEmCan: ['forward', 'rim'],
+      bienDem: true,
+      deBai: 'Giúp Sola với! Đá chuông nốt 4 chắn mọi chỗ rẽ. Hầm 1 có ba khối, hầm 2 có hai. Còn nghe đá là còn đo, gõ, đi tới chỗ đá rồi rẽ phải. Hết đá thì đi 2 ô tới cờ.',
+      veMaMau: 'Sola chỉ phá một khối. Chạy thử: R1 dừng giữa đường.',
       san: [
-        ['######', '#.II.#', '####I#', '####I#', '####F#', '######'],
-        ['########', '#.IIII.#', '######I#', '######F#', '########']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 8 }, { x: 4, y: 4, not: 2, phamVi: 3 }],
-        [{ x: 6, y: 1, not: 1, phamVi: 8 }, { x: 6, y: 3, not: 2, phamVi: 2 }]
-      ],
-      maMau: bai(['echo_turn()', 'echo_beat()']),
-      loiGiai: bai(['echo_turn()', 'echo_beat()'], [], [ham('echo_beat', ['march_beat(hear())'])]),
-      loiSai: [
-        { moTa: 'Trong echo_beat gọi go_echo() thay vì march_beat(hear())', baiLam: bai(['echo_turn()', 'echo_beat()']), hamCuaEmMoi: [ham('echo_beat', ['go_echo()'])], phaiCoMa: ['chua-du-dieu'] }
-      ],
-      sao: { o: 18, nhip: 8 },
-      goiY: [
-        'Trong thân hàm echo_beat(), viết march_beat(hear()).'
-      ]
-    }),
-
-    manAmThanh(10, 'trum', {
-      ten: 'Trùm Cảm biến âm thanh: Vòm đá vọng âm',
-      nhipTheo: 'tong',
-      mucTieu: 'choi-dieu', dieuToiCo: true,
-      dieu: ['xx', 'xxx'],
-      huyHieu: { ma: 'am-thanh', ten: 'Huy hiệu Lắng nghe tiếng vang' },
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'march_beat', 'go_echo', 'echo_turn', 'echo_beat'],
-      deBai: 'Thử thách Trùm Cảm biến âm thanh trên 2 sân: đi qua 2 góc cua có đặt chuông đá bằng echo_turn(), sau đó gõ nhịp về đích bằng echo_beat().',
-      veMaMau: 'Mã mẫu mới đi qua góc cua đầu tiên.',
-      san: [
-        ['#######', '#.III.#', '#####I#', '#####I#', '###FI.#', '#######'],
-        ['#########', '#.IIIII.#', '#######I#', '#######I#', '####FII.#', '#########']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
         [
-          { x: 5, y: 1, not: 1, phamVi: 8 },
-          { x: 5, y: 4, not: 2, phamVi: 3 },
-          { x: 3, y: 4, not: 3, phamVi: 2 }
+          '########',
+          '#.IIII.#',
+          '######I#',
+          '###F##I#',
+          '###I##I#',
+          '###.II.#',
+          '########'
         ],
         [
-          { x: 7, y: 1, not: 1, phamVi: 8 },
-          { x: 7, y: 4, not: 2, phamVi: 3 },
-          { x: 4, y: 4, not: 3, phamVi: 3 }
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '#####I#',
+          '#####I#',
+          '###FI.#',
+          '#######'
         ]
       ],
-      maMau: bai(['echo_turn()']),
-      loiGiai: bai(['echo_turn()', 'echo_turn()', 'echo_beat()']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(6, 1, 4), da(6, 5, 4), da(3, 5, 4)], [da(5, 1, 4), da(5, 5, 4)]],
+      maMau: bai(['n = hear()', 'note(4)', 'wait()', 'rim(n)', 'forward(2)']),
+      loiGiai: bai(['while hear() > 0:', '    n = hear()', '    note(4)', '    wait()', '    rim(n)', 'forward(2)']),
       loiSai: [
-        { moTa: 'Mới đi qua một góc cua', baiLam: bai(['echo_turn()']), phaiCoMa: ['chua-du-dieu'] }
+        { moTa: 'Chỉ phá một khối: R1 rẽ ở khối đầu rồi dừng giữa đường', baiLam: bai(['n = hear()', 'note(4)', 'wait()', 'rim(n)', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gõ trước rồi mới đo trong vòng lặp: hear() nghe khối xa hơn, R1 đâm vách', baiLam: bai(['while hear() > 0:', '    note(4)', '    wait()', '    rim(hear())', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Lặp for 3 lần: hầm 2 chỉ có hai khối, lần thứ ba R1 quay tại chỗ rồi đi sai hướng', baiLam: bai(['for i in range(3):', '    n = hear()', '    note(4)', '    wait()', '    rim(n)', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 19, nhip: 25 },
+      sao: { o: 15, nhip: 20 },
       goiY: [
-        'Gọi echo_turn() 2 lần cho 2 góc rẽ phải.',
-        'Cuối cùng gọi echo_beat() để vừa tiến về cờ vừa khớp giai điệu.'
+        'Luna: Ba dòng của màn trước đặt vào trong while hear() > 0.',
+        'Luna: Hết đá thì hear() là 0, vòng lặp dừng, forward(2) đưa R1 tới cờ.'
       ]
     }),
 
+    manAmThanh(10, 'tong-hop', {
+      ten: 'Trùm: hang chuông ngân',
+      hamCuaEmCan: ['move', 'forward', 'turn_right', 'rim'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while'] },
+      deBai: 'Giúp Sola với! Đá chuông nốt 6 chắn ngay đầu hầm. Qua đá là đường tối, ngách có chuông nằm đâu đó bên phải. Từ ngách, chuông đá dẫn đường tới cờ.',
+      veMaMau: 'Sola quên đá chuông cũng vang. Chạy thử: R1 rẽ ngay từ đầu.',
+      san: [
+        [
+          '##########',
+          '#.I.IIIII#',
+          '######I###',
+          '######I###',
+          '###F##I###',
+          '###I##I###',
+          '###.II.###',
+          '##########'
+        ],
+        [
+          '##########',
+          '#..IIIIII#',
+          '#######I##',
+          '#######I##',
+          '###F###I##',
+          '###I###I##',
+          '###.III.##',
+          '##########'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(3, 1, 6)], [da(2, 1, 6)]],
+      chuongDa: [
+        [cd(6, 6, 2, 5), cd(3, 6, 4, 3), cd(3, 4, 7, 2)],
+        [cd(7, 6, 2, 5), cd(3, 6, 4, 4), cd(3, 4, 7, 2)]
+      ],
+      maMau: bai(['while hear() == 0:', '    move()', 'turn_right()', 'while hear() > 0:', '    rim(hear())']),
+      loiGiai: bai(['note(6)', 'wait()', 'while hear() == 0:', '    move()', 'turn_right()', 'while hear() > 0:', '    rim(hear())']),
+      loiSai: [
+        { moTa: 'Không gõ đá: hear() nghe đá chuông ngay từ đầu nên R1 rẽ luôn, đâm vách', baiLam: bai(['while hear() == 0:', '    move()', 'turn_right()', 'while hear() > 0:', '    rim(hear())']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'note(6) mà thiếu wait(): lúc đo đá chưa vỡ nên R1 rẽ ngay đầu hầm rồi dừng', baiLam: bai(['note(6)', 'while hear() == 0:', '    move()', 'turn_right()', 'while hear() > 0:', '    rim(hear())']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lặp rim(hear()) đúng 2 lần: hầm 1 còn chuông thứ ba', baiLam: bai(['note(6)', 'wait()', 'while hear() == 0:', '    move()', 'turn_right()', 'for i in range(2):', '    rim(hear())']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 16, nhip: 21 },
+      goiY: [
+        'Luna: Đá chuông chưa vỡ cũng là tiếng vang. Gõ note(6), wait() trước đã.',
+        'Luna: Sau đó: chưa nghe thì move(), tới ngách thì turn_right(), rồi còn nghe thì rim(hear()).'
+      ]
+    }),
+
+
     /* ========================================================================
-       CHƯƠNG 2: che-am-thanh — Chế lệnh: dò sóng âm (10 màn)
+       CHƯƠNG 2: che-am-thanh — Chế lệnh: dò tiếng vang
        ====================================================================== */
     manCheAmThanh(1, 'lam-quen', {
-      ten: 'Chế lệnh: bước khi nghe vang',
-      taoHam: ['step_if_echo'], chiChay: true, chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'go_echo'],
-      deBai: 'Màn mở đầu Chương 2: chế sẵn hàm step_if_echo() kiểm tra nếu nghe thấy chuông đá (hear() > 0) thì gọi go_echo(). Bấm Chạy để xem hàm hoạt động trên 2 sân.',
-      veMaMau: 'if hear() > 0: giúp R1 chỉ tiến theo tiếng vang khi có chuông trong tầm nghe.',
+      ten: 'Chế lệnh: đi theo tiếng vang',
+      taoHam: ['go_echo'], chinhCoDinh: true,
+      hamCuaEmCan: ['forward', 'turn_right'],
+      deBai: 'Giúp Sola với! forward(hear()) lặp lại ở mọi chỗ rẽ. Chế hàm go_echo(): đi tới chuông đá gần nhất. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi go_echo() hai lần. Mở Xưởng hàm, chế go_echo().',
       san: [
-        ['#######', '#.IIIF#', '#######'],
-        ['#########', '#.IIIIIF#', '#########']
+        [
+          '########',
+          '#.III.u#',
+          '#####I##',
+          '#####I##',
+          '###FI.##',
+          '#####u##',
+          '########'
+        ],
+        [
+          '######',
+          '#.I.u#',
+          '###I##',
+          '#FI.##',
+          '###u##',
+          '######'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 5, y: 1, not: 1, phamVi: 8 }],
-        [{ x: 7, y: 1, not: 1, phamVi: 8 }]
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(5, 1, 2), cd(5, 4, 6)], [cd(3, 1, 2), cd(3, 3, 6)]],
+      maMau: bai(['go_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['go_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'forward(2)'], [], [GO_ECHO]),
+      loiSai: [
+        { moTa: 'Chưa chế hàm go_echo', baiLam: bai(['go_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'forward(2)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm viết forward(3): hầm 2 đoạn đầu chỉ dài 2 ô, R1 lăn xuống hố', baiLam: bai(['go_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'forward(2)']), hamCuaEmMoi: [ham('go_echo', ['forward(3)'])], phaiCoMa: ['roi-ho'] }
       ],
-      maMau: bai(['step_if_echo()'], [], [ham('step_if_echo', ['if hear() > 0:', '    go_echo()'])]),
-      loiGiai: bai(['step_if_echo()'], [], [ham('step_if_echo', ['if hear() > 0:', '    go_echo()'])]),
-      sao: { o: 9, nhip: 6 },
+      sao: { o: 13, nhip: 11 },
       goiY: [
-        'Bấm nút Chạy để quan sát step_if_echo() hoạt động và mở khóa hàm.'
+        'Luna: Thân go_echo() chỉ một dòng.',
+        'Luna: forward(hear()).'
       ]
     }),
 
     manCheAmThanh(2, 'lam-quen', {
-      ten: 'Dò vào vùng vang âm',
-      hamCuaEmCan: ['move', 'forward', 'go_echo', 'step_if_echo'],
-      deBai: 'Chuông đá ở ô cờ chỉ có tầm vang 3 bước nên lúc xuất phát hear() bằng 0. Hãy lặp while hear() == 0: để tiến từng bước move() cho tới khi nghe thấy chuông, rồi gọi go_echo().',
-      veMaMau: 'Mã mẫu gọi step_if_echo() ngay lúc hear() == 0 nên R1 đứng yên.',
+      ten: 'Lặp theo tiếng vang',
+      hamCuaEmCan: ['turn_right', 'go_echo'],
+      deBai: 'Giúp Sola với! Đường cuộn vào trong, mỗi chỗ rẽ một chuông đá. Hầm 1 có ba chuông, hầm 2 có bốn. Còn nghe thì go_echo() rồi rẽ phải.',
+      veMaMau: 'Sola viết hai lần. Chạy thử: R1 dừng giữa đường.',
       san: [
-        ['#######', '#.IIIF#', '#######'],
-        ['#########', '#.IIIIIF#', '#########']
+        [
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '#####I#',
+          '###FI.#',
+          '#######'
+        ],
+        [
+          '#########',
+          '#.IIIII.#',
+          '#######I#',
+          '####F##I#',
+          '####I##I#',
+          '####.II.#',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
       chuongDa: [
-        [{ x: 5, y: 1, not: 1, phamVi: 3 }],
-        [{ x: 7, y: 1, not: 1, phamVi: 3 }]
+        [cd(5, 1, 1, 4), cd(5, 4, 3, 3), cd(3, 4, 5, 2)],
+        [cd(7, 1, 1, 6), cd(7, 5, 3, 4), cd(4, 5, 5, 3), cd(4, 3, 8, 2)]
       ],
-      maMau: bai(['step_if_echo()']),
-      loiGiai: bai(['while hear() == 0:', '    move()', 'go_echo()']),
+      maMau: bai(['go_echo()', 'turn_right()', 'go_echo()', 'turn_right()']),
+      loiGiai: bai(['while hear() > 0:', '    go_echo()', '    turn_right()']),
       loiSai: [
-        { moTa: 'Gọi step_if_echo() ngay khi ngoài tầm vang: đứng yên', baiLam: bai(['step_if_echo()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Viết hai lần: còn chuông chưa tới', baiLam: bai(['go_echo()', 'turn_right()', 'go_echo()', 'turn_right()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lặp for 3 lần: hầm 2 có bốn chuông', baiLam: bai(['for i in range(3):', '    go_echo()', '    turn_right()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'while hear() == 0: lúc đầu đã nghe chuông nên vòng lặp không chạy', baiLam: bai(['while hear() == 0:', '    go_echo()', '    turn_right()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 9, nhip: 6 },
+      sao: { o: 11, nhip: 18 },
       goiY: [
-        'Viết vòng lặp while hear() == 0: với thân move().',
-        'Ngay sau vòng lặp, gọi go_echo() để đi nốt tới cờ.'
+        'Luna: while hear() > 0: rồi hai dòng thụt vào.',
+        'Luna: go_echo() rồi turn_right().'
       ]
     }),
 
     manCheAmThanh(3, 'lam-quen', {
-      ten: 'Chế lệnh: dò tìm tiếng vang',
-      taoHam: ['find_echo'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'go_echo'],
-      deBai: 'Đóng gói thao tác dò sóng âm thành hàm find_echo(): trong khi hear() == 0 thì move(), sau khi nghe thấy tiếng chuông thì gọi go_echo().',
-      veMaMau: 'Chương trình chính đã gọi find_echo(). Em hãy hoàn thiện phần thân hàm find_echo().',
+      ten: 'Chế lệnh: đi tới khi nghe',
+      taoHam: ['wait_echo'], chinhCoDinh: true,
+      hamCuaEmCan: ['move', 'turn_right', 'go_echo'],
+      deBai: 'Giúp Sola với! Chuông trong ngách ngân khẽ, phải tới miệng ngách mới nghe. Chế hàm wait_echo(): còn chưa nghe thì đi tiếp. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi wait_echo(), rẽ phải, rồi go_echo(). Mở Xưởng hàm, chế wait_echo().',
       san: [
-        ['########', '#.IIIIF#', '########'],
-        ['#########', '#.IIIIIF#', '#########']
+        [
+          '#########',
+          '#.IIIIII#',
+          '###I#.###',
+          '###F#####',
+          '#########'
+        ],
+        [
+          '#########',
+          '#.IIIIII#',
+          '##.###I##',
+          '######F##',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 6, y: 1, not: 1, phamVi: 3 }],
-        [{ x: 7, y: 1, not: 1, phamVi: 2 }]
-      ],
-      maMau: bai(['find_echo()']),
-      loiGiai: bai(['find_echo()'], [], [ham('find_echo', ['while hear() == 0:', '    move()', 'go_echo()'])]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(3, 3, 4, 2)], [cd(6, 3, 4, 2)]],
+      maMau: bai(['wait_echo()', 'turn_right()', 'go_echo()']),
+      loiGiai: bai(['wait_echo()', 'turn_right()', 'go_echo()'], [], [WAIT_ECHO]),
       loiSai: [
-        { moTa: 'Quên gọi go_echo() sau vòng lặp while', baiLam: bai(['find_echo()']), hamCuaEmMoi: [ham('find_echo', ['while hear() == 0:', '    move()'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa chế hàm wait_echo', baiLam: bai(['wait_echo()', 'turn_right()', 'go_echo()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm viết while hear() > 0: lúc đầu chưa nghe nên R1 không đi', baiLam: bai(['wait_echo()', 'turn_right()', 'go_echo()']), hamCuaEmMoi: [ham('wait_echo', ['while hear() > 0:', '    move()'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 10, nhip: 6 },
+      sao: { o: 13, nhip: 8 },
       goiY: [
-        'Sau vòng lặp while hear() == 0: trong hàm find_echo(), thêm lệnh go_echo().'
+        'Luna: Thân wait_echo() giống vòng lặp ở màn "Chưa nghe thì đi tiếp".',
+        'Luna: while hear() == 0: rồi move() thụt vào.'
       ]
     }),
 
-    manCheAmThanh(4, 'lam-quen', {
-      ten: 'Dò sóng qua khúc cua',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'go_echo', 'find_echo'],
-      deBai: 'Chuông đá ở góc cua có tầm vang ngắn (2 bước) nên cần dò từng bước, còn chuông ở ô cờ vừa đủ tầm nghe từ góc cua. Hãy dùng find_echo() kết hợp turn_right() để đi qua góc cua tới cờ ở cả 2 sân.',
-      veMaMau: 'Mã mẫu mới dò tới góc cua và xoay phải.',
+    manCheAmThanh(4, 'luyen', {
+      ten: 'Ngách sâu dẫn đường',
+      hamCuaEmCan: ['turn_right', 'go_echo', 'wait_echo'],
+      deBai: 'Giúp Sola với! Đi dọc hầm tới khi nghe chuông ngách. Rẽ vào ngách, rồi các chuông đá dẫn tới cờ. Mỗi hầm số chuông khác nhau.',
+      veMaMau: 'Sola nối tay từng đoạn. Chạy thử: R1 dừng giữa đường.',
       san: [
-        ['#######', '#.III.#', '#####I#', '#####I#', '#####F#', '#######'],
-        ['#########', '#.IIIII.#', '#######I#', '#######I#', '#######I#', '#######F#', '#########']
+        [
+          '#########',
+          '#.IIIIII#',
+          '#####I###',
+          '#####I###',
+          '##F##I###',
+          '##I##I###',
+          '##.II.###',
+          '#########'
+        ],
+        [
+          '#########',
+          '#.IIIIII#',
+          '######I##',
+          '######I##',
+          '##F###I##',
+          '##I###I##',
+          '##.III.##',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
       chuongDa: [
-        [{ x: 5, y: 1, not: 1, phamVi: 2 }, { x: 5, y: 4, not: 2, phamVi: 3 }],
-        [{ x: 7, y: 1, not: 1, phamVi: 2 }, { x: 7, y: 5, not: 2, phamVi: 4 }]
+        [cd(5, 6, 2, 5), cd(2, 6, 4, 3), cd(2, 4, 6, 2)],
+        [cd(6, 6, 2, 5), cd(2, 6, 4, 4), cd(2, 4, 6, 2)]
       ],
-      maMau: bai(['find_echo()', 'turn_right()']),
-      loiGiai: bai(['find_echo()', 'turn_right()', 'find_echo()']),
+      maMau: bai(['wait_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'go_echo()']),
+      loiGiai: bai(['wait_echo()', 'turn_right()', 'while hear() > 0:', '    go_echo()', '    turn_right()']),
       loiSai: [
-        { moTa: 'Chưa gọi find_echo() lần thứ hai sau khi rẽ phải', baiLam: bai(['find_echo()', 'turn_right()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Nối tay hai đoạn: còn chuông cuối chưa tới', baiLam: bai(['wait_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'go_echo()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên rẽ vào ngách: R1 đi tiếp dọc hầm, đâm vách', baiLam: bai(['wait_echo()', 'while hear() > 0:', '    go_echo()', '    turn_right()']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 14, nhip: 11 },
+      sao: { o: 15, nhip: 19 },
       goiY: [
-        'Sau turn_right(), gọi thêm find_echo() một lần nữa để đi tới chuông ở ô cờ.'
+        'Luna: wait_echo() đưa R1 tới miệng ngách. turn_right() để quay vào ngách.',
+        'Luna: Rồi lặp như màn "Lặp theo tiếng vang".'
       ]
     }),
 
     manCheAmThanh(5, 'luyen', {
-      ten: 'Chế lệnh: chuỗi khúc cua vang',
-      taoHam: ['echo_chain'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'go_echo', 'echo_turn'],
-      deBai: 'Chế tạo hàm echo_chain(n) nhận số khúc cua n: lặp n lần lệnh echo_turn() để đi qua chuỗi n góc cua có đặt chuông đá.',
-      veMaMau: 'Chương trình chính gọi echo_chain(2) rồi go_echo(). Hãy hoàn thiện thân hàm echo_chain(n).',
+      ten: 'Chế lệnh: đo, gõ, đi',
+      taoHam: ['crack_rim'], chinhCoDinh: true,
+      bienDem: true,
+      hamCuaEmCan: ['forward', 'rim', 'play_note'],
+      deBai: 'Giúp Sola với! Đá chuông chắn mọi chỗ rẽ, qua chỗ rẽ là hố sụt. Chế hàm crack_rim(n): đo đá bằng hear(), gõ nốt n, đi tới chỗ đá rồi rẽ phải. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi crack_rim(4), crack_rim(7) rồi forward(2). Mở Xưởng hàm, chế crack_rim(n).',
       san: [
-        ['#######', '#.III.#', '#####I#', '#####I#', '###FI.#', '#######'],
-        ['#########', '#.IIIII.#', '#######I#', '#######I#', '#######I#', '####FII.#', '#########']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
         [
-          { x: 5, y: 1, not: 1, phamVi: 4 },
-          { x: 5, y: 4, not: 2, phamVi: 3 },
-          { x: 3, y: 4, not: 3, phamVi: 2 }
+          '#######',
+          '#.II.u#',
+          '####I##',
+          '####I##',
+          '##FI.##',
+          '####u##',
+          '#######'
         ],
         [
-          { x: 7, y: 1, not: 1, phamVi: 6 },
-          { x: 7, y: 5, not: 2, phamVi: 4 },
-          { x: 4, y: 5, not: 3, phamVi: 3 }
+          '#########',
+          '#.IIII.u#',
+          '######I##',
+          '####FI.##',
+          '######u##',
+          '#########'
         ]
       ],
-      maMau: bai(['echo_chain(2)', 'go_echo()']),
-      loiGiai: bai(
-        ['echo_chain(2)', 'go_echo()'],
-        [],
-        [ham('echo_chain', ['for i in range(n):', '    echo_turn()'], ['n'])]
-      ),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(4, 1, 4), da(4, 4, 7)], [da(6, 1, 4), da(6, 3, 7)]],
+      maMau: bai(['crack_rim(4)', 'crack_rim(7)', 'forward(2)']),
+      loiGiai: bai(['crack_rim(4)', 'crack_rim(7)', 'forward(2)'], [], [CRACK_RIM]),
       loiSai: [
-        { moTa: 'Trong echo_chain chỉ gọi go_echo() mà quên rẽ phải', baiLam: bai(['echo_chain(2)', 'go_echo()']), hamCuaEmMoi: [ham('echo_chain', ['for i in range(n):', '    go_echo()'], ['n'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Chưa chế hàm crack_rim', baiLam: bai(['crack_rim(4)', 'crack_rim(7)', 'forward(2)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Gõ trước rồi mới đo: hear() nghe khối sau, R1 đi quá chỗ rẽ, lăn xuống hố', baiLam: bai(['crack_rim(4)', 'crack_rim(7)', 'forward(2)']), hamCuaEmMoi: [ham('crack_rim', ['play_note(n)', 'rim(hear())'], ['n'])], phaiCoMa: ['roi-ho'] },
+        { moTa: 'Viết rim(3) thay cho số đo: hầm 2 đoạn đầu dài 5 ô', baiLam: bai(['crack_rim(4)', 'crack_rim(7)', 'forward(2)']), hamCuaEmMoi: [ham('crack_rim', ['play_note(n)', 'rim(3)'], ['n'])], phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 14, nhip: 15 },
+      sao: { o: 17, nhip: 13 },
       goiY: [
-        'Bên trong for i in range(n):, gọi echo_turn().'
+        'Luna: Ba dòng: gap = hear(), play_note(n), rim(gap).',
+        'Luna: Đo trước khi gõ, vì đá vỡ rồi thì hết vang.'
       ]
     }),
 
     manCheAmThanh(6, 'luyen', {
-      ten: 'Vòng xoắn ba trạm chuông',
-      mucTieu: 'choi-dieu', dieuToiCo: true,
-      dieu: ['xx', 'xxx'],
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'march_beat', 'go_echo', 'echo_turn', 'echo_beat', 'echo_chain'],
-      deBai: 'Hành lang xoắn ốc có 2 góc cua gắn chuông đá và kết thúc bằng một đoạn cần gõ nhịp tới chuông thứ ba tại ô cờ. Hãy kết hợp echo_chain(2) và echo_beat().',
-      veMaMau: 'Mã mẫu mới truyền 1 vào echo_chain(...) nên thiếu một góc cua.',
+      ten: 'Sổ nốt của từng hầm',
+      hamCuaEmCan: ['forward', 'crack_rim'],
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      duLieuSan: ['notes = {"dau": 5, "giua": 2, "cuoi": 7}', 'notes = {"dau": 3, "giua": 6}'],
+      deBai: 'Giúp Sola với! Luna ghi nốt các khối đá chuông vào sổ notes, mỗi hầm một sổ. Hầm 1 ba khối, hầm 2 hai khối. Đi hết sổ, mỗi dòng một lần crack_rim, rồi forward(2) tới cờ.',
+      veMaMau: 'Sola chép tay nốt của hầm 1. Chạy thử: sang hầm 2 sổ khác.',
       san: [
-        ['#######', '#.III.#', '#####I#', '#####I#', '###FI.#', '#######'],
-        ['#########', '#.IIIII.#', '#######I#', '#######I#', '####FII.#', '#########']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
         [
-          { x: 5, y: 1, not: 1, phamVi: 8 },
-          { x: 5, y: 4, not: 2, phamVi: 3 },
-          { x: 3, y: 4, not: 3, phamVi: 2 }
+          '#######',
+          '#.III.#',
+          '#####I#',
+          '###F#I#',
+          '###I#I#',
+          '###.I.#',
+          '#######'
         ],
         [
-          { x: 7, y: 1, not: 1, phamVi: 8 },
-          { x: 7, y: 4, not: 2, phamVi: 3 },
-          { x: 4, y: 4, not: 3, phamVi: 3 }
+          '#########',
+          '#.IIIII.#',
+          '#######I#',
+          '#######I#',
+          '#####FI.#',
+          '#########'
         ]
       ],
-      maMau: bai(['echo_chain(1)', 'echo_beat()']),
-      loiGiai: bai(['echo_chain(2)', 'echo_beat()']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(5, 1, 5), da(5, 5, 2), da(3, 5, 7)], [da(7, 1, 3), da(7, 4, 6)]],
+      maMau: bai(['notes = {"dau": 5, "giua": 2, "cuoi": 7}', 'crack_rim(5)', 'crack_rim(2)', 'crack_rim(7)', 'forward(2)']),
+      loiGiai: bai(['notes = {"dau": 5, "giua": 2, "cuoi": 7}', 'for k in notes:', '    crack_rim(notes[k])', 'forward(2)']),
       loiSai: [
-        { moTa: 'Để nguyên echo_chain(1): thiếu góc rẽ thứ hai', baiLam: bai(['echo_chain(1)', 'echo_beat()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chép tay nốt hầm 1: đá đầu hầm 2 là nốt 3, không vỡ', baiLam: bai(['notes = {"dau": 5, "giua": 2, "cuoi": 7}', 'crack_rim(5)', 'crack_rim(2)', 'crack_rim(7)', 'forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đọc từng khoá: sổ hầm 2 không có "cuoi" nên chương trình dừng', baiLam: bai(['notes = {"dau": 5, "giua": 2, "cuoi": 7}', 'crack_rim(notes["dau"])', 'crack_rim(notes["giua"])', 'crack_rim(notes["cuoi"])', 'forward(2)']), phaiCoMa: ['loi-chay'] }
       ],
-      sao: { o: 20, nhip: 14 },
+      sao: { o: 18, nhip: 18 },
       goiY: [
-        'Sửa echo_chain(1) thành echo_chain(2) rồi giữ nguyên echo_beat().'
+        'Luna: for k in notes: đi qua từng khoá của sổ.',
+        'Luna: Trong vòng lặp: crack_rim(notes[k]).'
       ]
     }),
 
-    manCheAmThanh(7, 'luyen', {
-      ten: 'Tra từ điển bằng khoảng cách vang',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Khoảng cách k = hear() tới chuông đá ở góc cua cũng chính là khóa trong từ điển d chỉ số bước cần đi sau khi rẽ phải. Hãy đo k = hear(), gọi spike_step(k), rồi tiến d[k] bước tới cờ.',
-      veMaMau: 'Mã mẫu chưa tiến d[k] bước sau khi rẽ phải.',
+    manCheAmThanh(7, 'bien-the', {
+      ten: 'Sửa hàm đo đá',
+      suaHam: ['crack_rim'], chinhCoDinh: true,
+      bienDem: true,
+      hamCuaEmCan: ['rim', 'play_note', 'go_echo', 'crack_rim'],
+      deBai: 'Giúp Sola với! Ai đó đổi thứ tự trong crack_rim(n): gõ trước, đo sau. Đá vỡ rồi thì hear() nghe sang chỗ khác. Sửa lại hàm. Chương trình chính đã khoá.',
+      veMaMau: 'Mở crack_rim(n) trong Xưởng hàm. Chạy thử: R1 đi quá chỗ rẽ.',
       san: [
-        ['######', '#.II.#', '####I#', '####F#', '######'],
-        ['########', '#.IIII.#', '######I#', '######I#', '######F#', '########']
+        [
+          '########',
+          '#.III.u#',
+          '#####I##',
+          '###FI.##',
+          '#####u##',
+          '########'
+        ],
+        [
+          '######',
+          '#.I.u#',
+          '###I##',
+          '###I##',
+          '###I##',
+          '#FI.##',
+          '###u##',
+          '######'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 8 }],
-        [{ x: 6, y: 1, not: 1, phamVi: 8 }]
-      ],
-      maMau: bai(['d = {3: 2, 5: 3}', 'k = hear()', 'spike_step(k)']),
-      loiGiai: bai(['d = {3: 2, 5: 3}', 'k = hear()', 'spike_step(k)', 'forward(d[k])']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(5, 1, 6), da(5, 3, 3)], [da(3, 1, 6), da(3, 5, 3)]],
+      chuongDa: [[cd(3, 3, 1, 2)], [cd(1, 5, 1, 2)]],
+      maMau: bai(['crack_rim(6)', 'crack_rim(3)', 'go_echo()'], [], [ham('crack_rim', ['play_note(n)', 'gap = hear()', 'rim(gap)'], ['n'])]),
+      loiGiai: bai(['crack_rim(6)', 'crack_rim(3)', 'go_echo()'], [], [CRACK_RIM]),
       loiSai: [
-        { moTa: 'Chưa tiến d[k] bước sau khi rẽ phải', baiLam: bai(['d = {3: 2, 5: 3}', 'k = hear()', 'spike_step(k)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không sửa: đo sau khi đá vỡ, R1 đi quá chỗ rẽ, lăn xuống hố', baiLam: bai(['crack_rim(6)', 'crack_rim(3)', 'go_echo()']), hamCuaEmMoi: [ham('crack_rim', ['play_note(n)', 'gap = hear()', 'rim(gap)'], ['n'])], phaiCoMa: ['roi-ho'] },
+        { moTa: 'Bỏ hẳn dòng đo, viết rim(4): hầm 2 đoạn đầu chỉ dài 2 ô', baiLam: bai(['crack_rim(6)', 'crack_rim(3)', 'go_echo()']), hamCuaEmMoi: [ham('crack_rim', ['play_note(n)', 'rim(4)'], ['n'])], phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 13, nhip: 9 },
+      sao: { o: 18, nhip: 12 },
       goiY: [
-        'Ở sân 1, hear() trả về 3 và d[3] là 2. Ở sân 2, hear() trả về 5 và d[5] là 3.',
-        'Thêm forward(d[k]) ở dòng cuối.'
+        'Luna: Dòng gap = hear() phải đứng trước play_note(n).',
+        'Luna: Kéo dòng đo lên đầu hàm.'
       ]
     }),
 
     manCheAmThanh(8, 'bien-the', {
-      ten: 'Chế lệnh: lộ trình vang từ điển',
-      taoHam: ['echo_route'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Chế tạo hàm echo_route(d) nhận bản đồ từ điển d: lưu k = hear(), gọi spike_step(k) để tới chuông đá và rẽ phải, rồi đi tiếp forward(d[k]) bước.',
-      veMaMau: 'Chương trình chính đã khởi tạo d và gọi echo_route(d). Hãy hoàn thiện thân hàm echo_route(d).',
+      ten: 'Đá chuông trong ngách',
+      hamCuaEmCan: ['turn_right', 'go_echo', 'wait_echo', 'crack_rim'],
+      deBai: 'Giúp Sola với! Ngách có đá chuông nốt 6, chỉ nghe thấy ở miệng ngách. Phá đá xong, chuông đá dẫn tới cờ.',
+      veMaMau: 'Sola quên đá còn nguyên. Chạy thử: R1 đâm vào đá.',
       san: [
-        ['######', '#.II.#', '####I#', '####I#', '####F#', '######'],
-        ['########', '#.IIII.#', '######I#', '######F#', '########']
+        [
+          '#########',
+          '#.IIIIII#',
+          '####I####',
+          '####I####',
+          '##FI.####',
+          '#########'
+        ],
+        [
+          '#########',
+          '#.IIIIII#',
+          '##.###I##',
+          '######I##',
+          '####FI.##',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 8 }],
-        [{ x: 6, y: 1, not: 1, phamVi: 8 }]
-      ],
-      maMau: bai(['d = {3: 3, 5: 2}', 'echo_route(d)']),
-      loiGiai: bai(
-        ['d = {3: 3, 5: 2}', 'echo_route(d)'],
-        [],
-        [ham('echo_route', ['k = hear()', 'spike_step(k)', 'forward(d[k])'], ['d'])]
-      ),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[{ x: 4, y: 4, not: 6, ben: 1, phamVi: 3 }], [{ x: 6, y: 4, not: 6, ben: 1, phamVi: 3 }]],
+      chuongDa: [[cd(2, 4, 2, 2)], [cd(4, 4, 2, 2)]],
+      maMau: bai(['wait_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'go_echo()']),
+      loiGiai: bai(['wait_echo()', 'turn_right()', 'crack_rim(6)', 'go_echo()']),
       loiSai: [
-        { moTa: 'Quên gọi forward(d[k]) cuối hàm echo_route', baiLam: bai(['d = {3: 3, 5: 2}', 'echo_route(d)']), hamCuaEmMoi: [ham('echo_route', ['k = hear()', 'spike_step(k)'], ['d'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không phá đá: R1 đâm vào đá chuông trong ngách', baiLam: bai(['wait_echo()', 'turn_right()', 'go_echo()', 'turn_right()', 'go_echo()']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Gõ nhầm nốt 4: đá nốt 6 không vỡ', baiLam: bai(['wait_echo()', 'turn_right()', 'crack_rim(4)', 'go_echo()']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 14, nhip: 8 },
+      sao: { o: 21, nhip: 13 },
       goiY: [
-        'Trong echo_route(d), viết 3 dòng: k = hear(), spike_step(k), và forward(d[k]).'
+        'Luna: Tới miệng ngách, quay vào, rồi crack_rim(6).',
+        'Luna: crack_rim xong R1 đã rẽ phải, go_echo() tới cờ.'
       ]
     }),
 
     manCheAmThanh(9, 'bien-the', {
-      ten: 'Lộ trình âm vang kép',
-      mucTieu: 'choi-dieu', dieuToiCo: true,
-      dieu: ['xx', 'xxx'],
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step', 'march_beat', 'go_echo', 'echo_beat', 'echo_route'],
-      deBai: 'Dùng echo_route(d) để vượt chặng chữ L đầu tiên theo từ điển d, sau đó rẽ phải và gọi echo_beat() để vừa tiến vừa gõ nhịp tới chuông đá cuối cùng ở ô cờ.',
-      veMaMau: 'Mã mẫu mới gọi echo_route(d) mà chưa rẽ phải và gọi echo_beat().',
+      ten: 'Chế lệnh: theo chuỗi chuông',
+      taoHam: ['echo_spiral'], chinhCoDinh: true,
+      hamCuaEmCan: ['turn_right', 'go_echo', 'crack_rim'],
+      deBai: 'Giúp Sola với! Phá khối đá nốt 5 ở chỗ rẽ đầu, rồi chuỗi chuông đá dẫn tới cờ. Chế hàm echo_spiral(): còn nghe thì go_echo() rồi rẽ phải. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi crack_rim(5) rồi echo_spiral(). Mở Xưởng hàm, chế echo_spiral().',
       san: [
-        ['######', '#.II.#', '####I#', '####I#', '##FI.#', '######'],
-        ['########', '#.IIII.#', '######I#', '######I#', '######I#', '###FII.#', '########']
+        [
+          '######',
+          '#.II.#',
+          '####I#',
+          '##F#I#',
+          '##I#I#',
+          '##.I.#',
+          '######'
+        ],
+        [
+          '#########',
+          '#.IIIII.#',
+          '#######I#',
+          '###F###I#',
+          '###.III.#',
+          '#########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(4, 1, 5)], [da(7, 1, 5)]],
       chuongDa: [
-        [{ x: 4, y: 1, not: 1, phamVi: 3 }, { x: 2, y: 4, not: 2, phamVi: 2 }],
-        [{ x: 6, y: 1, not: 1, phamVi: 5 }, { x: 3, y: 5, not: 2, phamVi: 3 }]
+        [cd(4, 5, 2, 4), cd(2, 5, 4, 2), cd(2, 3, 7, 2)],
+        [cd(7, 4, 2, 3), cd(3, 4, 4, 4), cd(3, 3, 7, 1)]
       ],
-      maMau: bai(['d = {3: 3, 5: 4}', 'echo_route(d)']),
-      loiGiai: bai(['d = {3: 3, 5: 4}', 'echo_route(d)', 'turn_right()', 'echo_beat()']),
+      maMau: bai(['crack_rim(5)', 'echo_spiral()']),
+      loiGiai: bai(['crack_rim(5)', 'echo_spiral()'], [], [ECHO_SPIRAL]),
       loiSai: [
-        { moTa: 'Chưa rẽ phải và gọi echo_beat() ở chặng cuối', baiLam: bai(['d = {3: 3, 5: 4}', 'echo_route(d)']), phaiCoMa: ['chua-du-dieu'] }
+        { moTa: 'Chưa chế hàm echo_spiral', baiLam: bai(['crack_rim(5)', 'echo_spiral()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm lặp for 2 lần: còn chuông cuối chưa tới', baiLam: bai(['crack_rim(5)', 'echo_spiral()']), hamCuaEmMoi: [ham('echo_spiral', ['for i in range(2):', '    go_echo()', '    turn_right()'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 22, nhip: 14 },
+      sao: { o: 20, nhip: 18 },
       goiY: [
-        'Sau echo_route(d), gọi turn_right() để hướng về phía Tây (trái).',
-        'Sau đó gọi echo_beat() để tiến tới chuông đá ở ô cờ và khớp giai điệu.'
+        'Luna: Thân echo_spiral() giống vòng lặp ở màn "Lặp theo tiếng vang".',
+        'Luna: while hear() > 0:, rồi go_echo() và turn_right() thụt vào.'
       ]
     }),
 
-    manCheAmThanh(10, 'trum', {
-      ten: 'Trùm Chế tác âm thanh: Bản giao hưởng thạch nhũ',
-      nhipTheo: 'tong',
-      mucTieu: 'choi-dieu', dieuToiCo: true,
-      dieu: ['xx', 'xxx'],
-      huyHieu: { ma: 'che-am-thanh', ten: 'Huy hiệu Chế lệnh: dò sóng âm' },
-      hamCuaEmCan: ['move', 'forward', 'turn_left', 'turn_right', 'spike_step', 'march_beat', 'go_echo', 'echo_beat', 'find_echo', 'echo_route'],
-      deBai: 'Thử thách Trùm Chế tác âm thanh: dò sóng tới góc cua đầu tiên bằng find_echo(), xoay phải rồi tra từ điển bằng echo_route(d), cuối cùng xoay trái bằng turn_left() và gõ nhịp xuống cờ bằng echo_beat().',
-      veMaMau: 'Mã mẫu mới dò tới góc cua đầu tiên và xoay phải.',
+    manCheAmThanh(10, 'tong-hop', {
+      ten: 'Trùm: lối ra hang chuông',
+      hamCuaEmCan: ['turn_right', 'go_echo', 'wait_echo', 'crack_rim', 'echo_spiral'],
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      duLieuSan: ['notes = {"dau": 3, "giua": 8, "cuoi": 5}', 'notes = {"dau": 6, "giua": 2}'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while', 'dict'] },
+      deBai: 'Giúp Sola với! Vòng ngoài là đá chuông, nốt ghi trong sổ notes của từng hầm. Phá hết đá thì đi tới khi nghe chuông ngách, rẽ vào, theo chuỗi chuông tới cờ.',
+      veMaMau: 'Sola mới phá đá rồi theo chuông luôn. Chạy thử: R1 dừng sau khối đá cuối.',
       san: [
-        ['#######', '#.III.#', '#####I#', '#####I#', '###.II#', '###I###', '###F###', '#######'],
-        ['#########', '#.IIIII.#', '#######I#', '#######I#', '#######I#', '####.III#', '####I####', '####I####', '####F####', '#########']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
         [
-          { x: 5, y: 1, not: 1, phamVi: 2 },
-          { x: 5, y: 4, not: 2, phamVi: 3 },
-          { x: 3, y: 6, not: 3, phamVi: 2 }
+          '#########',
+          '#.IIIII.#',
+          '#######I#',
+          '##.II.#I#',
+          '##I##F#I#',
+          '##I####I#',
+          '##.IIII.#',
+          '#########'
         ],
         [
-          { x: 7, y: 1, not: 1, phamVi: 2 },
-          { x: 7, y: 5, not: 2, phamVi: 4 },
-          { x: 4, y: 8, not: 3, phamVi: 3 }
+          '########',
+          '#.IIII.#',
+          '######I#',
+          '######I#',
+          '###.F#I#',
+          '###I##I#',
+          '##I.II.#',
+          '########'
         ]
       ],
-      maMau: bai(['d = {3: 2, 4: 3}', 'find_echo()', 'turn_right()']),
-      loiGiai: bai([
-        'd = {3: 2, 4: 3}',
-        'find_echo()',
-        'turn_right()',
-        'echo_route(d)',
-        'turn_left()',
-        'echo_beat()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(7, 1, 3), da(7, 6, 8), da(2, 6, 5)], [da(6, 1, 6), da(6, 6, 2)]],
+      chuongDa: [[cd(5, 3, 4, 3), cd(5, 4, 1, 1)], [cd(3, 4, 4, 2), cd(4, 4, 1, 1)]],
+      maMau: bai(['notes = {"dau": 3, "giua": 8, "cuoi": 5}', 'for k in notes:', '    crack_rim(notes[k])', 'echo_spiral()']),
+      loiGiai: bai(['notes = {"dau": 3, "giua": 8, "cuoi": 5}', 'for k in notes:', '    crack_rim(notes[k])', 'wait_echo()', 'turn_right()', 'echo_spiral()']),
       loiSai: [
-        { moTa: 'Mới dò tới góc đầu tiên', baiLam: bai(['d = {3: 2, 4: 3}', 'find_echo()', 'turn_right()']), phaiCoMa: ['chua-du-dieu'] }
+        { moTa: 'Không wait_echo(): phá xong đá thì chưa nghe chuông nào, R1 đứng yên', baiLam: bai(['notes = {"dau": 3, "giua": 8, "cuoi": 5}', 'for k in notes:', '    crack_rim(notes[k])', 'echo_spiral()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đọc từng khoá: sổ hầm 2 không có "cuoi" nên chương trình dừng', baiLam: bai(['notes = {"dau": 3, "giua": 8, "cuoi": 5}', 'crack_rim(notes["dau"])', 'crack_rim(notes["giua"])', 'crack_rim(notes["cuoi"])', 'wait_echo()', 'turn_right()', 'echo_spiral()']), phaiCoMa: ['loi-chay'] },
+        { moTa: 'Quên rẽ vào ngách: R1 đi tiếp dọc hầm', baiLam: bai(['notes = {"dau": 3, "giua": 8, "cuoi": 5}', 'for k in notes:', '    crack_rim(notes[k])', 'wait_echo()', 'echo_spiral()']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 30, nhip: 33 },
+      sao: { o: 26, nhip: 31 },
       goiY: [
-        'Sau turn_right(), gọi echo_route(d) để đi hết cạnh dọc và cạnh ngang theo từ điển d.',
-        'Tiếp tục gọi turn_left() và echo_beat() để vừa tiến xuống phía Nam vừa gõ nhịp tới cờ.'
+        'Luna: for k in notes: crack_rim(notes[k]) phá hết vòng đá.',
+        'Luna: Rồi wait_echo(), turn_right(), echo_spiral().'
       ]
     })
   ];

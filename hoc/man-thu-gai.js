@@ -1,14 +1,11 @@
 /* ============================================================================
-   man-thu-gai.js — Mùa 8 Hang động đá vôi: GÓI 5 "Thu gai trượt đá" (20 màn)
-     Chương 1: thu-gai     (10 màn: retract_spikes(), extend_spikes() trượt dải 'I' 1 nhịp)
-     Chương 2: che-thu-gai (10 màn: chế hàm lướt đá ướt kết hợp ngách hang, cảm biến âm, dict, set)
-
-   LuậtR1 gói 5:
-     - Thân: 'gai' (loaiRobot: 'gai', thuGai: true)
-     - Tay: 'loa' (gõ nhịp beat)
-     - Cảm biến: 'am-thanh' (hear() đo khoảng cách 1..8 tới chuông đá gần nhất)
-     - Khay lệnh: left_move, right_move, left_back, right_back, wait,
-                  retract_spikes, extend_spikes, beat, hear
+   man-thu-gai.js — Mùa 8 Hang động · Gói 5: Thu gai (viết lại 16/11, KE-HOACH-MUA-8.md)
+   Chương 1: thu-gai "Lướt đá ướt" (10 màn): retract_spikes() thu gai (không tốn nhịp): bước vào ô đá ướt 'I' là lướt một mạch,
+             dừng ở ô đầu tiên không phải 'I' (bị chặn thì dừng ở ô 'I' cuối; gặp hố thì rơi), cả cú lướt tốn một nhịp.
+             extend_spikes() bung gai lại, bám từng bước. Lướt vào ngách, lướt rồi nghe chuông, đá chuông chắn dải, sổ nốt theo sân.
+   Chương 2: che-thu-gai "Chế lệnh: lướt rồi bám" (10 màn): slide_stop(), glide_step(), glide_tunnel(), echo_glide()
+             (mùa 9 gọi cả bốn hàm: giữ tên và thân).
+   Lời: "Giúp Sola với!", gợi ý của Luna, gọi người chơi là "bạn".
    ========================================================================== */
 (function () {
   'use strict';
@@ -16,903 +13,817 @@
   var M = (typeof window !== 'undefined' && window.ManHoc) ||
     (typeof require === 'function' ? require('./man-chuoi-1.js') : null);
 
-  function bai(chinh, hamMan, hamEm) {
-    return { chinh: chinh || [], hamCuaMan: hamMan || [], hamCuaEmMoi: hamEm || [] };
-  }
-  function ham(ten, than, thamSo, dong) {
-    var h = { ten: ten, thamSo: thamSo || [], than: than || [] };
-    if (dong) h.dong = true;
-    return h;
-  }
+  var GOC_GAI = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'note', 'beat', 'hear', 'retract_spikes', 'extend_spikes'];
+  var ROBOT_GAI = { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] };
 
-  var CAU_TRUC = ['for', 'while', 'if', 'elif', 'else', 'def', 'return', 'list', 'dict', 'set'];
-  var HAM_GOC_THU_GAI = [
-    'left_move', 'right_move', 'left_back', 'right_back', 'wait',
-    'retract_spikes', 'extend_spikes', 'beat', 'hear'
-  ];
+  function bai(chinh, ham, moi) {
+    return { chinh: chinh, hamCuaMan: ham || [], hamCuaEmMoi: moi || [] };
+  }
+  function ham(ten, than, thamSo) {
+    return { ten: ten, than: than, thamSo: thamSo || [] };
+  }
+  function cd(x, y, not, phamVi) { return phamVi ? { x: x, y: y, not: not, phamVi: phamVi } : { x: x, y: y, not: not }; }
+  function da(x, y, not, ben) { return { x: x, y: y, not: not, ben: ben || 1 }; }
+  function ng(ax, ay, bx, by) { return { a: { x: ax, y: ay }, b: { x: bx, y: by } }; }
+  function hai(a) { return [a, a]; }
 
-  function manGaiThu(chuong, so, hang, d) {
+  /** Tầng đá ướt: tầng i ở hàng y = 2i + 1: ô (1, y) là chỗ xuất phát hay miệng ra của tầng trên, ô (2, y) đá ướt, đá chuông ở (3, y) trên đá ướt,
+   *  đá ướt tới miệng ngách ở (cuoi[i], y), chui xuống (1, y + 2). Các hàng `duoi` vẽ từ hàng y = 2n + 1 (hàng đầu là hàng của miệng ra cuối).
+   *  Trả về { san, ngachHang, daChuong }. */
+  function tangLuot(cuoi, duoi, rong) {
+    var tuong = new Array(rong + 1).join('#');
+    var san = [tuong], ngach = [], daCh = [];
+    cuoi.forEach(function (x, i) {
+      var y = 2 * i + 1;
+      san.push(('#.' + new Array(x - 1).join('I') + '.' + tuong).slice(0, rong - 1) + '#');
+      san.push(tuong);
+      ngach.push(ng(x, y, 1, y + 2));
+      daCh.push({ x: 3, y: y });
+    });
+    duoi.forEach(function (h) { san.push(h); });
+    san.push(tuong);
+    return { san: san, ngachHang: ngach, daChuong: daCh };
+  }
+  function voiDa(t, nots) { return t.daChuong.map(function (d, i) { return da(d.x, d.y, nots[i]); }); }
+
+  function manLuot(so, hang, ds) {
     return Object.assign({
-      id: chuong + '.' + so,
-      chuong: chuong,
-      so: so,
-      hang: hang,
-      loaiRobot: 'gai',
-      thuGai: true,
-      robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren' }] },
-      moXuong: true,
-      camHamCuaEm: false,
-      taoHam: [],
+      chuong: 'thu-gai', so: so, hang: hang,
+      vo: 'hang', loaiRobot: 'gai', thuGai: true,
+      robot: ROBOT_GAI,
+      hamGoc: GOC_GAI.slice(),
       hamCuaEmCan: [],
-      khung: { ham: 10, chinh: 10, cauTruc: CAU_TRUC },
-      cauTruc: CAU_TRUC,
-      hamGoc: HAM_GOC_THU_GAI,
-      mucTieu: d.dieu ? 'choi-dieu' : 'toi-co',
-      nhipToiDa: d.nhipToiDa || (d.sao && d.sao.nhip ? d.sao.nhip + 12 : 40),
-      loiSai: []
-    }, d);
+      taoHam: [],
+      cauTruc: ['for', 'while', 'dict'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while', 'dict'] },
+      mucTieu: 'toi-co'
+    }, ds);
   }
 
-  function manThuGai(so, hang, d) { return manGaiThu('thu-gai', so, hang, d); }
-  function manCheThuGai(so, hang, d) { return manGaiThu('che-thu-gai', so, hang, d); }
+  function manCheLuot(so, hang, ds) {
+    return Object.assign({
+      chuong: 'che-thu-gai', so: so, hang: hang,
+      vo: 'hang', loaiRobot: 'gai', thuGai: true,
+      robot: ROBOT_GAI,
+      hamGoc: GOC_GAI.slice(),
+      hamCuaEmCan: [],
+      taoHam: [],
+      cauTruc: ['for', 'while', 'if', 'else', 'dict', 'set'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while', 'if', 'else', 'dict', 'set'] },
+      mucTieu: 'toi-co'
+    }, ds);
+  }
+
+  var T8A = tangLuot([6, 5], ['#.Iu####', '##F#####'], 8), T8B = tangLuot([4, 7, 5], ['#.Iu#####', '##F######'], 9);
+  var T9A = tangLuot([5, 6, 4], ['#.Iu####', '##F#####'], 8), T9B = tangLuot([7, 4, 6], ['#.Iu#####', '##F######'], 9);
+  var T10A = tangLuot([7, 6], ['#.IIIIII#', '#######I#', '#######I#', '#####F.I#'], 9);
+  var T10B = tangLuot([5, 7, 4], ['#.IIIIII#', '#######I#', '#######I#', '###F###I#', '###.###I#', '###IIIII#'], 9);
+
+  var SLIDE_STOP = ham('slide_stop', ['retract_spikes()', 'move()', 'extend_spikes()', 'move()']);
+  var GLIDE_STEP = ham('glide_step', ['retract_spikes()', 'move()', 'extend_spikes()', 'turn_right()']);
+  var GLIDE_TUNNEL = ham('glide_tunnel', ['retract_spikes()', 'move()', 'extend_spikes()', 'move()']);
+  var ECHO_GLIDE = ham('echo_glide', ['if hear() > 0:', '    glide_step()', 'else:', '    move()']);
 
   var DS = [
     /* ========================================================================
-       CHƯƠNG 1: thu-gai — Thu gai trượt băng (10 màn)
+       CHƯƠNG 1: thu-gai — Lướt đá ướt
        ====================================================================== */
-    manThuGai(1, 'lam-quen', {
-      ten: 'Thu gai lướt đá ướt',
+    manLuot(1, 'lam-quen', {
+      ten: 'Thu gai, lướt một mạch',
       chiChay: true, chinhCoDinh: true,
       hamCuaEmCan: ['move'],
-      deBai: 'Khi gọi retract_spikes(), R1 thu gọn đinh gai ở đầu nhịp tiếp theo: bước vào dải đá vôi ướt I sẽ trượt một mạch qua hết dải I chỉ trong 1 nhịp. Gọi extend_spikes() để bung gai bám đá trở lại. Bấm Chạy để xem R1 lướt qua 3 ô I rồi bước vào cờ.',
-      veMaMau: 'retract_spikes() rồi move() giúp R1 trượt từ (1, 1) sang (5, 1) trong 1 nhịp; extend_spikes() rồi move() bước nốt vào cờ.',
+      deBai: 'Sola làm mẫu. Ô I là đá vôi ướt. Gai bung thì R1 bám từng bước. retract_spikes() thu gai: R1 bước vào đá ướt là lướt một mạch tới hết dải, chỉ tốn một nhịp. extend_spikes() bung gai lại. Bấm Chạy để xem.',
+      veMaMau: 'Chương trình Sola viết sẵn và đã khoá: thu gai, lướt, bung gai, bước vào cờ.',
       san: [
-        '########',
-        '#.III.F#',
-        '########'
+        '#########',
+        '#.IIII.F#',
+        '#########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'retract_spikes()',
-        'move()',
-        'extend_spikes()',
-        'move()'
-      ]),
-      loiGiai: bai([
-        'retract_spikes()',
-        'move()',
-        'extend_spikes()',
-        'move()'
-      ]),
+      maMau: bai(['retract_spikes()', 'move()', 'extend_spikes()', 'move()']),
+      loiGiai: bai(['retract_spikes()', 'move()', 'extend_spikes()', 'move()']),
       sao: { o: 7, nhip: 2 },
       goiY: [
-        'Bấm nút Chạy để quan sát R1 thu gai trượt vèo qua dải đá ướt I.',
-        'Màn 1 chỉ cần chạy thử, chưa cần sửa mã.'
+        'Luna: Thu gai và bung gai không tốn nhịp.',
+        'Luna: Bốn ô đá ướt mà chỉ một nhịp lướt.'
       ]
     }),
 
-    manThuGai(2, 'lam-quen', {
-      ten: 'Bung gai thắng trước hố',
+    manLuot(2, 'lam-quen', {
+      ten: 'Dải dài, dải ngắn',
       hamCuaEmCan: ['move', 'forward', 'turn_right'],
-      deBai: 'Sau khi thu gai trượt hết hành lang ngang sang (5, 1) và rẽ phải, phía Nam là dải đá ướt dẫn thẳng xuống hố sụt u ở (5, 4). Hãy gọi extend_spikes() trước khi đi xuống 2 bước rồi rẽ phải vào cờ.',
-      veMaMau: 'Mã mẫu quên bung gai trước khi đi xuống nên R1 trượt thẳng xuống hố sụt.',
+      nhipToiDa: 6,
+      deBai: 'Giúp Sola với! Nước ngầm dâng, chỉ còn 6 nhịp. Đi bộ qua dải đá ướt thì không kịp. Thu gai, lướt tới chỗ rẽ, rồi rẽ phải xuống cờ. Hai hầm dài ngắn khác nhau.',
+      veMaMau: 'Sola đếm từng bước của hầm 1. Chạy thử: hết nhịp, mà hầm 2 còn dài hơn.',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '####FI#',
-        '#####u#',
-        '#######'
+        [
+          '#########',
+          '#.IIII.##',
+          '######.##',
+          '######F##',
+          '#########'
+        ],
+        [
+          '###########',
+          '#.IIIIIII.#',
+          '#########.#',
+          '#########F#',
+          '###########'
+        ]
       ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'retract_spikes()',
-        'move()',
-        'turn_right()',
-        'forward(2)',
-        'turn_right()',
-        'move()'
-      ]),
-      loiGiai: bai([
-        'retract_spikes()',
-        'move()',
-        'turn_right()',
-        'extend_spikes()',
-        'forward(2)',
-        'turn_right()',
-        'move()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      maMau: bai(['forward(5)', 'turn_right()', 'forward(2)']),
+      loiGiai: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(2)']),
       loiSai: [
-        { moTa: 'Quên gọi extend_spikes() trước khi đi xuống: trượt thẳng vào hố sụt', baiLam: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Đi bộ từng ô: quá 6 nhịp', baiLam: bai(['forward(5)', 'turn_right()', 'forward(2)']), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Quên thu gai: move() chỉ bước một ô, rẽ là đâm vách', baiLam: bai(['move()', 'turn_right()', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 11, nhip: 4 },
+      goiY: [
+        'Luna: retract_spikes() rồi move() là lướt tới hết dải, dài ngắn gì cũng một nhịp.',
+        'Luna: retract_spikes(), move(), turn_right(), forward(2).'
+      ]
+    }),
+
+    manLuot(3, 'lam-quen', {
+      ten: 'Gai thu tới khi bung',
+      hamCuaEmCan: ['move', 'forward', 'turn_right'],
+      nhipToiDa: 8,
+      deBai: 'Giúp Sola với! Gai đã thu thì thu mãi, tới khi gọi extend_spikes(). Lướt tới chỗ rẽ, rẽ phải. Dải dọc có hố sụt ở cuối: bung gai để bước từng ô, tới ô thứ hai thì rẽ phải vào cờ. Chỉ còn 8 nhịp.',
+      veMaMau: 'Sola quên bung gai. Chạy thử: R1 lướt luôn xuống hố.',
+      san: [
+        [
+          '########',
+          '#.IIII.#',
+          '######I#',
+          '#####FI#',
+          '######u#',
+          '########'
+        ],
+        [
+          '##########',
+          '#.IIIIII.#',
+          '########I#',
+          '#######FI#',
+          '########u#',
+          '##########'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      maMau: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']),
+      loiGiai: bai(['retract_spikes()', 'move()', 'extend_spikes()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']),
+      loiSai: [
+        { moTa: 'Quên bung gai: R1 lướt xuống hố', baiLam: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Đi bộ từng ô: quá 8 nhịp', baiLam: bai(['forward(5)', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
       sao: { o: 14, nhip: 6 },
       goiY: [
-        'Chèn lệnh extend_spikes() ngay sau dòng turn_right() đầu tiên.',
-        'Khi gai đã bung ra, forward(2) sẽ bước từng ô chắc chắn và dừng ở (5, 3).'
+        'Luna: Lướt xong, extend_spikes() trước khi xuống dải dọc.',
+        'Luna: Thêm extend_spikes() ngay sau move() đầu tiên.'
       ]
     }),
 
-    manThuGai(3, 'lam-quen', {
-      ten: 'Hai dải băng vuông góc',
-      hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Khi đã gọi retract_spikes(), đinh gai vẫn thu gọn ở các nhịp sau cho tới khi gọi extend_spikes(). Hãy bỏ lệnh extend_spikes() thừa ở góc cua để R1 trượt luôn qua dải đá ướt dọc tới thẳng cờ.',
-      veMaMau: 'Mã mẫu gọi extend_spikes() ở góc (5, 1) nên bước xuống chỉ đi được 1 ô.',
+    manLuot(4, 'luyen', {
+      ten: 'Lướt tới vách đá',
+      hamCuaEmCan: ['move', 'forward', 'turn_right'],
+      nhipToiDa: 5,
+      deBai: 'Giúp Sola với! Dải đá ướt chạy thẳng vào vách. Lướt tới vách thì R1 dừng ở ô đá ướt cuối cùng. Rẽ phải rồi lướt tiếp xuống cờ. Chỉ còn 5 nhịp.',
+      veMaMau: 'Sola đi bộ từng ô. Chạy thử: hết nhịp.',
       san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '#####I#',
-        '#####F#',
-        '#######'
+        [
+          '#######',
+          '#.IIII#',
+          '#####I#',
+          '#####I#',
+          '#####F#',
+          '#######'
+        ],
+        [
+          '#########',
+          '#.IIIIII#',
+          '#######I#',
+          '#######F#',
+          '#########'
+        ]
       ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'retract_spikes()',
-        'move()',
-        'turn_right()',
-        'extend_spikes()',
-        'move()'
-      ]),
-      loiGiai: bai([
-        'retract_spikes()',
-        'move()',
-        'turn_right()',
-        'move()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      maMau: bai(['forward(4)', 'turn_right()', 'forward(3)']),
+      loiGiai: bai(['retract_spikes()', 'move()', 'turn_right()', 'move()']),
       loiSai: [
-        { moTa: 'Để nguyên extend_spikes(): dừng ở (5, 2) chưa tới cờ', baiLam: bai(['retract_spikes()', 'move()', 'turn_right()', 'extend_spikes()', 'move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Đi bộ từng ô: quá 5 nhịp', baiLam: bai(['forward(4)', 'turn_right()', 'forward(3)']), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Bung gai sau dải đầu: dải dọc chỉ bước được một ô', baiLam: bai(['retract_spikes()', 'move()', 'extend_spikes()', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
       sao: { o: 9, nhip: 3 },
       goiY: [
-        'Xóa dòng extend_spikes() ở giữa chương trình.',
-        'Khi gai còn thu, lệnh move() cuối sẽ trượt từ (5, 1) qua (5, 2), (5, 3) xuống thẳng cờ (5, 4).'
+        'Luna: Gai thu rồi thì giữ nguyên, rẽ xong không cần thu lại.',
+        'Luna: retract_spikes(), move(), turn_right(), move().'
       ]
     }),
 
-    manThuGai(4, 'lam-quen', {
-      ten: 'Đo chuông sau cú trượt',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'spike_step'],
-      deBai: 'Ở cả 2 sân, sau khi trượt hết hành lang ngang sang (5, 1) và rẽ phải, phía dưới là dải đá ướt có hố sụt ở cuối nhưng có chuông đá đánh dấu chỗ rẽ vào cờ. Hãy bung gai bằng extend_spikes(), dùng spike_step(hear()) đi tới chuông đá và rẽ phải, rồi bước vào cờ.',
-      veMaMau: 'Mã mẫu chưa bung gai và chưa đi nốt đoạn cuối vào cờ.',
+    manLuot(5, 'luyen', {
+      ten: 'Lướt rồi nghe chuông',
+      hamCuaEmCan: ['move', 'forward', 'turn_right'],
+      nhipToiDa: 10,
+      deBai: 'Giúp Sola với! Lướt tới chỗ rẽ, rẽ phải. Chuông đá treo trên hố sụt ở cuối hầm. Cờ ở bên phải, ngay trước hố. Đo bằng hear() để dừng đúng chỗ. Chỉ còn 10 nhịp.',
+      veMaMau: 'Sola đếm bước xuống của hầm 1. Chạy thử: hầm 2 sâu hơn.',
       san: [
         [
-          '#######',
-          '#.III.#',
-          '#####I#',
-          '####FI#',
-          '#####u#',
-          '#######'
+          '########',
+          '#.IIII.#',
+          '######.#',
+          '#####F.#',
+          '######u#',
+          '########'
         ],
         [
           '#######',
           '#.III.#',
-          '#####I#',
-          '#####I#',
-          '####FI#',
+          '#####.#',
+          '#####.#',
+          '#####.#',
+          '####F.#',
           '#####u#',
           '#######'
         ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 5, y: 3, not: 1, phamVi: 4 }],
-        [{ x: 5, y: 4, not: 1, phamVi: 4 }]
-      ],
-      maMau: bai([
-        'retract_spikes()',
-        'move()',
-        'turn_right()'
-      ]),
-      loiGiai: bai([
-        'retract_spikes()',
-        'move()',
-        'turn_right()',
-        'extend_spikes()',
-        'spike_step(hear())',
-        'move()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(6, 4, 3)], [cd(5, 6, 3)]],
+      maMau: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']),
+      loiGiai: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(hear() - 1)', 'turn_right()', 'move()']),
       loiSai: [
-        { moTa: 'Chưa đi xuống theo chuông đá', baiLam: bai(['retract_spikes()', 'move()', 'turn_right()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên gọi extend_spikes() trước spike_step(hear()): trượt xuống hố sụt', baiLam: bai(['retract_spikes()', 'move()', 'turn_right()', 'spike_step(hear())', 'move()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Đếm bước hầm 1: hầm 2 còn xa cờ', baiLam: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'forward(hear()): R1 đi tới tận chuông, lăn xuống hố', baiLam: bai(['retract_spikes()', 'move()', 'turn_right()', 'forward(hear())', 'turn_right()', 'move()']), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 15, nhip: 7 },
+      sao: { o: 13, nhip: 8 },
       goiY: [
-        'Sau turn_right(), gọi extend_spikes() để không bị trượt trên dải I dọc.',
-        'Tiếp theo gọi spike_step(hear()) rồi move() để rẽ vào cờ ở cả 2 sân.'
+        'Luna: Ở chỗ rẽ, hear() là số bước tới chuông. Chỗ rẽ vào cờ gần hơn một bước.',
+        'Luna: forward(hear() - 1), rồi turn_right() và move().'
       ]
     }),
 
-    manThuGai(5, 'luyen', {
-      ten: 'Chế lệnh: trượt rồi bấm gai',
-      taoHam: ['glide_step'], chinhCoDinh: true,
+    manLuot(6, 'luyen', {
+      ten: 'Lướt vào ngách',
+      hamCuaEmCan: ['move', 'forward'],
+      nhipToiDa: 4,
+      deBai: 'Giúp Sola với! Dải đá ướt chạy thẳng vào miệng ngách. Lướt hết dải là chui luôn qua ngách, ra bên kia vẫn nhìn hướng cũ. Bên kia lại là đá ướt dẫn tới cờ. Chỉ còn 4 nhịp.',
+      veMaMau: 'Sola đi bộ cả hai dải. Chạy thử: hết nhịp.',
+      san: [
+        [
+          '#######',
+          '#.III.#',
+          '#######',
+          '#.IIIF#',
+          '#######'
+        ],
+        [
+          '#########',
+          '#.IIIII.#',
+          '#########',
+          '#.IIF####',
+          '#########'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [[ng(5, 1, 1, 3)], [ng(7, 1, 1, 3)]],
+      maMau: bai(['forward(4)', 'forward(4)']),
+      loiGiai: bai(['retract_spikes()', 'move()', 'move()']),
+      loiSai: [
+        { moTa: 'Đi bộ từng ô: quá 4 nhịp', baiLam: bai(['forward(4)', 'forward(4)']), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Bung gai sau ngách: dải dưới chỉ bước được một ô', baiLam: bai(['retract_spikes()', 'move()', 'extend_spikes()', 'move()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 6, nhip: 2 },
+      goiY: [
+        'Luna: Gai thu suốt cả hai dải. Mỗi move() là một lần lướt.',
+        'Luna: retract_spikes(), move(), move().'
+      ]
+    }),
+
+    manLuot(7, 'bien-the', {
+      ten: 'Xoắn ốc đá ướt',
       hamCuaEmCan: ['move', 'turn_right'],
-      deBai: 'Hãy chế hàm glide_step() gồm 4 dòng: retract_spikes(), move(), extend_spikes(), turn_right(). Hàm này giúp R1 thu gai trượt hết dải đá ướt tới góc khô, rồi bung gai trở lại ngay trong nhịp rẽ phải.',
-      veMaMau: 'Viết 4 dòng trong hàm glide_step(): retract_spikes(), move(), extend_spikes(), turn_right().',
-      san: [
-        '#######',
-        '#.III.#',
-        '#F###I#',
-        '#.III.#',
-        '#######'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'for i in range(3):',
-        '    glide_step()',
-        'move()'
-      ]),
-      loiGiai: bai(
-        [
-          'for i in range(3):',
-          '    glide_step()',
-          'move()'
-        ],
-        [],
-        [ham('glide_step', ['retract_spikes()', 'move()', 'extend_spikes()', 'turn_right()'])]
-      ),
-      loiSai: [
-        { moTa: 'Chưa tạo hàm glide_step', baiLam: bai(['for i in range(3):', '    glide_step()', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Thiếu turn_right() trong glide_step: đâm tường ở góc phải', baiLam: bai(['for i in range(3):', '    glide_step()', 'move()']), hamCuaEmMoi: [ham('glide_step', ['retract_spikes()', 'move()', 'extend_spikes()'])], phaiCoMa: ['quen-wait'] }
-      ],
-      sao: { o: 12, nhip: 7 },
-      goiY: [
-        'Đặt extend_spikes() ngay trước turn_right() để nhịp quay xe đồng thời bung gai ra.',
-        'Ba lần glide_step() đưa R1 về (1, 3) hướng lên Bắc, rồi move() bước vào cờ (1, 2).'
-      ]
-    }),
-
-    manThuGai(6, 'luyen', {
-      ten: 'Lướt vòng xoáy đá ướt',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step'],
-      deBai: 'Sau 3 lần gọi glide_step() quanh hành lang ngoài, R1 về tới (1, 4) hướng lên Bắc với gai đã bung sẵn. Phía trên ô (1, 3) là hố sụt (1, 2), nên chỉ bước 1 ô lên (1, 3) rồi rẽ phải và đi 3 bước vào cờ.',
-      veMaMau: 'Mã mẫu lặp glide_step() 4 lần nên ở cạnh thứ tư R1 thu gai trượt thẳng xuống hố sụt (1, 2).',
-      san: [
-        '#######',
-        '#.III.#',
-        '#uuuuI#',
-        '#II.FI#',
-        '#.III.#',
-        '#######'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'for i in range(4):',
-        '    glide_step()'
-      ]),
-      loiGiai: bai([
-        'for i in range(3):',
-        '    glide_step()',
-        'move()',
-        'turn_right()',
-        'forward(3)'
-      ]),
-      loiSai: [
-        { moTa: 'Lặp glide_step() 4 lần: cạnh thứ tư trượt vào hố (1, 2)', baiLam: bai(['for i in range(4):', '    glide_step()']), phaiCoMa: ['roi-ho'] },
-        { moTa: 'Quên rẽ phải sau move(): đi tiếp lên hố (1, 2)', baiLam: bai(['for i in range(3):', '    glide_step()', 'move()', 'forward(3)']), phaiCoMa: ['roi-ho'] }
-      ],
-      sao: { o: 16, nhip: 11 },
-      goiY: [
-        'Đổi range(4) thành range(3) để dừng ở góc (1, 4) với đinh gai đang bung.',
-        'Thêm move(), turn_right(), forward(3) để đi vào cờ ở (4, 3).'
-      ]
-    }),
-
-    manThuGai(7, 'luyen', {
-      ten: 'Chế lệnh: trượt xuyên ngách',
-      taoHam: ['glide_tunnel'], chinhCoDinh: true,
-      hamCuaEmCan: ['move'],
-      deBai: 'Khi R1 thu gai trượt hết dải đá ướt và đáp đúng lên miệng ngách hang ngầm, nó sẽ chui sang đầu bên kia ngay trong cùng 1 nhịp. Hãy chế hàm glide_tunnel() gồm 4 dòng: retract_spikes(), move(), extend_spikes(), move() để trượt vào ngách rồi bung gai bước ra khỏi đầu ngách bên kia.',
-      veMaMau: 'Tạo hàm glide_tunnel() gồm: retract_spikes(), move(), extend_spikes(), move().',
-      san: [
-        '#######',
-        '#.III>#',
-        '#######',
-        '#>II.F#',
-        '#######'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      ngachHang: [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }],
-      maMau: bai([
-        'glide_tunnel()',
-        'retract_spikes()',
-        'move()',
-        'extend_spikes()',
-        'move()'
-      ]),
-      loiGiai: bai(
-        [
-          'glide_tunnel()',
-          'retract_spikes()',
-          'move()',
-          'extend_spikes()',
-          'move()'
-        ],
-        [],
-        [ham('glide_tunnel', ['retract_spikes()', 'move()', 'extend_spikes()', 'move()'])]
-      ),
-      loiSai: [
-        { moTa: 'Chưa tạo hàm glide_tunnel', baiLam: bai(['glide_tunnel()', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên bước ra khỏi miệng ngách thứ hai trong glide_tunnel: chui ngược lại ngách', baiLam: bai(['glide_tunnel()', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()']), hamCuaEmMoi: [ham('glide_tunnel', ['retract_spikes()', 'move()'])], phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 12, nhip: 4 },
-      goiY: [
-        'Trong glide_tunnel(), cặp retract_spikes() + move() đầu tiên trượt tới (5, 1) và chui sang (1, 3).',
-        'Cặp extend_spikes() + move() tiếp theo bung gai và bước sang (2, 3).'
-      ]
-    }),
-
-    manThuGai(8, 'bien-the', {
-      ten: 'Sổ tay chọn chế độ gai',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step'],
-      deBai: 'Mỗi sân có một từ điển d riêng ghi cách đi cho 2 chặng. Chặng "ngang" có mã 1: dùng glide_step() để trượt hết dải băng và rẽ phải. Chặng "doc" ghi số ô cần bước tiếp vào cờ: gai đã bung nên gọi forward(d["doc"]). Sân 1 là d = {"ngang": 1, "doc": 2}. Hãy hoàn thành chương trình.',
-      veMaMau: 'Mã mẫu mới thực hiện chặng ngang, chưa đi chặng dọc vào cờ.',
+      nhipToiDa: 9,
+      khung: { chinh: 6, moiHam: 8, cauTruc: ['for', 'while', 'dict'] },
+      deBai: 'Giúp Sola với! Hầm cuộn thành xoắn ốc đá ướt, góc nào cũng là vách. Thu gai một lần, rồi lặp: lướt, rẽ phải. Chỉ còn 9 nhịp.',
+      veMaMau: 'Sola lặp hai lần. Chạy thử: R1 còn cách cờ một dải.',
       san: [
         [
-          '#######',
-          '#.III.#',
-          '#####I#',
-          '#####F#',
-          '#####u#',
-          '#######'
+          '########',
+          '#.IIIII#',
+          '#F####I#',
+          '#I####I#',
+          '#IIIIII#',
+          '########'
         ],
         [
-          '#######',
-          '#.II.##',
-          '####I##',
-          '####I##',
-          '####F##',
-          '#######'
+          '##########',
+          '#.IIIIIII#',
+          '#F######I#',
+          '#I######I#',
+          '#I######I#',
+          '#IIIIIIII#',
+          '##########'
         ]
       ],
-      duLieuSan: ['d = {"ngang": 1, "doc": 2}', 'd = {"ngang": 1, "doc": 3}'],      // dữ liệu theo sân: điền thẳng số của sân 1 thì dừng trước cờ ở sân 2
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"ngang": 1, "doc": 2}',
-        'if d["ngang"] == 1:',
-        '    glide_step()'
-      ]),
-      loiGiai: bai([
-        'd = {"ngang": 1, "doc": 2}',
-        'if d["ngang"] == 1:',
-        '    glide_step()',
-        'forward(d["doc"])'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      maMau: bai(['retract_spikes()', 'for i in range(2):', '    move()', '    turn_right()', 'move()']),
+      loiGiai: bai(['retract_spikes()', 'for i in range(3):', '    move()', '    turn_right()', 'move()']),
       loiSai: [
-        { moTa: 'Chưa viết lệnh đi xuống cờ', baiLam: bai(['d = {"ngang": 1, "doc": 2}', 'if d["ngang"] == 1:', '    glide_step()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Điền thẳng số của sân 1: forward(2) dừng trước cờ 1 ô ở sân 2', baiLam: bai(['d = {"ngang": 1, "doc": 2}', 'if d["ngang"] == 1:', '    glide_step()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Lặp hai lần: R1 còn cách cờ một dải', baiLam: bai(['retract_spikes()', 'for i in range(2):', '    move()', '    turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên thu gai: move() chỉ bước một ô, rẽ là đâm vách', baiLam: bai(['for i in range(3):', '    move()', '    turn_right()', 'move()']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 15, nhip: 5 },
+      sao: { o: 10, nhip: 7 },
       goiY: [
-        'Sau glide_step(), R1 đã đứng ở cuối dải băng, hướng xuống Nam và đinh gai đã bung.',
-        'Thêm dòng forward(d["doc"]) ở cuối chương trình. Điền thẳng số thì chỉ đúng ở một sân.'
+        'Luna: Ba lần lướt rồi rẽ phải, thêm một lần lướt cuối.',
+        'Luna: for i in range(3): move() rồi turn_right(). Ra ngoài vòng lặp: move().'
       ]
     }),
 
-    manThuGai(9, 'bien-the', {
-      ten: 'Tập hợp nhịp bước sau trượt',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step', 'count_unique'],
-      deBai: 'Mỗi sân có một danh sách a riêng. Sau khi gọi glide_step() để trượt hết hành lang ngang và rẽ phải, số bước cần đi tiếp xuống cờ đúng bằng số mẫu đá phân biệt trong a. Sân 1 là a = [4, 7, 4, 9, 7]. Hãy dùng count_unique(a) và forward() để đi tới cờ.',
-      veMaMau: 'Mã mẫu đang đi cứng 2 bước nên dừng trước cờ.',
+    manLuot(8, 'bien-the', {
+      ten: 'Đá chuông chắn dải',
+      hamCuaEmCan: ['move', 'play_note'],
+      nhipToiDa: 5,
+      deBai: 'Giúp Sola với! Đá chuông nốt 4 chắn giữa dải đá ướt. Lướt tới thì R1 dừng ngay trước đá. Gõ nốt 4 cho đá vỡ, rồi lướt tiếp tới cờ. Chỉ còn 5 nhịp.',
+      veMaMau: 'Sola quên gõ đá. Chạy thử xem.',
       san: [
         [
-          '#######',
-          '#.III.#',
-          '#####I#',
-          '#####I#',
-          '#####F#',
-          '#####u#',
-          '#######'
+          '##########',
+          '#.IIIIIIF#',
+          '##########'
         ],
         [
-          '#######',
-          '#.II.##',
-          '####I##',
-          '####I##',
-          '####I##',
-          '####F##',
-          '#######'
+          '############',
+          '#.IIIIIIIIF#',
+          '############'
         ]
       ],
-      duLieuSan: ['a = [4, 7, 4, 9, 7]', 'a = [6, 2, 6, 8, 3, 2]'],      // dữ liệu theo sân: sân 1 cần 3 bước, sân 2 cần 4; điền thẳng số của sân 1 thì dừng trước cờ ở sân 2
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'a = [4, 7, 4, 9, 7]',
-        'glide_step()',
-        'forward(2)'
-      ]),
-      loiGiai: bai([
-        'a = [4, 7, 4, 9, 7]',
-        'glide_step()',
-        'forward(count_unique(a))'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(5, 1, 4)], [da(7, 1, 4)]],
+      maMau: bai(['retract_spikes()', 'move()', 'move()']),
+      loiGiai: bai(['retract_spikes()', 'move()', 'play_note(4)', 'move()']),
       loiSai: [
-        { moTa: 'Để nguyên forward(2): dừng trước cờ', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'glide_step()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Điền thẳng số của sân 1: forward(3) dừng trước cờ 1 ô ở sân 2', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'glide_step()', 'forward(3)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Quên gõ đá: R1 kẹt trước đá chuông', baiLam: bai(['retract_spikes()', 'move()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gõ xong lại bung gai: R1 chỉ bước một ô', baiLam: bai(['retract_spikes()', 'move()', 'play_note(4)', 'extend_spikes()', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 14, nhip: 6 },
+      sao: { o: 9, nhip: 3 },
       goiY: [
-        'Ở sân 1, a = [4, 7, 4, 9, 7] có 3 giá trị phân biệt nên count_unique(a) trả về 3. Ở sân 2 thì khác.',
-        'Đổi forward(2) thành forward(count_unique(a)). Điền thẳng số thì chỉ đúng ở một sân.'
+        'Luna: Lướt dừng trước đá. play_note(4) cho đá vỡ.',
+        'Luna: retract_spikes(), move(), play_note(4), move().'
       ]
     }),
 
-    manThuGai(10, 'trum', {
-      ten: 'Trùm: Đường băng ngầm đá vôi',
-      huyHieu: { ma: 'thu-gai', ten: 'Huy hiệu Thu gai trượt băng' },
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step', 'glide_tunnel'],
-      nhipTheo: 'tong',
-      deBai: 'Vượt qua 2 khoang hang băng ngầm! Ở mỗi sân, đầu tiên gọi glide_tunnel() để trượt qua dải đá ướt đầu tiên, chui qua ngách ngầm sang tầng giữa và bước ra 1 ô. Tiếp theo gọi glide_step() để trượt hết tầng giữa sang phải rồi rẽ xuống, cuối cùng tiến hear() bước tới cờ.',
-      veMaMau: 'Kết hợp glide_tunnel(), glide_step() và forward(hear()).',
+    manLuot(9, 'bien-the', {
+      ten: 'Sổ nốt đá trên dải',
+      hamCuaEmCan: ['move', 'play_note'],
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      duLieuSan: ['notes = {"dau": 3, "cuoi": 6}', 'notes = {"dau": 5, "giua": 2, "cuoi": 7}'],
+      nhipToiDa: 9,
+      deBai: 'Giúp Sola với! Sổ notes ghi nốt các đá chuông chắn trên dải, theo thứ tự từ đầu tới cuối. Mỗi hầm một sổ. Lướt tới đá nào thì gõ nốt của đá đó. Chỉ còn 9 nhịp.',
+      veMaMau: 'Sola chép tay nốt của hầm 1. Chạy thử: hầm 2 có ba đá.',
       san: [
         [
-          '#######',
-          '#.III>#',
-          '#######',
-          '#>III.#',
-          '#####I#',
-          '#####F#',
-          '#####u#',
-          '#######'
+          '############',
+          '#.IIIIIIIIF#',
+          '############'
         ],
         [
-          '#######',
-          '#.III>#',
-          '#######',
-          '#>III.#',
-          '#####I#',
-          '#####I#',
-          '#####F#',
-          '#####u#',
-          '#######'
+          '##############',
+          '#.IIIIIIIIIIF#',
+          '##############'
         ]
       ],
-      batDau: [
-        { x: 1, y: 1, huong: 1 },
-        { x: 1, y: 1, huong: 1 }
-      ],
-      ngachHang: [
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }],
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }]
-      ],
-      chuongDa: [
-        [{ x: 5, y: 5, not: 2, phamVi: 4 }],
-        [{ x: 5, y: 6, not: 2, phamVi: 4 }]
-      ],
-      maMau: bai([
-        'glide_tunnel()',
-        'glide_step()'
-      ]),
-      loiGiai: bai([
-        'glide_tunnel()',
-        'glide_step()',
-        'forward(hear())'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(4, 1, 3), da(7, 1, 6)], [da(3, 1, 5), da(6, 1, 2), da(9, 1, 7)]],
+      maMau: bai(['notes = {"dau": 3, "cuoi": 6}', 'retract_spikes()', 'move()', 'play_note(3)', 'move()', 'play_note(6)', 'move()']),
+      loiGiai: bai(['notes = {"dau": 3, "cuoi": 6}', 'retract_spikes()', 'for k in notes:', '    move()', '    play_note(notes[k])', 'move()']),
       loiSai: [
-        { moTa: 'Chưa đi đoạn cuối theo chuông đá tới cờ', baiLam: bai(['glide_tunnel()', 'glide_step()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Dùng số bước cứng forward(2): sân 2 dừng thiếu trước cờ', baiLam: bai(['glide_tunnel()', 'glide_step()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chép tay nốt hầm 1: hầm 2 nốt khác, đá không vỡ', baiLam: bai(['notes = {"dau": 3, "cuoi": 6}', 'retract_spikes()', 'move()', 'play_note(3)', 'move()', 'play_note(6)', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên lướt sau vòng lặp: R1 dừng trước cờ', baiLam: bai(['notes = {"dau": 3, "cuoi": 6}', 'retract_spikes()', 'for k in notes:', '    move()', '    play_note(notes[k])']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 18, nhip: 13 },
+      sao: { o: 11, nhip: 7 },
       goiY: [
-        'Sau glide_tunnel() và glide_step(), R1 đứng ở (5, 3) hướng xuống Nam với đinh gai đã bung.',
-        'Thêm dòng forward(hear()) để R1 đi đúng 2 bước ở sân 1 và 3 bước ở sân 2 tới cờ.'
+        'Luna: for k in notes: lướt tới đá, rồi gõ notes[k].',
+        'Luna: Hết vòng lặp, đá đã vỡ hết: move() lướt tới cờ.'
+      ]
+    }),
+
+    manLuot(10, 'tong-hop', {
+      ten: 'Trùm: hầm đá ướt hai tầng',
+      hamCuaEmCan: ['move', 'forward', 'turn_right', 'play_note'],
+      khoaTD: ['dau', 'cuoi'],
+      duLieuSan: ['notes = {"dau": 4, "cuoi": 7}', 'notes = {"dau": 2, "cuoi": 5}'],
+      nhipToiDa: 14,
+      deBai: 'Giúp Sola với! Hai dải đá ướt nối nhau bằng ngách, mỗi dải có một đá chuông chắn, nốt ghi trong sổ notes. Hết dải dưới thì rẽ phải. Cuối hầm là hố có chuông đá, cờ ở bên phải ngay trước hố. Chỉ còn 14 nhịp.',
+      veMaMau: 'Sola đếm bước xuống của hầm 1. Chạy thử: hầm 2 sâu hơn.',
+      san: [
+        [
+          '#########',
+          '#.IIIII.#',
+          '#########',
+          '#.IIIII.#',
+          '#######.#',
+          '######F.#',
+          '#######u#',
+          '#########'
+        ],
+        [
+          '##########',
+          '#.IIIIII.#',
+          '##########',
+          '#.IIII.###',
+          '######.###',
+          '######.###',
+          '######.###',
+          '#####F.###',
+          '######u###',
+          '##########'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [[ng(7, 1, 1, 3)], [ng(8, 1, 1, 3)]],
+      daChuong: [[da(4, 1, 4), da(3, 3, 7)], [da(6, 1, 2), da(2, 3, 5)]],
+      chuongDa: [[cd(7, 6, 1)], [cd(6, 8, 1)]],
+      maMau: bai(['notes = {"dau": 4, "cuoi": 7}', 'retract_spikes()', 'for k in notes:', '    move()', '    play_note(notes[k])', 'move()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']),
+      loiGiai: bai(['notes = {"dau": 4, "cuoi": 7}', 'retract_spikes()', 'for k in notes:', '    move()', '    play_note(notes[k])', 'move()', 'turn_right()', 'forward(hear() - 1)', 'turn_right()', 'move()']),
+      loiSai: [
+        { moTa: 'Đếm bước xuống hầm 1: hầm 2 còn xa cờ', baiLam: bai(['notes = {"dau": 4, "cuoi": 7}', 'retract_spikes()', 'for k in notes:', '    move()', '    play_note(notes[k])', 'move()', 'turn_right()', 'forward(2)', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'forward(hear()): R1 đi tới tận chuông, lăn xuống hố', baiLam: bai(['notes = {"dau": 4, "cuoi": 7}', 'retract_spikes()', 'for k in notes:', '    move()', '    play_note(notes[k])', 'move()', 'turn_right()', 'forward(hear())', 'turn_right()', 'move()']), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Quên thu gai: R1 đi bộ từng ô, quá 14 nhịp', baiLam: bai(['notes = {"dau": 4, "cuoi": 7}', 'for k in notes:', '    move()', '    play_note(notes[k])', 'move()', 'turn_right()', 'forward(hear() - 1)', 'turn_right()', 'move()']), phaiCoMa: ['qua-nhieu-nhip'] }
+      ],
+      sao: { o: 19, nhip: 12 },
+      goiY: [
+        'Luna: Vòng lặp như màn "Sổ nốt đá trên dải": lướt rồi gõ notes[k]. Lần lướt thứ hai chui qua ngách.',
+        'Luna: Hết vòng lặp: move(), turn_right(), forward(hear() - 1), rồi rẽ phải vào cờ.'
       ]
     }),
 
     /* ========================================================================
-       CHƯƠNG 2: che-thu-gai — Chế lệnh: lướt đá ướt (10 màn)
+       CHƯƠNG 2: che-thu-gai — Chế lệnh: lướt rồi bám
        ====================================================================== */
-    manCheThuGai(1, 'lam-quen', {
-      ten: 'Chế lệnh: lướt thẳng rồi thắng',
+    manCheLuot(1, 'lam-quen', {
+      ten: 'Chế lệnh: lướt rồi bám',
       taoHam: ['slide_stop'], chinhCoDinh: true,
-      hamCuaEmCan: ['move'],
-      deBai: 'Khác với glide_step() luôn rẽ phải ở cuối, nhiều khi R1 cần trượt qua một dải đá ướt rồi dừng thẳng hướng trên ô khô tiếp theo với đinh gai đã bung sẵn. Hãy tạo hàm slide_stop() gồm 4 dòng: retract_spikes(), move(), extend_spikes(), move().',
-      veMaMau: 'Trong slide_stop(), viết: retract_spikes(), move(), extend_spikes(), move().',
+      hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Giúp Sola với! Chế hàm slide_stop(): thu gai, lướt tới hết dải, bung gai, bước thêm một ô. Ô đá ướt sau chỗ dừng có hố sụt phía trước, nên phải bám gai. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi slide_stop() hai lần. Mở Xưởng hàm, chế slide_stop().',
       san: [
-        '########',
-        '#.II..F#',
-        '########'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'slide_stop()',
-        'move()'
-      ]),
-      loiGiai: bai(
         [
-          'slide_stop()',
-          'move()'
+          '##########',
+          '#.IIII.Iu#',
+          '#######I##',
+          '#######I##',
+          '#######.##',
+          '#######F##',
+          '##########'
         ],
-        [],
-        [ham('slide_stop', ['retract_spikes()', 'move()', 'extend_spikes()', 'move()'])]
-      ),
-      loiSai: [
-        { moTa: 'Chưa tạo hàm slide_stop', baiLam: bai(['slide_stop()', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Thiếu move() cuối trong slide_stop: lệnh extend_spikes() chưa được thực thi hết nhịp', baiLam: bai(['slide_stop()', 'move()']), hamCuaEmMoi: [ham('slide_stop', ['retract_spikes()', 'move()', 'extend_spikes()'])], phaiCoMa: ['chua-toi-co'] }
+        [
+          '########',
+          '#.II.Iu#',
+          '#####I##',
+          '#####I##',
+          '#####I##',
+          '#####.##',
+          '#####F##',
+          '########'
+        ]
       ],
-      sao: { o: 9, nhip: 3 },
-      goiY: [
-        'Trong slide_stop(), retract_spikes() + move() trượt từ (1, 1) sang (4, 1).',
-        'Tiếp theo extend_spikes() + move() bung gai và tiến sang (5, 1), rồi move() ở chương trình chính bước vào cờ (6, 1).'
-      ]
-    }),
-
-    manCheThuGai(2, 'lam-quen', {
-      ten: 'Hai dải băng nối tiếp',
-      hamCuaEmCan: ['move', 'turn_right', 'slide_stop'],
-      deBai: 'Hành lang gồm một dải băng ngang và một dải băng dọc, mỗi dải đều có hố sụt chặn phía sau cờ. Hãy gọi slide_stop() để lướt qua dải ngang và dừng ở (5, 1), rẽ phải bằng turn_right(), rồi gọi tiếp slide_stop() để vào thẳng cờ.',
-      veMaMau: 'Mã mẫu quên rẽ phải giữa hai lần gọi slide_stop().',
-      san: [
-        '########',
-        '#.II..u#',
-        '#####I##',
-        '#####I##',
-        '#####.##',
-        '#####F##',
-        '#####u##',
-        '########'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'slide_stop()',
-        'slide_stop()'
-      ]),
-      loiGiai: bai([
-        'slide_stop()',
-        'turn_right()',
-        'slide_stop()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      maMau: bai(['slide_stop()', 'turn_right()', 'slide_stop()']),
+      loiGiai: bai(['slide_stop()', 'turn_right()', 'slide_stop()'], [], [SLIDE_STOP]),
       loiSai: [
-        { moTa: 'Quên turn_right() ở góc (5, 1): trượt tiếp sang phải rơi xuống hố (6, 1)', baiLam: bai(['slide_stop()', 'slide_stop()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'Chưa chế hàm slide_stop', baiLam: bai(['slide_stop()', 'turn_right()', 'slide_stop()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm quên bung gai: bước thêm một ô là lướt xuống hố', baiLam: bai(['slide_stop()', 'turn_right()', 'slide_stop()']), hamCuaEmMoi: [ham('slide_stop', ['retract_spikes()', 'move()', 'move()'])], phaiCoMa: ['roi-ho'] }
       ],
       sao: { o: 12, nhip: 5 },
       goiY: [
-        'Sau lần slide_stop() đầu tiên, R1 đang đứng ở (5, 1).',
-        'Chèn turn_right() vào giữa hai lệnh slide_stop().'
+        'Luna: Thân slide_stop() có bốn dòng: thu gai, lướt, bung gai, bước.',
+        'Luna: retract_spikes(), move(), extend_spikes(), move().'
       ]
     }),
 
-    manCheThuGai(3, 'lam-quen', {
-      ten: 'Chế lệnh: trượt rẽ trái',
-      taoHam: ['glide_left'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'turn_left'],
-      deBai: 'Tương tự glide_step() rẽ phải, hãy tạo hàm glide_left() gồm 4 dòng: retract_spikes(), move(), extend_spikes(), turn_left() để trượt hết dải đá ướt rồi vừa bung gai vừa rẽ trái.',
-      veMaMau: 'Tạo hàm glide_left() gồm: retract_spikes(), move(), extend_spikes(), turn_left().',
+    manCheLuot(2, 'lam-quen', {
+      ten: 'Bậc thang đá ướt',
+      hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'slide_stop'],
+      khung: { chinh: 6, moiHam: 8, cauTruc: ['for', 'while', 'if', 'else', 'dict', 'set'] },
+      deBai: 'Giúp Sola với! Bậc thang đá ướt đi xuống: lướt, bám một ô, rẽ phải; lướt, bám một ô, rẽ trái; cứ thế. Ô bám nào cũng có hố phía trước. Hai hầm bậc dài ngắn khác nhau.',
+      veMaMau: 'Sola xuống một bậc. Chạy thử: R1 còn trên thang.',
       san: [
-        '#######',
-        '#####F#',
-        '#####I#',
-        '#####I#',
-        '#.III.#',
-        '#######'
-      ],
-      batDau: { x: 1, y: 4, huong: 1 },
-      maMau: bai([
-        'glide_left()',
-        'retract_spikes()',
-        'move()'
-      ]),
-      loiGiai: bai(
         [
-          'glide_left()',
-          'retract_spikes()',
-          'move()'
+          '############',
+          '#.II.Iu#####',
+          '#####I######',
+          '#####.######',
+          '#####III.Iu#',
+          '#####u###I##',
+          '#########.##',
+          '#########IF#',
+          '#########u##',
+          '############'
         ],
-        [],
-        [ham('glide_left', ['retract_spikes()', 'move()', 'extend_spikes()', 'turn_left()'])]
-      ),
-      loiSai: [
-        { moTa: 'Chưa tạo hàm glide_left', baiLam: bai(['glide_left()', 'retract_spikes()', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Gọi turn_right() thay vì turn_left(): đâm tường dưới', baiLam: bai(['glide_left()', 'retract_spikes()', 'move()']), hamCuaEmMoi: [ham('glide_left', ['retract_spikes()', 'move()', 'extend_spikes()', 'turn_right()'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        [
+          '############',
+          '#.III.Iu####',
+          '######I#####',
+          '######I#####',
+          '######.#####',
+          '######II.Iu#',
+          '######u##I##',
+          '#########I##',
+          '#########.##',
+          '#########IF#',
+          '#########u##',
+          '############'
+        ]
       ],
-      sao: { o: 12, nhip: 3 },
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      maMau: bai(['for i in range(1):', '    slide_stop()', '    turn_right()', '    slide_stop()', '    turn_left()', 'move()']),
+      loiGiai: bai(['for i in range(2):', '    slide_stop()', '    turn_right()', '    slide_stop()', '    turn_left()', 'move()']),
+      loiSai: [
+        { moTa: 'Lặp một lần: R1 mới xuống một bậc', baiLam: bai(['for i in range(1):', '    slide_stop()', '    turn_right()', '    slide_stop()', '    turn_left()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Rẽ trái trước rồi mới rẽ phải: R1 quay vào vách', baiLam: bai(['for i in range(2):', '    slide_stop()', '    turn_left()', '    slide_stop()', '    turn_right()', 'move()']), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 17, nhip: 13 },
       goiY: [
-        'Trong glide_left(), dòng thứ tư là turn_left().',
-        'Sau khi glide_left() đưa R1 tới (5, 4) hướng lên Bắc, retract_spikes() + move() trượt thẳng lên cờ (5, 1).'
+        'Luna: Một bậc là slide_stop(), turn_right(), slide_stop(), turn_left().',
+        'Luna: Lặp hai bậc, rồi move() vào cờ.'
       ]
     }),
 
-    manCheThuGai(4, 'lam-quen', {
-      ten: 'Zích zắc băng phải trái',
-      hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'glide_step', 'glide_left'],
-      deBai: 'Kết hợp glide_step() (trượt rồi rẽ phải) và glide_left() (trượt rồi rẽ trái) để đưa R1 lướt qua hành lang zích zắc 3 tầng tới cờ.',
-      veMaMau: 'Mã mẫu dùng glide_step() cho cả hai góc nên ở góc thứ hai R1 quay ngược sang trái thay vì hướng sang phải.',
+    manCheLuot(3, 'luyen', {
+      ten: 'Chế lệnh: lướt rồi rẽ',
+      taoHam: ['glide_step'], chinhCoDinh: true,
+      hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Giúp Sola với! Chế hàm glide_step(): thu gai, lướt, bung gai, rẽ phải. Hết xoắn ốc, gai phải đang bung để bước một ô lên đá ướt, phía trước ô đó là hố. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi glide_step() ba lần. Mở Xưởng hàm, chế glide_step().',
       san: [
-        '#######',
-        '#.II###',
-        '###I###',
-        '###.I.#',
-        '#####F#',
-        '#######'
+        [
+          '########',
+          '#.IIIII#',
+          '#u####I#',
+          '#IF###I#',
+          '#IIIIII#',
+          '########'
+        ],
+        [
+          '##########',
+          '#.IIIIIII#',
+          '#u######I#',
+          '#I######I#',
+          '#IF#####I#',
+          '#IIIIIIII#',
+          '##########'
+        ]
       ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'glide_step()',
-        'glide_step()',
-        'glide_step()',
-        'move()'
-      ]),
-      loiGiai: bai([
-        'glide_step()',
-        'glide_left()',
-        'glide_step()',
-        'move()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      maMau: bai(['for i in range(3):', '    glide_step()', 'move()', 'turn_right()', 'move()']),
+      loiGiai: bai(['for i in range(3):', '    glide_step()', 'move()', 'turn_right()', 'move()'], [], [GLIDE_STEP]),
       loiSai: [
-        { moTa: 'Gọi glide_step() ở chặng thứ hai: rẽ phải đâm vào vách đá', baiLam: bai(['glide_step()', 'glide_step()', 'glide_step()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Chưa chế hàm glide_step', baiLam: bai(['for i in range(3):', '    glide_step()', 'move()', 'turn_right()', 'move()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm quên bung gai: hết xoắn ốc R1 lướt xuống hố', baiLam: bai(['for i in range(3):', '    glide_step()', 'move()', 'turn_right()', 'move()']), hamCuaEmMoi: [ham('glide_step', ['retract_spikes()', 'move()', 'turn_right()'])], phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 19, nhip: 7 },
+      sao: { o: 14, nhip: 9 },
       goiY: [
-        'Tại góc (3, 1), glide_step() rẽ phải hướng xuống Nam. Khi trượt xuống (3, 3), R1 cần rẽ trái để hướng sang Đông.',
-        'Đổi dòng thứ hai thành glide_left().'
+        'Luna: Giống slide_stop(), nhưng dòng cuối là turn_right() thay cho move().',
+        'Luna: retract_spikes(), move(), extend_spikes(), turn_right().'
       ]
     }),
 
-    manCheThuGai(5, 'luyen', {
-      ten: 'Chế lệnh: trượt khi có tiếng vang',
+    manCheLuot(4, 'luyen', {
+      ten: 'Lướt tới khi nghe chuông',
+      hamCuaEmCan: ['glide_step', 'go_echo'],
+      deBai: 'Giúp Sola với! Xoắn ốc đá ướt, cờ treo chuông đá. Chuông ngân nhỏ, chỉ nghe được ở góc cuối. Chưa nghe thì còn lướt rồi rẽ; nghe được rồi thì đi tới chuông. Hai hầm số góc khác nhau.',
+      veMaMau: 'Sola đếm góc của hầm 1. Chạy thử: hầm 2 ít góc hơn.',
+      san: [
+        [
+          '##########',
+          '#.IIIIIII#',
+          '########I#',
+          '###F####I#',
+          '###.####I#',
+          '###IIIIII#',
+          '##########'
+        ],
+        [
+          '########',
+          '#.IIIII#',
+          '######I#',
+          '######I#',
+          '######I#',
+          '###F..I#',
+          '########'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(3, 3, 5, 2)], [cd(3, 5, 5, 3)]],
+      maMau: bai(['for i in range(3):', '    glide_step()', 'go_echo()']),
+      loiGiai: bai(['while hear() == 0:', '    glide_step()', 'go_echo()']),
+      loiSai: [
+        { moTa: 'Đếm góc hầm 1: hầm 2 lướt thừa một lần', baiLam: bai(['for i in range(3):', '    glide_step()', 'go_echo()']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Lặp hai lần: hầm 1 chưa nghe được chuông', baiLam: bai(['for i in range(2):', '    glide_step()', 'go_echo()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 15, nhip: 8 },
+      goiY: [
+        'Luna: Giống wait_echo(), nhưng mỗi vòng là glide_step() thay cho move().',
+        'Luna: while hear() == 0: glide_step(). Ra ngoài vòng lặp: go_echo().'
+      ]
+    }),
+
+    manCheLuot(5, 'luyen', {
+      ten: 'Chế lệnh: lướt qua ngách',
+      taoHam: ['glide_tunnel'], chinhCoDinh: true,
+      hamCuaEmCan: ['move', 'turn_right'],
+      deBai: 'Giúp Sola với! Chế hàm glide_tunnel(): thu gai, lướt vào ngách, bung gai, bước một ô ra khỏi miệng ngách. Ô đầu tầng cuối có hố phía trước. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi glide_tunnel() hai lần. Mở Xưởng hàm, chế glide_tunnel().',
+      san: [
+        [
+          '########',
+          '#.IIII.#',
+          '########',
+          '#.III.##',
+          '########',
+          '#.Iu####',
+          '##F#####',
+          '########'
+        ],
+        [
+          '#########',
+          '#.II.####',
+          '#########',
+          '#.IIIII.#',
+          '#########',
+          '#.Iu#####',
+          '##F######',
+          '#########'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [[ng(6, 1, 1, 3), ng(5, 3, 1, 5)], [ng(4, 1, 1, 3), ng(7, 3, 1, 5)]],
+      maMau: bai(['for i in range(2):', '    glide_tunnel()', 'turn_right()', 'move()']),
+      loiGiai: bai(['for i in range(2):', '    glide_tunnel()', 'turn_right()', 'move()'], [], [GLIDE_TUNNEL]),
+      loiSai: [
+        { moTa: 'Chưa chế hàm glide_tunnel', baiLam: bai(['for i in range(2):', '    glide_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm quên bung gai: bước ra khỏi ngách là lướt xuống hố', baiLam: bai(['for i in range(2):', '    glide_tunnel()', 'turn_right()', 'move()']), hamCuaEmMoi: [ham('glide_tunnel', ['retract_spikes()', 'move()', 'move()'])], phaiCoMa: ['roi-ho'] }
+      ],
+      sao: { o: 13, nhip: 6 },
+      goiY: [
+        'Luna: Thân giống hệt slide_stop(), chỉ khác tên: lần này cuối dải là miệng ngách.',
+        'Luna: retract_spikes(), move(), extend_spikes(), move().'
+      ]
+    }),
+
+    manCheLuot(6, 'luyen', {
+      ten: 'Chế lệnh: nghe rồi lướt',
       taoHam: ['echo_glide'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step'],
-      deBai: 'Có những hành lang chỉ nên thu gai trượt nhanh khi cảm biến âm thanh nghe thấy chuông đá báo hiệu ở cuối dải băng (hear() > 0); nếu im lặng (hear() == 0) thì phía trước có hố sụt sát bên, chỉ được bước 1 ô bằng move(). Hãy tạo hàm echo_glide() thực hiện quy tắc đó.',
-      veMaMau: 'Trong echo_glide(), dùng if hear() > 0: gọi glide_step(), ngược lại else: gọi move().',
+      hamCuaEmCan: ['move', 'glide_step'],
+      deBai: 'Giúp Sola với! Chuông đá nhỏ treo trong hốc, sát chỗ bắt đầu mỗi dải đá ướt, chỉ nghe được khi đứng cạnh. Chế hàm echo_glide(): nghe thấy chuông thì glide_step(), không thì bước một ô. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi echo_glide() bốn lần. Mở Xưởng hàm, chế echo_glide().',
       san: [
         [
-          '#######',
-          '#.III.#',
-          '#####F#',
-          '#######'
+          '#########',
+          '##.######',
+          '#..IIII##',
+          '######..#',
+          '######I##',
+          '#####FI##',
+          '#########'
         ],
         [
-          '#######',
-          '#.Fu###',
-          '#######',
-          '#######'
+          '########',
+          '#.######',
+          '#.IIII##',
+          '####..##',
+          '#####I##',
+          '###F.I##',
+          '########'
         ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 5, y: 2, not: 1, phamVi: 6 }],
-        []
-      ],
-      maMau: bai([
-        'echo_glide()',
-        'if hear() > 0:',
-        '    move()'
-      ]),
-      loiGiai: bai(
-        [
-          'echo_glide()',
-          'if hear() > 0:',
-          '    move()'
-        ],
-        [],
-        [ham('echo_glide', ['if hear() > 0:', '    glide_step()', 'else:', '    move()'])]
-      ),
+      batDau: hai({ x: 1, y: 2, huong: 1 }),
+      chuongDa: [[cd(2, 1, 3, 1), cd(7, 3, 6, 1)], [cd(1, 1, 3, 1), cd(4, 3, 6, 1)]],
+      maMau: bai(['for i in range(4):', '    echo_glide()', 'move()']),
+      loiGiai: bai(['for i in range(4):', '    echo_glide()', 'move()'], [], [ECHO_GLIDE]),
       loiSai: [
-        { moTa: 'Chưa tạo hàm echo_glide', baiLam: bai(['echo_glide()', 'if hear() > 0:', '    move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Luôn gọi glide_step() không kiểm tra hear(): ở sân 2 trượt thẳng xuống hố sụt', baiLam: bai(['echo_glide()', 'if hear() > 0:', '    move()']), hamCuaEmMoi: [ham('echo_glide', ['glide_step()'])], phaiCoMa: ['roi-ho'] }
+        { moTa: 'Chưa chế hàm echo_glide', baiLam: bai(['for i in range(4):', '    echo_glide()', 'move()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm luôn glide_step(): chỗ không có dải đá ướt R1 rẽ vào vách', baiLam: bai(['for i in range(4):', '    echo_glide()', 'move()']), hamCuaEmMoi: [ham('echo_glide', ['glide_step()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đảo hai nhánh: nghe thấy chuông lại chỉ bước một ô', baiLam: bai(['for i in range(4):', '    echo_glide()', 'move()']), hamCuaEmMoi: [ham('echo_glide', ['if hear() > 0:', '    move()', 'else:', '    glide_step()'])], phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 16, nhip: 3 },
+      sao: { o: 16, nhip: 7 },
       goiY: [
-        'Ở sân 1 có chuông đá tại (5, 2) nên hear() > 0: echo_glide() gọi glide_step() rồi bước xuống cờ (5, 2).',
-        'Ở sân 2 không có chuông đá nên hear() == 0: echo_glide() chỉ gọi move() bước 1 ô vào cờ (2, 1).'
+        'Luna: if hear() > 0: glide_step(). else: move().',
+        'Luna: Bốn dòng: if hear() > 0:, thụt vào glide_step(), else:, thụt vào move().'
       ]
     }),
 
-    manCheThuGai(6, 'luyen', {
-      ten: 'Lướt rồi gõ trống báo tin',
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'drum_hit'],
-      dieu: 'xx.xxx',
-      dieuToiCo: true,
-      deBai: 'Vừa di chuyển tới cờ vừa hoàn thành bản nhạc trống xx.xxx! Đầu tiên gõ 2 tiếng trống bằng drum_hit(2), tiếp theo gọi retract_spikes() và move() để trượt một mạch từ (1, 1) tới cờ (5, 1) trong đúng 1 nhịp nghỉ (.), rồi đứng tại cờ gọi drum_hit(3).',
-      veMaMau: 'Mã mẫu đang gọi move() khi chưa thu gai nên chỉ bước sang (2, 1) và chưa tới cờ.',
-      san: [
-        '#######',
-        '#.IIIF#',
-        '#######'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'drum_hit(2)',
-        'move()',
-        'drum_hit(3)'
-      ]),
-      loiGiai: bai([
-        'drum_hit(2)',
-        'retract_spikes()',
-        'move()',
-        'drum_hit(3)'
-      ]),
-      loiSai: [
-        { moTa: 'Quên gọi retract_spikes() trước move(): hết nhạc mới đi được 1 ô', baiLam: bai(['drum_hit(2)', 'move()', 'drum_hit(3)']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 10, nhip: 6 },
-      goiY: [
-        'Cú trượt retract_spikes() + move() chỉ tốn đúng 1 nhịp và không gõ trống, tạo ra nhịp nghỉ . giữa xx và xxx.',
-        'Chèn retract_spikes() ngay trước move().'
-      ]
-    }),
-
-    manCheThuGai(7, 'luyen', {
-      ten: 'Chế lệnh: trượt và gõ vang',
-      taoHam: ['glide_beat'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'drum_hit'],
-      dieu: 'xxx',
-      dieuToiCo: true,
-      deBai: 'Tạo hàm glide_beat(n) nhận số tiếng trống n: đầu tiên gọi glide_step() để trượt hết dải đá ướt và rẽ phải, sau đó gọi drum_hit(n) để gõ n tiếng trống báo hiệu tại góc vừa tới.',
-      veMaMau: 'Mở Xưởng hàm, tạo glide_beat(n) gồm 2 dòng: glide_step() và drum_hit(n).',
-      san: [
-        '#######',
-        '#.III.#',
-        '#####F#',
-        '#######'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'glide_beat(3)',
-        'move()'
-      ]),
-      loiGiai: bai(
-        [
-          'glide_beat(3)',
-          'move()'
-        ],
-        [],
-        [ham('glide_beat', ['glide_step()', 'drum_hit(n)'], ['n'])]
-      ),
-      loiSai: [
-        { moTa: 'Chưa tạo hàm glide_beat', baiLam: bai(['glide_beat(3)', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Chỉ gõ drum_hit(1) thay vì drum_hit(n): thiếu tiếng trống', baiLam: bai(['glide_beat(3)', 'move()']), hamCuaEmMoi: [ham('glide_beat', ['glide_step()', 'drum_hit(1)'], ['n'])], phaiCoMa: ['chua-du-dieu'] }
-      ],
-      sao: { o: 16, nhip: 6 },
-      goiY: [
-        'Trong glide_beat(n), dòng 1 là glide_step() và dòng 2 là drum_hit(n).',
-        'Sau khi gõ đủ 3 tiếng trống ở (5, 1), lệnh move() cuối đưa R1 bước vào cờ (5, 2).'
-      ]
-    }),
-
-    manCheThuGai(8, 'bien-the', {
-      ten: 'Bản đồ trượt từ điển',
-      hamCuaEmCan: ['move', 'turn_right', 'turn_left', 'glide_step', 'glide_left'],
-      deBai: 'Mỗi sân có một từ điển d riêng lưu hướng rẽ ở cuối mỗi dải đá ướt. Sân 1 là d = {"a": "R", "b": "L", "c": "R"}. Hãy duyệt for k in d:, nếu d[k] == "R" thì gọi glide_step(), ngược lại gọi glide_left(). Sau vòng lặp, bước 1 ô vào cờ.',
-      veMaMau: 'Hoàn thành nhánh else trong vòng lặp for k in d: và thêm move() ở cuối.',
+    manCheLuot(7, 'bien-the', {
+      ten: 'Sửa hàm lướt rồi rẽ',
+      suaHam: ['glide_step'], chinhCoDinh: true,
+      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'go_echo'],
+      deBai: 'Giúp Sola với! Ai đó sửa glide_step() thành rẽ trái, nhưng hầm này vòng sang phải. Sửa lại hàm. Cờ treo chuông đá. Chương trình chính đã khoá.',
+      veMaMau: 'Mở glide_step() trong Xưởng hàm. Chạy thử: R1 quay vào vách.',
       san: [
         [
-          '#######',
-          '#.II###',
-          '###I###',
-          '###.I.#',
-          '#####F#',
-          '#######'
+          '#########',
+          '#.IIIIII#',
+          '#######I#',
+          '#######I#',
+          '#F.....I#',
+          '#########'
         ],
         [
           '#######',
-          '#.III.#',
+          '#.IIII#',
           '#####I#',
-          '##.II.#',
-          '##F####',
-          '#######'
-        ]
-      ],
-      duLieuSan: ['d = {"a": "R", "b": "L", "c": "R"}', 'd = {"a": "R", "b": "R", "c": "L"}'],      // dữ liệu theo sân: thứ tự rẽ khác nhau nên điền thẳng lệnh của sân này thì đâm tường ở sân kia
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'd = {"a": "R", "b": "L", "c": "R"}',
-        'for k in d:',
-        '    if d[k] == "R":',
-        '        glide_step()'
-      ]),
-      loiGiai: bai([
-        'd = {"a": "R", "b": "L", "c": "R"}',
-        'for k in d:',
-        '    if d[k] == "R":',
-        '        glide_step()',
-        '    else:',
-        '        glide_left()',
-        'move()'
-      ]),
-      loiSai: [
-        { moTa: 'Thiếu nhánh else và lệnh move() cuối', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên lệnh move() sau vòng lặp: dừng sát trước cờ', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'for k in d:', '    if d[k] == "R":', '        glide_step()', '    else:', '        glide_left()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Điền thẳng lệnh của sân 1: glide_step(), glide_left(), glide_step() rồi move() đâm tường ở sân 2', baiLam: bai(['d = {"a": "R", "b": "L", "c": "R"}', 'glide_step()', 'glide_left()', 'glide_step()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
-      ],
-      sao: { o: 22, nhip: 7 },
-      goiY: [
-        'Thêm else: rồi thụt lề glide_left() bên trong vòng lặp for k in d:.',
-        'Ngoài vòng lặp, gọi move() để bước vào cờ. Viết thẳng các lệnh rẽ thì chỉ đúng ở một sân.'
-      ]
-    }),
-
-    manCheThuGai(9, 'bien-the', {
-      ten: 'Chế lệnh: lướt theo tập mẫu',
-      taoHam: ['unique_glide'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step', 'count_unique'],
-      deBai: 'Tạo hàm unique_glide(a) nhận danh sách a: đầu tiên gọi glide_step() để trượt hết dải băng ngang và rẽ phải, sau đó tiến xuống đúng count_unique(a) bước bằng forward(count_unique(a)).',
-      veMaMau: 'Trong unique_glide(a), viết 2 dòng: glide_step() và forward(count_unique(a)).',
-      san: [
-        '#######',
-        '#.III.#',
-        '#####I#',
-        '#####I#',
-        '#####F#',
-        '#####u#',
-        '#######'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      maMau: bai([
-        'unique_glide([2, 5, 2, 8, 5])'
-      ]),
-      loiGiai: bai(
-        [
-          'unique_glide([2, 5, 2, 8, 5])'
-        ],
-        [],
-        [ham('unique_glide', ['glide_step()', 'forward(count_unique(a))'], ['a'])]
-      ),
-      loiSai: [
-        { moTa: 'Chưa tạo hàm unique_glide', baiLam: bai(['unique_glide([2, 5, 2, 8, 5])']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Quên gọi glide_step() trước khi tiến: đâm tường phải', baiLam: bai(['unique_glide([2, 5, 2, 8, 5])']), hamCuaEmMoi: [ham('unique_glide', ['forward(count_unique(a))'], ['a'])], phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 14, nhip: 5 },
-      goiY: [
-        'Thân hàm unique_glide(a) chỉ gồm 2 dòng: glide_step() và forward(count_unique(a)).',
-        'Danh sách [2, 5, 2, 8, 5] có 3 số khác nhau nên R1 bước xuống đúng 3 ô tới cờ (5, 4).'
-      ]
-    }),
-
-    manCheThuGai(10, 'trum', {
-      ten: 'Trùm: Vũ điệu lướt đá vôi',
-      huyHieu: { ma: 'che-thu-gai', ten: 'Huy hiệu Chế lệnh: lướt đá ướt' },
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step', 'glide_tunnel', 'drum_hit', 'glide_beat', 'count_unique'],
-      nhipTheo: 'tong',
-      dieu: 'xx..x',
-      dieuToiCo: true,
-      deBai: 'Trùm Gói 5! Trên cả 2 sân, đầu tiên gọi glide_tunnel() để trượt qua dải đá ướt tầng trên và chui ngách sang (2, 3). Tiếp theo gọi glide_beat(2) để trượt sang góc (5, 3), rẽ phải và gõ 2 tiếng trống, sau đó tiến count_unique([1, 3, 1]) bước xuống cờ và gõ 1 tiếng trống kết thúc bằng drum_hit(1).',
-      veMaMau: 'Kết hợp glide_tunnel(), glide_beat(2), forward(count_unique([1, 3, 1])) và drum_hit(1).',
-      san: [
-        [
-          '#######',
-          '#.III>#',
-          '#######',
-          '#>III.#',
           '#####I#',
-          '#####F#',
-          '#######'
-        ],
-        [
-          '#######',
-          '#.III>#',
-          '#######',
-          '#>III.#',
-          '#####.#',
-          '#####F#',
+          '#####I#',
+          '#####I#',
+          '#F...I#',
           '#######'
         ]
       ],
-      batDau: [
-        { x: 1, y: 1, huong: 1 },
-        { x: 1, y: 1, huong: 1 }
-      ],
-      ngachHang: [
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }],
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }]
-      ],
-      maMau: bai([
-        'glide_tunnel()',
-        'glide_beat(2)'
-      ]),
-      loiGiai: bai([
-        'glide_tunnel()',
-        'glide_beat(2)',
-        'forward(count_unique([1, 3, 1]))',
-        'drum_hit(1)'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 4, 2)], [cd(1, 6, 2)]],
+      maMau: bai(['for i in range(2):', '    glide_step()', 'go_echo()'], [], [ham('glide_step', ['retract_spikes()', 'move()', 'extend_spikes()', 'turn_left()'])]),
+      loiGiai: bai(['for i in range(2):', '    glide_step()', 'go_echo()'], [], [GLIDE_STEP]),
       loiSai: [
-        { moTa: 'Thiếu đoạn đi xuống cờ và gõ nhịp cuối', baiLam: bai(['glide_tunnel()', 'glide_beat(2)']), phaiCoMa: ['chua-du-dieu'] },
-        { moTa: 'Truyền 3 số khác nhau [1, 3, 5]: đi 3 bước nên lệch nhịp trống cuối', baiLam: bai(['glide_tunnel()', 'glide_beat(2)', 'forward(count_unique([1, 3, 5]))', 'drum_hit(1)']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Không sửa: R1 rẽ trái vào vách', baiLam: bai(['for i in range(2):', '    glide_step()', 'go_echo()']), hamCuaEmMoi: [ham('glide_step', ['retract_spikes()', 'move()', 'extend_spikes()', 'turn_left()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Xoá dòng rẽ: R1 lướt xong vẫn nhìn vào vách', baiLam: bai(['for i in range(2):', '    glide_step()', 'go_echo()']), hamCuaEmMoi: [ham('glide_step', ['retract_spikes()', 'move()', 'extend_spikes()'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 24, nhip: 18 },
+      sao: { o: 15, nhip: 10 },
       goiY: [
-        'glide_tunnel() rồi glide_beat(2) đưa R1 tới (5, 3) hướng xuống Nam và gõ xx.',
-        'Thêm forward(count_unique([1, 3, 1])) rồi drum_hit(1) để đi 2 bước (..) xuống cờ và gõ x.'
+        'Luna: Hầm vòng sang phải của R1.',
+        'Luna: Đổi turn_left() thành turn_right().'
+      ]
+    }),
+
+    manCheLuot(8, 'bien-the', {
+      ten: 'Sổ đá chắn các tầng',
+      hamCuaEmCan: ['move', 'turn_right', 'play_note', 'glide_tunnel'],
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      duLieuSan: ['notes = {"dau": 6, "giua": 2}', 'notes = {"dau": 1, "giua": 8, "cuoi": 4}'],
+      deBai: 'Giúp Sola với! Mỗi tầng đá ướt có một đá chuông chắn trước miệng ngách. Sổ notes ghi nốt đá từng tầng, từ trên xuống. Gõ cho đá vỡ rồi lướt qua ngách. Tầng cuối có hố phía trước, cờ ở bên phải.',
+      veMaMau: 'Sola chép tay nốt hầm 1. Chạy thử: hầm 2 có ba tầng.',
+      san: [T8A.san, T8B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [T8A.ngachHang, T8B.ngachHang],
+      daChuong: [voiDa(T8A, [6, 2]), voiDa(T8B, [1, 8, 4])],
+      maMau: bai(['notes = {"dau": 6, "giua": 2}', 'play_note(6)', 'glide_tunnel()', 'play_note(2)', 'glide_tunnel()', 'turn_right()', 'move()']),
+      loiGiai: bai(['notes = {"dau": 6, "giua": 2}', 'for k in notes:', '    play_note(notes[k])', '    glide_tunnel()', 'turn_right()', 'move()']),
+      loiSai: [
+        { moTa: 'Chép tay nốt hầm 1: hầm 2 đá không vỡ', baiLam: bai(['notes = {"dau": 6, "giua": 2}', 'play_note(6)', 'glide_tunnel()', 'play_note(2)', 'glide_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lướt trước rồi mới gõ: R1 kẹt trước đá', baiLam: bai(['notes = {"dau": 6, "giua": 2}', 'for k in notes:', '    glide_tunnel()', '    play_note(notes[k])', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 17, nhip: 11 },
+      goiY: [
+        'Luna: for k in notes: gõ notes[k], rồi glide_tunnel().',
+        'Luna: Ra ngoài vòng lặp: turn_right(), move().'
+      ]
+    }),
+
+    manCheLuot(9, 'bien-the', {
+      ten: 'Không gõ trùng khi lướt',
+      hamCuaEmCan: ['move', 'turn_right', 'ring_once', 'glide_tunnel'],
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      duLieuSan: ['notes = {"dau": 5, "giua": 3, "cuoi": 3}', 'notes = {"dau": 2, "giua": 6, "cuoi": 6}'],
+      nhipToiDa: 10,
+      deBai: 'Giúp Sola với! Nước ngầm dâng, chỉ còn 10 nhịp. Đá tầng dưới cách R1 đúng 3 ô nên cũng nghe được tiếng gõ: hai tầng liền nhau cùng nốt thì một lần gõ vỡ cả hai. Dùng túi s để không gõ trùng.',
+      veMaMau: 'Sola gõ mọi tầng. Chạy thử: hết nhịp.',
+      san: [T9A.san, T9B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [T9A.ngachHang, T9B.ngachHang],
+      daChuong: [voiDa(T9A, [5, 3, 3]), voiDa(T9B, [2, 6, 6])],
+      maMau: bai(['notes = {"dau": 5, "giua": 3, "cuoi": 3}', 'for k in notes:', '    play_note(notes[k])', '    glide_tunnel()', 'turn_right()', 'move()']),
+      loiGiai: bai(['notes = {"dau": 5, "giua": 3, "cuoi": 3}', 's = set()', 'for k in notes:', '    ring_once(notes[k], s)', '    glide_tunnel()', 'turn_right()', 'move()']),
+      loiSai: [
+        { moTa: 'Gõ mọi tầng: quá 10 nhịp', baiLam: bai(['notes = {"dau": 5, "giua": 3, "cuoi": 3}', 'for k in notes:', '    play_note(notes[k])', '    glide_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Quên s = set(): chưa có túi s nên chương trình dừng', baiLam: bai(['notes = {"dau": 5, "giua": 3, "cuoi": 3}', 'for k in notes:', '    ring_once(notes[k], s)', '    glide_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['loi-chay'] }
+      ],
+      sao: { o: 21, nhip: 10 },
+      goiY: [
+        'Luna: s = set() ngay sau sổ. ring_once(n, s) chỉ gõ nốt chưa có trong túi.',
+        'Luna: Trong vòng lặp: ring_once(notes[k], s) rồi glide_tunnel().'
+      ]
+    }),
+
+    manCheLuot(10, 'tong-hop', {
+      ten: 'Trùm: hầm đá ướt ngân chuông',
+      hamCuaEmCan: ['move', 'play_note', 'glide_step', 'glide_tunnel', 'go_echo'],
+      khoaTD: ['dau', 'giua', 'cuoi'],
+      duLieuSan: ['notes = {"dau": 4, "giua": 6}', 'notes = {"dau": 2, "giua": 5, "cuoi": 8}'],
+      deBai: 'Giúp Sola với! Lướt qua các tầng đá ướt theo sổ notes như màn trước. Ra khỏi tầng cuối là xoắn ốc đá ướt, cờ treo chuông đá chỉ nghe được ở góc cuối.',
+      veMaMau: 'Sola đếm góc xoắn ốc của hầm 1. Chạy thử: hầm 2 nhiều góc hơn.',
+      san: [T10A.san, T10B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [T10A.ngachHang, T10B.ngachHang],
+      daChuong: [voiDa(T10A, [4, 6]), voiDa(T10B, [2, 5, 8])],
+      chuongDa: [[cd(5, 8, 1, 2)], [cd(3, 10, 1, 2)]],
+      maMau: bai(['notes = {"dau": 4, "giua": 6}', 'for k in notes:', '    play_note(notes[k])', '    glide_tunnel()', 'for i in range(2):', '    glide_step()', 'go_echo()']),
+      loiGiai: bai(['notes = {"dau": 4, "giua": 6}', 'for k in notes:', '    play_note(notes[k])', '    glide_tunnel()', 'while hear() == 0:', '    glide_step()', 'go_echo()']),
+      loiSai: [
+        { moTa: 'Đếm góc hầm 1: hầm 2 còn một góc chưa lướt', baiLam: bai(['notes = {"dau": 4, "giua": 6}', 'for k in notes:', '    play_note(notes[k])', '    glide_tunnel()', 'for i in range(2):', '    glide_step()', 'go_echo()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Theo chuông trước khi qua các tầng: R1 kẹt trước đá', baiLam: bai(['notes = {"dau": 4, "giua": 6}', 'while hear() == 0:', '    glide_step()', 'go_echo()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 25, nhip: 17 },
+      goiY: [
+        'Luna: Qua các tầng như màn "Sổ đá chắn các tầng".',
+        'Luna: Rồi while hear() == 0: glide_step(), và go_echo().'
       ]
     })
   ];

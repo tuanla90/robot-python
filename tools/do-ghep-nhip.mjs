@@ -30,7 +30,7 @@ const NHOM = {
 };
 const BO_QUA = new Set(['wait', 'ink', 'aim']);
 // Nhịp có sự kiện lệnh bị bỏ thì không tính là ghép thật.
-const BI_BO = new Set(['ban-dung-yen', 'nem-dung-yen', 'omni-khong-cheo', 'tay-vuong', 'banh-goi-lai', 'tay-goi-lai', 'dang-neo']);
+const BI_BO = new Set(['ban-dung-yen', 'nem-dung-yen', 'khong-co-da', 'omni-khong-cheo', 'tay-vuong', 'banh-goi-lai', 'tay-goi-lai', 'dang-neo']);
 
 const thuMua = TT.mua.map(m => m.ma).filter(m => m !== 'mua-an');
 const muaCua = {}, goiCua = {};

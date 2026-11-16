@@ -542,7 +542,7 @@
       } else if (l.ma === 'khong-ray') {
         them('khong-ray', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Chỉ cần cẩu có bánh ray (nâng cấp thân) mới dùng được rail(n).', { cho: cho(m) });
       } else if (l.ma === 'tam-sai') {
-        them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.', { cho: cho(m), tam: l.tamDat });
+        them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + (l.nemDa ? ' Đứng yên thì tay hất chỉ ném được 1 hoặc 2 ô.' : ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.'), { cho: cho(m), tam: l.tamDat });
       } else if (l.ma === 'luc-ban-sai') {
         them('luc-ban-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Lực phun viết chữ thường trong dấu nháy: "low" phun nhẹ (bay 2 ô, không giật), "high" phun mạnh (bay xa, xe giật).', { cho: cho(m), luc: l.lucDat });
       } else if (l.ma === 'xit-tham-so') {                                // M9L15: bình xịt bụng drone không nhận đối số
@@ -802,7 +802,15 @@
       var nd0 = nemDung[0], mnd = nd0.lenh ? (g.anhXa[nd0.lenh.dongPy] || null) : null, mndn = nd0.nem ? (g.anhXa[nd0.nem.dongPy] || null) : null;
       cd.push({ ma: 'nem-dung-yen', muc: 'thong-tin', nhip: nd0.nhip, soLan: nemDung.length, cho: cho(mnd), choNem: cho(mndn),
         loi: 'Ở nhịp ' + nd0.nhip + ': lệnh ' + (nd0.nem ? nd0.nem.ten + '() (ở ' + viTri(mndn) + ') ' : 'máy ném ') + 'và lệnh ' + (nd0.lenh ? nd0.lenh.ten + '() (ở ' + viTri(mnd) + ') ' : 'bánh ') + 'nằm chung một nhịp, nên xe đứng yên và lệnh bánh bị bỏ.' +
-          (nemDung.length > 1 ? ' Chuyện này xảy ra ' + nemDung.length + ' lần.' : '') + ' Nhịp có load() hay throw() chỉ nạp hoặc ném, xe không đi.' });
+          (nemDung.length > 1 ? ' Chuyện này xảy ra ' + nemDung.length + ' lần.' : '') +
+          (nd0.da ? (nd0.nem && nd0.nem.ten === 'load' ? ' Nhịp có load() thì xe không đi.' : ' Chạy đà chỉ ghép được với TIẾN THẲNG: cả hai bánh cùng tiến. Lùi, quay hay trượt thì không có đà.') : ' Nhịp có load() hay throw() chỉ nạp hoặc ném, xe không đi.') });
+    }
+    var khongDa = res.suKien.filter(function (e) { return e.ma === 'khong-co-da'; });
+    if (khongDa.length) {                                                       // NÉM ĐÀ (cfg.nemDa): throw() + tiến thẳng mà ô trước bị chặn: xe đứng yên, ném tầm thường
+      var kd0 = khongDa[0], mkd = kd0.nem ? (g.anhXa[kd0.nem.dongPy] || null) : null;
+      cd.push({ ma: 'khong-co-da', muc: 'thong-tin', nhip: kd0.nhip, soLan: khongDa.length, o: kd0.o, den: kd0.den, cho: cho(mkd),
+        loi: 'Ở nhịp ' + kd0.nhip + ': xe định chạy đà rồi ném (throw() ở ' + viTri(mkd) + '), nhưng ô trước mặt bị chặn. Xe đứng yên, nên vật chỉ bay đúng tầm đã đặt, không được thêm 1 ô.' +
+          (khongDa.length > 1 ? ' Chuyện này xảy ra ' + khongDa.length + ' lần.' : '') + ' Muốn có đà thì ô trước mặt xe phải trống.' });
     }
     var banLai = res.suKien.filter(function (e) { return e.ma === 'ban-goi-lai'; });
     if (banLai.length) {
@@ -1069,7 +1077,9 @@
         ma: 'omni-khong-cheo', muc: 'thong-tin', nhip: oc.nhip, soLan: omniCheo.length, cho: cho(moc), choTruot: cho(mos),
         loi: 'Ở nhịp ' + oc.nhip + ': lệnh ' + (oc.lenh ? oc.lenh.ten + '() (ở ' + viTri(moc) + ') ' : 'bánh ') + 'và lệnh ' + oc.truot.ten + '() (ở ' + viTri(mos) + ') nằm chung một nhịp, nên xe chỉ trượt còn lệnh bánh bị bỏ.' +
           (omniCheo.length > 1 ? ' Chuyện này xảy ra ' + omniCheo.length + ' lần.' : '') +
-          ' Bánh omni không đi chéo: một nhịp chỉ trượt ngang HOẶC tiến/quay.'
+          (oc.ghep && oc.ghep.quay
+            ? ' Trượt chỉ ghép được với ĐI THẲNG: cả hai bánh cùng tiến, hay cùng lùi. Trượt với quay thì không ghép được.'
+            : ' Bánh omni không đi chéo: một nhịp chỉ trượt ngang HOẶC tiến/quay.')
       });
     }
     var xichDo = res.suKien.filter(function (e) { return e.ma === 'xich-quay-do'; });
@@ -1679,7 +1689,7 @@
         san: rows, batDau: bd, loaiRobot: man.loaiRobot || 'banh',
         hamGoc: man.hamGoc, nhipToiDa: man.nhipToiDa || 200, mucTieu: man.mucTieu || 'toi-co',
         mau: lm.mau, vatMau: lm.vatMau, vatChat: lm.vatChat, vatDang: lm.vatDang || undefined, vatCan: man.vatCan, vat: lm.vatThem || undefined, roBanDau: Array.isArray(man.roBanDau) ? man.roBanDau[i] : man.roBanDau,
-        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay, canGatDoi: man.canGatDoi,
+        cuaNhip: lm.cuaNhip || undefined, noi: lm.noi || undefined, nutBat: lm.nutBat || undefined, lua: lm.lua || undefined, demTu: lm.demTu || undefined, sanDoc: lm.sanDoc || undefined, daLapHo: man.daLapHo, thung: lm.thungThem || undefined, danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay, cheoGhep: man.cheoGhep, nemDa: man.nemDa, canGatDoi: man.canGatDoi,
         omniCheo: man.omniCheo || (man.robot && man.robot.omniCheo), chinhLuc: man.chinhLuc || (man.robot && man.robot.chinhLuc), nhanDang: man.nhanDang || (man.robot && man.robot.nhanDang), tamNemMacDinh: man.tamNemMacDinh,
         thuGai: man.thuGai || (man.robot && man.robot.thuGai), phanAm: man.phanAm || (man.robot && man.robot.phanAm),
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
@@ -1840,7 +1850,7 @@
         doi: mans.map(function (mi, i) {
           return {
             batDau: Array.isArray(mi.batDau) && nhieu ? mi.batDau[si] : mi.batDau, loaiRobot: mi.loaiRobot || 'banh', hamGoc: mi.hamGoc,
-            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, xichDay: mi.xichDay, beSung: mi.beSung, ghiXich: mi.ghiXich, phunKhiChay: mi.phunKhiChay, canGatDoi: mi.canGatDoi, mucBanDau: mi.mucBanDau,
+            camBien: mi.robot ? mi.robot.camBien : undefined, pin: theoSan(mi.pin, si), roBanDau: theoSan(mi.roBanDau, si), danToiDa: mi.danToiDa, lucBan: mi.lucBan, xichDay: mi.xichDay, beSung: mi.beSung, ghiXich: mi.ghiXich, phunKhiChay: mi.phunKhiChay, cheoGhep: mi.cheoGhep, nemDa: mi.nemDa, canGatDoi: mi.canGatDoi, mucBanDau: mi.mucBanDau,
             omniCheo: mi.omniCheo || (mi.robot && mi.robot.omniCheo), chinhLuc: mi.chinhLuc || (mi.robot && mi.robot.chinhLuc), nhanDang: mi.nhanDang || (mi.robot && mi.robot.nhanDang), tamNemMacDinh: mi.tamNemMacDinh,
             thuGai: mi.thuGai || (mi.robot && mi.robot.thuGai), phanAm: mi.phanAm || (mi.robot && mi.robot.phanAm),
             co: SanHoc.coCuaSan(mi.co, si, nhieu),
@@ -1981,7 +1991,7 @@
     var res = SanHoc.chay({
       san: hangSanThu(st), batDau: st.batDau, loaiRobot: man.loaiRobot || 'banh',
       hamGoc: man.hamGoc, nhipToiDa: nhipToiDa, vat: st.vat, thung: st.thung, mau: lopMauSanThu(st), roBanDau: st.ro === true ? true : undefined,
-      danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay, canGatDoi: man.canGatDoi, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
+      danToiDa: man.danToiDa, lucBan: man.lucBan, xichDay: man.xichDay, beSung: man.beSung, ghiXich: man.ghiXich, phunKhiChay: man.phunKhiChay, cheoGhep: man.cheoGhep, nemDa: man.nemDa, canGatDoi: man.canGatDoi, camBien: man.robot ? man.robot.camBien : undefined, mucBanDau: man.mucBanDau,
       omniCheo: man.omniCheo || (man.robot && man.robot.omniCheo), chinhLuc: man.chinhLuc || (man.robot && man.robot.chinhLuc), nhanDang: man.nhanDang || (man.robot && man.robot.nhanDang), tamNemMacDinh: man.tamNemMacDinh, daLapHo: man.daLapHo,
       thuGai: man.thuGai || (man.robot && man.robot.thuGai), phanAm: man.phanAm || (man.robot && man.robot.phanAm),
       daoChieu: man.daoChieu, phanCung: SanHoc.phanCungCua(man), nguonDong: nguonDongCua(g),

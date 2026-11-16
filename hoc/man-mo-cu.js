@@ -31,7 +31,7 @@
   var T_LOB_PAD = ['aim_lob(n)', 'forward(2)'];
   var T_BELT_LOB = ['move()', 'aim_lob(n)'];
   var T_SPIN_PAD = ['load()', 'wait()', 'move()', 'aim(n)', 'throw()', 'wait()'];
-  var T_DIAG_PAD = ['diag_right()', 'aim_lob(n)', 'diag_left()'];
+  var T_DIAG_PAD = ['dir_fr()', 'aim_lob(n)', 'dir_fl()'];
   var T_SMART_PAD = ['s = shape("front")', 'if s == "round":', '    aim_lob(2)', '    forward(2)', 'else:', '    lob_pad(3)'];
 
   function manMC(o) {
@@ -151,7 +151,7 @@
       id: 6804, chuong: 'mo-cu', so: 4, ma: 'mo-cu.4',
       ten: 'Lách chéo né băng ngược', hang: 'luyen',
       hamCuaEmCan: ['move', 'forward', 'lob', 'fill_pit'],
-      deBai: 'Trên đường lên hố `u` có thùng nặng `H` ở `(3, 5)` và băng chuyền ngược `v` ở `(4, 4)`. Hãy gọi `diag_right()` từ `(3, 6)` lên `(4, 5)` để né thùng `H`, gọi `diag_left()` lên `(3, 4)` để né băng ngược `v`, rồi dùng `fill_pit()` và `move()` để lấp hố tiến vào cờ!',
+      deBai: 'Trên đường lên hố `u` có thùng nặng `H` ở `(3, 5)` và băng chuyền ngược `v` ở `(4, 4)`. Hãy gọi `dir_fr()` từ `(3, 6)` lên `(4, 5)` để né thùng `H`, gọi `dir_fl()` lên `(3, 4)` để né băng ngược `v`, rồi dùng `fill_pit()` và `move()` để lấp hố tiến vào cờ!',
       veMaMau: 'Chương trình mới lách chéo qua thùng H và băng v tới (3, 4). Hãy gọi fill_pit() và move().',
       goiY: [
         'Tại (3, 4), viên đá tròn ở (3, 3) và hố u ở (3, 2) nằm ngay trước mũi xe.',
@@ -168,11 +168,11 @@
         '######'
       ],
       batDau: { x: 3, y: 6, huong: 0 },
-      maMau: bai(['diag_right()', 'diag_left()']),
-      loiGiai: bai(['diag_right()', 'diag_left()', 'fill_pit()', 'move()']),
+      maMau: bai(['dir_fr()', 'dir_fl()']),
+      loiGiai: bai(['dir_fr()', 'dir_fl()', 'fill_pit()', 'move()']),
       sao: { o: 15, nhip: 7 },
       loiSai: [
-        { moTa: 'Chưa gọi fill_pit() và move() sau khi lách chéo lên (3, 4)', baiLam: bai(['diag_right()', 'diag_left()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chưa gọi fill_pit() và move() sau khi lách chéo lên (3, 4)', baiLam: bai(['dir_fr()', 'dir_fl()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đi thẳng từ đầu thay vì lách chéo nên đâm vào thùng nặng H', baiLam: bai(['move()', 'fill_pit()', 'move()']), phaiCoMa: ['dam-tuong'] }
       ],
       loiBinh: 'Lộ trình zíc-zắc chéo giúp R1 luồn qua khe giữa thùng nặng H và dải băng chuyền ngược một cách gọn gàng.'
@@ -285,29 +285,30 @@
     manMC({
       id: 6807, chuong: 'mo-cu', so: 7, ma: 'mo-cu.7',
       ten: 'Bàn xoay nhắm nút đè', hang: 'thu-thach',
-      hamCuaEmCan: ['move', 'forward', 'slide_r'],
-      deBai: 'Xúc viên đá ở `(2, 2)` bằng `load()` và `wait()`, rồi tiến 2 ô `forward(2)` lên bàn xoay `@` ở `(2, 1)`. Bàn xoay tự động xoay mũi R1 sang phải (hướng Đông) nhìn thẳng về cổng `C` ở `(3, 1)`, hàng rào `=` ở `(4, 1)` và nút đè `M` ở `(5, 1)`. Hãy chỉnh tầm `aim(3)`, gọi `throw()`, `wait()` để hất đá đè nút `M` mở cổng `C`, rồi gọi `move()` và `slide_r(1)` vào cờ `F`!',
-      veMaMau: 'Chương trình đã xúc đá và bước lên bàn xoay @ ở (2, 1). Hãy hất đá tầm 3 rồi qua cổng C vào cờ.',
+      hamCuaEmCan: ['move', 'forward', 'slide_r', 'run_throw'],
+      deBai: 'R1 xúc viên đá rồi tiến lên bàn xoay `@`. Bàn xoay quay mũi xe sang phải. Nút đè `M` nằm sau cổng `C`, cách bàn xoay 3 ô: đứng yên thì không tới. Hãy chạy đà hất đá đè nút `M` mở cổng, rồi qua cổng xuống cờ `F`.',
+      veMaMau: 'Chương trình đã xúc đá và bước lên bàn xoay. Hãy chạy đà hất đá rồi vào cờ.',
       goiY: [
-        'Trên bàn xoay (2, 1), mũi R1 đã xoay sang phải nhìn về cổng C (3, 1) và nút M (5, 1).',
-        'Viết tiếp aim(3), throw(), wait(), rồi move() để bước sang (3, 1) và slide_r(1) để trượt xuống cờ F ở (3, 2).'
+        'Trên bàn xoay, ô trước mũi xe còn trống: đủ chỗ chạy đà. Chạy đà thì đá bay thêm 1 ô.',
+        'aim(1) rồi run_throw(). Cổng mở thì move() qua cổng, slide_r(1) xuống cờ.'
       ],
       san: [
         '#######',
-        '#.@C=M#',
-        '#.oF..#',
-        '#.....#',
+        '#.@.CM#',
+        '##o#F##',
+        '##.####',
         '#######'
       ],
       batDau: { x: 2, y: 3, huong: 0 },
       maMau: bai(['load()', 'wait()', 'forward(2)']),
-      loiGiai: bai(['load()', 'wait()', 'forward(2)', 'aim(3)', 'throw()', 'wait()', 'move()', 'slide_r(1)']),
+      loiGiai: bai(['load()', 'wait()', 'forward(2)', 'aim(1)', 'run_throw()', 'move()', 'slide_r(1)']),
       sao: { o: 16, nhip: 6 },
       loiSai: [
-        { moTa: 'Chưa hất đá tầm 3 và bước vào cờ sau khi lên bàn xoay', baiLam: bai(['load()', 'wait()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên chỉnh aim(3) nên hất tầm 2 trúng hàng rào = ở (4, 1) làm vỡ đá', baiLam: bai(['load()', 'wait()', 'forward(2)', 'throw()', 'wait()', 'move()', 'slide_r(1)']), phaiCoMa: ['nem-vo'] }
+        { moTa: 'Chưa hất đá và bước vào cờ sau khi lên bàn xoay', baiLam: bai(['load()', 'wait()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đứng yên trên bàn xoay mà hất tầm 2: đá rơi vào cổng đang đóng', baiLam: bai(['load()', 'wait()', 'forward(2)', 'throw()', 'wait()', 'move()', 'move()', 'slide_r(1)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gọi aim(3): tay hất chỉ nhận tầm 1 hoặc 2', baiLam: bai(['load()', 'wait()', 'forward(2)', 'aim(3)', 'throw()', 'wait()', 'move()', 'slide_r(1)']), phaiCoMa: ['tam-sai'] }
       ],
-      loiBinh: 'Bàn xoay @ kết hợp với tay hất đá chỉnh lực tạo thành bệ pháo xoay tự động mở cổng!'
+      loiBinh: 'Bàn xoay quay mũi xe, chạy đà cho đá bay xa: hai món cũ ghép lại mở được cổng.'
     }),
 
     /* ---- Màn 8: 2 sân — Tuyển quặng dọc băng chuyền nối trạm ---- */
@@ -373,7 +374,7 @@
     manMC({
       id: 6809, chuong: 'mo-cu', so: 9, ma: 'mo-cu.9',
       ten: 'Sàn dốc và cổng khóa', hang: 'thu-thach',
-      hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'fill_pit', 'diag_r', 'round_fill'],
+      hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'fill_pit', 'dir_fr', 'round_fill'],
       deBai: 'Ở tầng dưới có hố `u` kèm đá tròn hoặc đá vuông: hãy gọi `round_fill()` rồi `move()` để vượt lên tầng trên. Tại tầng trên, viên đá trước mặt cần hất xa 3 ô (`aim_lob(3)`) lên nút đè `M` để mở cổng `C`, sau đó tiến `forward(2)` qua cổng và trượt `slide_r(1)` lên băng chuyền `>` vào cờ `F`!',
       veMaMau: 'Sau round_fill() và move(), hãy gọi aim_lob(3), forward(2) và slide_r(1).',
       goiY: [
@@ -444,7 +445,7 @@
       id: 6810, chuong: 'mo-cu', so: 10, ma: 'mo-cu.10',
       ten: 'Trùm chương 1: Pháo đài mỏ đá cũ', hang: 'trum',
       huyHieu: 'mo-cu',
-      hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'fill_pit', 'diag_r', 'round_fill'],
+      hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'fill_pit', 'dir_fr', 'round_fill'],
       deBai: 'Trùm Chương 1! Từ đáy hầm `(3, 10)`, hãy lặp 2 tầng đầu (`for i in range(2):`) với `round_fill()` và `move()` để vượt qua các bãi hố đá tròn/vuông. Lên tới tầng cổng sắt `(y = 4)`, hãy gọi `aim_lob(3)` để hất đá lên nút đè `M`, tiến `forward(2)` qua cổng `C`, rồi gọi `slide_r(1)` để băng chuyền `>` đẩy R1 vào cờ `F`!',
       veMaMau: 'Lặp 2 lần round_fill() và move(), sau đó gọi aim_lob(3), forward(2) và slide_r(1).',
       goiY: [
@@ -640,45 +641,46 @@
       id: 6814, chuong: 'che-mo-cu', so: 4, ma: 'che-mo-cu.4',
       ten: 'Chế hàm: Xoay bệ hất đá (spin_pad)', hang: 'luyen',
       taoHam: ['spin_pad'],
-      hamCuaEmCan: ['move', 'forward'],
-      deBai: 'Khi viên đá nằm ngay trên bàn xoay `@` hoặc `%` trước mặt, R1 có thể xúc đá (`load()`, `wait()`), bước lên bàn xoay (`move()`) để bàn xoay tự quay mũi xe về phía nút đè `M`, rồi chỉnh tầm và hất (`aim(n)`, `throw()`, `wait()`). Hãy chế hàm `spin_pad(n)` thực hiện chuỗi đó để mở cổng trên cả 2 sân!',
+      hamCuaEmCan: ['move', 'forward', 'back'],
+      deBai: 'Viên đá nằm trên bàn xoay `@` hoặc `%` trước mặt R1. Xúc đá, bước lên bàn xoay: bàn quay mũi xe về phía nút đè `M`. Rồi chỉnh tầm và hất. Hãy chế hàm `spin_pad(n)` làm cả chuỗi đó, mở cổng trên cả 2 sân. Cờ `F` nằm sau cổng, phía sau lưng xe.',
       veMaMau: 'Hoàn thiện hàm spin_pad(n): sau move(), hãy thêm aim(n), throw(), wait().',
       goiY: [
-        'Trong hàm def spin_pad(n):, sau load(), wait(), move(), hãy viết tiếp aim(n), throw(), wait().',
-        'Sau khi spin_pad(3) mở cổng C, chương trình chính gọi forward(2) để tiến qua cổng vào cờ F.'
+        'Trong hàm spin_pad(n): sau load(), wait(), move(), viết tiếp aim(n), throw(), wait().',
+        'Nút M cách bàn xoay 2 ô: spin_pad(2). Cổng mở thì lùi 2 lần back() vào cờ.'
       ],
       san: [
         [
           '#######',
-          '#.@CFM#',
-          '#.....#',
+          '#FC@.M#',
+          '###.###',
           '#######'
         ],
         [
           '#######',
-          '#MFC%.#',
-          '#.....#',
+          '#M.%CF#',
+          '###.###',
           '#######'
         ]
       ],
       vatThem: [
-        [{ x: 2, y: 1 }],
-        [{ x: 4, y: 1 }]
+        [{ x: 3, y: 1 }],
+        [{ x: 3, y: 1 }]
       ],
       batDau: [
-        { x: 2, y: 2, huong: 0 },
-        { x: 4, y: 2, huong: 0 }
+        { x: 3, y: 2, huong: 0 },
+        { x: 3, y: 2, huong: 0 }
       ],
-      maMau: bai(['spin_pad(3)', 'forward(2)'], {
+      maMau: bai(['spin_pad(2)', 'back()', 'back()'], {
         hamCuaEmMoi: [H('spin_pad', ['n'], ['load()', 'wait()', 'move()'])]
       }),
-      loiGiai: bai(['spin_pad(3)', 'forward(2)'], {
+      loiGiai: bai(['spin_pad(2)', 'back()', 'back()'], {
         hamCuaEmMoi: [H('spin_pad', ['n'], T_SPIN_PAD)]
       }),
       sao: { o: 13, nhip: 10 },
       loiSai: [
-        { moTa: 'Chưa thêm aim(n), throw(), wait() vào thân hàm spin_pad(n) nên đâm vào cổng C đang đóng', baiLam: bai(['spin_pad(3)', 'forward(2)'], { hamCuaEmMoi: [H('spin_pad', ['n'], ['load()', 'wait()', 'move()'])] }), hamCuaEmMoi: [H('spin_pad', ['n'], ['load()', 'wait()', 'move()'])], phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Quên gọi aim(n) trước throw() nên ném tầm 2 rơi vào ô cờ trước nút M và không mở được cổng C', baiLam: bai(['spin_pad(3)', 'forward(2)'], { hamCuaEmMoi: [H('spin_pad', ['n'], ['load()', 'wait()', 'move()', 'throw()', 'wait()'])] }), hamCuaEmMoi: [H('spin_pad', ['n'], ['load()', 'wait()', 'move()', 'throw()', 'wait()'])], phaiCoMa: ['dam-tuong'], cung: true }
+        { moTa: 'Chưa thêm aim(n), throw(), wait() vào thân hàm spin_pad(n) nên đâm vào cổng C đang đóng', baiLam: bai(['spin_pad(2)', 'back()', 'back()'], { hamCuaEmMoi: [H('spin_pad', ['n'], ['load()', 'wait()', 'move()'])] }), hamCuaEmMoi: [H('spin_pad', ['n'], ['load()', 'wait()', 'move()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Gọi spin_pad(3): đứng trên bàn xoay thì tay hất chỉ nhận tầm 1 hoặc 2', baiLam: bai(['spin_pad(3)', 'back()', 'back()'], { hamCuaEmMoi: [H('spin_pad', ['n'], T_SPIN_PAD)] }), hamCuaEmMoi: [H('spin_pad', ['n'], T_SPIN_PAD)], phaiCoMa: ['tam-sai'] },
+        { moTa: 'Gọi spin_pad(1): đá rơi ngắn, chưa tới nút M, cổng không mở', baiLam: bai(['spin_pad(1)', 'back()', 'back()'], { hamCuaEmMoi: [H('spin_pad', ['n'], T_SPIN_PAD)] }), hamCuaEmMoi: [H('spin_pad', ['n'], T_SPIN_PAD)], phaiCoMa: ['dam-tuong'] }
       ],
       loiBinh: 'Đã lưu hàm spin_pad(n) vào Kho hàm của em! Bất kể bàn xoay quay trái (%) hay quay phải (@), spin_pad(n) đều hất trúng nút M.'
     }),
@@ -687,17 +689,17 @@
     manMC({
       id: 6815, chuong: 'che-mo-cu', so: 5, ma: 'che-mo-cu.5',
       ten: 'Cổng dọc nối cổng ngang', hang: 'luyen',
-      hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob', 'lob_pad', 'spin_pad'],
-      deBai: 'Để thoát khỏi hầm mỏ cũ, trước hết hãy gọi `lob_pad(3)` để hất đá lên nút `M` ở `(2, 2)` mở cổng dọc `C` ở `(2, 3)` và tiến lên `(2, 3)`. Sau đó gọi `slide_r(2)` trượt sang `(4, 3)` ngay dưới bàn xoay `@` ở `(4, 2)`, rồi gọi `spin_pad(3)` và `forward(2)` qua cổng thứ hai vào cờ `F`!',
-      veMaMau: 'Sau lob_pad(3) và slide_r(2), hãy gọi spin_pad(3) rồi forward(2).',
+      hamCuaEmCan: ['move', 'forward', 'slide_r', 'slide_l', 'lob', 'aim_lob', 'lob_pad', 'spin_pad'],
+      deBai: 'Hai cổng khoá đường ra. Cổng dọc: nút `M` cách R1 3 ô, dùng `lob_pad(3)`. Rồi trượt sang dưới bàn xoay `@`. Cổng ngang: nút `M` cách bàn xoay 2 ô, dùng `spin_pad(n)`. Qua cổng thứ hai, cờ `F` ở bên trái mũi xe.',
+      veMaMau: 'Chương trình có sẵn đã mở cổng dọc và trượt tới dưới bàn xoay. Hãy mở cổng ngang rồi vào cờ.',
       goiY: [
-        'lob_pad(3) và slide_r(2) đưa R1 tới (4, 3), ngay dưới bàn xoay @ ở (4, 2).',
-        'Gọi spin_pad(3) để xúc đá ở (4, 2), bước lên @ xoay sang phải và hất đá tầm 3 vào nút M ở (7, 2), sau đó gọi forward(2) vào cờ F ở (6, 2).'
+        'Nút M thứ hai cách bàn xoay 2 ô: spin_pad(2).',
+        'Cổng mở thì move() vào ô cổng, slide_l(1) lên cờ.'
       ],
       san: [
         '#########',
-        '#.......#',
-        '#.M.@CFM#',
+        '#####F###',
+        '#.M.@CM##',
         '#.C.....#',
         '#.o.....#',
         '#.......#',
@@ -705,18 +707,19 @@
       ],
       noi: [
         { nut: { x: 2, y: 2 }, cua: [{ x: 2, y: 3 }] },
-        { nut: { x: 7, y: 2 }, cua: [{ x: 5, y: 2 }] }
+        { nut: { x: 6, y: 2 }, cua: [{ x: 5, y: 2 }] }
       ],
       vatThem: [{ x: 4, y: 2 }],
       batDau: { x: 2, y: 5, huong: 0 },
       maMau: bai(['lob_pad(3)', 'slide_r(2)']),
-      loiGiai: bai(['lob_pad(3)', 'slide_r(2)', 'spin_pad(3)', 'forward(2)']),
+      loiGiai: bai(['lob_pad(3)', 'slide_r(2)', 'spin_pad(2)', 'move()', 'slide_l(1)']),
       sao: { o: 26, nhip: 11 },
       loiSai: [
-        { moTa: 'Chưa gọi spin_pad(3) và forward(2) sau khi trượt sang dưới bàn xoay', baiLam: bai(['lob_pad(3)', 'slide_r(2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Gọi spin_pad(2) thay vì spin_pad(3) nên viên đá thứ hai không tới nút M ở (7, 2)', baiLam: bai(['lob_pad(3)', 'slide_r(2)', 'spin_pad(2)', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Chưa mở cổng ngang sau khi trượt sang dưới bàn xoay', baiLam: bai(['lob_pad(3)', 'slide_r(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gọi spin_pad(3): đứng trên bàn xoay thì tay hất chỉ nhận tầm 1 hoặc 2', baiLam: bai(['lob_pad(3)', 'slide_r(2)', 'spin_pad(3)', 'move()', 'slide_l(1)']), phaiCoMa: ['tam-sai'] },
+        { moTa: 'Gọi spin_pad(1): đá rơi vào cổng ngang đang đóng', baiLam: bai(['lob_pad(3)', 'slide_r(2)', 'spin_pad(1)', 'move()', 'slide_l(1)']), phaiCoMa: ['dam-tuong'] }
       ],
-      loiBinh: 'Sự kết hợp giữa lob_pad(3) và spin_pad(3) giúp R1 mở thông hành lang chữ Z khóa kép chỉ trong vài dòng lệnh!'
+      loiBinh: 'lob_pad(3) chạy đà mở cổng xa, spin_pad(2) đứng trên bàn xoay mở cổng gần.'
     }),
 
     /* ---- Màn 16 (che-mo-cu.6): Chế hàm diag_pad(n) ---- */
@@ -725,10 +728,10 @@
       ten: 'Chế hàm: Lách chéo hất nút (diag_pad)', hang: 'luyen',
       taoHam: ['diag_pad'],
       hamCuaEmCan: ['move', 'forward', 'lob', 'aim_lob'],
-      deBai: 'Khi viên đá và nút đè `M` nằm lệch 1 cột bên phải trục đường chính, R1 có thể lách chéo phải (`diag_right()`), hất đá tầm `n` lên nút `M` (`aim_lob(n)`), rồi lách chéo trái (`diag_left()`) trở về trục chính để đi qua cổng `C` vừa mở! Hãy chế hàm `diag_pad(n)` thực hiện 3 bước đó.',
-      veMaMau: 'Hoàn thiện hàm diag_pad(n): thêm aim_lob(n) và diag_left() sau diag_right().',
+      deBai: 'Khi viên đá và nút đè `M` nằm lệch 1 cột bên phải trục đường chính, R1 có thể lách chéo phải (`dir_fr()`), hất đá tầm `n` lên nút `M` (`aim_lob(n)`), rồi lách chéo trái (`dir_fl()`) trở về trục chính để đi qua cổng `C` vừa mở! Hãy chế hàm `diag_pad(n)` thực hiện 3 bước đó.',
+      veMaMau: 'Hoàn thiện hàm diag_pad(n): thêm aim_lob(n) và dir_fl() sau dir_fr().',
       goiY: [
-        'Trong hàm def diag_pad(n):, dòng 1 là diag_right(), dòng 2 là aim_lob(n), dòng 3 là diag_left().',
+        'Trong hàm def diag_pad(n):, dòng 1 là dir_fr(), dòng 2 là aim_lob(n), dòng 3 là dir_fl().',
         'Chương trình chính đã gọi sẵn diag_pad(3) và forward(3) để đi qua cổng C tới cờ F.'
       ],
       san: [
@@ -743,15 +746,15 @@
       ],
       batDau: { x: 3, y: 6, huong: 0 },
       maMau: bai(['diag_pad(3)', 'forward(3)'], {
-        hamCuaEmMoi: [H('diag_pad', ['n'], ['diag_right()'])]
+        hamCuaEmMoi: [H('diag_pad', ['n'], ['dir_fr()'])]
       }),
       loiGiai: bai(['diag_pad(3)', 'forward(3)'], {
         hamCuaEmMoi: [H('diag_pad', ['n'], T_DIAG_PAD)]
       }),
       sao: { o: 16, nhip: 7 },
       loiSai: [
-        { moTa: 'Chưa hoàn thiện hàm diag_pad(n) nên chưa hất đá mở cổng và lệch khỏi cột cờ', baiLam: bai(['diag_pad(3)', 'forward(3)'], { hamCuaEmMoi: [H('diag_pad', ['n'], ['diag_right()'])] }), hamCuaEmMoi: [H('diag_pad', ['n'], ['diag_right()'])], phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Quên gọi diag_left() ở cuối hàm diag_pad(n) nên tiến thẳng đâm vào hàng rào =', baiLam: bai(['diag_pad(3)', 'forward(3)'], { hamCuaEmMoi: [H('diag_pad', ['n'], ['diag_right()', 'aim_lob(n)'])] }), hamCuaEmMoi: [H('diag_pad', ['n'], ['diag_right()', 'aim_lob(n)'])], phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Chưa hoàn thiện hàm diag_pad(n) nên chưa hất đá mở cổng và lệch khỏi cột cờ', baiLam: bai(['diag_pad(3)', 'forward(3)'], { hamCuaEmMoi: [H('diag_pad', ['n'], ['dir_fr()'])] }), hamCuaEmMoi: [H('diag_pad', ['n'], ['dir_fr()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quên gọi dir_fl() ở cuối hàm diag_pad(n) nên tiến thẳng đâm vào hàng rào =', baiLam: bai(['diag_pad(3)', 'forward(3)'], { hamCuaEmMoi: [H('diag_pad', ['n'], ['dir_fr()', 'aim_lob(n)'])] }), hamCuaEmMoi: [H('diag_pad', ['n'], ['dir_fr()', 'aim_lob(n)'])], phaiCoMa: ['dam-tuong'] }
       ],
       loiBinh: 'Đã lưu hàm diag_pad(n) vào Kho hàm của em! Lách chéo hất nút rồi quay lại trục chính giúp R1 mở cổng bên hông cực kỳ linh hoạt.'
     }),

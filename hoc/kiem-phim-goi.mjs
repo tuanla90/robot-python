@@ -181,8 +181,11 @@ console.log('\n== 3. Nối luồng (đọc nguồn) ==');
   const mg = nguon('man-goi.js');
   kiem('man-goi.js: chạm hộp gói đã mở mà chưa xem phim → PhimGoi.mo(g.ma, … App.vaoGoi(g.ma)), đã xem thì vào thẳng',
     /PhimGoi\.co\(g\.ma\) && !PhimGoi\.daXem\(g\.ma\)\) \{ PhimGoi\.mo\(g\.ma, function \(\) \{ App\.vaoGoi\(g\.ma\); \}\); return; \}[^\n]*\n\s*App\.vaoGoi\(g\.ma\);/.test(mg));
-  kiem('man-goi.js: nút "Xem phim" (hộp chi tiết gói, moChiTietGoi) chỉ hiện khi gói đã xem phim (hay đang bật Mở hết), nhãn t(\'pg.xemLai\'), qua TP.Hop.nut (vùng chạm chuẩn .g-wd, không cần tự khai cỡ)',
-    /PhimGoi\.daXem\(g\.ma\)\)\)/.test(mg) && /TP\.Hop\.nut\('g-wd', t\('pg\.xemLai'\)/.test(mg));
+  kiem('man-goi.js: nút ▶ xem lại chỉ ở hộp đã xem phim, có cả aria-label lẫn title t(\'pg.xemLai\'), không lan sự kiện lên hộp',
+    /PhimGoi\.daXem\(g\.ma\)\)/.test(mg) && /setAttribute\('aria-label', t\('pg\.xemLai'\)\)/.test(mg) && /setAttribute\('title', t\('pg\.xemLai'\)\)/.test(mg) && /ev\.stopPropagation\(\)/.test(mg) && /data-i', 'play'/.test(mg));
+  const css = nguon('choi.css');
+  const m = /\.g-phim\{[^}]*width:(\d+)px;height:(\d+)px/.exec(css);
+  kiem('nút ▶ (.g-phim) có vùng chạm ≥ 24×24', !!m && +m[1] >= 24 && +m[2] >= 24, m ? m[1] + '×' + m[2] : 'không thấy .g-phim');
   const cd = nguon('cai-dat.js');
   kiem('cai-dat.js: nút "Xem lại phim các gói" mở danh sách gói đã mở có phim',
     /t\('caiDat\.phimGoi'\)/.test(cd) && /App\.goiMo\(g\) && PhimGoi\.co\(g\.ma\)/.test(cd) && /PhimGoi\.mo\(g\.ma,/.test(cd));

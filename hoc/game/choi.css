@@ -356,7 +356,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .g-tron-so{font:var(--wm) calc(24px*var(--km))/1 var(--mono);color:var(--cream);text-shadow:2px 2px 0 var(--ink)}      /* ghim mùa không có huy hiệu riêng: số mùa to giữa vòng tròn */
 .g-day{position:absolute;left:0;top:0;bottom:0;width:0;transition:transform .25s ease-out}
 .g-day.tuc,.g-day.dang-keo{transition:none}
-.g-the{position:absolute;top:0;bottom:0;margin:auto 0;width:212px;height:min(94%,380px);display:flex;flex-direction:column;align-items:center;padding:0 10px 14px;
+.g-the{position:absolute;top:0;bottom:0;margin:auto 0;width:216px;height:min(94%,382px);display:flex;flex-direction:column;align-items:center;padding:0 12px 13px;
   --c:var(--g-goSangV7);--hi:var(--g-camSangV1);--lo:var(--g-goV3);color:var(--cream);cursor:pointer;transform:scale(.86);transition:transform .25s ease-out,filter .25s;
   background-image:repeating-linear-gradient(180deg,transparent 0 30px,var(--g-moToiV12) 30px 32px)}
 .g-the.giua{transform:scale(1)}
@@ -373,14 +373,21 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
   font:700 calc(14px*var(--kp))/1 var(--px);letter-spacing:1px;color:var(--g-vang);text-shadow:2px 2px 0 var(--ink);padding-top:3px;background:var(--g-moToiV3);box-shadow:inset 0 -3px 0 var(--g-moToiV5),0 2px 0 var(--ink)}
 .g-so::before,.g-so::after{content:"";position:absolute;top:13px;width:6px;height:6px;background:var(--hi);box-shadow:0 0 0 2px var(--ink)}
 .g-so::before{left:9px}.g-so::after{right:9px}
-.g-mat{flex:1 1 auto;min-height:118px;max-height:170px;margin-top:14px;width:164px;display:flex;align-items:center;justify-content:center}
+.g-mat{flex:1 1 auto;position:relative;min-height:112px;max-height:152px;margin-top:12px;width:176px;display:flex;align-items:center;justify-content:center}
+.g-loai{position:absolute;bottom:6px;padding:2px 8px}
 .g-ten{margin-top:10px;max-width:192px;font:800 calc(20px*var(--kp))/1.05 var(--px);text-align:center;text-shadow:2px 2px 0 var(--ink)}
-.g-mota{margin-top:5px;min-height:16px;font:600 calc(12px*var(--kp))/1.2 var(--px);color:var(--g-kemSangV7);text-shadow:1px 1px 0 var(--ink)}
-.g-dong{margin-top:auto;height:30px;display:flex;align-items:center;gap:6px;padding:0 10px;background:var(--g-moToiV6);box-shadow:inset 0 0 0 2px var(--ink);
+.g-mota{margin-top:4px;min-height:16px;font:600 calc(12px*var(--kp))/1.2 var(--px);color:var(--g-kemSangV7);text-shadow:1px 1px 0 var(--ink)}
+.g-chan{margin-top:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:7px}
+.g-dong{margin-top:auto;height:30px;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;background:var(--g-moToiV6);box-shadow:inset 0 0 0 2px var(--ink);
   font:var(--wm) calc(16px*var(--km))/1 var(--mono);color:var(--g-vang);text-shadow:2px 2px 0 var(--ink)}
+.g-chan .g-dong{margin-top:0}
+.g-bar{width:100%;height:7px;overflow:hidden}
+.g-bar-fill{height:100%}
+.g-cta{width:100%;height:38px;display:flex;align-items:center;justify-content:center;gap:6px}
 .g-dong .g-can{font:700 calc(14px*var(--kp))/1 var(--px);color:var(--g-trang);padding-top:2px}
 .g-dong.g-sapco{font:700 calc(15px*var(--kp))/1 var(--px);color:var(--g-trang);padding-top:2px;letter-spacing:1px}
 .g-xong{position:absolute;top:10px;right:-8px;padding:4px 7px 2px;font:700 calc(11px*var(--kp))/1 var(--px);color:var(--ink);background:var(--g-vang);box-shadow:0 0 0 2px var(--ink);transform:rotate(8deg)}
+.g-phim{position:absolute;left:8px;top:46px;width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;z-index:2}
 .g-nav{flex:none;height:40px;margin-top:10px;display:flex;align-items:center;gap:10px}
 .g-cham{flex:1;min-width:0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
 .g-ch{width:9px;height:9px;background:var(--g-kemV7);box-shadow:0 0 0 2px var(--ink)}
@@ -388,17 +395,42 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .g-ch.on{background:var(--g-vang);transform:scale(1.4)}
 .g-duoi{position:absolute;left:0;right:0;bottom:14px;z-index:4;height:40px;display:flex;align-items:center;justify-content:center;gap:10px;pointer-events:none}     /* nổi trên bản đồ */
 .g-duoi>*{pointer-events:auto}
-.g-dau.g-noi{position:absolute;left:12px;right:12px;top:12px;z-index:4;height:46px;justify-content:space-between;pointer-events:none}     /* ◀ và ★ nổi trên bản đồ */
+.g-duoi.m-duoi{left:12px;right:12px;bottom:12px;justify-content:flex-start}
+.g-dau.g-noi{position:absolute;left:10px;right:10px;top:10px;z-index:4;height:42px;justify-content:space-between;pointer-events:none}     /* ◀ và ★ nổi trên bản đồ */
 .g-noi>*{pointer-events:auto}
-.g-noi .nav{width:46px;height:46px;border-radius:50%}
-.g-noi .g-tong{height:40px;padding:0 14px 0 10px;font-size:calc(19px*var(--km))}
+.g-noi .nav{width:42px;height:42px;border-radius:50%}
+.g-noi .g-tong{height:38px;padding:0 13px 0 9px;font-size:calc(18px*var(--km))}
 
-/* ---------- chọn gói (man-goi.js, 5/11): 10 gói của một mùa gọn trong 1 màn hình, không cuộn ---------- */
-/* nền: đúng khúc ảnh dài 9 nơi chốn (dai-9.webp) của mùa đang xem, cắt bằng background-position (đặt trong man-goi.js); cùng ảnh, cùng tỉ lệ 0,8 với man-mua.js */
-.gg-than{flex:1 1 auto;min-height:0;position:relative;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
-  background:var(--g-xanhLaToi) url(phim-clb/a/ban-do/dai-9.webp) -120px 0/576px auto no-repeat}      /* 10 gói luôn vừa khít, không cần cuộn; chỉ cứu lưới "Kho lưu trữ" (mua-an, debug) có hơn chục gói */
-.gg-than::-webkit-scrollbar{display:none}
-.gg-than .g-nh-ten{display:block;white-space:nowrap;text-overflow:ellipsis}      /* tên gói một dòng (ellipsis): 2 dòng sẽ cao hơn bước giữa hai nút, đè nhãn nút kế */
+/* ---------- biển trạm bản đồ mùa (man-mua.js) & nền cảnh màn chọn gói Cut the Rope (man-goi.js) ---------- */
+.m-tram{position:absolute;left:-60px;top:-19px;width:120px;height:38px;display:flex;align-items:center;gap:7px;padding:3px 9px 3px 3px;border-radius:999px}
+.m-ava{flex:none;position:relative;width:32px;height:32px;border-radius:50%;overflow:visible}
+.m-ava .g-tron-anh{border-radius:50%;display:block}
+.m-ava-khoa,.m-ava-xong{position:absolute;right:-3px;bottom:-3px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.m-bang{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.m-phu{display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:0}
+.m-so-mua{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-sao-nho{flex:none;display:flex;align-items:center;gap:2px}
+.m-ten{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hop-dong-x{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.hop-mua-ct .hop-td{position:relative;padding-right:36px}
+.m-ct-dau{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.m-ct-ava{flex:none;width:58px;height:58px;border-radius:50%;overflow:hidden}
+.m-ct-chu{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.m-ct-tien{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:10px 12px}
+.m-ct-sao{display:flex;align-items:center;justify-content:center;gap:6px}
+.m-ct-bar{width:100%;height:8px;overflow:hidden}
+.m-ct-bar-fill{height:100%}
+
+.gg-nen{position:absolute;left:0;top:0;right:0;bottom:0;z-index:1;pointer-events:none;background:var(--g-xanhLaToi) url(phim-clb/a/nen-doc/mua-1.webp) 50% 50%/cover no-repeat}
+.gg-nen[data-nen-mua="mua-2"]{background-image:url(phim-clb/a/nen-doc/mua-2.webp)}
+.gg-nen[data-nen-mua="mua-3"]{background-image:url(phim-clb/a/nen-doc/mua-3.webp)}
+.gg-nen[data-nen-mua="mua-4"]{background-image:url(phim-clb/a/nen-doc/mua-cang.webp)}
+.gg-nen[data-nen-mua="mua-5"]{background-image:url(phim-clb/a/nen-doc/mua-song.webp)}
+.gg-nen[data-nen-mua="mua-6"]{background-image:url(phim-clb/a/nen-doc/mua-4.webp)}
+.gg-nen[data-nen-mua="mua-7"]{background-image:url(phim-clb/a/nen-doc/mua-5.webp)}
+.gg-nen[data-nen-mua="mua-8"]{background-image:url(phim-clb/a/nen-doc/mua-hang.webp)}
+.gg-nen[data-nen-mua="mua-9"]{background-image:url(phim-clb/a/nen-doc/mua-7.webp)}
+.gg-khung{flex:1 1 auto;min-height:0;position:relative;margin:6px -14px 0;touch-action:pan-y}
 
 /* ---------- lưới màn của gói (man-chon.js) ---------- */
 .c-td{flex:1;min-width:0;overflow:hidden;height:38px;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;position:relative;
