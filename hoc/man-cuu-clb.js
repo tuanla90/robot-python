@@ -53,6 +53,11 @@
   var CH_2 = ['pick()', 'forward(1)', 'drop()'];
   var KT_2 = ['lob()', 'forward(2)', 'load()', 'wait()', 'forward(1)', 'throw()', 'wait()'];
 
+  /** cuu-clb.3: hồ CLB tràn (hàng 2), cầu phao trôi vào góc sau cống đóng. Xe cứu hỏa phun trúng van cống V: cống mở; quay lên chờ cầu.
+   *  Xuồng chạy qua cống, tung lưới bắt bè, lùi ba ô kéo bè vào bến q, nhả lưới. Xe cứu hỏa qua cầu phao, ủi thùng nặng (kệ đổ) vào ô D. */
+  var CU_3 = ['spray()', 'wait()', 'tr_right()', 'wait_n(6)', 'forward(2)', 'tr_right()', 'forward(2)'];
+  var XU_3 = ['forward(4)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -118,6 +123,30 @@
       sao: { o: 35, nhip: 9 },
       goiY: ['lob(): nạp vật trước mũi rồi ném xa 2 ô; đá rơi xuống hố thì lấp hố.', 'load(): nạp vật trước mũi vào rổ. throw(): ném xa 2 ô, bay qua tường.', 'Vật rơi trúng tường thì vỡ.', 'drop(): xe thả thùng ở ô trước mũi.'],
       cauDo: { doi: ['CH', 'KT'], lap: null, coChe: ['thung', 'nem', 'tuong', 'kho', 'ho', 'da-tron'], cuu: 'hang', meo: 'tiep-suc' }
+    }),
+    // 3 · làm cầu, cặp #10 Cứu hỏa + Xuồng, trộn Nhà máy (thùng nặng, vòi phun) + Bến sông (cống, van T3, cầu phao): hồ CLB tràn, cầu phao trôi vào góc sau cống đóng;
+    //     kệ dụng cụ đổ (thùng nặng) nằm bên kia hồ. Xích phun trúng van cống, xuồng qua cống kéo bè vào bến q, xích qua cầu ủi kệ vào ô D. Bẫy: xe chở hàng (không phun, không ủi).
+    man9('cuu-clb', 3, 'lam-quen', {
+      ten: 'Cầu phao qua hồ CLB',
+      vo: 'song',
+      mucTieu: 'day-thung',
+      deBai: 'Hồ CLB tràn, cầu phao trôi vào góc sau cống đóng. Kệ dụng cụ đổ nằm bên kia hồ. Chọn hai bạn: ai mở cống và ủi kệ vào D, ai kéo bè làm cầu?',
+      veMaMau: 'Cống còn đóng.',
+      san: ['##########', '#....H.D.#', '#B~Kq~~~~#', '#.V......#', '##########'],
+      doi: [khe({ x: 4, y: 3, huong: 3 }, { batDauNuoc: { x: 6, y: 2, huong: 3 } }), khe({ x: 7, y: 3, huong: 3 }, { batDauNuoc: { x: 7, y: 2, huong: 3 } })],
+      chonDoi: {
+        menu: ['CU', 'XU', 'CH'],
+        cachMau: [{ chon: ['CU', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_3, XU_3]) }]
+      },
+      maMau: doiBai([['spray()', 'wait()'], []]),
+      loiSai: [
+        { moTa: 'Không mở cống: xuồng đâm cống đóng', baiLam: doiBai([['tr_right()', 'wait_n(6)', 'forward(2)', 'tr_right()', 'forward(2)'], XU_3]), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Xích lên cầu khi bè chưa tới: đâm mặt nước', baiLam: doiBai([['spray()', 'wait()', 'tr_right()', 'forward(2)', 'tr_right()', 'forward(2)'], XU_3]), phaiCoMa: ['chua-day-thung'] },
+        { moTa: 'Xuồng lùi hai ô: bè dừng trước bến q', baiLam: doiBai([CU_3, ['forward(4)', 'cast_net()', 'wait()', 'for i in range(2):', '    back()', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-day-thung'] }
+      ],
+      sao: { o: 33, nhip: 18 },
+      goiY: ['Tia phun trúng van V thì cống đổi (đóng ↔ mở).', 'Bè nằm trên bến q là cầu phao.', 'Xích tiến vào thùng nặng thì đẩy thùng đi một ô.'],
+      cauDo: { doi: ['CU', 'XU'], lap: null, coChe: ['nuoc', 'van', 'cong', 'phun', 'be', 'luoi', 'thung-nang'], cuu: 'hang', meo: 'lam-cau' }
     })
   ];
 
