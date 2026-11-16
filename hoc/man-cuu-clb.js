@@ -49,9 +49,9 @@
   var CH_1 = ['pick()', 'forward(5)', 'drop()'];
 
   /** cuu-clb.2: kho CLB bị tường đổ bít cửa, chỉ còn ô trống D sau tường. Xe chở hàng gắp thùng dụng cụ, tiến một ô, đặt thùng trước mũi máy khai thác.
-   *  Máy khai thác chờ thùng, nạp vào rổ, tiến một ô cho sát tường, ném xa 2 ô qua tường vào D. */
+   *  Máy khai thác ở sân dưới: hất đá tròn lấp hố sụt trên lối (lob), tiến hai ô, nạp thùng, tiến một ô sát tường, ném xa 2 ô qua tường vào D. */
   var CH_2 = ['pick()', 'forward(1)', 'drop()'];
-  var KT_2 = ['wait_n(4)', 'load()', 'wait()', 'forward(1)', 'throw()', 'wait()'];
+  var KT_2 = ['lob()', 'forward(2)', 'load()', 'wait()', 'forward(1)', 'throw()', 'wait()'];
 
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
@@ -95,27 +95,29 @@
       cauDo: { doi: ['CH', 'CC'], lap: null, coChe: ['container', 'thung', 'kho', 'ray', 'ho'], cuu: 'hang', meo: 'don-loi' }
     }),
     // 2 · tiếp sức, cặp #6 Chở hàng + Khai thác, trộn Kho (thùng gỗ) + Mỏ đá (ném qua tường): tường kho CLB đổ bít cửa, chỉ còn ô D sau tường.
-    //     Xe chở hàng gắp thùng, đặt trước mũi máy khai thác; máy khai thác nạp, tiến một ô sát tường, ném qua tường vào D. Bẫy: drone (không mang thùng gỗ).
+    //     Bão còn làm sụt một hố trên lối máy khai thác. Máy khai thác hất đá tròn lấp hố, tiến lên; xe chở hàng gắp thùng, đặt trước mũi máy khai thác;
+    //     máy khai thác nạp, tiến một ô sát tường, ném qua tường vào D. Bẫy: drone (không mang thùng gỗ).
     man9('cuu-clb', 2, 'lam-quen', {
       ten: 'Ném thùng qua tường kho',
       mucTieu: 'dua-vat',
-      deBai: 'Tường kho CLB đổ, bít cửa. Thùng dụng cụ phải vào ô D sau tường. Chọn hai bạn: ai mang thùng tới, ai ném qua tường?',
+      deBai: 'Tường kho CLB đổ, bít cửa. Thùng dụng cụ phải vào ô D sau tường; lối dưới có hố sụt. Chọn hai bạn: ai mang thùng tới, ai lấp hố rồi ném qua tường?',
       veMaMau: 'Thùng còn nằm ngoài sân.',
-      san: ['#######', '###D###', '#######', '#.o...#', '###.###', '#######'],
-      doi: [khe({ x: 1, y: 3, huong: 1 }), khe({ x: 3, y: 4, huong: 0 })],
+      san: ['#######', '###D###', '#######', '#.o...#', '###u###', '###o###', '###.###', '#######'],
+      them: { vatDang: ['.......', '.......', '.......', '.......', '.......', '...r...', '.......', '.......'] },
+      doi: [khe({ x: 1, y: 3, huong: 1 }), khe({ x: 3, y: 6, huong: 0 })],
       chonDoi: {
         menu: ['CH', 'KT', 'DR'],
         cachMau: [{ chon: ['CH', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([CH_2, KT_2]) }]
       },
       maMau: doiBai([['pick()'], []]),
       loiSai: [
-        { moTa: 'Máy khai thác ném ngay chỗ xuất phát: thùng rơi trúng tường, vỡ', baiLam: doiBai([CH_2, ['wait_n(4)', 'lob()']]), phaiCoMa: ['nem-vo'] },
-        { moTa: 'Xe thả thùng tại chỗ (không tiến): máy khai thác nạp hụt', baiLam: doiBai([['pick()', 'drop()'], KT_2]), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Máy khai thác không chờ: nạp khi thùng chưa tới', baiLam: doiBai([CH_2, ['load()', 'wait()', 'forward(1)', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Máy khai thác ném thùng ngay khi nạp: thùng rơi trúng tường, vỡ', baiLam: doiBai([CH_2, ['lob()', 'forward(2)', 'lob()']]), phaiCoMa: ['nem-vo'] },
+        { moTa: 'Hất đá tầm 1 (aim(1)): đá rơi lại trước mũi, hố còn đó, máy khai thác kẹt', baiLam: doiBai([CH_2, ['aim(1)', 'lob()', 'forward(2)', 'load()', 'wait()', 'forward(1)', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe thả thùng tại chỗ (không tiến): máy khai thác nạp hụt', baiLam: doiBai([['pick()', 'drop()'], KT_2]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 31, nhip: 9 },
-      goiY: ['load(): nạp vật ở ô trước mũi vào rổ. throw(): ném xa 2 ô, bay qua tường.', 'Vật rơi trúng tường thì vỡ.', 'drop(): xe thả thùng ở ô trước mũi.'],
-      cauDo: { doi: ['CH', 'KT'], lap: null, coChe: ['thung', 'nem', 'tuong', 'kho'], cuu: 'hang', meo: 'tiep-suc' }
+      sao: { o: 35, nhip: 9 },
+      goiY: ['lob(): nạp vật trước mũi rồi ném xa 2 ô; đá rơi xuống hố thì lấp hố.', 'load(): nạp vật trước mũi vào rổ. throw(): ném xa 2 ô, bay qua tường.', 'Vật rơi trúng tường thì vỡ.', 'drop(): xe thả thùng ở ô trước mũi.'],
+      cauDo: { doi: ['CH', 'KT'], lap: null, coChe: ['thung', 'nem', 'tuong', 'kho', 'ho', 'da-tron'], cuu: 'hang', meo: 'tiep-suc' }
     })
   ];
 
