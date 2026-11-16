@@ -69,6 +69,11 @@
   var DR_6 = ['land()', 'wait_n(9)', 'take_off()', 'go_left()', 'c = color("here")', 'go_down()', 'go_down()', 'go_left()', 'go_left()', 'ink(c)', 'pen_down()', 'for i in range(4):', '    go_right()', 'pen_up()'];
   var SAN_6 = ['############', '#..........#', '#o.........#', '#..........#', '#..........#', '############'];
   function MAU_6(c) { return ['............', '............', '.' + c + '..........', '............', '............', '............']; }
+  /** Drone khách khoá cuu-nong-trai.7: đậu chờ 6 nhịp, cất cánh, sang ô sạc thứ nhất đáp sạc, gieo ba ô, tới ô sạc thứ hai đáp sạc, gieo hai ô. */
+  var DR_R3_7 = ['land()', 'wait_n(6)', 'take_off()', 'go_right()', 'go_right()', 'land()', 'take_off()', 'ink("green")', 'for i in range(3):', '    go_right()', '    dot()',
+    'go_right()', 'land()', 'take_off()', 'for i in range(2):', '    go_right()', '    dot()', 'wait()'];
+  var CU_7 = ['forward(1)', 'move()', 'back()'];
+  var KT_7 = ['forward(1)', 'load()', 'wait()', 'turn_right()', 'throw()', 'wait()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -236,6 +241,33 @@
       sao: { o: 44, nhip: 24 },
       goiY: ['color("here"): màu bao hạt ngay dưới drone.', 'land() rồi chờ: đậu không tốn pin.'],
       cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bao-hat', 'mau', 'gieo', 'pin', 'dau'], cuu: 'hang', meo: 'tiep-suc' }
+    }),
+    // 7 · cứu máy, dọn lối: drone khách (R3, khoá) hết pin sau bão, đậu chờ rồi đi gieo luống; nó phải đáp sạc ở hai ô sạc trên đường. Cây đổ đè ô sạc thứ nhất,
+    //     tảng đá lăn tới đè ô sạc thứ hai. Xe cứu hỏa tiến ủi cây; máy khai thác tiến nạp đá, quay phải ném ra bãi trống. Drone khách đáp sạc hai lần, gieo đủ luống.
+    //     Bẫy: cần cẩu (móc không nhấc cây, không nhấc đá). Bảng có cẩu nên mọi khe trên dải ray, hướng lên.
+    man9('cuu-nong-trai', 7, 'van-dung', {
+      ten: 'Drone khách hết pin',
+      khung: { chinh: 20, moiHam: 8 },
+      deBai: 'Drone khách hết pin, phải đáp sạc ở hai ô sạc rồi mới gieo xong luống. Cây đổ đè ô sạc thứ nhất, đá đè ô sạc thứ hai. Đọc chương trình của drone khách rồi chọn hai bạn dọn kịp.',
+      veMaMau: 'Đọc chương trình của drone khoá: đậu chờ 6 nhịp rồi đi.',
+      san: ['###########', '#.........#', '#.........#', '#..P...P..#', '#.........#', '#RRRRRRRRR#', '###########'],
+      them: { thungThem: [{ x: 3, y: 3 }], vatThem: [{ x: 7, y: 3 }] },
+      hinh: luong(11, 7, [{ y: 3, x0: 4, mau: 'ggg.gg' }]),
+      doi: [khe({ x: 3, y: 5, huong: 0 }), khe({ x: 7, y: 5, huong: 0 }),
+        may('DR', { x: 1, y: 3, huong: 1 }, { son: 'tim', coDinh: true, pin: 9 })],
+      chonDoi: {
+        menu: ['CU', 'CC', 'KT'],
+        cachMau: [{ chon: ['CU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_7, KT_7, DR_R3_7]) }]
+      },
+      maMau: doiBai([[], [], DR_R3_7]),
+      loiSai: [
+        { moTa: 'Không ủi cây: drone khách không đáp được ô sạc thứ nhất', baiLam: doiBai([[], KT_7, DR_R3_7]), phaiCoMa: ['dap-bi-chan'] },
+        { moTa: 'Không dọn đá: drone khách hết pin trước ô sạc thứ hai', baiLam: doiBai([CU_7, [], DR_R3_7]), phaiCoMa: ['dap-bi-chan'] },
+        { moTa: 'Máy khai thác nạp khi chưa tới sát đá: nạp hụt, đá còn đè ô sạc', baiLam: doiBai([CU_7, KT_7.slice(1), DR_R3_7]), phaiCoMa: ['dap-bi-chan'] }
+      ],
+      sao: { o: 46, nhip: 25 },
+      goiY: ['Đọc chương trình của drone khoá: nó đáp ô sạc nào, lúc nào?', 'Máy khai thác: load() nạp vật trước mũi, throw() ném xa 2 ô.'],
+      cauDo: { doi: ['CU', 'KT'], lap: null, coChe: ['cay-do', 'da', 'sac', 'pin', 'gieo', 'ray', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
   ];
 })();
