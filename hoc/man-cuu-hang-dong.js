@@ -112,6 +112,16 @@
   var HD_11 = ['play_note(listen())'];
   var NHEN_11 = ['wait()', 'crouch()', 'k = hear() - 1', 'for i in range(k):', '    go_right()', 'pull_s()', 'for i in range(k):', '    go_left()', 'stand()', 'wait()', 'go_down()', 'magnet_off()', 'wait()'];
 
+  /** lap-hang-dong.2 (ba sân): thang sắt đổ chắn lối xe hang động R1 (hàng 2) ở cột 3 / 5 / 4 tuỳ sân; chuông đá treo trên vách ngay trên cột thang (hàng 0) vang trong hang tối.
+   *  R2 nhện đi hàng 1 (mặt quay xuống), dọn thang, mang về cờ cuối hàng 1. */
+  function san12(x) { var h = '#.......F#'.split(''); h[x] = 'o'; return ['##########', '#.......F#', h.join(''), '##########']; }
+  function vc12(x) { var h = '..........'.split(''); h[x] = 's'; return ['..........', '..........', h.join(''), '..........']; }
+  var HD_12 = ['wait_n(14)', 'forward(7)'];
+  /** Cách một (mic, L4): n = hear() là khoảng cách tới chuông = số cột của thang; bò n - 1 ô tới trên thang, bước xuống, clear_iron("U") (gói 3), bò 8 - n ô về cờ. */
+  var NHEN_MIC_12 = ['n = hear()', 'for i in range(n - 1):', '    go_right()', 'go_down()', 'clear_iron("U")', 'for i in range(8 - n):', '    go_right()', 'magnet_off()', 'wait()'];
+  /** Cách hai (cảm biến từ, mặt quay xuống): bò bảy ô về cờ, ô nào front_metal() thì bước xuống hút. */
+  var NHEN_TU_12 = ['for i in range(7):', '    go_right()', '    if front_metal():', '        go_down()', '        clear_iron("U")', 'magnet_off()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -394,6 +404,31 @@
       sao: { o: 21, nhip: 26 },
       goiY: ['hear(): khoảng cách (số ô) tới nguồn tiếng gần nhất.', 'Mic không cần mũi: nhện gắn được.', 'pull_s(): hút sắt dưới bụng nhện.'],
       cauDo: { doi: null, lap: 'nhen+nam-cham+am-thanh', coChe: ['gam', 'ngach', 'chuong-da', 'da-chuong', 'sat', 'mic'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 12 · đọc rồi chọn (ba sân), ép đổi cảm biến: thang sắt đổ chắn lối xe hang động R1, mỗi sân một cột; chuông đá treo trên vách ngay trên cột thang vang trong hang tối.
+    //      R2 nhện + nam châm, chọn cảm biến: mic (hear() = khoảng cách tới chuông = cột thang, rồi bò đúng số ô) hay cảm biến từ (bò từng ô, front_metal() thì xuống hút).
+    //      Nhện bò hàng trên, bước xuống thang, clear_iron("U") (gói 3), mang về cờ. R1 chờ rồi chạy qua lối đã dọn.
+    man9('lap-hang-dong', 2, 'lam-quen', {
+      ten: 'Thang sắt dưới chuông',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['clear_iron']),
+      deBai: 'Ba sân. Thang sắt đổ chắn lối xe hang động, mỗi sân một cột. Chuông đá treo ngay trên cột thang. Lắp nhện + nam châm, chọn cảm biến để tìm thang, mang thang về cờ cuối hàng trên.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san12(3), san12(5), san12(4)],
+      them: { vatChat: [vc12(3), vc12(5), vc12(4)], chuongDa: [[{ x: 3, y: 0, not: 4 }], [{ x: 5, y: 0, not: 4 }], [{ x: 4, y: 0, not: 4 }]] },
+      doi: [may('HD', { x: 1, y: 2, huong: 1 }, { co: [{ x: 8, y: 2 }] }), khe({ x: 1, y: 1, huong: 2 }, { son: 'lam', co: [{ x: 8, y: 1 }] })],
+      lapRap: lapR2(['nhen'], ['nam-cham'], ['am-thanh', 'tu'], 10, [
+        cach('nhen', 'nam-cham', 'am-thanh', [HD_12, NHEN_MIC_12]),
+        cach('nhen', 'nam-cham', 'tu', [HD_12, NHEN_TU_12])
+      ], { moLai: ['L4'] }),
+      maMau: doiBai([HD_12, ['n = hear()']]),
+      loiSai: [
+        { moTa: 'Điền thẳng cột của sân 1 (cột 3): sân 2, 3 thang còn chắn lối', baiLam: doiBai([HD_12, ['go_right()', 'go_right()', 'go_down()', 'clear_iron("U")', 'for i in range(5):', '    go_right()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bò n ô (quên trừ 1): nhện đi quá cột thang', baiLam: doiBai([HD_12, ['n = hear()', 'for i in range(n):', '    go_right()', 'go_down()', 'clear_iron("U")', 'for i in range(7 - n):', '    go_right()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 35, nhip: 25 },
+      goiY: ['hear(): số ô tới chuông. Chuông ở hàng trên vách, nên hear() bằng số cột của thang.', 'clear_iron(d): hút sắt rồi bước d (hàm em viết ở Bãi tái chế).', 'Mặt nhện quay xuống: front_metal() đọc ô ngay dưới.'],
+      cauDo: { doi: null, lap: 'nhen+nam-cham+am-thanh', coChe: ['sat', 'chuong-da', 'mic', 'thang'], cuu: 'hang', meo: 'doc-roi-chon' }
     })
   ];
 
