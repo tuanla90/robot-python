@@ -233,7 +233,6 @@
     //     play_note(d[n]): đá vỡ; về cờ. Nhện co chân chui gầm đá thấp, qua chỗ đá vừa vỡ về cờ. Gõ lại nốt chuông (play_note(listen())) hay điền thẳng nốt sân 1 thì đá không vỡ.
     man9('cuu-hang-dong', 2, 'lam-quen', {
       ten: 'Sổ ám hiệu chuông đá',
-      hamCuaEmCan: HAM_EM.concat(['crouch', 'stand']),
       deBai: 'Ba sân. Đá chuông chắn ngách của nhện. Chuông đá dưới hốc vang một nốt, mỗi sân một nốt. Sổ d: nghe nốt n thì đá cần nốt d[n]. Xe hang động nghe, tra sổ, hát cho đá vỡ.',
       veMaMau: 'Xe hang động có sổ d nhưng chưa nghe.',
       san: [san2(), san2(), san2()],
@@ -560,7 +559,7 @@
       san: ['##############', '#D.......o...#', '##############', '#~~~~~~~~~~~~#', '##############'],
       them: { dong: DONG_15, daChuong: [{ x: 8, y: 1, not: 6, ben: 3 }], vatChat: ['..............', '.........s....', '..............', '..............', '..............'] },
       doi: [may('PL', { x: 2, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', chinhLuoi: false })],
-      lapRap: lapR2(['xuong'], ['loa'], ['am-thanh'], 9, [
+      lapRap: lapR2(['xuong'], ['loa'], ['am-thanh'], 10, [
         cach('xuong', 'loa', null, [PL_15, XUONG_15]),
         cach('xuong', 'loa', 'am-thanh', [PL_15, XUONG_MIC_15])
       ], { moLai: ['L5'] }),
@@ -588,7 +587,7 @@
         tramCuu: [{ x: 1, y: 1 }]
       },
       doi: [may('PL', { x: 2, y: 3, huong: 3 }), khe({ x: 1, y: 2, huong: 1 }, { son: 'lam', batDauNuoc: { x: 1, y: 2, huong: 1 } })],
-      lapRap: lapR2(['xuong'], ['day-keo'], ['am-thanh', 'hong-ngoai'], 9, [
+      lapRap: lapR2(['xuong'], ['day-keo'], ['am-thanh', 'hong-ngoai'], 10, [
         cach('xuong', 'day-keo', 'am-thanh', [PL_16, XUONG_MIC_16]),
         cach('xuong', 'day-keo', 'hong-ngoai', [PL_16, XUONG_HN_16])
       ], { moLai: ['L5'] }),
