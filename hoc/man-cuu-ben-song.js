@@ -52,6 +52,10 @@
   var PL_6 = ['go_up()', 'go_up()', 'pull_s()', 'wait_n(8)', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'];
   /** Xuồng khách khoá cuu-ben-song.7: lưới dài 1 bắt bè sau đuôi, chờ 5 nhịp, chạy thẳng 6 ô qua cống (bè theo sau vào bến q), nhả lưới. */
   var XU_R3_7 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(4)', 'forward(6)', 'drop_net()', 'wait()'];
+  /** cuu-ben-song.8: xe cứu hỏa chờ drone rắc cát, chạy vào dải bùn (trượt tới ô cát dưới van), quay lên phun van. Xuồng khách khoá: bắt bè sau đuôi, chờ, chạy ra bến. */
+  var CU_8 = ['wait_n(3)', 'move()', 'spray()', 'wait()'];
+  var DR_8 = ['go_down()', 'dot()', 'go_up()', 'land()'];
+  var XU_R3_8 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(7)', 'forward(5)', 'drop_net()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -252,6 +256,29 @@
       sao: { o: 27, nhip: 13 },
       goiY: ['Tia nước của xe cứu hỏa trúng van V thì van đổi, cống mở.', 'Máy khai thác: load() đá trước mũi, quay rồi throw() lấp hố.'],
       cauDo: { doi: ['KT', 'CU'], lap: null, coChe: ['nuoc', 'van', 'cong', 'phun', 'nem', 'ho', 'r3'], cuu: 'may', meo: 'don-loi' }
+    }),
+    // 8 · cứu máy, làm cầu (rắc cát): xuồng khách (R3, khoá) kẹt trong vũng tách sông, cống đóng; van V nằm trên bờ cuối một dải bùn trơn, giữa van và bùn là hố.
+    //     Xe cứu hỏa chạy vào dải bùn thì trượt một mạch rơi xuống hố, không dừng được trong tầm phun (2 ô). Drone bay xuống ô bùn cuối dải rắc cát (dot()): ô đó thành sàn,
+    //     xe trượt tới đó thì dừng, phun qua hố trúng van, cống mở; xuồng khách kéo bè ra bến q. Bẫy: xe hang động (bám bùn nhưng không phun van).
+    man9('cuu-ben-song', 8, 'van-dung', {
+      ten: 'Van trên bờ bùn',
+      deBai: 'Xuồng khách kẹt trong vũng, cống đóng. Van nằm trên dải bùn trơn: xe chạy vào bùn trượt mãi tới hố. Làm sao cho xe dừng đúng dưới van?',
+      veMaMau: 'Đọc chương trình của xuồng khoá: chờ 8 nhịp rồi forward(5). Xe cứu hỏa chạy vào bùn là trượt.',
+      san: ['##########', '####.#####', '#.VuIIII.#', '##########', '#B~K~~q~##', '##########'],
+      doi: [khe({ x: 8, y: 2, huong: 3 }), khe({ x: 4, y: 1, huong: 2 }, { pin: 8 }),
+        may('XU', { x: 2, y: 4, huong: 1 }, { son: 'tim', coDinh: true })],
+      chonDoi: {
+        menu: ['CU', 'DR', 'HD'],
+        cachMau: [{ chon: ['CU', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_8, DR_8, XU_R3_8]) }]
+      },
+      maMau: doiBai([[], [], XU_R3_8]),
+      loiSai: [
+        { moTa: 'Không rắc cát: xe trượt qua van, rơi hố', baiLam: doiBai([CU_8, [], XU_R3_8]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'dot() là lệnh cuối của drone: không còn nhịp nào để rắc, xe trượt rơi hố', baiLam: doiBai([CU_8, ['go_down()', 'dot()'], XU_R3_8]), phaiCoMa: ['roi-ho'] }
+      ],
+      sao: { o: 26, nhip: 15 },
+      goiY: ['dot() trên ô bùn: rắc cát, ô thành sàn thường.', 'Xe trượt trên bùn tới ô không còn bùn thì dừng.'],
+      cauDo: { doi: ['CU', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'van', 'cong', 'phun', 'ho', 'r3'], cuu: 'may', meo: 'lam-cau' }
     }),
   ];
 })();
