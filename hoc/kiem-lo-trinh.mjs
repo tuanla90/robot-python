@@ -74,7 +74,7 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'radar-tron.2', 'radar-tron.3', 'radar-tron.4', 'radar-tron.5', 'radar-tron.6', 'radar-tron.7', 'radar-tron.8', 'radar-tron.9',
   'che-radar-tron.1', 'che-radar-tron.2', 'che-radar-tron.3', 'che-radar-tron.4', 'che-radar-tron.5', 'che-radar-tron.6', 'che-radar-tron.7', 'che-radar-tron.8', 'che-radar-tron.9',      // gói 3 mùa 6: radar tròn (2 sân)
   'ban-xoay.18', 'che-ban-xoay.12', 'che-ban-xoay.17', 'che-ban-xoay.18',      // gói 4 mùa 6: dò đá lấp hố bằng radar (2 sân)
-  'di-cheo.7', 'di-cheo.8', 'che-di-cheo.6', 'che-di-cheo.7',      // gói 5 mùa 6: đi chéo kết hợp radar (2 sân)
+  'di-cheo.8', 'che-di-cheo.7', 'che-di-cheo.9',      // gói 5 mùa 6 (làm lại 15/11, chéo ghép): đi chéo kết hợp radar (2 sân)
   'chinh-luc.7', 'chinh-luc.8', 'che-chinh-luc.5', 'che-chinh-luc.7',      // gói 6 mùa 6: chỉnh lực hất kết hợp radar (2 sân)
   'nhan-dang.2', 'nhan-dang.3', 'nhan-dang.4', 'nhan-dang.5', 'nhan-dang.6', 'nhan-dang.7', 'nhan-dang.8', 'nhan-dang.9',
   'che-nhan-dang.1', 'che-nhan-dang.2', 'che-nhan-dang.3', 'che-nhan-dang.4', 'che-nhan-dang.5', 'che-nhan-dang.6', 'che-nhan-dang.7', 'che-nhan-dang.9',      // gói 7 mùa 6: nhận dạng đá / quặng (2 sân)

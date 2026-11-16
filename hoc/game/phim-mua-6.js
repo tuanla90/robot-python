@@ -186,7 +186,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         hoi(k, c, '?', 130, 60, 0.8);
         c.sau(900, function () { r.mat('ngac'); c.keu('loi'); });
       },
-      // 2 · Sola chỉnh con lăn omni để lách chéo trong 1 nhịp
+      // 2 · Sola chỉ ra: bánh omni cộng hai chuyển động tới và ngang (ghép nhịp 5a: slide_* cùng nhịp hai bánh đi thẳng = đi chéo)
       function (k, c) {
         c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
         bayToi(k, c, c.ico('denBanh', 3, BM.vang), 250, 40, 150, Y + 12, 0.1, 0.95);
@@ -199,10 +199,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         diQua(c, s, r, [[2, 1], [2, 0]], 300, 600);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });
       },
-      // 4 · code: diag_right() và diag_left()
+      // 4 · code: hàm của em dir_fr() và dir_fl() (diag_* là lệnh cũ, thôi dạy)
       function (k, c) {
         c.nen(k, 'pg-xuong'); c.nen(k, 'md-san pg-gach');
-        c.code(k, ['diag_right()', 'diag_left()', 'lob()'], 10, 14);
+        c.code(k, ['dir_fr()', 'dir_fl()', 'lob()'], 10, 14);
         var r = c.xe(OMNI_RADAR, { camBien: { bat: true, mat: true } }, 1, 3, 180, Y); k.appendChild(r);
         truot(c, r, 900, 230, Y, 0.6);
         c.sau(1600, function () { r.mat('vui'); c.keu('thang'); });

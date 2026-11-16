@@ -69,10 +69,10 @@
         { lenh: ['slide_left', 'wait'], ra: 'Trượt sang trái 1 ô, mặt giữ nguyên', ket: { x: 1, y: 2, huong: 0 } }
       ],
       gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh',
-        { chu: 'Bản nâng cấp đi chéo: diag_left() và diag_right() lách chéo 1 ô trong 1 nhịp', can: ['diag_left', 'diag_right'] }],
+        { chu: 'Đi chéo: slide_*() cùng nhịp với hai bánh đi thẳng (từ gói Đi chéo). Lệnh cũ: diag_left(), diag_right()', can: ['diag_left', 'diag_right'] }],
       khong: [{ chu: 'Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', khongCan: ['diag_left'] }, 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
       luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.',
-        { chu: 'Mỗi lệnh diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
+        { chu: 'Lệnh cũ diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
     },
     'nhen': {
       khe: 'than', ten: 'Thân nhện',

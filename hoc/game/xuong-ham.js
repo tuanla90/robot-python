@@ -170,6 +170,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     S.rid++; S.busy = false; E.side.classList.remove('busy');
     if (window.HuongDan) HuongDan.bao('mo-xuong', { loai: loai, ten: ten });
     S.loai = loai; S.ten = ten; S.theMo = the || null;
+    TP.datCheoGhep(TP.coCheoGhepCua(A.man()));                // chéo ghép: thân hàm dir_*() có slide_* chung nhịp với lệnh bánh
     TP.datCheList(TP.coListCua(A.man()));                     // gói List: ô phần tử danh sách trong khung thân hàm
     TP.datCheTD(TP.coTDCua(A.man()), TP.khoaTDCua(A.man()), TP.nguonAmCua(A.man()));
     TP.datCheBT(TP.coBTCua(A.man()), TP.nguonBTCua(A.man(), KhoHam.ds().concat(A.bai().hamCuaMan || [], (A.man().loiGiai && A.man().loiGiai.hamCuaEmMoi) || [])));     // mùa 4–7: ô biểu thức trong khung thân hàm     // mùa 8: ô từ điển / tập hợp / hear() listen() trong khung thân hàm

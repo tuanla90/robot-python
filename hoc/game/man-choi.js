@@ -250,6 +250,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     E.doiDoi.style.display = goc.chonDoi ? '' : 'none';                               // M9D2: nút "Đổi đội" chỉ ở màn chọn đội
     E.lapLai.classList.remove('nhay');
     S.vet = null; S.idx = 0; S.nhip = 0;                                                // đồng hồ NHỊP không giữ số của màn trước
+    TP.datCheoGhep(TP.coCheoGhepCua(m));               // mùa Mỏ đá gói 5–10 (man.cheoGhep): khung cho slide_* chung nhịp với lệnh bánh (đi chéo)
     TP.datCheList(TP.coListCua(m));                    // màn có cauTruc 'list': dòng danh sách (a = [1, 2], for n in a:, a.append(1)) tách thành ô phần tử chạm được
     TP.datCheTD(TP.coTDCua(m), TP.khoaTDCua(m), TP.nguonAmCua(m));      // mùa 8: dòng từ điển / tập hợp / hear() listen() tách thành ô chạm được (tên, khoá chữ, số, in / not in)
     TP.datCheMau(TP.coMauCua(m), TP.coPinCua(m), m.vaHoac === true);
