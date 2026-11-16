@@ -61,6 +61,13 @@
   var KT_3 = ['aim_lob(3)', 'wait_n(3)', 'forward(6)', 'load()', 'wait()', 'aim(2)', 'throw()', 'wait()'];
   var HD_3 = ['forward(3)', 'turn_left()', 'forward(2)'];
 
+  /** cuu-mo-da.4 (ba sân): hầm hẹp hàng 1, khối đá rỗng chắn cửa hầm ở (3, 1), mỗi sân một nốt (3 / 6 / 8); quặng và xe goòng sau cửa; dốc bùn hàng 3 sát hầm. */
+  var SAN_4 = ['#########', '#....oD.#', '#########', '#.IIIIII#', '#########'];
+  var VD_4 = ['.........', '.....q...', '.........', '.........', '.........'];
+  /** Xe hang động: tiến một ô lên dốc bùn (đủ gần cửa hầm), nghe nốt của đá rỗng rồi hát lại. Máy khai thác: chờ, qua cửa hầm vừa vỡ, hất quặng lên xe goòng. */
+  var HD_4 = ['forward(1)', 'play_note(listen())'];
+  var KT_4 = ['wait()', 'forward(3)', 'lob()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -152,6 +159,32 @@
       sao: { o: 44, nhip: 17 },
       goiY: ['aim_lob(3): chạy đà một ô rồi hất, đá bay xa 3 ô tính từ chỗ đứng cũ.', 'Bánh gai bám bùn: dừng được giữa dốc rồi quay.', 'Nút đè chỉ giữ cửa mở khi có xe đứng trên nút.'],
       cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem-da', 'nut-de', 'cua', 'xe-goong'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 4 · dọn lối, đọc nốt (ba sân, luật 13/11): khối đá rỗng chắn cửa hầm, mỗi sân một nốt. Xe hang động tiến một ô lên dốc bùn cho đủ gần (tầm 3 ô), nghe nốt bằng listen(),
+    //     hát lại play_note(...): đá rỗng nứt vỡ. Máy khai thác chờ, đi qua cửa hầm vừa mở, hất quặng lên xe goòng. Bảng 2 cỗ máy (đúng đôi tốt).
+    //     Điền thẳng nốt của sân 1 thì sân 2, 3 đá không vỡ. Xe hang động đứng ở chỗ xuất phát thì quá xa (4 ô), hát không tới.
+    man9('cuu-mo-da', 4, 'luyen', {
+      ten: 'Đá rỗng chắn cửa hầm',
+      mucTieu: 'dua-vat',
+      hamCuaEmCan: HAM_EM.concat(['play_note']),
+      deBai: 'Ba sân. Khối đá rỗng chắn cửa hầm, mỗi sân một nốt. Xe hang động nghe nốt bằng listen() rồi hát lại cho đá vỡ (đứng cách đá tối đa 3 ô). Máy khai thác qua cửa, hất quặng lên xe goòng.',
+      veMaMau: 'Cửa hầm còn bị đá rỗng chắn.',
+      san: [SAN_4, SAN_4, SAN_4],
+      them: { vatDang: [VD_4, VD_4, VD_4], daChuong: [[{ x: 3, y: 1, not: 3, ben: 1 }], [{ x: 3, y: 1, not: 6, ben: 1 }], [{ x: 3, y: 1, not: 8, ben: 1 }]] },
+      doi: [khe({ x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 })],
+      chonDoi: {
+        menu: ['KT', 'HD'],
+        cachMau: [{ chon: ['KT', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([KT_4, HD_4]) }]
+      },
+      maMau: doiBai([KT_4, ['forward(1)']]),
+      loiSai: [
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(3)): sân 2, 3 đá không vỡ', baiLam: doiBai([KT_4, ['forward(1)', 'play_note(3)']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe hang động hát ngay ở chỗ xuất phát: xa đá 4 ô, đá không vỡ', baiLam: doiBai([KT_4, ['play_note(listen())']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác không chờ: tới cửa hầm khi đá chưa vỡ', baiLam: doiBai([['forward(3)', 'lob()'], HD_4]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 19, nhip: 7 },
+      goiY: ['listen(): nốt của khối đá rỗng gần nhất.', 'play_note(n): hát nốt n. Đá rỗng nghe đúng nốt của nó thì nứt vỡ.', 'Loa chỉ tới đá cách xe tối đa 3 ô.'],
+      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['da-rong', 'not', 'bun', 'nem', 'xe-goong'], cuu: 'hang', meo: 'don-loi' }
     }),
     /* HẾT MOI */
   ];

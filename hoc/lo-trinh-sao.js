@@ -794,7 +794,6 @@
   "trum-mua-song.8": { "o": 46, "nhip": 36 },
   "trum-mua-song.9": { "o": 56, "nhip": 36 },
   "trum-mua-song.10": { "o": 58, "nhip": 60 },
-  "cuu-mo-da.4": { "o": 44, "nhip": 9 },
   "cuu-mo-da.5": { "o": 23, "nhip": 4 },
   "cuu-mo-da.6": { "o": 34, "nhip": 14 },
   "cuu-mo-da.7": { "o": 18, "nhip": 8 },
