@@ -163,6 +163,18 @@
   var NHEN_LOA_17 = ['jump("R")', 'play_note(6)', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()'];
   var NHEN_LOA_MIC_17 = ['jump("R")', 'n = listen()', 'play_note(n)', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()'];
 
+  /** lap-hang-dong.8 (hai sân): hành lang hai dãy đá chuông. Dãy trên (hàng 1): chín khối đá chuông chắn lối xe chở hàng R1. Dãy dưới (hàng 3, trong vách): chín chuông đá,
+   *  chuông cột x cùng nốt với đá cột x. Đá cùng nốt nằm liền nhau (tối đa 3 cột): hát một lần ở cột đầu, đá cùng nốt trong tầm 3 ô vỡ cùng lúc.
+   *  Robot R2 trượt dọc hàng 2, mỗi cột nghe nốt; set s nhớ nốt đã hát, khỏi hát lại (hát lại tốn nhịp, xe chở hàng chạy theo lịch sẽ đâm đá). */
+  var NOT_18 = [[4, 4, 4, 6, 6, 6, 2, 2, 2], [6, 6, 2, 2, 2, 4, 4, 7, 7]];
+  function san18() { return ['#############', '#..........F#', '#..........F#', '#############', '#############']; }
+  function daChuong18(ds) { return ds.map(function (n, i) { return { x: i + 2, y: 1, not: n, ben: 1 }; }); }
+  function chuongDa18(ds) { return ds.map(function (n, i) { return { x: i + 2, y: 3, not: n }; }); }
+  var CH_18 = ['wait_n(6)', 'forward(10)'];
+  var OMNI_18 = ['s = set()', 'for i in range(9):', '    slide_r(1)', '    n = listen()', '    if n not in s:', '        s.add(n)', '        play_note(n)', 'slide_r(1)'];
+  /** Cách hai: bánh gai + loa + mic, quay phải một lần rồi tiến (chậm hơn một nhịp). */
+  var GAI_18 = ['s = set()', 'turn_right()', 'for i in range(9):', '    forward(1)', '    n = listen()', '    if n not in s:', '        s.add(n)', '        play_note(n)', 'forward(1)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -598,6 +610,29 @@
       sao: { o: 35, nhip: 19 },
       goiY: ['Loa vang trong 3 ô quanh nhện (đếm ngang + dọc).', 'jump("R"): nhện bật qua đúng một ô.', 'Nhện đứng trên nút M thì cửa đá C mở.'],
       cauDo: { doi: null, lap: 'nhen+loa', coChe: ['ho', 'da-chuong', 'not', 'nut', 'cua'], cuu: 'hang', meo: 'giu-cua' }
+    }),
+    // 18 · dọn lối (hai sân), ôn set: hành lang hai dãy đá chuông; R2 trượt ngang dọc hành lang, mỗi cột nghe nốt, nốt chưa có trong set thì hát và bỏ vào set.
+    //      Đá cùng nốt liền nhau vỡ cùng lúc nên hát lại là phí nhịp: xe chở hàng R1 chạy theo lịch sẽ đâm đá. Cách hai: bánh gai, quay phải rồi tiến.
+    man9('lap-hang-dong', 8, 'luyen', {
+      ten: 'Hành lang hai dãy đá',
+      khung: { chinh: 12 },
+      deBai: 'Hai sân. Đá chuông chắn lối xe chở hàng, chuông đá dưới vách cùng nốt. Đá cùng nốt liền nhau vỡ cùng lúc. Lắp robot đi dọc hành lang, nghe từng cột, nốt nào hát rồi thì nhớ trong set, khỏi hát lại.',
+      veMaMau: 'Robot R2 chưa có chương trình.',
+      san: [san18(), san18()],
+      them: { daChuong: NOT_18.map(daChuong18), chuongDa: NOT_18.map(chuongDa18) },
+      doi: [may('CH', { x: 1, y: 1, huong: 1 }, { co: [{ x: 11, y: 1 }] }), khe({ x: 1, y: 2, huong: 0 }, { son: 'lam', co: [{ x: 11, y: 2 }] })],
+      lapRap: lapR2(['omni', 'gai'], ['loa'], ['am-thanh'], 9, [
+        cach('omni', 'loa', 'am-thanh', [CH_18, OMNI_18]),
+        cach('gai', 'loa', 'am-thanh', [CH_18, GAI_18])
+      ]),
+      maMau: doiBai([CH_18, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng nốt sân 1 (4, 6, 2 ở cột 2, 5, 8): sân 2 đá còn nguyên', baiLam: doiBai([CH_18, ['slide_r(1)', 'play_note(4)', 'slide_r(3)', 'play_note(6)', 'slide_r(3)', 'play_note(2)', 'slide_r(3)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không nhớ nốt đã hát (hát ở mọi cột): chậm, xe chở hàng đâm đá', baiLam: doiBai([CH_18, ['for i in range(9):', '    slide_r(1)', '    play_note(listen())', 'slide_r(1)']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 26, nhip: 19 },
+      goiY: ['s = set(), s.add(n), n not in s: túi nhớ nốt đã hát.', 'Đá cùng nốt trong tầm 3 ô vỡ cùng một lúc.', 'slide_r(1): omni trượt sang phải một ô, mặt vẫn nhìn lên đá.'],
+      cauDo: { doi: null, lap: 'omni+loa+am-thanh', coChe: ['da-chuong', 'chuong-da', 'not', 'set'], cuu: 'hang', meo: 'don-loi' }
     })
   ];
 
