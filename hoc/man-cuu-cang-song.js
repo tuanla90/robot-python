@@ -176,6 +176,8 @@
   function lapR2(than, tay, cam, nganSach, cachLap, them) {
     return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
   }
+  /** Xuồng lắp loa thay tay lưới: bỏ cờ chỉnh dây lưới (set_length chỉ là nâng cấp của tay lưới). */
+  function xuongLoa(r) { r.chinhLuoi = false; return r; }
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -446,22 +448,28 @@
       cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'da', 'ray', 'r3', 'tau'], cuu: 'may', meo: 'lam-cau' }
     }),
 
-    manCS('cuu-cang-song', 10, 'trum', {
-      ten: 'Hợp tấu bến cảng: Đoạn 4 Kìa con bướm vàng',
-      r1: R1_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '5 5 4 4 3 3 2 2', r2: '1 3 2 4 3 5 4 2' },
+    // 10 · song ca đoạn 4 (Bè 1: 5 5 4 4 3 3 2 2 | Bè 2: 1 3 2 4 3 5 4 2), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Bảng ghi "xuồng lắp loa hát, cẩu quay cần theo nhịp": cẩu không có loa và màn choi-dieu chỉ chấm robot hát, nên bè 2 do xe hang động (khách của cảng,
+    //      loa sẵn) hát trên bờ; xuồng lắp loa hát bè 1 dưới nước. Hai đá chuông trên bến vỡ khi nghe nốt cuối. Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-cang-song', 10, 'trum', {
+      ten: 'Song ca cảng sông',
+      mucTieu: 'choi-dieu',
+      deBai: 'Cảng đã thông! Xuồng hát dưới nước, xe hang động hát trên bờ: song ca đoạn 4. Mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
       hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Khép lại chương Cứu hộ Cảng sông, dàn nhạc robot biểu diễn Đoạn 4 bài "Kìa con bướm vàng" ("Bươm bướm bay, đôi ba vòng") gồm 8 nhịp 2 bè: Bè 1 (R1) chơi giai điệu [5, 5, 4, 4, 3, 3, 2, 2], còn Bè 2 (R2) chơi bè hòa âm [1, 3, 2, 4, 3, 5, 4, 2]. Hãy gọi play_part([1, 3, 2, 4, 3, 5, 4, 2]) cho R2!',
-      veMaMau: 'R2 chưa chơi đủ bè 2 [1, 3, 2, 4, 3, 5, 4, 2].',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_note(1)']),
-      loiGiai: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4, 3, 5, 4, 2])']),
+      san: ['######', '~~~~.#', '#....#', '######'],
+      doi: [xuongLoa(may('XU', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out'], themHam: ['note', 'beat'], phatNot: true })),
+        may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      them: { dieu: { r1: '5 5 4 4 3 3 2 2', r2: '1 3 2 4 3 5 4 2' }, daChuong: [{ x: 4, y: 1, not: 2, ben: 1 }, { x: 4, y: 2, not: 2, ben: 1 }] },
+      maMau: doiBai([['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_note(1)']]),
+      loiGiai: doiBai([['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4, 3, 5, 4, 2])']]),
       loiSai: [
-        { moTa: 'R2 chỉ phát 1 nốt thay vì gọi play_part([1, 3, 2, 4, 3, 5, 4, 2])', baiLam: baiDoi(['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_note(1)']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_note(1)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 đảo hai nốt giữa', baiLam: doiBai([['play_part([5, 5, 4, 4, 3, 3, 2, 2])'], ['play_part([1, 3, 2, 4, 5, 3, 4, 2])']]), phaiCoMa: ['sai-not'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Ở chương trình R2, gọi play_part([1, 3, 2, 4, 3, 5, 4, 2]).']
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([1, 3, 2, 4, 3, 5, 4, 2]).'],
+      cauDo: { doi: ['XU', 'HD'], lap: null, coChe: ['loa', 'da-chuong', 'nuoc'], cuu: null, meo: 'song-song' }
     }),
 
     /* ========================================================================
