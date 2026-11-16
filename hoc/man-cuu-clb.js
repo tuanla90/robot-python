@@ -95,6 +95,10 @@
   var CH_9 = ['forward(5)', 'turn_left()', 'forward(1)', 'turn_right()', 'forward(1)'];
   var PL_9 = ['for i in range(5):', '    go_right()', 'go_up()', 'wait_n(2)', 'go_right()'];
 
+  /** cuu-clb.10 / lap-clb.10: song ca đoạn 9 (nối đoạn 8: bè 1 sang câu 5 5 4 4 3 3 2 2, bè 2 giữ quãng ba trên như đoạn 8). CHỜ USER DUYỆT nốt. */
+  var BE1_9 = 'play_part([5, 5, 4, 4, 3, 3, 2, 2])';
+  var BE2_9 = 'play_part([7, 7, 6, 6, 5, 5, 4, 4])';
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -337,6 +341,32 @@
       sao: { o: 28, nhip: 13 },
       goiY: ['while not front_clear(): wait(): máy khách đứng chờ khi ô trước bị chắn.', 'Xích tiến vào thùng nặng thì đẩy thùng đi một ô.', 'Nhện mỗi bước mất hai nhịp: ai tới nút nhanh hơn?'],
       cauDo: { doi: ['CU', 'CH'], lap: null, coChe: ['thung-nang', 'nut-de', 'cua', 'r3', 'cho-truoc'], cuu: 'may', meo: 'doc-roi-chon' }
+    }),
+    // 10 · song ca đoạn 9 (Bè 1: 5 5 4 4 3 3 2 2 | Bè 2: 7 7 6 6 5 5 4 4), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Bảng đủ 8 cỗ máy, được chọn trùng: chỉ cỗ máy có loa mới hát được (xe hang động), nên đôi tốt là hai xe hang động. Hát tại chỗ (màn choi-dieu có ô F thì lõi không cho thắng).
+    //      Mọi khe trên dải ray (cẩu đứng được), dưới mỗi khe là ô hồ (xuồng xuất phát được). Khối đá chuông trên hồ vỡ khi nghe nốt 2 của bè 1 (chỉ để nhìn).
+    man9('cuu-clb', 10, 'trum', {
+      ten: 'Song ca sân CLB',
+      mucTieu: 'choi-dieu',
+      deBai: 'Sân CLB đã gọn! Song ca đoạn 9. Bảng có đủ tám cỗ máy: chọn hai bạn hát được, rồi mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      san: ['#######', '#RRRRR#', '#~~~~~#', '#######'],
+      doi: [khe({ x: 1, y: 1, huong: 0, nac: 2, tam: 1 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } }), khe({ x: 3, y: 1, huong: 0, nac: 2, tam: 1 }, { batDauNuoc: { x: 3, y: 2, huong: 1 } })],
+      them: { dieu: { r1: '5 5 4 4 3 3 2 2', r2: '7 7 6 6 5 5 4 4' }, daChuong: [{ x: 2, y: 2, not: 2, ben: 1 }] },
+      chonDoi: {
+        menu: ['CH', 'CU', 'PL', 'CC', 'XU', 'DR', 'KT', 'HD'], trung: true,
+        cachMau: [{ chon: ['HD', 'HD'], ghiChu: 'đôi tốt: chỉ xe hang động có loa', loiGiai: doiBai([[BE1_9], [BE2_9]]) }]
+      },
+      maMau: doiBai([[BE1_9], ['play_note(7)']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([[BE1_9], ['play_note(7)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 đảo hai nốt giữa', baiLam: doiBai([[BE1_9], ['play_part([7, 7, 6, 5, 6, 5, 4, 4])']]), phaiCoMa: ['sai-not'] },
+        { moTa: 'R2 hát nhầm bè 1', baiLam: doiBai([[BE1_9], [BE1_9]]), phaiCoMa: ['sai-not'] }
+      ],
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Cỗ máy nào có loa thì mới hát được.', 'Bè 2: play_part([7, 7, 6, 6, 5, 5, 4, 4]).', 'Hai bạn bắt đầu cùng một nhịp.'],
+      cauDo: { doi: ['HD', 'HD'], lap: null, coChe: ['loa', 'da-chuong', 'clb', 'chon-may-hat'], cuu: null, meo: 'song-song' }
     })
   ];
 
