@@ -153,6 +153,19 @@
   /** Cách hai rẻ hơn: hai bánh, chờ y như vậy rồi quay phải, tiến một ô về cờ. */
   var XE_17 = ['while not warm():', '    wait()', 'spray_back()', 'wait()', 'turn_right()', 'move()'];
 
+  /** lap-mo-da.8: bãi đá lở ba sân, mũi khoan sắt nằm ngay trên hay ngay dưới chỗ robot (tuỳ sân); rào '=' chắn lối thẳng tới thùng D, lối vòng hàng trên có gầm thấp 'n'. */
+  function san18(tren) {
+    return ['#######', tren ? '#.o.n.#' : '#...n.#', '#...=D#', tren ? '##.####' : '##o####', '#.oD..#', '#######'];
+  }
+  function vc18(tren) { return ['.......', tren ? '..s....' : '.......', '.......', tren ? '.......' : '..s....', '.......', '.......']; }
+  var VD_18 = ['.......', '.......', '.......', '.......', '..q....', '.......'];
+  var KT_18 = ['lob()'];
+  /** Drone + nam châm + radar (L11): radar đọc ô trên g[0][1]: có mũi khoan thì bay lên hút, không thì bay xuống hút; về chỗ cũ, bay qua rào thấp tới thùng, thả. */
+  var DOC_18 = ['g = radar()', 'if g[0][1] == "V":', '    go_up()', '    pull_s()', '    go_down()', 'else:', '    go_down()', '    pull_s()', '    go_up()'];
+  var DRONE_18 = DOC_18.concat(['for i in range(3):', '    go_right()', 'magnet_off()', 'wait()']);
+  /** Cách hai: nhện + nam châm + radar (L12) đọc y hệt, nhưng không qua rào: vòng lên hàng trên, co chân chui gầm đá lở, xuống thùng. */
+  var NHEN_18 = DOC_18.concat(['go_up()', 'crouch()', 'for i in range(3):', '    go_right()', 'go_down()', 'magnet_off()', 'wait()']);
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -582,6 +595,31 @@
       sao: { o: 17, nhip: 9 },
       goiY: ['warm(): vật trước cảm biến đang nóng (máy đang chạy).', 'spray_back(): phun ra sau đuôi.', 'while not warm(): wait(): chờ tới khi thấy máy.'],
       cauDo: { doi: null, lap: 'omni+hoi+hong-ngoai', coChe: ['nut-ban', 'cua', 'hong-ngoai', 'voi-phun'], cuu: 'hang', meo: 'cho-tin-hieu' }
+    }),
+    // 18 · đọc rồi chọn (ba sân, ôn lưới grid[r][c]), lai L11 drone + nam châm + radar (ra mắt): bãi đá lở, mũi khoan sắt nằm ngay trên hay ngay dưới chỗ robot (mỗi sân một chỗ).
+    //      Radar đọc g[0][1] (ô trên): "V" thì lên hút, không thì xuống hút; về chỗ cũ, bay qua rào thấp tới thùng D, thả. Máy khai thác R1 hất quặng vào thùng hầm dưới (song song).
+    //      Cách hai: nhện + nam châm + radar (L12) đọc y hệt, không qua rào: vòng hàng trên, co chân chui gầm đá lở (chậm hơn). Xe có bánh kẹp được mũi khoan nhưng vướng rào và gầm thấp.
+    man9('lap-mo-da', 8, 'van-dung', {
+      ten: 'Mũi khoan trên hay dưới',
+      mucTieu: 'dua-vat',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Mũi khoan sắt nằm ngay trên hay ngay dưới chỗ robot, mỗi sân một chỗ. Lắp robot đọc radar, hút mũi khoan, mang tới thùng D sau rào.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san18(true), san18(false), san18(false)],
+      them: { vatChat: [vc18(true), vc18(false), vc18(false)], vatDang: [VD_18, VD_18, VD_18] },
+      doi: [may('KT', { x: 1, y: 4, huong: 1 }), khe({ x: 2, y: 2, huong: 0 }, { son: 'lam', pin: 20 })],
+      lapRap: lapR2(['drone', 'nhen', 'hai-banh'], ['nam-cham', 'kep'], ['radar'], 11, [
+        cach('drone', 'nam-cham', 'radar', [KT_18, DRONE_18]),
+        cach('nhen', 'nam-cham', 'radar', [KT_18, NHEN_18])
+      ], { moLai: ['L11', 'L12'] }),
+      maMau: doiBai([KT_18, ['g = radar()']]),
+      loiSai: [
+        { moTa: 'Điền thẳng chỗ của sân 1 (bay lên): sân 2, 3 mũi khoan nằm dưới', baiLam: doiBai([KT_18, ['go_up()', 'pull_s()', 'go_down()', 'for i in range(3):', '    go_right()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Đọc g[1][0] (ô bên trái) thay vì g[0][1] (ô trên)', baiLam: doiBai([KT_18, ['g = radar()', 'if g[1][0] == "V":', '    go_up()', '    pull_s()', '    go_down()', 'else:', '    go_down()', '    pull_s()', '    go_up()', 'for i in range(3):', '    go_right()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 24, nhip: 9 },
+      goiY: ['g[0][1]: hàng 0 (trên), cột 1 (giữa) = ô ngay trên robot.', 'pull_s(): bật nam châm hút. magnet_off(): thả.'],
+      cauDo: { doi: null, lap: 'drone+nam-cham+radar', coChe: ['sat', 'rao', 'radar', 'nem', 'mui-khoan'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
     /* HẾT MOI */
   ];
