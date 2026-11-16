@@ -101,6 +101,16 @@
     'for i in range(3):', '    go_right()', 'stand()', 'dot()', 'wait()', 'go_right()', 'dot()', 'wait()'];
   /** Drone R2 lap-nong-trai.3: bay qua mương, qua nhà kính, gieo theo danh sách a (1 gieo, 0 bỏ qua). */
   var DRONE_13 = ['ink("green")', 'a = [1, 1, 1, 0, 1, 0, 0, 1, 1]', 'for g in a:', '    if g == 1:', '        dot()', '    go_right()'];
+  /** lap-nong-trai.4 (ba sân): hàng mẫu (sàn màu) ở hàng 1 cột 1–4, mỗi sân một bộ màu; mương sụt (hố) ở (6, 2); luống cần gieo ở hàng 2 cột 7–10 đúng thứ tự màu mẫu. */
+  var MAU_14 = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
+  function san14(m) { return ['#############', '#' + m + '.......#', '#.....u.....#', '#...........#', '#...........#', '#############']; }
+  function hinh14(m) { return luong(13, 6, [{ y: 2, x0: 7, mau: m }, { y: 4, x0: 1, mau: 'ggggg' }]); }
+  /** R2 lap-nong-trai.4: đọc màu ô mẫu phía trên, a.append(...) vào danh sách, rồi (nhện nhảy mương / drone bay qua) gieo theo a. */
+  var DOC_14 = ['a = []', 'for i in range(4):', '    a.append(color("up"))', '    go_right()'];
+  var GIEO_14 = ['for c in a:', '    ink(c)', '    dot()', '    go_right()'];
+  var NHEN_14 = DOC_14.concat(['crouch()', 'wait()', 'stand()', 'go_right()'], GIEO_14);
+  var DRONE_14 = DOC_14.concat(['go_right()', 'go_right()'], GIEO_14);
+  var DR_14 = hang('green', 4).concat(['land()']);
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -440,6 +450,30 @@
       sao: { o: 34, nhip: 23 },
       goiY: ['Nhện gieo ô dưới bụng: dot() rồi mới bước.', 'Nhảy: crouch(), wait(), stand() cùng go_right(). Chui gầm: co chân rồi đi.'],
       cauDo: { doi: null, lap: 'nhen+son', coChe: ['gieo', 'ho', 'gam-thap', 'nha-kinh', 'pin'], cuu: 'hang', meo: 'song-song' }
+    }),
+    // 14 · đọc rồi chọn, ôn list (ba sân, luật 13/11), lai L12 nhện + camera bốn hướng: luống mẫu sau bão còn nguyên bốn ô hoa (sàn màu), mỗi sân một bộ màu.
+    //      R2 đi dưới luống mẫu đọc màu ô phía trên color("up"), a.append(...) vào danh sách, qua mương sụt, gieo luống mới theo a. R1 drone gieo luống dưới rồi đậu.
+    //      Cách một nhện + gieo hạt + camera bốn hướng (L12): nhảy mương (rẻ hơn). Cách hai drone + gieo hạt + camera bốn hướng: bay qua (nhanh hơn). Xe có bánh rơi mương.
+    man9('lap-nong-trai', 4, 'luyen', {
+      ten: 'Chép luống mẫu',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Luống mẫu còn bốn ô hoa, mỗi sân một bộ màu. Lắp robot đọc màu luống mẫu, nhớ vào danh sách a, qua mương rồi gieo luống mới đúng thứ tự đó.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san14('rgby'), san14('byrg'), san14('ggrb')],
+      hinh: [hinh14('rgby'), hinh14('byrg'), hinh14('ggrb')],
+      doi: [may('DR', { x: 1, y: 4, huong: 1 }, { pin: 11 }), khe({ x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['nhen', 'drone', 'hai-banh'], ['son'], ['camera-4', 'camera'], 11, [
+        cach('nhen', 'son', 'camera-4', [DR_14, NHEN_14]),
+        cach('drone', 'son', 'camera-4', [DR_14, DRONE_14])
+      ], { moLai: ['L6', 'L12'] }),
+      maMau: doiBai([DR_14, ['a = []']]),
+      loiSai: [
+        { moTa: 'Điền thẳng màu của sân 1: sân 2, 3 gieo sai màu', baiLam: doiBai([DR_14, ['a = ["red", "green", "blue", "yellow"]', 'for i in range(4):', '    go_right()', 'crouch()', 'wait()', 'stand()', 'go_right()'].concat(GIEO_14)]), phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Nhện bước thẳng vào mương: rơi hố', baiLam: doiBai([DR_14, DOC_14.concat(['go_right()'], GIEO_14)]), phaiCoMa: ['roi-ho'] }
+      ],
+      sao: { o: 30, nhip: 27 },
+      goiY: ['a.append(x): thêm x vào cuối danh sách a.', 'color("up"): màu ô phía trên robot (camera bốn hướng).', 'for c in a: lần lượt từng màu đã nhớ.'],
+      cauDo: { doi: null, lap: 'nhen+son+camera-4', coChe: ['gieo', 'mau', 'ho', 'list', 'pin'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
   ];
 })();
