@@ -176,6 +176,10 @@
   /** Máy khai thác chờ đủ lâu cho cả hai cách (nhện chậm hơn: mỗi bước hai nhịp) rồi chạy qua lối đã dọn. */
   var KT_19 = ['wait_n(16)', 'forward(7)'];
 
+  /** lap-mo-da.10: song ca đoạn 7 như cuu-mo-da.10, mỗi bạn gọi play_part (gói 1) với bè của mình. */
+  var KT_20 = ['play_part([1, 1, 5, 5, 6, 6, 5, 5])'];
+  var R2_20 = ['play_part([3, 3, 1, 3, 4, 4, 3, 3])'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -654,6 +658,34 @@
       sao: { o: 26, nhip: 28 },
       goiY: ['g[2][1]: hàng 2 (dưới), cột 1 (giữa) = ô ngay dưới robot.', 'clear_iron(d): hút sắt rồi bước d (hàm em viết ở Bãi tái chế).'],
       cauDo: { doi: null, lap: 'gai+nem+radar', coChe: ['sat', 'radar', 'nem', 'nam-cham', 'mui-khoan'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 20 · song ca đoạn 7 (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 3 3 1 3 4 4 3 3, như cuu-mo-da.10), giữ cho gói 10 ghép bài; mỗi bạn gọi play_part (gói 1).
+    //      Máy khai thác lắp loa hát bè 1 trên nền đá khô; R2 tự lắp đứng trên dốc bùn hát bè 2. Cách một bánh gai + loa, cách hai bánh omni + loa (đắt hơn); drone không mang nổi loa (bẫy).
+    //      Bảng ghi "robot hát phải đứng vững không trượt" (đi trên bùn vừa đi vừa hát, tới cờ): lõi chưa làm được, màn đội choi-dieu có ô F thì bắt mọi xe tới cờ
+    //      (dieuToiCo) mà xeToiCo chỉ ghi khi mục tiêu là toi-co, nên không bao giờ thắng (ghi trong báo cáo M9M7). Khối đá rỗng cuối dốc vỡ khi nghe nốt Fa của bè 2 (chỉ để nhìn).
+    man9('lap-mo-da', 10, 'trum', {
+      ten: 'Song ca trên dốc',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      deBai: 'Màn cuối mỏ đá: song ca đoạn 7. Máy khai thác hát bè 1. Lắp loa cho bạn đứng trên dốc bùn hát bè 2. Drone không mang nổi loa: chọn thân khác.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      san: ['#######', '#.....#', '#.III.#', '#######'],
+      doi: [may('KT', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['load', 'throw', 'aim', 'radar', 'shape', 'diag_left', 'diag_right'], themHam: ['note', 'beat'], phatNot: true }),
+        khe({ x: 3, y: 2, huong: 1 }, { son: 'lam' })],
+      them: { dieu: { r1: '1 1 5 5 6 6 5 5', r2: '3 3 1 3 4 4 3 3' }, daChuong: [{ x: 5, y: 2, not: 4, ben: 1 }] },
+      lapRap: lapR2(['gai', 'omni', 'drone'], ['loa'], [], 7, [
+        cach('gai', 'loa', null, [KT_20, R2_20]),
+        cach('omni', 'loa', null, [KT_20, R2_20])
+      ]),
+      maMau: doiBai([KT_20, ['play_note(3)']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([KT_20, ['play_note(3)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'R2 hát nhầm bè 1', baiLam: doiBai([KT_20, KT_20]), phaiCoMa: ['sai-not'] },
+        { moTa: 'R2 chờ một nhịp rồi mới hát: lệch nhịp với bè 1', baiLam: doiBai([KT_20, ['wait()'].concat(R2_20)]), phaiCoMa: ['lo-nhip'] }
+      ],
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([3, 3, 1, 3, 4, 4, 3, 3]).', 'Hai bạn bắt đầu cùng một nhịp.', 'Drone chở nhẹ, không mang nổi loa.'],
+      cauDo: { doi: null, lap: 'gai+loa', coChe: ['loa', 'da-chuong', 'bun', 'mo-da'], cuu: null, meo: 'song-song' }
     }),
     /* HẾT MOI */
   ];
