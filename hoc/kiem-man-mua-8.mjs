@@ -43,7 +43,7 @@ const baiCua = (s, m) => Object.assign({}, s.baiLam, { hamCuaEmMoi: s.hamCuaEmMo
 
 const chuongMua8 = TT.goi.filter((g) => g.mua === 'mua-8').flatMap((g) => g.chuong);
 /** Chương đã viết lại theo KE-HOACH-MUA-8.md (P3). Chương còn lại là màn PDM8 cũ chờ viết lại: không kiểm (chạy `node hoc/kiem-man-mua-8.mjs <chương>` để kiểm riêng). */
-const CHUONG_XONG = ['banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not', 'nghe-not', 'che-nghe-not'];
+const CHUONG_XONG = ['banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not', 'nghe-not', 'che-nghe-not', 'hang-cu', 'che-hang-cu'];
 const ds = M.danhSach.filter((m) => chuongMua8.includes(m.chuong) && (chiChuong.length ? chiChuong.includes(m.chuong) : CHUONG_XONG.includes(m.chuong)));
 const conLai = chuongMua8.filter((c) => !CHUONG_XONG.includes(c));
 if (!chiChuong.length && conLai.length) console.log('Chưa viết lại (không kiểm): ' + conLai.join(', '));
