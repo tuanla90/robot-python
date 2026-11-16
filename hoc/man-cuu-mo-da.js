@@ -344,6 +344,29 @@
       goiY: ['Đọc chương trình của máy khách: nó rẽ ở ô nào?', 'dot() trên bùn trơn: rắc cát, ô thành sàn thường; xe trượt tới ô cát thì dừng.', 'sonic_rail(): nghe nốt, hát lại, lùi.'],
       cauDo: { doi: ['DR', 'HD'], lap: null, coChe: ['bun', 'rac-cat', 'da-rong', 'not', 'xe-goong', 'ray', 'r3'], cuu: 'may', meo: 'lam-cau' }
     }),
+    // 10 · song ca đoạn 7 (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 3 3 1 3 4 4 3 3), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Máy khai thác lắp loa thay máy ném hát bè 1; xe hang động hát bè 2 (bảng ghi "gai gõ nhịp": choi-dieu chấm hai robot hát nốt).
+    //      Hai khối đá rỗng còn sót trên dốc vỡ khi nghe nốt của mình (chỉ để nhìn). Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-mo-da', 10, 'trum', {
+      ten: 'Song ca mỏ đá',
+      mucTieu: 'choi-dieu',
+      deBai: 'Mỏ đá đã thông! Máy khai thác lắp loa thay máy ném, xe hang động hát cùng: song ca đoạn 7. Mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      san: ['######', '#....#', '#.II.#', '######'],
+      doi: [may('KT', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['load', 'throw', 'aim', 'radar', 'shape', 'diag_left', 'diag_right'], themHam: ['note', 'beat'], phatNot: true }),
+        may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      them: { dieu: { r1: '1 1 5 5 6 6 5 5', r2: '3 3 1 3 4 4 3 3' }, daChuong: [{ x: 4, y: 1, not: 6, ben: 1 }, { x: 4, y: 2, not: 4, ben: 1 }] },
+      maMau: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_note(3)']]),
+      loiGiai: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 3, 1, 3, 4, 4, 3, 3])']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_note(3)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 đảo hai nốt giữa', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 3, 3, 1, 4, 4, 3, 3])']]), phaiCoMa: ['sai-not'] }
+      ],
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([3, 3, 1, 3, 4, 4, 3, 3]).'],
+      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['loa', 'da-chuong', 'mo-da'], cuu: null, meo: 'song-song' }
+    }),
     /* HẾT MOI */
   ];
 
