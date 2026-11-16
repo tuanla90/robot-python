@@ -97,6 +97,10 @@
   var CU_15 = ['spray()', 'wait()'];
   /** Xuồng R2 lap-ben-song.5: buộc bè sau đuôi, lên ngã ba, quay trái nhìn phao: đỏ (bãi cạn) thì quay sang phải; đi 4 ô, bè vào bến q. */
   var XU_15 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'turn_left()', 'if color() == "red":', '    turn_right()', '    turn_right()', 'forward(4)', 'drop_net()', 'wait()'];
+  /** lap-ben-song.6: sông hàng 1 chảy sang phải về thác (9, 1); vũng nước đầu nguồn cột 2 (xuồng đứng sẵn); bờ (3, 2), (5, 2) kẹp hõm nước (4, 2) không chảy; hố (3, 3) trên lối về trạm cứu (3, 4);
+   *  máy khai thác ở (5, 3) nhìn xuống tảng đá (5, 4). */
+  var SAN_16 = ['##########', '~~~~~~~~~~', '##~.~.####', '##~u..####', '###.#o####', '##########'];
+  var KT_16 = ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -484,6 +488,30 @@
       sao: { o: 23, nhip: 14 },
       goiY: ['color(): màu phao ở ô trước mũi xuồng.', 'Phao đỏ là bãi cạn: quay sang nhánh kia.'],
       cauDo: { doi: null, lap: 'xuong+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'van', 'cong', 'phun'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 16 · cứu kịp, lai L3 (xe tời bờ): người rơi xuống sông trôi sát bờ về phía thác. R2 tự lắp xe trên bờ tung lưới tời người vào ô nước sát bờ; người tự lên bờ về trạm.
+    //      R1 máy khai thác nạp tảng đá, ném lấp hố trên lối về trạm. Cách một hai bánh + lưới (rẻ). Cách hai xuồng + lưới đứng sẵn trong vũng đầu nguồn (đắt hơn, cứu sớm hơn).
+    man9('lap-ben-song', 6, 'cung-co', {
+      ten: 'Ném lưới từ bờ',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Một người rơi xuống sông, trôi mỗi nhịp một ô về phía thác. Lắp robot tung lưới kéo người vào bờ kịp lúc. Máy khai thác lấp hố trên lối về trạm cứu.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: SAN_16,
+      doi: [may('KT', { x: 5, y: 3, huong: 2 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam', batDauNuoc: { x: 2, y: 2, huong: 0 } })],
+      them: { nguoi: [{ x: 0, y: 1 }], tramCuu: [{ x: 3, y: 4 }], thac: [{ x: 9, y: 1 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (x) { return { x: x, y: 1, huong: 1, suc: 1 }; }) },
+      lapRap: lapR2(['hai-banh', 'xuong', 'omni'], ['day-keo'], [], 8, [
+        cach('hai-banh', 'day-keo', null, [KT_16, ['wait_n(3)', 'cast_net()', 'wait()']]),
+        cach('xuong', 'day-keo', null, [KT_16, ['set_length(1)', 'wait()', 'cast_net()', 'wait()', 'back()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([KT_16, []]),
+      loiSai: [
+        { moTa: 'Tung lưới ngay: người chưa tới, trôi xuống thác', baiLam: doiBai([KT_16, ['cast_net()', 'wait()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Không lấp hố: người lên bờ đứng chờ', baiLam: doiBai([[], ['wait_n(3)', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 16, nhip: 7 },
+      goiY: ['Người trôi mỗi nhịp một ô: đếm xem bao nhiêu nhịp thì người tới trước mũi xe.', 'Xe trên bờ tung lưới: người về ô nước sát bờ rồi tự lên bờ.'],
+      cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'ho', 'nem', 'thac', 'bo'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
   ];
 })();
