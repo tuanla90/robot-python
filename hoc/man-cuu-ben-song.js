@@ -67,6 +67,14 @@
   var XU_R3_9 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(8)', 'forward(7)', 'drop_net()', 'wait()'];
   /** lap-ben-song.2: xuồng R1 tung lưới sang trái bắt bè thứ nhất, lùi một ô kéo bè vào bến q, nhả. */
   var XU_12 = ['cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()'];
+  /** lap-ben-song.3 (ba sân): lục bình L chắn luồng hàng 1 ở cột c; bến q của lục bình ở (c, 2); bờ hàng 3 dài tới cột c (mỏm bờ), sau đó là tường. */
+  function san13(c) {
+    var h1 = '#B~~~~~q~#'.split(''); h1[c] = 'L';
+    var h2 = '#~~~~~~~~#'.split(''); h2[c] = 'q';
+    return ['##########', h1.join(''), h2.join(''), ('#' + '.'.repeat(c) + '##########').slice(0, 10), '##########'];
+  }
+  /** Xuồng lap-ben-song.3: lưới dài 1 bắt bè sau đuôi, chờ xe bờ dọn lục bình, chạy thẳng 6 ô (bè vào bến q (7, 1)), nhả lưới. */
+  var XU_13 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(4)', 'forward(6)', 'drop_net()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -382,6 +390,29 @@
       sao: { o: 16, nhip: 5 },
       goiY: ['Xuồng không qua cống kẹt: lắp thân đi trên bờ.', 'Xe trên bờ tung lưới: bè về ô nước sát mũi xe.'],
       cauDo: { doi: null, lap: 'omni+day-keo', coChe: ['nuoc', 'be', 'luoi', 'cong', 'bo', 'lach'], cuu: 'hang', meo: 'song-song' }
+    }),
+    // 13 · dọn lối (kéo), ba sân: đám lục bình L dạt chắn luồng của xuồng, mỗi sân ở một cột (3, 5, 6). Xuồng R1 dắt bè ra bến q cuối luồng, chờ lối thông.
+    //      R2 tự lắp xe trên bờ dưới luồng: đo tầm tới mỏm bờ (cột của lục bình) rồi tung lưới sang trái tời lục bình vào bến q sát bờ. Điền thẳng số của sân 1 thì trượt sân 2, 3.
+    //      Cách một xích + lưới + hồng ngoại: d = distance(), forward(d). Cách hai rẻ hơn: hai bánh + lưới + khoảng cách: while front_clear(): forward(1).
+    man9('lap-ben-song', 3, 'luyen', {
+      ten: 'Lục bình chắn luồng',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Lục bình dạt chắn luồng, mỗi sân một chỗ. Lắp xe đi trên bờ, đo xem mỏm bờ ở đâu, tới đó tung lưới tời lục bình vào bến. Xuồng chờ lối thông rồi dắt bè ra.',
+      veMaMau: 'Xe R2 chưa có chương trình.',
+      san: [san13(3), san13(5), san13(6)],
+      doi: [may('XU', { x: 2, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['xich', 'hai-banh', 'omni'], ['day-keo', 'kep'], ['hong-ngoai', 'khoang-cach', 'camera'], 8, [
+        cach('xich', 'day-keo', 'hong-ngoai', [XU_13, ['d = distance()', 'forward(d)', 'cast_net("left")', 'wait()']]),
+        cach('hai-banh', 'day-keo', 'khoang-cach', [XU_13, ['while front_clear():', '    forward(1)', 'cast_net("left")', 'wait()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([XU_13, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng forward(2) của sân 1: sân 2, 3 xe dừng sớm, lưới không trúng lục bình', baiLam: doiBai([XU_13, ['forward(2)', 'cast_net("left")', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe tung lưới ngay chỗ xuất phát: lục bình còn chắn luồng', baiLam: doiBai([XU_13, ['cast_net("left")', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 19, nhip: 13 },
+      goiY: ['d = distance(): số ô trống trước mũi xe, tới sát mỏm bờ.', 'Xe trên bờ tung lưới sang trái: lục bình về ô nước sát bờ.'],
+      cauDo: { doi: null, lap: 'xich+day-keo+hong-ngoai', coChe: ['nuoc', 'be', 'luoi', 'bo', 'luc-binh'], cuu: 'hang', meo: 'don-loi' }
     }),
   ];
 })();
