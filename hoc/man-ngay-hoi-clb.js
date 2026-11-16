@@ -113,6 +113,16 @@
   var OMNI_8 = ['slide_r(2)', 'forward(1)', 'pick()', 'turn_right()', 'drop()'];
   function san8() { return ['##########', '#.oo...D##', '###.D#####', '#........#', '##########']; }
 
+  /** tong-hop-clb.9 (hai sân, tự lắp): kẻ sân cho ngày hội. Drone R1 (đặt sẵn) kẻ vạch đỏ hàng trên (giống nhau hai sân). R2 tự lắp gieo cỏ xanh cách một ô một khóm
+   *  dọc hàng dưới; luống sân 1 (Nông trại) dài 6 ô, sân 2 (sân CLB) dài 8 ô: đi tới khi trước mặt hết trống (while front_clear()), đếm i, i % 2 == 0 thì gieo.
+   *  Cách một: hai bánh + gieo hạt + khoảng cách (rẻ): quay lên, tiến, quay phải. Cách hai: omni + gieo hạt + khoảng cách: trượt lên một ô (nhanh, đắt). */
+  var DR_9 = ['ink("red")', 'pen_down()', 'for i in range(7):', '    go_right()', 'pen_up()', 'wait()'];
+  var GIEO_9 = ['ink("green")', 'i = 0', 'while front_clear():', '    if i % 2 == 0:', '        dot()', '    forward(1)', '    i = i + 1'];
+  var BANH_9 = ['turn_left()', 'forward(1)', 'turn_right()'].concat(GIEO_9);
+  var OMNI_9 = ['slide_left()', 'wait()'].concat(GIEO_9);
+  function san9(dai) { var h = '#' + '.'.repeat(dai) + '#'.repeat(9 - dai); return ['##########', '#........#', '##########', h, '#.########', '##########']; }
+  function hinh9(dai) { var h = '.'; for (var x = 1; x <= 8; x++) h += (x <= dai && x % 2 === 1) ? 'g' : '.'; return ['..........', '.rrrrrrrr.', '..........', h + '.', '..........', '..........']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -332,6 +342,31 @@
       sao: { o: 38, nhip: 26 },
       goiY: ['Tay kẹp gắp được thùng gỗ lẫn thanh sắt; nam châm chỉ hút sắt.', 'Omni trượt ngang được, không cần quay.', 'Vật nằm trên ô D (hốc chứa, kho) là đã vào chỗ.'],
       cauDo: { doi: null, lap: 'hai-banh+kep', coChe: ['thung', 'sat', 'kho', 'hoc', 'da-nang', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
+    }),
+    // 9 · nhiều sân, tự lắp (bảng ghi hai robot tự lắp: lõi chỉ cho tự lắp MỘT robot, nên R1 drone đặt sẵn), Nông trại (gieo, luống) + sân CLB (kẻ vạch):
+    //     R2 gieo cỏ cách một ô (i % 2 == 0), luống mỗi sân dài khác nhau: while front_clear() đọc từ sân. Ôn %.
+    man9('tong-hop-clb', 9, 'bien-the', {
+      ten: 'Kẻ sân ngày hội',
+      mucTieu: 'to-hinh', vo: 'nong-trai',
+      khung: { chinh: 14, moiHam: 8 },
+      deBai: 'Hai sân: luống ở Nông trại và sân CLB. Drone kẻ vạch đỏ hàng trên. Lắp cho Luna một robot gieo cỏ xanh dọc hàng dưới, cách một ô một khóm. Luống mỗi sân dài khác nhau.',
+      veMaMau: 'R2 mới có màu cỏ.',
+      san: [san9(6), san9(8)],
+      them: { hinh: [hinh9(6), hinh9(8)] },
+      doi: [may('DR', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 4, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['hai-banh', 'omni', 'drone'], ['son', 'kep', 'loa'], ['khoang-cach', 'camera', 'hong-ngoai'], 8, [
+        cach('hai-banh', 'son', 'khoang-cach', [DR_9, BANH_9]),
+        cach('omni', 'son', 'khoang-cach', [DR_9, OMNI_9])
+      ]),
+      maMau: doiBai([DR_9, ['ink("green")', 'i = 0']]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (gieo ba khóm): sân 2 luống dài 8, thiếu khóm cuối', baiLam: doiBai([DR_9, ['turn_left()', 'forward(1)', 'turn_right()', 'ink("green")', 'for i in range(3):', '    dot()', '    forward(2)']]), phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Gieo mọi ô (quên i % 2 == 0): cỏ mọc kín luống', baiLam: doiBai([DR_9, ['turn_left()', 'forward(1)', 'turn_right()', 'ink("green")', 'while front_clear():', '    dot()', '    forward(1)']]), phaiCoMa: ['to-thua'] },
+        { moTa: 'Quên i = i + 1: i luôn là 0, gieo mọi ô', baiLam: doiBai([DR_9, BANH_9.slice(0, -1)]), phaiCoMa: ['to-thua'] }
+      ],
+      sao: { o: 30, nhip: 22 },
+      goiY: ['i % 2: số dư khi chia i cho 2; i % 2 == 0 là i chẵn: 0, 2, 4…', 'while front_clear(): đi tới khi trước mặt không còn trống.', 'Omni trượt ngang được, không cần quay.'],
+      cauDo: { doi: null, lap: 'hai-banh+son+khoang-cach', coChe: ['gieo', 'vach', 'luong', 'chia-du', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
     })
   ];
 
