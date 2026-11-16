@@ -13,6 +13,7 @@ Kế hoạch: [KE-HOACH-MUA-8.md](../KE-HOACH-MUA-8.md). Nhánh `claude/mua-8-ha
 | P3 gói 1 Bánh gai: `banh-gai` Bám đá ướt, `tu-dien` Sổ tay đường hang | xong, 20/20 màn đạt máy kiểm | nhánh |
 | P3 gói 2 Loa: `loa` Gõ đá chuông, `tap-hop` Không gõ trùng | xong, 20/20 màn đạt máy kiểm | nhánh |
 | P3 gói 3 Cảm biến âm thanh: `am-thanh` Nghe tiếng vang, `che-am-thanh` Chế lệnh: dò tiếng vang | xong, 20/20 màn đạt máy kiểm | nhánh |
+| P3 gói 4 Ngách hang: `san-hang-dong` Chui ngách ngầm, `che-hang-dong` Chế lệnh: vượt ngách | xong, 20/20 màn đạt máy kiểm | nhánh |
 
 Gói 2 sửa ở phiên này: loa.2 (lời sai thứ hai thắng 3 sao), loa.6 (đá cách 4 ô không nghe: đi tới chỗ rẽ rồi mới lặp), loa.10 (đường sai, khung 12 dòng),
 tap-hop.3 (nước dâng 6 nhịp: tạo túi trong vòng là hết nhịp), tap-hop.4 viết lại "Đếm nốt trong túi" (2 sân, `duLieuSan` cho `s`, `forward(len(s))`),
@@ -27,6 +28,12 @@ Lưu ý khi dựng sân: đâm vách chỉ chặn bánh (không thua), nên đo�
 Chuông vừa rời khỏi vẫn nghe được (cách 1 ô), nên không đặt `wait_echo()` ngay sau một chuông đá; đá chuông vỡ thì hết vang nên dùng được.
 Soát trên trình duyệt: am-thanh.4, am-thanh.7, che-am-thanh.10 (3 sao, huy hiệu).
 
+Gói 4: bước vào miệng ngách tính một bước, ra miệng kia giữ hướng; `hear()` đo đường chim bay (không theo ngách) nên màn dạy chui rồi mới nghe / đo.
+Sân tầng ngách dựng bằng hàm `tang(n, coDa, duoi, rong, bCuoi)` trong man-san-hang-dong.js. Hàm chế: `dive(n)`, `echo_exit()`, `dive_once(n, s)` (nhắc `ring_once` gói 2), `dive_all(book)`.
+Lưu ý: chương trình có `while` (kể cả trong hàm như `wait_echo`) mà chạm `nhipToiDa` thì máy chấm báo `vong-vo-han` chứ không `qua-nhieu-nhip`; màn trần nhịp nên không có `while`.
+Lõi: ngách không kiểm đá chuông ở miệng ra (`ngach-chan` chỉ xét thùng / vật / cửa / đồng đội), nên không đặt đá chuông lên miệng ngách.
+Soát trên trình duyệt: san-hang-dong.10, che-hang-dong.6 (3 sao).
+
 Khay: dòng từ điển ba cặp (`a = {"dau": 3, "giua": 6, "cuoi": 3}`) tràn ô ở khung hẹp; nay hàng code đó tự cao lên (flex-grow tới 2,2 lần, `vuaDong` trong thanh-phan.js), các hàng khác thấp đi một chút.
 
 Máy kiểm:
@@ -40,8 +47,8 @@ Nhánh thêm đỏ `kiem-loi-giai` (và `kiem-lo-trinh` dừng sớm hơn, ở a
 
 ## Còn lại
 
-1. **P3 gói 4–10 (140 màn)** vẫn là bản PDM8 cũ: đề chưa mở bằng "Giúp Sola", gợi ý chưa "Luna:", nhiều dòng không lắp được bằng khay, nhiều màn chỉ một lời sai.
-2. **Màn cũ gói 3–8 gọi hàm của gói 1–2 cũ** mà bản viết lại đã bỏ: `spike_step` (thu-gai.4), `march_beat` (gói 4),
+1. **P3 gói 5–10 (120 màn)** vẫn là bản PDM8 cũ: đề chưa mở bằng "Giúp Sola", gợi ý chưa "Luna:", nhiều dòng không lắp được bằng khay, nhiều màn chỉ một lời sai.
+2. **Màn cũ gói 3–8 gọi hàm của gói 1–2 cũ** mà bản viết lại đã bỏ: `spike_step` (thu-gai.4),
    `count_unique` (4 màn), `drum_hit` (4 màn). Vì vậy `hoc/kiem-lo-trinh.mjs` và `hoc/kiem-loi-giai.mjs` đỏ trên nhánh này. Gộp main trước khi viết lại các gói đó thì cần cầu tạm
    (cấp 4 hàm đó làm hàm của màn cho các màn cũ) hay viết lại gói 3–4 trước.
 3. Hàm mùa 9 phải giữ (tên, tham số, thân): `play_note` (đã có ở loa.5), `go_echo` (gói 3), `glide_step`, `glide_tunnel`, `slide_stop`, `echo_glide` (gói 5), `crack_glide` (gói 6),
