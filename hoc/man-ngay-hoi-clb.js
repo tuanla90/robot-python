@@ -218,6 +218,18 @@
   var BANH_18 = ['n = listen()', 'd = n - 5', 'if d < 0:', '    turn_left()', 'else:', '    turn_right()', 'forward(abs(d))', 'if d < 0:', '    turn_right()', 'else:', '    turn_left()', 'play_note(n)', 'forward(2)'];
   function san18(n) { var a = '###########'.split(''), b = a.slice(); a[n] = 'F'; b[n] = '.'; return ['###########', a.join(''), b.join(''), '#.........#', '###########', '###########', '#.F.......#', '###########']; }
 
+  /** trum-mua-clb.9 (hai sân CLB, song ca tám đoạn): ghép đủ tám đoạn của tám nơi (G1–G8) thành bài; mỗi bè khai tám list đoạn, nối bằng +, play_part một lần.
+   *  Lệch bảng: (1) bảng ghi hai robot tự lắp; lõi lắp ráp chỉ cho một khe tự lắp, nên R1 Sola là xe chở hàng lắp loa đặt sẵn, R2 Luna tự lắp xe có loa.
+   *  (2) bảng ghi 'vừa làm việc vừa giữ nhịp': lõi không cho đội choi-dieu thắng khi có ô cờ (xeToiCo chỉ bật ở mục tiêu toi-co), nên hát tại chỗ.
+   *  (3) hát tại chỗ thì mọi thân có loa cùng nhịp: hai cách lắp chỉ khác giá và độ dài code (như lap-clb.10): omni + loa nối tám đoạn một dòng; hai bánh + loa (rẻ) nối dần qua biến bai.
+   *  Hai sân giống nhau, chỉ khác tượng đá chuông trang trí. Ôn list, nối list bằng +. */
+  function be19(be) { var ds = []; for (var g = 1; g <= 8; g++) ds.push(khaiDoan('d' + g, be[g])); return ds; }
+  var PLAY_19 = 'play_part(d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8)';
+  var CH_19 = be19(B1).concat([PLAY_19]);
+  var OMNI_19 = be19(B2).concat([PLAY_19]);
+  var BANH_19 = be19(B2).concat(['bai = d1 + d2 + d3 + d4', 'bai = bai + d5 + d6 + d7 + d8', 'play_part(bai)']);
+  var SAN_19 = ['#####', '#...#', '#####', '#...#', '#####'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -694,6 +706,31 @@
       sao: { o: 33, nhip: 21 },
       goiY: ['abs(d): bỏ dấu âm: abs(-3) = 3.', 'd = n - 5 âm: ngách ở bên trái cột 5.', 'Omni trượt một ô mỗi nhịp: slide_left() rồi wait().'],
       cauDo: { doi: null, lap: 'omni+loa+am-thanh', coChe: ['da-chuong', 'not', 'mic', 'ngach', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
+    }),
+    // 19 · song ca tám đoạn, hai sân CLB: R1 xe chở hàng lắp loa (đặt sẵn) hát bè 1, R2 tự lắp xe có loa hát bè 2; mỗi bè khai tám list đoạn, nối bằng +. Hát tại chỗ.
+    man9('trum-mua-clb', 9, 'bien-the', {
+      ten: 'Tám đoạn thành bài',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      khung: { chinh: 14, moiHam: 8 },
+      deBai: 'Tổng duyệt cả bài! Ghép tám đoạn của tám nơi: Kho, Nhà máy, Bãi, Cảng, Bến, Nông trại, Mỏ, Hang. Sola hát bè 1, Luna lắp một robot có loa hát bè 2. Hai bạn bắt đầu cùng nhịp.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [SAN_19, SAN_19],
+      them: { dieu: { r1: noiDieu(B1, [1, 2, 3, 4, 5, 6, 7, 8]), r2: noiDieu(B2, [1, 2, 3, 4, 5, 6, 7, 8]) }, daChuong: [[], [{ x: 3, y: 1, not: 8, ben: 1 }]] },
+      doi: [xeLoa('CH', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['omni', 'hai-banh', 'drone'], ['loa', 'kep', 'son'], [], 7, [
+        cach('omni', 'loa', null, [CH_19, OMNI_19]),
+        cach('hai-banh', 'loa', null, [CH_19, BANH_19])
+      ]),
+      maMau: doiBai([CH_19, be19(B2)]),
+      loiSai: [
+        { moTa: 'Khai đủ tám list mà quên play_part: robot đứng im', baiLam: doiBai([CH_19, be19(B2)]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Ghép thiếu đoạn 5 (d1 + d2 + d3 + d4 + d6…): lệch bè 1 từ đoạn 5', baiLam: doiBai([CH_19, be19(B2).concat(['play_part(d1 + d2 + d3 + d4 + d6 + d7 + d8)'])]), phaiCoMa: ['sai-not'] },
+        { moTa: 'Bè 2 chép nhầm bè 1 đoạn Kho: hai bè trùng, sai nốt bè 2', baiLam: doiBai([CH_19, [khaiDoan('d1', B1[1])].concat(be19(B2).slice(1), [PLAY_19])]), phaiCoMa: ['sai-not'] }
+      ],
+      sao: { o: 29, nhip: 150 },
+      goiY: ['Nối list bằng +: d1 + d2 là hai đoạn liền nhau.', 'play_part(notes): hát lần lượt từng nốt trong list.', 'Drone không mang nổi loa.'],
+      cauDo: { doi: null, lap: 'omni+loa', coChe: ['loa', 'ghep-bai', 'list', 'tam-doan', 'nhieu-san'], cuu: null, meo: 'song-song' }
     })
   ];
 
