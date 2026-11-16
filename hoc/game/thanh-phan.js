@@ -1108,10 +1108,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (CHE_TD && slot === 'so') {                                                      // mùa 8: số lấy từ biến gán n = listen(), cảm biến âm thanh, từ điển (d["a"], d[k]), độ dài len(s)
         var them = function (x) { if (kq.indexOf(x) < 0) kq.push(x); };
-        for (j = 0; j < i && j < arr.length; j++) { var gn = tachTD(chuoi(arr[j])); if (gn && gn.kieu === 'ganN') them(gn.ds[0]); }
+        var bienGan = [];                                                                 // n = listen() ở trên: n dùng được, và sổ tra bằng n (d[n])
+        for (j = 0; j < i && j < arr.length; j++) { var gn = tachTD(chuoi(arr[j])); if (gn && gn.kieu === 'ganN') { them(gn.ds[0]); if (bienGan.indexOf(gn.ds[0]) < 0) bienGan.push(gn.ds[0]); } }
         TD_NGUON.forEach(function (n) { them(n + '()'); });
         vongTD.forEach(them);
         var dsD = tenTDTai(arr, i, 'dict'), dsS = tenTDTai(arr, i, 'set'), pTD = bienDuoc().filter(function (p) { return kieuBienCua(p) === 'td'; });
+        dsD.concat(pTD).forEach(function (dn) { bienGan.forEach(function (b) { them(dn + '[' + b + ']'); }); });
         dsD.forEach(function (dn) { khoaCuaTD(arr, i, dn).forEach(function (k) { them(dn + '[' + k + ']'); }); });
         pTD.forEach(function (p) { TD_KHOA.forEach(function (k) { them(p + '[' + khoaChu(k) + ']'); }); });          // đối số từ điển của hàm đang sửa: khoá theo màn
         dsD.concat(dsS, pTD).forEach(function (n) { them('len(' + n + ')'); });

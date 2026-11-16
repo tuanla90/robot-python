@@ -223,6 +223,10 @@ console.log('\n== 6. Khung chương trình: chạm ô của dòng mùa 8 ==');
   E5.cham(2, '.num');
   kiem('chạm đối số của follow(a) (đối số là sổ) → chọn tên sổ a, b', ['a', 'b'].every((x) => nutBien(E5).includes(x)) && !nutBien(E5).includes('1'), J(nutBien(E5)));
   E5.dongBang();
+  const E6 = K.dungEditor(['d = {2: 5, 4: 7}', 'for i in range(2):', '    n = listen()', '    play_note(1)']);
+  E6.cham(3, '.num');
+  kiem('chạm số trong play_note(1) (dưới d = {...} và n = listen()) → chip có d[n] (tra sổ bằng nốt vừa nghe)', ['n', 'd[n]', 'd[2]'].every((x) => nutBien(E6).includes(x)), J(nutBien(E6)));
+  E6.dongBang();
 }
 
 console.log('\n' + (hong ? 'HỎNG ' + hong + ' / ' + (dat + hong) : 'ĐẠT cả ' + dat) + ' phép kiểm nhập liệu mùa 8');

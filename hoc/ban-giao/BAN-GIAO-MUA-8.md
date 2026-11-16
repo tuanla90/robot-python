@@ -64,6 +64,23 @@ hang-cu.8 dùng điều này (cổng chỉ mở đúng một nhịp, ngân thừ
 Hàm chế: `crack_switch()` (thân mùa 9), `spin_crack()`, `ring_gate(n, k)`. Bỏ `echo_gate`, `belt_echo`, `dict_gate`, `unique_echo_step` và `spin_crack` cũ (gói 9, 10 cũ còn gọi).
 Soát trên trình duyệt: hang-cu.8, hang-cu.10, che-hang-cu.10 (3 sao).
 
+Gói 9 (đội R1 + R2): R1 của Sola (bánh gai, loa, mic) và R2 máy mỏ đá của Luna (bánh omni ghép nhịp `cheoGhep`, tay ném `nemDa`, radar; bỏ `diag_*`, `shape`, `vatDang` vì mùa 8 chưa có hình).
+Hai robot chung một sân: R2 hất đá `o` lấp hố `u` hay đè nút `M` mở cổng `C` (`noi`); R1 gõ đúng nốt làm vỡ đá chuông chắn đường R2.
+Loa phá đá trong Manhattan ≤ 3 hoặc trên tia thẳng từ mũi xe (tường chặn tia); phát nốt khác thì vạch đã ngân về 0.
+`lob()` 2 nhịp, `aim_lob(3)` 3 nhịp (chạy đà rồi lùi), lướt hết dải trong 1 nhịp. Đặt đá chuông sát bên phải R2 thì `slide_r(1)` trong `fill_for_mate` đâm đá.
+Hàm chế: `fill_for_mate(k)`, `crack_for_mate()` (thân mùa 9), `ring_for_mate(k)` (`go_echo()`, `ring_gate(listen(), k)`).
+Bỏ `heavy_gate_lob`, `wait_crack_go`, `shape_lob_step`, `dict_team_lob` của bản cũ. Soát trên trình duyệt: doi-hang-dong.8, doi-hang-dong.10, che-doi-hang-dong.10 (3 sao, huy hiệu).
+
+Gói 10 (R1 một mình, mọi màn 2–3 hầm, `nhipTheo: 'tong'`): nhắc lại cả 8 gói, kể cả ngách (gói 4) mà gói 9 chưa dùng.
+`hear()` đo Manhattan tới nguồn gần nhất, kể cả chuông vừa rời (cách 1 ô), nên `echo_crack_step()` không gọi liền hai lần.
+Giữa hai lần có lướt (`glide_step`) để chuông cũ xa ra, hoặc dùng chuông `phamVi` 3 (trum-mua-hang.4: `while hear() > 0: tunnel_crack_glide()`).
+Hàm chế: `echo_crack_step()`, `tunnel_crack_glide()` (thân mùa 9), `ring_dive(k)` (`n = listen()`, `note(n, k)`, `wait()`, `forward(3)`). `dive(listen())` (gói 4) dùng lại cho tầng ngách có đá.
+Soát trên trình duyệt: trum-mua-hang.10 (3 sao, huy hiệu), trum-mua-hang.6 (3 sao).
+
+Khay `d[n]`: trước đây chạm ô số chỉ có `d[2]`, `d[4]` (khoá đặt thẳng) và `d[k]` (biến vòng `for k in d`), không có `d[n]` dù `n = listen()` nằm ngay trên.
+Các màn sổ ám hiệu gói 7, 9, 10 vì vậy không lắp được bằng khay. Nay `thanh-phan.js` thêm chip `sổ[biến]` cho mọi biến gán `n = …` ở các dòng trên, cả với sổ là đối số hàm.
+`kiem-nhap-mua-8.mjs` có thêm phép 88. Trên trình duyệt chưa soát được chip này: tab xem thử treo ở `thanh-phan.js` sau khi xoá bộ đệm service worker, dù curl lấy tệp bình thường.
+
 Khay: dòng từ điển ba cặp (`a = {"dau": 3, "giua": 6, "cuoi": 3}`) tràn ô ở khung hẹp; nay hàng code đó tự cao lên (flex-grow tới 2,2 lần, `vuaDong` trong thanh-phan.js), các hàng khác thấp đi một chút.
 
 Máy kiểm:
@@ -77,10 +94,8 @@ Nhánh thêm đỏ `kiem-loi-giai` (và `kiem-lo-trinh` dừng sớm hơn, ở a
 
 ## Còn lại
 
-1. **P3 gói 9–10 (40 màn)** vẫn là bản PDM8 cũ: đề chưa mở bằng "Giúp Sola", gợi ý chưa "Luna:", nhiều dòng không lắp được bằng khay, nhiều màn chỉ một lời sai.
-2. **Màn cũ gói 9, 10 gọi hàm cũ đã bỏ**: `drum_hit` (gói 2 cũ), `crack_step`, `unique_notes`, `march_note(n)` một đối số (gói 6 cũ). Vì vậy `hoc/kiem-lo-trinh.mjs` và `hoc/kiem-loi-giai.mjs` đỏ trên nhánh này; hết khi viết lại các gói đó.
-3. Hàm mùa 9 phải giữ (tên, tham số, thân): `play_note` (đã có ở loa.5), `go_echo` (gói 3), `glide_step`, `glide_tunnel`, `slide_stop`, `echo_glide` (gói 5), `crack_glide` (gói 6),
-   `crack_tunnel`, `decode_glide` (thân nay hai dòng, cùng hành vi), `listen_unique_step` (gói 7), `crack_switch` (gói 8), `fill_for_mate`, `crack_for_mate`, `aim_lob`, `slide_r` (gói 9), `echo_crack_step`, `tunnel_crack_glide` (gói 10).
-4. Màn cũ có lỗi dữ liệu: tong-hop-hang.9 miệng ngách (3, 1), (4, 1) đè tường; doi-hang-dong.9, che-doi-hang-dong.5–.8, .10 dùng `vatDang` chưa có hình.
-5. P4 tổng soát (recall gói 9–10, huy hiệu, `npm test` cả bộ), mùa 8 vẫn ẩn tới khi user cho mở. Phim gói mùa 8 không thuộc phạm vi.
+1. P3 xong cả 10 gói (200/200 màn đạt `kiem-man-mua-8`). Còn P4 tổng soát: `npm test` cả bộ, rồi gộp main một lần qua /push-main. Mùa 8 vẫn ẩn tới khi user cho mở. Phim gói mùa 8 không thuộc phạm vi.
+2. Hàm mùa 9 phải giữ (tên, tham số, thân): `play_note` (loa.5), `go_echo` (gói 3), `glide_step`, `glide_tunnel`, `slide_stop`, `echo_glide` (gói 5), `crack_glide` (gói 6),
+   `crack_tunnel`, `decode_glide` (thân nay hai dòng, cùng hành vi), `listen_unique_step` (gói 7), `crack_switch` (gói 8), `fill_for_mate`, `crack_for_mate`, `aim_lob`, `slide_r` (gói 9), `echo_crack_step`, `tunnel_crack_glide` (gói 10): đã giữ.
+3. Soát lại trên trình duyệt chip `d[n]` của khay khi tab xem thử chạy lại được (mở một màn sổ ám hiệu, chạm ô số trong `play_note(…)`).
 6. Thẻ bộ phận tay loa còn tên cũ "Loa cộng hưởng" (gói đã đổi tên ngắn "Loa"); xem có cần đổi theo.
