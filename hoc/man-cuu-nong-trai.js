@@ -80,6 +80,11 @@
   var CH_8 = ['pick()', 'back()'];
   var DR_R3_8 = ['land()', 'wait_n(7)', 'take_off()', 'go_down()', 'land()', 'take_off()', 'go_down()', 'ink("yellow")', 'for i in range(5):', '    dot()', '    go_right()',
     'land()', 'take_off()', 'go_down()', 'for i in range(5):', '    dot()', '    go_left()'];
+  /** Drone khách khoá cuu-nong-trai.9: đậu chờ, sang ô sạc 1; theo danh sách độ dài luống a = [3, 2]: mỗi đoạn đáp sạc, cất cánh, gieo n ô, bay sang ô sạc kế. */
+  var DR_R3_9 = ['land()', 'wait_n(3)', 'take_off()', 'go_right()', 'go_right()', 'ink("red")', 'a = [3, 2]', 'for n in a:', '    land()', '    take_off()',
+    '    for i in range(n):', '        go_right()', '        dot()', '    go_right()'];
+  var CH_9 = ['grab_clear()'];
+  var PL_9 = ['go_up()', 'clear_iron("D")'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -301,6 +306,33 @@
       sao: { o: 42, nhip: 30 },
       goiY: ['Drone đậu trên bè sạc thì sạc như ô sạc P.', 'Xuồng lùi thì bè trong lưới đi theo.'],
       cauDo: { doi: ['XU', 'CH'], lap: null, coChe: ['be-sac', 'nuoc', 'luoi', 'bao-hat', 'sac', 'pin', 'gieo', 'r3'], cuu: 'may', meo: 'tiep-suc' }
+    }),
+    // 9 · cứu máy, song song, nhắc lại (G1 gắp gỗ, G3 hút sắt clear_iron, G4 grab_clear): drone khách (R3, khoá) đi gieo theo danh sách độ dài luống a = [3, 2],
+    //     đầu mỗi đoạn đáp sạc. Bão phủ bao hạt (gỗ) lên ô sạc thứ nhất, cày sắt rơi lên ô sạc thứ hai. Xe chở hàng grab_clear() gắp bao lùi ra;
+    //     nhện bước lên cày, clear_iron("D") hút cày mang xuống. Hai việc phải xong trước khi drone khách tới. Bẫy: xe cứu hỏa (xích không ủi được bao, không hút sắt).
+    man9('cuu-nong-trai', 9, 'bien-the', {
+      ten: 'Bao hạt và cày sắt',
+      khung: { chinh: 16, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['grab_clear', 'clear_iron']),
+      deBai: 'Drone khách gieo theo danh sách a = [3, 2]: đầu mỗi đoạn đáp sạc. Bao hạt đè ô sạc thứ nhất, cày sắt đè ô sạc thứ hai. Chọn hai bạn: ai gắp gỗ, ai hút sắt? Nhớ grab_clear() và clear_iron(d).',
+      veMaMau: 'Đọc chương trình của drone khoá: nó đáp ở hai ô sạc nào?',
+      san: ['############', '#..........#', '#..P...P...#', '#..........#', '#..........#', '############'],
+      them: { vatThem: [{ x: 3, y: 2 }, { x: 7, y: 2, chat: 'sat' }] },
+      hinh: luong(12, 6, [{ y: 2, x0: 4, mau: 'rrr.rr' }]),
+      doi: [khe({ x: 3, y: 3, huong: 0 }), khe({ x: 7, y: 3, huong: 0 }),
+        may('DR', { x: 1, y: 2, huong: 1 }, { son: 'tim', coDinh: true, pin: 9 })],
+      chonDoi: {
+        menu: ['CH', 'PL', 'CU'],
+        cachMau: [{ chon: ['CH', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([CH_9, PL_9, DR_R3_9]) }]
+      },
+      maMau: doiBai([[], [], DR_R3_9]),
+      loiSai: [
+        { moTa: 'Không gắp bao hạt: drone khách không đáp được ô sạc thứ nhất', baiLam: doiBai([[], PL_9, DR_R3_9]), phaiCoMa: ['dap-bi-chan'] },
+        { moTa: 'Nhện chưa bước lên cày đã hút: cày còn đè ô sạc', baiLam: doiBai([CH_9, ['clear_iron("D")'], DR_R3_9]), phaiCoMa: ['dap-bi-chan'] }
+      ],
+      sao: { o: 48, nhip: 22 },
+      goiY: ['grab_clear(): gắp vật trước mũi rồi lùi một ô.', 'clear_iron(d): hút sắt dưới bụng nhện rồi bước theo hướng d.'],
+      cauDo: { doi: ['CH', 'PL'], lap: null, coChe: ['bao-hat', 'sat', 'sac', 'pin', 'gieo', 'list', 'r3'], cuu: 'may', meo: 'song-song' }
     }),
   ];
 })();
