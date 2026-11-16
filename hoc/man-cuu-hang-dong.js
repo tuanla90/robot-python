@@ -66,6 +66,11 @@
   var PL_4 = ['go_right()', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()'];
   var HD_4 = ['wait_n(4)', 'forward(7)'];
 
+  /** cuu-hang-dong.5: sông ngầm dâng, nhà thám hiểm mặc áo phao kẹt ở cuối luồng (7, 2) dưới vách đá; đá chuông (4, 2) rơi chắn luồng xuồng.
+   *  Xe hang động tiến một ô (đá trong tầm 3), nghe nốt, hát lại: đá vỡ. Xuồng chờ, chạy qua chỗ đá, cách người 2 ô (lưới dài 2) tung lưới, lùi hai ô kéo người tới dưới bờ đá; người lên bờ về trạm. */
+  var HD_5 = ['forward(1)', 'play_note(listen())'];
+  var XU_5 = ['wait_n(2)', 'forward(4)', 'cast_net()', 'wait()', 'back()', 'back()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -178,6 +183,31 @@
       sao: { o: 17, nhip: 14 },
       goiY: ['Bước vào miệng ngách là chui ra miệng kia cùng màu, giữ hướng.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
       cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ngach', 'nut-de', 'cua'], cuu: 'hang', meo: 'giu-cua' }
+    }),
+    // 5 · cứu người, dọn lối + cứu kịp: sông ngầm dâng sau bão, nhà thám hiểm (áo phao) kẹt dưới vách đá cuối luồng, không có bờ để lên; đá chuông rơi chắn luồng.
+    //     Xe hang động tiến một ô, listen() rồi hát lại: đá vỡ. Xuồng qua chỗ đá, tung lưới kéo người lùi về dưới bờ đá; người tự lên bờ về trạm cứu.
+    //     Bẫy: robot phân loại (nhện không bơi, không hát). Khe thứ hai: xuồng xuất phát trong luồng, cỗ máy khác đứng ở hốc dưới.
+    man9('cuu-hang-dong', 5, 'cung-co', {
+      ten: 'Người dưới vách sông ngầm',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Sông ngầm dâng, nhà thám hiểm kẹt dưới vách đá cuối luồng. Đá chuông chắn luồng. Chọn hai bạn: ai hát vỡ đá, ai kéo người về dưới bờ đá cho người lên trạm cứu?',
+      veMaMau: 'Đá chuông còn chắn luồng.',
+      san: ['##########', '#.....####', '#~~~~~~~~#', '#.########', '##########'],
+      them: { daChuong: [{ x: 4, y: 2, not: 6, ben: 1 }], nguoi: [{ x: 7, y: 2 }], tramCuu: [{ x: 3, y: 1 }] },
+      doi: [khe({ x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      chonDoi: {
+        menu: ['HD', 'XU', 'PL'],
+        cachMau: [{ chon: ['HD', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_5, XU_5]) }]
+      },
+      maMau: doiBai([['forward(1)'], ['wait_n(2)']]),
+      loiSai: [
+        { moTa: 'Xe hang động hát ngay chỗ xuất phát: xa đá 4 ô, đá không vỡ', baiLam: doiBai([['play_note(listen())'], XU_5]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xuồng lùi một ô: người còn dưới vách, không lên bờ được', baiLam: doiBai([HD_5, XU_5.slice(0, 5)]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xuồng chạy sát người rồi mới tung lưới: lưới dài 2 ô, vướng người', baiLam: doiBai([HD_5, ['wait_n(2)', 'forward(5)', 'cast_net()', 'wait()', 'back()', 'back()', 'back()']]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 23, nhip: 13 },
+      goiY: ['listen(): nốt của đá chuông gần nhất.', 'cast_net(): lưới dài 2 ô, bắt người cách mũi xuồng đúng 2 ô; back(): kéo người theo.', 'Người được kéo tới ô nước sát bờ thì tự lên bờ, đi về trạm cứu.'],
+      cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['song-ngam', 'da-chuong', 'not', 'nguoi', 'luoi'], cuu: 'nguoi', meo: 'cuu-kip' }
     })
   ];
 
