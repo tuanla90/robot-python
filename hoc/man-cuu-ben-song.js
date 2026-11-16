@@ -84,6 +84,18 @@
   function dong14(suc) { return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (x) { return { x: x, y: 4, huong: 1, suc: suc }; }); }
   /** Xuồng R1 lap-ben-song.4: lưới dài 1 trúng van V ngay trước mũi, cống mở. */
   var XU_14 = ['set_length(1)', 'cast_net()', 'wait()'];
+  /** lap-ben-song.5 (ba sân): kênh cột 5 lên ngã ba (5, 1); luồng sâu (sau: 'phai' | 'trai') có bến q, bên kia là bãi cạn (ô sàn) ngay cạnh ngã ba.
+   *  Phao: ô bãi cạn sơn đỏ, ô nước đầu luồng sâu sơn xanh. Máy khai thác đứng bờ (4, 3), tảng đá giữa kênh (5, 3), hố bờ (4, 5). */
+  function san15(sau) {
+    return ['###########', sau === 'phai' ? '#~~~.~~~q~#' : '#~q~~~.~~~#', '#####~#####', '####.~#####', '####.~#####', '####u~#####', '#####B#####', '###########'];
+  }
+  function son15(sau) {
+    var h = '...........'.split(''); h[sau === 'phai' ? 4 : 6] = 'r'; h[sau === 'phai' ? 6 : 4] = 'b';
+    return ['...........', h.join(''), '...........', '...........', '...........', '...........', '...........', '...........'];
+  }
+  var KT_15 = ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'];
+  /** Xuồng R2 lap-ben-song.5: buộc bè sau đuôi, lên ngã ba, quay trái nhìn phao: đỏ (bãi cạn) thì quay sang phải; đi 4 ô, bè vào bến q. */
+  var XU_15 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'turn_left()', 'if color() == "red":', '    turn_right()', '    turn_right()', 'forward(4)', 'drop_net()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -446,6 +458,31 @@
       sao: { o: 24, nhip: 12 },
       goiY: ['h, s = flow(): s là số ô nước đẩy xuồng mỗi nhịp.', 'Vào dòng ở cột x thì trôi tới cột x + s. Cửa lạch ở cột 5.'],
       cauDo: { doi: null, lap: 'xuong+day-keo+dong-chay', coChe: ['nuoc', 'dong', 'be', 'luoi', 'van', 'cong'], cuu: 'hang', meo: 'dan-duong' }
+    }),
+    // 15 · đọc rồi chọn, ba sân, lai L14 (xuồng + camera): kênh lên tới ngã ba, mỗi nhánh có phao đánh dấu: phao đỏ trên bãi cạn, phao xanh ở luồng sâu.
+    //      Mỗi sân luồng sâu ở một bên (phải, trái, phải); bến q trong luồng sâu. R1 máy khai thác nạp tảng đá giữa kênh, ném lấp hố bờ.
+    //      R2 tự lắp xuồng dắt bè sau đuôi, tới ngã ba quay trái đọc màu phao: đỏ thì quay sang phải. Cách hai rẻ hơn: khoảng cách (front_clear(): bãi cạn không trống).
+    man9('lap-ben-song', 5, 'luyen', {
+      ten: 'Phao đỏ, phao xanh',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Ở ngã ba, phao đỏ đánh dấu bãi cạn, phao xanh đánh dấu luồng sâu. Lắp xuồng dắt bè, tới ngã ba đọc màu phao rồi chọn nhánh sâu. Máy khai thác dọn đá giữa kênh.',
+      veMaMau: 'Xuồng R2 chưa có chương trình.',
+      san: [san15('phai'), san15('trai'), san15('phai')],
+      doi: [may('KT', { x: 4, y: 3, huong: 1 }), khe({ x: 5, y: 5, huong: 0 }, { son: 'lam', batDauNuoc: { x: 5, y: 5, huong: 0 } })],
+      them: { vatThem: [[{ x: 5, y: 3 }], [{ x: 5, y: 3 }], [{ x: 5, y: 3 }]], sonBanDau: [son15('phai'), son15('trai'), son15('phai')] },
+      lapRap: lapR2(['xuong'], ['day-keo'], ['camera', 'khoang-cach', 'dong-chay'], 10, [
+        cach('xuong', 'day-keo', 'camera', [KT_15, XU_15]),
+        cach('xuong', 'day-keo', 'khoang-cach', [KT_15, XU_15.map(function (d) { return d === 'if color() == "red":' ? 'if not front_clear():' : d; })])
+      ], { moLai: ['L14'] }),
+      maMau: doiBai([KT_15, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng nhánh phải của sân 1: sân 2 luồng sâu bên trái, xuồng đâm bãi cạn', baiLam: doiBai([KT_15, ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'turn_right()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nhầm màu: thấy phao xanh mới quay sang phải', baiLam: doiBai([KT_15, XU_15.map(function (d) { return d === 'if color() == "red":' ? 'if color() == "blue":' : d; })]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác không dọn đá: xuồng vướng đá giữa kênh', baiLam: doiBai([[], XU_15]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 26, nhip: 14 },
+      goiY: ['color(): màu phao ở ô trước mũi xuồng.', 'Phao đỏ là bãi cạn: quay sang nhánh kia.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'ho', 'nem'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
   ];
 })();
