@@ -99,6 +99,14 @@
   var BE1_9 = 'play_part([5, 5, 4, 4, 3, 3, 2, 2])';
   var BE2_9 = 'play_part([7, 7, 6, 6, 5, 5, 4, 4])';
 
+  /** lap-clb.1: xe chở hàng R1 (đặt sẵn) mang thùng dụng cụ A vào kho D cuối lối; thùng loa B đổ ngay giữa lối, tay kẹp đang bận giữ A nên không gắp được B.
+   *  R2 tự lắp xe có bánh + tay lưới (xe tời bờ L3): tới dưới hốc D2, tung lưới lên kéo B ra khỏi lối vào hốc D2. Xe chở hàng chờ lối thông rồi chạy qua.
+   *  Cách một (rẻ): hai bánh + lưới, quay, tiến, quay. Cách hai (nhanh): omni + lưới, trượt ngang thẳng tới hốc. */
+  var CH_11A = ['pick()', 'wait_n(3)', 'forward(6)', 'drop()'];
+  var BANH_11 = ['turn_right()', 'forward(3)', 'turn_left()', 'cast_net()', 'wait()'];
+  var CH_11B = ['pick()', 'wait()', 'forward(6)', 'drop()'];
+  var OMNI_11 = ['slide_r(3)', 'cast_net()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -367,6 +375,32 @@
       sao: { o: 7, nhip: 10 },
       goiY: ['Cỗ máy nào có loa thì mới hát được.', 'Bè 2: play_part([7, 7, 6, 6, 5, 5, 4, 4]).', 'Hai bạn bắt đầu cùng một nhịp.'],
       cauDo: { doi: ['HD', 'HD'], lap: null, coChe: ['loa', 'da-chuong', 'clb', 'chon-may-hat'], cuu: null, meo: 'song-song' }
+    }),
+    /* ========================================================================
+       CHƯƠNG 2: lap-clb (10 màn) · R1 đặt sẵn đổi mỗi màn, R2 Luna tự lắp từ bảng 3 thẻ mỗi khe, không gợi ý tổ hợp
+       ======================================================================== */
+    // 11 · dọn lối (kéo), R1 đặt sẵn xe chở hàng; R2 lai L3 xe tời bờ, trộn Kho (thùng gỗ, kho) + Bến (tay lưới): thùng loa đổ giữa lối, kẹp của xe chở hàng đang bận giữ thùng khác.
+    //      R2 tự lắp xe có bánh + tay lưới, tung lưới kéo thùng loa vào hốc chứa D2 bên lối. Cách hai omni + lưới đắt hơn mà nhanh hơn (trượt, không quay).
+    man9('lap-clb', 1, 'lam-quen', {
+      ten: 'Kéo thùng khỏi lối',
+      mucTieu: 'dua-vat',
+      deBai: 'Xe chở hàng mang thùng dụng cụ vào kho, nhưng thùng loa đổ giữa lối. Kẹp của nó đang bận. Lắp cho Luna một robot kéo thùng loa vào hốc chứa bên lối.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['##########', '#.o..o..D#', '#####D####', '#.....####', '##########'],
+      doi: [may('CH', { x: 1, y: 1, huong: 1 }), khe({ x: 2, y: 3, huong: 0 }, { son: 'lam' })],
+      lapRap: lapR2(['hai-banh', 'omni', 'nhen'], ['day-keo', 'kep', 'nam-cham'], ['khoang-cach', 'hong-ngoai'], 8, [
+        cach('hai-banh', 'day-keo', null, [CH_11A, BANH_11]),
+        cach('omni', 'day-keo', null, [CH_11B, OMNI_11])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([CH_11A, []]),
+      loiSai: [
+        { moTa: 'Kéo khi chưa tới dưới hốc (tiến 2 ô): dây vướng tường', baiLam: doiBai([CH_11A, ['turn_right()', 'forward(2)', 'turn_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe chở hàng không chờ: đâm thùng loa giữa lối', baiLam: doiBai([['pick()', 'forward(6)', 'drop()'], BANH_11]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên quay lên: dây tung sang phải, vướng tường', baiLam: doiBai([CH_11A, ['turn_right()', 'forward(3)', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 36, nhip: 15 },
+      goiY: ['Tay lưới trên xe có bánh (xe tời bờ): cast_net() kéo thùng gỗ cách 2 ô về ô trước mũi.', 'Omni trượt ngang được, không cần quay.', 'Thùng nằm trên ô D2 là đã vào hốc chứa.'],
+      cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['thung', 'keo', 'kho', 'hoc'], cuu: 'hang', meo: 'don-loi' }
     })
   ];
 
