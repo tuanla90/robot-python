@@ -188,6 +188,16 @@
   var BANH_15 = ['turn_left()', 'while color() != "red":', '    forward(1)', 'turn_right()', 'cast_net()', 'wait()', 'turn_left()', 'forward(1)'];
   function san15(x) { var b = '#........#'.split(''); b[x] = 'r'; return ['##########', '#........#', b.join(''), '#~~~~~~~~#', '#~~~~~~~~#', '##########']; }
 
+  /** trum-mua-clb.6 (hai sân Nông trại, không dùng drone: bảng thân không có drone): xe hang động R1 hát đoạn Nông trại (bè 1 đoạn 6) trên lối trên.
+   *  Luống mỗi sân dài khác nhau (7 ô, 9 ô). Gieo MỘT cây ở giữa luống: đứng ở đầu luống, k = distance() (hồng ngoại: số ô trống tới cuối luống), đi k // 2 ô rồi gieo.
+   *  Cách một: omni + gieo hạt + hồng ngoại (trượt lên luống, không quay, nhanh). Cách hai: hai bánh + gieo hạt + hồng ngoại (rẻ, quay hai lần). Nhện không gắn được hồng ngoại. Ôn // (chia lấy phần nguyên). */
+  var HD_16 = [hat(6, 1)];
+  var GIEO_16 = ['ink("green")', 'k = distance()', 'forward(k // 2)', 'dot()', 'wait()'];
+  var OMNI_16 = ['slide_left()', 'wait()'].concat(GIEO_16);
+  var BANH_16 = ['turn_left()', 'forward(1)', 'turn_right()'].concat(GIEO_16);
+  function san16(dai) { return ['###########', '#.........#', '###########', '#' + '.'.repeat(dai) + '#'.repeat(9 - dai) + '#', '#.#########', '###########']; }
+  function hinh16(dai) { var h = '...........'.split(''); h[1 + Math.floor((dai - 1) / 2)] = 'g'; return ['...........', '...........', '...........', h.join(''), '...........', '...........']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -588,6 +598,31 @@
       sao: { o: 26, nhip: 31 },
       goiY: ['color(): màu sàn dưới bụng xe, "red" là cọc phao.', 'A != B: đúng khi A khác B.', 'Xe bờ kéo người dưới nước về ô nước sát bờ; người tự lên bờ, đi về trạm.'],
       cauDo: { doi: null, lap: 'omni+day-keo+mau', coChe: ['nguoi', 'nuoc', 'luoi', 'xe-bo', 'mau', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'nguoi', meo: 'doi-vai' }
+    }),
+    // 16 · đổi vai, hai sân Nông trại (G6), không dùng drone (bảng thân không có drone): R1 xe hang động hát đoạn Nông trại (bè 1 đoạn 6: 4 4 3 3 2 2 1 1).
+    //      R2 tự lắp robot gieo hạt + hồng ngoại: luống dài khác nhau, gieo một cây ở giữa (k // 2). Ôn //.
+    man9('trum-mua-clb', 6, 'lam-quen', {
+      ten: 'Nông trại không có drone',
+      mucTieu: 'to-hinh', vo: 'nong-trai',
+      hamCuaEmCan: HAM_EM.concat(['play_part']),
+      deBai: 'Hai sân Nông trại. Drone về nhà sửa! Xe hang động hát đoạn Nông trại. Lắp cho Luna một robot gieo hạt: gieo một cây xanh ở giữa luống. Luống mỗi sân dài khác nhau.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san16(7), san16(9)],
+      them: { hinh: [hinh16(7), hinh16(9)] },
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 4, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['omni', 'hai-banh', 'nhen'], ['son', 'kep', 'loa'], ['hong-ngoai', 'camera', 'mau'], 9, [
+        cach('omni', 'son', 'hong-ngoai', [HD_16, OMNI_16]),
+        cach('hai-banh', 'son', 'hong-ngoai', [HD_16, BANH_16])
+      ]),
+      maMau: doiBai([HD_16, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (đi 3 ô): sân 2 luống dài 9, cây lệch giữa', baiLam: doiBai([HD_16, ['slide_left()', 'wait()', 'ink("green")', 'forward(3)', 'dot()', 'wait()']]), phaiCoMa: ['to-thua'] },
+        { moTa: 'Đi hết k ô (quên // 2): gieo ở cuối luống', baiLam: doiBai([HD_16, ['slide_left()', 'wait()', 'ink("green")', 'k = distance()', 'forward(k)', 'dot()', 'wait()']]), phaiCoMa: ['to-thua'] },
+        { moTa: 'Dùng % thay //: k % 2 là số dư (0), gieo ngay đầu luống', baiLam: doiBai([HD_16, ['slide_left()', 'wait()', 'ink("green")', 'k = distance()', 'forward(k % 2)', 'dot()', 'wait()']]), phaiCoMa: ['to-thua'] }
+      ],
+      sao: { o: 26, nhip: 18 },
+      goiY: ['k // 2: chia k cho 2, bỏ phần lẻ: 6 // 2 = 3, 7 // 2 = 3.', 'distance(): số ô trống trước mặt.', 'Omni trượt ngang được, không cần quay.'],
+      cauDo: { doi: null, lap: 'omni+son+hong-ngoai', coChe: ['gieo', 'luong', 'hong-ngoai', 'chia-nguyen', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     })
   ];
 
