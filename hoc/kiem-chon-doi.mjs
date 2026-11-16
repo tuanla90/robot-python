@@ -241,6 +241,14 @@ console.log('E. Mọi cách chọn đội của màn trong lộ trình dựng đ
     J(kq[0].m.doi.map((r) => [r.loaiRobot, r.batDau])) === J([['xuong', { x: 0, y: 1, huong: 1 }], ['banh', { x: 1, y: 0, huong: 1 }]]) &&
     J(kq[1].m.doi.map((r) => [r.loaiRobot, r.batDau])) === J([['banh', { x: 0, y: 0, huong: 1 }], ['xuong', { x: 1, y: 2, huong: 1 }]]) &&
     kq.every((k) => !k.loi && k.m.doi.every((r) => r.batDauNuoc === undefined)), J(kq.map((k) => [k.m.doi.map((r) => r.batDau), k.loi])));
+  // bản mặc định (macDinh, lộ trình đọc thẳng): xuồng của cách mẫu xuất phát trên nước; chọn lại trên bản mặc định (xe vào khe đó) về ô trên cạn gốc
+  const md = LapRap.macDinh(clone(gia));
+  let loiMd = ''; try { const r = Cham.cham(md, md.doi.map(() => 'wait()\n')); loiMd = r.loi ? String(r.loi) : ''; } catch (e) { loiMd = e.message; }
+  const lai = LapRap.apDungDoi(md, ['CH', 'XU']);
+  let loiLai = ''; try { const r = Cham.cham(lai, lai.doi.map(() => 'wait()\n')); loiLai = r.loi ? String(r.loi) : ''; } catch (e) { loiLai = e.message; }
+  kiem('khe batDauNuoc, bản mặc định: xuồng cách mẫu xuất phát trên nước, chấm được; chọn lại CH + XU trên bản mặc định: CH về ô cạn gốc, XU ra nước',
+    J(md.doi[0].batDau) === J({ x: 0, y: 1, huong: 1 }) && !loiMd && J(lai.doi.map((r) => r.batDau)) === J([{ x: 0, y: 0, huong: 1 }, { x: 1, y: 2, huong: 1 }]) && !loiLai,
+    J([md.doi.map((r) => r.batDau), loiMd, lai.doi.map((r) => r.batDau), loiLai]));
 }
 
 console.log('---------------------------------------------');

@@ -333,9 +333,10 @@
   /** Ô xuất phát của khe theo cỗ máy đặt vào (16/11, mùa 9 G4 Cảng sông). r là bản sao doi[i] (đã locCoMay), sửa tại chỗ rồi trả lại.
    *  - doi[i].batDauNuoc = { x, y, huong }: ô trên MẶT NƯỚC dùng khi cỗ máy là xuồng (loaiRobot 'xuong'); cỗ máy khác dùng batDau (ô trên cạn).
    *    Một khe trộn xuồng với xe cạn được (lõi ném lỗi nếu xuồng xuất phát trên cạn hay xe cạn xuất phát trên nước). Trường này không đi xuống lõi.
+   *    Bản mặc định (macDinh) đặt batDau theo cỗ máy của cách mẫu và cất ô trên cạn gốc ở batDauCan, để chọn lại trên bản mặc định vẫn đúng ô.
    *  - batDau.nac / tam (khe cẩu): cỗ máy không phải cẩu thì bỏ hai trường đó (lõi chỉ nhận ở cần cẩu). */
   function chonBatDau(r, loai) {
-    if (r.batDauNuoc) { if (loai === 'xuong') r.batDau = Object.assign({}, r.batDauNuoc); delete r.batDauNuoc; }
+    if (r.batDauNuoc) { r.batDau = Object.assign({}, loai === 'xuong' ? r.batDauNuoc : (r.batDauCan || r.batDau)); delete r.batDauNuoc; delete r.batDauCan; }
     if (loai !== 'cau' && r.batDau && (r.batDau.nac !== undefined || r.batDau.tam !== undefined)) {
       r.batDau = Object.assign({}, r.batDau); delete r.batDau.nac; delete r.batDau.tam;
     }
@@ -498,11 +499,16 @@
    * Màn lắp ráp ở dạng "bản mặc định": điền (nếu màn chưa khai) loaiRobot, robot, hamGoc và loiGiai theo cách lắp mẫu ĐẦU TIÊN (cachLap[0], cách ứng với sao 3), để mọi chỗ đọc thẳng
    * ManHoc.danhSach (máy kiểm chung, Sổ lệnh, Gỡ lỗi) thấy một màn đủ trường. Giao diện không chơi bản này mà chơi apDung(màn, cách người chơi chọn). man-chuoi-1.js gọi hàm này trong chuanHoa.
    */
+  /** macDinh: khe có batDauNuoc thì bản mặc định xuất phát ở ô của cỗ máy cách mẫu (ad.batDau, có thể trên nước), ô trên cạn gốc cất ở batDauCan (16/11). */
+  function giuBatDau(gop, r, ad) {
+    if (r && r.batDauNuoc && ad && ad.batDau) { gop.batDauCan = r.batDauCan || r.batDau; gop.batDau = ad.batDau; }
+    return gop;
+  }
   function macDinh(man) {
     var C = chonDoiCua(man), i = robotLapCua(man), a;
     if (C && Array.isArray(C.cachMau) && C.cachMau.length && kiemChon(man, C.cachMau[0].chon).ok) {   // M9D1: màn chọn đội: bản mặc định = cách mẫu đầu (đôi tốt)
       a = apDungDoi(man, C.cachMau[0]);
-      man.doi = man.doi.map(function (r, j) { return Object.assign({}, a.doi[j], r); });
+      man.doi = man.doi.map(function (r, j) { return giuBatDau(Object.assign({}, a.doi[j], r), r, a.doi[j]); });
       ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
       if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
     }
@@ -511,7 +517,7 @@
     if (i !== null && (!man.doi[i] || man.doi[i].coDinh)) return man;
     a = apDung(man, L.cachLap[0]);
     if (i !== null) {                                                                      // M9D1: lắp cho robot thứ i của màn đội: điền man.doi[i] (và trường đầu màn khi i = 0)
-      man.doi[i] = Object.assign({}, a.doi[i], man.doi[i]);
+      man.doi[i] = giuBatDau(Object.assign({}, a.doi[i], man.doi[i]), man.doi[i], a.doi[i]);
       if (i === 0) ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
       if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
       return man;
