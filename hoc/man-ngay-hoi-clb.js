@@ -70,6 +70,15 @@
   var SAN_3_BEN = ['#########', '##..HD###', '#~q~~~~B#', '#......##', '#########'];
   var SAN_3_NT = ['#########', '##....HD#', '#~q~~~~B#', '#.gggg.##', '#########'];
 
+  /** tong-hop-clb.4 (hai sân: Mỏ đá + Hang động): lối trên của xe hang động có hố sụt ở cột 5; lối dưới của máy khai thác bị tượng đá chuông chắn ở cột 7.
+   *  Máy khai thác hất đá tròn trước mũi lấp hố lối trên (lob(), gói 7), quay phải, chờ tượng vỡ rồi về cờ. Xe hang động qua hố vừa lấp, dừng trên tượng (cách 2 ô),
+   *  nghe nốt, hát lại: tượng vỡ; về cờ. Mỗi sân tượng một nốt (sân 1 nốt 3, sân 2 nốt 6), sân 2 lối trên là đá vôi ướt (bánh gai bám). */
+  var HD_4 = ['forward(6)', 'play_note(listen())', 'forward(1)'];
+  var KT_4 = ['lob()', 'turn_right()', 'wait_n(2)', 'forward(3)'];
+  var VD_4 = ['..........', '..........', '.....r....', '..........', '..........'];
+  var SAN_4_MO = ['##########', '#....u..F#', '#####o####', '#####...F#', '##########'];
+  var SAN_4_HANG = ['##########', '#.IIIu..F#', '#####o####', '#####...F#', '##########'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -167,6 +176,30 @@
       sao: { o: 25, nhip: 32 },
       goiY: ['set_length(1): lưới dài 1 ô; cast_net("back"): tung lưới ra sau đuôi.', 'Bè nằm trên bến q là cầu phao.', 'distance(): số ô trống trước mũi; xích tiến vào thùng nặng thì đẩy thùng đi một ô.'],
       cauDo: { doi: ['CU', 'XU'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'thung-nang', 'hong-ngoai', 'luong', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
+    }),
+    // 4 · nhiều sân, hai sân Mỏ đá (G7: đá tròn, hố, lob) + Hang động (G8: đá chuông, listen, đá vôi ướt). Mỗi bạn dọn lối cho bạn kia:
+    //     máy khai thác hất đá lấp hố lối trên, xe hang động hát vỡ tượng chắn lối dưới. Mỗi sân tượng một nốt (sân cấp qua listen()). Bẫy: xe cứu hỏa (không hất đá, không hát).
+    man9('tong-hop-clb', 4, 'luyen', {
+      ten: 'Đá tròn và đá chuông',
+      vo: 'mo-da',
+      deBai: 'Hai sân: Mỏ đá và Hang động. Lối trên có hố sụt, lối dưới có tượng đá chuông; mỗi sân tượng một nốt. Chọn hai bạn dọn lối cho nhau, rồi cả hai về cờ.',
+      veMaMau: 'Hố và tượng còn chắn hai lối.',
+      san: [SAN_4_MO, SAN_4_HANG],
+      them: { vatDang: [VD_4, VD_4], daChuong: [[{ x: 7, y: 3, not: 3, ben: 1 }], [{ x: 7, y: 3, not: 6, ben: 1 }]] },
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 5, y: 3, huong: 0 }, { co: [{ x: 8, y: 3 }] })],
+      chonDoi: {
+        menu: ['HD', 'KT', 'CU'],
+        cachMau: [{ chon: ['HD', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_4, KT_4]) }]
+      },
+      maMau: doiBai([['forward(6)'], ['lob()']]),
+      loiSai: [
+        { moTa: 'Điền thẳng nốt sân 1 (play_note(3)): sân Hang tượng nốt 6, không vỡ', baiLam: doiBai([['forward(6)', 'play_note(3)', 'forward(1)'], KT_4]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Máy khai thác không chờ tượng vỡ: đâm tượng, đứng lại', baiLam: doiBai([HD_4, ['lob()', 'turn_right()', 'forward(3)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Hất đá tầm 1 (aim(1)): đá rơi lại trước mũi, hố còn đó', baiLam: doiBai([HD_4, ['aim(1)'].concat(KT_4)]), phaiCoMa: ['roi-ho'] }
+      ],
+      sao: { o: 27, nhip: 19 },
+      goiY: ['lob(): nạp vật trước mũi rồi ném xa 2 ô; đá rơi xuống hố thì lấp hố.', 'listen(): nốt của đá chuông gần nhất; loa phá đá trong tầm 3 ô.', 'Mỗi sân tượng một nốt: đừng điền thẳng.'],
+      cauDo: { doi: ['HD', 'KT'], lap: null, coChe: ['ho', 'da-tron', 'nem', 'da-chuong', 'not', 'da-uot', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
     })
   ];
 
