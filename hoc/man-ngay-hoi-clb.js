@@ -171,6 +171,15 @@
   var SAN_13 = ['#######', '#..o..#', '#.D...#', '#.....#', '#######'];
   function chat13(c) { return ['.......', '...' + c + '...', '.......', '.......', '.......']; }
 
+  /** trum-mua-clb.4 (hai sân Cảng, không dùng cần cẩu: bảng thân không có cẩu): máy khai thác lắp loa R1 hát đoạn Cảng (bè 1 đoạn 4).
+   *  Container trôi trên luồng, sân 1 cách xe ở đầu cầu tàu 2 ô, sân 2 cách 3 ô. R2 tự lắp xe bờ + tay lưới: ra đầu cầu tàu, set_length(3) (dây dài nhất), tung lưới kéo container về bến q (ô nước gần xe nhất).
+   *  Dây mặc định 2 ô chỉ tới container sân 1. Cách một: omni (trượt ngang, nhanh). Cách hai: hai bánh (rẻ). Không cảm biến (xe bờ không đo được qua mặt nước). */
+  var KT_14 = [hat(4, 1)];
+  var KEO_14 = ['set_length(3)', 'wait()', 'cast_net()', 'wait()'];
+  var OMNI_14 = ['slide_left()', 'wait()', 'slide_left()', 'wait()', 'forward(2)', 'turn_right()'].concat(KEO_14);
+  var BANH_14 = ['turn_left()', 'forward(2)', 'turn_right()', 'forward(2)', 'turn_right()'].concat(KEO_14);
+  function san14(x) { var a = '#.q~~~~~~#'.split(''); a[x] = 'B'; return ['##########', a.join(''), '#.########', '#........#', '##########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -519,6 +528,32 @@
       sao: { o: 28, nhip: 18 },
       goiY: ['front_metal(): vật trước mũi là sắt. front_pole(): "N", "S" hay "none".', 'Sắt: cực nào cũng hút. Nam châm: khác cực mới hút, cùng cực thì đẩy.', 'A or B: đúng khi một trong hai đúng.'],
       cauDo: { doi: null, lap: 'omni+nam-cham+tu', coChe: ['nam-cham', 'sat', 'cuc', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
+    }),
+    // 14 · đổi vai, hai sân Cảng (G4), không dùng cần cẩu (bảng thân không có cẩu): R1 máy khai thác lắp loa hát đoạn Cảng (bè 1 đoạn 4: 5 5 4 4 3 3 2 2).
+    //      R2 tự lắp xe bờ + tay lưới: ra đầu cầu tàu, set_length(3), kéo container về bến q. Dây mặc định 2 ô chỉ tới sân 1.
+    man9('trum-mua-clb', 4, 'lam-quen', {
+      ten: 'Cảng không có cần cẩu',
+      vo: 'song',
+      mucTieu: 'dua-vat',
+      hamCuaEmCan: HAM_EM.concat(['play_part']),
+      deBai: 'Hai sân Cảng. Cần cẩu về nhà sửa! Máy khai thác hát đoạn Cảng. Container rơi xuống luồng, mỗi sân trôi xa gần khác nhau. Lắp cho Luna một xe bờ có tay lưới: ra đầu cầu tàu, kéo container về bến q.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san14(3), san14(4)],
+      them: { contTroi: [[{ x: 3, y: 1, so: 41 }], [{ x: 4, y: 1, so: 41 }]] },
+      doi: [xeLoa('KT', { x: 8, y: 3, huong: 3 }), khe({ x: 3, y: 3, huong: 0 }, { son: 'lam' })],
+      lapRap: lapR2(['omni', 'hai-banh', 'nhen'], ['day-keo', 'kep', 'nam-cham'], [], 7, [
+        cach('omni', 'day-keo', null, [KT_14, OMNI_14]),
+        cach('hai-banh', 'day-keo', null, [KT_14, BANH_14])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([KT_14, []]),
+      loiSai: [
+        { moTa: 'Quên set_length(3): dây mặc định 2 ô, sân 2 container cách 3 ô', baiLam: doiBai([KT_14, ['slide_left()', 'wait()', 'slide_left()', 'wait()', 'forward(2)', 'turn_right()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Trượt không chờ: hai lệnh slide_left() cùng một nhịp, xe mới sang một ô', baiLam: doiBai([KT_14, ['slide_left()', 'slide_left()', 'forward(2)', 'turn_right()'].concat(KEO_14)]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên quay phải: tung lưới lên tường', baiLam: doiBai([KT_14, ['slide_left()', 'wait()', 'slide_left()', 'wait()', 'forward(2)'].concat(KEO_14)]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 27, nhip: 22 },
+      goiY: ['set_length(n): dây lưới dài n ô (1 tới 3), mặc định 2.', 'Omni trượt một ô mỗi nhịp: slide_left() rồi wait().', 'Xe bờ kéo vật nổi về ô nước gần xe nhất trên dây.'],
+      cauDo: { doi: null, lap: 'omni+day-keo', coChe: ['nuoc', 'cont-troi', 'luoi', 'xe-bo', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     })
   ];
 
