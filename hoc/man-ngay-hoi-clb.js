@@ -79,9 +79,9 @@
   var SAN_4_MO = ['##########', '#....u..F#', '#####o####', '#####...F#', '##########'];
   var SAN_4_HANG = ['##########', '#.IIIu..F#', '#####o####', '#####...F#', '##########'];
 
-  /** tong-hop-clb.5 (ba sân, đọc rồi chọn): lối trên từ (1, 1) tới cờ (8, 1), ô (6, 1) mỗi sân một thứ chắn: sân 1 Hang tượng đá chuông, sân 2 Mỏ đá hố sụt (đá tròn ở (6, 2)),
-   *  sân 3 Nhà máy cửa C (nút đè M ở (6, 2)). Xe hang động tiến hai ô, nghe: có nốt (n > 0) thì hát (tượng vỡ), rồi về cờ. Máy khai thác (6, 3) hất đá lên lối trên
-   *  (sân 2 lấp hố; sân khác không có gì để hất), tiến lên (6, 2) (sân 3 đè nút: cửa mở), chờ xe qua, lùi, sang cờ (5, 3). Đôi khác qua được một, hai sân: chỉ đôi này qua cả ba. */
+  /** tong-hop-clb.5 (ba sân, đọc rồi chọn): lối trên từ (1, 1) tới cờ (8, 1), ô (6, 1) mỗi sân một thứ chắn: sân 1 Nhà máy cửa C (nút đè M ở (6, 2)), sân 2 Mỏ đá hố sụt (đá tròn ở (6, 2)), sân 3 Hang tượng đá chuông.
+   *  Xe hang động tiến hai ô, nghe: có nốt (n > 0) thì hát (tượng vỡ), rồi về cờ. Máy khai thác (6, 3) hất đá lên lối trên
+   *  (sân 2 lấp hố; sân khác không có gì để hất), tiến lên (6, 2) (sân 1 đè nút: cửa mở), chờ xe qua, lùi, sang cờ (5, 3). Đôi khác qua được một, hai sân: chỉ đôi này qua cả ba. */
   var HD_5 = ['forward(2)', 'n = listen()', 'if n > 0:', '    play_note(n)', 'forward(5)'];
   var KT_5 = ['lob()', 'forward(1)', 'wait_n(1)', 'back()', 'turn_left()', 'forward(1)'];
   var VD_5 = ['..........', '..........', '......r...', '..........', '..........'];
@@ -211,15 +211,15 @@
       goiY: ['lob(): nạp vật trước mũi rồi ném xa 2 ô; đá rơi xuống hố thì lấp hố.', 'listen(): nốt của đá chuông gần nhất; loa phá đá trong tầm 3 ô.', 'Mỗi sân tượng một nốt: đừng điền thẳng.'],
       cauDo: { doi: ['HD', 'KT'], lap: null, coChe: ['ho', 'da-tron', 'nem', 'da-chuong', 'not', 'da-uot', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
     }),
-    // 5 · đọc rồi chọn, ba sân Hang (đá chuông) + Mỏ đá (hố, đá tròn) + Nhà máy (cửa, nút đè), bảng 4 cỗ máy: cùng một ô chắn lối, mỗi sân một thứ.
-    //     Xe hang động nghe (if n > 0: hát), máy khai thác hất đá rồi đè nút. Xe cứu hỏa thay máy khai thác: qua sân 1, 3, kẹt hố sân 2; xe chở hàng thay xe hang động: kẹt tượng sân 1.
+    // 5 · đọc rồi chọn, ba sân Nhà máy (cửa, nút đè) + Mỏ đá (hố, đá tròn) + Hang (đá chuông), bảng 4 cỗ máy: cùng một ô chắn lối, mỗi sân một thứ.
+    //     Xe hang động nghe (if n > 0: hát), máy khai thác hất đá rồi đè nút. Xe cứu hỏa thay máy khai thác: qua sân 1, 3, kẹt hố sân 2; xe chở hàng thay xe hang động: kẹt tượng sân 3.
     man9('tong-hop-clb', 5, 'luyen', {
       ten: 'Một ô, ba thứ chắn',
       vo: 'mo-da',
-      deBai: 'Ba sân: Hang động, Mỏ đá, Nhà máy. Cùng một ô trên lối trên, mỗi sân một thứ chắn: tượng đá chuông, hố sụt, cửa đóng. Chọn hai bạn qua được cả ba sân. Đôi nào cũng qua được một sân, chỉ một đôi qua cả ba.',
+      deBai: 'Ba sân: Nhà máy, Mỏ đá, Hang động. Cùng một ô trên lối trên, mỗi sân một thứ chắn: cửa đóng, hố sụt, tượng đá chuông. Chọn hai bạn qua được cả ba sân. Đôi nào cũng qua được một sân, chỉ một đôi qua cả ba.',
       veMaMau: 'Xe hang động chưa biết sân nào có tượng.',
-      san: [SAN_5_HANG, SAN_5_MO, SAN_5_NM],
-      them: { daChuong: [[{ x: 6, y: 1, not: 4, ben: 1 }], [], []], vatDang: [null, VD_5, null], noi: [[], [], [{ nut: { x: 6, y: 2 }, cua: [{ x: 6, y: 1 }] }]] },
+      san: [SAN_5_NM, SAN_5_MO, SAN_5_HANG],
+      them: { daChuong: [[], [], [{ x: 6, y: 1, not: 4, ben: 1 }]], vatDang: [null, VD_5, null], noi: [[{ nut: { x: 6, y: 2 }, cua: [{ x: 6, y: 1 }] }], [], []] },
       doi: [khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 6, y: 3, huong: 0 }, { co: [{ x: 5, y: 3 }] })],
       chonDoi: {
         menu: ['HD', 'KT', 'CU', 'CH'],
@@ -227,8 +227,8 @@
       },
       maMau: doiBai([['forward(2)', 'n = listen()'], ['lob()']]),
       loiSai: [
-        { moTa: 'Chạy đúng sân 1, thua sân 2, 3: hát thẳng play_note(listen()) (sân 2, 3 không có tượng, listen() trả 0)', baiLam: doiBai([['forward(2)', 'play_note(listen())', 'forward(5)'], KT_5]), phaiCoMa: ['not-sai'] },
-        { moTa: 'Máy khai thác không tiến lên nút: sân 3 cửa đóng', baiLam: doiBai([HD_5, ['lob()', 'wait_n(4)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chạy đúng sân Hang, thua hai sân kia: hát thẳng play_note(listen()) (sân Mỏ đá, Nhà máy không có tượng, listen() trả 0)', baiLam: doiBai([['forward(2)', 'play_note(listen())', 'forward(5)'], KT_5]), phaiCoMa: ['not-sai'] },
+        { moTa: 'Máy khai thác không tiến lên nút: sân Nhà máy cửa đóng', baiLam: doiBai([HD_5, ['lob()', 'wait_n(4)']]), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Máy khai thác rời nút sớm: cửa đóng trước mũi xe', baiLam: doiBai([HD_5, ['lob()', 'forward(1)', 'back()']]), phaiCoMa: ['chua-toi-co'] }
       ],
       sao: { o: 35, nhip: 26 },
