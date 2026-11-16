@@ -157,6 +157,12 @@
   /** Cách hai: hồng ngoại distance() đếm ô nước trống trước mũi xuồng tới người: k = p - 2. */
   var XUONG_HN_16 = ['k = distance()', 'forward(k - 1)', 'cast_net()', 'wait()', 'for i in range(k - 2):', '    back()'];
 
+  /** lap-hang-dong.7: hố sụt (3, 1) trên lối nhện; đá chuông (nốt 6) rơi đè nút M (6, 1), cách mép hố bên này 4 ô (ngoài tầm loa). Cửa đá C (5, 5) trên lối xe hang động R1 ở hang dưới,
+   *  xe cách đá ≥ 4 ô (hai tầng đá ở giữa), không hát tới. Nhện + loa (L7) bật qua hố, đứng trong tầm 2 ô hát vỡ đá, lên nút giữ cửa cho xe qua, rồi sang cờ. */
+  var HD_17 = ['wait_n(9)', 'forward(7)'];
+  var NHEN_LOA_17 = ['jump("R")', 'play_note(6)', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()'];
+  var NHEN_LOA_MIC_17 = ['jump("R")', 'n = listen()', 'play_note(n)', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -570,6 +576,28 @@
       sao: { o: 18, nhip: 18 },
       goiY: ['hear(): khoảng cách (số ô) tới nguồn tiếng gần nhất.', 'cast_net(): lưới dài 2 ô, bắt người cách mũi xuồng đúng 2 ô.', 'Người tới ô nước dưới bờ thì tự lên bờ.'],
       cauDo: { doi: null, lap: 'xuong+day-keo+am-thanh', coChe: ['song-ngam', 'chuong-da', 'cua', 'nut', 'nguoi', 'luoi'], cuu: 'nguoi', meo: 'cuu-kip' }
+    }),
+    // 17 · giữ cửa (bảng ghi dọn lối), lai L7 nhện + loa: đá chuông rơi đè nút cửa, bên kia hố sụt. Đứng mép hố thì xa đá 4 ô (ngoài tầm 3 ô): nhện bật qua hố rồi mới hát.
+    //      Xe hang động R1 ở hang dưới, cách đá hai tầng đá, không hát tới; cửa đá mở khi nhện đứng trên nút. Cách hai: thêm mic, nghe nốt rồi hát.
+    man9('lap-hang-dong', 7, 'luyen', {
+      ten: 'Hát bên kia hố sụt',
+      deBai: 'Đá chuông rơi đè nút cửa, bên kia hố sụt. Loa chỉ vang 3 ô. Lắp robot bật qua hố, hát vỡ đá, đứng lên nút giữ cửa cho xe hang động, rồi về cờ.',
+      veMaMau: 'Robot R2 chưa có chương trình.',
+      san: ['###########', '#..u..MF###', '###########', '###########', '###########', '#....C..F.#', '###########'],
+      them: { daChuong: [{ x: 6, y: 1, not: 6, ben: 1 }] },
+      doi: [may('HD', { x: 1, y: 5, huong: 1 }, { co: [{ x: 8, y: 5 }] }), khe({ x: 2, y: 1, huong: 1 }, { son: 'lam', co: [{ x: 7, y: 1 }] })],
+      lapRap: lapR2(['nhen', 'gai'], ['loa'], ['am-thanh'], 9, [
+        cach('nhen', 'loa', null, [HD_17, NHEN_LOA_17]),
+        cach('nhen', 'loa', 'am-thanh', [HD_17, NHEN_LOA_MIC_17])
+      ], { moLai: ['L7', 'L4'] }),
+      maMau: doiBai([HD_17, []]),
+      loiSai: [
+        { moTa: 'Hát ở mép hố: đá cách 4 ô, ngoài tầm loa', baiLam: doiBai([HD_17, ['play_note(6)', 'jump("R")', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Nhện rời nút ngay: cửa đá đóng trước khi xe tới', baiLam: doiBai([HD_17, ['jump("R")', 'play_note(6)', 'go_right()', 'go_right()', 'go_right()']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 35, nhip: 19 },
+      goiY: ['Loa vang trong 3 ô quanh nhện (đếm ngang + dọc).', 'jump("R"): nhện bật qua đúng một ô.', 'Nhện đứng trên nút M thì cửa đá C mở.'],
+      cauDo: { doi: null, lap: 'nhen+loa', coChe: ['ho', 'da-chuong', 'not', 'nut', 'cua'], cuu: 'hang', meo: 'giu-cua' }
     })
   ];
 
