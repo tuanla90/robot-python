@@ -68,6 +68,11 @@
   var HD_4 = ['forward(1)', 'play_note(listen())'];
   var KT_4 = ['wait()', 'forward(3)', 'lob()'];
 
+  /** cuu-mo-da.5: thợ mỏ kẹt cuối hầm (1, 1); đá lở (đá tròn) chắn giữa hầm, khối đá rỗng nốt 5 chắn cửa hầm (5, 1); hố ngách (4, 2) dưới hầm; trạm cứu ngoài cửa (8, 3).
+   *  Xe hang động tiến ba ô trên dốc bùn cho đủ gần cửa hầm, nghe nốt, hát lại: đá rỗng vỡ. Máy khai thác chờ, vào hầm qua cửa vừa mở, xúc đá lở, quay xuống hất vào hố ngách, rồi lùi xuống ngách nhường lối. */
+  var HD_5 = ['forward(3)', 'play_note(listen())'];
+  var KT_5 = ['wait_n(4)', 'forward(3)', 'load()', 'wait()', 'turn_left()', 'aim(1)', 'throw()', 'wait()', 'forward(1)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -185,6 +190,34 @@
       sao: { o: 19, nhip: 7 },
       goiY: ['listen(): nốt của khối đá rỗng gần nhất.', 'play_note(n): hát nốt n. Đá rỗng nghe đúng nốt của nó thì nứt vỡ.', 'Loa chỉ tới đá cách xe tối đa 3 ô.'],
       cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['da-rong', 'not', 'bun', 'nem', 'xe-goong'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 5 · cứu người, dọn lối: bão làm sập hầm, thợ mỏ kẹt bên trong. Khối đá rỗng chắn cửa hầm, đá lở chắn giữa hầm. Xe hang động tiến ba ô trên dốc bùn (đủ gần, tầm 3 ô),
+    //     nghe nốt rồi hát lại: đá rỗng nứt vỡ. Máy khai thác vào hầm qua cửa vừa mở, xúc đá lở, quay xuống hất vào hố ngách (lấp luôn hố), lùi xuống ngách nhường lối.
+    //     Thợ mỏ tự đi ra trạm cứu. Bẫy: robot phân loại (nhện không hát, nam châm không hút đá).
+    man9('cuu-mo-da', 5, 'cung-co', {
+      ten: 'Thợ mỏ trong hầm sập',
+      mucTieu: 'cuu-nguoi',
+      khung: { chinh: 16, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['play_note']),
+      deBai: 'Hầm sập, thợ mỏ kẹt bên trong. Đá rỗng chắn cửa hầm, đá lở chắn giữa hầm. Chọn hai bạn mở lối, rồi tránh khỏi lối cho thợ mỏ ra trạm cứu.',
+      veMaMau: 'Cửa hầm còn đá rỗng chắn.',
+      san: ['##########', '#..o.....#', '####u###.#', '#.IIIIII.#', '##########'],
+      them: { vatDang: ['..........', '...r......', '..........', '..........', '..........'], daChuong: [{ x: 5, y: 1, not: 5, ben: 1 }],
+        tramCuu: [{ x: 8, y: 3 }], nguoi: [{ x: 1, y: 1, duong: [{ x: 2, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 }, { x: 5, y: 1 }, { x: 6, y: 1 }, { x: 7, y: 1 }, { x: 8, y: 1 }, { x: 8, y: 2 }, { x: 8, y: 3 }] }] },
+      doi: [khe({ x: 7, y: 1, huong: 3 }), khe({ x: 1, y: 3, huong: 1 })],
+      chonDoi: {
+        menu: ['KT', 'HD', 'PL'],
+        cachMau: [{ chon: ['KT', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([KT_5, HD_5]) }]
+      },
+      maMau: doiBai([['wait_n(4)', 'forward(3)'], ['forward(3)']]),
+      loiSai: [
+        { moTa: 'Máy khai thác xúc đá xong đứng lại giữa hầm: thợ mỏ phải chờ', baiLam: doiBai([KT_5.slice(0, 8), HD_5]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động hát ngay chỗ xuất phát: xa cửa hầm, đá không vỡ', baiLam: doiBai([KT_5, ['play_note(listen())']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Hất đá lở 2 ô (quên aim(1)): đá bay qua hố, rơi trúng xe hang động, vỡ', baiLam: doiBai([KT_5.filter(function (d) { return d !== 'aim(1)'; }), HD_5]), phaiCoMa: ['nem-vo'] }
+      ],
+      sao: { o: 26, nhip: 20 },
+      goiY: ['Thợ mỏ chỉ bước khi ô kế trên lối trống: robot đứng trên lối thì thợ mỏ chờ.', 'listen() rồi play_note(...): hát lại nốt của đá rỗng.', 'Đá tròn rơi xuống hố thì lấp hố: ngách thành chỗ đứng.'],
+      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['da-rong', 'not', 'bun', 'nem', 'ho', 'nguoi'], cuu: 'nguoi', meo: 'don-loi' }
     }),
     /* HẾT MOI */
   ];
