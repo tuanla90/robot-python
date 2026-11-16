@@ -152,25 +152,69 @@
     return ManHoc.chuanHoa(m);
   }
 
+  /* ---- M9M4: khung màn mùa 9 (chép từ man-cuu-bai-tai-che.js) ------------------------------------------ */
+  var CoMay = laNode ? require('./co-may.js') : window.CoMay;
+  var HAM_EM = ['move', 'back', 'forward', 'wait_n', 'tr_left', 'tr_right', 'turn_left', 'turn_right', 'pick', 'drop', 'go', 'walk', 'jump', 'crawl', 'pull_s'];
+  /** Robot của màn: cỗ máy `ma` (CoMay.dung) ở ô xuất phát bd, cờ riêng co, đế son ('lam' Luna, 'tim' máy khách). */
+  function may(ma, bd, them) {
+    var t = them || {};
+    var r = CoMay.dung(ma, { batDau: bd, son: t.son, pin: t.pin });
+    if (t.co) r.co = t.co;
+    if (t.coDinh) r.coDinh = true;
+    if (t.tay) r.robot.tay = t.tay;
+    if (t.tay || t.boHam || t.themHam) r.hamGoc = r.hamGoc.filter(function (h) { return (t.boHam || []).indexOf(h) < 0; }).concat(t.themHam || []);
+    if (t.phatNot) r.phatNot = true;
+    return r;
+  }
+  /** Khe robot em lập trình ở màn chọn đội / khe lắp: ô xuất phát trên cạn, batDauNuoc (ô trên nước khi cỗ máy là xuồng), cờ, pin (drone), đế. */
+  function khe(bd, them) { return Object.assign({ batDau: bd }, them || {}); }
+  function doiBai(ds, hamMan, hamEm) {
+    return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
+  }
+  /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
+  function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
+  function lapR2(than, tay, cam, nganSach, cachLap, them) {
+    return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
+  }
+  function man9(chuong, so, hang, cfg) {
+    var r1 = cfg.doi[0];
+    var m = {
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'cang',
+      cauTruc: ['for', 'if', 'while', 'list'], vaHoac: true, moXuong: true, camHamCuaEm: false,
+      hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
+      khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'toi-co',
+      deBai: cfg.deBai, veMaMau: cfg.veMaMau || '', san: cfg.san, batDau: clone(r1.batDau),
+      doi: cfg.doi.map(clone), maMau: cfg.maMau, loiSai: cfg.loiSai || [], sao: cfg.sao, goiY: cfg.goiY || [], cauDo: cfg.cauDo
+    };
+    if (r1.loaiRobot) { m.loaiRobot = r1.loaiRobot; m.robot = clone(r1.robot); m.hamGoc = r1.hamGoc.slice(); }
+    if (cfg.loiGiai) m.loiGiai = cfg.loiGiai;
+    if (cfg.chonDoi) m.chonDoi = cfg.chonDoi;
+    if (cfg.lapRap) m.lapRap = cfg.lapRap;
+    if (cfg.noi) m.noi = cfg.noi;
+    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
+    Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
+    return ManHoc.chuanHoa(m);
+  }
+
   ManHoc.manCuuCangSong = [
     /* ========================================================================
        CHƯƠNG 1: cuu-cang-song (10 màn)
        ======================================================================== */
-    manCS('cuu-cang-song', 1, 'lam-quen', {
-      ten: 'Bánh gai phá đá chuông trên đường ray cẩu',
-      chiChay: true, r2: R_GAI,
-      hamCuaEmCan: ['swing_by', 'play_note', 'back'],
-      deBai: 'Chào mừng em đến Gói 4: Cứu hộ Cảng sông! R1 là cần cẩu container Mùa 4 ở (1, 3), còn R2 là robot bánh gai gắn loa Mùa 8 đang đứng ở (2, 4) hướng lên. Trên đường ray tại (2, 3) có tảng đá chuông nốt 4 chắn lối trượt của R1: R2 gọi play_note(listen()) phá đá chuông ngay nhịp đầu, trong lúc R1 nhấc kiện 15 ở (1, 4), quay swing_by(2), trượt rail(1) sang cột 2 rồi hạ hàng lên tàu! Nhấn Chạy để quan sát!',
-      veMaMau: 'Quan sát R2 phá đá chuông trên ray để R1 trượt sang giao container lên tàu.',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 4, huong: 0 }],
-      chong: [CW(1, 4, [[15, 1]])],
-      daChuong: [{ x: 2, y: 3, not: 4, ben: 1 }],
-      tau: tauDon(5, 2),
-      giao: [{ tau: 0, so: [15] }],
-      maMau: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['play_note(listen())']),
-      loiGiai: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['play_note(listen())']),
-      sao: { o: 14, nhip: 5 },
-      goiY: ['Nhấn Chạy để xem R2 phá đá chuông ở (2, 3) giúp R1 trượt sang cột 2 giao kiện 15 lên tàu.']
+    // 1 · show (tiếp sức): bão đánh rơi container 12 xuống sông, nằm ngoài tầm cần. Xuồng tung lưới bắt container, cuộn dây kéo về một ô, nhả lưới;
+    //     cẩu chạy ray sang phải rail(2), nhấc container, chạy ray về rail(-2) (số âm: sang trái), vươn cần hạ lên boong tàu (chạy sẵn, khoá). Đội cố định CC + XU.
+    man9('cuu-cang-song', 1, 'lam-quen', {
+      ten: 'Container rơi xuống sông',
+      chiChay: true, mucTieu: 'giao-tau',
+      deBai: 'Bão đánh rơi container xuống sông, ngoài tầm cần. Xuồng kéo nó về, cẩu nhấc lên tàu. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
+      san: ['~~~T~~~~', '~~~~~~B~', '~~~~~~~~', '..RRRR..', '########'],
+      doi: [may('CC', { x: 3, y: 3, nac: 0, tam: 2 }), may('XU', { x: 4, y: 1, huong: 1 }, { son: 'lam' })],
+      them: { contTroi: [{ x: 6, y: 1, so: 12 }], tau: [{ o: [{ x: 3, y: 0 }], co: 8, vang: 4 }], giao: [{ tau: 0, so: [12] }] },
+      maMau: doiBai([['rail(2)', 'wait()', 'pick_up()', 'rail(-2)', 'extend()', 'set_down()'], ['cast_net()', 'wait()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]),
+      loiGiai: doiBai([['rail(2)', 'wait()', 'pick_up()', 'rail(-2)', 'extend()', 'set_down()'], ['cast_net()', 'wait()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]),
+      sao: { o: 14, nhip: 10 },
+      goiY: ['rail(-2): số âm, bệ cẩu chạy sang trái 2 ô.'],
+      cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'cont-troi', 'luoi', 'tau'], cuu: 'hang', meo: 'tiep-suc' }
     }),
 
     manCS('cuu-cang-song', 2, 'lam-quen', {
@@ -232,24 +276,32 @@
       goiY: ['Thay wait() của R2 bằng slide_r(1) để R2 trượt sang (4, 4) ngay nhịp đầu.']
     }),
 
-    manCS('cuu-cang-song', 5, 'cung-co', {
-      ten: 'Bánh gai phá đá chuông giải phóng container',
-      r2: R_GAI,
-      hamCuaEmCan: ['carry_by', 'play_note', 'forward', 'wait_n'],
-      deBai: 'Container 25 nằm ở (3, 4), còn đường ray (3, 3) bị tảng đá chuông nốt 5 chắn trước mặt R2 (bánh gai đang đứng ở (2, 3) hướng phải)! Hãy cho R2 gọi play_note(listen()) phá đá chuông ở (3, 3) rồi gọi forward(2) tiến sang (4, 3) nhường đường ray cho R1 trượt rail(2) từ (1, 3) sang (3, 3) và gọi carry_by(2) bốc kiện 25 lên tàu!',
-      veMaMau: 'R2 chưa gọi play_note(listen()) và forward(2) để phá đá chuông và nhường đường ray (3, 3).',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
-      chong: [CW(3, 4, [[25, 2]])],
-      daChuong: [{ x: 3, y: 3, not: 5, ben: 1 }],
-      tau: tauDon(9, 2),
-      giao: [{ tau: 0, so: [25] }],
-      maMau: baiDoi(['wait_n(3)', 'rail(2)', 'carry_by(2)'], ['play_note(listen())']),
-      loiGiai: baiDoi(['wait_n(3)', 'rail(2)', 'carry_by(2)'], ['play_note(listen())', 'forward(2)']),
+    // 5 · cứu người, cứu kịp: thủy thủ rơi xuống luồng nước chảy (hàng 1), trôi mỗi nhịp một ô về mép sân. Người ở cột 1, xuồng ở cột 5: d = 1 - 5 âm; xuồng chờ abs(d) - 1 nhịp (lưới tung ở nhịp kế) cho người trôi tới ngay dưới mũi,
+    //     tung lưới dài 1 ô kéo người sát bờ, người tự lên bờ. Container đổ chắn lối về trạm cứu: cẩu nhấc đi. Khe trên ray (cẩu), batDauNuoc cho xuồng.
+    //     Bẫy: xe cứu hỏa (không xuống nước, không nhấc container).
+    man9('cuu-cang-song', 5, 'cung-co', {
+      ten: 'Thủy thủ trôi theo dòng',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Thủy thủ trôi theo dòng, mỗi nhịp một ô. Kéo người vào bờ kịp lúc, dọn container chắn lối về trạm cứu.',
+      veMaMau: 'Xuồng tung lưới sớm quá.',
+      san: ['~~~~~~~~~', '~~~~~~~~~', '###...###', '###.#####', '#..RRR..#', '#########'],
+      doi: [khe({ x: 4, y: 4, huong: 0, nac: 0, tam: 2 }, { batDauNuoc: { x: 2, y: 0, huong: 2 } }), khe({ x: 5, y: 4, huong: 0 }, { batDauNuoc: { x: 5, y: 0, huong: 2 } })],
+      them: { contChan: true, chong: [{ x: 4, y: 2, cont: [{ so: 9 }] }], nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 3, y: 3 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: 1 }; }) },
+      chonDoi: {
+        menu: ['CC', 'XU', 'CU'],
+        cachMau: [{ chon: ['CC', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['pick_up()', 'swing_right()', 'set_down()'],
+          ['set_length(1)', 'd = 1 - 5', 'wait_n(abs(d) - 1)', 'cast_net()', 'wait()']]) }]
+      },
+      maMau: doiBai([['pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'cast_net()', 'wait()']]),
       loiSai: [
-        { moTa: 'R2 phá đá chuông ở (3, 3) nhưng chưa gọi forward(2) sang (4, 3) nên R1 trượt rail(2) đâm phải R2', baiLam: baiDoi(['wait_n(3)', 'rail(2)', 'carry_by(2)'], ['play_note(listen())']), phaiCoMa: ['het-ray'] }
+        { moTa: 'Tung lưới ngay: người chưa tới, trôi xa', baiLam: doiBai([['pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'cast_net()', 'wait()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Cẩu không nhấc container: người đứng chờ', baiLam: doiBai([[], ['set_length(1)', 'd = 1 - 5', 'wait_n(abs(d) - 1)', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 24, nhip: 9 },
-      goiY: ['Ở chương trình R2, thêm forward(2) sau play_note(listen()) để tiến sang (4, 3).']
+      sao: { o: 13, nhip: 9 },
+      goiY: ['d = 1 - 5 = -4: người ở bên trái xuồng 4 ô. abs(d) = 4.', 'set_length(1): lưới dài 1 ô.'],
+      cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'container'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
     manCS('cuu-cang-song', 6, 'cung-co', {
