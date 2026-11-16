@@ -184,6 +184,10 @@
   /** Chương trình cẩu của lap-cang-song.3: hai lần chờ số dưới móc, nhấc, quay phải hạ lên boong; giữa hai lần quay về, thu cần, chạy ray. */
   var CAU_13 = ['for k in range(2):', '    while read_code() == -1:', '        wait()', '    wait()', '    pick_up()', '    swing_right()', '    set_down()', '    if k == 0:',
     '        swing_left()', '        retract()', '        retract()', '        rail(2)'];
+  /** Chương trình cẩu của lap-cang-song.4: chờ số dưới móc, chờ xe nhả lưới, nhấc, quay phải hạ lên boong. */
+  var CAU_14 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'];
+  /** Chương trình xuồng khách khoá của lap-cang-song.5: lưới dài 1, chờ 2 nhịp tung lần một; sang phải một ô (ba nhịp), tung lần hai. */
+  var XU_15 = ['set_length(1)', 'wait_n(2)', 'cast_net()', 'wait()', 'turn_left()', 'move()', 'turn_right()', 'set_length(1)', 'cast_net()', 'wait()'];
   /** Xuồng lắp loa thay tay lưới: bỏ cờ chỉnh dây lưới (set_length chỉ là nâng cấp của tay lưới). */
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
   function man9(chuong, so, hang, cfg) {
@@ -567,47 +571,56 @@
       cauDo: { doi: null, lap: 'xuong+day-keo+quet-ma', coChe: ['nuoc', 'cont-troi', 'luoi', 'doc-ma', 'hang-tau'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manCS('lap-cang-song', 4, 'luyen', {
-      ten: 'Chế tạo hàm grab_clear cho xe kho dọn bãi',
-      r2: R_BANH,
-      taoHam: ['grab_clear'],
-      hamCuaEmCan: ['slide_load', 'pick', 'back', 'wait_n'],
-      deBai: 'Hãy định nghĩa hàm grab_clear() cho R2 (xe hai bánh) gồm 2 lệnh: pick() để gắp kiện gỗ trước mặt, rồi back() để lùi 1 ô nhường chỗ cho cần cẩu! Ở chương trình chính, R2 ở (3, 3) hướng trái gọi grab_clear() để gắp kiện gỗ tại (2, 3) và lùi sang (4, 3); R1 chờ 3 nhịp rồi gọi slide_load(2, 2) bốc kiện 33 ở (3, 4) lên tàu.',
-      veMaMau: 'Hoàn thiện hàm grab_clear() gồm pick() và back().',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, huong: 3 }],
-      chong: [CW(3, 4, [[33, 2]])],
-      vatThem: [{ x: 2, y: 3 }],
-      tau: tauDon(9, 2),
-      giao: [{ tau: 0, so: [33] }],
-      maMau: baiDoi(['wait_n(3)', 'slide_load(2, 2)'], ['grab_clear()']),
-      loiGiai: baiDoi(['wait_n(3)', 'slide_load(2, 2)'], ['grab_clear()'], [H_GRAB_CLEAR]),
+    // 14 · tiếp sức, lai L3 (xe tời bờ): container 22 nổi xa bờ, ngoài tầm cẩu. Xe trên bờ lắp tay lưới: sang đúng cột, set_length(3) tung lưới xa 3 ô,
+    //      tời kéo container một lần về ô nước sát bờ. Cẩu đứng ray dọc bên phải, cần quay trái: chờ có số dưới móc, nhấc, quay phải hạ lên tàu.
+    //      Cách một hai bánh + lưới (rẻ): quay, đi, quay để sang cột. Cách hai omni + lưới (đắt hơn, nhanh hơn): slide_right() một nhịp.
+    man9('lap-cang-song', 4, 'luyen', {
+      ten: 'Xe tời bờ',
+      mucTieu: 'giao-tau',
+      deBai: 'Container 22 nổi xa bờ, cẩu với không tới. Lắp cho xe trên bờ tay lưới: tung xa, tời container về sát bờ cho cẩu.',
+      veMaMau: 'Xe tung lưới sai cột.',
+      san: ['########', '#~~~B~T#', '#~~~~~R#', '#~~~~~R#', '#.....##', '#.....##', '#.....##', '########'],
+      doi: [may('CC', { x: 6, y: 3, huong: 0, nac: 3, tam: 2 }), khe({ x: 3, y: 4, huong: 0 }, { son: 'lam' })],
+      them: { contTroi: [{ x: 4, y: 1, so: 22 }], hangTau: { o: [{ x: 6, y: 1 }], can: [22] } },
+      lapRap: lapR2(['hai-banh', 'omni'], ['day-keo'], [], 7, [
+        cach('hai-banh', 'day-keo', null, [CAU_14, ['turn_right()', 'move()', 'turn_left()', 'set_length(3)', 'cast_net()', 'wait()']]),
+        cach('omni', 'day-keo', null, [CAU_14, ['slide_right()', 'wait()', 'set_length(3)', 'cast_net()', 'wait()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([CAU_14, ['set_length(3)', 'cast_net()', 'wait()']]),
       loiSai: [
-        { moTa: 'Hàm grab_clear() thiếu lệnh back() nên R2 vẫn đứng ở (3, 3) chặn R1', baiLam: baiDoi(['wait_n(3)', 'slide_load(2, 2)'], ['grab_clear()']), hamCuaEmMoi: [{ ten: 'grab_clear', thamSo: [], than: ['pick()'] }], phaiCoMa: ['het-ray'] }
+        { moTa: 'Xe tung lưới ở cột 3: không có container', baiLam: doiBai([CAU_14, ['set_length(3)', 'cast_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Lưới dài 2: tung hụt, container cách 3 ô', baiLam: doiBai([CAU_14, ['turn_right()', 'move()', 'turn_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 27, nhip: 9 },
-      goiY: ['Trong hàm grab_clear(), thêm back() ngay dưới pick().']
+      sao: { o: 23, nhip: 10 },
+      goiY: ['set_length(3): lưới xa 3 ô.', 'Xe trên bờ tung lưới là tời kéo vật về ô nước sát bờ.'],
+      cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['nuoc', 'cont-troi', 'luoi', 'bo', 'tau'], cuu: 'hang', meo: 'tiep-suc' }
     }),
 
-    manCS('lap-cang-song', 5, 'cung-co', {
-      ten: 'Sửa lỗi hàm grab_clear giải phóng bãi trung chuyển',
-      r2: R_BANH, taiToiDa: 4,
-      hamCuaEmCan: ['swing_by', 'carry2_by', 'pick', 'back'],
-      deBai: 'Trong màn này hàm grab_clear() của R2 bị viết ngược thứ tự (gọi back() trước pick() nên R2 lùi ra xa không gắp được kiện gỗ ở (3, 4)!). Hãy sửa lại hàm grab_clear() thành pick() rồi back(), giúp R2 ở (4, 4) hướng trái (huong = 3) gắp kiện gỗ ở (3, 4) và lùi sang (5, 4) nhường ô trung chuyển (3, 4) cho R1 gom 2 kiện [18, 36] từ (3, 5) về (3, 4) rồi bốc đôi lên tàu!',
-      veMaMau: 'Sửa lại thứ tự lệnh trong grab_clear() thành pick() rồi back().',
-      bd: [{ x: 3, y: 3, nac: 2, tam: 1 }, { x: 4, y: 4, huong: 3 }],
-      chong: [CW(3, 5, [[18, 2], [36, 2]])],
-      vatThem: [{ x: 3, y: 4 }],
-      tau: tauDon(12, 2),
-      giao: [{ tau: 0, so: [36, 18] }],
-      maMau: baiDoi(['for i in range(2):', '    extend()', '    pick_up()', '    retract()', '    set_down()', 'carry2_by(2)'], ['grab_clear()'], [], [
-        { ten: 'grab_clear', thamSo: [], than: ['back()', 'pick()'] }
-      ]),
-      loiGiai: baiDoi(['for i in range(2):', '    extend()', '    pick_up()', '    retract()', '    set_down()', 'carry2_by(2)'], ['grab_clear()'], [], [H_GRAB_CLEAR]),
+    // 15 · cứu người, cứu kịp, lai L10 (drone thả phao): hai thủy thủ trôi sát nhau trên luồng nước chảy về thác. Xuồng khách (R3, khoá) neo phía trên,
+    //      tung lưới bắt người thứ nhất ở ô (5, 1) sát bờ, rồi sang phải một ô (ba nhịp) mới tung lần hai ở (6, 1). Drone lắp tay lưới mang phao: bay tới (6, 1)
+    //      thả phao, bay ra; người thứ hai trôi tới bám phao đứng yên chờ lưới. Container đổ trên lối về trạm: cẩu nhấc xuống bãi dưới.
+    //      Cách một drone + lưới (thả phao). Cách hai rẻ hơn: hai bánh + lưới (xe tời bờ) đứng ô (6, 3), chờ người thứ hai trôi tới (6, 1) rồi tời vào, tránh sang phải.
+    man9('lap-cang-song', 5, 'cung-co', {
+      ten: 'Phao cho người thứ hai',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Hai thủy thủ trôi sát nhau. Xuồng khách bắt người thứ nhất, rồi sang phải một ô mới tung lần hai. Giữ người thứ hai lại cho xuồng.',
+      veMaMau: 'Đọc chương trình của xuồng khoá: lần tung thứ hai ở ô (6, 1).',
+      san: ['~~~~~~~~~', '~~~~~~~~~', '#####..##', '#RRR#...#', '#####..##', '###.#####', '#########'],
+      doi: [may('CC', { x: 3, y: 3, huong: 0, nac: 1, tam: 2 }), khe({ x: 6, y: 3, huong: 0 }, { son: 'lam', pin: 20 }),
+        may('XU', { x: 5, y: 0, huong: 2 }, { son: 'tim', coDinh: true })],
+      them: { contChan: true, chong: [{ x: 5, y: 3, cont: [{ so: 12 }] }], nguoi: [{ x: 2, y: 1 }, { x: 1, y: 1 }], tramCuu: [{ x: 5, y: 4 }, { x: 6, y: 4 }], thac: [{ x: 8, y: 1 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: 1 }; }) },
+      lapRap: lapR2(['drone', 'hai-banh'], ['day-keo'], [], 8, [
+        cach('drone', 'day-keo', null, [['pick_up()', 'swing_right()', 'set_down()'], ['go_up()', 'go_up()', 'cast_net()', 'wait()', 'go_right()'], XU_15]),
+        cach('hai-banh', 'day-keo', null, [['pick_up()', 'swing_right()', 'set_down()'], ['wait_n(4)', 'cast_net()', 'wait()', 'turn_right()', 'move()'], XU_15])
+      ], { moLai: ['L10', 'L3'] }),
+      maMau: doiBai([['pick_up()', 'swing_right()', 'set_down()'], [], XU_15]),
       loiSai: [
-        { moTa: 'Chưa sửa thứ tự lệnh trong grab_clear() nên kiện gỗ vẫn nằm ở (3, 4) chặn R1 hạ hàng', baiLam: baiDoi(['for i in range(2):', '    extend()', '    pick_up()', '    retract()', '    set_down()', 'carry2_by(2)'], ['grab_clear()'], [], [{ ten: 'grab_clear', thamSo: [], than: ['back()', 'pick()'] }]), phaiCoMa: ['ha-bi-chan'] }
+        { moTa: 'Không giữ người thứ hai: trôi qua lưới, xuống thác', baiLam: doiBai([['pick_up()', 'swing_right()', 'set_down()'], [], XU_15]), phaiCoMa: ['nguoi-troi-xa'] }
       ],
-      sao: { o: 27, nhip: 12 },
-      goiY: ['Trong hàm grab_clear(), đổi thứ tự thành pick() trước rồi back() sau.']
+      sao: { o: 32, nhip: 11 },
+      goiY: ['Người trôi tới ô có phao thì bám phao, đứng yên.', 'Thả phao xong bay ra cho lưới của xuồng đi qua.'],
+      cauDo: { doi: null, lap: 'drone+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'phao', 'container', 'r3'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
     manCS('lap-cang-song', 6, 'cung-co', {
