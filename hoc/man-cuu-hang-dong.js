@@ -102,6 +102,16 @@
   /** Xe hang động: chờ lối thông, tiến ba ô tới chỗ hát, nghe chuông, tra sổ, hát nốt đá chuông. */
   var HD_9 = [D_9, 'wait_n(5)', 'forward(3)', 'n = listen()', 'play_note(d[n])'];
 
+  /** R2 đã lắp sẵn (màn show chương 2): nhện + nam châm + mic (lai L4), như LapRap.apDung lắp ra. */
+  var NHEN_MIC = {
+    loaiRobot: 'nhen', robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'am-thanh', o: 'tren' }], son: 'lam' },
+    hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'hear', 'listen']
+  };
+  /** lap-hang-dong.1: xe hang động R1 hát vỡ đá chuông chắn miệng ngách (cách 3 ô). Nhện L4: co chân, nghe chuông đá cuối ngách (hear() = khoảng cách),
+   *  bò hear() - 1 ô tới hòm sắt nằm ngay trước chuông, hút, bò ra, đứng lên, xuống hốc chứa D, thả. */
+  var HD_11 = ['play_note(listen())'];
+  var NHEN_11 = ['wait()', 'crouch()', 'k = hear() - 1', 'for i in range(k):', '    go_right()', 'pull_s()', 'for i in range(k):', '    go_left()', 'stand()', 'wait()', 'go_down()', 'magnet_off()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -363,6 +373,27 @@
       sao: { o: 7, nhip: 10 },
       goiY: ['Bè 2: play_part([6, 6, 5, 5, 4, 4, 3, 3]).'],
       cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['loa', 'da-chuong', 'hang-dong'], cuu: null, meo: 'song-song' }
+    }),
+    /* ========================================================================
+       CHƯƠNG 2: lap-hang-dong (10 màn)
+       ======================================================================== */
+    // 11 · show (đọc rồi chọn), lai L4 nhện + nam châm + mic (ra mắt): ngách gầm thấp tối om, hòm dụng cụ sắt kẹt ở cuối ngách, ngay trước một chuông đá đang vang.
+    //      Xe hang động R1 hát vỡ đá chuông chắn miệng ngách. Luna lắp sẵn nhện + nam châm + mic (khoá): co chân, hear() đo xa tới chuông, bò hear() - 1 ô tới hòm, hút, bò ra, thả vào D.
+    man9('lap-hang-dong', 1, 'lam-quen', {
+      ten: 'Nhện nghe chuông trong ngách',
+      chiChay: true,
+      khung: { chinh: 14, moiHam: 8 },
+      mucTieu: 'dua-vat',
+      deBai: 'Hòm dụng cụ sắt kẹt cuối ngách gầm thấp tối om, ngay trước chuông đá đang vang. Luna lắp cho nhện một cái mic: nghe chuông để biết hòm ở xa bao nhiêu. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem nhện nghe chuông.',
+      san: ['#########', '#..nno..#', '#D#######', '#.......#', '#########'],
+      them: { vatChat: ['.........', '.....s...', '.........', '.........', '.........'], chuongDa: [{ x: 6, y: 1, not: 3 }], daChuong: [{ x: 2, y: 1, not: 6, ben: 1 }] },
+      doi: [may('HD', { x: 1, y: 3, huong: 1 }), Object.assign({ batDau: { x: 1, y: 1, huong: 1 } }, clone(NHEN_MIC))],
+      maMau: doiBai([HD_11, NHEN_11]),
+      loiGiai: doiBai([HD_11, NHEN_11]),
+      sao: { o: 21, nhip: 26 },
+      goiY: ['hear(): khoảng cách (số ô) tới nguồn tiếng gần nhất.', 'Mic không cần mũi: nhện gắn được.', 'pull_s(): hút sắt dưới bụng nhện.'],
+      cauDo: { doi: null, lap: 'nhen+nam-cham+am-thanh', coChe: ['gam', 'ngach', 'chuong-da', 'da-chuong', 'sat', 'mic'], cuu: 'hang', meo: 'doc-roi-chon' }
     })
   ];
 
