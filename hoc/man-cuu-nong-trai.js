@@ -61,6 +61,9 @@
   var DR_4 = ['a = ["green", "green", "yellow", "yellow", "green"]', 'for i in range(3):', '    go_right()', 'go_down()', 'dot()', 'go_up()', 'wait_n(5)', 'land()', 'take_off()', 'go_down()', 'go_down()',
     'for c in a:', '    ink(c)', '    dot()', '    go_right()'];
   var CU_4 = ['wait_n(5)', 'move()', 'tr_left()', 'move()', 'back()'];
+  /** cuu-nong-trai.5: xe chở hàng chờ cây được ủi, đi tới trước cửa, gắp bao hạt, lùi, rẽ xuống khỏi lối. Xích ủi cây lên, lùi hai ô nhường chỗ. */
+  var CH_5 = ['wait_n(2)', 'forward(3)', 'pick()', 'back()', 'turn_left()', 'forward(1)'];
+  var CU_5 = ['move()', 'back()', 'back()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -178,27 +181,28 @@
       goiY: ['dot() trên ô bùn: rắc cát, ô thành sàn thường.', 'Xích trượt trên bùn tới ô không còn bùn thì dừng.'],
       cauDo: { doi: ['DR', 'CU'], lap: null, coChe: ['bun', 'rac-cat', 'cay-do', 'gieo', 'sac', 'pin', 'list'], cuu: 'hang', meo: 'lam-cau' }
     }),
-    // 5 · cứu người, dọn lối: bão làm đổ nhà kính, bác nông dân kẹt bên trong. Bao hạt rơi chắn cửa nhà kính, khung cây đổ (thùng nặng) chắn lối về trạm cứu.
-    //     Xe chở hàng gắp bao hạt ở cửa rồi lùi (grab_clear() của gói 4 cũng được); xe cứu hỏa ủi khung đổ lên, lùi. Bác tự đi theo lối về trạm.
-    //     Bẫy: drone (bay qua được nhưng không gắp, không ủi).
+    // 5 · cứu người, dọn lối: bão làm đổ nhà kính, bác nông dân kẹt bên trong. Bao hạt rơi chắn cửa nhà kính, khung cây đổ (thùng nặng) chắn lối ra.
+    //     Xe cứu hỏa ủi khung đổ lên, lùi hai ô nhường chỗ. Xe chở hàng chờ, đi qua chỗ cây vừa ủi tới trước cửa, gắp bao hạt, lùi rồi rẽ xuống khỏi lối.
+    //     Bác tự đi theo lối về trạm cứu. Bẫy: drone (bay qua được nhưng không gắp, không ủi).
     man9('cuu-nong-trai', 5, 'cung-co', {
       ten: 'Bác nông dân trong nhà kính',
       mucTieu: 'cuu-nguoi',
-      deBai: 'Nhà kính đổ, bác nông dân kẹt bên trong. Bao hạt chắn cửa, khung cây đổ chắn lối về trạm cứu. Chọn hai bạn dọn lối cho bác.',
-      veMaMau: 'Lối của bác còn bao hạt và cây đổ.',
-      san: ['##########', '#...#....#', '#...o....#', '####.#.###', '#........#', '##########'],
-      them: { thungThem: [{ x: 6, y: 2 }], nguoi: [{ x: 1, y: 2, duong: [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }, { x: 6, y: 2 }, { x: 7, y: 2 }, { x: 8, y: 2 }] }], tramCuu: [{ x: 8, y: 2 }] },
-      doi: [khe({ x: 4, y: 3, huong: 0 }), khe({ x: 6, y: 3, huong: 0 })],
+      deBai: 'Nhà kính đổ, bác nông dân kẹt bên trong. Bao hạt chắn cửa, khung cây đổ chắn lối ra. Chọn hai bạn dọn lối, rồi tránh khỏi lối cho bác đi.',
+      veMaMau: 'Xe chở hàng vướng cây đổ.',
+      san: ['##########', '#...#....#', '#...o....#', '######.#.#', '######...#', '##########'],
+      them: { thungThem: [{ x: 6, y: 2 }], tramCuu: [{ x: 8, y: 4 }],
+        nguoi: [{ x: 1, y: 2, duong: [{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }, { x: 6, y: 2 }, { x: 7, y: 2 }, { x: 8, y: 2 }, { x: 8, y: 3 }, { x: 8, y: 4 }] }] },
+      doi: [khe({ x: 8, y: 2, huong: 3 }), khe({ x: 6, y: 3, huong: 0 })],
       chonDoi: {
         menu: ['DR', 'CU', 'CH'],
-        cachMau: [{ chon: ['CH', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([['pick()', 'back()'], ['move()', 'back()']]) }]
+        cachMau: [{ chon: ['CH', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([CH_5, CU_5]) }]
       },
-      maMau: doiBai([[], []]),
+      maMau: doiBai([['forward(3)'], []]),
       loiSai: [
-        { moTa: 'Chỉ ủi cây: bao hạt còn chắn cửa', baiLam: doiBai([[], ['move()', 'back()']]), phaiCoMa: ['chua-cuu-nguoi'] },
-        { moTa: 'Xích ủi cây rồi đứng lại trên lối: bác phải chờ', baiLam: doiBai([['pick()', 'back()'], ['move()']]), phaiCoMa: ['chua-cuu-nguoi'] }
+        { moTa: 'Xích không ủi cây: xe chở hàng không tới được cửa', baiLam: doiBai([CH_5, []]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe chở hàng gắp xong đứng lại trên lối: bác phải chờ', baiLam: doiBai([CH_5.slice(0, 4), CU_5]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 18, nhip: 9 },
+      sao: { o: 30, nhip: 16 },
       goiY: ['pick(): gắp vật trước mũi xe.', 'Bác chỉ bước khi ô kế trên lối trống: robot đứng trên lối thì bác chờ.'],
       cauDo: { doi: ['CH', 'CU'], lap: null, coChe: ['nha-kinh', 'bao-hat', 'cay-do', 'nguoi'], cuu: 'nguoi', meo: 'don-loi' }
     }),
