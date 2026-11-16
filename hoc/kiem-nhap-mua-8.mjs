@@ -117,6 +117,9 @@ console.log('\n== 4. Thêm / bỏ / thay ô ==');
 {
   kiem('themTDDong từ điển: thêm cặp sau cặp đang chạm, khoá chưa dùng của màn', TP.themTDDong('d = {"ngang": 3}', 2) === 'd = {"ngang": 3, "doc": 1}');
   kiem('themTDDong từ điển rỗng → khoá đầu của màn', TP.themTDDong('d = {}', 0) === 'd = {"ngang": 1}');
+  TP.datCheTD(true, ['2', '4'], ['hear', 'listen']);
+  kiem('khoá số (sổ ám hiệu gói 7: d = {2: 5}): thêm cặp giữ khoá số, không bọc "…"', TP.themTDDong('d = {2: 5}', 2) === 'd = {2: 5, 4: 1}' && TP.themTDDong('d = {}', 0) === 'd = {2: 1}', TP.themTDDong('d = {2: 5}', 2));
+  TP.datCheTD(true, KHOA, ['hear', 'listen']);
   kiem('themTDDong tập hợp: set() → {1}; {1, 2} → thêm số nhỏ nhất chưa có', TP.themTDDong('s = set()', 0) === 's = {1}' && TP.themTDDong('s = {1, 2}', 2) === 's = {1, 2, 3}');
   kiem('tối đa 5 cặp / phần tử', TP.themTDDong('s = {1, 2, 3, 4, 5}', 5) === 's = {1, 2, 3, 4, 5}');
   kiem('boTDDong: bỏ cả cặp khi chạm khoá hay giá trị; tập hợp hết phần tử → set()', TP.boTDDong('d = {"ngang": 3, "doc": 2}', 2) === 'd = {"doc": 2}' && TP.boTDDong('d = {"ngang": 3, "doc": 2}', 3) === 'd = {"ngang": 3}' && TP.boTDDong('s = {1}', 1) === 's = set()');

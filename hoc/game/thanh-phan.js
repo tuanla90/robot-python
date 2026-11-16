@@ -276,6 +276,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
          Chỉ có ở mùa 8 trở đi: các chương cũ giữ nguyên cách tách dòng. */
   var CHE_TD = false, TD_KHOA = ['a', 'b', 'c'], TD_NGUON = [];                                             // TD_KHOA: khoá chọn được của màn · TD_NGUON: 'hear' / 'listen' có trên robot
   var TD_TOI_DA = 5, TD_TEN = { dict: ['d', 'buoc', 'not_da'], set: ['s', 'da_nghe', 'da_go'] };            // số cặp / phần tử tối đa vẽ trên khung · tên gợi ý
+  /** Khoá in ra mã: khoá số (d = {2: 5}, nốt chuông từ listen()) giữ nguyên, khoá chữ bọc "…". */
+  function khoaChu(k) { return RE_SO.test(String(k)) ? String(k) : '"' + k + '"'; }
   function datCheTD(b, khoa, nguon) { CHE_TD = !!b; TD_KHOA = (khoa && khoa.length) ? khoa.slice() : ['a', 'b', 'c']; TD_NGUON = (nguon || []).slice(); }
   function coTDCua(man) { return coCauTruc(man, 'dict') || coCauTruc(man, 'set') || nguonAmCua(man).length > 0 || coDongTD(man); }
   /** Màn có dòng gán từ điển / tập hợp (lời giải, mã mẫu) dù cauTruc không khai 'dict' / 'set' (gói 142 Từ điển, 144 Tập hợp): vẫn tách thành ô chạm được để bảng dữ liệu mở ra. Khay khối thì vẫn theo cauTruc. */
@@ -353,9 +355,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var pos = Math.max(1, Math.min(k + 1, ds.length));
     if (dict) {
       if (pos % 2 === 0) pos++;                                                    // chèn sau trọn một cặp
-      var dung = ds.filter(function (v, i) { return i % 2 === 1; }).map(function (v) { return v.slice(1, -1); });
+      var dung = ds.filter(function (v, i) { return i % 2 === 1; }).map(function (v) { return v.replace(/^"|"$/g, ''); });
       var khoa = TD_KHOA.filter(function (x) { return dung.indexOf(x) < 0; })[0] || TD_KHOA[0];
-      ds.splice(pos, 0, '"' + khoa + '"', '1');
+      ds.splice(pos, 0, khoaChu(khoa), '1');
     } else {
       var co = ds.slice(1);
       var so = 1; while (co.indexOf(String(so)) >= 0 && so < 9) so++;
@@ -1107,7 +1109,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         vongTD.forEach(them);
         var dsD = tenTDTai(arr, i, 'dict'), dsS = tenTDTai(arr, i, 'set'), pTD = bienDuoc().filter(function (p) { return kieuBienCua(p) === 'td'; });
         dsD.forEach(function (dn) { khoaCuaTD(arr, i, dn).forEach(function (k) { them(dn + '[' + k + ']'); }); });
-        pTD.forEach(function (p) { TD_KHOA.forEach(function (k) { them(p + '["' + k + '"]'); }); });          // đối số từ điển của hàm đang sửa: khoá theo màn
+        pTD.forEach(function (p) { TD_KHOA.forEach(function (k) { them(p + '[' + khoaChu(k) + ']'); }); });          // đối số từ điển của hàm đang sửa: khoá theo màn
         dsD.concat(dsS, pTD).forEach(function (n) { them('len(' + n + ')'); });
       }
       return kq;
@@ -1154,13 +1156,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         arr.forEach(function (x) { var g = tachTD(chuoi(x)); if (g && (g.kieu === 'ganDict' || g.kieu === 'ganSet')) dung[g.ds[0]] = true; });
         pTD.forEach(function (p) { dung[p] = true; });
         ds[0] = TD_TEN[kieu].filter(function (n) { return !dung[n]; })[0] || ds[0];
-        if (d.kieu === 'ganDict' && d.vt[1] === 'khoa') ds[1] = '"' + TD_KHOA[0] + '"';
+        if (d.kieu === 'ganDict' && d.vt[1] === 'khoa') ds[1] = khoaChu(TD_KHOA[0]);
         return d.ghep(ds);
       }
       if (d.kieu === 'ganKhoa' || d.kieu === 'add' || d.kieu === 'for') {
         var co = tenTDTai(arr, at, kieu).concat(pTD);
         if (co.length) ds[0] = co[co.length - 1];
-        if (d.kieu === 'ganKhoa') { var kh = khoaCuaTD(arr, at, ds[0]); ds[1] = kh.length ? kh[0] : '"' + TD_KHOA[0] + '"'; }
+        if (d.kieu === 'ganKhoa') { var kh = khoaCuaTD(arr, at, ds[0]); ds[1] = kh.length ? kh[0] : khoaChu(TD_KHOA[0]); }
         return d.ghep(ds);
       }
       if (d.kieu === 'in') {
@@ -1325,7 +1327,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (vai === 'khoa') {
         ds = d.kieu === 'ganDict' ? [] : khoaCuaTD(arr, i, d.ds[0]);
-        TD_KHOA.forEach(function (k) { if (ds.indexOf('"' + k + '"') < 0) ds.push('"' + k + '"'); });
+        TD_KHOA.forEach(function (k) { if (ds.indexOf(khoaChu(k)) < 0) ds.push(khoaChu(k)); });
         if (ds.indexOf(v) < 0) ds.unshift(v);
         chonChuoi({ neo: so, kieu: 'bien', gia: '', hien: v, bien: ds, khiChon: function (x) { ed.datSo(i, x, kk); } });
         return;
@@ -1339,7 +1341,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var bien = bienTam('so', i, null, null);
       if (d.kieu === 'in' && kk === 0) {                                                   // `if "a" in d:` / `if k in d:`: vế trái còn là khoá hay biến vòng
         var dn = d.ds[2];
-        khoaCuaTD(arr, i, dn).concat(TD_KHOA.map(function (k) { return '"' + k + '"'; })).forEach(function (k) { if (bien.indexOf(k) < 0) bien.push(k); });
+        khoaCuaTD(arr, i, dn).concat(TD_KHOA.map(khoaChu)).forEach(function (k) { if (bien.indexOf(k) < 0) bien.push(k); });
         for (var j = i - 1; j >= 0; j--) { var ft = RE_TD_FOR.exec(chuoi(arr[j])); if (ft && bien.indexOf(ft[2]) < 0) bien.unshift(ft[2]); }
       }
       if (d.kieu === 'ganN') bien = bien.filter(function (x) { return RE_TD_NGUON.test(x); });     // n = …: chỉ nguồn số (listen(), len(s), d["a"])

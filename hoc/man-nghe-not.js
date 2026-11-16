@@ -1,14 +1,10 @@
 /* ============================================================================
-   man-nghe-not.js — Mùa 8 Hang động đá vôi: GÓI 7 "Thẩm âm chuông đá" (20 màn)
-     Chương 1: nghe-not     (10 màn: listen() nhận diện nốt 1..8 của chuông đá / đá chuông)
-     Chương 2: che-nghe-not (10 màn: chế hàm giải mã giai điệu kết hợp thu gai, phát nốt, dict, set)
-
-   Luật R1 gói 7:
-     - Thân: 'gai' (loaiRobot: 'gai', thuGai: true)
-     - Tay: 'loa' (beat, note)
-     - Cảm biến: 'am-thanh' nâng cấp thẩm âm (phanAm: true, mở lệnh listen())
-     - Khay lệnh: left_move, right_move, left_back, right_back, wait,
-                  retract_spikes, extend_spikes, beat, note, hear, listen
+   man-nghe-not.js — Mùa 8 Hang động · Gói 7: Nghe nốt (mã gói nghe-not; viết lại 16/11, KE-HOACH-MUA-8.md)
+   Chương 1: nghe-not "Bắt nốt chuông đá" (10 màn): listen() trả nốt của nguồn âm gần nhất (chuông, đá chuông chưa vỡ),
+             kể cả chuông ngay trên đầu; ghép với note(n, k), lướt đá ướt, ngách, sổ dict, túi set.
+   Chương 2: che-nghe-not "Chế lệnh: giải mã giai điệu" (10 màn): crack_tunnel(), decode_glide(d, k), listen_unique_step(s)
+             (mùa 9 gọi: giữ tên và thân).
+   Lời: "Giúp Sola với!", gợi ý của Luna, gọi người chơi là "bạn".
    ========================================================================== */
 (function () {
   'use strict';
@@ -16,747 +12,667 @@
   var M = (typeof window !== 'undefined' && window.ManHoc) ||
     (typeof require === 'function' ? require('./man-chuoi-1.js') : null);
 
-  function bai(chinh, hamMan, hamEm) {
-    return { chinh: chinh || [], hamCuaMan: hamMan || [], hamCuaEmMoi: hamEm || [] };
+  function bai(chinh, ham, moi) {
+    return { chinh: chinh, hamCuaMan: ham || [], hamCuaEmMoi: moi || [] };
   }
-  function ham(ten, than, thamSo, dong) {
-    var h = { ten: ten, thamSo: thamSo || [], than: than || [] };
-    if (dong) h.dong = true;
-    return h;
+  function ham(ten, than, thamSo) {
+    return { ten: ten, than: than, thamSo: thamSo || [] };
   }
 
-  var CAU_TRUC = ['for', 'while', 'if', 'elif', 'else', 'def', 'return', 'list', 'dict', 'set'];
-  var HAM_GOC_NGHE_NOT = [
-    'left_move', 'right_move', 'left_back', 'right_back', 'wait',
-    'retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen'
-  ];
-
-  function manGaiThauAm(chuong, so, hang, d) {
+  var GOC_NGHE = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'note', 'beat', 'hear', 'listen', 'retract_spikes', 'extend_spikes'];
+  var ROBOT_NGHE = { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }] };
+  function cd(x, y, not, phamVi) { return phamVi ? { x: x, y: y, not: not, phamVi: phamVi } : { x: x, y: y, not: not }; }
+  function da(x, y, not, ben) { return { x: x, y: y, not: not, ben: ben || 1 }; }
+  function ng(ax, ay, bx, by) { return { a: { x: ax, y: ay }, b: { x: bx, y: by } }; }
+  function hai(a) { return [a, a]; }
+  function tangLuot(cuoi, duoi, rong) {
+    var tuong = new Array(rong + 1).join('#');
+    var san = [tuong], ngach = [], daCh = [];
+    cuoi.forEach(function (x, i) {
+      var y = 2 * i + 1;
+      san.push(('#.' + new Array(x - 1).join('I') + '.' + tuong).slice(0, rong - 1) + '#');
+      san.push(tuong);
+      ngach.push(ng(x, y, 1, y + 2));
+      daCh.push({ x: 3, y: y });
+    });
+    duoi.forEach(function (h) { san.push(h); });
+    san.push(tuong);
+    return { san: san, ngachHang: ngach, daChuong: daCh };
+  }
+  function voiDa(t, nots, ben) { return t.daChuong.map(function (d, i) { return da(d.x, d.y, nots[i], ben); }); }
+  function manNghe(so, hang, ds) {
     return Object.assign({
-      id: chuong + '.' + so,
-      chuong: chuong,
-      so: so,
-      hang: hang,
-      loaiRobot: 'gai',
-      thuGai: true,
-      phanAm: true,
-      robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }] },
-      moXuong: true,
-      camHamCuaEm: false,
-      taoHam: [],
+      chuong: 'nghe-not', so: so, hang: hang,
+      vo: 'hang', loaiRobot: 'gai', thuGai: true, phanAm: true,
+      robot: ROBOT_NGHE,
+      hamGoc: GOC_NGHE.slice(),
       hamCuaEmCan: [],
-      khung: { ham: 10, chinh: 10, cauTruc: CAU_TRUC },
-      cauTruc: CAU_TRUC,
-      hamGoc: HAM_GOC_NGHE_NOT,
-      mucTieu: d.dieu ? 'choi-dieu' : 'toi-co',
-      nhipToiDa: d.nhipToiDa || (d.sao && d.sao.nhip ? d.sao.nhip + 12 : 40),
-      loiSai: []
-    }, d);
+      taoHam: [],
+      cauTruc: ['for', 'while', 'if', 'dict', 'set'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while', 'if', 'dict', 'set'] },
+      mucTieu: 'toi-co'
+    }, ds);
+  }
+  var T7A = tangLuot([5, 6, 4], ['#.Iu####', '##F#####'], 8), T7B = tangLuot([7, 4, 6], ['#.Iu#####', '##F######'], 9);
+  var T10A = tangLuot([5, 6], ['#.IIIIF#'], 8), T10B = tangLuot([6, 4], ['#.IIIIIIF#'], 10);
+  function manCheNghe(so, hang, ds) {
+    return Object.assign({
+      chuong: 'che-nghe-not', so: so, hang: hang,
+      vo: 'hang', loaiRobot: 'gai', thuGai: true, phanAm: true,
+      robot: ROBOT_NGHE,
+      hamGoc: GOC_NGHE.slice(),
+      hamCuaEmCan: [],
+      taoHam: [],
+      cauTruc: ['for', 'while', 'if', 'else', 'dict', 'set'],
+      khung: { chinh: 10, moiHam: 8, cauTruc: ['for', 'while', 'if', 'else', 'dict', 'set'] },
+      mucTieu: 'toi-co'
+    }, ds);
   }
 
-  function manNgheNot(so, hang, d) { return manGaiThauAm('nghe-not', so, hang, d); }
-  function manCheNgheNot(so, hang, d) { return manGaiThauAm('che-nghe-not', so, hang, d); }
+  var C1A = tangLuot([6, 4, 5], ['#.Iu####', '##F#####'], 8), C1B = tangLuot([4, 6, 7], ['#.Iu#####', '##F######'], 9);
+  var C2A = tangLuot([5, 6], ['#.Iu####', '##F#####'], 8), C2B = tangLuot([4, 7, 5], ['#.Iu#####', '##F######'], 9);
+  var C8A = tangLuot([5, 4, 6], ['#.Iu####', '##F#####'], 8), C8B = tangLuot([6, 7, 4], ['#.Iu#####', '##F######'], 9);
+  var C10A = tangLuot([5, 6], ['#.IIIII#', '######I#', '######I#', '#####FI#'], 8);
+  var C10B = tangLuot([4, 6], ['#.IIII###', '#####I###', '##F##I###', '##IIII###'], 9);
+
+  var CRACK_TUNNEL = ham('crack_tunnel', ['play_note(listen())', 'glide_tunnel()']);
+  var DECODE_GLIDE = ham('decode_glide', ['n = listen()', 'crack_glide(d[n], k)'], ['d', 'k']);
+  var LISTEN_UNIQUE_STEP = ham('listen_unique_step', ['n = listen()', 'if n not in s:', '    s.add(n)', '    play_note(n)', 'move()'], ['s']);
 
   var DS = [
     /* ========================================================================
-       CHƯƠNG 1: nghe-not — Thẩm âm chuông đá (10 màn)
+       CHƯƠNG 1: nghe-not — Bắt nốt chuông đá
        ====================================================================== */
-    manNgheNot(1, 'lam-quen', {
-      ten: 'Cảm biến thẩm âm mở khóa',
+    manNghe(1, 'lam-quen', {
+      ten: 'Nghe nốt của đá',
       chiChay: true, chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'play_note'],
-      deBai: 'Khi cảm biến âm thanh được nâng cấp thẩm âm, lệnh listen() trả về đúng nốt nhạc (từ 1 đến 8) của chuông đá hoặc khối đá chuông chưa vỡ gần nhất (kể cả ngay dưới chân R1). Bấm Chạy để xem R1 dùng play_note(listen()) tự đọc tần số và phá đá chuông.',
-      veMaMau: 'listen() đọc được nốt 6 của khối đá chuông ở (3, 1), truyền vào play_note(listen()) để phá đá rồi tiến tới cờ.',
+      hamCuaEmCan: ['forward', 'play_note'],
+      deBai: 'Sola làm mẫu. Mic của R1 vừa nâng cấp: listen() là nốt của tiếng vang gần nhất. Đá chuông chưa vỡ cũng vang nốt của nó. play_note(listen()) gõ đúng nốt đá. Bấm Chạy để xem.',
+      veMaMau: 'Chương trình Sola viết sẵn và đã khoá: nghe nốt đá, gõ đúng nốt đó, rồi đi tới cờ.',
       san: [
-        '#######',
-        '#.II.F#',
-        '#######'
+        '########',
+        '#.....F#',
+        '########'
       ],
       batDau: { x: 1, y: 1, huong: 1 },
-      daChuong: [{ x: 3, y: 1, not: 6, ben: 1 }],
-      maMau: bai(['play_note(listen())', 'forward(4)']),
-      loiGiai: bai(['play_note(listen())', 'forward(4)']),
-      sao: { o: 9, nhip: 5 },
+      daChuong: [da(3, 1, 6)],
+      maMau: bai(['play_note(listen())', 'forward(5)']),
+      loiGiai: bai(['play_note(listen())', 'forward(5)']),
+      sao: { o: 9, nhip: 6 },
       goiY: [
-        'Bấm nút Chạy để quan sát listen() tự nhận diện tần số cộng hưởng của khối đá.',
-        'Màn 1 chỉ cần chạy thử, chưa cần sửa mã.'
+        'Luna: listen() không tốn nhịp, như hear().',
+        'Luna: Đá nốt 6 nên listen() là 6.'
       ]
     }),
 
-    manNgheNot(2, 'lam-quen', {
-      ten: 'Tự bắt tần số hai sân',
-      hamCuaEmCan: ['move', 'forward', 'play_note'],
-      deBai: 'Ở 2 sân, khối đá chuông chắn đường mang tần số khác nhau (sân 1 là nốt 3, sân 2 là nốt 7). Hãy thay số cứng trong play_note(3) bằng play_note(listen()) để phá đá ở cả 2 sân.',
-      veMaMau: 'Mã mẫu dùng số cứng 3 nên ở sân 2 không phá được khối đá nốt 7.',
-      san: [
-        ['#######', '#.II.F#', '#######'],
-        ['#######', '#.II.F#', '#######']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      daChuong: [
-        [{ x: 3, y: 1, not: 3, ben: 1 }],
-        [{ x: 3, y: 1, not: 7, ben: 1 }]
-      ],
-      maMau: bai(['play_note(3)', 'forward(4)']),
-      loiGiai: bai(['play_note(listen())', 'forward(4)']),
+    manNghe(2, 'lam-quen', {
+      ten: 'Mỗi hầm một nốt',
+      hamCuaEmCan: ['forward', 'play_note'],
+      deBai: 'Giúp Sola với! Hai hầm, đá chuông mỗi hầm một nốt. Nghe nốt đá rồi gõ đúng nốt đó.',
+      veMaMau: 'Sola gõ nốt 5 của hầm 1. Chạy thử: đá hầm 2 nốt khác.',
+      san: hai([
+        '#########',
+        '#......F#',
+        '#########'
+      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(4, 1, 5)], [da(4, 1, 7)]],
+      maMau: bai(['play_note(5)', 'forward(6)']),
+      loiGiai: bai(['play_note(listen())', 'forward(6)']),
       loiSai: [
-        { moTa: 'Để nguyên play_note(3): ở sân 2 đâm vào khối đá chuông nốt 7', baiLam: bai(['play_note(3)', 'forward(4)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Gõ nốt 5 của hầm 1: đá hầm 2 không vỡ', baiLam: bai(['play_note(5)', 'forward(6)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'play_note(hear()): hear() là số ô, không phải nốt', baiLam: bai(['play_note(hear())', 'forward(6)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 9, nhip: 5 },
+      sao: { o: 9, nhip: 7 },
       goiY: [
-        'Đổi play_note(3) thành play_note(listen()).',
-        'Nhờ listen(), R1 tự phát nốt 3 ở sân 1 và nốt 7 ở sân 2.'
+        'Luna: listen() là nốt, hear() là số ô.',
+        'Luna: play_note(listen()) rồi forward(6).'
       ]
     }),
 
-    manNgheNot(3, 'lam-quen', {
-      ten: 'Nhại lại tiếng chuông đá',
-      hamCuaEmCan: ['move', 'forward', 'play_note'],
-      dieu: '4...8',
-      dieuToiCo: true,
-      deBai: 'Dọc hành lang có 2 chuông đá phát nốt mẫu: chuông đầu ở ngay (1, 1) và chuông thứ hai ở cờ (4, 1). Hãy nghe và phát lại nốt của chuông đầu bằng play_note(listen()), tiến 3 bước tới cờ bằng forward(3) (ứng với 3 nhịp nghỉ ...), rồi phát lại nốt của chuông thứ hai.',
-      veMaMau: 'Mã mẫu mới nhại tiếng chuông đầu và đi tới cờ, chưa phát nốt của chuông tại cờ.',
-      san: ['######', '#.IIF#', '######'],
-      batDau: { x: 1, y: 1, huong: 1 },
-      chuongDa: [
-        { x: 1, y: 1, not: 4, phamVi: 1 },
-        { x: 4, y: 1, not: 8, phamVi: 1 }
-      ],
-      maMau: bai(['play_note(listen())', 'forward(3)']),
-      loiGiai: bai(['play_note(listen())', 'forward(3)', 'play_note(listen())']),
+    manNghe(3, 'lam-quen', {
+      ten: 'Nghe rồi ngân dài',
+      hamCuaEmCan: ['forward', 'play_note'],
+      deBai: 'Giúp Sola với! Đá chuông 3 vạch, mỗi hầm một nốt. Gán nốt nghe được vào n, rồi vừa ngân n đủ 3 nhịp vừa đi tới cờ.',
+      veMaMau: 'Sola gõ nốt một nhịp. Chạy thử: đá 3 vạch chưa vỡ.',
+      san: hai([
+        '#########',
+        '#......F#',
+        '#########'
+      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(5, 1, 2, 3)], [da(5, 1, 8, 3)]],
+      maMau: bai(['n = listen()', 'play_note(n)', 'forward(6)']),
+      loiGiai: bai(['n = listen()', 'note(n, 3)', 'forward(6)']),
       loiSai: [
-        { moTa: 'Chưa phát nốt của chuông thứ hai sau khi tới cờ', baiLam: bai(['play_note(listen())', 'forward(3)']), phaiCoMa: ['chua-du-dieu'] }
+        { moTa: 'Gõ một nhịp: đá 3 vạch chưa vỡ', baiLam: bai(['n = listen()', 'play_note(n)', 'forward(6)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Ngân nốt 2 của hầm 1: đá hầm 2 không vỡ', baiLam: bai(['note(2, 3)', 'forward(6)']), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 8, nhip: 6 },
+      goiY: [
+        'Luna: n = listen() rồi note(n, 3).',
+        'Luna: Vừa ngân vừa đi: forward(6) ngay sau note(n, 3).'
+      ]
+    }),
+
+    manNghe(4, 'luyen', {
+      ten: 'Đá nào gõ nốt đó',
+      hamCuaEmCan: ['forward', 'play_note'],
+      deBai: 'Giúp Sola với! Ba đá chuông cách nhau 2 ô, mỗi đá một nốt, mỗi hầm một bộ nốt. Đứng trước đá nào thì nghe nốt đá đó.',
+      veMaMau: 'Sola nghe một lần rồi gõ mãi nốt đó. Chạy thử: đá thứ hai không vỡ.',
+      san: hai([
+        '#########',
+        '#......F#',
+        '#########'
+      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(2, 1, 3), da(4, 1, 6), da(6, 1, 1)], [da(2, 1, 7), da(4, 1, 2), da(6, 1, 5)]],
+      maMau: bai(['n = listen()', 'for i in range(3):', '    play_note(n)', '    forward(2)']),
+      loiGiai: bai(['for i in range(3):', '    play_note(listen())', '    forward(2)']),
+      loiSai: [
+        { moTa: 'Nghe một lần: đá thứ hai nốt khác, không vỡ', baiLam: bai(['n = listen()', 'for i in range(3):', '    play_note(n)', '    forward(2)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Chép tay nốt hầm 1: đá hầm 2 không vỡ', baiLam: bai(['play_note(3)', 'forward(2)', 'play_note(6)', 'forward(2)', 'play_note(1)', 'forward(2)']), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 10, nhip: 9 },
+      goiY: [
+        'Luna: Nghe lại trước mỗi đá: listen() nằm trong vòng lặp.',
+        'Luna: for i in range(3): play_note(listen()), forward(2).'
+      ]
+    }),
+
+    manNghe(5, 'luyen', {
+      ten: 'Lướt tới đá rồi nghe',
+      hamCuaEmCan: ['move', 'play_note'],
+      deBai: 'Giúp Sola với! Dải đá ướt có hai đá chuông chắn. Lướt dừng ngay trước đá, nghe nốt đá, gõ, rồi lướt tiếp. Hai hầm, đá ở chỗ khác, nốt khác.',
+      veMaMau: 'Sola chép tay nốt hầm 1. Chạy thử: hầm 2 đá nốt khác.',
+      san: [
+        [
+          '############',
+          '#.IIIIIIIIF#',
+          '############'
+        ],
+        [
+          '##############',
+          '#.IIIIIIIIIIF#',
+          '##############'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(4, 1, 3), da(7, 1, 6)], [da(3, 1, 5), da(9, 1, 2)]],
+      maMau: bai(['retract_spikes()', 'move()', 'play_note(3)', 'move()', 'play_note(6)', 'move()']),
+      loiGiai: bai(['retract_spikes()', 'for i in range(2):', '    move()', '    play_note(listen())', 'move()']),
+      loiSai: [
+        { moTa: 'Chép tay nốt hầm 1: đá hầm 2 không vỡ', baiLam: bai(['retract_spikes()', 'move()', 'play_note(3)', 'move()', 'play_note(6)', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên thu gai: move() chỉ bước một ô', baiLam: bai(['for i in range(2):', '    move()', '    play_note(listen())', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
       sao: { o: 10, nhip: 5 },
       goiY: [
-        'Khác với hear() bỏ qua chuông dưới chân, listen() đọc được cả chuông đá ngay tại ô R1 đang đứng.',
-        'Thêm dòng play_note(listen()) vào cuối chương trình.'
+        'Luna: Mỗi vòng: move() lướt tới đá, rồi play_note(listen()).',
+        'Luna: Hết vòng lặp, move() lướt tới cờ.'
       ]
     }),
 
-    manNgheNot(4, 'lam-quen', {
-      ten: 'Thẩm âm phá thạch nhũ dày',
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'crack_glide'],
-      deBai: 'Ở cả 2 sân, khối đá chuông chặn trên dải băng ngang đều có độ bền 2 nhưng mang tần số khác nhau. Hãy truyền listen() vào hàm crack_glide(listen(), 2) để ngân 2 nhịp phá đá, trượt tới góc (5, 1) rẽ phải rồi bước vào cờ.',
-      veMaMau: 'Mã mẫu đang gọi crack_glide(listen(), 1) nên chỉ ngân 1 nhịp, chưa đủ phá thạch nhũ dày.',
+    manNghe(6, 'luyen', {
+      ten: 'Nghe ở góc xoắn ốc',
+      hamCuaEmCan: ['move', 'crack_glide'],
+      deBai: 'Giúp Sola với! Mỗi góc xoắn ốc có đá chuông 2 vạch chắn đầu dải. Đứng ở góc thì nghe nốt đá, ngân 2 nhịp rồi lướt. Mỗi hầm một bộ nốt.',
+      veMaMau: 'Sola ngân nốt 4 ở mọi góc. Chạy thử: đá góc thứ hai không vỡ.',
       san: [
-        ['#######', '#.III.#', '#####F#', '#######'],
-        ['#######', '#.III.#', '#####F#', '#######']
+        [
+          '########',
+          '#.IIIII#',
+          '######I#',
+          '######I#',
+          '#####FI#',
+          '########'
+        ],
+        [
+          '##########',
+          '#.IIIIIII#',
+          '########I#',
+          '#######FI#',
+          '##########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      daChuong: [
-        [{ x: 3, y: 1, not: 2, ben: 2 }],
-        [{ x: 3, y: 1, not: 6, ben: 2 }]
-      ],
-      maMau: bai([
-        'crack_glide(listen(), 1)',
-        'move()'
-      ]),
-      loiGiai: bai([
-        'crack_glide(listen(), 2)',
-        'move()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      daChuong: [[da(2, 1, 4, 2), da(6, 2, 7, 2)], [da(2, 1, 6, 2), da(8, 2, 1, 2)]],
+      maMau: bai(['for i in range(2):', '    crack_glide(4, 2)', 'move()']),
+      loiGiai: bai(['for i in range(2):', '    crack_glide(listen(), 2)', 'move()']),
       loiSai: [
-        { moTa: 'Để nguyên độ bền 1 trong crack_glide(listen(), 1): đá ben=2 chưa vỡ', baiLam: bai(['crack_glide(listen(), 1)', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Ngân nốt 4 ở mọi góc: đá khác nốt không vỡ', baiLam: bai(['for i in range(2):', '    crack_glide(4, 2)', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Ngân một nhịp: đá 2 vạch chưa vỡ', baiLam: bai(['for i in range(2):', '    crack_glide(listen(), 1)', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 14, nhip: 5 },
+      sao: { o: 15, nhip: 9 },
       goiY: [
-        'Khối đá chuông có độ bền 2 nên cần ngân 2 nhịp.',
-        'Đổi crack_glide(listen(), 1) thành crack_glide(listen(), 2).'
+        'Luna: crack_glide(n, k) nhận nốt n. Nốt đó là listen().',
+        'Luna: for i in range(2): crack_glide(listen(), 2). Rồi move().'
       ]
     }),
 
-    manNgheNot(5, 'luyen', {
-      ten: 'Chế lệnh: tự dò tần số trượt',
-      taoHam: ['auto_crack_glide'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'crack_glide'],
-      deBai: 'Tạo hàm auto_crack_glide(k) nhận độ bền k: tự đọc tần số đá chuông bằng listen() rồi gọi crack_glide(listen(), k) để ngân k nhịp phá đá, trượt hết dải băng và rẽ phải.',
-      veMaMau: 'Mở Xưởng hàm, tạo auto_crack_glide(k) gồm 1 dòng: crack_glide(listen(), k).',
-      san: [
-        [
-          '#######',
-          '#.III.#',
-          '#####I#',
-          '#####I#',
-          '####FI#',
-          '#######'
-        ],
-        [
-          '#######',
-          '#.III.#',
-          '#####I#',
-          '#####I#',
-          '####FI#',
-          '#######'
-        ]
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      daChuong: [
-        [
-          { x: 3, y: 1, not: 4, ben: 1 },
-          { x: 5, y: 3, not: 7, ben: 2 }
-        ],
-        [
-          { x: 3, y: 1, not: 8, ben: 1 },
-          { x: 5, y: 3, not: 3, ben: 2 }
-        ]
-      ],
-      maMau: bai([
-        'auto_crack_glide(1)',
-        'auto_crack_glide(2)',
-        'move()'
-      ]),
-      loiGiai: bai(
-        [
-          'auto_crack_glide(1)',
-          'auto_crack_glide(2)',
-          'move()'
-        ],
-        [],
-        [ham('auto_crack_glide', ['crack_glide(listen(), k)'], ['k'])]
-      ),
+    manNghe(7, 'bien-the', {
+      ten: 'Nghe qua tầng ngách',
+      hamCuaEmCan: ['move', 'turn_right', 'play_note', 'glide_tunnel'],
+      deBai: 'Giúp Sola với! Ba tầng đá ướt, đá chuông chắn trước miệng ngách mỗi tầng. Nghe nốt đá, gõ, rồi lướt qua ngách. Tầng cuối có hố phía trước, cờ ở bên phải.',
+      veMaMau: 'Sola nghe một lần ở tầng đầu. Chạy thử: đá tầng hai không vỡ.',
+      san: [T7A.san, T7B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [T7A.ngachHang, T7B.ngachHang],
+      daChuong: [voiDa(T7A, [2, 5, 8]), voiDa(T7B, [6, 3, 1])],
+      maMau: bai(['n = listen()', 'for i in range(3):', '    play_note(n)', '    glide_tunnel()', 'turn_right()', 'move()']),
+      loiGiai: bai(['for i in range(3):', '    play_note(listen())', '    glide_tunnel()', 'turn_right()', 'move()']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm auto_crack_glide', baiLam: bai(['auto_crack_glide(1)', 'auto_crack_glide(2)', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Dùng hear() thay vì listen() trong auto_crack_glide: phát sai tần số đá chuông', baiLam: bai(['auto_crack_glide(1)', 'auto_crack_glide(2)', 'move()']), hamCuaEmMoi: [ham('auto_crack_glide', ['crack_glide(hear(), k)'], ['k'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Nghe một lần ở tầng đầu: đá tầng hai không vỡ', baiLam: bai(['n = listen()', 'for i in range(3):', '    play_note(n)', '    glide_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Lướt trước rồi mới gõ: R1 kẹt trước đá', baiLam: bai(['for i in range(3):', '    glide_tunnel()', '    play_note(listen())', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 16, nhip: 8 },
+      sao: { o: 16, nhip: 11 },
       goiY: [
-        'Thân hàm auto_crack_glide(k) chỉ cần gọi crack_glide(listen(), k).',
-        'Khi khối đá thứ nhất vỡ, lần gọi auto_crack_glide(2) tự động bắt tần số khối đá thứ hai.'
+        'Luna: Mỗi tầng: play_note(listen()) rồi glide_tunnel().',
+        'Luna: Hết ba tầng: turn_right(), move().'
       ]
     }),
 
-    manNgheNot(6, 'luyen', {
-      ten: 'Ba dải băng cộng hưởng',
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'crack_glide', 'auto_crack_glide'],
-      deBai: 'Hành lang xoắn 3 cạnh đều có đá chuông độ bền 1 chặn trên dải đá ướt. Hãy dùng vòng lặp for lặp 3 lần auto_crack_glide(1) rồi bước 1 ô vào cờ ở cả 2 sân.',
-      veMaMau: 'Mã mẫu mới lặp 2 lần nên dừng ở góc (1, 4).',
-      san: [
-        [
-          '#######',
-          '#.III.#',
-          '#F###I#',
-          '#.III.#',
-          '#######'
-        ],
-        [
-          '#######',
-          '#.III.#',
-          '#F###I#',
-          '#.III.#',
-          '#######'
-        ]
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      daChuong: [
-        [
-          { x: 3, y: 1, not: 2, ben: 1 },
-          { x: 5, y: 2, not: 5, ben: 1 },
-          { x: 3, y: 3, not: 8, ben: 1 }
-        ],
-        [
-          { x: 3, y: 1, not: 6, ben: 1 },
-          { x: 5, y: 2, not: 3, ben: 1 },
-          { x: 3, y: 3, not: 4, ben: 1 }
-        ]
-      ],
-      maMau: bai([
-        'for i in range(2):',
-        '    auto_crack_glide(1)',
-        'move()'
+    manNghe(8, 'bien-the', {
+      ten: 'Sổ ám hiệu',
+      khoaTD: ['2', '4'],
+      hamCuaEmCan: ['forward'],
+      deBai: 'Giúp Sola với! R1 đứng ngay dưới một chuông đá. Chuông ngân ám hiệu, đá chuông 3 vạch phía trước cần nốt khác. Sổ d dịch ám hiệu ra nốt phá đá: chuông nốt 2 thì đá nốt 5, chuông nốt 4 thì đá nốt 7.',
+      veMaMau: 'Sola ngân luôn nốt chuông. Chạy thử: đá không vỡ.',
+      san: hai([
+        '#########',
+        '#......F#',
+        '#########'
       ]),
-      loiGiai: bai([
-        'for i in range(3):',
-        '    auto_crack_glide(1)',
-        'move()'
-      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 2)], [cd(1, 1, 4)]],
+      daChuong: [[da(5, 1, 5, 3)], [da(5, 1, 7, 3)]],
+      maMau: bai(['d = {2: 5, 4: 7}', 'note(listen(), 3)', 'forward(6)']),
+      loiGiai: bai(['d = {2: 5, 4: 7}', 'n = listen()', 'note(d[n], 3)', 'forward(6)']),
       loiSai: [
-        { moTa: 'Chỉ lặp 2 lần: mới tới góc (5, 3) và đâm vào đá chuông thứ ba', baiLam: bai(['for i in range(2):', '    auto_crack_glide(1)', 'move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Ngân nốt chuông: đá cần nốt khác, không vỡ', baiLam: bai(['d = {2: 5, 4: 7}', 'note(listen(), 3)', 'forward(6)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Ngân nốt 5 của hầm 1: đá hầm 2 không vỡ', baiLam: bai(['d = {2: 5, 4: 7}', 'note(5, 3)', 'forward(6)']), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 16, nhip: 10 },
+      sao: { o: 9, nhip: 6 },
       goiY: [
-        'Cần đi qua 3 cạnh băng trước khi bước lên cờ ở (1, 2).',
-        'Đổi range(2) thành range(3).'
+        'Luna: Đứng dưới chuông thì listen() là nốt chuông. n = listen(), rồi d[n] là nốt đá.',
+        'Luna: n = listen(), note(d[n], 3), rồi forward(6).'
       ]
     }),
 
-    manNgheNot(7, 'luyen', {
-      ten: 'Chế lệnh: vừa bước vừa nhại âm',
-      taoHam: ['echo_march'], chinhCoDinh: true,
-      hamCuaEmCan: ['march_note'],
-      dieu: '362',
-      dieuToiCo: true,
-      deBai: 'Tạo hàm echo_march(n) lặp n lần (for i in range(n):) lệnh march_note(listen()): ở mỗi bước, R1 đọc tần số của chuông đá hoặc đá chuông gần nhất rồi vừa tiến 1 ô vừa phát đúng nốt đó!',
-      veMaMau: 'Trong echo_march(n), viết 2 dòng: for i in range(n): và thụt lề march_note(listen()).',
-      san: [
-        '######',
-        '#.IIF#',
-        '######'
-      ],
-      batDau: { x: 1, y: 1, huong: 1 },
-      chuongDa: [
-        { x: 1, y: 1, not: 3, phamVi: 1 },
-        { x: 2, y: 1, not: 6, phamVi: 1 },
-        { x: 3, y: 1, not: 2, phamVi: 1 }
-      ],
-      maMau: bai([
-        'echo_march(3)'
+    manNghe(9, 'bien-the', {
+      ten: 'Không gõ lại nốt đã nghe',
+      hamCuaEmCan: ['move', 'forward', 'play_note'],
+      nhipToiDa: 10,
+      deBai: 'Giúp Sola với! Bốn ô đầu hầm, ô nào cũng treo một chuông đá. Dưới mỗi chuông, nghe nốt rồi gõ, đá chuông cùng nốt ở cuối hầm sẽ vỡ. Nốt đã gõ thì không gõ lại: chỉ còn 10 nhịp.',
+      veMaMau: 'Sola gõ ở mọi chuông. Chạy thử: hết nhịp.',
+      san: hai([
+        '###########',
+        '#........F#',
+        '###########'
       ]),
-      loiGiai: bai(
-        [
-          'echo_march(3)'
-        ],
-        [],
-        [ham('echo_march', ['for i in range(n):', '    march_note(listen())'], ['n'])]
-      ),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 3), cd(2, 1, 5), cd(3, 1, 3), cd(4, 1, 5)], [cd(1, 1, 6), cd(2, 1, 6), cd(3, 1, 2), cd(4, 1, 2)]],
+      daChuong: [[da(6, 1, 3), da(8, 1, 5)], [da(6, 1, 6), da(8, 1, 2)]],
+      maMau: bai(['for i in range(4):', '    play_note(listen())', '    move()', 'forward(4)']),
+      loiGiai: bai(['s = set()', 'for i in range(4):', '    n = listen()', '    if n not in s:', '        s.add(n)', '        play_note(n)', '    move()', 'forward(4)']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm echo_march', baiLam: bai(['echo_march(3)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Gọi march_note(1) thay vì march_note(listen()): phát sai nốt', baiLam: bai(['echo_march(3)']), hamCuaEmMoi: [ham('echo_march', ['for i in range(n):', '    march_note(1)'], ['n'])], phaiCoMa: ['sai-not'] }
+        { moTa: 'Gõ ở mọi chuông: quá 10 nhịp', baiLam: bai(['for i in range(4):', '    play_note(listen())', '    move()', 'forward(4)']), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'move() nằm trong nhánh if: gặp nốt trùng thì R1 đứng yên', baiLam: bai(['s = set()', 'for i in range(4):', '    n = listen()', '    if n not in s:', '        s.add(n)', '        play_note(n)', '        move()', 'forward(4)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 7, nhip: 3 },
+      sao: { o: 15, nhip: 10 },
       goiY: [
-        'Trong thân vòng lặp for i in range(n):, gọi march_note(listen()).',
-        'Tại (1, 1), (2, 1), (3, 1), R1 lần lượt nghe và phát 3, 6, 2 đồng thời bước vào cờ (4, 1).'
+        'Luna: Túi s ghi nốt đã gõ. n = listen(), if n not in s: thì thêm vào túi rồi gõ.',
+        'Luna: move() thụt ngang với if (không nằm trong nhánh if).'
       ]
     }),
 
-    manNgheNot(8, 'bien-the', {
-      ten: 'Từ điển dịch giọng chuông đá',
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'crack_glide'],
-      deBai: 'Tại (1, 1) có một chuông đá chỉ đường (phamVi: 1), còn ở (4, 1) có khối đá chuông chặn đường nhưng đặt ngoài tầm nghe trực tiếp (phamVi: 1). Từ điển d = {2: 7, 5: 4} cho biết: nếu chuông chỉ đường ngân nốt 2 thì khối đá phía trước mang nốt 7; nếu ngân nốt 5 thì khối đá mang nốt 4. Hãy tra d[listen()] để gọi crack_glide(d[listen()], 1) rồi bước vào cờ.',
-      veMaMau: 'Mã mẫu truyền thẳng listen() thay vì tra từ điển d[listen()] nên phát sai tần số khối đá.',
-      san: [
-        ['#######', '#.III.#', '#####F#', '#######'],
-        ['#######', '#.III.#', '#####F#', '#######']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 1, y: 1, not: 2, phamVi: 1 }],
-        [{ x: 1, y: 1, not: 5, phamVi: 1 }]
-      ],
-      daChuong: [
-        [{ x: 4, y: 1, not: 7, ben: 1, phamVi: 1 }],
-        [{ x: 4, y: 1, not: 4, ben: 1, phamVi: 1 }]
-      ],
-      maMau: bai(['d = {2: 7, 5: 4}', 'crack_glide(listen(), 1)', 'move()']),
-      loiGiai: bai(['d = {2: 7, 5: 4}', 'crack_glide(d[listen()], 1)', 'move()']),
+    manNghe(10, 'tong-hop', {
+      ten: 'Trùm: hầm ám hiệu',
+      khoaTD: ['3', '5'],
+      hamCuaEmCan: ['move', 'play_note', 'glide_tunnel'],
+      deBai: 'Giúp Sola với! Hai tầng đá ướt có đá chuông chắn như màn trước. Ra khỏi tầng cuối, R1 đứng dưới chuông ám hiệu, đá chuông 2 vạch chắn dải đá ướt dẫn tới cờ. Sổ d dịch ám hiệu ra nốt đá.',
+      veMaMau: 'Sola ngân luôn nốt chuông. Chạy thử: đá cuối không vỡ.',
+      san: [T10A.san, T10B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [T10A.ngachHang, T10B.ngachHang],
+      chuongDa: [[cd(2, 5, 3)], [cd(2, 5, 5)]],
+      daChuong: [voiDa(T10A, [2, 7]).concat([da(3, 5, 6, 2)]), voiDa(T10B, [4, 8]).concat([da(3, 5, 1, 2)])],
+      maMau: bai(['d = {3: 6, 5: 1}', 'for i in range(2):', '    play_note(listen())', '    glide_tunnel()', 'note(listen(), 2)', 'wait()', 'retract_spikes()', 'move()']),
+      loiGiai: bai(['d = {3: 6, 5: 1}', 'for i in range(2):', '    play_note(listen())', '    glide_tunnel()', 'n = listen()', 'note(d[n], 2)', 'wait()', 'retract_spikes()', 'move()']),
       loiSai: [
-        { moTa: 'Truyền listen() mà không tra d[listen()]: khối đá ở (4, 1) không vỡ', baiLam: bai(['d = {2: 7, 5: 4}', 'crack_glide(listen(), 1)', 'move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Ngân nốt chuông: đá cuối cần nốt khác', baiLam: bai(['d = {3: 6, 5: 1}', 'for i in range(2):', '    play_note(listen())', '    glide_tunnel()', 'note(listen(), 2)', 'wait()', 'retract_spikes()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Ngân nốt 6 của hầm 1: đá cuối hầm 2 không vỡ', baiLam: bai(['d = {3: 6, 5: 1}', 'for i in range(2):', '    play_note(listen())', '    glide_tunnel()', 'note(6, 2)', 'wait()', 'retract_spikes()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên wait(): R1 lướt khi đá chưa vỡ', baiLam: bai(['d = {3: 6, 5: 1}', 'for i in range(2):', '    play_note(listen())', '    glide_tunnel()', 'n = listen()', 'note(d[n], 2)', 'retract_spikes()', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 15, nhip: 4 },
+      sao: { o: 18, nhip: 9 },
       goiY: [
-        'Khối đá ở (4, 1) cách (1, 1) đúng 3 ô trên tia nhìn thẳng nên loa phát từ (1, 1) vẫn làm vỡ đá.',
-        'Đổi listen() thành d[listen()] trong lệnh crack_glide.'
-      ]
-    }),
-
-    manNgheNot(9, 'bien-the', {
-      ten: 'Thu thập nốt nhạc không trùng',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step'],
-      deBai: 'Dọc 3 ô đầu có 3 chuông đá (trong đó có những chuông trùng nốt). Hãy vừa đi qua 3 ô vừa thêm nốt nghe được vào tập hợp s = set() bằng s.add(listen()), sau đó rẽ phải và tiến len(s) bước xuống cờ ở cả 2 sân.',
-      veMaMau: 'Mã mẫu chưa thêm lệnh tiến len(s) bước xuống cờ sau khi rẽ phải.',
-      san: [
-        ['######', '#.II.#', '####I#', '####F#', '####u#', '######'],
-        ['######', '#.II.#', '####I#', '####I#', '####F#', '####u#', '######']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [
-          { x: 1, y: 1, not: 3, phamVi: 1 },
-          { x: 2, y: 1, not: 5, phamVi: 1 },
-          { x: 3, y: 1, not: 3, phamVi: 1 }
-        ],
-        [
-          { x: 1, y: 1, not: 3, phamVi: 1 },
-          { x: 2, y: 1, not: 5, phamVi: 1 },
-          { x: 3, y: 1, not: 8, phamVi: 1 }
-        ]
-      ],
-      maMau: bai(['s = set()', 'for i in range(3):', '    s.add(listen())', '    move()', 'turn_right()']),
-      loiGiai: bai(['s = set()', 'for i in range(3):', '    s.add(listen())', '    move()', 'turn_right()', 'forward(len(s))']),
-      loiSai: [
-        { moTa: 'Chưa tiến xuống cờ sau khi rẽ phải', baiLam: bai(['s = set()', 'for i in range(3):', '    s.add(listen())', '    move()', 'turn_right()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đi cứng 3 bước forward(3): ở sân 1 vượt quá cờ rơi xuống hố', baiLam: bai(['s = set()', 'for i in range(3):', '    s.add(listen())', '    move()', 'turn_right()', 'forward(3)']), phaiCoMa: ['roi-ho'] }
-      ],
-      sao: { o: 13, nhip: 7 },
-      goiY: [
-        'Ở sân 1 có 2 nốt khác nhau (3, 5) nên len(s) == 2; ở sân 2 có 3 nốt khác nhau (3, 5, 8) nên len(s) == 3.',
-        'Thêm dòng forward(len(s)) vào cuối chương trình.'
-      ]
-    }),
-
-    manNgheNot(10, 'trum', {
-      ten: 'Trùm: Mê cung chuông đá thẩm âm',
-      huyHieu: { ma: 'nghe-not', ten: 'Huy hiệu Thẩm âm chuông đá' },
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'crack_glide', 'auto_crack_glide', 'march_note', 'echo_march'],
-      nhipTheo: 'tong',
-      deBai: 'Trùm Chương 1 Gói 7! Trên cả 2 sân, đầu tiên gọi auto_crack_glide(2) để thẩm âm, ngân 2 nhịp phá thạch nhũ dày trên hành lang ngang rồi trượt tới góc (5, 1) và rẽ phải. Sau đó gọi echo_march(2) để vừa bước xuống 2 ô vừa thẩm âm phá liên tiếp 2 khối đá chuông dọc đường tới cờ.',
-      veMaMau: 'Kết hợp auto_crack_glide(2) và echo_march(2).',
-      san: [
-        [
-          '#######',
-          '#.III.#',
-          '#####I#',
-          '#####F#',
-          '#######'
-        ],
-        [
-          '#######',
-          '#.III.#',
-          '#####I#',
-          '#####F#',
-          '#######'
-        ]
-      ],
-      batDau: [
-        { x: 1, y: 1, huong: 1 },
-        { x: 1, y: 1, huong: 1 }
-      ],
-      daChuong: [
-        [
-          { x: 3, y: 1, not: 4, ben: 2 },
-          { x: 5, y: 2, not: 7, ben: 1 },
-          { x: 5, y: 3, not: 2, ben: 1 }
-        ],
-        [
-          { x: 3, y: 1, not: 6, ben: 2 },
-          { x: 5, y: 2, not: 3, ben: 1 },
-          { x: 5, y: 3, not: 8, ben: 1 }
-        ]
-      ],
-      maMau: bai([
-        'auto_crack_glide(2)'
-      ]),
-      loiGiai: bai([
-        'auto_crack_glide(2)',
-        'echo_march(2)'
-      ]),
-      loiSai: [
-        { moTa: 'Mới đi hết chặng ngang: dừng ở góc (5, 1)', baiLam: bai(['auto_crack_glide(2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Chỉ gọi echo_march(1): dừng ở (5, 2) trước cờ', baiLam: bai(['auto_crack_glide(2)', 'echo_march(1)']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 21, nhip: 12 },
-      goiY: [
-        'Sau auto_crack_glide(2), R1 đứng ở (5, 1) hướng xuống Nam với gai đã bung.',
-        'Gọi echo_march(2) để R1 lần lượt thẩm âm, phá 2 khối đá chuông ở (5, 2) và (5, 3) rồi bước vào cờ.'
+        'Luna: Hai tầng như màn "Nghe qua tầng ngách".',
+        'Luna: Dưới chuông: n = listen(), note(d[n], 2), wait(), rồi lướt tới cờ.'
       ]
     }),
 
     /* ========================================================================
-       CHƯƠNG 2: che-nghe-not — Chế lệnh: giải mã giai điệu (10 màn)
+       CHƯƠNG 2: che-nghe-not — Chế lệnh: giải mã giai điệu
        ====================================================================== */
-    manCheNgheNot(1, 'lam-quen', {
-      ten: 'Chế lệnh: thẩm âm bước tới',
-      taoHam: ['listen_step'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'play_note', 'crack_step'],
-      deBai: 'Tạo hàm listen_step(m) nhận số bước m: tự đọc tần số khối đá chuông phía trước bằng listen() rồi gọi crack_step(listen(), m) để phá đá và tiến m bước.',
-      veMaMau: 'Mở Xưởng hàm, tạo listen_step(m) gồm 1 dòng: crack_step(listen(), m).',
-      san: [
-        ['#######', '#..I.F#', '#######'],
-        ['#######', '#..I.F#', '#######']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      daChuong: [
-        [{ x: 3, y: 1, not: 5, ben: 1 }],
-        [{ x: 3, y: 1, not: 8, ben: 1 }]
-      ],
-      maMau: bai(['listen_step(4)']),
-      loiGiai: bai(['listen_step(4)'], [], [ham('listen_step', ['crack_step(listen(), m)'], ['m'])]),
-      loiSai: [
-        { moTa: 'Chưa tạo hàm listen_step', baiLam: bai(['listen_step(4)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Truyền cứng tần số 5 thay vì listen(): ở sân 2 đâm vào đá chuông nốt 8', baiLam: bai(['listen_step(4)']), hamCuaEmMoi: [ham('listen_step', ['crack_step(5, m)'], ['m'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
-      ],
-      sao: { o: 11, nhip: 5 },
-      goiY: [
-        'Thân hàm listen_step(m) chỉ cần 1 dòng: crack_step(listen(), m).',
-        'Khi gọi listen_step(4), R1 tự phá khối đá ở (3, 1) và tiến 4 bước tới cờ (5, 1) trên cả 2 sân.'
-      ]
-    }),
-
-    manCheNgheNot(2, 'lam-quen', {
-      ten: 'Thẩm âm kết hợp đo khoảng cách',
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'play_note', 'crack_step', 'listen_step'],
-      deBai: 'Cảm biến nâng cấp vừa có listen() (đọc nốt) vừa có hear() (đo khoảng cách)! Ở cả 2 sân, khối đá chuông nằm ngay trên ô cờ ở cuối hành lang. Hãy gọi listen_step(hear()) để vừa tự phá đá vừa tiến đúng số bước tới cờ.',
-      veMaMau: 'Mã mẫu truyền cứng 3 bước nên ở sân 2 dừng thiếu trước cờ.',
-      san: [
-        ['######', '#.IIF#', '######'],
-        ['#######', '#.IIIF#', '#######']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      daChuong: [
-        [{ x: 4, y: 1, not: 3, ben: 1 }],
-        [{ x: 5, y: 1, not: 7, ben: 1 }]
-      ],
-      maMau: bai(['listen_step(3)']),
-      loiGiai: bai(['listen_step(hear())']),
-      loiSai: [
-        { moTa: 'Để nguyên listen_step(3): ở sân 2 dừng trước cờ 1 ô', baiLam: bai(['listen_step(3)']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 11, nhip: 5 },
-      goiY: [
-        'Trước khi khối đá ở ô cờ vỡ, hear() đo chính xác khoảng cách từ R1 tới ô cờ.',
-        'Đổi listen_step(3) thành listen_step(hear()).'
-      ]
-    }),
-
-    manCheNgheNot(3, 'lam-quen', {
-      ten: 'Chế lệnh: thẩm âm xuyên ngách',
+    manCheNghe(1, 'lam-quen', {
+      ten: 'Chế lệnh: nghe rồi chui',
       taoHam: ['crack_tunnel'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'glide_tunnel', 'play_note'],
-      deBai: 'Tạo hàm crack_tunnel() gồm 2 dòng: gọi play_note(listen()) để tự phá khối đá chuông đang chặn trên dải băng dẫn vào ngách hang, rồi gọi glide_tunnel() để trượt qua dải băng, chui qua ngách ngầm và bước ra 1 ô.',
-      veMaMau: 'Trong crack_tunnel(), viết 2 dòng: play_note(listen()) và glide_tunnel().',
-      san: [
-        ['#######', '#.III>#', '#######', '#>II.F#', '#######'],
-        ['#######', '#.III>#', '#######', '#>II.F#', '#######']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      ngachHang: [
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }],
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }]
-      ],
-      daChuong: [
-        [{ x: 3, y: 1, not: 4, ben: 1 }],
-        [{ x: 3, y: 1, not: 8, ben: 1 }]
-      ],
-      maMau: bai(['crack_tunnel()', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()']),
-      loiGiai: bai(
-        ['crack_tunnel()', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()'],
-        [],
-        [ham('crack_tunnel', ['play_note(listen())', 'glide_tunnel()'])]
-      ),
+      hamCuaEmCan: ['move', 'turn_right', 'play_note', 'glide_tunnel'],
+      deBai: 'Giúp Sola với! Chế hàm crack_tunnel(): nghe nốt đá chắn trước, gõ đúng nốt đó, rồi glide_tunnel(). Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi crack_tunnel() ba lần. Mở Xưởng hàm, chế crack_tunnel().',
+      san: [C1A.san, C1B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [C1A.ngachHang, C1B.ngachHang],
+      daChuong: [voiDa(C1A, [3, 7, 2]), voiDa(C1B, [5, 1, 6])],
+      maMau: bai(['for i in range(3):', '    crack_tunnel()', 'turn_right()', 'move()']),
+      loiGiai: bai(['for i in range(3):', '    crack_tunnel()', 'turn_right()', 'move()'], [], [CRACK_TUNNEL]),
       loiSai: [
-        { moTa: 'Chưa tạo hàm crack_tunnel', baiLam: bai(['crack_tunnel()', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Gọi glide_tunnel() trước play_note(listen()): trượt vướng đá chuông nên không tới được miệng ngách', baiLam: bai(['crack_tunnel()', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()']), hamCuaEmMoi: [ham('crack_tunnel', ['glide_tunnel()', 'play_note(listen())'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa chế hàm crack_tunnel', baiLam: bai(['for i in range(3):', '    crack_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm lướt trước rồi mới gõ: R1 kẹt trước đá', baiLam: bai(['for i in range(3):', '    crack_tunnel()', 'turn_right()', 'move()']), hamCuaEmMoi: [ham('crack_tunnel', ['glide_tunnel()', 'play_note(listen())'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 16, nhip: 5 },
+      sao: { o: 17, nhip: 11 },
       goiY: [
-        'Trong crack_tunnel(), phải gọi play_note(listen()) phá đá trước rồi mới gọi glide_tunnel().',
-        'Sau khi ra ở (2, 3), chương trình chính trượt tiếp qua dải băng dưới và bước vào cờ (5, 3).'
+        'Luna: Thân hàm hai dòng, giống màn "Nghe qua tầng ngách".',
+        'Luna: play_note(listen()), glide_tunnel().'
       ]
     }),
 
-    manCheNgheNot(4, 'lam-quen', {
-      ten: 'Hai ngách hang khóa âm',
-      hamCuaEmCan: ['move', 'glide_tunnel', 'play_note', 'crack_tunnel'],
-      deBai: 'Cả hai tầng ngách hang đều có đá chuông chắn trên dải băng. Hãy gọi crack_tunnel() để vượt ngách đầu sang (2, 3), sau đó phá tiếp khối đá thứ hai bằng play_note(listen()), thu gai trượt tới (4, 3) rồi bung gai bước vào cờ.',
-      veMaMau: 'Mã mẫu mới vượt qua ngách đầu, chưa phá đá và trượt ở tầng dưới.',
-      san: [
-        ['#######', '#.III>#', '#######', '#>II.F#', '#######'],
-        ['#######', '#.III>#', '#######', '#>II.F#', '#######']
-      ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      ngachHang: [
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }],
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }]
-      ],
-      daChuong: [
-        [{ x: 3, y: 1, not: 2, ben: 1 }, { x: 3, y: 3, not: 6, ben: 1 }],
-        [{ x: 3, y: 1, not: 5, ben: 1 }, { x: 3, y: 3, not: 7, ben: 1 }]
-      ],
-      maMau: bai(['crack_tunnel()']),
-      loiGiai: bai(['crack_tunnel()', 'play_note(listen())', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()']),
+    manCheNghe(2, 'lam-quen', {
+      ten: 'Còn đá thì còn chui',
+      hamCuaEmCan: ['move', 'turn_right', 'crack_tunnel'],
+      deBai: 'Giúp Sola với! Tầng nào cũng có đá chuông chắn. Đá chưa vỡ còn vang, nên còn nghe tiếng vang là còn tầng. Hai hầm số tầng khác nhau. Tầng cuối có hố phía trước, cờ ở bên phải.',
+      veMaMau: 'Sola đếm tầng của hầm 1. Chạy thử: hầm 2 có ba tầng.',
+      san: [C2A.san, C2B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [C2A.ngachHang, C2B.ngachHang],
+      daChuong: [voiDa(C2A, [4, 8]), voiDa(C2B, [2, 6, 3])],
+      maMau: bai(['for i in range(2):', '    crack_tunnel()', 'turn_right()', 'move()']),
+      loiGiai: bai(['while hear() > 0:', '    crack_tunnel()', 'turn_right()', 'move()']),
       loiSai: [
-        { moTa: 'Chưa đi nốt tầng dưới', baiLam: bai(['crack_tunnel()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Quên gọi play_note(listen()) ở tầng dưới: vướng khối đá ở (3, 3)', baiLam: bai(['crack_tunnel()', 'retract_spikes()', 'move()', 'extend_spikes()', 'move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Đếm tầng hầm 1: hầm 2 còn một tầng', baiLam: bai(['for i in range(2):', '    crack_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'while hear() == 0: vòng lặp không chạy', baiLam: bai(['while hear() == 0:', '    crack_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 17, nhip: 6 },
+      sao: { o: 17, nhip: 11 },
       goiY: [
-        'Sau crack_tunnel(), R1 đang đứng ở (2, 3) ngay trước khối đá chuông (3, 3).',
-        'Gọi play_note(listen()), rồi retract_spikes(), move(), extend_spikes(), move() để tới cờ.'
+        'Luna: while hear() > 0: crack_tunnel().',
+        'Luna: Ra ngoài vòng lặp: turn_right(), move().'
       ]
     }),
 
-    manCheNgheNot(5, 'luyen', {
-      ten: 'Chế lệnh: dịch mã chuông bằng từ điển',
+    manCheNghe(3, 'luyen', {
+      ten: 'Chế lệnh: giải mã rồi lướt',
+      khoaTD: ['1', '3'],
       taoHam: ['decode_glide'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'crack_glide'],
-      deBai: 'Tạo hàm decode_glide(d, k) nhận từ điển mật mã d và độ bền k: đọc nốt của chuông chỉ đường dưới chân bằng listen(), tra tần số thật d[listen()] rồi gọi crack_glide(d[listen()], k) để phá khối đá phía trước và trượt hết dải băng.',
-      veMaMau: 'Trong decode_glide(d, k), viết 1 dòng: crack_glide(d[listen()], k).',
+      hamCuaEmCan: ['move', 'crack_glide'],
+      deBai: 'Giúp Sola với! Ở mỗi góc, R1 dừng ngay dưới chuông ám hiệu, đá chuông 2 vạch chắn đầu dải. Chế hàm decode_glide(d, k): tra sổ d theo nốt chuông, rồi crack_glide nốt đó k nhịp. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi decode_glide hai lần. Mở Xưởng hàm, chế decode_glide(d, k).',
       san: [
-        ['#######', '#.III.#', '#####F#', '#######'],
-        ['#######', '#.III.#', '#####F#', '#######']
+        [
+          '########',
+          '#.IIIII#',
+          '######I#',
+          '######I#',
+          '#####FI#',
+          '########'
+        ],
+        [
+          '##########',
+          '#.IIIIIII#',
+          '########I#',
+          '#######FI#',
+          '##########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 1, y: 1, not: 1, phamVi: 1 }],
-        [{ x: 1, y: 1, not: 3, phamVi: 1 }]
-      ],
-      daChuong: [
-        [{ x: 4, y: 1, not: 6, ben: 2, phamVi: 1 }],
-        [{ x: 4, y: 1, not: 8, ben: 2, phamVi: 1 }]
-      ],
-      maMau: bai(['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'move()']),
-      loiGiai: bai(
-        ['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'move()'],
-        [],
-        [ham('decode_glide', ['crack_glide(d[listen()], k)'], ['d', 'k'])]
-      ),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 1), cd(6, 1, 3)], [cd(1, 1, 3), cd(8, 1, 1)]],
+      daChuong: [[da(2, 1, 6, 2), da(6, 2, 8, 2)], [da(2, 1, 8, 2), da(8, 2, 6, 2)]],
+      maMau: bai(['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'decode_glide(d, 2)', 'move()']),
+      loiGiai: bai(['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'decode_glide(d, 2)', 'move()'], [], [DECODE_GLIDE]),
       loiSai: [
-        { moTa: 'Chưa tạo hàm decode_glide', baiLam: bai(['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'move()']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Truyền thẳng listen() không tra d[listen()]: phát sai tần số đá chuông', baiLam: bai(['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'move()']), hamCuaEmMoi: [ham('decode_glide', ['crack_glide(listen(), k)'], ['d', 'k'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa chế hàm decode_glide', baiLam: bai(['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'decode_glide(d, 2)', 'move()']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm không tra sổ: ngân nốt chuông, đá không vỡ', baiLam: bai(['d = {1: 6, 3: 8}', 'decode_glide(d, 2)', 'decode_glide(d, 2)', 'move()']), hamCuaEmMoi: [ham('decode_glide', ['crack_glide(listen(), k)'], ['d', 'k'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 16, nhip: 5 },
+      sao: { o: 18, nhip: 9 },
       goiY: [
-        'Thân hàm decode_glide(d, k) chỉ gồm 1 dòng: crack_glide(d[listen()], k).',
-        'Khi đá vỡ và R1 trượt tới (5, 1) rẽ phải, lệnh move() bước vào cờ.'
+        'Luna: n = listen() là nốt chuông, d[n] là nốt đá.',
+        'Luna: Thân hàm hai dòng: n = listen(), crack_glide(d[n], k).'
       ]
     }),
 
-    manCheNgheNot(6, 'luyen', {
-      ten: 'Giải mã hai tầng mật âm',
-      hamCuaEmCan: ['move', 'turn_right', 'glide_step', 'crack_glide', 'decode_glide'],
-      deBai: 'Mỗi góc hành lang đều đặt một chuông chỉ đường báo mật mã cho khối đá chuông ở cuối dải băng tiếp theo. Hãy dùng bảng mã d = {1: 5, 2: 7, 4: 8} và gọi decode_glide(d, 1) hai lần liên tiếp rồi bước vào cờ.',
-      veMaMau: 'Mã mẫu mới giải mã tầng đầu tiên.',
+    manCheNghe(4, 'luyen', {
+      ten: 'Sổ ám hiệu mỗi hầm',
+      khoaTD: ['2', '5', '6'],
+      hamCuaEmCan: ['move', 'decode_glide'],
+      duLieuSan: ['d = {2: 7, 5: 3}', 'd = {2: 4, 6: 1}'],
+      deBai: 'Giúp Sola với! Mỗi hầm dùng một sổ ám hiệu d riêng. Ba góc xoắn ốc, góc nào cũng có chuông ám hiệu và đá chuông 1 vạch.',
+      veMaMau: 'Sola giải mã hai góc. Chạy thử: còn góc thứ ba.',
       san: [
-        ['#######', '#.III.#', '#####I#', '#####I#', '####FI#', '#######'],
-        ['#######', '#.III.#', '#####I#', '#####I#', '####FI#', '#######']
+        [
+          '##########',
+          '#.IIIIIII#',
+          '########I#',
+          '########I#',
+          '###F####I#',
+          '###IIIIII#',
+          '##########'
+        ],
+        [
+          '########',
+          '#.IIIII#',
+          '######I#',
+          '#F####I#',
+          '#IIIIII#',
+          '########'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 1, y: 1, not: 1, phamVi: 1 }, { x: 5, y: 1, not: 2, phamVi: 1 }],
-        [{ x: 1, y: 1, not: 2, phamVi: 1 }, { x: 5, y: 1, not: 4, phamVi: 1 }]
-      ],
-      daChuong: [
-        [{ x: 4, y: 1, not: 5, ben: 1, phamVi: 1 }, { x: 5, y: 3, not: 7, ben: 1, phamVi: 1 }],
-        [{ x: 4, y: 1, not: 7, ben: 1, phamVi: 1 }, { x: 5, y: 3, not: 8, ben: 1, phamVi: 1 }]
-      ],
-      maMau: bai(['d = {1: 5, 2: 7, 4: 8}', 'decode_glide(d, 1)']),
-      loiGiai: bai(['d = {1: 5, 2: 7, 4: 8}', 'decode_glide(d, 1)', 'decode_glide(d, 1)', 'move()']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 2), cd(8, 1, 5), cd(8, 5, 2)], [cd(1, 1, 6), cd(6, 1, 2), cd(6, 4, 6)]],
+      daChuong: [[da(2, 1, 7), da(8, 2, 3), da(7, 5, 7)], [da(2, 1, 1), da(6, 2, 4), da(5, 4, 1)]],
+      maMau: bai(['d = {2: 7, 5: 3}', 'for i in range(2):', '    decode_glide(d, 1)', 'move()']),
+      loiGiai: bai(['d = {2: 7, 5: 3}', 'for i in range(3):', '    decode_glide(d, 1)', 'move()']),
       loiSai: [
-        { moTa: 'Chưa giải mã chặng dọc và bước vào cờ', baiLam: bai(['d = {1: 5, 2: 7, 4: 8}', 'decode_glide(d, 1)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Lặp hai lần: còn góc thứ ba', baiLam: bai(['d = {2: 7, 5: 3}', 'for i in range(2):', '    decode_glide(d, 1)', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không tra sổ: ngân nốt chuông, đá không vỡ', baiLam: bai(['d = {2: 7, 5: 3}', 'for i in range(3):', '    crack_glide(listen(), 1)', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 17, nhip: 7 },
+      sao: { o: 18, nhip: 10 },
       goiY: [
-        'Tại góc (5, 1) có chuông chỉ đường thứ hai ngay dưới chân R1.',
-        'Gọi thêm decode_glide(d, 1) rồi move() để vào cờ ở (4, 4).'
+        'Luna: for i in range(3): decode_glide(d, 1).',
+        'Luna: Ra ngoài vòng lặp: move() vào cờ.'
       ]
     }),
 
-    manCheNgheNot(7, 'luyen', {
-      ten: 'Chế lệnh: phát nốt mới không trùng',
+    manCheNghe(5, 'luyen', {
+      ten: 'Chế lệnh: nghe từng ô',
       taoHam: ['listen_unique_step'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'play_note'],
-      dieu: '3.7..5',
-      dieuToiCo: true,
-      deBai: 'Tạo hàm listen_unique_step(s) nhận tập hợp s: đọc nốt dưới chân n = listen(), kiểm tra nếu n chưa có trong s (if n not in s:) thì thêm s.add(n) và gọi play_note(n), sau cùng (ngoài khối if) gọi move() để bước sang ô kế tiếp.',
-      veMaMau: 'Trong listen_unique_step(s), viết: n = listen(), if n not in s: (thụt lề s.add(n), play_note(n)), rồi move().',
-      san: ['#######', '#.II.F#', '#######'],
-      batDau: { x: 1, y: 1, huong: 1 },
-      chuongDa: [
-        { x: 1, y: 1, not: 3, phamVi: 1 },
-        { x: 2, y: 1, not: 7, phamVi: 1 },
-        { x: 3, y: 1, not: 3, phamVi: 1 },
-        { x: 4, y: 1, not: 5, phamVi: 1 }
-      ],
-      maMau: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)']),
-      loiGiai: bai(
-        ['s = set()', 'for i in range(4):', '    listen_unique_step(s)'],
-        [],
-        [ham('listen_unique_step', ['n = listen()', 'if n not in s:', '    s.add(n)', '    play_note(n)', 'move()'], ['s'])]
-      ),
+      hamCuaEmCan: ['move', 'forward', 'play_note'],
+      nhipToiDa: 10,
+      deBai: 'Giúp Sola với! Bốn ô đầu hầm treo chuông đá. Chế hàm listen_unique_step(s): nghe nốt, nốt chưa có trong túi s thì thêm vào túi và gõ, rồi bước một ô. Chỉ còn 10 nhịp. Chương trình chính đã khoá.',
+      veMaMau: 'Chương trình chính gọi listen_unique_step bốn lần. Mở Xưởng hàm, chế listen_unique_step(s).',
+      san: hai([
+        '###########',
+        '#........F#',
+        '###########'
+      ]),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 2), cd(2, 1, 7), cd(3, 1, 7), cd(4, 1, 2)], [cd(1, 1, 5), cd(2, 1, 5), cd(3, 1, 5), cd(4, 1, 3)]],
+      daChuong: [[da(6, 1, 2), da(8, 1, 7)], [da(6, 1, 5), da(8, 1, 3)]],
+      maMau: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)', 'forward(4)']),
+      loiGiai: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)', 'forward(4)'], [], [LISTEN_UNIQUE_STEP]),
       loiSai: [
-        { moTa: 'Chưa tạo hàm listen_unique_step', baiLam: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Đặt move() bên trong nhánh if: khi gặp nốt trùng tại (3, 1) R1 đứng yên không đi tiếp', baiLam: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)']), hamCuaEmMoi: [ham('listen_unique_step', ['n = listen()', 'if n not in s:', '    s.add(n)', '    play_note(n)', '    move()'], ['s'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa chế hàm listen_unique_step', baiLam: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)', 'forward(4)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Thân hàm quên s.add(n): gõ lại nốt cũ, quá 10 nhịp', baiLam: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)', 'forward(4)']), hamCuaEmMoi: [ham('listen_unique_step', ['n = listen()', 'if n not in s:', '    play_note(n)', 'move()'], ['s'])], phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 13, nhip: 7 },
+      sao: { o: 16, nhip: 10 },
       goiY: [
-        'Nhớ đặt dòng move() thẳng cột với if n not in s: để dù gặp nốt trùng R1 vẫn bước qua.',
-        'Tại (3, 1) nốt 3 đã có trong s nên R1 không phát nốt mà bước luôn sang (4, 1).'
+        'Luna: Giống màn "Không gõ lại nốt đã nghe", gói lại thành hàm.',
+        'Luna: n = listen(), if n not in s: (thụt vào s.add(n), play_note(n)), rồi move() ngang với if.'
       ]
     }),
 
-    manCheNgheNot(8, 'bien-the', {
-      ten: 'Lọc tiếng vọng qua bốn trạm',
-      hamCuaEmCan: ['move', 'play_note', 'listen_unique_step'],
-      dieu: '2.6.4.',
-      dieuToiCo: true,
-      deBai: 'Dọc 3 ô đầu từ (1, 1) tới (3, 1) có 3 chuông đá khác nhau mang nốt 2, 6, 4. Khi gọi listen_unique_step(s), mỗi trạm phát 1 nốt rồi dành 1 nhịp để bước sang ô kế tiếp, tạo đúng tiết tấu 2.6.4. tới cờ! Hãy sửa số lần lặp trong vòng lặp.',
-      veMaMau: 'Mã mẫu chỉ lặp 2 lần nên chưa phát nốt thứ ba và chưa tới cờ.',
-      san: ['######', '#.IIF#', '######'],
-      batDau: { x: 1, y: 1, huong: 1 },
-      chuongDa: [
-        { x: 1, y: 1, not: 2, phamVi: 1 },
-        { x: 2, y: 1, not: 6, phamVi: 1 },
-        { x: 3, y: 1, not: 4, phamVi: 1 }
-      ],
-      maMau: bai(['s = set()', 'for i in range(2):', '    listen_unique_step(s)']),
-      loiGiai: bai(['s = set()', 'for i in range(3):', '    listen_unique_step(s)']),
-      loiSai: [
-        { moTa: 'Để nguyên range(2): dừng ở (3, 1) thiếu nốt 4 và chưa tới cờ', baiLam: bai(['s = set()', 'for i in range(2):', '    listen_unique_step(s)']), phaiCoMa: ['chua-du-dieu'] }
-      ],
-      sao: { o: 13, nhip: 6 },
-      goiY: [
-        'Từ (1, 1) tới cờ (4, 1) có 3 trạm chuông.',
-        'Đổi range(2) thành range(3).'
-      ]
-    }),
-
-    manCheNgheNot(9, 'bien-the', {
-      ten: 'Chế lệnh: đếm nốt chuông mở lối',
-      taoHam: ['scan_unique_notes'], chinhCoDinh: true,
-      hamCuaEmCan: ['move', 'forward', 'turn_right'],
-      deBai: 'Tạo hàm scan_unique_notes(n) nhận số bước khảo sát n: khởi tạo s = set(), lặp for i in range(n): gọi s.add(listen()) rồi move(), sau vòng lặp trả về return len(s) (số nốt nhạc phân biệt đã thu thập).',
-      veMaMau: 'Trong scan_unique_notes(n), tạo s = set(), lặp n lần s.add(listen()) + move(), rồi return len(s).',
+    manCheNghe(6, 'luyen', {
+      ten: 'Nghe từng ô rồi lướt',
+      hamCuaEmCan: ['move', 'listen_unique_step'],
+      nhipToiDa: 7,
+      deBai: 'Giúp Sola với! Bốn ô đầu hầm treo chuông đá, sau đó là dải đá ướt có đá chuông chắn. Gõ mỗi nốt một lần dưới các chuông, rồi lướt một mạch tới cờ. Chỉ còn 7 nhịp.',
+      veMaMau: 'Sola gõ ở mọi chuông. Chạy thử: hết nhịp.',
       san: [
-        ['######', '#.II.#', '####I#', '####F#', '####u#', '######'],
-        ['######', '#.II.#', '####I#', '####I#', '####F#', '####u#', '######']
+        [
+          '############',
+          '#.....IIIIF#',
+          '############'
+        ],
+        [
+          '###############',
+          '#.....IIIIIIIF#',
+          '###############'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      chuongDa: [
-        [{ x: 1, y: 1, not: 4, phamVi: 1 }, { x: 2, y: 1, not: 7, phamVi: 1 }, { x: 3, y: 1, not: 4, phamVi: 1 }],
-        [{ x: 1, y: 1, not: 4, phamVi: 1 }, { x: 2, y: 1, not: 7, phamVi: 1 }, { x: 3, y: 1, not: 2, phamVi: 1 }]
-      ],
-      maMau: bai(['k = scan_unique_notes(3)', 'turn_right()', 'forward(k)']),
-      loiGiai: bai(
-        ['k = scan_unique_notes(3)', 'turn_right()', 'forward(k)'],
-        [],
-        [ham('scan_unique_notes', ['s = set()', 'for i in range(n):', '    s.add(listen())', '    move()', 'return len(s)'], ['n'])]
-      ),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 4), cd(2, 1, 4), cd(3, 1, 1), cd(4, 1, 1)], [cd(1, 1, 3), cd(2, 1, 6), cd(3, 1, 6), cd(4, 1, 3)]],
+      daChuong: [[da(7, 1, 4), da(9, 1, 1)], [da(8, 1, 3), da(11, 1, 6)]],
+      maMau: bai(['for i in range(4):', '    play_note(listen())', '    move()', 'retract_spikes()', 'move()']),
+      loiGiai: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)', 'retract_spikes()', 'move()']),
       loiSai: [
-        { moTa: 'Chưa tạo hàm scan_unique_notes', baiLam: bai(['k = scan_unique_notes(3)', 'turn_right()', 'forward(k)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Trả về n thay vì len(s): ở sân 1 đi 3 bước rơi xuống hố sụt', baiLam: bai(['k = scan_unique_notes(3)', 'turn_right()', 'forward(k)']), hamCuaEmMoi: [ham('scan_unique_notes', ['s = set()', 'for i in range(n):', '    s.add(listen())', '    move()', 'return n'], ['n'])], phaiCoMa: ['roi-ho'] }
+        { moTa: 'Gõ ở mọi chuông: quá 7 nhịp', baiLam: bai(['for i in range(4):', '    play_note(listen())', '    move()', 'retract_spikes()', 'move()']), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Quên thu gai: R1 chỉ bước một ô', baiLam: bai(['s = set()', 'for i in range(4):', '    listen_unique_step(s)', 'move()']), phaiCoMa: ['chua-toi-co'] }
       ],
       sao: { o: 15, nhip: 7 },
       goiY: [
-        'Trong scan_unique_notes(n), sau vòng lặp for i in range(n): hãy trả về return len(s).',
-        'Ở sân 1 hàm trả về 2, ở sân 2 hàm trả về 3, giúp forward(k) dừng đúng tại cờ.'
+        'Luna: s = set(), rồi for i in range(4): listen_unique_step(s).',
+        'Luna: Hết vòng lặp: retract_spikes(), move().'
       ]
     }),
 
-    manCheNgheNot(10, 'trum', {
-      ten: 'Trùm: Giải mã cung điện chuông đá',
-      huyHieu: { ma: 'che-nghe-not', ten: 'Huy hiệu Chế lệnh: giải mã giai điệu' },
-      hamCuaEmCan: ['move', 'forward', 'turn_right', 'glide_step', 'glide_tunnel', 'play_note', 'crack_glide', 'crack_tunnel', 'decode_glide', 'scan_unique_notes'],
-      nhipTheo: 'tong',
-      deBai: 'Trùm Gói 7! Trên cả 2 sân, đầu tiên gọi crack_tunnel() để thẩm âm phá đá trên dải băng tầng trên, trượt vào ngách ngầm (5, 1) sang (1, 3) và bước ra (2, 3). Tiếp theo dùng bảng mã d = {2: 6, 4: 8} và gọi decode_glide(d, 2) để giải mã chuông chỉ đường ở (2, 3), ngân 2 nhịp phá thạch nhũ dày ở (4, 3), trượt tới góc (5, 3) và rẽ phải. Cuối cùng tiến hear() bước xuống cờ.',
-      veMaMau: 'Kết hợp crack_tunnel(), d = {2: 6, 4: 8}, decode_glide(d, 2) và forward(hear()).',
+    manCheNghe(7, 'bien-the', {
+      ten: 'Sửa hàm giải mã',
+      khoaTD: ['1', '3'],
+      suaHam: ['decode_glide'], chinhCoDinh: true,
+      hamCuaEmCan: ['move', 'crack_glide', 'decode_glide'],
+      deBai: 'Giúp Sola với! Ai đó sửa decode_glide(d, k) thành ngân luôn nốt chuông, quên tra sổ. Sửa lại hàm. Chương trình chính đã khoá.',
+      veMaMau: 'Mở decode_glide trong Xưởng hàm. Chạy thử: đá không vỡ.',
       san: [
-        ['#######', '#.III>#', '#######', '#>III.#', '#####I#', '#####F#', '#######'],
-        ['#######', '#.III>#', '#######', '#>III.#', '#####I#', '#####I#', '#####F#', '#######']
+        [
+          '#########',
+          '#.IIIIII#',
+          '#######I#',
+          '#######I#',
+          '#F#####I#',
+          '#IIIIIII#',
+          '#########'
+        ],
+        [
+          '#######',
+          '#.IIII#',
+          '#####I#',
+          '##F##I#',
+          '##IIII#',
+          '#######'
+        ]
       ],
-      batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      ngachHang: [
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }],
-        [{ a: { x: 5, y: 1 }, b: { x: 1, y: 3 } }]
-      ],
-      chuongDa: [
-        [{ x: 2, y: 3, not: 2, phamVi: 1 }, { x: 5, y: 5, not: 1, phamVi: 3 }],
-        [{ x: 2, y: 3, not: 4, phamVi: 1 }, { x: 5, y: 6, not: 1, phamVi: 4 }]
-      ],
-      daChuong: [
-        [{ x: 3, y: 1, not: 5, ben: 1 }, { x: 4, y: 3, not: 6, ben: 2, phamVi: 1 }],
-        [{ x: 3, y: 1, not: 7, ben: 1 }, { x: 4, y: 3, not: 8, ben: 2, phamVi: 1 }]
-      ],
-      maMau: bai(['d = {2: 6, 4: 8}', 'crack_tunnel()', 'decode_glide(d, 2)']),
-      loiGiai: bai(['d = {2: 6, 4: 8}', 'crack_tunnel()', 'decode_glide(d, 2)', 'forward(hear())']),
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 1), cd(7, 1, 3), cd(7, 5, 1)], [cd(1, 1, 3), cd(5, 1, 1), cd(5, 4, 3)]],
+      daChuong: [[da(2, 1, 6, 2), da(7, 2, 8, 2), da(6, 5, 6, 2)], [da(2, 1, 8, 2), da(5, 2, 6, 2), da(4, 4, 8, 2)]],
+      maMau: bai(['d = {1: 6, 3: 8}', 'for i in range(3):', '    decode_glide(d, 2)', 'move()'], [], [ham('decode_glide', ['crack_glide(listen(), k)'], ['d', 'k'])]),
+      loiGiai: bai(['d = {1: 6, 3: 8}', 'for i in range(3):', '    decode_glide(d, 2)', 'move()'], [], [DECODE_GLIDE]),
       loiSai: [
-        { moTa: 'Chưa đi đoạn cuối từ (5, 3) xuống cờ', baiLam: bai(['d = {2: 6, 4: 8}', 'crack_tunnel()', 'decode_glide(d, 2)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đi cứng forward(2): ở sân 2 dừng trước cờ 1 ô', baiLam: bai(['d = {2: 6, 4: 8}', 'crack_tunnel()', 'decode_glide(d, 2)', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không sửa: ngân nốt chuông, đá không vỡ', baiLam: bai(['d = {1: 6, 3: 8}', 'for i in range(3):', '    decode_glide(d, 2)', 'move()']), hamCuaEmMoi: [ham('decode_glide', ['crack_glide(listen(), k)'], ['d', 'k'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Tra sổ nhưng ngân 1 nhịp: đá 2 vạch chưa vỡ', baiLam: bai(['d = {1: 6, 3: 8}', 'for i in range(3):', '    decode_glide(d, 2)', 'move()']), hamCuaEmMoi: [ham('decode_glide', ['n = listen()', 'crack_glide(d[n], 1)'], ['d', 'k'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 27, nhip: 19 },
+      sao: { o: 18, nhip: 13 },
       goiY: [
-        'Sau decode_glide(d, 2), R1 đứng ở (5, 3) hướng xuống Nam và nghe thấy chuông đá đặt tại ô cờ.',
-        'Thêm dòng forward(hear()) vào cuối chương trình.'
+        'Luna: listen() là nốt chuông. Nốt đá là d[n] với n = listen().',
+        'Luna: Hai dòng: n = listen(), crack_glide(d[n], k).'
+      ]
+    }),
+
+    manCheNghe(8, 'bien-the', {
+      ten: 'Ám hiệu qua ngách',
+      khoaTD: ['2', '6', '8'],
+      hamCuaEmCan: ['move', 'turn_right', 'play_note', 'glide_tunnel', 'crack_tunnel'],
+      deBai: 'Giúp Sola với! Ở mỗi tầng, R1 đứng dưới chuông ám hiệu, đá chuông chắn trước miệng ngách cần nốt khác. Tra sổ d rồi gõ, rồi lướt qua ngách. crack_tunnel() ở đây sẽ gõ nhầm nốt chuông.',
+      veMaMau: 'Sola dùng crack_tunnel(). Chạy thử: đá không vỡ.',
+      san: [C8A.san, C8B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [C8A.ngachHang, C8B.ngachHang],
+      chuongDa: [[cd(1, 1, 2), cd(2, 3, 6), cd(2, 5, 8)], [cd(1, 1, 8), cd(2, 3, 2), cd(2, 5, 6)]],
+      daChuong: [voiDa(C8A, [5, 3, 1]), voiDa(C8B, [1, 5, 3])],
+      maMau: bai(['d = {2: 5, 6: 3, 8: 1}', 'for i in range(3):', '    crack_tunnel()', 'turn_right()', 'move()']),
+      loiGiai: bai(['d = {2: 5, 6: 3, 8: 1}', 'for i in range(3):', '    n = listen()', '    play_note(d[n])', '    glide_tunnel()', 'turn_right()', 'move()']),
+      loiSai: [
+        { moTa: 'crack_tunnel(): gõ nốt chuông, đá không vỡ', baiLam: bai(['d = {2: 5, 6: 3, 8: 1}', 'for i in range(3):', '    crack_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Nghe một lần ở tầng đầu: đá tầng hai không vỡ', baiLam: bai(['d = {2: 5, 6: 3, 8: 1}', 'n = listen()', 'for i in range(3):', '    play_note(d[n])', '    glide_tunnel()', 'turn_right()', 'move()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 18, nhip: 11 },
+      goiY: [
+        'Luna: Mỗi tầng: n = listen(), rồi play_note(d[n]).',
+        'Luna: Rồi glide_tunnel(). Hết ba tầng: turn_right(), move().'
+      ]
+    }),
+
+    manCheNghe(9, 'bien-the', {
+      ten: 'Giải mã tới khi hết đá',
+      khoaTD: ['4', '7'],
+      hamCuaEmCan: ['move', 'decode_glide'],
+      deBai: 'Giúp Sola với! Chuông ám hiệu ở đây ngân khẽ, chỉ nghe được khi đứng ngay dưới. Đá chuông 2 vạch thì vang xa. Còn nghe đá thì còn giải mã rồi lướt. Hai hầm số góc khác nhau.',
+      veMaMau: 'Sola đếm góc của hầm 1. Chạy thử: hầm 2 nhiều góc hơn.',
+      san: [
+        [
+          '########',
+          '#.IIIII#',
+          '######I#',
+          '######I#',
+          '######I#',
+          '#####FI#',
+          '########'
+        ],
+        [
+          '#########',
+          '#.IIII###',
+          '#####I###',
+          '##F##I###',
+          '##IIII###',
+          '#########'
+        ]
+      ],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      chuongDa: [[cd(1, 1, 4, 1), cd(6, 1, 7, 1)], [cd(1, 1, 7, 1), cd(5, 1, 4, 1), cd(5, 4, 7, 1)]],
+      daChuong: [[da(2, 1, 2, 2), da(6, 2, 5, 2)], [da(2, 1, 5, 2), da(5, 2, 2, 2), da(4, 4, 5, 2)]],
+      maMau: bai(['d = {4: 2, 7: 5}', 'for i in range(2):', '    decode_glide(d, 2)', 'move()']),
+      loiGiai: bai(['d = {4: 2, 7: 5}', 'while hear() > 0:', '    decode_glide(d, 2)', 'move()']),
+      loiSai: [
+        { moTa: 'Đếm góc hầm 1: hầm 2 còn một đá', baiLam: bai(['d = {4: 2, 7: 5}', 'for i in range(2):', '    decode_glide(d, 2)', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'while hear() == 0: vòng lặp không chạy, R1 đâm đá', baiLam: bai(['d = {4: 2, 7: 5}', 'while hear() == 0:', '    decode_glide(d, 2)', 'move()']), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 18, nhip: 13 },
+      goiY: [
+        'Luna: hear() bỏ qua chuông ngay trên đầu, chỉ đo tới đá còn vang.',
+        'Luna: while hear() > 0: decode_glide(d, 2). Rồi move().'
+      ]
+    }),
+
+    manCheNghe(10, 'tong-hop', {
+      ten: 'Trùm: hầm giai điệu',
+      khoaTD: ['2', '4'],
+      hamCuaEmCan: ['move', 'crack_tunnel', 'decode_glide'],
+      deBai: 'Giúp Sola với! Hai tầng đá ướt có đá chuông chắn, nghe là ra nốt. Ra khỏi tầng cuối là xoắn ốc: góc nào cũng có chuông ám hiệu ngân khẽ và đá chuông 2 vạch. Tra sổ d. Hai hầm số góc khác nhau.',
+      veMaMau: 'Sola đếm góc xoắn ốc của hầm 1. Chạy thử: hầm 2 nhiều góc hơn.',
+      san: [C10A.san, C10B.san],
+      batDau: hai({ x: 1, y: 1, huong: 1 }),
+      ngachHang: [C10A.ngachHang, C10B.ngachHang],
+      chuongDa: [[cd(2, 5, 2, 1), cd(6, 5, 4, 1)], [cd(2, 5, 4, 1), cd(5, 5, 2, 1), cd(5, 8, 4, 1)]],
+      daChuong: [
+        voiDa(C10A, [3, 6]).concat([da(3, 5, 7, 2), da(6, 6, 1, 2)]),
+        voiDa(C10B, [5, 8]).concat([da(3, 5, 1, 2), da(5, 6, 7, 2), da(4, 8, 1, 2)])
+      ],
+      maMau: bai(['d = {2: 7, 4: 1}', 'for i in range(2):', '    crack_tunnel()', 'for i in range(2):', '    decode_glide(d, 2)', 'move()']),
+      loiGiai: bai(['d = {2: 7, 4: 1}', 'for i in range(2):', '    crack_tunnel()', 'while hear() > 0:', '    decode_glide(d, 2)', 'move()']),
+      loiSai: [
+        { moTa: 'Đếm góc hầm 1: hầm 2 còn một đá', baiLam: bai(['d = {2: 7, 4: 1}', 'for i in range(2):', '    crack_tunnel()', 'for i in range(2):', '    decode_glide(d, 2)', 'move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xoắn ốc không tra sổ: gõ nốt chuông, đá không vỡ', baiLam: bai(['d = {2: 7, 4: 1}', 'for i in range(2):', '    crack_tunnel()', 'for i in range(3):', '    crack_glide(listen(), 2)', 'move()']), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 28, nhip: 19 },
+      goiY: [
+        'Luna: Hai tầng: for i in range(2): crack_tunnel().',
+        'Luna: Xoắn ốc: while hear() > 0: decode_glide(d, 2). Rồi move().'
       ]
     })
   ];
