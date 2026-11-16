@@ -166,6 +166,16 @@
   /** Cách hai: nhện + nam châm + radar (L12) đọc y hệt, nhưng không qua rào: vòng lên hàng trên, co chân chui gầm đá lở, xuống thùng. */
   var NHEN_18 = DOC_18.concat(['go_up()', 'crouch()', 'for i in range(3):', '    go_right()', 'go_down()', 'magnet_off()', 'wait()']);
 
+  /** lap-mo-da.9: ba sân, mũi khoan sắt rơi trên lối máy khai thác (hàng 2) ở cột 3, 5, 4 tuỳ sân; R2 đi hàng trên dọn giúp. */
+  function san19(xMui) { var h2 = '#........#'.split(''); h2[xMui] = 'o'; h2[8] = 'F'; return ['##########', '#......F##', h2.join(''), '##########']; }
+  function vc19(xMui) { var h2 = '..........'.split(''); h2[xMui] = 's'; return ['..........', '..........', h2.join(''), '..........']; }
+  /** Cách một: bánh gai + máy ném + radar: quay sang phải, mỗi ô đọc g[2][1] (ô ngay dưới); có mũi khoan thì quay xuống xúc vào rổ, quay lại đi tiếp. */
+  var GAI_19 = ['turn_left()', 'for i in range(6):', '    forward(1)', '    g = radar()', '    if g[2][1] == "V":', '        turn_right()', '        load()', '        wait()', '        turn_left()'];
+  /** Cách hai: nhện + nam châm + cảm biến từ (mặt quay xuống): front_metal() thì bước xuống, gọi hàm clear_iron("U") của Bãi tái chế (hút rồi bước lên), thả trên hàng trên. */
+  var NHEN_19 = ['for i in range(6):', '    go_right()', '    if front_metal():', '        go_down()', '        clear_iron("U")', '        magnet_off()', '        wait()'];
+  /** Máy khai thác chờ đủ lâu cho cả hai cách (nhện chậm hơn: mỗi bước hai nhịp) rồi chạy qua lối đã dọn. */
+  var KT_19 = ['wait_n(16)', 'forward(7)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -620,6 +630,30 @@
       sao: { o: 24, nhip: 9 },
       goiY: ['g[0][1]: hàng 0 (trên), cột 1 (giữa) = ô ngay trên robot.', 'pull_s(): bật nam châm hút. magnet_off(): thả.'],
       cauDo: { doi: null, lap: 'drone+nam-cham+radar', coChe: ['sat', 'rao', 'radar', 'nem', 'mui-khoan'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 19 · đọc rồi chọn (ba sân), hai cách lắp, nhắc gói 3 (clear_iron của Bãi tái chế): mũi khoan sắt rơi giữa lối máy khai thác, mỗi sân một cột. R2 đi hàng trên, đọc ô ngay dưới.
+    //      Cách một bánh gai + máy ném + radar: g[2][1] == "V" thì quay xuống xúc mũi khoan vào rổ. Cách hai nhện + nam châm + cảm biến từ (mặt quay xuống):
+    //      front_metal() thì bước xuống, clear_iron("U") hút rồi bước lên, thả ở hàng trên. Máy khai thác R1 chờ rồi chạy qua lối đã dọn tới cờ.
+    man9('lap-mo-da', 9, 'van-dung', {
+      ten: 'Ném hay hút',
+      hamCuaEmCan: HAM_EM.concat(['clear_iron']),
+      deBai: 'Ba sân. Mũi khoan sắt rơi giữa lối máy khai thác, mỗi sân một cột. Lắp robot đi hàng trên, đọc ô ngay dưới, dọn mũi khoan. Bánh gai xúc vào rổ, hay nhện hút lên?',
+      veMaMau: 'Máy khai thác chờ 16 nhịp rồi chạy.',
+      san: [san19(3), san19(5), san19(4)],
+      them: { vatChat: [vc19(3), vc19(5), vc19(4)] },
+      doi: [may('KT', { x: 1, y: 2, huong: 1 }, { co: [{ x: 8, y: 2 }] }), khe({ x: 1, y: 1, huong: 2 }, { son: 'lam', co: [{ x: 7, y: 1 }] })],
+      lapRap: lapR2(['gai', 'nhen'], ['nem', 'nam-cham'], ['radar', 'tu'], 10, [
+        cach('gai', 'nem', 'radar', [KT_19, GAI_19]),
+        cach('nhen', 'nam-cham', 'tu', [KT_19, NHEN_19])
+      ], { moLai: ['L12'] }),
+      maMau: doiBai([KT_19, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng cột của sân 1 (cột 3): sân 2, 3 mũi khoan còn trên lối', baiLam: doiBai([KT_19, ['turn_left()', 'forward(2)', 'turn_right()', 'load()', 'wait()', 'turn_left()', 'forward(4)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đọc g[0][1] (ô trên) thay vì g[2][1] (ô dưới): không thấy mũi khoan', baiLam: doiBai([KT_19, ['turn_left()', 'for i in range(6):', '    forward(1)', '    g = radar()', '    if g[0][1] == "V":', '        turn_right()', '        load()', '        wait()', '        turn_left()']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 26, nhip: 28 },
+      goiY: ['g[2][1]: hàng 2 (dưới), cột 1 (giữa) = ô ngay dưới robot.', 'clear_iron(d): hút sắt rồi bước d (hàm em viết ở Bãi tái chế).'],
+      cauDo: { doi: null, lap: 'gai+nem+radar', coChe: ['sat', 'radar', 'nem', 'nam-cham', 'mui-khoan'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
     /* HẾT MOI */
   ];
