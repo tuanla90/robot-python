@@ -332,30 +332,32 @@
       cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'container'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
-    // 6 · dọn lối: container đổ giữa lối duy nhất từ kho ra bến. Cẩu nhấc nó đặt vào hốc bên cạnh (ba lệnh); xe chở hàng đi lên lấy thùng gỗ,
-    //     chạy ngang qua chỗ cẩu vừa dọn, quay lên đặt thùng vào ô bến D. Mọi khe trên dải ray R, mặt hướng lên (bảng có cần cẩu).
-    //     Bẫy: drone (không nhấc thùng gỗ, không nhấc container). Bảng ghi bẫy máy khai thác: nó nạp / ném chở thùng được như xe, nên đổi thành drone.
+    // 6 · dọn lối + tạo hàm grab_clear(): container đổ giữa lối duy nhất từ kho ra bến. Cẩu nhấc nó, quay cần hai nấc, đặt lên ô trống phía trên ray.
+    //     Thùng gỗ nằm ngay trước mũi xe chở hàng: grab_clear() gắp rồi lùi một ô (ra khỏi ray), xe quay phải chạy dọc lối qua chỗ cẩu vừa dọn,
+    //     quay xuống đặt thùng vào ô bến D. Mọi khe trên dải ray R (bảng có cần cẩu). Bẫy: drone (không nhấc thùng gỗ, không nhấc container).
+    //     Bảng ghi bẫy máy khai thác: nó nạp / ném chở thùng được như xe, nên đổi thành drone. Các gói sau gọi grab_clear (cuu-clb, cuu-hang-dong, ngay-hoi-clb).
     man9('cuu-cang-song', 6, 'cung-co', {
       ten: 'Container chắn lối',
       mucTieu: 'dua-vat',
-      deBai: 'Container đổ chắn lối ra bến. Cẩu dọn lối, xe chở thùng gỗ ra ô bến D.',
-      veMaMau: 'Xe chạy thẳng vào container.',
-      san: ['~~~~~~~~', '#o####D#', '#......#', '#.##.###', '#RRRRR##', '########'],
-      doi: [khe({ x: 4, y: 4, huong: 0, nac: 0, tam: 2 }), khe({ x: 1, y: 4, huong: 0 })],
-      them: { contChan: true, chong: [{ x: 4, y: 2, cont: [{ so: 7 }] }] },
+      taoHam: ['grab_clear'],
+      deBai: 'Container đổ chắn lối ra bến. Cẩu dọn lối, xe chở thùng gỗ ra ô bến D. Viết grab_clear(): gắp rồi lùi một ô.',
+      veMaMau: 'Hàm grab_clear chưa có. Xe chạy thẳng vào container.',
+      san: ['########', '#o##.###', '#RRRR###', '#......#', '######D#', '########'],
+      doi: [khe({ x: 4, y: 2, huong: 0, nac: 2, tam: 1 }), khe({ x: 1, y: 2, huong: 0 })],
+      them: { contChan: true, chong: [{ x: 4, y: 3, cont: [{ so: 7 }] }] },
       chonDoi: {
         menu: ['CC', 'CH', 'DR'],
         cachMau: [{ chon: ['CC', 'CH'], ghiChu: 'đôi tốt', loiGiai: doiBai([
-          ['pick_up()', 'retract()', 'set_down()'],
-          ['forward(2)', 'pick()', 'turn_right()', 'forward(5)', 'turn_left()', 'drop()']]) }]
+          ['pick_up()', 'swing_left()', 'swing_left()', 'set_down()'],
+          ['grab_clear()', 'turn_right()', 'forward(5)', 'turn_right()', 'drop()']], [], [H_GRAB_CLEAR]) }]
       },
-      maMau: doiBai([[], ['forward(2)', 'pick()', 'turn_right()', 'forward(5)', 'turn_left()', 'drop()']]),
+      maMau: doiBai([[], ['turn_right()', 'forward(5)']]),
       loiSai: [
-        { moTa: 'Cẩu không dọn: xe đâm container', baiLam: doiBai([[], ['forward(2)', 'pick()', 'turn_right()', 'forward(5)', 'turn_left()', 'drop()']]), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Xe quên lấy thùng', baiLam: doiBai([['pick_up()', 'retract()', 'set_down()'], ['forward(2)', 'turn_right()', 'forward(5)', 'turn_left()']]), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Cẩu không dọn: xe đâm container', baiLam: doiBai([[], ['grab_clear()', 'turn_right()', 'forward(5)', 'turn_right()', 'drop()']]), hamCuaEmMoi: [H_GRAB_CLEAR], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Thân grab_clear thiếu back(): xe chạy dọc ray, đâm vào cẩu', baiLam: doiBai([['pick_up()', 'swing_left()', 'swing_left()', 'set_down()'], ['grab_clear()', 'turn_right()', 'forward(5)', 'turn_right()', 'drop()']]), hamCuaEmMoi: [{ ten: 'grab_clear', thamSo: [], than: ['pick()'] }], phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 34, nhip: 14 },
-      goiY: ['retract(): cần ngắn lại, móc về ô gần bệ.'],
+      sao: { o: 37, nhip: 13 },
+      goiY: ['grab_clear(): pick() rồi back().', 'Cẩu: swing_left() hai lần là quay từ hướng xuống sang hướng lên.'],
       cauDo: { doi: ['CC', 'CH'], lap: null, coChe: ['container', 'thung-go', 'dich'], cuu: 'hang', meo: 'don-loi' }
     }),
 
