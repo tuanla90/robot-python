@@ -97,7 +97,7 @@ console.log('\n== 5. Màn mùa 8 chỉ dùng vật có hình ==');
   const M = require(path.join(day, 'lo-trinh-hoc.js'));
   const TT = require(path.join(day, 'thu-tu-chuong.js'));
   const ch8 = TT.goi.filter((g) => g.mua === 'mua-8').flatMap((g) => g.chuong);
-  const CHUONG_XONG = ['banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai'];      // như kiem-man-mua-8.mjs: chương đã viết lại (P3); chương cũ chỉ in ra, không chặn
+  const CHUONG_XONG = ['banh-gai', 'tu-dien', 'loa', 'tap-hop', 'am-thanh', 'che-am-thanh', 'san-hang-dong', 'che-hang-dong', 'thu-gai', 'che-thu-gai', 'phat-not', 'che-phat-not'];      // như kiem-man-mua-8.mjs: chương đã viết lại (P3); chương cũ chỉ in ra, không chặn
   const tatCa = M.danhSach.filter((m) => ch8.includes(m.chuong));
   const ds = tatCa.filter((m) => CHUONG_XONG.includes(m.chuong));
   const CO_HINH = new Set(['chuongDa', 'danDoi', 'daChuong', 'ngachHang', 'noi', 'cuaNhip', 'mau', 'vatMau', 'vatChat', 'vatThem', 'thungThem', 'demTu', 'dong', 'nutBat', 'dieu', 'bongMo']);
