@@ -56,6 +56,11 @@
   /** Xe hang động cuu-mo-da.2: chờ hố được lấp, bám bùn đi ngang dốc tới nút đè (cửa hầm mở), giữ nút chờ máy khai thác qua cửa, rồi tới cờ. */
   var HD_2 = ['wait_n(3)', 'forward(6)', 'wait_n(2)', 'forward(1)'];
 
+  /** cuu-mo-da.3: máy khai thác hất đá tròn chạy đà (aim_lob(3)) lấp hố ở cột 4, chờ cửa hầm mở, đi qua hố đã lấp và cửa, xúc quặng, hất 2 ô lên xe goòng D.
+   *  Xe hang động bám bùn, dừng giữa dốc ở cột 4, quay lên, qua hố đã lấp, đứng giữ nút đè (cửa hầm mở). */
+  var KT_3 = ['aim_lob(3)', 'wait_n(3)', 'forward(6)', 'load()', 'wait()', 'aim(2)', 'throw()', 'wait()'];
+  var HD_3 = ['forward(3)', 'turn_left()', 'forward(2)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -121,6 +126,32 @@
       sao: { o: 38, nhip: 15 },
       goiY: ['g = radar(): g[r][c] là ô hàng r cột c quanh máy. Hàng 0 trước mặt (khi quay lên).', '"u" là hố.', 'aim(1) rồi throw(): đá rơi ô ngay trước mũi.'],
       cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem', 'nut-de', 'cua', 'radar'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 3 · làm cầu (bẫy xích trượt bùn): dốc bùn hàng 4; hố ở cột 4 chắn lối lên nút đè M giữ cửa hầm C, sau cửa là quặng và xe goòng D.
+    //     Máy khai thác chạy đà hất đá tròn xa 3 ô lấp hố (aim_lob(3)), chờ, đi qua hố đã lấp và cửa, xúc quặng hất lên xe goòng.
+    //     Xe hang động bám bùn dừng giữa dốc ở cột 4, quay lên qua hố đã lấp, đứng giữ nút. Bẫy: xe cứu hỏa (xích trượt tuột trên bùn, không dừng giữa dốc được).
+    man9('cuu-mo-da', 3, 'luyen', {
+      ten: 'Dừng giữa dốc bùn',
+      mucTieu: 'dua-vat',
+      deBai: 'Quặng sau cửa hầm phải lên xe goòng D. Nút giữ cửa ở trên hố, lối lên nút đi từ giữa dốc bùn. Chọn hai bạn: ai lấp hố, ai dừng được giữa dốc bùn để lên giữ nút?',
+      veMaMau: 'Cửa hầm còn đóng.',
+      san: ['###########', '#.........#', '#...M.....#', '#.o.u.C.oD#', '#.IIIIIIII#', '###########'],
+      noi: [{ nut: { x: 4, y: 2 }, cua: [{ x: 6, y: 3 }] }],
+      them: { vatDang: ['...........', '...........', '...........', '..r.....q..', '...........', '...........'] },
+      doi: [khe({ x: 1, y: 3, huong: 1 }), khe({ x: 1, y: 4, huong: 1 })],
+      chonDoi: {
+        menu: ['KT', 'HD', 'CU'],
+        cachMau: [{ chon: ['KT', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([KT_3, HD_3]) }]
+      },
+      maMau: doiBai([['aim_lob(3)'], ['forward(3)']]),
+      loiSai: [
+        { moTa: 'Hất đá 2 ô (không chạy đà): đá rơi trước hố, xe hang động rơi hố', baiLam: doiBai([['lob()', 'wait_n(4)', 'forward(6)', 'load()', 'wait()', 'aim(2)', 'throw()', 'wait()'], HD_3]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Máy khai thác đi ngay: cửa hầm còn đóng', baiLam: doiBai([['aim_lob(3)', 'forward(6)', 'load()', 'wait()', 'aim(2)', 'throw()', 'wait()'], HD_3]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe hang động đi tiếp tới nút rồi rời nút: cửa đóng lại', baiLam: doiBai([KT_3, HD_3.concat(['forward(1)'])]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 44, nhip: 17 },
+      goiY: ['aim_lob(3): chạy đà một ô rồi hất, đá bay xa 3 ô tính từ chỗ đứng cũ.', 'Bánh gai bám bùn: dừng được giữa dốc rồi quay.', 'Nút đè chỉ giữ cửa mở khi có xe đứng trên nút.'],
+      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem-da', 'nut-de', 'cua', 'xe-goong'], cuu: 'hang', meo: 'lam-cau' }
     }),
     /* HẾT MOI */
   ];
