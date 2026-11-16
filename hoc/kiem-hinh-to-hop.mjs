@@ -14,7 +14,7 @@ import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
-const NEN = 'e80c5e8';                                                       // nền so hình cũ: HEAD trước gói M9H2 (4/11)
+const NEN = 'bf718c0';                                                       // nền so hình cũ: main lúc gộp vào nhánh mùa 9 (16/11; trước là e80c5e8 = HEAD trước gói M9H2 4/11, main sau đó đổi cẩu 4 hướng, tời)
 
 if (process.argv[2] === '--chup') chupCon();                                 // chế độ con (phần d): chỉ nạp bộ vẽ nền, không nạp bộ vẽ hiện tại
 const day = path.dirname(fileURLToPath(import.meta.url));

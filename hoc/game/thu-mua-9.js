@@ -122,12 +122,12 @@
       ['cast_net()', 'wait()', 'wait()']); },
     'gio': function () { return manSan9('gio', 'Thử giỏ cứu hộ', 'Cẩu vớt người bằng giỏ, đặt lên bờ.', 'L9', { than: 'cau', tay: 'day-keo' },
       { san: ['~~~~~', '.....', '.....'], batDau: { x: 2, y: 1, nac: 0, tam: 1 }, mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] },
-      ['cast_net()', 'swing_left()', 'swing_left()', 'drop_net()', 'wait()', 'wait()']); },
+      ['cast_net()', 'swing_left()', 'drop_net()', 'wait()', 'wait()', 'wait()']); },
     'nam-cham': function () { return manSan9('nam-cham', 'Thử cẩu nam châm', 'Hút thanh sắt, quay, thả.', 'L1', { than: 'cau', tay: 'nam-cham' },
-      { san: ['.....', '.....', '.#o..', '....F'], batDau: { x: 0, y: 2, nac: 2, tam: 1 }, vatChat: ['.....', '.....', '..s..', '.....'] },
+      { san: ['.....', '.....', '.#o..', '....F'], batDau: { x: 0, y: 2, nac: 1, tam: 1 }, vatChat: ['.....', '.....', '..s..', '.....'] },
       ['extend()', 'magnet_n()', 'swing_left()', 'magnet_off()']); },
     'gau': function () { return manSan9('gau', 'Thử cẩu gầu', 'Gầu ngoạm thùng, quay, thả.', 'L8', { than: 'cau', tay: 'kep' },
-      { san: ['.....', '.....', '.#o..', '....F'], batDau: { x: 0, y: 2, nac: 2, tam: 1 } }, ['extend()', 'grab()', 'swing_left()', 'release()']); },
+      { san: ['.....', '.....', '.#o..', '....F'], batDau: { x: 0, y: 2, nac: 1, tam: 1 } }, ['extend()', 'grab()', 'swing_left()', 'release()']); },
     'xe-toi': function () { return manSan9('xe-toi', 'Thử xe tời bờ', 'Xe trên bờ quăng lưới kéo bè.', 'L3', { than: 'hai-banh', tay: 'day-keo' },
       { san: ['.~~B', '...F'], batDau: { x: 0, y: 0, huong: 1 } }, ['set_length(3)', 'cast_net()', 'wait()']); },
     'phun-van': function () { return manSan9('phun-van', 'Thử phun van', 'Phun nước gạt van mở cống.', null, null,
@@ -140,8 +140,8 @@
       { san: ['~B~~', '....', '...F'], batDau: { x: 0, y: 1 }, loaiRobot: 'drone', robot: { than: 'drone', tay: null, camBien: [] }, hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'land', 'take_off'],
         pin: 6, dong: [{ x: 1, y: 0, huong: 1, suc: 1 }, { x: 2, y: 0, huong: 1, suc: 1 }], beSac: [{ x: 1, y: 0 }] }, ['go_right()', 'go_right()', 'go_right()', 'go_up()', 'land()']); },
     'lap-ho': function () { return manSan9('lap-ho', 'Thử lấp hố', 'Cẩu hạ container xuống hố.', null, null,
-      { san: ['.....', '.#u#.', '.....', '....F'], batDau: { x: 2, y: 0, nac: 5, tam: 2 }, loaiRobot: 'cau', robot: { than: 'cau', tay: 'moc-cau', camBien: [] },
-        hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'], contLapHo: true, chong: [{ x: 0, y: 2, cont: [{ so: 5 }] }] },
+      { san: ['.....', '.#u#.', '.....', '....F'], batDau: { x: 2, y: 0, nac: 3, tam: 2 }, loaiRobot: 'cau', robot: { than: 'cau', tay: 'moc-cau', camBien: [] },
+        hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'], contLapHo: true, chong: [{ x: 0, y: 0, cont: [{ so: 5 }] }] },
       ['pick_up()', 'swing_left()', 'retract()', 'set_down()']); },
     // M9L15 (4/11): drone + bình xịt bụng — bay qua hàng rào tới ô lửa, xịt (lửa tắt), rồi bay ra van V giữa nước, xịt (van đổi), về cờ
     'binh-xit': function () { return manSan9('binh-xit', 'Thử bình xịt', 'Drone xịt tắt lửa, rồi xịt gạt van giữa nước.', 'L15', { than: 'drone', tay: 'hoi' },
@@ -150,11 +150,11 @@
   };
 
   // M9T5 (5/11): chồng container chặn như tường (cfg.contChan). Đội hai robot, mục tiêu đẩy thùng: xe cứu hỏa (Sola, xích) tiến vào chồng ở (1, 2) → đâm hai lần (nhịp 1, 2);
-  //   cần cẩu (Luna, bệ trên ray hàng trên) đầu cần trên chồng, nhấc đi ở nhịp 2 rồi hạ sang (3, 0) → nhịp 3 xích đi qua ô chồng cũ, ủi thùng H vào ô đích D (nhịp 5).
+  //   cần cẩu (Luna, bệ trên ray hàng trên, nấc 2 = xuống theo cẩu 4 hướng 14/11) đầu cần trên chồng, nhấc đi ở nhịp 2 rồi hạ sang (3, 0) → nhịp 3 xích đi qua ô chồng cũ, ủi thùng H vào ô đích D (nhịp 5).
   function manContChan() {
     var xe = CoMay().dung('CU', { batDau: { x: 0, y: 2, huong: 1 } });
-    var cau = CoMay().dung('CC', { batDau: { x: 1, y: 0, nac: 4, tam: 2 }, son: 'lam' });
-    var bai = { doi: [{ chinh: ['for i in range(5):', '    left_move()', '    right_move()', '    wait()'] }, { chinh: ['wait()', 'pick_up()', 'swing_left()', 'swing_left()', 'set_down()'] }] };
+    var cau = CoMay().dung('CC', { batDau: { x: 1, y: 0, nac: 2, tam: 2 }, son: 'lam' });
+    var bai = { doi: [{ chinh: ['for i in range(5):', '    left_move()', '    right_move()', '    wait()'] }, { chinh: ['wait()', 'pick_up()', 'swing_left()', 'set_down()'] }] };
     var tho = Object.assign({
       ma: 'thu.cont-chan', id: 'T9.cont-chan', chuong: chuongThu(), so: 9, ten: 'Thử chồng chặn', hang: 'lam-quen', deBai: 'Xe đâm chồng container. Cẩu nhấc đi, xe qua ủi thùng.',
       san: ['RRR..', '.....', '..H.D'], batDau: clone(xe.batDau), robot: clone(xe.robot), hamGoc: xe.hamGoc.slice(),

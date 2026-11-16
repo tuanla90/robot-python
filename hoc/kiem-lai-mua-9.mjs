@@ -398,18 +398,18 @@ const T5 = {};
   const skVet5 = (k) => k.vet.filter((v) => v.loai === 'nhip').flatMap((v) => v.suKien || []);
   kiem('T5 b (băng chuyền): băng đẩy xe về ô chồng → "bang-chan" vat container (vết nhịp), xe đứng im ở (1, 0)', bg && bg.robot.x === 1 && skVet5(bg).some((e) => e.ma === 'bang-chan' && e.vat === 'container'), bg && J(skVet5(bg)));
   // cẩu nhấc chồng 2 container: nhấc 1 vẫn chặn, nhấc hết thì ô thông; xe (robot 2) tới cờ
-  //   sân ['.....', '....F']: cẩu (2, 0) nấc 4 tầm 1 → đầu cần (2, 1) = ô chồng; hạ sang nấc 2 → (3, 0), ngoài đường xe; xe (0, 1) quay phải
+  //   sân ['.....', '....F']: cẩu (2, 0) nấc 2 (xuống; cẩu 4 hướng 14/11) tầm 1 → đầu cần (2, 1) = ô chồng; hạ sang nấc 1 → (3, 0), ngoài đường xe; xe (0, 1) quay phải
   T5.cau = (code) => SanHoc.chay({ san: ['.....', '....F'], contChan: true, chong: [{ x: 2, y: 1, cont: [{ so: 1 }, { so: 2 }] }], doi: [
-    { batDau: { x: 2, y: 0, nac: 4, tam: 1 }, loaiRobot: 'cau', hamGoc: CAU5 },
+    { batDau: { x: 2, y: 0, nac: 2, tam: 1 }, loaiRobot: 'cau', hamGoc: CAU5 },
     { batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH5, co: [{ x: 4, y: 1 }] }] },
     [code, TIEN5.repeat(10)]);
-  const NHAC = 'pick_up()\nswing_left()\nswing_left()\nset_down()\nswing_right()\nswing_right()\npick_up()\nswing_left()\nswing_left()\nset_down()\n';
+  const NHAC = 'pick_up()\nswing_left()\nset_down()\nswing_right()\npick_up()\nswing_left()\nset_down()\n';
   const ca = thu(() => T5.cau(NHAC)), xe2 = ca && ca.doi[1];
   const damCau = xe2 ? xe2.suKien.filter((e) => e.ma === 'dam-tuong' && e.vat === 'container').map((e) => e.nhip) : [];
   T5.cauOk = (k) => !!k && !k.loi && J(k.doi[1].robot) === J({ x: 4, y: 1, huong: 1 }) && k.doi[1].suKien.some((e) => e.ma === 'dam-tuong' && e.vat === 'container');
   kiem('T5 b (cẩu): chồng 2 container — xe đâm khi còn chồng (cả sau lần nhấc đầu), cẩu nhấc hết thì ô thông, xe qua tới cờ (4, 1); đâm ở nhịp ' + J(damCau), T5.cauOk(ca) && damCau.length >= 2 && damCau[damCau.length - 1] >= 2,
     ca && (ca.loi ? J(ca.loi) : J(ca.doi.map((d) => [d.robot, d.suKien.map((e) => e.nhip + ':' + e.ma + ':' + (e.vat || ''))]))));
-  const caKhong = thu(() => T5.cau('pick_up()\nswing_left()\nswing_left()\nset_down()\n' + 'wait()\n'.repeat(6)));
+  const caKhong = thu(() => T5.cau('pick_up()\nswing_left()\nset_down()\n' +'wait()\n'.repeat(6)));
   kiem('T5 d (cẩu): cẩu chỉ nhấc 1 trong 2 container → ô vẫn chặn, xe không tới cờ (phép b đỏ)', caKhong && !T5.cauOk(caKhong) && caKhong.doi[1].robot.x === 1, caKhong && J(caKhong.doi[1].robot));
 
   // THÙNG NẶNG: xích ủi thùng (xichDay) vào ô chồng → thùng không đi, xích đứng yên ('dam-tuong' thung-nang chan container); băng chuyền đẩy thùng vào chồng → 'thung-bang-chan'

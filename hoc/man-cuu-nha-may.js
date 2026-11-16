@@ -98,18 +98,18 @@
       mucTieu: 'day-thung',
       deBai: 'Băng chuyền đưa thùng nặng tới. Container chặn băng. Thùng tới sát mũi xe thì ủi vào đích.',
       veMaMau: 'Xe chưa biết chờ thùng.',
-      san: ['########', '###D####', '#>>....#', '###RR###', '########'],
-      doi: [khe({ x: 3, y: 3, huong: 0 }), khe({ x: 4, y: 3, huong: 0 })],
+      san: ['########', '###D####', '#>>....#', '###R####', '###R..##', '########'],
+      doi: [khe({ x: 3, y: 3, huong: 0 }), khe({ x: 3, y: 4, huong: 0 })],
       them: { contChan: true, chong: [{ x: 3, y: 2, cont: [{ so: 4 }] }], thungThem: [{ x: 1, y: 2 }] },
       chonDoi: {
         menu: ['CU', 'CC'],
         cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
           ['wait_n(2)', 'while distance() > 0:', '    wait()', 'move()'],
-          ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()']]) }]
+          ['extend()', 'pick_up()', 'swing_right()', 'set_down()']]) }]
       },
-      maMau: doiBai([['wait_n(2)', 'move()'], ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()']]),
+      maMau: doiBai([['wait_n(2)', 'move()'], ['extend()', 'pick_up()', 'swing_right()', 'set_down()']]),
       loiSai: [
-        { moTa: 'Xe ủi ngay khi thùng chưa tới', baiLam: doiBai([['wait_n(2)', 'move()'], ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()']]), phaiCoMa: ['chua-day-thung'] }
+        { moTa: 'Xe ủi ngay khi thùng chưa tới', baiLam: doiBai([['wait_n(2)', 'move()'], ['extend()', 'pick_up()', 'swing_right()', 'set_down()']]), phaiCoMa: ['chua-day-thung'] }
       ],
       sao: { o: 16, nhip: 6 },
       goiY: ['distance() > 0: trước mũi còn ô trống.'],
@@ -172,21 +172,21 @@
       taoHam: ['valve_step'],
       deBai: 'Công nhân kẹt sau cửa C. Van N mở cửa. Viết hàm valve_step(n): phun nhẹ, rồi tiến n ô.',
       veMaMau: 'Hàm valve_step chưa có.',
-      san: ['#########', '#..C...N#', '#######.#', '######..#', '#####RRR#', '#########'],
+      san: ['#########', '#..C...N#', '#######.#', '#######.#', '#######R#', '#####..R#', '#########'],
       noi: [{ nut: { x: 7, y: 1 }, cua: [{ x: 3, y: 1 }] }],
-      doi: [khe({ x: 7, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0 })],
+      doi: [khe({ x: 7, y: 4, huong: 0 }), khe({ x: 7, y: 5, huong: 0 })],
       them: { contChan: true, chong: [{ x: 7, y: 2, cont: [{ so: 5 }] }], nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 5, y: 1 }] },
       chonDoi: {
         menu: ['CU', 'CC', 'KT'],
         cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([
           ['move()', 'wait_n(2)', 'valve_step(1)'],
-          ['swing_right()', 'extend()', 'pick_up()', 'retract()', 'set_down()']], [], [H_VALVE_STEP9]) }]
+          ['extend()', 'extend()', 'pick_up()', 'retract()', 'swing_left()', 'set_down()']], [], [H_VALVE_STEP9]) }]
       },
-      maMau: doiBai([['move()', 'wait_n(2)', 'valve_step(1)'], ['swing_right()', 'extend()', 'pick_up()', 'retract()', 'set_down()']]),
+      maMau: doiBai([['move()', 'wait_n(2)', 'valve_step(1)'], ['extend()', 'extend()', 'pick_up()', 'retract()', 'swing_left()', 'set_down()']]),
       loiSai: [
-        { moTa: 'Thân valve_step thiếu lệnh phun', baiLam: doiBai([['move()', 'wait_n(2)', 'valve_step(1)'], ['swing_right()', 'extend()', 'pick_up()', 'retract()', 'set_down()']]), hamCuaEmMoi: [{ ten: 'valve_step', thamSo: ['n'], than: ['forward(n)'] }], phaiCoMa: ['chua-cuu-nguoi'] }
+        { moTa: 'Thân valve_step thiếu lệnh phun', baiLam: doiBai([['move()', 'wait_n(2)', 'valve_step(1)'], ['extend()', 'extend()', 'pick_up()', 'retract()', 'swing_left()', 'set_down()']]), hamCuaEmMoi: [{ ten: 'valve_step', thamSo: ['n'], than: ['forward(n)'] }], phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 23, nhip: 9 },
+      sao: { o: 23, nhip: 8 },
       goiY: ['Trong valve_step(n): squirt("low") rồi forward(n).'],
       cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['container', 'van', 'cua'], cuu: 'nguoi', meo: 'don-loi' }
     }),
@@ -244,30 +244,30 @@
       cauDo: { doi: ['CC', 'PL'], lap: null, coChe: ['container', 'nut-de', 'cua', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
 
-    // 8 · cứu máy, song song: xe cứu hỏa khách (R3, khoá) đã nổ máy, tiến ngay 4 ô ủi kệ về kho. Trên lối: thùng gỗ (ô ray) rồi chồng container.
-    //     Nhịp 1 xe chở hàng gắp thùng bên phải (kẹp xoay, không quay); nhịp 2 cẩu quay cần nhấc chồng. Chậm một nhịp là R3 đâm.
-    //     Bẫy: máy khai thác (phải quay rồi mới nạp được thùng: R3 đâm thùng).
+    // 8 · cứu máy, song song: xe cứu hỏa khách (R3, khoá) đã nổ máy, tiến ngay 4 ô ủi kệ về kho. Trên lối: thùng gỗ rồi chồng container.
+    //     Nhịp 1 xe chở hàng gắp thùng trước mũi; cần cẩu xuất phát chĩa sang phải: nhịp 1 quay cần, nhịp 2 nhấc chồng. Chậm một nhịp là R3 đâm.
+    //     Bẫy: drone (bay được nhưng không nhấc thùng gỗ: R3 đâm thùng). 16/11 dựng lại theo cẩu 4 hướng.
     man9('cuu-nha-may', 8, 'van-dung', {
       ten: 'Dọn cùng lúc',
       mucTieu: 'day-thung',
       deBai: 'Xe cứu hỏa đã nổ máy, tiến ngay 4 ô. Thùng gỗ và chồng container chắn lối. Hai bạn dọn cùng lúc.',
       veMaMau: 'Đọc chương trình của xe khoá.',
-      san: ['#######', '###D###', '###H###', '###.###', '###..##', '##RRR##', '###.###', '#######'],
-      doi: [khe({ x: 4, y: 5, huong: 0 }), khe({ x: 2, y: 5, huong: 0 }),
-        may('CU', { x: 3, y: 6, huong: 0 }, { son: 'tim', coDinh: true })],
-      them: { contChan: true, chong: [{ x: 3, y: 4, cont: [{ so: 9 }] }], vatThem: [{ x: 3, y: 5 }] },
+      san: ['########', '#....HD#', '##RR.###', '########'],
+      doi: [khe({ x: 3, y: 2, huong: 0, nac: 1 }), khe({ x: 2, y: 2, huong: 0 }),
+        may('CU', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true })],
+      them: { contChan: true, chong: [{ x: 3, y: 1, cont: [{ so: 9 }] }], vatThem: [{ x: 2, y: 1 }] },
       chonDoi: {
-        menu: ['CC', 'CH', 'KT'],
+        menu: ['CC', 'CH', 'DR'],
         cachMau: [{ chon: ['CC', 'CH'], ghiChu: 'đôi tốt', loiGiai: doiBai([
           ['swing_left()', 'pick_up()', 'swing_right()', 'set_down()'],
-          ['pick_right()']]) }]
+          ['pick()']]) }]
       },
       maMau: doiBai([[], [], ['forward(4)']]),
       loiSai: [
-        { moTa: 'Cẩu chậm một nhịp: xe khoá đâm chồng', baiLam: doiBai([['wait()', 'swing_left()', 'pick_up()', 'swing_right()', 'set_down()'], ['pick_right()'], ['forward(4)']]), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Cẩu chậm một nhịp: xe khoá đâm chồng', baiLam: doiBai([['wait()', 'swing_left()', 'pick_up()', 'swing_right()', 'set_down()'], ['pick()'], ['forward(4)']]), phaiCoMa: ['dam-tuong'] }
       ],
       sao: { o: 22, nhip: 5 },
-      goiY: ['pick_right(): gắp thùng bên phải.', 'Xe khoá không chờ ai.'],
+      goiY: ['pick(): gắp thùng trước mũi.', 'Xe khoá không chờ ai.'],
       cauDo: { doi: ['CC', 'CH'], lap: null, coChe: ['container', 'thung', 'r3'], cuu: 'may', meo: 'song-song' }
     }),
 
@@ -280,7 +280,7 @@
       veMaMau: 'Đọc chương trình của xe khoá.',
       hamCuaEmCan: HAM_EM.concat(['bridge_lay', 'pull_back', 'tow_grab', 'tow_drop']),
       san: ['#######', '###.###', '#~~qB~#', '#R....#', '#R.H..#', '###D###', '#######'],
-      doi: [may('XU', { x: 2, y: 2, huong: 1 }), may('CC', { x: 1, y: 3, nac: 2, tam: 2 }, { son: 'lam' }),
+      doi: [may('XU', { x: 2, y: 2, huong: 1 }), may('CC', { x: 1, y: 3, nac: 1, tam: 2 }, { son: 'lam' }),
         may('CU', { x: 3, y: 1, huong: 2 }, { son: 'tim', coDinh: true })],
       them: { contChan: true, chong: [{ x: 3, y: 3, cont: [{ so: 2 }] }] },
       maMau: doiBai([['bridge_lay(1)'], [], ['wait_n(3)', 'forward(3)']]),
@@ -344,13 +344,13 @@
       mucTieu: 'day-thung',
       deBai: 'Thanh sắt rơi vào khe máy. Đặt sắt lên nút M để mở cửa C. Lắp tay nào cho cẩu?',
       veMaMau: 'Xe cứu hỏa chờ cửa mở.',
-      san: ['#########', '##o=M####', '##==.####', '####.####', '#...C.HD#', '#########'],
+      san: ['#########', '####M####', '##==.####', '##o=.####', '#...C.HD#', '#########'],
       noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 4, y: 4 }] }],
       doi: [may('CU', { x: 1, y: 4, huong: 1 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam' })],
-      them: { vatChat: ['.........', '..s......', '.........', '.........', '.........', '.........'] },
+      them: { vatChat: ['.........', '.........', '.........', '..s......', '.........', '.........'] },
       lapRap: lapR2(['cau', 'drone'], ['moc-cau', 'nam-cham'], [], 9, [
         cach('cau', 'nam-cham', null, [['wait_n(4)', 'forward(5)'], ['extend()', 'swing_left()', 'magnet_n()', 'swing_right()', 'magnet_off()']]),
-        cach('drone', 'nam-cham', null, [['wait_n(6)', 'forward(5)'], ['go_up()', 'go_up()', 'go_left()', 'go_left()', 'magnet_n()', 'wait()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()']])
+        cach('drone', 'nam-cham', null, [['wait_n(6)', 'forward(5)'], ['go_left()', 'go_left()', 'magnet_n()', 'wait()', 'go_right()', 'go_right()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']])
       ], { moLai: ['L1'] }),
       maMau: doiBai([['wait_n(4)', 'forward(5)'], []]),
       loiSai: [
@@ -361,8 +361,8 @@
       cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'nut-de', 'cua', 'thung-nang', 'doi-tay'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    // 13 · lai L13 cẩu + nam châm + cảm biến từ: quanh bệ cẩu là đống lẫn sắt và gỗ. Sắt nằm trên lối xe cứu hỏa; hút nhầm gỗ là lỗi.
-    //      Quét năm ô quanh bệ, front_metal() đọc ô đầu cần: sắt thì hút, vươn cần thả ra ngoài lối; biến n đếm số sắt đã dọn.
+    // 13 · lai L13 cẩu + nam châm + cảm biến từ: quanh bệ cẩu là đống lẫn sắt và gỗ. Sắt nằm trên lối xe cứu hỏa (lối rẽ quanh bệ); hút nhầm gỗ là lỗi.
+    //      Cần xuất phát chĩa xuống (gỗ), quét bốn hướng quanh bệ (cẩu 4 hướng, 16/11), front_metal() đọc ô đầu cần: sắt thì hút, vươn cần thả ra ngoài lối; biến n đếm số sắt đã dọn.
     //      Cách hai rẻ hơn: không lắp cảm biến, nhìn sân rồi quay thẳng tới từng thanh sắt.
     man9('lap-nha-may', 3, 'luyen', {
       ten: 'Sắt hay gỗ',
@@ -370,20 +370,20 @@
       khung: { chinh: 16, moiHam: 8 },
       deBai: 'Sắt và gỗ lẫn quanh cẩu. Sắt chắn lối xe cứu hỏa. Chỉ hút sắt, thả ra ngoài lối.',
       veMaMau: 'Cẩu mới quét một ô.',
-      san: ['#.#.#.###', '#.ooo.HD#', '##o.o####', '#########'],
-      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 3, y: 2, huong: 0 }, { son: 'lam' })],
-      them: { vatChat: ['.........', '..sss....', '..g.g....', '.........'] },
+      san: ['###.#####', '#..o.####', '##o.o.###', '###oH####', '####D####', '#########'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }), khe({ x: 3, y: 2, huong: 0, nac: 2 }, { son: 'lam' })],
+      them: { vatChat: ['.........', '...s.....', '..g.s....', '...g.....', '.........', '.........'] },
       lapRap: lapR2(['cau'], ['moc-cau', 'nam-cham'], ['tu'], 11, [
-        cach('cau', 'nam-cham', 'tu', [['wait_n(12)', 'forward(5)'],
-          ['n = 0', 'swing_left()', 'swing_left()', 'for i in range(5):', '    if front_metal():', '        magnet_n()', '        extend()', '        magnet_off()', '        retract()', '        n = n + 1', '    swing_right()']]),
-        cach('cau', 'nam-cham', null, [['wait_n(10)', 'forward(5)'],
-          ['swing_left()', 'magnet_n()', 'extend()', 'magnet_off()', 'retract()', 'swing_right()', 'magnet_n()', 'extend()', 'magnet_off()', 'retract()', 'swing_right()', 'magnet_n()', 'extend()', 'magnet_off()']])
+        cach('cau', 'nam-cham', 'tu', [['wait_n(3)', 'forward(3)', 'tr_right()', 'forward(2)'],
+          ['n = 0', 'for i in range(4):', '    if front_metal():', '        magnet_n()', '        extend()', '        magnet_off()', '        retract()', '        n = n + 1', '    swing_right()']]),
+        cach('cau', 'nam-cham', null, [['wait_n(3)', 'forward(3)', 'tr_right()', 'forward(2)'],
+          ['swing_right()', 'swing_right()', 'magnet_n()', 'extend()', 'magnet_off()', 'retract()', 'swing_right()', 'magnet_n()', 'extend()', 'magnet_off()']])
       ], { moLai: ['L1', 'L13'] }),
-      maMau: doiBai([['wait_n(12)', 'forward(5)'], ['swing_left()', 'swing_left()', 'if front_metal():', '    magnet_n()']]),
+      maMau: doiBai([['wait_n(3)', 'forward(3)', 'tr_right()', 'forward(2)'], ['if front_metal():', '    magnet_n()']]),
       loiSai: [
-        { moTa: 'Không đọc cảm biến: nam châm hút cả gỗ', baiLam: doiBai([['wait_n(12)', 'forward(5)'], ['swing_left()', 'swing_left()', 'for i in range(5):', '    magnet_n()', '    extend()', '    magnet_off()', '    retract()', '    swing_right()']]), phaiCoMa: ['hut-go'] }
+        { moTa: 'Không đọc cảm biến: nam châm hút cả gỗ', baiLam: doiBai([['wait_n(3)', 'forward(3)', 'tr_right()', 'forward(2)'], ['for i in range(4):', '    magnet_n()', '    extend()', '    magnet_off()', '    retract()', '    swing_right()']]), phaiCoMa: ['hut-go'] }
       ],
-      sao: { o: 24, nhip: 20 },
+      sao: { o: 24, nhip: 12 },
       goiY: ['front_metal(): ô đầu cần có sắt không.', 'n = n + 1: đếm thêm một thanh.'],
       cauDo: { doi: null, lap: 'cau+nam-cham+tu', coChe: ['sat', 'go', 'cam-bien', 'thung-nang'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),

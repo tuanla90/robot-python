@@ -42,12 +42,12 @@ console.log('\n== 1. Sự kiện lõi mùa 9 phát ra đều có chỗ trong san
 const SAN_MAU = [
   ['R rắc cát (xe + bộ gieo hạt)', () => chay('R', { than: 'hai-banh', tay: 'son' }, ['..I.F', '.....'], { x: 2, y: 0, huong: 1 }, 'ink("yellow")\ndot()\nwait()\n' + TIEN + 'left_back()\nright_back()\nwait()\n')],
   ['R rắc cát (drone)', () => chay('R', { than: 'drone', tay: 'son' }, ['.I.', '..F'], { x: 0, y: 0 }, 'go_right()\nink("yellow")\ndot()\nwait()\n')],
-  ['L1 cẩu + nam châm hút / thả', () => chay('L1', { than: 'cau', tay: 'nam-cham' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\nmagnet_n()\nswing_left()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..s..', '.....'] })],
-  ['L8 cẩu + gầu ngoạm / thả', () => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\nswing_left()\nrelease()\n')],
-  ['L8 gầu hụt (thùng nặng)', () => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#H..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\n')],
+  ['L1 cẩu + nam châm hút / thả', () => chay('L1', { than: 'cau', tay: 'nam-cham' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\nmagnet_n()\nswing_left()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..s..', '.....'] })],
+  ['L8 cẩu + gầu ngoạm / thả', () => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\ngrab()\nswing_left()\nrelease()\n')],
+  ['L8 gầu hụt (thùng nặng)', () => chay('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#H..', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\ngrab()\n')],
   ['L2 container trôi + lưới', () => chay('L2', { than: 'xuong', tay: 'day-keo', camBien: 'quet-ma' }, ['~~~~~', '~~~B~', '~~~~Q'], { x: 1, y: 1, huong: 1 }, 'a = read_code()\ncast_net()\nwait()\n', { contTroi: [{ x: 3, y: 1, so: 12 }] })],
-  ['T2 container lấp hố', () => SanHoc.chay({ san: ['.....', '.#u#.', '.....', '....F'], contLapHo: true, chong: [{ x: 0, y: 2, cont: [{ so: 5 }] }], doi: [
-    { batDau: { x: 2, y: 0, nac: 5, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU }, { batDau: { x: 2, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH }] },
+  ['T2 container lấp hố', () => SanHoc.chay({ san: ['.....', '.#u#.', '.....', '....F'], contLapHo: true, chong: [{ x: 0, y: 0, cont: [{ so: 5 }] }], doi: [
+    { batDau: { x: 2, y: 0, nac: 3, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU }, { batDau: { x: 2, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH }] },
     ['pick_up()\nswing_left()\nretract()\nset_down()\n', 'wait()\nwait()\nwait()\nwait()\n' + TIEN + TIEN])],
   ['L3 xe tời bờ kéo bè', () => chay('L3', { than: 'hai-banh', tay: 'day-keo' }, ['.~~B', '...F'], { x: 0, y: 0, huong: 1 }, 'set_length(3)\ncast_net()\nwait()\n')],
   ['L3 xe tời bờ hụt (hết tầm)', () => chay('L3', { than: 'hai-banh', tay: 'day-keo' }, ['.~~B', '...F'], { x: 0, y: 0, huong: 1 }, 'cast_net()\nwait()\n')],
@@ -65,8 +65,8 @@ const SAN_MAU = [
     doi: [{ batDau: { x: 2, y: 2 }, loaiRobot: 'drone', hamGoc: BAY.concat(['cast_net', 'drop_net']) }, { batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'xuong', hamGoc: XUONG }] }, ['cast_net()\nwait()\n', TIEN + TIEN + 'left_move()\nwait()\ncast_net()\nwait()\n'])],
   ['L10 phao: thu, hụt', () => chay('L10', { than: 'drone', tay: 'day-keo' }, ['~~~~~', '~~~~~', '...F.'], { x: 2, y: 0 }, 'cast_net()\nwait()\ndrop_net()\nwait()\ncast_net()\nwait()\ncast_net()\nwait()\ngo_down()\ngo_down()\ndrop_net()\nwait()\n', { nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 0, y: 2 }] })],
   ['L10 thác', () => SanHoc.chay({ san: ['~~~~', '....', '...F'], batDau: { x: 0, y: 1, huong: 1 }, hamGoc: BANH, mucTieu: 'cuu-nguoi', nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 2 }], thac: [{ x: 1, y: 0 }], dong: [{ x: 0, y: 0, huong: 1, suc: 1 }] }, 'wait()\nwait()\n')],
-  ['L9 giỏ vớt người, đặt lên bờ', () => chay('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_left()\nswing_left()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] })],
-  ['L9 giỏ hụt (đặt xuống nước)', () => chay('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_right()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] })],
+  ['L9 giỏ vớt người, đặt lên bờ', () => chay('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_left()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] })],
+  ['L9 giỏ hụt (đặt xuống nước)', () => chay('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] })],
   // M9L15 (4/11): drone + bình xịt bụng — xịt lửa, van giữa nước; xịt nút N, xịt hụt, hết bình
   ['L15 bình xịt: lửa, van', () => chay('L15', { than: 'drone', tay: 'hoi' }, ['.=.....', '.=..~V~', '......F'], { x: 0, y: 0 }, BINH_XIT, { lua: [{ x: 2, y: 0, suc: 1 }] })],
   ['L15 bình xịt: nút, hụt, hết bình', () => chay('L15', { than: 'drone', tay: 'hoi' }, ['.N...', '....F'], { x: 0, y: 0 }, XIT_NUT)]
@@ -195,15 +195,15 @@ const CA_VE = [
     kiem: (h) => coHinh(h, 'container-troi', { so: 12 }) && !coHinh(h, 'be-go'), mo: 'bè B thành container số 12 (không vẽ bè gỗ)' },
   { ten: 'T4 bè sạc, drone theo bè', mk: () => { const cfg = { san: ['~B~~', '....', '...F'], batDau: { x: 1, y: 0 }, loaiRobot: 'drone', hamGoc: BAY.concat(['land', 'take_off']), pin: 6, dong: [{ x: 1, y: 0, huong: 1, suc: 1 }, { x: 2, y: 0, huong: 1, suc: 1 }], beSac: [{ x: 1, y: 0 }] }; return { cfg, r: SanHoc.chay(cfg, 'land()\nwait()\nwait()\n') }; },
     kiem: (h, F) => coHinh(h, 'be-sac') && F.vis.x === 3 && F.objs[0].x === 3, mo: 'bè sạc vẽ riêng, drone trôi cùng bè tới (3, 0)' },
-  { ten: 'L9 giỏ cứu hộ', mk: () => chayCfg('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_left()\nswing_left()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }),
+  { ten: 'L9 giỏ cứu hộ', mk: () => chayCfg('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_left()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }),
     kiem: (h, F, d) => d.veTreoCau9 > 10 && coHinh(h, 'gio-cuu-ho', { day: true }) && coHinh(h, 'gio-cuu-ho') && F.vis.cau.mang === null && F.objs[0].nguoi.toiTram, mo: 'giỏ treo đầu cần (có người: lưới căng), đặt xuống rồi người về trạm' },
-  { ten: 'L1 cẩu nam châm', mk: () => chayCfg('L1', { than: 'cau', tay: 'nam-cham' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\nmagnet_n()\nswing_left()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..s..', '.....'] }),
-    kiem: (h, F, d) => d.veTreoCau9 > 10 && F.vis.cau.mang === null && F.objs[0].x === 2 && F.objs[0].y === 0 && F.objs[0].tt === 'dat', mo: 'thanh sắt treo ở đầu cần (veTreoCau9 vẽ vật treo) rồi thả ở (2, 0)' },
-  { ten: 'L8 cẩu gầu', mk: () => chayCfg('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\nswing_left()\nrelease()\n'),
-    kiem: (h, F, d) => d.veTreoCau9 > 10 && F.vis.cau.mang === null && F.objs[0].x === 2 && F.objs[0].y === 0, mo: 'thùng treo ở gầu (veTreoCau9) rồi thả ở (2, 0)' },
+  { ten: 'L1 cẩu nam châm', mk: () => chayCfg('L1', { than: 'cau', tay: 'nam-cham' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\nmagnet_n()\nswing_left()\nmagnet_off()\n', { vatChat: ['.....', '.....', '..s..', '.....'] }),
+    kiem: (h, F, d) => d.veTreoCau9 > 10 && F.vis.cau.mang === null && F.objs[0].x === 0 && F.objs[0].y === 0 && F.objs[0].tt === 'dat', mo: 'thanh sắt treo ở đầu cần (veTreoCau9 vẽ vật treo) rồi thả ở (0, 0)' },
+  { ten: 'L8 cẩu gầu', mk: () => chayCfg('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#o..', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\ngrab()\nswing_left()\nrelease()\n'),
+    kiem: (h, F, d) => d.veTreoCau9 > 10 && F.vis.cau.mang === null && F.objs[0].x === 0 && F.objs[0].y === 0, mo: 'thùng treo ở gầu (veTreoCau9) rồi thả ở (0, 0)' },
   { ten: 'R rắc cát', mk: () => chayCfg('R', { than: 'hai-banh', tay: 'son' }, ['..I.F', '.....'], { x: 2, y: 0, huong: 1 }, 'ink("yellow")\ndot()\nwait()\n'),
     kiem: (h, F, d) => !!F.racCat9['2,0'] && d.veCat9 > 0, mo: 'ô (2, 0) có lớp cát (veCat9)' },
-  { ten: 'T2 container lấp hố', mk: () => { const cfg = { san: ['.....', '.#u#.', '.....', '....F'], contLapHo: true, chong: [{ x: 0, y: 2, cont: [{ so: 5 }] }], doi: [{ batDau: { x: 2, y: 0, nac: 5, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU }, { batDau: { x: 2, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH }] };
+  { ten: 'T2 container lấp hố', mk: () => { const cfg = { san: ['.....', '.#u#.', '.....', '....F'], contLapHo: true, chong: [{ x: 0, y: 0, cont: [{ so: 5 }] }], doi: [{ batDau: { x: 2, y: 0, nac: 3, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU }, { batDau: { x: 2, y: 3, huong: 0 }, loaiRobot: 'banh', hamGoc: BANH }] };
     return { cfg, r: SanHoc.chay(cfg, ['pick_up()\nswing_left()\nretract()\nset_down()\n', 'wait()\nwait()\nwait()\nwait()\n' + TIEN + TIEN]) }; },
     kiem: (h, F) => !!F.lapHo9['2,1'] && F.lapHo9['2,1'].so === 5 && coHinh(h, 'container', { so: 5 }), mo: 'hố (2, 1) có container số 5 nằm phẳng' },
   { ten: 'L3 xe tời bờ', mk: () => chayCfg('L3', { than: 'hai-banh', tay: 'day-keo' }, ['.~~B', '...F'], { x: 0, y: 0, huong: 1 }, 'set_length(3)\ncast_net()\nwait()\n'),
@@ -212,7 +212,7 @@ const CA_VE = [
     return { cfg, r: SanHoc.chay(cfg, ['spray()\nwait()\n', 'wait()\n' + TIEN]) }; },
     kiem: (h, F) => F.vanT['1,0'] && F.vanT['1,0'].bat === true && F.congT['1,1'].mo === true, mo: 'van (1, 0) bật, cống (1, 1) mở' },
   /* các nhánh hụt / lỗi: chỉ đòi phát hết không lỗi + không vật treo kẹt; độ phủ mã kiểm ở phép sau vòng */
-  { ten: 'L8 gầu hụt (thùng nặng)', mk: () => chayCfg('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#H..', '....F'], { x: 0, y: 2, nac: 2, tam: 1 }, 'extend()\ngrab()\n'),
+  { ten: 'L8 gầu hụt (thùng nặng)', mk: () => chayCfg('L8', { than: 'cau', tay: 'kep' }, ['.....', '.....', '.#H..', '....F'], { x: 0, y: 2, nac: 1, tam: 1 }, 'extend()\ngrab()\n'),
     kiem: (h, F) => !F.vis.cau.mang, mo: 'gầu ngoạm hụt, không treo gì' },
   { ten: 'P người chờ robot chắn lối', mk: () => { const cfg = { san: ['.....', '....F'], batDau: { x: 1, y: 0, huong: 2 }, hamGoc: BANH, mucTieu: 'cuu-nguoi', nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }] }; return { cfg, r: SanHoc.chay(cfg, 'wait()\nwait()\n' + TIEN) }; },
     kiem: (h, F) => coHinh(h, 'nguoi-cuu', { tram: true }), mo: 'người đứng chờ rồi đi tiếp về trạm' },
@@ -220,7 +220,7 @@ const CA_VE = [
     kiem: (h, F) => coHinh(h, 'nguoi-cuu', {}) || coHinh(h, 'nguoi-cuu', { vay: 1 }), mo: 'tia trúng người: người rung, báo lỗi' },
   { ten: 'L10 phao: thu, hụt', mk: () => chayCfg('L10', { than: 'drone', tay: 'day-keo' }, ['~~~~~', '~~~~~', '...F.'], { x: 2, y: 0 }, 'cast_net()\nwait()\ndrop_net()\nwait()\ncast_net()\nwait()\ncast_net()\nwait()\ngo_down()\ngo_down()\ndrop_net()\nwait()\n', { nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 0, y: 2 }] }),
     kiem: (h, F) => coHinh(h, 'phao-cuu', {}) && F.phaoBay9 === null, mo: 'phao thả, thu lại, thả lần hai; không phao bay kẹt giữa chừng' },
-  { ten: 'L9 giỏ hụt (đặt xuống nước)', mk: () => chayCfg('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\nswing_right()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }),
+  { ten: 'L9 giỏ hụt (đặt xuống nước)', mk: () => chayCfg('L9', { than: 'cau', tay: 'day-keo' }, ['~~~~~', '.....', '.....'], { x: 2, y: 1, nac: 0, tam: 1 }, 'cast_net()\ndrop_net()\n', { mucTieu: 'cuu-nguoi', nguoi: [{ x: 2, y: 0 }], tramCuu: [{ x: 0, y: 2 }] }),
     kiem: (h, F) => coHinh(h, 'gio-cuu-ho', { day: true }), mo: 'giỏ vớt người rồi hụt khi đặt xuống nước' },
   // M9L15 (4/11): bình xịt bụng drone — tia thẳng xuống (veXitBung9), lửa tắt, van bật; nút đổi, hụt '?'
   { ten: 'L15 bình xịt: lửa, van', mk: () => chayCfg('L15', { than: 'drone', tay: 'hoi' }, ['.=.....', '.=..~V~', '......F'], { x: 0, y: 0 }, BINH_XIT, { lua: [{ x: 2, y: 0, suc: 1 }] }),
