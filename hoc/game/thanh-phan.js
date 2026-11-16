@@ -117,6 +117,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var BP_CUA = {};
   Object.keys(BO_PHAN_LENH).forEach(function (bp) { BO_PHAN_LENH[bp].forEach(function (l) { BP_CUA[l] = bp; }); });
   var KIEU_DI = { banhT: 'banh', banhP: 'banh', truot: 'truot', sung: 'dung' };       // một nhịp một kiểu đi
+  /** GHÉP NHỊP (KE-HOACH-GHEP-NHIP.md): các cặp kiểu đi màn này cho đi CHUNG một nhịp, { 'a|b' (xếp chữ cái): true }. Mùa 2, xe xích có cờ ghiXich (2a ghì xích:
+      phun mạnh + hai xích) hay phunKhiChay (2b vừa chạy vừa phun nhẹ): lệnh phun đi chung lệnh xích. Khay không xét lực phun hay xích có đi thẳng không (đối số chọn sau);
+      lõi xét, sai thì xe đứng yên ('ban-dung-yen') và chẩn đoán nói vì sao. Màn sau thêm cờ ghép mới thì thêm cặp ở đây. */
+  function kieuDiGhep(man) {
+    var kq = {};
+    if (man && man.loaiRobot === 'xich' && (man.ghiXich || man.phunKhiChay)) kq['banh|dung'] = true;
+    return kq;
+  }
   var RE_HET_NHIP = /^(wait|go_up|go_down|go_left|go_right)$/;
   /** Tên lệnh của một dòng lệnh đơn (`ten(...)`), hoặc ''. */
   function tenDon(d) { var m = RE_LENH_DON.exec(chuoi(d)); return m ? m[1] : ''; }
@@ -128,13 +136,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     for (i = at; i < arr.length && laLenh(arr[i]); i++) ds.push(ten);
     return ds;
   }
-  /** Lý do KHÔNG chèn được lệnh gốc `ten` vào nhịp đang có các lệnh ds, hoặc null nếu được. */
-  function lyDoCamNhip(ten, ds) {
+  /** Lý do KHÔNG chèn được lệnh gốc `ten` vào nhịp đang có các lệnh ds, hoặc null nếu được. man (tùy chọn): màn đang soạn, để biết cặp kiểu đi được ghép (kieuDiGhep). */
+  function lyDoCamNhip(ten, ds, man) {
     var bp = BP_CUA[ten]; if (!bp) return null;
+    var ghep = kieuDiGhep(man);
     for (var i = 0; i < ds.length; i++) {
       var bk = BP_CUA[ds[i]]; if (!bk) continue;
       if (bk === bp) return window.t('choi.motLenh', { bp: window.t('choi.bp.' + bp), lenh: ds[i] });
-      if (KIEU_DI[bp] && KIEU_DI[bk] && KIEU_DI[bp] !== KIEU_DI[bk]) return window.t('choi.motKieuDi', { lenh: ds[i] });
+      if (KIEU_DI[bp] && KIEU_DI[bk] && KIEU_DI[bp] !== KIEU_DI[bk] && !ghep[[KIEU_DI[bp], KIEU_DI[bk]].sort().join('|')]) return window.t('choi.motKieuDi', { lenh: ds[i] });
     }
     return null;
   }
@@ -1625,7 +1634,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var arr = lay(), kq = {}; if (chiDoc()) return kq;
       var c = choChen(''), at = c.at, ds = lenhCungNhip(arr, at, c.bac === undefined ? this.bacMacDinh(at, '') : Math.max(0, Math.min(c.bac, toiDaBac(arr, at))));
       if (!ds.length) return kq;
-      Object.keys(BP_CUA).forEach(function (l) { var ly = lyDoCamNhip(l, ds); if (ly) kq[l] = ly; });
+      var man = tuyChon.man ? tuyChon.man() : null;
+      Object.keys(BP_CUA).forEach(function (l) { var ly = lyDoCamNhip(l, ds, man); if (ly) kq[l] = ly; });
       return kq;
     };
     /** Chèn vào vị trí at (0..số dòng). Đầy khung thì nháy đỏ, không chèn (trả về false). Bộ phận đã có lệnh trong nhịp đó thì không chèn, gọi tuyChon.khiCamNhip(lý do), trả về null.
@@ -1637,7 +1647,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       this.anHoan(); hienX = -1;
       at = Math.max(0, Math.min(at, arr.length));
       var b = bac === undefined || bac === null ? this.bacMacDinh(at, txt) : Math.max(0, Math.min(bac, toiDaBac(arr, at)));
-      var lyCam = lyDoCamNhip(tenDon(txt), lenhCungNhip(arr, at, b));         // bộ phận đã có lệnh trong nhịp này (hay khác kiểu đi): không chèn, báo lý do
+      var lyCam = lyDoCamNhip(tenDon(txt), lenhCungNhip(arr, at, b), tuyChon.man ? tuyChon.man() : null);         // bộ phận đã có lệnh trong nhịp này (hay khác kiểu đi): không chèn, báo lý do
       if (lyCam) { if (tuyChon.khiCamNhip) tuyChon.khiCamNhip(lyCam); baoHd('cam-nhip', { dong: at }); return null; }
       arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));
       chuanHoaBac(arr);
@@ -3509,6 +3519,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return null;
   }
 
-  window.TP = { h: h, esc: esc, choBoSung: choBoSung, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonMuc: chonMuc, chonDkm: chonDkm, datCheMau: datCheMau, datCheList: datCheList, coListCua: coListCua, datCheTD: datCheTD, coTDCua: coTDCua, datCheBT: datCheBT, coBTCua: coBTCua, khayBTCua: khayBTCua, nguonBTCua: nguonBTCua, tachBT: tachBT, dungBT: dungBT, phanTichBT: phanTichBT, inBT: inBT, phepBT: phepBT, chonBT: chonBT, khoaTDCua: khoaTDCua, nguonAmCua: nguonAmCua, tachTD: tachTD, themTDDong: themTDDong, boTDDong: boTDDong, chonPtu: chonPtu, tachList: tachList, themPtuDong: themPtuDong, boPtuDong: boPtuDong, litThanhTen: litThanhTen, catTop: catTop, LIST_TOI_DA: LIST_TOI_DA, LIST_TEN_GOI_Y: LIST_TEN_GOI_Y, coMauCua: coMauCua, coPinCua: coPinCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, tachHamKhac: tachHamKhac, theHamRong: theHamRong, theCuaHam: theCuaHam, theMacDinh: theMacDinh, khoaKhay: khoaKhay, daXemMeo: daXemMeo, datXemMeo: datXemMeo, nhomNhip: nhomNhip, lenhCungNhip: lenhCungNhip, lyDoCamNhip: lyDoCamNhip, BO_PHAN_LENH: BO_PHAN_LENH, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
+  window.TP = { h: h, esc: esc, choBoSung: choBoSung, vanBan: vanBan, mauDong: mauDong, tachDoiSo: tachDoiSo, thayDoiSo: thayDoiSo, lopMau: lopMau, bacCua: bacCua, coCauTruc: coCauTruc, chonSo: chonSo, chonChuoi: chonChuoi, chonDieuKien: chonDieuKien, chonMau: chonMau, chonMuc: chonMuc, chonDkm: chonDkm, datCheMau: datCheMau, datCheList: datCheList, coListCua: coListCua, datCheTD: datCheTD, coTDCua: coTDCua, datCheBT: datCheBT, coBTCua: coBTCua, khayBTCua: khayBTCua, nguonBTCua: nguonBTCua, tachBT: tachBT, dungBT: dungBT, phanTichBT: phanTichBT, inBT: inBT, phepBT: phepBT, chonBT: chonBT, khoaTDCua: khoaTDCua, nguonAmCua: nguonAmCua, tachTD: tachTD, themTDDong: themTDDong, boTDDong: boTDDong, chonPtu: chonPtu, tachList: tachList, themPtuDong: themPtuDong, boPtuDong: boPtuDong, litThanhTen: litThanhTen, catTop: catTop, LIST_TOI_DA: LIST_TOI_DA, LIST_TEN_GOI_Y: LIST_TEN_GOI_Y, coMauCua: coMauCua, coPinCua: coPinCua, coDieuKienCua: coDieuKienCua, MAU_DS: MAU_DS, tachDKM: tachDKM, camBienCua: camBienCua, taoKieu: taoKieu, taoSoToiDa: taoSoToiDa, locHamTheoRobot: locHamTheoRobot, tachHamKhac: tachHamKhac, theHamRong: theHamRong, theCuaHam: theCuaHam, theMacDinh: theMacDinh, khoaKhay: khoaKhay, daXemMeo: daXemMeo, datXemMeo: datXemMeo, nhomNhip: nhomNhip, lenhCungNhip: lenhCungNhip, lyDoCamNhip: lyDoCamNhip, kieuDiGhep: kieuDiGhep, BO_PHAN_LENH: BO_PHAN_LENH, xepChanDoan: xepChanDoan, dongChonSo: dongChonSo, Editor: Editor, Palette: Palette, Chan: Chan, Keo: Keo, XUONG_MS: XUONG_MS,
     bongVe: bongVe, bongAn: bongAn, bongMui: bongMui, vuaChu: vuaChu, Hop: { mo: mo, dong: dong, nut: nut, xacNhan: xacNhan, doc: doc } };
 })();

@@ -90,6 +90,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       khiChiDoc: baoChinhCoDinh,
       khiDoi: khiDoi, khiKhoa: function () { toast(t('choi.khoaO'), 'bad'); }, khiBam: function () { anBongD(); },
       khiCamNhip: function (ly) { toast(ly, 'bad', 3400); },                                  // mỗi bộ phận một lệnh mỗi nhịp: chèn bị từ chối
+      man: function () { return manXe(); },                                                   // cờ ghép nhịp của màn (ghiXich …): kiểu đi được đi chung một nhịp
       khiNhip: function (cam) { if (S.pal) S.pal.datCamNhip(cam); }                          // khay làm mờ khối của bộ phận đã có lệnh trong nhịp đang soạn
     });
     S.pal = new TP.Palette(q('.pal'), {

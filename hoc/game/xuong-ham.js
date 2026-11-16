@@ -104,6 +104,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       khiDoi: khiSuaThan, khiBam: function () { anBongD(); },
       chiDoc: hamKhoa, khiChiDoc: baoHamKhoa,                                                  // hàm của màn bị khóa (man.khoaHamMan, vd. go_out() ở 3.7): chỉ xem
       khiCamNhip: function (ly) { toast(ly, 'bad', 3400); },                                  // mỗi bộ phận một lệnh mỗi nhịp (như khung chương trình chính)
+      man: function () { return A.man(); },                                                   // cờ ghép nhịp của màn (ghiXich …), như khung chương trình chính
       khiNhip: function (cam) { if (S.pal) S.pal.datCamNhip(cam); }
     });
     S.pal = new TP.Palette(q('.pal'), {
