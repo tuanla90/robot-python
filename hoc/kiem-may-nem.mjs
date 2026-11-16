@@ -492,6 +492,78 @@ console.log('\n== Bảng 10 màn chương Máy ném (lời giải mẫu) ==');
   for (const b of BANG) console.log('  ' + b.id.padEnd(5) + ' | ' + String(b.o).padEnd(2) + ' | ' + String(b.nhip).padEnd(4) + ' | ' + String(b.san).padEnd(3) + ' | ' + b.ten);
 }
 
+/* ====================================================== NÉM ĐÀ (cfg.nemDa, ghép nhịp 5b) */
+console.log('\n== NÉM ĐÀ (cfg.nemDa): throw() + tiến thẳng cùng nhịp = xe tiến 1 ô, vật rời tay ở ô mới, bay tầm + 1; aim chỉ 1 hoặc 2; tắt cờ thì luật cũ ==');
+{
+  const DA = { roBanDau: true, nemDa: true }, P = (x) => ({ x, y: 0, huong: 1 });          // xe nhìn sang phải trên một hàng
+  const HANG = ['.......'];
+  const DAW = L('left_move()', 'right_move()', 'throw()', 'wait()'), DAW2 = L('throw()', 'right_move()', 'left_move()', 'wait()');
+  const vx = (r) => r.vat[r.vat.length - 1];
+  for (const [ten, code] of [['bánh viết trước', DAW], ['throw() viết trước', DAW2]]) {
+    for (const n of [1, 2]) {
+      const r = chay(HANG, P(1), aim(n) + code, DA), e = ev(r, 'nem-vat')[0];
+      kiem('có cờ, aim(' + n + '), ' + ten + ': xe tiến 1 ô tới x=2, vật rời tay ở x=2, bay ' + (n + 1) + ' ô tới x=' + (3 + n) + ' trong 1 nhịp, không nem-dung-yen',
+        r.robot.x === 2 && r.nhip === 1 && vx(r).x === 3 + n && vx(r).trangThai === 'dat' && e && e.da === true && e.tam === n + 1 && e.tu.x === 2 && e.den.x === 3 + n && !maSK(r, 'nem-dung-yen').length && !maSK(r, 'khong-co-da').length &&
+        nhipVet(r)[0].robot.banh.trai === 1 && nhipVet(r)[0].robot.banh.phai === 1 && nhipVet(r)[0].suKien.findIndex((s) => s.ma === 'tien') < nhipVet(r)[0].suKien.findIndex((s) => s.ma === 'nem-vat'), J([r.robot, r.suKien, r.vat]));
+      // TỰ CHỨNG MINH: tắt cờ thì cùng chương trình đó xe đứng yên, vật chỉ bay n ô
+      const r0 = chay(HANG, P(1), aim(n) + code, { roBanDau: true }), e0 = ev(r0, 'nem-vat')[0];
+      kiem('  tắt cờ, aim(' + n + '), ' + ten + ': xe đứng yên ở x=1, vật chỉ tới x=' + (1 + n) + ', có nem-dung-yen (không có da)', r0.robot.x === 1 && vx(r0).x === 1 + n && e0 && e0.da === undefined && e0.tam === n && maSK(r0, 'nem-dung-yen').length === 1 && !maSK(r0, 'nem-dung-yen')[0].da, J([r0.robot, r0.suKien]));
+    }
+  }
+  // tầm đo từ ô thả vật: hố cách mép 3 ô chỉ ném đà mới lấp được
+  const HO = ['....u.'];
+  const rDa = chay(HO, P(0), aim(2) + DAW, Object.assign({ daLapHo: true }, DA)), rDung = chay(HO, P(0), TIEN + aim(2) + NEMW, Object.assign({ daLapHo: true }, DA));
+  kiem('hố cách xe 4 ô: chạy đà (aim(2) + tiến + throw) lấp được hố ở x=4 (lap-ho, tam 3)', ev(rDa, 'lap-ho').length === 1 && ev(rDa, 'lap-ho')[0].o.x === 4 && ev(rDa, 'lap-ho')[0].tam === 3 && rDa.robot.x === 1, J(rDa.suKien));
+  kiem('  cùng sân: tiến một nhịp RỒI đứng yên ném aim(2) thì vật rơi x=3, không tới hố', !ev(rDung, 'lap-ho').length && vx(rDung).x === 3 && rDung.robot.x === 1);
+  // ô trước bị chặn: đứng yên, ném tầm thường, khong-co-da thay cho dam-tuong
+  for (const [ten, rows, vat, extra] of [['tường', ['.#...'], 'tuong'], ['hàng rào', ['.=...'], 'rao'], ['mép sân', ['.'], 'ngoai-san'], ['vật nằm đất', ['.o...'], 'vat']]) {
+    const r = chay(rows, P(0), aim(2) + DAW, Object.assign({}, DA, extra || {})), e = maSK(r, 'khong-co-da')[0], en = ev(r, 'nem-vat')[0];
+    kiem('có cờ, ô trước là ' + ten + ': xe đứng yên, ném tầm thường 2 ô, khong-co-da (vat ' + vat + '), không dam-tuong, không nem-dung-yen',
+      r.robot.x === 0 && e && e.vat === vat && e.o.x === 0 && e.nem.ten === 'throw' && en && en.tam === 2 && en.da === undefined && en.den.x === 2 && !maSK(r, 'dam-tuong').length && !maSK(r, 'nem-dung-yen').length && nhipVet(r)[0].robot.banh.trai === 0, J([r.robot, r.suKien]));
+  }
+  // lùi / quay + throw, và bánh + load: vẫn bỏ lệnh bánh
+  for (const [ten, lenhs] of [['lùi', ['left_back()', 'right_back()']], ['quay phải', ['left_move()']], ['quay trái', ['right_move()']], ['quay đầu', ['left_move()', 'right_back()']]]) {
+    const r = chay(HANG, P(2), aim(2) + L(...lenhs, 'throw()', 'wait()'), DA), e = maSK(r, 'nem-dung-yen')[0];
+    kiem('có cờ: ' + ten + ' + throw() vẫn đứng yên, hướng giữ, ném 2 ô, nem-dung-yen có da', r.robot.x === 2 && r.robot.huong === 1 && vx(r).x === 4 && e && e.da === true && e.nem.ten === 'throw' && !ev(r, 'nem-vat')[0].da, J([r.robot, r.suKien]));
+  }
+  const rTr = SanHoc.chay({ san: ['...', '...', '...'], batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'omni', hamGoc: OMNI.concat(NEM), mucTieu: 'dua-vat', roBanDau: true, nemDa: true }, aim(1) + L('slide_right()', 'throw()', 'wait()'));
+  kiem('có cờ, omni: slide_right + throw() vẫn đứng yên (nem-dung-yen có da)', rTr.robot.x === 0 && rTr.robot.y === 1 && maSK(rTr, 'nem-dung-yen').length === 1 && maSK(rTr, 'nem-dung-yen')[0].da === true);
+  const rOm = SanHoc.chay({ san: ['.....'], batDau: P(0), loaiRobot: 'omni', hamGoc: OMNI.concat(NEM), mucTieu: 'dua-vat', roBanDau: true, nemDa: true }, aim(2) + DAW);
+  kiem('có cờ, omni: tiến + throw() chạy đà, vật tới x=4', rOm.robot.x === 1 && rOm.vat[0].x === 4 && ev(rOm, 'nem-vat')[0].da === true);
+  const rLd = chay(['..o..'], P(0), L('left_move()', 'right_move()', 'load()', 'wait()'), { nemDa: true });
+  kiem('có cờ: tiến + load() vẫn đứng yên (nem-dung-yen có da, nem.ten load), không nạp vì vật chưa ở ô trước', rLd.robot.x === 0 && maSK(rLd, 'nem-dung-yen').length === 1 && maSK(rLd, 'nem-dung-yen')[0].nem.ten === 'load' && maSK(rLd, 'nem-dung-yen')[0].da === true);
+  const rHut = chay(HANG, P(1), DAW, { nemDa: true });
+  kiem('có cờ, rổ rỗng: xe vẫn tiến 1 ô, tay hất hụt (nem-hut)', rHut.robot.x === 2 && maSK(rHut, 'nem-hut').length === 1);
+  const rXi = SanHoc.chay({ san: HANG, batDau: P(1), loaiRobot: 'xich', hamGoc: BANH.concat(NEM), mucTieu: 'dua-vat', roBanDau: true, nemDa: true }, aim(2) + DAW);
+  kiem('có cờ, xe xích: không chạy đà (xích đứng yên, nem-dung-yen), vật bay 2 ô', rXi.robot.x === 1 && rXi.vat[0].x === 3 && maSK(rXi, 'nem-dung-yen').length === 1);
+  // tách nhịp: tiến rồi ném ở hai nhịp thì không có đà
+  const rTach = chay(HANG, P(1), aim(2) + TIEN + NEMW, DA);
+  kiem('có cờ: tiến rồi ném ở HAI nhịp: 2 nhịp, vật bay đúng 2 ô từ x=2 tới x=4, không có da', rTach.nhip === 2 && vx(rTach).x === 4 && !ev(rTach, 'nem-vat')[0].da);
+  // throw() nhớ tầm lúc gọi; chạy đà cộng 1 vào tầm đó
+  const rNho = chay(HANG, P(0), aim(1) + L('throw()', 'aim(2)', 'left_move()', 'right_move()', 'wait()'), DA);
+  kiem('có cờ: throw() nhớ tầm lúc gọi (aim(1)), chạy đà bay 2 ô từ x=1 tới x=3', vx(rNho).x === 3 && ev(rNho, 'nem-vat')[0].tam === 2);
+  // trần aim
+  const a3 = chay(HANG, P(0), aim(3) + NEMW, DA), a3cu = chay(HANG, P(0), aim(3) + NEMW, { roBanDau: true }), a2 = chay(HANG, P(0), aim(2) + NEMW, DA);
+  kiem('có cờ: aim(3) là tam-sai, lời nói "1 hoặc 2" và gợi ý chạy đà, loi.nemDa', a3.loi && a3.loi.ma === 'tam-sai' && /n = 1 hoặc 2 /.test(a3.loi.thongDiep) && /chạy đà/.test(a3.loi.thongDiep) && a3.loi.nemDa === true && a3.loi.tamDat === 3, J(a3.loi));
+  kiem('  tắt cờ: aim(3) vẫn ném 3 ô (luật cũ, mùa khác không đổi); aim(4) vẫn nói "1, 2 hoặc 3"', !a3cu.loi && a3cu.vat[0].x === 3 && /1, 2 hoặc 3/.test(chay(HANG, P(0), aim(4), { roBanDau: true }).loi.thongDiep));
+  kiem('có cờ: aim(2) đứng yên ném 2 ô, aim(0) / aim(2.5) / aim() vẫn tam-sai', !a2.loi && a2.vat[0].x === 2 && [aim(0), aim(2.5), 'aim()\n'].every((c) => { const r = chay(HANG, P(0), c, DA); return r.loi && r.loi.ma === 'tam-sai' && /1 hoặc 2/.test(r.loi.thongDiep) && !/2 hoặc 3/.test(r.loi.thongDiep); }));
+  kiem('SanHoc.TAM_NEM_DA = 2, TAM_NEM_TOI_DA vẫn 3; nemDa ở xe không có máy ném không đổi gì', SanHoc.TAM_NEM_DA === 2 && SanHoc.TAM_NEM_TOI_DA === 3 && (() => { const a = SanHoc.chay({ san: HANG, batDau: P(0), loaiRobot: 'banh', nemDa: true }, TIEN + TIEN), b = SanHoc.chay({ san: HANG, batDau: P(0), loaiRobot: 'banh' }, TIEN + TIEN); return J(a.robot) === J(b.robot) && a.nhip === b.nhip; })());
+  // cham.js đưa cờ xuống lõi + lời
+  {
+    const manDa = { id: 'thu-nem-da', ma: 'thu-nem-da', loaiRobot: 'omni', nemDa: true, mucTieu: 'dua-vat', hamGoc: OMNI.concat(NEM), robot: { than: 'omni', tay: 'nem', camBien: [] }, chinhLuc: true, camHamCuaEm: false, khung: { chinh: 12, moiHam: 10 }, cauTruc: [], taoHam: [], hamCuaEmCan: [], san: ['....D.'], batDau: { x: 0, y: 0, huong: 1 }, roBanDau: true, sao: { o: 5, nhip: 1 } };
+    const r1 = ChamHoc.cham(manDa, { chinh: ['aim(2)', 'left_move()', 'right_move()', 'throw()', 'wait()'], hamCuaMan: [] }, []);
+    kiem('cham.js đưa cờ nemDa của màn xuống lõi: aim(2) + chạy đà thắng trong 1 nhịp, không chẩn đoán nào', r1.thang === true && r1.soNhip === 1 && !r1.chanDoan.length, J([r1.thang, r1.soNhip, maCua(r1)]));
+    const r0 = ChamHoc.cham(Object.assign({}, manDa, { nemDa: undefined }), { chinh: ['aim(2)', 'left_move()', 'right_move()', 'throw()', 'wait()'], hamCuaMan: [] }, []);
+    kiem('  tắt cờ ở màn: cùng lời giải KHÔNG thắng, có nem-dung-yen với lời cũ', r0.thang !== true && maCua(r0).includes('nem-dung-yen') && /xe không đi\.$/.test(r0.chanDoan.find((c) => c.ma === 'nem-dung-yen').loi));
+    const r3 = ChamHoc.cham(manDa, { chinh: ['aim(3)', 'throw()', 'wait()'], hamCuaMan: [] }, []);
+    kiem('cham.js: aim(3) ở màn ném đà → tam-sai, lời có "1 hoặc 2", không còn "1, 2 hoặc 3"', maCua(r3).includes('tam-sai') && /1 hoặc 2/.test(r3.chanDoan.find((c) => c.ma === 'tam-sai').loi) && !/1, 2 hoặc 3/.test(r3.chanDoan.find((c) => c.ma === 'tam-sai').loi), J(r3.chanDoan));
+    const r4 = ChamHoc.cham(manDa, { chinh: ['aim(2)', 'left_back()', 'right_back()', 'throw()', 'wait()'], hamCuaMan: [] }, []);
+    kiem('cham.js: lùi + throw() ở màn ném đà → nem-dung-yen, lời nói chỉ TIẾN THẲNG mới có đà', maCua(r4).includes('nem-dung-yen') && /TIẾN THẲNG/.test(r4.chanDoan.find((c) => c.ma === 'nem-dung-yen').loi));
+    const r5 = ChamHoc.cham(Object.assign({}, manDa, { san: ['.#..D.'] }), { chinh: ['aim(2)', 'left_move()', 'right_move()', 'throw()', 'wait()'], hamCuaMan: [] }, []);
+    kiem('cham.js: chạy đà mà ô trước là tường → khong-co-da (thông tin), không dam-tuong, không thắng', r5.thang !== true && maCua(r5).includes('khong-co-da') && !maCua(r5).includes('dam-tuong') && r5.chanDoan.find((c) => c.ma === 'khong-co-da').muc === 'thong-tin', J(maCua(r5)));
+  }
+}
+
 console.log('\n---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);

@@ -298,6 +298,12 @@
         - load() và throw() chỉ RA LỆNH (wait() cho nhịp trôi). Mỗi nhịp tay nhận MỘT lệnh (hai lệnh: lệnh sau bị bỏ, 'nem-goi-lai', lỗi). Nhịp có load() hay
           throw() thì xe ĐỨNG YÊN, lệnh bánh / trượt cùng nhịp bị bỏ ('nem-dung-yen', thông tin). throw() nhớ tầm đang đặt LÚC GỌI (throw(); aim(3); wait()
           ném bằng tầm cũ).
+        - NÉM ĐÀ (cfg.nemDa, ghép nhịp 5b, 16/11; bật từ gói 6 Chỉnh lực hất tới hết mùa Mỏ đá; nơi khác không bật): ném lao phải chạy đà mới xa.
+          Màn có cờ: aim(n) chỉ nhận n = 1 hoặc 2 (TAM_NEM_DA; aim(3) là 'tam-sai'). throw() cùng nhịp với TIẾN THẲNG (left_move + right_move; xe bánh / omni,
+          không tính xích): (a) xe tiến 1 ô, (b) vật rời tay ở ô MỚI, bay tầm + 1 ô ('nem-vat' có da: true, tam = tầm thật). Ô trước bị chặn (tường, rào, vật,
+          thùng, đồng đội, cửa đóng): xe đứng yên, ném tầm thường, sự kiện 'khong-co-da' {nhip, o, den, vat, lenh, nem} (thông tin, thay cho 'dam-tuong').
+          Rổ rỗng thì xe vẫn tiến, tay hất hụt ('nem-hut'). Lùi / quay / trượt + throw(), và mọi lệnh bánh + load(): vẫn bỏ lệnh bánh ('nem-dung-yen', có da: true
+          để cham.js nói luật mới). Không có cờ: luật cũ y nguyên (aim tới 3, ném là đứng yên).
         - load(): vật nằm ở Ô TRƯỚC MẶT xe (trangThai 'dat') vào rổ ('nap-vat'), vật đi theo xe (trangThai 'ro', x y = ô xe); ô đó trống ra. Ô trước không có vật:
           'nap-hut' (thông tin). Rổ đã có vật: 'ro-day' (lỗi), vật ở yên dưới đất.
         - throw(): vật trong rổ bay thẳng theo hướng mặt, rơi xuống ô cách xe đúng `tam` ô ('nem-vat' {id, tu, den, tam}); bay qua mọi thứ ở giữa (rào, tường,
@@ -615,6 +621,7 @@
   // tay máy ném (chương may-nem): aim(n) đặt tầm (đổi ngay, không tốn nhịp), load() nạp vật ở ô TRƯỚC MẶT vào rổ, throw() ném vật trong rổ; ký hiệu '=' là tường thấp (hàng rào)
   var TAY_NEM = ['aim', 'throw', 'load'];
   var TAM_NEM_TOI_DA = 3;                       // aim(n): n = 1, 2 hoặc 3 ô
+  var TAM_NEM_DA = 2;                           // màn NÉM ĐÀ (cfg.nemDa): aim(n) chỉ còn 1 hoặc 2; muốn 3 ô thì chạy đà (throw() cùng nhịp tiến thẳng: tầm + 1)
   // tay SÚNG HƠI (chương sung-hoi, che-sung-hoi): hai lệnh gốc spray() (bắn ra trước, xe giật lùi) và spray_back() (bắn ra sau, xe giật tới); ký hiệu N nút bắn, C cửa đóng, c cửa mở
   var TAY_HOI = ['spray', 'spray_back'];
   var LUC_BAN = ['low', 'high'];             // spray(p) / spray_back(p) ở màn có cfg.lucBan: "low" phun nhẹ (bay ≤ 2 ô, không giật; cũng là không đối số), "high" phun mạnh (bay xa, giật)
@@ -1117,7 +1124,7 @@
       coNamCham, coNem, coHoi, coCamBien, coCamTu, coColor, dsCamBien, coCamMauBung, coCamera, camNhin, coPinCamBien, coLook,
       coCamBay, pinToiDa, pin, dao, rb, demBang, quayDo, lenh, lenhTon, tayCho, chanCho, nhayBuoc,
       truotCho, ncCho, nc, nem, nemCho, hoiCho, dan, vet, suKienChan, loi, docCho, docLienTiep,
-      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung, ghiXich, phunKhiChay, cheoGhep, coDap, dau, coCam4, cam4TaiCho,
+      soLanDoc, traVe, tay, hangNhip, xeToiCo, coRieng, coSon, son, sonCho, lucBan, laR1, coHongNgoai, xichDay, beSung, ghiXich, phunKhiChay, cheoGhep, nemDa, coDap, dau, coCam4, cam4TaiCho,
       coOmniCheo, coChinhLuc, coRadar, coRadarNhanDang, vuaCheo,
       laXuong, coNeo, coPhao, coSetLength, coCuonDay, daiLuoi, coDongChay, neo, keo, neoCho, phaoCho,   // BẾN SÔNG: xuồng, neo, tay lưới, chong chóng
       laCau, coMoc, coMoc2, coQuetMa, coCan, coRay, nac, tam, treo, canGatDoi, cauCho,   // CẢNG SÔNG: cần cẩu (nấc 0–3, tầm 1–3, container đang treo đáy → đỉnh), móc, móc đôi, máy quét mã, cân tải, ray
@@ -1373,6 +1380,7 @@
       xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
       beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật; robot không súng bỏ qua cờ, để màn nhiều robot khai một chỗ)
       ghiXich = !!rc.ghiXich && coHoi && loai === 'xich';          // mùa 2 (ghép nhịp 2a): phun MẠNH cùng nhịp hai xích đi thẳng thì xích + giật cộng lại (đứng yên / phóng 2 ô)
+      nemDa = !!rc.nemDa && coNem;                                 // mùa 7 Mỏ đá (ghép nhịp 5b): throw() cùng nhịp tiến thẳng = chạy đà, bay tầm + 1; aim tối đa 2
       cheoGhep = !!rc.cheoGhep && loai === 'omni';                 // mùa 7 Mỏ đá (ghép nhịp 5a): slide_* cùng nhịp hai bánh đi thẳng = đi chéo 1 ô, giữ hướng mặt
       phunKhiChay = !!rc.phunKhiChay && coHoi && loai === 'xich';  // mùa 2 (ghép nhịp 2b): phun NHẸ cùng nhịp hai xích đi thẳng thì xích chạy 1 ô rồi phun từ ô mới
       vet = [], suKienChan = [];
@@ -1402,7 +1410,7 @@
         truotCho: truotCho, ncCho: ncCho, nc: nc, nem: nem, nemCho: nemCho, hoiCho: hoiCho,
         dan: dan, vet: vet, suKienChan: suKienChan, loi: loi, docCho: docCho, docLienTiep: docLienTiep,
         soLanDoc: soLanDoc, traVe: traVe, tay: tay, hangNhip: hangNhip, xeToiCo: xeToiCo, coRieng: coRieng, coSon: coSon, son: son, sonCho: sonCho, lucBan: lucBan, laR1: laR1,
-        coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung, ghiXich: ghiXich, phunKhiChay: phunKhiChay, cheoGhep: cheoGhep, coDap: coDap, dau: dau, coCam4: coCam4, cam4TaiCho: cam4TaiCho,
+        coHongNgoai: coHongNgoai, xichDay: xichDay, beSung: beSung, ghiXich: ghiXich, phunKhiChay: phunKhiChay, cheoGhep: cheoGhep, nemDa: nemDa, coDap: coDap, dau: dau, coCam4: coCam4, cam4TaiCho: cam4TaiCho,
         coOmniCheo: coOmniCheo, coChinhLuc: coChinhLuc, coRadar: coRadar, coRadarNhanDang: coRadarNhanDang, vuaCheo: vuaCheo,
         laXuong: laXuong, coNeo: coNeo, coPhao: coPhao, coSetLength: coSetLength, coCuonDay: coCuonDay, daiLuoi: daiLuoi, coDongChay: coDongChay, neo: neo, keo: keo, neoCho: neoCho, phaoCho: phaoCho,
         laCau: laCau, coMoc: coMoc, coMoc2: coMoc2, coQuetMa: coQuetMa, coCan: coCan, coRay: coRay, nac: nac, tam: tam, treo: treo, canGatDoi: canGatDoi, cauCho: cauCho,
@@ -1420,7 +1428,7 @@
       truotCho = o.truotCho; ncCho = o.ncCho; nc = o.nc; nem = o.nem; nemCho = o.nemCho; hoiCho = o.hoiCho;
       dan = o.dan; vet = o.vet; suKienChan = o.suKienChan; loi = o.loi; docCho = o.docCho; docLienTiep = o.docLienTiep;
       soLanDoc = o.soLanDoc; traVe = o.traVe; tay = o.tay; hangNhip = o.hangNhip; xeToiCo = o.xeToiCo; coRieng = o.coRieng; coSon = o.coSon; son = o.son; sonCho = o.sonCho; lucBan = o.lucBan; laR1 = o.laR1;
-      coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung; ghiXich = o.ghiXich; phunKhiChay = o.phunKhiChay; cheoGhep = o.cheoGhep; coDap = o.coDap; dau = o.dau; coCam4 = o.coCam4; cam4TaiCho = o.cam4TaiCho;
+      coHongNgoai = o.coHongNgoai; xichDay = o.xichDay; beSung = o.beSung; ghiXich = o.ghiXich; phunKhiChay = o.phunKhiChay; cheoGhep = o.cheoGhep; nemDa = o.nemDa; coDap = o.coDap; dau = o.dau; coCam4 = o.coCam4; cam4TaiCho = o.cam4TaiCho;
       coOmniCheo = o.coOmniCheo; coChinhLuc = o.coChinhLuc; coRadar = o.coRadar; coRadarNhanDang = o.coRadarNhanDang; vuaCheo = o.vuaCheo;
       laXuong = o.laXuong; coNeo = o.coNeo; coPhao = o.coPhao; coSetLength = o.coSetLength; coCuonDay = o.coCuonDay; daiLuoi = o.daiLuoi; coDongChay = o.coDongChay; neo = o.neo; keo = o.keo; neoCho = o.neoCho; phaoCho = o.phaoCho;
       laCau = o.laCau; coMoc = o.coMoc; coMoc2 = o.coMoc2; coQuetMa = o.coQuetMa; coCan = o.coCan; coRay = o.coRay; nac = o.nac; tam = o.tam; treo = o.treo; canGatDoi = o.canGatDoi; cauCho = o.cauCho;
@@ -2808,7 +2816,7 @@
       }
 
       /** MÁY NÉM: load() nạp vật nằm ở ô trước mặt vào rổ; throw() ném vật trong rổ bay thẳng theo hướng mặt đúng `tam` ô, rơi xuống ô đó. */
-      function apNem(l) {
+      function apNem(l, da) {                                       // da = true: NÉM ĐÀ (xe vừa tiến 1 ô trong nhịp này): bay tầm + 1 tính từ ô mới
         var lenhGhi = l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null;
         if (l.ten === 'load') {
           if (nem.ro !== null) {
@@ -2833,7 +2841,8 @@
           sk.push(ek); suKienChan.push(ek);
           return;
         }
-        var v = VEC[rb.huong], vt = vatTheoId(nem.ro), dx = rb.x + v[0] * l.tam, dy = rb.y + v[1] * l.tam, c = oTai(san, dx, dy), ly = null;
+        var tamNem = l.tam + (da ? 1 : 0);
+        var v = VEC[rb.huong], vt = vatTheoId(nem.ro), dx = rb.x + v[0] * tamNem, dy = rb.y + v[1] * tamNem, c = oTai(san, dx, dy), ly = null;
         if (laNguoi(vatNamTai(dx, dy))) return chamNguoi(sk, { x: dx, y: dy }, 'nem', lenhGhi);   // M9C1: không ném vào ô có người (vật vẫn trong rổ)
         if (c === null) ly = 'ngoai-san';
         else if (c === '#') ly = 'tuong';
@@ -2843,10 +2852,12 @@
         else if (vatNamTai(dx, dy)) ly = 'vat';
         else if (xeDatTai(dx, dy)) ly = 'dong-doi';
         nem.ro = null;
-        sk.push({ ma: 'nem-vat', id: vt.id, tu: { x: rb.x, y: rb.y }, den: { x: dx, y: dy }, tam: l.tam });
+        var enm = { ma: 'nem-vat', id: vt.id, tu: { x: rb.x, y: rb.y }, den: { x: dx, y: dy }, tam: tamNem };
+        if (da) enm.da = true;
+        sk.push(enm);
         if (ly) {                                                   // ô rơi không nhận được vật: vật vỡ tại đó
           vt.trangThai = 'vo'; vt.x = dx; vt.y = dy;
-          var ev = { ma: 'nem-vo', nhip: nhip, id: vt.id, o: { x: dx, y: dy }, lyDo: ly, tam: l.tam, lenh: lenhGhi };
+          var ev = { ma: 'nem-vo', nhip: nhip, id: vt.id, o: { x: dx, y: dy }, lyDo: ly, tam: tamNem, lenh: lenhGhi };
           sk.push(ev); suKienChan.push(ev);
           coVo = true;
           return;
@@ -2856,7 +2867,7 @@
           san.o[dy] = san.o[dy].slice(0, dx) + '.' + san.o[dy].slice(dx + 1);
           san.ho = san.ho.filter(function (h) { return !(h.x === dx && h.y === dy); });
           vt.trangThai = 'lap-ho'; vt.x = dx; vt.y = dy;
-          sk.push({ ma: 'lap-ho', nhip: nhip, id: vt.id, o: { x: dx, y: dy }, tam: l.tam });
+          sk.push({ ma: 'lap-ho', nhip: nhip, id: vt.id, o: { x: dx, y: dy }, tam: tamNem });
           return;
         }
         vt.trangThai = 'dat'; vt.x = dx; vt.y = dy;
@@ -3953,10 +3964,26 @@
             var edn = { ma: 'dang-neo', nhip: nhip, o: { x: rb.x, y: rb.y }, lenh: hanhDong.lenhBanh || null };
             sk.push(edn); suKienChan.push(edn);
           }
+          else if (coNem && hanhDong.nem && nemDa && hanhDong.nem.ten === 'throw' && !tr && !ch && t === 1 && p === 1 && loai !== 'xich') {
+            // NÉM ĐÀ (cfg.nemDa): throw() + tiến thẳng cùng nhịp: (a) xe tiến 1 ô, (b) vật rời tay ở ô mới, bay tầm + 1. Ô trước chặn: đứng yên, ném tầm thường, 'khong-co-da'.
+            var xDa = rb.x, yDa = rb.y, nSk = sk.length, nSc = suKienChan.length;
+            banhGhi = { trai: 1, phai: 1 };
+            thuDi(rb.huong, 1, 'tien');
+            if (rb.x !== xDa || rb.y !== yDa) apNem(hanhDong.nem, true);
+            else {
+              var eDam = sk.slice(nSk).filter(function (e) { return e.ma === 'dam-tuong'; })[0] || null;
+              sk.length = nSk; suKienChan.length = nSc;                                // không ghi 'dam-tuong': xe chỉ khựng lại vì hết chỗ chạy đà
+              banhGhi = { trai: 0, phai: 0 };
+              var ekd = { ma: 'khong-co-da', nhip: nhip, o: { x: xDa, y: yDa }, den: eDam ? eDam.den : null, vat: eDam ? eDam.vat : null, lenh: hanhDong.lenhBanh || null, nem: { ten: hanhDong.nem.ten, dongPy: hanhDong.nem.dongPy } };
+              sk.push(ekd); suKienChan.push(ekd);
+              apNem(hanhDong.nem);
+            }
+          }
           else if (coNem && hanhDong.nem) {                                          // nhịp có load() / throw(): xe đứng yên, lệnh bánh / trượt bị bỏ
             banhGhi = { trai: 0, phai: 0 };
             if (t !== 0 || p !== 0 || tr || ch) {
               var en = { ma: 'nem-dung-yen', nhip: nhip, lenh: (tr ? { ten: tr.ten, dongPy: tr.dongPy } : ch ? { ten: ch.ten, dongPy: ch.dongPy } : hanhDong.lenhBanh) || null, nem: { ten: hanhDong.nem.ten, dongPy: hanhDong.nem.dongPy } };
+              if (nemDa) en.da = true;                                               // màn có ném đà: cham.js nói chỉ TIẾN THẲNG + throw() mới ghép (chỉ thêm khi có cờ)
               sk.push(en); suKienChan.push(en);
             }
             if (loai === 'xich') xichThoi(sk);
@@ -4701,11 +4728,12 @@
         }
         var an = yc.thamSo && yc.thamSo.length === 1 ? yc.thamSo[0] : undefined;
         if (yc.thamSo && yc.thamSo.length !== 1) {
-          loi = { loai: 'runtime-error', ma: 'tam-sai', dong: yc.dong, thongDiep: 'aim() cần đúng 1 đối số (số ô ném xa: 1, 2 hoặc 3), đang có ' + yc.thamSo.length + '.', tamDat: null };
+          loi = { loai: 'runtime-error', ma: 'tam-sai', dong: yc.dong, thongDiep: 'aim() cần đúng 1 đối số (số ô ném xa: ' + (nemDa ? '1 hoặc 2' : '1, 2 hoặc 3') + '), đang có ' + yc.thamSo.length + '.', tamDat: null };
           return true;
         }
-        if (typeof an !== 'number' || !isFinite(an) || Math.floor(an) !== an || an < 1 || an > TAM_NEM_TOI_DA) {
-          loi = { loai: 'runtime-error', ma: 'tam-sai', dong: yc.dong, thongDiep: 'aim(n) chỉ nhận n = 1, 2 hoặc 3 (số ô ném xa), mà em đưa vào ' + (typeof an === 'string' ? '"' + an + '"' : String(an)) + '.', tamDat: an === undefined ? null : an };
+        if (typeof an !== 'number' || !isFinite(an) || Math.floor(an) !== an || an < 1 || an > (nemDa ? TAM_NEM_DA : TAM_NEM_TOI_DA)) {
+          loi = { loai: 'runtime-error', ma: 'tam-sai', dong: yc.dong, thongDiep: 'aim(n) chỉ nhận n = ' + (nemDa ? '1 hoặc 2' : '1, 2 hoặc 3') + ' (số ô ném xa), mà em đưa vào ' + (typeof an === 'string' ? '"' + an + '"' : String(an)) + '.' + (nemDa && an === 3 ? ' Muốn xa 3 ô thì chạy đà: aim(2), rồi throw() cùng nhịp với tiến thẳng.' : ''), tamDat: an === undefined ? null : an };
+          if (nemDa) loi.nemDa = true;
           return true;
         }
         nem.tam = an;
@@ -5275,7 +5303,7 @@
 
   var API = {
     VEC: VEC, TEN_HUONG: TEN_HUONG, HAM_GOC: HAM_GOC, LENH_NGUOC: LENH_NGUOC, BANH_LENH: BANH_LENH, MUC_TIEU: MUC_TIEU, phanCungMacDinh: phanCungMacDinh, phanCungCua: phanCungCua, TAY_LENH: TAY_LENH, TAY_XOAY: TAY_XOAY, XOAY_NAC: XOAY_NAC, TAY_NHOM: TAY_NHOM, BANG: BANG, BAN_XOAY: BAN_XOAY, CONG_KY: CONG_KY, XICH_QUAY: XICH_QUAY, OMNI_TRUOT: OMNI_TRUOT, OMNI_CHEO: OMNI_CHEO, OMNI_CHEO_BIEN: OMNI_CHEO_BIEN, CAM_BIEN_HAM: CAM_BIEN_HAM,
-    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, LUC_BAN: LUC_BAN, TEN_CU_VOI_PHUN: TEN_CU_VOI_PHUN, TAM_BAN_NHANH: TAM_BAN_NHANH, TAY_SON: TAY_SON, SON_LENH: SON_LENH, laLenhSon: laLenhSon, TAY_LOA: TAY_LOA, NOT_TOI_DA: NOT_TOI_DA, SO_NHIP_TOI_DA: SO_NHIP_TOI_DA, laLenhLoa: laLenhLoa, docDieu: docDieu, docDieuDoi: docDieuDoi, THAN_GAI: THAN_GAI, CAM_AM_THANH_HAM: CAM_AM_THANH_HAM, MA_CAM_AM_THANH: MA_CAM_AM_THANH, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_HONG_NGOAI_HAM: CAM_HONG_NGOAI_HAM, MA_CAM_HONG_NGOAI: MA_CAM_HONG_NGOAI, CAM_RADAR_HAM: CAM_RADAR_HAM, MA_CAM_RADAR: MA_CAM_RADAR, RADAR_HUONG: RADAR_HUONG, DANG_KY: DANG_KY, DANG_TEN: DANG_TEN, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
+    TAY_NAM_CHAM: TAY_NAM_CHAM, TAY_NEM: TAY_NEM, TAY_HOI: TAY_HOI, LUC_BAN: LUC_BAN, TEN_CU_VOI_PHUN: TEN_CU_VOI_PHUN, TAM_BAN_NHANH: TAM_BAN_NHANH, TAY_SON: TAY_SON, SON_LENH: SON_LENH, laLenhSon: laLenhSon, TAY_LOA: TAY_LOA, NOT_TOI_DA: NOT_TOI_DA, SO_NHIP_TOI_DA: SO_NHIP_TOI_DA, laLenhLoa: laLenhLoa, docDieu: docDieu, docDieuDoi: docDieuDoi, THAN_GAI: THAN_GAI, CAM_AM_THANH_HAM: CAM_AM_THANH_HAM, MA_CAM_AM_THANH: MA_CAM_AM_THANH, TAM_NEM_TOI_DA: TAM_NEM_TOI_DA, TAM_NEM_DA: TAM_NEM_DA, CAM_TU_HAM: CAM_TU_HAM, CAM_HONG_NGOAI_HAM: CAM_HONG_NGOAI_HAM, MA_CAM_HONG_NGOAI: MA_CAM_HONG_NGOAI, CAM_RADAR_HAM: CAM_RADAR_HAM, MA_CAM_RADAR: MA_CAM_RADAR, RADAR_HUONG: RADAR_HUONG, DANG_KY: DANG_KY, DANG_TEN: DANG_TEN, CAM_PIN_HAM: CAM_PIN_HAM, PIN_TOI_DA: PIN_TOI_DA, CHAT_KY: CHAT_KY, TAM_HUT: TAM_HUT, TAM_CUC: TAM_CUC, TAM_DAY: TAM_DAY, CUC_MAU: CUC_MAU, CAM_MAU_HAM: CAM_MAU_HAM, CAM_NHIN_HAM: CAM_NHIN_HAM, MA_CAM_BAY: MA_CAM_BAY, MAU_KY: MAU_KY, MAU_TEN: MAU_TEN, laHamCamBien: laHamCamBien, lopMauCuaSan: lopMauCuaSan, coCuaSan: coCuaSan,
     CHAN_LENH: CHAN_LENH,
     NUOC_KY: NUOC_KY, VAT_NOI_KY: VAT_NOI_KY, THAN_NEO: THAN_NEO, TAY_PHAO: TAY_PHAO, TOI_CUON: TOI_CUON, HUONG_LUOI: HUONG_LUOI, DAI_LUOI_MAC_DINH: DAI_LUOI_MAC_DINH, CAM_DONG_HAM: CAM_DONG_HAM, MA_CAM_DONG: MA_CAM_DONG, TAM_KEO: TAM_KEO, HUONG_TUONG_DOI: HUONG_TUONG_DOI, laNuoc: laNuoc,   // BẾN SÔNG
     CANG_KY: CANG_KY, NAC_VEC: NAC_VEC, SO_NAC: SO_NAC, TAM_CAU_TOI_DA: TAM_CAU_TOI_DA, CHONG_TOI_DA: CHONG_TOI_DA, RAY_TOI_DA: RAY_TOI_DA, CONT_SO_TOI_DA: CONT_SO_TOI_DA, CONT_TAN_TOI_DA: CONT_TAN_TOI_DA,
