@@ -2,6 +2,8 @@
 
 Kế hoạch: [KE-HOACH-MUA-8.md](../KE-HOACH-MUA-8.md). Nhánh `claude/mua-8-hang-dong`, worktree `.claude/worktrees/mua-8-hang-dong` (máy chủ thử: cấu hình `game-mua-8`, cổng 4220).
 
+**User 16/11: đợi đủ 10 gói viết lại rồi mới gộp main một lần** (không gộp từng phần, không cầu tạm cho màn cũ). Trong lúc đó gộp main vào nhánh khi cần.
+
 ## Đã xong
 
 | Phần | Trạng thái | Ở đâu |
