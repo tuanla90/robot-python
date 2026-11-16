@@ -132,6 +132,13 @@
   var CU_17 = ['wait()', 'move()', 'move()', 'move()', 'back()', 'back()', 'back()'];
   /** R2 lap-nong-trai.7: đọc radar, quay về phía có bao hạt (V), gắp. */
   var KEP_17 = ['r = radar()', 'if r[0][1] == "V":', '    turn_left()', 'elif r[2][1] == "V":', '    turn_right()', 'pick()', 'wait()'];
+  /** lap-nong-trai.8: luống bùn trơn hàng 2 cột 2–8 ('I'). Mỗi ô: dot() lần đầu rắc cát (ô hết trơn), dot() lần hai mới gieo. */
+  /** R2 bánh gai: xuống luống, quay phải, mỗi ô tiến một ô, rắc cát, gieo. */
+  var GAI_18 = ['ink("green")', 'forward(1)', 'turn_left()', 'for i in range(7):', '    forward(1)', '    dot()', '    wait()', '    dot()', 'wait()'];
+  /** R2 drone: xuống luống, mỗi ô bay sang phải một ô, rắc cát, gieo. */
+  var DRONE_18 = ['ink("green")', 'go_down()', 'for i in range(7):', '    go_right()', '    dot()', '    wait()', '    dot()', 'wait()'];
+  /** R1 xe gieo xích: hàng 3 bị cây đổ chắn, phải vòng qua luống bùn (đã rắc cát thì không trượt), dừng ở cột 4, xuống hàng 3, gieo năm ô vàng. */
+  var XICH_18 = ['for i in range(4):', '    wait()', 'forward(1)', 'tr_right()', 'forward(3)', 'tr_right()', 'forward(1)', 'tr_left()', 'ink("yellow")', 'pen_down()', 'forward(4)', 'pen_up()', 'wait()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -570,6 +577,30 @@
       sao: { o: 34, nhip: 13 },
       goiY: ['radar(): lưới 3×3 quanh robot. r[0][1] ô trên, r[2][1] ô dưới, r[1][2] ô phải.', '"V" là vật nằm đất (bao hạt).', 'pick(): gắp vật trước mũi xe.'],
       cauDo: { doi: null, lap: 'omni+kep+radar', coChe: ['cay-do', 'bao-hat', 'nguoi', 'radar'], cuu: 'nguoi', meo: 'don-loi' }
+    }),
+    // 18 · làm cầu (rắc cát): luống bùn trơn hàng 2. Bánh gai bám bùn, mỗi ô dot() hai lần: lần đầu rắc cát (ô hết trơn), lần hai gieo.
+    //      R1 xe gieo xích (dựng sẵn): hàng 3 bị cây đổ chắn, phải vòng qua luống bùn rồi dừng ở cột 4 xuống hàng 3; ô bùn chưa rắc cát thì xích trượt tuột qua chỗ rẽ.
+    //      Cách một bánh gai + gieo hạt (rẻ). Cách hai drone + gieo hạt: bay xuống không phải quay (nhanh hơn một nhịp). Hai bánh trượt trên bùn.
+    man9('lap-nong-trai', 8, 'luyen', {
+      ten: 'Luống bùn trơn',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Luống hàng 2 là bùn trơn. Lắp robot gieo luống bùn: chấm lần đầu là rắc cát cho hết trơn, chấm lần hai mới gieo. Xe xích R1 phải đi qua luống bùn rồi rẽ xuống, bùn trơn thì nó trượt.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['###########', '#.........#', '#.IIIIIII.#', '#.HH......#', '#.........#', '###########'],
+      hinh: luong(11, 6, [{ y: 2, x0: 2, mau: 'ggggggg' }, { y: 3, x0: 4, mau: 'yyyyy' }]),
+      doi: [Object.assign({ batDau: { x: 1, y: 3, huong: 0 } }, clone(XICH_GIEO)), khe({ x: 1, y: 1, huong: 2 }, { son: 'lam' })],
+      lapRap: lapR2(['gai', 'drone', 'hai-banh'], ['son'], [], 8, [
+        cach('gai', 'son', null, [XICH_18, GAI_18]),
+        cach('drone', 'son', null, [['for i in range(3):'].concat(XICH_18.slice(1)), DRONE_18])
+      ]),
+      maMau: doiBai([XICH_18, []]),
+      loiSai: [
+        { moTa: 'Chấm mỗi ô một lần: chỉ rắc cát, luống chưa gieo', baiLam: doiBai([XICH_18, ['ink("green")', 'forward(1)', 'turn_left()', 'for i in range(7):', '    forward(1)', '    dot()', '    wait()']]), phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Quên wait() giữa hai lần chấm: hai lệnh dot() cùng một nhịp', baiLam: doiBai([XICH_18, GAI_18.filter(function (d) { return d !== '    wait()'; })]), phaiCoMa: ['chua-to-hinh'] }
+      ],
+      sao: { o: 41, nhip: 22 },
+      goiY: ['dot() trên bùn trơn: rắc cát, ô hết trơn.', 'Chấm thêm lần nữa mới gieo hạt.', 'Bánh gai bám bùn, không trượt.'],
+      cauDo: { doi: null, lap: 'gai+son', coChe: ['bun', 'rac-cat', 'gieo', 'cay-do'], cuu: 'hang', meo: 'lam-cau' }
     }),
   ];
 })();
