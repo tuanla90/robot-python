@@ -232,6 +232,15 @@ console.log('E. Mọi cách chọn đội của màn trong lộ trình dựng đ
     const mm = nem(() => LapRap.apDungDoi(nac, chon)) === null ? LapRap.apDungDoi(nac, chon) : null;
     kiem('khe cẩu khai nac (' + nac.ma + '), chọn ' + khac + ' vào khe: apDungDoi bỏ nac / tam, màn gốc giữ nac', !!mm && mm.doi[i].batDau.nac === undefined && mm.doi[i].batDau.tam === undefined && nac.doi[i].batDau.nac !== undefined, J(mm && mm.doi[i].batDau));
   }
+  // G4 Cảng sông: khe trộn xuồng với xe cạn — doi[i].batDauNuoc là ô trên mặt nước dùng khi cỗ máy là xuồng; trường này không đi xuống lõi
+  const gia = { ma: 'gia-nuoc', ten: 'khe nước', san: ['...F', '~~~~', '~~~~'],
+    doi: [{ batDau: { x: 0, y: 0, huong: 1 }, batDauNuoc: { x: 0, y: 1, huong: 1 }, co: [{ x: 3, y: 0 }] }, { batDau: { x: 1, y: 0, huong: 1 }, batDauNuoc: { x: 1, y: 2, huong: 1 }, son: 'lam', co: [{ x: 3, y: 0 }] }],
+    chonDoi: { menu: ['XU', 'CH'], cachMau: [{ chon: ['XU', 'CH'], loiGiai: { doi: [{ chinh: ['wait()'] }, { chinh: ['wait()'] }] } }] } };
+  const kq = [['XU', 'CH'], ['CH', 'XU']].map((c) => { const m = LapRap.apDungDoi(gia, c); let loi = ''; try { const r = Cham.cham(m, m.doi.map(() => 'wait()\n')); loi = r.loi ? String(r.loi) : ''; } catch (e) { loi = e.message; } return { m, loi }; });
+  kiem('khe batDauNuoc: xuồng vào khe xuất phát trên nước, xe chở hàng vào khe xuất phát trên cạn, cả hai cách chấm được; batDauNuoc không đi xuống lõi',
+    J(kq[0].m.doi.map((r) => [r.loaiRobot, r.batDau])) === J([['xuong', { x: 0, y: 1, huong: 1 }], ['banh', { x: 1, y: 0, huong: 1 }]]) &&
+    J(kq[1].m.doi.map((r) => [r.loaiRobot, r.batDau])) === J([['banh', { x: 0, y: 0, huong: 1 }], ['xuong', { x: 1, y: 2, huong: 1 }]]) &&
+    kq.every((k) => !k.loi && k.m.doi.every((r) => r.batDauNuoc === undefined)), J(kq.map((k) => [k.m.doi.map((r) => r.batDau), k.loi])));
 }
 
 console.log('---------------------------------------------');

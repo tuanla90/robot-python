@@ -479,6 +479,9 @@
         - MÓC CẨU (tay, TAY_MOC; pick_up đi cùng set_down; pick_up2 là nâng cấp, cần có pick_up). TÊN: đặc tả ghi hook / unhook / hook2 nhưng mùa 3 đã dạy trẻ TỰ TẠO hàm hook() / unhook() (man-bung-nhen, man-trum-mua-3)
           nên tên gốc đổi thành pick_up / set_down / pick_up2 (31/10) để kho hàm của trẻ không vỡ.
           pick_up(): nhấc container TRÊN CÙNG ở ô đầu cần ('moc-cont' { o, cont, doi, tau }); ô không có container: 'moc-hut' { o, vat: 'trong' | 'tau-vang' | 'ngoai-san' } (lỗi); đang treo: 'dang-treo' { o, cont } (lỗi).
+          CONTAINER TRÔI (16/11, mùa 9 G4; lớp cfg.contTroi): ô đầu cần không có chồng mà có container trôi thì pick_up() nhấc nó lên ('moc-cont' như trên, thêm troi: id vật nổi;
+            vật nổi thành trangThai 'moc', container thành bản ghi treo mới); xe đứng trên / xuồng khác đang giữ trong lưới: 'moc-hut' vat 'co-xe' | 'dang-keo'; pick_up2: 'moc-thieu' co 1.
+            read_code() / weight() đọc container trôi ở đầu cần như container trên cùng.
           pick_up2(): nhấc HAI container trên cùng một lần, giữ thứ tự (treo = [dưới, trên]); chồng chỉ có 1: 'moc-thieu' { o, co } (lỗi, không nhấc); chồng trống: moc-hut.
           set_down(): hạ MỌI container đang treo lên ĐỈNH chồng ở ô đầu cần ('ha-cont' { o, cont, doi, tau }); không treo gì: 'khong-treo' (lỗi). Không hạ được → 'ha-bi-chan' { o, vat, cont } (lỗi), container vẫn treo; vat:
             'ngoai-san' | 'tau-vang' (ô T lúc tàu vắng) | 'nuoc' | 'tuong' | 'rao' | 'ray' (không đặt lên ray) | 'bac-thang' | 'nut' | 'ho' | 'gam-thap' | 'cua' | 'bang' | 'vat-can' | 'robot' (ô bệ / robot khác dưới đất) | 'thung-nang' | 'vat' | 'chong-day' (chồng + số hạ > 4).
@@ -3874,6 +3877,17 @@
           var ch = oTai(san, o.x, o.y) === null ? [] : chongO(o.x, o.y), tauM = tauDauTai(o.x, o.y);
           if (laNguoi(vatNamTai(o.x, o.y))) return chamNguoi(sk, o, 'moc', lg);                // M9C1: móc cẩu không nhắm vào ô có người
           if (treo.length) { var edt = { ma: 'dang-treo', nhip: nhip, o: o, cont: chupTreo(), lenh: lg }; sk.push(edt); suKienChan.push(edt); return; }
+          var vTroi = ch.length || oTai(san, o.x, o.y) === null ? null : vatNoiTai(o.x, o.y);
+          if (vTroi && vTroi.noi === 'container' && vTroi.so !== undefined) {         // 16/11 (mùa 9 G4): CONTAINER TRÔI ở ô đầu cần — móc nhấc lên như container trên cùng của chồng
+            var lyTroi = xeDatTai(o.x, o.y) ? 'co-xe' : xeKhac.some(function (xk) { return xk.keoId === vTroi.id; }) ? 'dang-keo' : null;
+            if (lyTroi) { var emk = { ma: 'moc-hut', nhip: nhip, o: o, vat: lyTroi, lenh: lg }; sk.push(emk); suKienChan.push(emk); return; }
+            if (ten === 'pick_up2') { var emt1 = { ma: 'moc-thieu', nhip: nhip, o: o, co: 1, lenh: lg }; sk.push(emt1); suKienChan.push(emt1); return; }
+            var ctT = { id: conts.length + 1, so: vTroi.so, tan: vTroi.tan, x: o.x, y: o.y, trangThai: 'treo', tuTroi: vTroi.id };
+            if (taiToiDa !== null && ctT.tan * tam > taiToiDa) return quaTai(ctT.tan, tam, lg, [ctT]);
+            conts.push(ctT); vTroi.trangThai = 'moc'; treo = [ctT]; coChong = true;
+            sk.push({ ma: 'moc-cont', nhip: nhip, o: o, cont: [chupCont(ctT)], doi: false, tau: null, troi: vTroi.id });
+            return;
+          }
           if (!ch.length) { var emh = { ma: 'moc-hut', nhip: nhip, o: o, vat: oTai(san, o.x, o.y) === null ? 'ngoai-san' : (oTai(san, o.x, o.y) === 'T' && !tauM) ? 'tau-vang' : 'trong', lenh: lg }; sk.push(emh); suKienChan.push(emh); return; }
           var soLay = ten === 'pick_up2' ? 2 : 1;
           if (soLay === 2 && ch.length < 2) { var emt = { ma: 'moc-thieu', nhip: nhip, o: o, co: ch.length, lenh: lg }; sk.push(emt); suKienChan.push(emt); return; }
@@ -4471,6 +4485,10 @@
       if (!top && hangTau && tauTai[o.x + ',' + o.y] === hangTau) {                 // HÀNG TÀU: chĩa vào boong trống của bến → số tàu đầu hàng đang cần; hết tàu → −1
         var canD = hangTau.coMat ? hangTau.can[hangTau.dau] : -1;
         return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: o, so: canD, tan: treo.length ? tongTan(treo) : 0, treo: treo.length, trong: canD < 0, hangTau: true, can: canD, nhip: nhip };
+      }
+      if (!top && oTai(san, o.x, o.y) !== null) {                                    // 16/11 (mùa 9 G4): container trôi ở ô đầu cần đọc như container trên cùng
+        var vqT = vatNoiTai(o.x, o.y);
+        if (vqT && vqT.noi === 'container' && vqT.so !== undefined) top = { so: vqT.so, tan: vqT.tan };
       }
       return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: o, so: top ? top.so : -1, tan: treo.length ? tongTan(treo) : top ? top.tan : 0, treo: treo.length, trong: !top, nhip: nhip };
     }

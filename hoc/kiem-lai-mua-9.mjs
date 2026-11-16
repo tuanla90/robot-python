@@ -771,5 +771,33 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
     xe && !xe.loi && xe.suKien.length >= 0 && vetNhip(xe).filter((v) => v.suKien.some((e) => e.ma === 'ban')).length === 2 && coSk(xe, 'giat') && xe.robot.x === 1 && !coSk(xe, 'xit-bung') && !coSk(xe, 'xit-hut'), xe && skNg(xe));
 }
 
+/* 16/11 (mùa 9 G4 Cảng sông): CẨU MÓC CONTAINER TRÔI — vòng "xuồng kéo container về tầm cần, cẩu nhấc lên bãi / boong".
+   Ô đầu cần không có chồng mà có container trôi (lớp contTroi): pick_up nhấc nó (moc-cont, troi = id vật nổi), read_code / weight đọc nó;
+   bè thường: moc-hut 'trong'; xuồng khác đang giữ trong lưới: moc-hut 'dang-keo'; nhả lưới rồi thì nhấc được. */
+console.log('\nT6 cẩu móc container trôi');
+{
+  const CAU6 = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'pick_up2', 'set_down', 'read_code', 'weight'];
+  const cau6 = (bd) => ({ batDau: bd, loaiRobot: 'cau', hamGoc: CAU6, camBien: [{ ma: 'quet-ma', o: 'tren' }] });
+  const skDs = (k) => vetNhip(k).flatMap((v) => (v.suKien || []).map((e) => Object.assign({ nhip: v.nhip }, e)));
+  const SAN6 = ['.~B~~', '.~~~~', '.....'];
+  const a = thu(() => SanHoc.chay(Object.assign(cau6({ x: 0, y: 0, nac: 1, tam: 2 }), { san: SAN6, contTroi: [{ x: 2, y: 0, so: 12, tan: 2 }] }),
+    'a = read_code()\nb = weight()\npick_up()\nretract()\nswing_right()\nextend()\nset_down()\n'));
+  const docA = a ? skDs(a).filter((e) => e.ma === 'doc-cam-bien') : [], mocA = a ? skDs(a).find((e) => e.ma === 'moc-cont') : null;
+  kiem('T6 a: cẩu đọc container trôi (read_code 12, weight 2), pick_up nhấc (moc-cont troi), hạ lên bờ (0, 2) thành chồng; vật nổi thành trangThai moc',
+    a && !a.loi && docA.length >= 2 && docA[0].so === 12 && docA[1].tan === 2 && mocA && mocA.troi !== undefined && J(mocA.cont) === J([{ so: 12, tan: 2 }]) &&
+    J(a.chong) === J([{ x: 0, y: 2, cont: [{ so: 12, tan: 2 }] }]) && a.vat.some((v) => v.noi === 'container' && v.trangThai === 'moc'), a && (a.loi ? J(a.loi) : skNg(a) + ' chong ' + J(a.chong)));
+  const b = thu(() => SanHoc.chay(Object.assign(cau6({ x: 0, y: 0, nac: 1, tam: 2 }), { san: ['.~B~~'] }), 'a = read_code()\npick_up()\n'));
+  kiem('T6 b: bè thường (không container) — read_code −1, pick_up moc-hut trong', b && !b.loi && skDs(b).some((e) => e.ma === 'doc-cam-bien' && e.so === -1) && skDs(b).some((e) => e.ma === 'moc-hut' && e.vat === 'trong'), b && skNg(b));
+  const c2 = thu(() => SanHoc.chay(Object.assign(cau6({ x: 0, y: 0, nac: 1, tam: 2 }), { san: SAN6, contTroi: [{ x: 2, y: 0, so: 12 }] }), 'pick_up2()\n'));
+  kiem('T6 c: pick_up2 vào container trôi — moc-thieu co 1, không nhấc', c2 && skDs(c2).some((e) => e.ma === 'moc-thieu' && e.co === 1) && !skDs(c2).some((e) => e.ma === 'moc-cont'), c2 && skNg(c2));
+  const XU6 = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net'];
+  const d = thu(() => SanHoc.chay({ san: ['.~B~~', '.~~~~', '.~~~~'], contTroi: [{ x: 2, y: 0, so: 12 }], doi: [
+    { batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'xuong', hamGoc: XU6 }, cau6({ x: 0, y: 0, nac: 1, tam: 2 })] },
+    ['cast_net()\nwait()\nwait()\ndrop_net()\nwait()\n', 'wait()\npick_up()\nwait()\nwait()\npick_up()\n']));
+  const skD = d ? d.doi[1].suKien : [];
+  kiem('T6 d: xuồng đang giữ container trong lưới — cẩu moc-hut dang-keo; xuồng nhả lưới rồi cẩu nhấc được (moc-cont)',
+    d && !d.loi && skD.some((e) => e.ma === 'moc-hut' && e.vat === 'dang-keo') && (d.doi[1].vet || []).some((v) => v.loai === 'nhip' && (v.suKien || []).some((e) => e.ma === 'moc-cont')), d && (d.loi ? J(d.loi) : J(skD.map((e) => e.nhip + ':' + e.ma + ':' + (e.vat || '')))));
+}
+
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);

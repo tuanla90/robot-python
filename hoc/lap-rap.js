@@ -330,6 +330,17 @@
     ks.forEach(function (k) { delete kq[k]; });
     return kq;
   }
+  /** Ô xuất phát của khe theo cỗ máy đặt vào (16/11, mùa 9 G4 Cảng sông). r là bản sao doi[i] (đã locCoMay), sửa tại chỗ rồi trả lại.
+   *  - doi[i].batDauNuoc = { x, y, huong }: ô trên MẶT NƯỚC dùng khi cỗ máy là xuồng (loaiRobot 'xuong'); cỗ máy khác dùng batDau (ô trên cạn).
+   *    Một khe trộn xuồng với xe cạn được (lõi ném lỗi nếu xuồng xuất phát trên cạn hay xe cạn xuất phát trên nước). Trường này không đi xuống lõi.
+   *  - batDau.nac / tam (khe cẩu): cỗ máy không phải cẩu thì bỏ hai trường đó (lõi chỉ nhận ở cần cẩu). */
+  function chonBatDau(r, loai) {
+    if (r.batDauNuoc) { if (loai === 'xuong') r.batDau = Object.assign({}, r.batDauNuoc); delete r.batDauNuoc; }
+    if (loai !== 'cau' && r.batDau && (r.batDau.nac !== undefined || r.batDau.tam !== undefined)) {
+      r.batDau = Object.assign({}, r.batDau); delete r.batDau.nac; delete r.batDau.tam;
+    }
+    return r;
+  }
   /** Màu đế của robot thứ i trong đội: khai ở doi[i].son hay doi[i].robot.son; mặc định R2 'lam' (hồng Luna), R1 không (xanh Sola). */
   function sonCua(r, i) { return r.son || (r.robot && r.robot.son) || (i === 1 ? 'lam' : undefined); }
   function apDung(man, cach) {
@@ -344,7 +355,7 @@
     if (i !== null) {                                                                      // M9D1: màn đội, lắp cho robot thứ i (man.lapRap.robot): gắn vào man.doi[i], không đụng robot khác
       if (!man.doi[i]) throw new Error('Màn không có robot thứ ' + (i + 1) + ' để lắp.');
       if (man.doi[i].coDinh) throw new Error('Robot thứ ' + (i + 1) + ' bị khoá, không lắp được.');
-      var r = locCoMay(man.doi[i]), pinR = man.doi[i].pin !== undefined ? man.doi[i].pin : pinCua(man);
+      var r = chonBatDau(locCoMay(man.doi[i]), th.loai), pinR = man.doi[i].pin !== undefined ? man.doi[i].pin : pinCua(man);
       r.loaiRobot = th.loai;
       if (c.than === 'drone' && pinR !== undefined && pinR !== null) { ch.camBien.push({ ma: 'pin', o: 'than' }); r.pin = pinR; }
       r.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
@@ -425,11 +436,7 @@
       if (j < 0) return r;
       var goc = locCoMay(r), d = CoMay.dung(chon[j], { son: sonCua(r, i), pin: r.pin !== undefined ? r.pin : man.pin, co: r.coThem || undefined });
       delete goc.son; delete goc.coThem;
-      // khe cẩu khai nac / tam: chọn cỗ máy khác vào khe thì bỏ hai trường đó (lõi chỉ nhận ở cần cẩu)
-      if (d.loaiRobot !== 'cau' && goc.batDau && (goc.batDau.nac !== undefined || goc.batDau.tam !== undefined)) {
-        goc.batDau = Object.assign({}, goc.batDau); delete goc.batDau.nac; delete goc.batDau.tam;
-      }
-      return Object.assign(goc, d);
+      return Object.assign(chonBatDau(goc, d.loaiRobot), d);
     });
     if (em.indexOf(0) >= 0) { kq.loaiRobot = kq.doi[0].loaiRobot; kq.robot = kq.doi[0].robot; kq.hamGoc = kq.doi[0].hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)
     if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai, man);
