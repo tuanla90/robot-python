@@ -193,6 +193,9 @@
   var CAU_R1_18 = ['pick_up()', 'swing_right()', 'swing_right()', 'extend()', 'set_down()'];
   var CAU_18_THAN = ['pick_up()', 'mau = look()', 'swing_right()', 'swing_right()', 'if mau == "blue":', '    extend()', '    set_down()', '    retract()', 'else:', '    set_down()',
     'swing_right()', 'swing_right()', 'rail(1)'];
+  /** lap-cang-song.9: cẩu chờ số dưới móc, nhấc 22, quay lên hạ; thu cần, quay hai nấc xuống nhấc 35 ở chồng bãi, quay về, vươn, hạ. */
+  var CAU_19 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()', 'retract()', 'swing_right()', 'swing_right()', 'pick_up()',
+    'swing_left()', 'swing_left()', 'extend()', 'set_down()'];
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
@@ -714,24 +717,30 @@
       cauDo: { doi: null, lap: 'cau+moc-cau+camera-bay', coChe: ['ray', 'tau', 'son', 'container', 'camera'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manCS('lap-cang-song', 9, 'bien-the', {
-      ten: 'Tổng duyệt Cảng sông - Hang động',
-      r2: R_GAI,
-      hamCuaEmCan: ['swing_by', 'slide_load', 'slide_load2', 'wait_n', 'sonic_rail', 'wait_slide_load'],
-      deBai: 'Tổng duyệt trước màn hợp tấu! Trên đường ray tại (2, 3) có tảng đá chuông nốt 6, còn R2 (bánh gai) đứng ở (3, 3) hướng trái. R1 cần giao kiện đơn [17] ở (2, 4) rồi trượt sang cột 4 bốc đôi cặp kiện [26, 38] ở (4, 4)! Hãy cho R2 gọi sonic_rail() rồi back() (lùi tiếp từ (4, 3) sang (5, 3) nhường cột 4 cho R1); còn R1 gọi wait_slide_load(2, 1) bốc kiện [17] ở cột 2, gọi swing_by(2) quay cần về hướng Nam rồi gọi slide_load2(2, 2) sang cột 4 bốc đôi [26, 38]!',
-      veMaMau: 'Phối hợp wait_slide_load(2, 1), swing_by(2), slide_load2(2, 2) của R1 và sonic_rail(), back() của R2.',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, huong: 3 }],
-      chong: [CW(2, 4, [[17, 1]]), CW(4, 4, [[26, 2], [38, 2]])],
-      daChuong: [{ x: 2, y: 3, not: 6, ben: 1 }],
-      tau: tauDon(15, 2),
-      giao: [{ tau: 0, so: [17, 26, 38] }],
-      maMau: baiDoi(['wait_slide_load(2, 1)'], ['sonic_rail()']),
-      loiGiai: baiDoi(['wait_slide_load(2, 1)', 'swing_by(2)', 'slide_load2(2, 2)'], ['sonic_rail()', 'back()']),
+    // 19 · biến thể, đọc rồi chọn: container 22 nổi trên bè giữa sông, ngoài tầm cần; hàng tàu cần 22 rồi 35 (35 ở chồng bãi dưới chân cẩu).
+    //      Cẩu chờ số dưới móc ở ô (4, 3) (read_code() == -1 thì chờ), nhấc, giao; thu cần, quay xuống nhấc 35, vươn, giao. Hai cách đưa 22 về ô (4, 3):
+    //      cách một xuồng + lưới xuất phát ngay ô (4, 3) (nhanh): lưới dài 2 bắt 22, thu dây còn 1, quay trái (container sang ô trước mũi mới), lùi một ô (container vào ô xuồng vừa rời), nhả lưới.
+    //      Cách hai rẻ hơn: xe hai bánh + lưới chạy dọc bờ ba ô tới cột 4, lưới dài 3 tời 22 về ô nước sát bờ.
+    man9('lap-cang-song', 9, 'bien-the', {
+      ten: 'Xuồng hay xe bờ',
+      mucTieu: 'giao-tau', khung: { chinh: 18, moiHam: 8 },
+      deBai: 'Container 22 nổi giữa sông, ngoài tầm cần. Đưa nó về ô (4, 3) dưới móc. Xuồng ở ngay đó thì nhanh, xe trên bờ thì rẻ.',
+      veMaMau: 'Cẩu đã có chương trình. Robot em chưa mang container về dưới móc.',
+      san: ['########', '#~~~B~T#', '#~~~~~R#', '#~~~~~R#', '#......#', '#.....##', '########'],
+      doi: [may('CC', { x: 6, y: 3, huong: 0, nac: 3, tam: 2 }), khe({ x: 1, y: 4, huong: 0 }, { son: 'lam', batDauNuoc: { x: 4, y: 3, huong: 0 } })],
+      them: { contTroi: [{ x: 4, y: 1, so: 22 }], chong: [{ x: 6, y: 4, cont: [{ so: 35 }] }], hangTau: { o: [{ x: 6, y: 1 }], can: [22, 35] } },
+      lapRap: lapR2(['xuong', 'hai-banh'], ['day-keo'], [], 8, [
+        cach('xuong', 'day-keo', null, [CAU_19, ['cast_net()', 'wait()', 'set_length(1)', 'wait()', 'turn_left()', 'back()', 'drop_net()', 'wait()']]),
+        cach('hai-banh', 'day-keo', null, [CAU_19, ['turn_right()', 'forward(3)', 'turn_left()', 'set_length(3)', 'cast_net()', 'wait()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([CAU_19, []]),
       loiSai: [
-        { moTa: 'R2 chưa lùi thêm 1 ô sang (5, 3) và R1 chưa gọi swing_by(2), slide_load2(2, 2)', baiLam: baiDoi(['wait_slide_load(2, 1)'], ['sonic_rail()']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Xuồng kéo nhưng không rời ô (4, 3): container nằm ở ô khác', baiLam: doiBai([CAU_19, ['cast_net()', 'wait()', 'turn_left()', 'drop_net()', 'wait()']]), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Quên thu dây set_length(1): lùi xong container mới tới ô (4, 2)', baiLam: doiBai([CAU_19, ['cast_net()', 'wait()', 'turn_left()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['vong-vo-han'] }
       ],
-      sao: { o: 33, nhip: 15 },
-      goiY: ['R1 thêm swing_by(2) và slide_load2(2, 2); R2 thêm back() sau sonic_rail().']
+      sao: { o: 31, nhip: 19 },
+      goiY: ['set_length(1): thu dây, container về sát mũi. Xuồng quay khi đang kéo: container sang ô trước mũi mới; lùi: container vào ô xuồng vừa rời.', 'Xe trên bờ tung lưới: container về ô nước sát bờ.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo', coChe: ['nuoc', 'cont-troi', 'luoi', 'hang-tau', 'chong'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
     manCS('lap-cang-song', 10, 'trum', {
