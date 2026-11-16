@@ -84,6 +84,12 @@
   var HD_7 = ['forward(1)', 'play_note(listen())', 'forward(1)'];
   var PL_7 = ['go_up()', 'wait_n(4)', 'go_down()', 'go_left()'];
 
+  /** Máy khai thác khách khoá cuu-mo-da.8: chờ ba nhịp rồi chạy thẳng bảy ô dọc lối hầm hàng 2 về cờ (8, 2). */
+  var KT_R3_8 = ['wait_n(3)', 'forward(7)'];
+  /** Xe cứu hỏa: ủi khối đá vuông lên ngách trên, lùi hai ô về cờ. Xe chở hàng: gắp hòm dụng cụ, lùi về cờ. */
+  var CU_8 = ['forward(1)', 'back()', 'back()'];
+  var CH_8 = ['pick()', 'back()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -281,6 +287,28 @@
       sao: { o: 26, nhip: 14 },
       goiY: ['Đọc chương trình của máy khách: nó tới cửa hầm, tới đá rỗng lúc nào?', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
       cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ho', 'nut-de', 'cua', 'da-rong', 'not', 'r3'], cuu: 'may', meo: 'giu-cua' }
+    }),
+    // 8 · cứu máy, dọn lối: máy khai thác khách (R3, khoá) chờ ba nhịp rồi chạy thẳng dọc lối hầm. Bão làm khối đá vuông (thùng nặng) và hòm dụng cụ (thùng gỗ) rơi chắn lối.
+    //     Xe cứu hỏa ủi khối đá lên ngách trên rồi lùi về cờ; xe chở hàng gắp hòm, lùi về cờ. Bẫy: xuồng (chỉ chạy trong mương, không lên lối hầm).
+    man9('cuu-mo-da', 8, 'van-dung', {
+      ten: 'Lối hầm bị chắn',
+      deBai: 'Máy khai thác khách chờ ba nhịp rồi chạy thẳng về cờ. Khối đá vuông nặng và hòm dụng cụ chắn lối hầm. Chọn hai bạn dọn kịp rồi về cờ.',
+      veMaMau: 'Đọc chương trình của máy khách: chờ 3 nhịp rồi đi.',
+      san: ['##########', '###.##.###', '#..H..o.F#', '###.##.###', '#~~F~~F~~#', '##########'],
+      doi: [khe({ x: 3, y: 3, huong: 0 }, { co: [{ x: 3, y: 4 }], batDauNuoc: { x: 2, y: 4, huong: 1 } }), khe({ x: 6, y: 3, huong: 0 }, { co: [{ x: 6, y: 4 }], batDauNuoc: { x: 5, y: 4, huong: 1 } }),
+        may('KT', { x: 1, y: 2, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 8, y: 2 }] })],
+      chonDoi: {
+        menu: ['CU', 'CH', 'XU'],
+        cachMau: [{ chon: ['CU', 'CH'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_8, CH_8, KT_R3_8]) }]
+      },
+      maMau: doiBai([[], [], KT_R3_8]),
+      loiSai: [
+        { moTa: 'Xe cứu hỏa ủi xong đứng lại giữa lối: máy khách vướng', baiLam: doiBai([['forward(1)'], CH_8, KT_R3_8]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Không gắp hòm dụng cụ: máy khách vướng hòm', baiLam: doiBai([CU_8, ['back()'], KT_R3_8]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 26, nhip: 12 },
+      goiY: ['Đọc chương trình của máy khách: nó đi qua khối đá lúc nào?', 'Xích tiến vào ô thùng nặng thì đẩy thùng đi một ô.', 'pick(): gắp vật trước mũi xe.'],
+      cauDo: { doi: ['CU', 'CH'], lap: null, coChe: ['thung-nang', 'hom', 'nuoc', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
     /* HẾT MOI */
   ];
