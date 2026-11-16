@@ -546,7 +546,7 @@
       san: [san14('phai'), san14('trai'), san14('trai')],
       doi: [may('XU', { x: 3, y: 4, huong: 1 }), khe({ x: 5, y: 5, huong: 0 }, { son: 'lam', batDauNuoc: { x: 5, y: 5, huong: 0 } })],
       them: { noi: [NOI_14, NOI_14, NOI_14], sonBanDau: [son14('phai'), son14('trai'), son14('trai')] },
-      lapRap: lapR2(['xuong', 'hai-banh', 'drone'], ['day-keo', 'kep', 'loa'], ['camera', 'radar', 'dong-chay'], 10, [
+      lapRap: lapR2(['xuong', 'hai-banh', 'drone'], ['day-keo', 'kep', 'loa'], ['camera', 'radar', 'dong-chay'], 11, [
         cach('xuong', 'day-keo', 'camera', [XU_14, CAM_14]),
         cach('xuong', 'day-keo', 'radar', [XU_14, RADAR_14])
       ], { moLai: ['L14'] }),
