@@ -184,6 +184,10 @@
   var NHEN_19 = ['go_right()', 'jump("R")', 'go_right()', 'go_right()', 'play_note(listen())'];
   var XUONG_19 = ['forward(8)', 'sonic_rail()'];
 
+  /** lap-hang-dong.10: song ca đoạn 8 (cùng bè với cuu-hang-dong.10). Xe hang động R1 hát bè 1 trên bờ; R2 tự lắp hát bè 2 tại chỗ, trên sông ngầm (xuồng) hay trên bờ (bánh gai). */
+  var HD_20 = ['play_part([4, 4, 3, 3, 2, 2, 1, 1])'];
+  var R2_20 = ['play_part([6, 6, 5, 5, 4, 4, 3, 3])'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -670,6 +674,32 @@
       sao: { o: 24, nhip: 21 },
       goiY: ['Loa vang trong 3 ô quanh robot (ngang + dọc).', 'Ngách: bước vào một miệng, chui ra miệng kia, giữ hướng.', 'sonic_rail(): hát lại nốt nghe được rồi lùi (gói 4).'],
       cauDo: { doi: null, lap: 'nhen+loa+am-thanh', coChe: ['ngach', 'ho', 'song-ngam', 'da-chuong', 'nguoi', 'mic'], cuu: 'nguoi', meo: 'doc-roi-chon' }
+    }),
+    // 20 · song ca (trùm), lai L5 xuồng + loa hay bánh gai + loa: song ca đoạn 8 của Hang động (bè giữ đúng như cuu-hang-dong.10 để gói 10 ghép bài).
+    //      Xe hang động hát bè 1 trên bờ. Lắp loa cho bạn hát bè 2 tại chỗ: xuồng trên sông ngầm hay bánh gai trên bờ đều được; drone không mang nổi loa.
+    //      Bảng ghi "tiếng vang đổi nhịp": lõi không có tiếng vang, giữ song ca tại chỗ. Khối đá chuông (1, 2) trên sông vỡ khi nghe nốt 2 của bè 1 (chỉ để nhìn).
+    man9('lap-hang-dong', 10, 'trum', {
+      ten: 'Song ca trên sông ngầm',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      deBai: 'Màn cuối hang động: song ca đoạn 8. Xe hang động hát bè 1. Lắp loa cho bạn hát bè 2: trên sông ngầm hay trên bờ đều được. Drone không mang nổi loa.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      san: ['#######', '#.....#', '#~~~~~#', '#######'],
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 3, y: 1, huong: 1 }, { son: 'lam', chinhLuoi: false, batDauNuoc: { x: 3, y: 2, huong: 1 } })],
+      them: { dieu: { r1: '4 4 3 3 2 2 1 1', r2: '6 6 5 5 4 4 3 3' }, daChuong: [{ x: 1, y: 2, not: 2, ben: 1 }] },
+      lapRap: lapR2(['xuong', 'gai', 'drone'], ['loa'], [], 8, [
+        cach('xuong', 'loa', null, [HD_20, R2_20]),
+        cach('gai', 'loa', null, [HD_20, R2_20])
+      ], { moLai: ['L5'] }),
+      maMau: doiBai([HD_20, ['play_note(6)']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([HD_20, ['play_note(6)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'R2 hát nhầm bè 1', baiLam: doiBai([HD_20, HD_20]), phaiCoMa: ['sai-not'] },
+        { moTa: 'R2 chờ một nhịp rồi mới hát: lệch nhịp với bè 1', baiLam: doiBai([HD_20, ['wait()'].concat(R2_20)]), phaiCoMa: ['lo-nhip'] }
+      ],
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([6, 6, 5, 5, 4, 4, 3, 3]).', 'Hai bạn bắt đầu cùng một nhịp.', 'Drone chở nhẹ, không mang nổi loa.'],
+      cauDo: { doi: null, lap: 'xuong+loa', coChe: ['loa', 'da-chuong', 'song-ngam'], cuu: null, meo: 'song-song' }
     })
   ];
 
