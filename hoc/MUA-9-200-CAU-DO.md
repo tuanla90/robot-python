@@ -145,6 +145,18 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨xuồng, hai bánh⟩ + lưới | hai cách: xuồng (nhanh) hay xe bờ (rẻ) | hàng | đọc rồi chọn |
 | 20 | ⟨xuồng, hai bánh⟩ + loa | song ca: robot hát trên nước hay trên bờ, chọn chỗ nghe được đủ nhịp | — | song ca |
 
+> **Đã dựng 16/11 (M9M4, hoc/man-cuu-cang-song.js viết lại theo khuôn G3, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt).** Lệch so với bảng:
+> - Gói tạo `grab_clear()` [pick(), back()] ở #6 và `sonic_rail()` [play_note(listen()), back()] ở #17 (gói sau gọi). `wait_slide_load` / `swing_by` của G4 cũ bỏ (chỉ G4 cũ dùng; `swing_by` là hàm mùa 4).
+> - Giao hàng dùng mục tiêu `giao-tau`: tàu chu kỳ (`tau` + `giao`) ở #1–#3, #18; hàng tàu nối đuôi (`hangTau`) ở các màn còn lại (tàu rời ngay khi nhận đúng số, không phải canh nhịp tàu).
+> - #3 cái sai nằm yên, cẩu đọc `read_code()` rồi bỏ qua (xuồng không có đầu đọc mã, không biết cái nào sai). #6, #8 bẫy máy khai thác → drone (máy khai thác nạp / chở được thùng gỗ, sắt vụn nên đôi bẫy thắng).
+> - #9 "lăn đá lấp hố trên ray" → đá chắn ray + xuồng kéo bè làm cầu phao cho máy khai thác (hố lấp xong thành sàn ".", không thành ray R). #10 cẩu không gắn loa và `choi-dieu` chỉ chấm hai robot hát: xuồng lắp loa hát bè 1, xe hang động hát bè 2; đội cố định.
+> - #13 "`so // 10` là tàu, đưa về bến của tàu đó" → số chục là SỐ Ô kéo về dưới móc (`c // 10`), hàng tàu nối đuôi nhận 15 rồi 37 (giao nhiều tàu theo chu kỳ cần tàu rời đúng nhịp; ô q `dua-vat` đếm cả container cẩu đã nhấc lên bờ). Mỗi luồng một ô dưới móc, không dùng q.
+> - #15 xuồng khách khoá (R3) tung lần hai ở ô kế bên; trạm cứu hai ô (người tới trạm đứng lại, chặn người sau). #16 người kẹt ở vũng sau tường, giỏ cứu hộ quay `abs(dich - nac)` nấc; cách hai xe tời bờ (rẻ, 1 sao).
+> - #17 "omni + nam châm + radar hút sắt trên ray" → tạo `sonic_rail()`: đá chuông chắn lối người về trạm (trùng việc dọn sắt của #7, #8; gói phải tạo sonic_rail). Đá chuông không chắn ray cẩu (lõi), nên chắn lối đi bộ. Mẹo cứu kịp (người, không phải robot, đi qua ô đá vỡ).
+> - #18 container không có màu (lõi: chồng không màu, `look()` trên chồng trả "none") → màu SƠN SẴN trên ô bãi dưới mỗi container (`sonBanDau`); cẩu nhấc trước rồi `look()` ô vừa trống. Hai tàu chu kỳ (xanh 13 nhịp, đỏ 21). Cách hai cẩu + móc không camera (danh sách màu nhìn bản đồ) cũng 3 sao: câu đố một sân nên đọc màu không bắt buộc.
+> - #19 xuồng + lưới đứng sẵn dưới móc (nhanh, 8 xu) hay xe hai bánh + lưới chạy bờ (rẻ, 5 xu); cẩu giao 22 rồi 35 ở chồng bãi. #20 R1 là xe hang động (hát bè 1 trên bờ), không phải cẩu (cẩu không gắn loa, `choi-dieu` cần đúng hai robot hát); đá chuông chỉ để nhìn, xuồng hát mới vỡ.
+> - Lõi còn thiếu (ghi lại, không sửa): `dua-vat` đếm cả container cẩu đã nhấc lên bờ; đá chuông không chắn ray cẩu; người tới trạm đứng lại chặn người sau; lộ trình ép `chinhLuoi = true` khi khe không khai (xuồng + loa phải khai `chinhLuoi: false`).
+
 ## G5 Bến sông sau bão (ôn `return`, tuple, `min` / `max`) · bão: lũ cuốn đá tròn chắn cống, bờ sụt hố, cống kẹt, dòng xiết
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |

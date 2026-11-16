@@ -617,7 +617,7 @@
 
     // 20 · song ca đoạn 4 (gói 10 ghép bài): bè 1 5 5 4 4 3 3 2 2, bè 2 1 3 2 4 3 5 4 2. Mục tiêu choi-dieu cần đúng hai robot cùng hát, mà cần cẩu không gắn loa,
     //      nên R1 là xe hang động (loa + mic, đặt sẵn trên bờ, hát bè 1), không phải cẩu. R2 tự lắp loa: xuồng hát dưới nước hay xe hai bánh hát trên bờ (rẻ hơn).
-    //      Đá chuông nốt 2 ở cuối bến vỡ khi bài hát vang tới.
+    //      Đá chuông nốt 2 ở cuối luồng nước vỡ khi xuồng hát (tiếng vang từ mũi dọc luồng); xe trên bờ không với tới. Đá chỉ để nhìn, không tính thắng.
     man9('lap-cang-song', 10, 'trum', {
       ten: 'Song ca trên nước, trên bờ',
       mucTieu: 'choi-dieu',
