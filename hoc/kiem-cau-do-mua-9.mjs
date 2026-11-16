@@ -51,11 +51,12 @@ export const SU_KIEN_CHINH = [
   'lap-ho', 'rac-cat', 'nut-de', 'nut-doi', 'cua-doi', 'keo-vat', 'keo-theo', 'tha-keo', 'dat-dai-luoi', 'tha-neo', 'nho-neo',
   'moc-cont', 'ha-cont', 'gau-ngoam', 'gio-vot', 'gio-dat', 'tha-phao', 'thu-phao', 'bam-phao', 'nguoi-len-bo', 'nguoi-toi-tram',
   'sac-pin', 'cat-canh', 'nhay', 'qua-ngach', 'rung-da-chuong', 'vo-da-chuong', 'to-o', 'dich-chuyen', 'thung-di', 'tau-cap', 'tau-roi', 'chay-ray',
+  'day-vat',   // M9M3 16/11: nam châm đẩy vật từ xa (cùng cực): việc chính của dọn lối đẩy từ xa
   'cau-hut', 'cau-tha', 'gau-tha',   // M9M2b 5/11: cẩu + nam châm (L1) hút / thả ở ô đầu cần, gầu ngoạm (L8) thả: việc chính của lai cần cẩu (gau-ngoam đã có)
   'toi-co', 'xong-dua-vat', 'xong-day-thung', 'xong-giao-tau', 'xong-cuu-nguoi', 'xong-dieu', 'xong-to-hinh', 'xong-dap-lua'
 ];
 const LAM_CAU = ['lap-ho', 'rac-cat', 'dat-dai-luoi', 'keo-theo', 'tha-keo'];
-const DON_LOI = ['nhat-vat', 'hut-vat', 'moc-cont', 'keo-vat', 'nem-vat', 'dap', 'gau-ngoam', 'gio-vot', 'thung-di', 'cau-hut'];   // M9M2b: + cau-hut (cầu trục từ L1 hút sắt khỏi lối)
+const DON_LOI = ['nhat-vat', 'hut-vat', 'moc-cont', 'keo-vat', 'nem-vat', 'dap', 'gau-ngoam', 'gio-vot', 'thung-di', 'cau-hut', 'day-vat'];   // M9M2b: + cau-hut (cầu trục từ L1 hút sắt khỏi lối); M9M3: + day-vat (suKienCua lấy ô vật rời đi: e.tu)
 const CUU_KIP = ['nguoi-toi-tram', 'xong-giao-tau', 'tau-roi', 'sac-pin'];
 
 /* ------------------------------------------------------------- (a) dấu */

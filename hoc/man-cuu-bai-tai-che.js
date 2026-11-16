@@ -503,7 +503,7 @@
       ],
       sao: { o: 30, nhip: 12 },
       goiY: ['Nhện nhảy khe: jump("U").', 'Xích không qua hố: đi vòng bên phải.'],
-      cauDo: { doi: null, lap: 'nhen+kep', coChe: ['go', 'sat', 'ho', 'nguoi'], cuu: 'nguoi', meo: 'don-loi' }
+      cauDo: { doi: null, lap: 'nhen+kep', coChe: ['go', 'sat', 'ho', 'nguoi'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
     // 19 · ⟨nhện, omni⟩ + kẹp, đọc rồi chọn: thùng gỗ phải qua cửa C vào ô đích; robot phân loại đứng giữ nút M. Nhện nhảy khe (lệnh ngắn, chậm hơn);
