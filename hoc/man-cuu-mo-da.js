@@ -124,6 +124,14 @@
   /** Cách hai: nhện + cảm biến từ (nhện quay mặt lên, front_metal() đọc ngách phía trên). */
   var NHEN_TU_13 = ['for i in range(5):', '    go_right()', '    if front_metal():', '        go_up()', '        pull_s()', '        go_down()', 'crouch()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()'];
 
+  /** lap-mo-da.4: máy khai thác chờ lối hầm trống, tiến ba ô, hất quặng vào máng cuối hầm. */
+  var KT_14 = ['wait_n(4)', 'forward(3)', 'lob()'];
+  var KT_14B = ['wait_n(7)', 'forward(3)', 'lob()'];
+  /** Cẩu + nam châm (L1): đầu cần chĩa xuống lối hầm, hút mũi khoan, quay cần nửa vòng, thả vào hốc chứa phía trên. */
+  var CAU_14 = ['magnet_n()', 'swing_left()', 'swing_left()', 'magnet_off()'];
+  /** Drone + nam châm: hạ xuống trên mũi khoan, hút, bay lên hốc chứa, thả. */
+  var DRONE_14 = ['go_down()', 'magnet_n()', 'wait()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -461,6 +469,29 @@
       sao: { o: 23, nhip: 24 },
       goiY: ['g = radar(): g[0][1] là ô ngay trên robot. "V" là có vật.', 'pull_s(): hút sắt dưới bụng. magnet_off(): thả.', 'crouch(): co chân chui gầm thấp.'],
       cauDo: { doi: null, lap: 'nhen+nam-cham+radar', coChe: ['sat', 'gam', 'ngach', 'radar', 'nem'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 14 · dọn lối, lai L1 cẩu + nam châm: mũi khoan sắt rơi giữa lối hầm hẹp, chắn máy khai thác. Bệ cẩu ở hốc trên lối, đầu cần chĩa xuống đúng ô mũi khoan:
+    //      hút, quay cần nửa vòng, thả vào hốc chứa D phía trên bệ. Máy khai thác qua lối vừa dọn, hất quặng vào máng cuối hầm. Cách hai: drone + nam châm (rẻ hơn, chậm hơn).
+    man9('lap-mo-da', 4, 'luyen', {
+      ten: 'Mũi khoan rơi giữa lối',
+      mucTieu: 'dua-vat',
+      deBai: 'Mũi khoan sắt rơi giữa lối hầm, chắn máy khai thác. Lắp robot ở hốc trên lối: hút mũi khoan cất vào hốc chứa D phía trên.',
+      veMaMau: 'Máy khai thác chờ lối trống.',
+      san: ['#########', '###D#####', '###.#####', '#..o.oD.#', '#########'],
+      them: { vatChat: ['.........', '.........', '.........', '...s.....', '.........'], vatDang: ['.........', '.........', '.........', '.....q...', '.........'] },
+      doi: [may('KT', { x: 1, y: 3, huong: 1 }), khe({ x: 3, y: 2, huong: 0, nac: 2 }, { son: 'lam' })],
+      lapRap: lapR2(['cau', 'drone'], ['moc-cau', 'nam-cham'], [], 9, [
+        cach('cau', 'nam-cham', null, [KT_14, CAU_14]),
+        cach('drone', 'nam-cham', null, [KT_14B, DRONE_14])
+      ], { moLai: ['L1'] }),
+      maMau: doiBai([KT_14, []]),
+      loiSai: [
+        { moTa: 'Hút mũi khoan rồi thả ngay: mũi khoan rơi lại giữa lối', baiLam: doiBai([KT_14, ['magnet_n()', 'magnet_off()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quay cần một nấc rồi thả: mũi khoan rơi vào tường bên', baiLam: doiBai([KT_14, ['magnet_n()', 'swing_left()', 'magnet_off()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 22, nhip: 11 },
+      goiY: ['Nam châm trên đầu cần hút sắt ở ô dưới đầu cần.', 'swing_left() hai lần: cần quay nửa vòng.'],
+      cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'ho', 'nem', 'mui-khoan'], cuu: 'hang', meo: 'don-loi' }
     }),
     /* HẾT MOI */
   ];
