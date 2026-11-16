@@ -539,6 +539,75 @@ console.log('\n== 8. Bảng 10 màn chương Bánh omni (so với xe hai bánh) 
   kiem('bảng đã in', true);
 }
 
+/* ====================================================== CHÉO GHÉP (cfg.cheoGhep, ghép nhịp 5a) */
+console.log('\n== CHÉO GHÉP (cfg.cheoGhep): slide_* + hai bánh đi thẳng cùng nhịp = đi chéo 1 ô, giữ hướng mặt; trượt + quay vẫn bỏ; tắt cờ thì luật cũ ==');
+{
+  const CO = { cheoGhep: true };
+  const skNhip = (kq, ma) => nhipVet(kq).flatMap((v) => v.suKien || []).filter((e) => e.ma === ma);   // sự kiện thông tin (cheo) chỉ nằm trong vết nhịp
+  const TIENB = ['left_move()', 'right_move()'], LUIB = ['left_back()', 'right_back()'];
+  // xe ở (3,2). Hướng 0 = mặt lên (y giảm), 1 = phải, 2 = xuống, 3 = trái (VEC của lõi).
+  const V = SanHoc.VEC;
+  for (let h = 0; h < 4; h++) {
+    for (const [tenT, sl, bien] of [['slide_left', 'slide_left()', -1], ['slide_right', 'slide_right()', 1]]) {
+      for (const [tenB, banh, doc] of [['tiến', TIENB, 1], ['lùi', LUIB, -1]]) {
+        const vf = V[doc > 0 ? h : (h + 2) % 4], vs = V[(h + (bien > 0 ? 1 : 3)) % 4];
+        const dich = (3 + vf[0] + vs[0]) + ',' + (2 + vf[1] + vs[1]);
+        for (const truoc of [true, false]) {
+          const code = truoc ? L(...banh, sl, 'wait()') : L(sl, ...banh, 'wait()');
+          const r = omni(TRONG, O(h), code, CO);
+          const e = skNhip(r, 'cheo')[0], nv = nhipVet(r)[0];
+          kiem('có cờ, hướng ' + h + ': ' + tenT + ' + ' + tenB + (truoc ? ' (bánh viết trước)' : ' (slide viết trước)') + ' = chéo 1 ô tới ' + dich + ' trong 1 nhịp, giữ hướng, không omni-khong-cheo',
+            vt(r.robot) === dich && r.robot.huong === h && r.nhip === 1 && !maSK(r, 'omni-khong-cheo').length && e && e.ghep === true && e.huong === bien && e.doc === doc &&
+            nv.robot.truot === bien && nv.robot.cheo === bien && (doc < 0 ? nv.robot.cheoDoc === -1 : nv.robot.cheoDoc === undefined) && nv.robot.banh.trai === doc && nv.robot.banh.phai === doc, J([r.robot, r.suKien]));
+          // TỰ CHỨNG MINH: tắt cờ thì cùng chương trình đó KHÔNG đi chéo (chỉ trượt, có omni-khong-cheo)
+          const r0 = omni(TRONG, O(h), code);
+          if (truoc) kiem('  tắt cờ, hướng ' + h + ': ' + tenT + ' + ' + tenB + ' chỉ trượt (không tới ' + dich + '), có omni-khong-cheo, không có sự kiện cheo',
+            vt(r0.robot) !== dich && maSK(r0, 'omni-khong-cheo').length === 1 && !skNhip(r0, 'cheo').length && !maSK(r0, 'omni-khong-cheo')[0].ghep, J([r0.robot, r0.suKien]));
+        }
+      }
+    }
+  }
+  // trượt + QUAY vẫn bỏ, sự kiện nói vì sao
+  for (const [mota, lenhs] of [['quay phải (chỉ bánh trái tiến)', ['left_move()']], ['quay trái (chỉ bánh phải tiến)', ['right_move()']], ['quay đầu (trái tiến, phải lùi)', ['left_move()', 'right_back()']], ['chỉ bánh trái lùi', ['left_back()']]]) {
+    const r = omni(TRONG, O(0), L('slide_right()', ...lenhs, 'wait()'), CO);
+    const e = maSK(r, 'omni-khong-cheo')[0];
+    kiem('có cờ: slide_right + ' + mota + ' vẫn chỉ trượt tới 4,2, hướng giữ, omni-khong-cheo có ghep.quay', vt(r.robot) === '4,2' && r.robot.huong === 0 && e && e.ghep && e.ghep.quay === true && !skNhip(r, 'cheo').length, J([r.robot, r.suKien]));
+  }
+  // tách nhịp thì vẫn 2 nhịp; slide đơn / bánh đơn không đổi
+  kiem('có cờ: trượt rồi tiến ở HAI nhịp vẫn là 2 nhịp, tới 4,1, không có sự kiện cheo', (() => { const r = omni(TRONG, O(0), SR + TIEN, CO); return vt(r.robot) === '4,1' && r.nhip === 2 && !skNhip(r, 'cheo').length; })());
+  kiem('có cờ: slide đơn lẻ và đi thẳng đơn lẻ chạy y như không cờ', (() => { const a = omni(TRONG, O(1), SL + TIEN + SR, CO), b = omni(TRONG, O(1), SL + TIEN + SR); return J(a.robot) === J(b.robot) && a.nhip === b.nhip; })());
+  // ô đích bị chặn: đứng yên, dam-tuong kieu cheo có ghep
+  const dCh = omni(['....', '..#.', '....'], { x: 1, y: 2, huong: 0 }, L('slide_right()', 'left_move()', 'right_move()', 'wait()'), CO);
+  kiem('có cờ: ô đích chéo là tường → đứng yên 1 nhịp, dam-tuong kieu cheo, ghep true, doc +1, huong +1, vat tuong', (() => { const e = maSK(dCh, 'dam-tuong')[0]; return vt(dCh.robot) === '1,2' && dCh.nhip === 1 && e && e.kieu === 'cheo' && e.ghep === true && e.doc === 1 && e.huong === 1 && e.vat === 'tuong' && e.den.x === 2 && e.den.y === 1; })(), J(dCh.suKien));
+  const dNg = omni(['...'], { x: 1, y: 0, huong: 0 }, L('slide_left()', 'left_back()', 'right_back()', 'wait()'), CO);
+  kiem('có cờ: chéo lùi ra ngoài sân → đứng yên, dam-tuong vat ngoai-san, doc -1', (() => { const e = maSK(dNg, 'dam-tuong')[0]; return vt(dNg.robot) === '1,0' && e && e.vat === 'ngoai-san' && e.doc === -1 && e.kieu === 'cheo'; })(), J(dNg.suKien));
+  // khe góc: hai ô kề đều là tường thì không lách; một ô kề là tường thì lách được (đồng nhất diag_*)
+  const g2 = omni(['.#.', '..#', '...'], { x: 1, y: 1, huong: 0 }, L('slide_right()', 'left_move()', 'right_move()', 'wait()'), CO);
+  kiem('có cờ: hai ô kề góc (trước mặt và bên phải) đều là tường → không lách qua khe góc, dam-tuong vat tuong', (() => { const e = maSK(g2, 'dam-tuong')[0]; return vt(g2.robot) === '1,1' && e && e.vat === 'tuong' && e.kieu === 'cheo'; })(), J([g2.robot, g2.suKien]));
+  const g1 = omni(['.#.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('slide_right()', 'left_move()', 'right_move()', 'wait()'), CO);
+  kiem('có cờ: chỉ MỘT ô kề góc là tường (trước mặt) → vẫn lách chéo tới 2,0', vt(g1.robot) === '2,0' && skNhip(g1, 'cheo').length === 1, J([g1.robot, g1.suKien]));
+  const dg = omni(['.#.', '...', '...'], { x: 1, y: 1, huong: 0 }, L('diag_right()'), { omniCheo: true });
+  const dg2 = omni(['.#.', '..#', '...'], { x: 1, y: 1, huong: 0 }, L('diag_right()'), { omniCheo: true });
+  kiem('đồng nhất với diag_right() (lệnh cũ, lõi giữ): một ô kề tường thì lách tới 2,0; hai ô kề tường thì đứng yên', vt(dg.robot) === '2,0' && vt(dg2.robot) === '1,1' && !skNhip(dg, 'cheo')[0].ghep);
+  kiem('diag_left() / diag_right() vẫn chạy khi màn có cả cheoGhep lẫn omniCheo (mã cũ không vỡ)', (() => { const r = omni(TRONG, O(0), L('diag_left()', 'diag_right()'), { omniCheo: true, cheoGhep: true }); return vt(r.robot) === '3,0' && r.nhip === 2; })());
+  // hàm của em dir_* (4 dòng) chạy đúng 1 nhịp mỗi lần gọi
+  const DIR = L('def dir_fl():', '    slide_left()', '    left_move()', '    right_move()', '    wait()', 'def dir_br():', '    slide_right()', '    left_back()', '    right_back()', '    wait()');
+  kiem('có cờ: dir_fl() ba lần = 3 nhịp, từ 3,4 tới 0,1; dir_br() đưa về', (() => { const a = omni(TRONG, { x: 3, y: 4, huong: 0 }, DIR + L('dir_fl()', 'dir_fl()', 'dir_fl()'), CO); const b = omni(TRONG, { x: 3, y: 4, huong: 0 }, DIR + L('dir_fl()', 'dir_fl()', 'dir_fl()', 'dir_br()', 'dir_br()', 'dir_br()'), CO); return vt(a.robot) === '0,1' && a.nhip === 3 && vt(b.robot) === '3,4' && b.nhip === 6 && b.robot.huong === 0; })());
+  // cờ chỉ có nghĩa với omni
+  kiem('cheoGhep ở xe hai bánh không đổi gì (cờ chỉ dành cho omni)', (() => { const a = SanHoc.chay({ san: TRONG, batDau: O(0), loaiRobot: 'banh', cheoGhep: true }, TIEN + TIEN), b = SanHoc.chay({ san: TRONG, batDau: O(0), loaiRobot: 'banh' }, TIEN + TIEN); return J(a.robot) === J(b.robot) && a.nhip === b.nhip; })());
+  // cham.js: lời omni-khong-cheo khi trượt + quay ở màn có cờ
+  {
+    const man = { id: 'thu-cheo-ghep', ma: 'thu-cheo-ghep', loaiRobot: 'omni', cheoGhep: true, san: ['...F', '....', '....'], batDau: { x: 0, y: 2, huong: 0 }, mucTieu: 'toi-co', hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'wait'], taoHam: [], hamCuaEmCan: [], khung: { chinh: 20, moiHam: 10 } };
+    const r = ChamHoc.cham(man, { chinh: ['slide_right()', 'left_move()', 'wait()'], hamCuaMan: [] }, []);
+    const c = r.chanDoan.find((x) => x.ma === 'omni-khong-cheo');
+    kiem('cham.js (màn có cờ): trượt + quay → lời omni-khong-cheo nói "Trượt chỉ ghép được với ĐI THẲNG", không còn nói "Bánh omni không đi chéo"', c && /Trượt chỉ ghép được với ĐI THẲNG/.test(c.loi) && !/không đi chéo/.test(c.loi), c && c.loi);
+    const r2 = ChamHoc.cham(man, { chinh: ['slide_right()', 'left_move()', 'right_move()', 'wait()', 'slide_right()', 'left_move()', 'right_move()', 'wait()', 'slide_right()', 'wait()'], hamCuaMan: [] }, []);
+    kiem('cham.js đưa cờ cheoGhep của màn xuống lõi: chéo 2 nhịp + trượt 1 nhịp thì thắng trong 3 nhịp, không chẩn đoán nào', r2.thang === true && r2.soNhip === 3 && !r2.chanDoan.length, J([r2.thang, r2.soNhip, maCua(r2)]));
+    const r3 = ChamHoc.cham(Object.assign({}, man, { cheoGhep: undefined }), { chinh: ['slide_right()', 'left_move()', 'right_move()', 'wait()', 'slide_right()', 'left_move()', 'right_move()', 'wait()', 'slide_right()', 'wait()'], hamCuaMan: [] }, []);
+    kiem('  tự chứng minh: cùng màn đó tắt cờ thì KHÔNG thắng và có omni-khong-cheo', r3.thang === false && maCua(r3).includes('omni-khong-cheo'), J([r3.thang, maCua(r3)]));
+  }
+}
+
 console.log('\n---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 if (hong) process.exit(1);

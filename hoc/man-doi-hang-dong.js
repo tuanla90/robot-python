@@ -41,6 +41,7 @@
       batDau: bd,
       loaiRobot: 'omni',
       omniCheo: true,
+      cheoGhep: true,      // ghép nhịp 5a: R2 (Máy mỏ đá) đi chéo bằng hàm của em dir_*() (slide_* cùng nhịp hai bánh đi thẳng)
       chinhLuc: true,
       nhanDang: true,
       tamNemMacDinh: 2,
@@ -178,18 +179,18 @@
     manDH(4, 'lam-quen', {
       ten: 'R2 đi chéo hất đá mở cổng',
       hamCuaEmCan: ['move', 'forward', 'wait_n', 'lob', 'slide_stop'],
-      deBai: 'R2 xuất phát ở (1, 5) cần đi chéo sang phải 1 bước bằng diag_right() lên (2, 4) để đứng ngay sau hòn đá o ở (2, 3), sau đó gọi lob() hất đá lên nút M ở (2, 2) mở cổng C cho R1, rồi gọi slide_r(1) vào cờ. R1 chờ 3 nhịp rồi gọi slide_stop() trượt qua đá ướt vào cờ.',
-      veMaMau: 'R2 chưa gọi diag_right(), lob(), slide_r(1) nên cổng C vẫn đóng.',
+      deBai: 'R2 xuất phát ở (1, 5) cần đi chéo sang phải 1 bước bằng dir_fr() lên (2, 4) để đứng ngay sau hòn đá o ở (2, 3), sau đó gọi lob() hất đá lên nút M ở (2, 2) mở cổng C cho R1, rồi gọi slide_r(1) vào cờ. R1 chờ 3 nhịp rồi gọi slide_stop() trượt qua đá ướt vào cờ.',
+      veMaMau: 'R2 chưa gọi dir_fr(), lob(), slide_r(1) nên cổng C vẫn đóng.',
       san: ['#######', '#.IICF#', '##M####', '##o####', '#..F###', '#.#####', '#######'],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 5, huong: 0 }],
       noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 4, y: 1 }] }],
       maMau: baiDoi(['wait_n(3)', 'slide_stop()'], ['move()']),
-      loiGiai: baiDoi(['wait_n(3)', 'slide_stop()'], ['diag_right()', 'lob()', 'slide_r(1)']),
+      loiGiai: baiDoi(['wait_n(3)', 'slide_stop()'], ['dir_fr()', 'lob()', 'slide_r(1)']),
       loiSai: [
         { moTa: 'R2 chỉ gọi move(): không nạp được đá và không mở cổng C cho R1', baiLam: baiDoi(['wait_n(3)', 'slide_stop()'], ['move()']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 21, nhip: 5 },
-      goiY: ['Từ (1, 5) hướng lên, diag_right() đưa R2 tới (2, 4) ngay dưới hòn đá o ở (2, 3).', 'Viết cho R2: diag_right(), lob(), slide_r(1).']
+      goiY: ['Từ (1, 5) hướng lên, dir_fr() đưa R2 tới (2, 4) ngay dưới hòn đá o ở (2, 3).', 'Viết cho R2: dir_fr(), lob(), slide_r(1).']
     }),
 
     manDH(5, 'cung-co', {
@@ -348,19 +349,19 @@
       ten: 'Chế hàm: Đi chéo hất đá mở cổng',
       taoHam: ['heavy_gate_lob'],
       hamCuaEmCan: ['move', 'forward', 'wait_n', 'aim_lob', 'slide_stop'],
-      deBai: 'Hãy viết hàm heavy_gate_lob(k) cho R2: gọi diag_right() để bước chéo vào sau viên đá, gọi aim_lob(k) để hất đá xa k ô lên nút M mở cổng C cho R1, rồi gọi slide_r(1) để về cờ. Dùng heavy_gate_lob(3) cho R2.',
+      deBai: 'Hãy viết hàm heavy_gate_lob(k) cho R2: gọi dir_fr() để bước chéo vào sau viên đá, gọi aim_lob(k) để hất đá xa k ô lên nút M mở cổng C cho R1, rồi gọi slide_r(1) để về cờ. Dùng heavy_gate_lob(3) cho R2.',
       veMaMau: 'Hàm heavy_gate_lob(k) đang để trống thân hàm.',
       san: ['#######', '#.IICF#', '##M####', '##=####', '##o####', '#..F###', '#.#####', '#######'],
       bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 6, huong: 0 }],
       noi: [{ nut: { x: 2, y: 2 }, cua: [{ x: 4, y: 1 }] }],
       maMau: baiDoi(['wait_n(3)', 'slide_stop()'], ['heavy_gate_lob(3)'], [ham('heavy_gate_lob', [], ['k'])]),
-      loiGiai: baiDoi(['wait_n(3)', 'slide_stop()'], ['heavy_gate_lob(3)'], [ham('heavy_gate_lob', ['diag_right()', 'aim_lob(k)', 'slide_r(1)'], ['k'])]),
+      loiGiai: baiDoi(['wait_n(3)', 'slide_stop()'], ['heavy_gate_lob(3)'], [ham('heavy_gate_lob', ['dir_fr()', 'aim_lob(k)', 'slide_r(1)'], ['k'])]),
       loiSai: [
         { moTa: 'Để trống heavy_gate_lob(k): R2 đứng yên, cổng C đóng chặt', baiLam: baiDoi(['wait_n(3)', 'slide_stop()'], ['heavy_gate_lob(3)'], [ham('heavy_gate_lob', [], ['k'])]), phaiCoMa: ['loi-cu-phap'] },
-        { moTa: 'Quên diag_right() trong heavy_gate_lob(k): R2 hất hụt vì chưa đứng sau viên đá', baiLam: baiDoi(['wait_n(3)', 'slide_stop()'], ['heavy_gate_lob(3)'], [ham('heavy_gate_lob', ['aim_lob(k)', 'slide_r(1)'], ['k'])]), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Quên dir_fr() trong heavy_gate_lob(k): R2 hất hụt vì chưa đứng sau viên đá', baiLam: baiDoi(['wait_n(3)', 'slide_stop()'], ['heavy_gate_lob(3)'], [ham('heavy_gate_lob', ['aim_lob(k)', 'slide_r(1)'], ['k'])]), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 24, nhip: 5 },
-      goiY: ['Trong heavy_gate_lob(k), viết 3 dòng: diag_right(), aim_lob(k), slide_r(1).', 'R1 chờ 3 nhịp rồi gọi slide_stop() trượt qua cổng C tới cờ.']
+      goiY: ['Trong heavy_gate_lob(k), viết 3 dòng: dir_fr(), aim_lob(k), slide_r(1).', 'R1 chờ 3 nhịp rồi gọi slide_stop() trượt qua cổng C tới cờ.']
     }),
 
     manCheDH(2, 'lam-quen', {

@@ -17,6 +17,7 @@
   var R1_OMNI = {
     loaiRobot: 'omni',
     omniCheo: true,
+    cheoGhep: true,      // ghép nhịp 5a: Máy mỏ đá đi chéo bằng hàm của em dir_*() (slide_* cùng nhịp hai bánh đi thẳng)
     chinhLuc: true,
     nhanDang: true,
     tamNemMacDinh: 2,
@@ -212,18 +213,18 @@
       ten: 'Đi chéo lấp hố sâu mở lối cho xe kho',
       r2: R_BANH,
       hamCuaEmCan: ['sort_lob', 'aim_lob', 'lob', 'wait_n', 'forward', 'move', 'pick', 'drop'],
-      deBai: 'Hố sâu u(2, 1) đang chắn ngang đường xe kho R2 đi lấy kiện hàng o(4, 1) đưa về D(5, 1). Hãy cho R1 ở (1, 4) hướng Bắc gọi diag_right() lách chéo lên (2, 3) đối diện tảng đá tròn o(2, 2), rồi gọi sort_lob() để tự nhận dạng đá tròn và hất 2 ô lấp phẳng hố u(2, 1)! R2 ở (1, 1) gọi wait_n(3) chờ lấp hố xong, gọi forward(2) qua (2, 1) tới (3, 1), pick() nhặt o(4, 1), move() sang (4, 1) và drop() vào D(5, 1)!',
-      veMaMau: 'R1 gọi diag_right() và sort_lob(); R2 chờ lấp hố rồi nhặt hàng đưa vào D(5, 1).',
+      deBai: 'Hố sâu u(2, 1) đang chắn ngang đường xe kho R2 đi lấy kiện hàng o(4, 1) đưa về D(5, 1). Hãy cho R1 ở (1, 4) hướng Bắc gọi dir_fr() lách chéo lên (2, 3) đối diện tảng đá tròn o(2, 2), rồi gọi sort_lob() để tự nhận dạng đá tròn và hất 2 ô lấp phẳng hố u(2, 1)! R2 ở (1, 1) gọi wait_n(3) chờ lấp hố xong, gọi forward(2) qua (2, 1) tới (3, 1), pick() nhặt o(4, 1), move() sang (4, 1) và drop() vào D(5, 1)!',
+      veMaMau: 'R1 gọi dir_fr() và sort_lob(); R2 chờ lấp hố rồi nhặt hàng đưa vào D(5, 1).',
       san: ['#######', '#.u.oD#', '#.o...#', '#.....#', '#.....#', '#######'],
       vatDang: ['.......', '.......', '..r....', '.......', '.......', '.......'],
       bd: [{ x: 1, y: 4, huong: 0 }, { x: 1, y: 1, huong: 1 }],
-      maMau: baiDoi(['diag_right()'], ['wait_n(3)', 'forward(2)', 'pick()', 'move()', 'drop()']),
-      loiGiai: baiDoi(['diag_right()', 'sort_lob()'], ['wait_n(3)', 'forward(2)', 'pick()', 'move()', 'drop()']),
+      maMau: baiDoi(['dir_fr()'], ['wait_n(3)', 'forward(2)', 'pick()', 'move()', 'drop()']),
+      loiGiai: baiDoi(['dir_fr()', 'sort_lob()'], ['wait_n(3)', 'forward(2)', 'pick()', 'move()', 'drop()']),
       loiSai: [
-        { moTa: 'R1 mới đi chéo lên (2, 3) mà chưa gọi sort_lob() hất đá lấp hố u(2, 1)', baiLam: baiDoi(['diag_right()'], ['wait_n(3)', 'forward(2)', 'pick()', 'move()', 'drop()']), phaiCoMa: ['roi-ho'] }
+        { moTa: 'R1 mới đi chéo lên (2, 3) mà chưa gọi sort_lob() hất đá lấp hố u(2, 1)', baiLam: baiDoi(['dir_fr()'], ['wait_n(3)', 'forward(2)', 'pick()', 'move()', 'drop()']), phaiCoMa: ['roi-ho'] }
       ],
       sao: { o: 28, nhip: 8 },
-      goiY: ['Ở chương trình R1, thêm sort_lob() sau diag_right().']
+      goiY: ['Ở chương trình R1, thêm sort_lob() sau dir_fr().']
     }),
 
     manMD('cuu-mo-da', 5, 'cung-co', {

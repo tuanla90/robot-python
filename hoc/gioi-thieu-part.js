@@ -69,10 +69,10 @@
         { lenh: ['slide_left', 'wait'], ra: 'Trượt sang trái 1 ô, mặt giữ nguyên', ket: { x: 1, y: 2, huong: 0 } }
       ],
       gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh',
-        { chu: 'Bản nâng cấp đi chéo: diag_left() và diag_right() lách chéo 1 ô trong 1 nhịp', can: ['diag_left', 'diag_right'] }],
+        { chu: 'Đi chéo: slide_*() cùng nhịp với hai bánh đi thẳng (từ gói Đi chéo). Lệnh cũ: diag_left(), diag_right()', can: ['diag_left', 'diag_right'] }],
       khong: [{ chu: 'Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', khongCan: ['diag_left'] }, 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
       luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.',
-        { chu: 'Mỗi lệnh diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
+        { chu: 'Lệnh cũ diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
     },
     'nhen': {
       khe: 'than', ten: 'Thân nhện',
@@ -153,8 +153,8 @@
       lenh: ['aim', 'load', 'throw'],
       ghep: [{ lenh: ['aim', 'load', 'wait', 'throw', 'wait'], ra: 'Chọn tầm, nạp vật, ném' }],
       gioi: ['Vật bay qua hàng rào, tường, băng chuyền', 'Rơi đúng n ô phía trước'],
-      khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên'],
-      luuY: ['aim(n) chọn tầm 1, 2 hoặc 3 ô, đổi ngay, không tốn nhịp.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
+      khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên (trừ chạy đà: tiến thẳng cùng nhịp throw())'],
+      luuY: ['aim(n) chọn tầm, đổi ngay, không tốn nhịp. Từ gói Chỉnh lực hất: tầm 1 hoặc 2, chạy đà thì bay thêm 1 ô.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
     },
     'son': {
       khe: 'tay', ten: 'Bộ gieo hạt',      // 30/10 vỏ Nông trại hoa (mùa 4): trước là Máy sơn, luật giữ nguyên
