@@ -209,6 +209,15 @@
   var BANH_17 = ['turn_right()', 'forward(1)', 'turn_left()', 'forward(1)', 'turn_left()', 'forward(1)'].concat(NEM_17);
   function san17(ho) { var a = '#oI.######'.split(''); a[ho] = 'u'; for (var x = 4; x < ho; x++) a[x] = '.'; return ['##########', '#........#', '##.#######', a.join(''), '##..######', '##########']; }
 
+  /** trum-mua-clb.8 (hai sân Hang, không dùng xe hang động: bảng thân không có bánh gai): xe chở hàng lắp loa R1 hát đoạn Hang (bè 1 đoạn 8) ở lối dưới, rồi về cờ.
+   *  Lối hang thoát ra ở một ngách trên, ngách bị đá chuông chắn; đá chuông nằm ở cột đúng bằng nốt của nó (sân 1 nốt 2, sân 2 nốt 7). R2 tự lắp robot loa + mic đứng ở cột 5:
+   *  n = listen(), d = n - 5 (âm: ngách ở bên trái), đi abs(d) ô, hát nốt n phá đá, lên ngách về cờ.
+   *  Cách một: omni + loa + mic (trượt ngang không quay, nhanh). Cách hai: hai bánh + loa + mic (rẻ, quay hai lần). Nhện + loa + mic (mở lai L7, L4) cũng thắng nhưng chậm (mỗi bước hai nhịp). Ôn abs, số âm, if / else. */
+  var CH_18 = [hat(8, 1), 'forward(1)'];
+  var OMNI_18 = ['n = listen()', 'd = n - 5', 'for i in range(abs(d)):', '    if d < 0:', '        slide_left()', '    else:', '        slide_right()', '    wait()', 'play_note(n)', 'forward(2)'];
+  var BANH_18 = ['n = listen()', 'd = n - 5', 'if d < 0:', '    turn_left()', 'else:', '    turn_right()', 'forward(abs(d))', 'if d < 0:', '    turn_right()', 'else:', '    turn_left()', 'play_note(n)', 'forward(2)'];
+  function san18(n) { var a = '###########'.split(''), b = a.slice(); a[n] = 'F'; b[n] = '.'; return ['###########', a.join(''), b.join(''), '#.........#', '###########', '###########', '#.F.......#', '###########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -659,6 +668,32 @@
       sao: { o: 33, nhip: 24 },
       goiY: ['distance(): số ô trống tới vật cản (hố cũng tính là ô trống).', 'aim(k): tầm ném k ô, đổi ngay, không tốn nhịp.', 'Bánh gai đứng lại được trên đá ướt; xe khác trượt tới khi gặp vật cản.'],
       cauDo: { doi: null, lap: 'gai+nem+hong-ngoai', coChe: ['ho', 'da-tron', 'nem', 'da-uot', 'hong-ngoai', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
+    }),
+    // 18 · đổi vai, hai sân Hang (G8), không dùng xe hang động (bảng thân không có bánh gai): R1 xe chở hàng lắp loa hát đoạn Hang (bè 1 đoạn 8: 4 4 3 3 2 2 1 1).
+    //      R2 tự lắp robot loa + mic: nghe nốt đá chuông chắn ngách (cột = nốt), đi abs(n - 5) ô sang trái hay phải, hát phá đá, lên ngách. Ôn abs, số âm.
+    man9('trum-mua-clb', 8, 'lam-quen', {
+      ten: 'Hang không có bánh gai',
+      vo: 'hang-dong',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['play_part']),
+      deBai: 'Hai sân Hang. Xe hang động về nhà sửa! Xe chở hàng lắp loa hát đoạn Hang. Lối ra là một ngách bị đá chuông chắn; đá chuông nằm đúng ở cột bằng nốt của nó. Lắp cho Luna một robot nghe nốt, tới đúng cột, hát phá đá, lên ngách.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san18(2), san18(7)],
+      them: { daChuong: [[{ x: 2, y: 2, not: 2, ben: 1 }], [{ x: 7, y: 2, not: 7, ben: 1 }]] },
+      doi: [xeLoa('CH', { x: 1, y: 6, huong: 1 }, { co: [{ x: 2, y: 6 }] }), khe({ x: 5, y: 3, huong: 0 }, { son: 'lam', co: [[{ x: 2, y: 1 }], [{ x: 7, y: 1 }]] })],
+      lapRap: lapR2(['omni', 'hai-banh', 'nhen'], ['loa', 'kep', 'son'], ['am-thanh', 'hong-ngoai', 'camera'], 9, [
+        cach('omni', 'loa', 'am-thanh', [CH_18, OMNI_18]),
+        cach('hai-banh', 'loa', 'am-thanh', [CH_18, BANH_18])
+      ], { moLai: ['L7', 'L4'] }),
+      maMau: doiBai([CH_18, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (sang trái 3 ô, hát nốt 2): sân 2 ngách ở cột 7', baiLam: doiBai([CH_18, ['for i in range(3):', '    slide_left()', '    wait()', 'play_note(2)', 'forward(2)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên abs: range(d) với d âm không chạy lần nào, sân 1 hát dưới tường', baiLam: doiBai([CH_18, ['n = listen()', 'd = n - 5', 'for i in range(d):', '    if d < 0:', '        slide_left()', '    else:', '        slide_right()', '    wait()', 'play_note(n)', 'forward(2)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đi ngược dấu (d < 0 mà sang phải): tới sai cột', baiLam: doiBai([CH_18, ['n = listen()', 'd = n - 5', 'for i in range(abs(d)):', '    if d < 0:', '        slide_right()', '    else:', '        slide_left()', '    wait()', 'play_note(n)', 'forward(2)']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 33, nhip: 21 },
+      goiY: ['abs(d): bỏ dấu âm: abs(-3) = 3.', 'd = n - 5 âm: ngách ở bên trái cột 5.', 'Omni trượt một ô mỗi nhịp: slide_left() rồi wait().'],
+      cauDo: { doi: null, lap: 'omni+loa+am-thanh', coChe: ['da-chuong', 'not', 'mic', 'ngach', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     })
   ];
 
