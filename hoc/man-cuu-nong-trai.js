@@ -74,6 +74,12 @@
     'go_right()', 'land()', 'take_off()', 'for i in range(2):', '    go_right()', '    dot()', 'wait()'];
   var CU_7 = ['forward(1)', 'move()', 'back()'];
   var KT_7 = ['forward(1)', 'load()', 'wait()', 'turn_right()', 'throw()', 'wait()'];
+  /** cuu-nong-trai.8: xuồng tung lưới bắt bè sạc, lùi ba ô kéo bè tới dưới drone khách, nhả lưới. Xe chở hàng gắp bao hạt trên ô sạc bờ.
+   *  Drone khách khoá: đậu chờ, xuống đáp bè sạc, gieo năm ô sang phải tới ô sạc bờ, đáp sạc, xuống hàng dưới gieo năm ô sang trái. Xe chở hàng gắp bao, lùi. */
+  var XU_8 = ['cast_net()', 'wait()', 'back()', 'back()', 'back()', 'drop_net()', 'wait()'];
+  var CH_8 = ['pick()', 'back()'];
+  var DR_R3_8 = ['land()', 'wait_n(7)', 'take_off()', 'go_down()', 'land()', 'take_off()', 'go_down()', 'ink("yellow")', 'for i in range(5):', '    dot()', '    go_right()',
+    'land()', 'take_off()', 'go_down()', 'for i in range(5):', '    dot()', '    go_left()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -268,6 +274,33 @@
       sao: { o: 46, nhip: 25 },
       goiY: ['Đọc chương trình của drone khoá: nó đáp ô sạc nào, lúc nào?', 'Máy khai thác: load() nạp vật trước mũi, throw() ném xa 2 ô.'],
       cauDo: { doi: ['CU', 'KT'], lap: null, coChe: ['cay-do', 'da', 'sac', 'pin', 'gieo', 'ray', 'r3'], cuu: 'may', meo: 'don-loi' }
+    }),
+    // 8 · cứu máy, tiếp sức (T4 bè sạc): drone khách (R3, khoá) hết pin. Trạm sạc hỏng, chỉ còn bè sạc trôi giữa mương và một ô sạc trên bờ bị bao hạt đè.
+    //     Xuồng tung lưới bắt bè sạc, lùi kéo bè tới ngay dưới drone khách; drone đáp lên bè sạc, sạc đầy, gieo hàng trên. Xe chở hàng gắp bao hạt khỏi ô sạc bờ, lùi khỏi luống;
+    //     drone đáp sạc lần hai, gieo hàng dưới. Bẫy: xe hang động (không kéo bè, không gắp bao).
+    man9('cuu-nong-trai', 8, 'van-dung', {
+      ten: 'Bè sạc giữa mương',
+      khung: { chinh: 20, moiHam: 8 },
+      deBai: 'Drone khách hết pin. Trạm sạc hỏng, chỉ còn bè sạc giữa mương và một ô sạc bị bao hạt đè. Đọc chương trình của drone khách: nó đáp ở đâu? Chọn hai bạn đưa bè tới, dọn ô sạc.',
+      veMaMau: 'Đọc chương trình của drone khoá: đậu chờ 7 nhịp, rồi đáp xuống mương ngay dưới nó.',
+      san: ['############', '#..........#', '#~~~~~~~B~~#', '#.........P#', '#..........#', '#..........#', '############'],
+      them: { beSac: [{ x: 8, y: 2 }], vatThem: [{ x: 10, y: 3 }] },
+      hinh: luong(12, 7, [{ y: 3, x0: 5, mau: 'yyyyy' }, { y: 4, x0: 6, mau: 'yyyyy' }]),
+      doi: [khe({ x: 6, y: 1, huong: 2 }, { batDauNuoc: { x: 6, y: 2, huong: 1 } }), khe({ x: 10, y: 4, huong: 0 }, { batDauNuoc: { x: 10, y: 2, huong: 3 } }),
+        may('DR', { x: 5, y: 1, huong: 1 }, { son: 'tim', coDinh: true, pin: 13 })],
+      chonDoi: {
+        menu: ['XU', 'CH', 'HD'],
+        cachMau: [{ chon: ['XU', 'CH'], ghiChu: 'đôi tốt', loiGiai: doiBai([XU_8, CH_8, DR_R3_8]) }]
+      },
+      maMau: doiBai([[], [], DR_R3_8]),
+      loiSai: [
+        { moTa: 'Xuồng không kéo bè sạc: drone khách đáp xuống nước, không sạc', baiLam: doiBai([[], CH_8, DR_R3_8]), phaiCoMa: ['dap-bi-chan'] },
+        { moTa: 'Xuồng lùi hai ô: bè sạc lệch một ô', baiLam: doiBai([['cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'], CH_8, DR_R3_8]), phaiCoMa: ['dap-bi-chan'] },
+        { moTa: 'Không dọn bao hạt: drone khách không đáp được ô sạc bờ', baiLam: doiBai([XU_8, [], DR_R3_8]), phaiCoMa: ['dap-bi-chan'] }
+      ],
+      sao: { o: 42, nhip: 30 },
+      goiY: ['Drone đậu trên bè sạc thì sạc như ô sạc P.', 'Xuồng lùi thì bè trong lưới đi theo.'],
+      cauDo: { doi: ['XU', 'CH'], lap: null, coChe: ['be-sac', 'nuoc', 'luoi', 'bao-hat', 'sac', 'pin', 'gieo', 'r3'], cuu: 'may', meo: 'tiep-suc' }
     }),
   ];
 })();
