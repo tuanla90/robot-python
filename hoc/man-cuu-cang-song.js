@@ -74,6 +74,9 @@
     'swing_right()', 'swing_right()', 'rail(1)'];
   /** lap-cang-song.9: cẩu chờ số dưới móc, nhấc 22, quay lên hạ; thu cần, quay hai nấc xuống nhấc 35 ở chồng bãi, quay về, vươn, hạ. */
   /** lap-cang-song.9 (hai sân): sông trên, ray dọc cột 6 (hàng 2–7), tàu (6, 1); chồng cạnh ray ở cột 7, mỗi sân một hàng. */
+  /** lap-cang-song.7 (ba sân, cùng bản đồ, mỗi sân đá chuông một nốt). */
+  var SAN_17 = ['#########', '######.##', '#.......#', '#RRRR####', '#....####', '#########'];
+  var CHONG_17 = [{ x: 3, y: 2, cont: [{ so: 31 }] }];
   var SAN_19 = ['##########', '#~~~B~T..#', '#~~~~~R..#', '#~~~~~R..#', '#.....R..#', '#.....R..#', '#.....R..#', '#.....R..#', '##########'];
   /** Cẩu lap-cang-song.9: chờ container nổi dưới móc, giao; quay phải, thu cần, dò ray xuống tới khi thấy số (đếm n), nhấc, rail(-n) về, quay lên, vươn, giao. */
   var CAU_19 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()', 'swing_right()', 'retract()', 'n = 0', 'while read_code() == -1:', '    rail(1)', '    n = n + 1',
@@ -574,16 +577,18 @@
     //      Cách một: bánh gai + loa + mic (như xe hang động); cách hai rẻ hơn: hai bánh + loa + mic. Gói sau (cuu-ben-song) gọi sonic_rail.
     //      Bảng ghi "omni + nam châm + radar hút sắt trên ray": trùng việc dọn sắt trên ray của cuu-cang-song.7 / .8, và gói phải tạo sonic_rail, nên đổi.
     //      Mẹo khai cứu kịp (người, không phải robot, đi lên ô đá chuông đã vỡ nên bộ dò dọn lối không thấy).
+    //      Ba sân (dữ liệu theo sân, luật 13/11): đá chuông nốt 6 / 3 / 8. Điền thẳng play_note(6) của sân 1 thì sân 2, 3 đá không vỡ.
     man9('lap-cang-song', 7, 'van-dung', {
       ten: 'Đá chuông chắn lối',
       mucTieu: 'cuu-nguoi',
       taoHam: ['sonic_rail'],
       hamCuaEmCan: HAM_EM.concat(['play_note']),
-      deBai: 'Container và đá chuông chắn lối về trạm cứu. Lắp robot nghe được nốt, hát lại để phá đá. Viết sonic_rail(): hát lại nốt nghe được, rồi lùi.',
+      deBai: 'Ba sân, mỗi sân đá chuông một nốt. Container và đá chuông chắn lối về trạm cứu. Lắp robot nghe được nốt, hát lại để phá đá. Viết sonic_rail(): hát lại nốt nghe được, rồi lùi.',
       veMaMau: 'Hàm sonic_rail chưa có. Thủy thủ đứng chờ.',
-      san: ['#########', '######.##', '#.......#', '#RRRR####', '#....####', '#########'],
+      san: [SAN_17, SAN_17, SAN_17],
       doi: [may('CC', { x: 3, y: 3, huong: 0, nac: 0, tam: 1 }), khe({ x: 6, y: 2, huong: 3 }, { son: 'lam' })],
-      them: { contChan: true, chong: [{ x: 3, y: 2, cont: [{ so: 31 }] }], nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 6, y: 1 }], daChuong: [{ x: 5, y: 2, not: 6, ben: 1 }] },
+      them: { contChan: true, chong: [CHONG_17, CHONG_17, CHONG_17], nguoi: [{ x: 1, y: 2 }], tramCuu: [{ x: 6, y: 1 }],
+        daChuong: [[{ x: 5, y: 2, not: 6, ben: 1 }], [{ x: 5, y: 2, not: 3, ben: 1 }], [{ x: 5, y: 2, not: 8, ben: 1 }]] },
       lapRap: lapR2(['gai', 'hai-banh'], ['loa'], ['am-thanh'], 9, [
         cach('gai', 'loa', 'am-thanh', [['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']], [H_SONIC_RAIL]),
         cach('hai-banh', 'loa', 'am-thanh', [['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']], [H_SONIC_RAIL])
@@ -591,7 +596,8 @@
       maMau: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], []]),
       loiSai: [
         { moTa: 'Thân sonic_rail thiếu back(): robot còn đứng chắn lối', baiLam: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']]), hamCuaEmMoi: [{ ten: 'sonic_rail', thamSo: [], than: ['play_note(listen())'] }], phaiCoMa: ['chua-cuu-nguoi'] },
-        { moTa: 'Hát sai nốt: đá chuông không vỡ', baiLam: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']]), hamCuaEmMoi: [{ ten: 'sonic_rail', thamSo: [], than: ['play_note(5)', 'back()'] }], phaiCoMa: ['chua-cuu-nguoi'] }
+        { moTa: 'Hát sai nốt: đá chuông không vỡ', baiLam: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']]), hamCuaEmMoi: [{ ten: 'sonic_rail', thamSo: [], than: ['play_note(5)', 'back()'] }], phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(6)): sân 2 (nốt 3), sân 3 (nốt 8) đá không vỡ', baiLam: doiBai([['pick_up()', 'swing_right()', 'swing_right()', 'set_down()'], ['sonic_rail()']]), hamCuaEmMoi: [{ ten: 'sonic_rail', thamSo: [], than: ['play_note(6)', 'back()'] }], phaiCoMa: ['chua-cuu-nguoi'] }
       ],
       sao: { o: 14, nhip: 7 },
       goiY: ['listen() trả nốt của đá chuông gần nhất.', 'sonic_rail(): play_note(listen()) rồi back().'],
