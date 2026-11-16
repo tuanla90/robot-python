@@ -161,6 +161,16 @@
   var BANH_12 = ['turn_right()', 'while not left_clear():', '    forward(1)', 'turn_left()', 'spray()', 'wait()', 'forward(1)'];
   function san12(x) { var a = '##########'.split(''), b = a.slice(); a[x] = 'N'; b[x] = 'F'; return ['##########', a.join(''), b.join(''), '#........#', '##########', '#...C...F#', '##########']; }
 
+  /** trum-mua-clb.3 (ba sân Bãi, không dùng nhện bò ray: bảng thân không có nhện): xe cứu hỏa lắp loa R1 hát đoạn Bãi (bè 1 đoạn 3).
+   *  Trước mũi R2 là một vật, mỗi sân một loại: sắt, nam châm quay cực N, nam châm quay cực S. Cảm biến từ đọc, chọn cực hút được (sắt: cực nào cũng hút; nam châm: khác cực mới hút), kéo về đích D.
+   *  Cách một: omni + nam châm + cảm biến từ, trượt xuống một ô (nhanh). Cách hai: hai bánh + nam châm + cảm biến từ, quay, tiến, quay (rẻ). Ôn if / else, or, so chuỗi ==. */
+  var CU_13 = [hat(3, 1)];
+  var CHON_CUC_13 = ['if front_metal() or front_pole() == "N":', '    magnet_s()', 'else:', '    magnet_n()', 'wait()'];
+  var OMNI_13 = CHON_CUC_13.concat(['slide_right()', 'wait()', 'magnet_off()', 'wait()']);
+  var BANH_13 = CHON_CUC_13.concat(['turn_right()', 'forward(1)', 'turn_left()', 'magnet_off()', 'wait()']);
+  var SAN_13 = ['#######', '#..o..#', '#.D...#', '#.....#', '#######'];
+  function chat13(c) { return ['.......', '...' + c + '...', '.......', '.......', '.......']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -484,6 +494,31 @@
       sao: { o: 23, nhip: 36 },
       goiY: ['front_clear(): ô trước mặt có trống không; not đảo True thành False.', 'Tia phun trúng nút N thì cửa C đổi (đóng ↔ mở).', 'Omni trượt ngang được, không cần quay.'],
       cauDo: { doi: null, lap: 'omni+hoi+khoang-cach', coChe: ['nut-ban', 'cua', 'phun', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
+    }),
+    // 13 · đổi vai, ba sân Bãi (G3), không dùng nhện bò ray (bảng thân không có nhện): R1 xe cứu hỏa lắp loa hát đoạn Bãi (bè 1 đoạn 3: 5 5 4 4 3 3 2 2).
+    //      R2 tự lắp xe nam châm: vật trước mũi mỗi sân một loại (sắt / nam châm N / nam châm S); đọc cảm biến từ, chọn cực hút được, đưa về đích. Ôn if / else, or, ==.
+    man9('trum-mua-clb', 3, 'lam-quen', {
+      ten: 'Bãi không có nhện',
+      mucTieu: 'dua-vat',
+      hamCuaEmCan: HAM_EM.concat(['play_part']),
+      deBai: 'Ba sân Bãi. Nhện bò ray về nhà sửa! Xe cứu hỏa hát đoạn Bãi. Lắp cho Luna một robot nam châm: trước mũi là sắt hay nam châm, mỗi sân một thứ. Đọc cảm biến, bật cực hút được, đưa vật về đích D.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [SAN_13, SAN_13, SAN_13],
+      them: { vatChat: [chat13('s'), chat13('N'), chat13('S')], vatCan: 'tu' },
+      doi: [xeLoa('CU', { x: 5, y: 3, huong: 3 }), khe({ x: 1, y: 1, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['omni', 'hai-banh', 'xich'], ['nam-cham', 'kep', 'day-keo'], ['tu', 'khoang-cach', 'camera'], 9, [
+        cach('omni', 'nam-cham', 'tu', [CU_13, OMNI_13]),
+        cach('hai-banh', 'nam-cham', 'tu', [CU_13, BANH_13])
+      ]),
+      maMau: doiBai([CU_13, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (sắt: magnet_s()): sân 3 nam châm quay cực S bị đẩy ra xa', baiLam: doiBai([CU_13, ['magnet_s()', 'wait()', 'slide_right()', 'wait()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên or: chỉ hỏi front_metal(), nam châm quay cực N gặp cực N bị đẩy', baiLam: doiBai([CU_13, ['if front_metal():', '    magnet_s()', 'else:', '    magnet_n()', 'wait()', 'slide_right()', 'wait()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên magnet_off(): vật còn dính mũi xe, chưa nằm trên đích', baiLam: doiBai([CU_13, CHON_CUC_13.concat(['slide_right()', 'wait()'])]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 28, nhip: 18 },
+      goiY: ['front_metal(): vật trước mũi là sắt. front_pole(): "N", "S" hay "none".', 'Sắt: cực nào cũng hút. Nam châm: khác cực mới hút, cùng cực thì đẩy.', 'A or B: đúng khi một trong hai đúng.'],
+      cauDo: { doi: null, lap: 'omni+nam-cham+tu', coChe: ['nam-cham', 'sat', 'cuc', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     })
   ];
 
