@@ -391,6 +391,19 @@ Chương 1 bảng 3–4 cỗ máy, dùng các cặp còn lại. Chương 2: robo
 | 19 | hai robot tự lắp | sân CLB: tám đoạn ghép đủ bài, robot vừa làm việc vừa giữ nhịp | — | song ca |
 | 20 | ba robot (R3 đánh trống `beat()`, khoá) | trùm cuối: Sola, Luna và trống CLB tấu bài chúc mừng trên sân đủ tám nơi | — | song ca |
 
+> **Đã dựng 17/11 (M9M10, hoc/man-ngay-hoi-clb.js viết lại theo bảng G10, 20 màn, mỗi màn 2–3 sân, `nhipTheo: 'tong'`, có `cauDo`; kiem-cau-do-mua-9 HỎNG 0, kiem-loi-giai 68/68).** Màn → Python ôn:
+> tong-hop-clb #1 tuần tự hai sân · #2 for · #3 biến `k = distance()` · #4 `listen()` làm đối số · #5 if · #6 tuần tự (cứu người) · #7 while + if · #8 lắp tự do · #9 `%` · #10 list (nối +) ·
+> trum-mua-clb #11 while · #12 `not` + while · #13 if / else, `or`, `==` chuỗi · #14 `set_length(3)` (không cảm biến) · #15 while (`left_clear()`) · #16 `//` · #17 biến cảm biến làm `aim(k)` · #18 `abs`, số âm · #19 list (tám đoạn) · #20 `set`, `%`, `in`, list (chín đoạn).
+> Đoạn hát: #10 đoạn 1–4 hai bè; #11–#18 R1 hát bè 1 đoạn của nơi đó (Kho 1, Nhà máy 2, Bãi 3, Cảng 4, Bến 5, Nông trại 6, Mỏ 7, Hang 8); #19 bè 1 + bè 2 đoạn 1–8; #20 bè 1 đoạn 1–9 + trống `x . . x x . x .` mỗi ô nhịp.
+> Lệch so với bảng:
+> - #2 nhện không có `front_metal()` (khe trên dải ray của cẩu không có hướng): vòng lặp chung qua mọi ô ray. #3 bè + luống thành bè + kiện rơm, đo bằng `distance()`. #5 không phải "mỗi đôi qua một sân". #6 người dưới sông chỉ ở sân 1. #7 R3 là cùng một cỗ máy (CH) ở mọi sân. #9 R1 drone đặt sẵn (lõi chỉ cho một khe tự lắp). #10 hai sân giống nhau, chỉ khác tượng đá chuông trang trí.
+> - #11–#18 cách "không dùng X": thân của X không có trong bảng thân (CH → không hai bánh, CU → không xích, PL → không nhện, CC → không cẩu, XU → không xuồng, DR → không drone, KT → không omni, HD → không bánh gai). R1 hát là cỗ máy nhà lắp loa (`xeLoa`: bỏ tay cũ, thêm `note` / `beat`) hay xe hang động; ở #11, #13–#16 R1 hát chỉ để trang trí (mục tiêu dừng khi R2 xong việc).
+> - Tổ hợp khác bảng: #12 omni / hai bánh + vòi phun + khoảng cách (không cẩu + kẹp) · #13 omni / hai bánh + nam châm + cảm biến từ (không cẩu, drone) · #14 xe bờ omni / hai bánh + lưới, không xuồng (đầu đọc mã chỉ đọc trên xuồng / cẩu; hồng ngoại không đo qua mặt nước) · #15 xe bờ + lưới + khoảng cách (cọc neo), không drone + phao (phao không cứu người tới trạm; màu bụng không thuộc part mùa 9) · #16 omni / hai bánh + gieo hạt + hồng ngoại (nhện không gắn hồng ngoại) · #17 gai / hai bánh + máy ném + hồng ngoại, tắt ném đà ở khe (`nemDa: false`) để `aim` tới 3 · #18 omni / hai bánh + loa + mic (nhện + loa + mic thắng nhưng mỗi bước hai nhịp).
+> - Nhịp bằng nhau giữa hai cách (#12, #18, #19, #20): R1 hát lâu hơn việc của R2, hay màn hát tại chỗ; hai cách chỉ khác giá và số ô.
+> - #19: bảng ghi hai robot tự lắp, robot vừa làm việc vừa giữ nhịp. Lõi chỉ cho một khe tự lắp; đội `choi-dieu` có ô cờ không thắng được (lõi chỉ bật `xeToiCo` ở mục tiêu `toi-co`), nên R1 đặt sẵn và hai bạn hát tại chỗ.
+> - #20: bảng ghi ba robot (R3 trống khoá). Lõi `choi-dieu` đội nhận đúng 2 robot, nên trống do R2 tự lắp đánh bằng `beat()`; không có R3.
+> - `and` chưa có màn G10 nào bắt dùng (chỉ `or` ở #13).
+
 ## Đếm nhanh
 
 - Kiểu cứu: hàng là nhiều nhất; **máy** (R3) 3 màn mỗi gói G1–G8 + G9–G10; **người** ít nhất 2 màn mỗi gói, có cả trên cạn (mở lối, dẫn bằng tiếng) lẫn dưới nước (xuồng, xe bờ, cẩu giỏ, drone phao).
