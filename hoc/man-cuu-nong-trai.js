@@ -49,6 +49,14 @@
   var DR_1 = ['ink("green")', 'pen_down()', 'for i in range(4):', '    go_right()', 'pen_up()', 'go_down()', 'land()', 'take_off()', 'go_down()',
     'ink("yellow")', 'pen_down()', 'for i in range(4):', '    go_left()', 'pen_up()'];
   var CU_1 = ['move()', 'back()'];
+  /** cuu-nong-trai.2: drone bay tới ô sạc (cây đã ủi), đáp sạc, cất cánh, sang đầu luống, gieo theo danh sách màu a (kế hoạch của em). Xe cứu hỏa ủi cây lên, lùi. */
+  var DR_2 = ['a = ["red", "yellow", "yellow", "red"]', 'for i in range(3):', '    go_right()', 'land()', 'take_off()', 'for i in range(3):', '    go_right()',
+    'for c in a:', '    ink(c)', '    dot()', '    go_right()'];
+  var CU_2 = ['move()', 'back()'];
+  /** cuu-nong-trai.3: xe cứu hỏa ủi cây khỏi ô sạc, lùi, quay phải phun nút N mở cửa nhà kính. Drone: sang ô sạc, đáp sạc, bay qua cửa vào nhà kính gieo luống theo a. */
+  var CU_3 = ['move()', 'back()', 'tr_right()', 'spray()', 'wait()'];
+  var DR_3 = ['a = ["red", "yellow", "blue", "yellow"]', 'go_right()', 'go_right()', 'land()', 'take_off()', 'go_up()', 'for i in range(3):', '    go_right()',
+    'for c in a:', '    ink(c)', '    dot()', '    go_right()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -92,6 +100,54 @@
       sao: { o: 26, nhip: 14 },
       goiY: ['Xích tiến vào ô cây đổ thì đẩy cây đi một ô.', 'land() trên ô sạc P: pin đầy lại. Ô có cây đổ thì không đáp được.'],
       cauDo: { doi: ['DR', 'CU'], lap: null, coChe: ['cay-do', 'gieo', 'sac', 'pin'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 2 · dọn lối, ôn list (kế hoạch của em): cây đổ đè ô sạc giữa đường bay. Drone ít pin: bay thẳng tới luống thì hết pin giữa luống; phải đáp sạc ở ô sạc trước.
+    //     Xe cứu hỏa tiến ủi cây khỏi ô sạc, lùi. Drone gieo luống bốn ô theo danh sách màu a = ["red", "yellow", "yellow", "red"]: for c in a: ink(c), dot(), go_right().
+    //     Bảng 2 cỗ máy (đúng đôi tốt). Drone ở khe 1 (pin 12).
+    man9('cuu-nong-trai', 2, 'lam-quen', {
+      ten: 'Gieo theo danh sách',
+      deBai: 'Cây đổ đè ô sạc. Drone ít pin: phải đáp sạc giữa đường. Gieo luống theo danh sách màu a, mỗi ô một màu.',
+      veMaMau: 'Drone bay thẳng tới luống: hết pin giữa chừng.',
+      san: ['#############', '#...........#', '#...P.......#', '#...........#', '#############'],
+      them: { thungThem: [{ x: 4, y: 2 }] },
+      hinh: luong(13, 5, [{ y: 2, x0: 7, mau: 'ryyr' }]),
+      doi: [khe({ x: 1, y: 2, huong: 1 }, { pin: 12 }), khe({ x: 4, y: 3, huong: 0 })],
+      chonDoi: {
+        menu: ['DR', 'CU'],
+        cachMau: [{ chon: ['DR', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([DR_2, CU_2]) }]
+      },
+      maMau: doiBai([['a = ["red", "yellow", "yellow", "red"]', 'for i in range(6):', '    go_right()', 'for c in a:', '    ink(c)', '    dot()', '    go_right()'], []]),
+      loiSai: [
+        { moTa: 'Drone không đáp sạc: hết pin giữa luống', baiLam: doiBai([['a = ["red", "yellow", "yellow", "red"]', 'for i in range(6):', '    go_right()', 'for c in a:', '    ink(c)', '    dot()', '    go_right()'], CU_2]), phaiCoMa: ['het-pin'] },
+        { moTa: 'Xe cứu hỏa không ủi cây: drone không đáp được', baiLam: doiBai([DR_2, []]), phaiCoMa: ['dap-bi-chan'] },
+        { moTa: 'Danh sách thiếu một màu: luống còn ô chưa gieo', baiLam: doiBai([DR_2.map(function (d, i) { return i === 0 ? 'a = ["red", "yellow", "red"]' : d; }), CU_2]), phaiCoMa: ['chua-to-hinh'] }
+      ],
+      sao: { o: 22, nhip: 14 },
+      goiY: ['for c in a: lần lượt lấy từng màu trong danh sách a.', 'land() trên ô sạc P: pin đầy lại.'],
+      cauDo: { doi: ['DR', 'CU'], lap: null, coChe: ['cay-do', 'gieo', 'sac', 'pin', 'list'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 3 · dọn lối + mở cửa: cây đổ đè ô sạc, cửa nhà kính đóng (nút N trong tường). Xe cứu hỏa ủi cây khỏi ô sạc, lùi, quay phải phun trúng nút: cửa mở.
+    //     Drone đáp sạc, bay qua cửa vào nhà kính gieo luống theo danh sách màu. Bẫy: xuồng (chạy trong mương, không lên bờ ủi cây, không phun).
+    man9('cuu-nong-trai', 3, 'luyen', {
+      ten: 'Cửa nhà kính',
+      deBai: 'Cây đổ đè ô sạc, cửa nhà kính đóng. Chọn hai bạn: ai ủi cây, ai mở cửa, ai gieo luống trong nhà kính?',
+      veMaMau: 'Drone tới cửa: cửa còn đóng.',
+      san: ['############', '#....#.....#', '#....C.....#', '#..P.#.....#', '#....N.....#', '#~~~~~~~~~~#', '############'],
+      them: { thungThem: [{ x: 3, y: 3 }] },
+      hinh: luong(12, 7, [{ y: 2, x0: 6, mau: 'ryby' }]),
+      doi: [khe({ x: 1, y: 3, huong: 1 }, { pin: 13, batDauNuoc: { x: 1, y: 5, huong: 1 } }), khe({ x: 3, y: 4, huong: 0 }, { batDauNuoc: { x: 3, y: 5, huong: 1 } })],
+      chonDoi: {
+        menu: ['DR', 'CU', 'XU'],
+        cachMau: [{ chon: ['DR', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([DR_3, CU_3]) }]
+      },
+      maMau: doiBai([DR_3, ['move()', 'back()']]),
+      loiSai: [
+        { moTa: 'Xe cứu hỏa không mở cửa: drone đâm cửa đóng', baiLam: doiBai([DR_3, ['move()', 'back()']]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Drone chờ trên ô sạc mà không đáp: hết pin trong nhà kính', baiLam: doiBai([DR_3.map(function (d) { return d === 'land()' || d === 'take_off()' ? 'wait()' : d; }), CU_3]), phaiCoMa: ['het-pin'] }
+      ],
+      sao: { o: 28, nhip: 17 },
+      goiY: ['Tia nước trúng nút N: cửa nhà kính mở.', 'Đi qua ô sạc thì đáp sạc: land(), rồi take_off().'],
+      cauDo: { doi: ['DR', 'CU'], lap: null, coChe: ['cay-do', 'gieo', 'sac', 'pin', 'list', 'cua', 'phun'], cuu: 'hang', meo: 'don-loi' }
     }),
   ];
 })();
