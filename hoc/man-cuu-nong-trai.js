@@ -111,6 +111,13 @@
   var NHEN_14 = DOC_14.concat(['crouch()', 'wait()', 'stand()', 'go_right()'], GIEO_14);
   var DRONE_14 = DOC_14.concat(['go_right()', 'go_right()'], GIEO_14);
   var DR_14 = hang('green', 4).concat(['land()']);
+  /** lap-nong-trai.5 (ba sân): ruộng bậc thang, ba bậc: bậc 1 hàng 2 cột 1–3, bậc 2 hàng 3 cột 4–6, bậc 3 hàng 4 từ cột 7 tới cây đổ (mỗi sân cây đổ một chỗ). */
+  function san15(xCay) { var h4 = '#'; for (var x = 1; x <= 12; x++) h4 += x === xCay ? 'H' : '.'; return ['##############', '#............#', '#............#', '#............#', h4 + '#', '##############']; }
+  function hinh15(xCay) { var b3 = ''; for (var x = 7; x < xCay; x++) b3 += 'g'; return luong(14, 6, [{ y: 1, x0: 1, mau: 'rrrrr' }, { y: 2, x0: 1, mau: 'ggg' }, { y: 3, x0: 4, mau: 'ggg' }, { y: 4, x0: 7, mau: b3 }]); }
+  /** R2 lap-nong-trai.5: gieo từng bậc theo danh sách số ô a, xuống bậc, rồi bậc cuối gieo tới cây đổ (cảm biến khoảng cách front_clear()). */
+  function bac15(xuong) { return ['a = [3, 3]', 'ink("green")', 'for n in a:', '    pen_down()', '    forward(n - 1)', '    pen_up()'].concat(xuong, ['    forward(1)', 'pen_down()', 'while front_clear():', '    forward(1)', 'pen_up()']); }
+  var XE_15 = bac15(['    turn_right()', '    forward(1)', '    turn_left()']);
+  var OMNI_15 = bac15(['    slide_right()', '    wait()']);
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -474,6 +481,30 @@
       sao: { o: 30, nhip: 27 },
       goiY: ['a.append(x): thêm x vào cuối danh sách a.', 'color("up"): màu ô phía trên robot (camera bốn hướng).', 'for c in a: lần lượt từng màu đã nhớ.'],
       cauDo: { doi: null, lap: 'nhen+son+camera-4', coChe: ['gieo', 'mau', 'ho', 'list', 'pin'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 15 · song song, ôn for n in a (danh sách số ô), ruộng bậc thang (ba sân, luật 13/11): ba bậc, bậc thứ ba dài tới cây đổ, mỗi sân cây đổ một chỗ.
+    //      R1 drone gieo bậc trên cao (hàng 1) rồi đậu. R2 gieo ba bậc: a = [3, 3] cho hai bậc đầu, bậc cuối gieo tới khi cảm biến khoảng cách thấy cây.
+    //      Cách một hai bánh + gieo hạt + khoảng cách (rẻ). Cách hai omni + gieo hạt + khoảng cách: trượt xuống bậc không phải quay (nhanh hơn).
+    man9('lap-nong-trai', 5, 'luyen', {
+      ten: 'Ruộng bậc thang',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Ruộng bậc thang ba bậc: bậc 1 và bậc 2 mỗi bậc 3 ô (a = [3, 3]), bậc 3 dài tới cây đổ, mỗi sân cây đổ một chỗ. Lắp robot gieo ba bậc. Drone R1 gieo bậc trên cao.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san15(10), san15(11), san15(12)],
+      hinh: [hinh15(10), hinh15(11), hinh15(12)],
+      doi: [may('DR', { x: 1, y: 1, huong: 1 }, { pin: 11 }), khe({ x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['hai-banh', 'omni', 'drone'], ['son'], ['khoang-cach', 'camera'], 8, [
+        cach('hai-banh', 'son', 'khoang-cach', [DR_12, XE_15]),
+        cach('omni', 'son', 'khoang-cach', [DR_12, OMNI_15])
+      ]),
+      maMau: doiBai([DR_12, ['a = [3, 3]', 'ink("green")']]),
+      loiSai: [
+        { moTa: 'Điền thẳng bậc cuối của sân 1 (3 ô): sân 2, 3 gieo thiếu', baiLam: doiBai([DR_12, XE_15.slice(0, 11).concat(['forward(2)', 'pen_up()'])]), phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Quên nhấc bút khi xuống bậc: gieo lan ra ngoài luống', baiLam: doiBai([DR_12, XE_15.filter(function (d) { return d !== '    pen_up()'; })]), phaiCoMa: ['to-thua'] }
+      ],
+      sao: { o: 34, nhip: 19 },
+      goiY: ['for n in a: lần lượt từng số ô của mỗi bậc.', 'pen_down() gieo luôn ô đang đứng: đi n - 1 bước là gieo n ô.', 'while front_clear(): đi tới khi thấy cây đổ.'],
+      cauDo: { doi: null, lap: 'hai-banh+son+khoang-cach', coChe: ['gieo', 'cay-do', 'list', 'pin'], cuu: 'hang', meo: 'song-song' }
     }),
   ];
 })();
