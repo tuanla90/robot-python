@@ -636,5 +636,34 @@
       goiY: ['color(): màu ô trước mặt (camera). "none" là ô trống.', 'len(a): số màu đã nhớ. a[i]: màu thứ i.', 'Nhện co chân chui gầm. Xích ủi cây đổ.'],
       cauDo: { doi: null, lap: 'xich+son+camera', coChe: ['gieo', 'mau', 'gam-thap', 'cay-do', 'list', 'pin'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
+    // 20 · song ca đoạn 6 (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 6 2 5 1 4 5 3 1), giữ đúng nốt của #10 cho gói 10 ghép bài; gọi play_part (cuu-kho-hang.10 tạo).
+    //      R1 xe cứu hỏa lắp loa hát bè 1. R2 tự lắp: drone không mang nổi loa (bẫy). Cách một nhện + loa (lai L7). Luống hoa vừa gieo (sơn sẵn) cạnh R2 chỉ để nhìn.
+    //      Cách hai xích + loa (rẻ hơn). Omni + loa cũng hát được. Hai đá chuông nốt 1 ở cuối luống: hát đúng thì vỡ (chỉ để nhìn).
+    man9('lap-nong-trai', 10, 'trum', {
+      ten: 'Song ca giữa luống',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      deBai: 'Màn cuối nông trại: song ca đoạn 6. Xe cứu hỏa hát bè 1. Lắp loa cho bạn hát bè 2. Drone không mang nổi loa: chọn thân khác.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      san: ['#######', '#.....#', '#.....#', '#######'],
+      doi: [may('CU', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['spray', 'spray_back'], themHam: ['note', 'beat'], phatNot: true }),
+        khe({ x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      them: { dieu: { r1: '4 4 3 3 2 2 1 1', r2: '6 2 5 1 4 5 3 1' }, daChuong: [{ x: 5, y: 1, not: 1, ben: 1 }, { x: 5, y: 2, not: 1, ben: 1 }],
+        sonBanDau: luong(7, 4, [{ y: 2, x0: 2, mau: 'gyr' }]) },
+      lapRap: lapR2(['nhen', 'xich', 'omni', 'drone'], ['loa'], [], 7, [
+        cach('nhen', 'loa', null, [['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([6, 2, 5, 1, 4, 5, 3, 1])']]),
+        cach('xich', 'loa', null, [['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([6, 2, 5, 1, 4, 5, 3, 1])']]),
+        cach('omni', 'loa', null, [['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([6, 2, 5, 1, 4, 5, 3, 1])']])
+      ], { moLai: ['L7'] }),
+      maMau: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(6)']]),
+      loiSai: [
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(6)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'R2 hát nhầm bè 1', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([4, 4, 3, 3, 2, 2, 1, 1])']]), phaiCoMa: ['sai-not'] },
+        { moTa: 'R2 chờ một nhịp rồi mới hát: lệch nhịp với bè 1', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['wait()', 'play_part([6, 2, 5, 1, 4, 5, 3, 1])']]), phaiCoMa: ['lo-nhip'] }
+      ],
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([6, 2, 5, 1, 4, 5, 3, 1]).', 'Hai bạn bắt đầu cùng một nhịp.', 'Drone chở nhẹ, không mang nổi loa.'],
+      cauDo: { doi: null, lap: 'nhen+loa', coChe: ['loa', 'da-chuong', 'nong-trai'], cuu: null, meo: 'song-song' }
+    }),
   ];
 })();
