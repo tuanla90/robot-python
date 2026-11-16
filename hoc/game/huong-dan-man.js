@@ -772,7 +772,7 @@
   H['vuon-cu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: drone bay trên cao vượt qua hàng rào =, băng chuyền > và hố u để gieo bốn ô hoa đỏ.');
   H['che-vuon-cu.1'] = trinhDien1('Chương trình đã khoá. Bấm Chạy: hàm leap_dot(c) gieo một ô rồi bay hai ô vượt qua chướng ngại.');
   H['che-vuon-cu.2'] = [buocTaoHam('span_sow', 'Bấm Hàm mới, đặt tên span_sow và thêm đối số c, n.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: ink(c), pen_down(), lặp n lần go_right(), rồi pen_up(). Bấm Chạy.'));
-  H['che-vuon-cu.3'] = [buocTaoHam('mark_here', 'Bấm Hàm mới, đặt tên mark_here và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: nếu color("here") != "none" thì chọn hạt đó và dot(), rồi go_right(). Bấm Chạy.'));
+  H['che-vuon-cu.3'] = [buocTaoHam('mark_here', 'Bấm Hàm mới, đặt tên mark_here và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: đọc m = color("here"), nếu m != "none" thì ink(m) và dot(), rồi go_right(). Bấm Chạy.'));
   H['che-vuon-cu.5'] = [buocTaoHam('gate_sow', 'Bấm Hàm mới, đặt tên gate_sow và thêm đối số c.', CHU_TAO)].concat(buocThuVeChay('Thân hàm: wait() chờ thùng mở cổng, bay phải hai ô, ink(c), dot(), wait(). Bấm Chạy.'));
   H['che-vuon-cu.7'] = [buocTaoHam('sow_up', 'Bấm Hàm mới, đặt tên sow_up và thêm đối số n.', CHU_TAO)].concat(buocThuVeChay('Lặp n lần: đọc c = color("up"), nếu c != "none" thì ink(c) và dot(), rồi go_right(). Bấm Chạy.'));
   // MÙA 4 gói 9 (PDM4c 31/10: đội drone nông nghiệp R1 + nhện phân loại R2): doi-nam-cham.11 trình diễn; che-doi-nam-cham.11 trình diễn hàm crawl_pad(d); .12 pad_hold(d), .14 wait_sow(c, n), .15 pole_gate()

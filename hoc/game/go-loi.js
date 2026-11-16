@@ -117,13 +117,20 @@
   function cachGiai(m) {
     var ds = [];
     if (!m) return ds;
-    var goc = m.manGoc || m, lg = m.loiGiai, L = goc.lapRap;
-    if (L && Array.isArray(L.cachLap) && window.LapRap) {
+    var goc = m.manGoc || m, lg = m.loiGiai, L = goc.lapRap, C = goc.chonDoi;
+    if (C && Array.isArray(C.cachMau) && window.LapRap && !L) {                       // M9D2 màn chọn đội: mỗi cách mẫu một lời giải (đội của cách đó; R3 khoá lấy maMau.doi[i])
+      C.cachMau.forEach(function (cm, i) {
+        if (!cm || !cm.loiGiai) return;
+        var mm; try { mm = LapRap.apDungDoi(goc, cm); } catch (e) { return; }
+        ds.push({ ma: 'doi' + (i + 1), nhan: t('go.giaiLap', { n: i + 1 }), moTa: cm.chon.map(function (x) { return LapRap.coMay().DS[x].ten; }).join(' + ') + (cm.ghiChu ? '. ' + cm.ghiChu : ''), man: mm,
+          bai: chepBai(mm.loiGiai), moi: (cm.loiGiai.hamCuaEmMoi || []).map(chepHam), coMoi: true, chon: cm.chon.slice() });
+      });
+    } else if (L && Array.isArray(L.cachLap) && window.LapRap) {
       L.cachLap.forEach(function (cl, i) {
         if (!cl || !cl.loiGiai) return;
         var mm; try { mm = LapRap.apDung(goc, cl); } catch (e) { return; }
         ds.push({ ma: 'lap' + (i + 1), nhan: t('go.giaiLap', { n: i + 1 }), moTa: LapRap.moTa(cl) + (cl.ghiChu ? '. ' + cl.ghiChu : ''), man: mm,
-          bai: chepBai(cl.loiGiai), moi: (cl.loiGiai.hamCuaEmMoi || []).map(chepHam), coMoi: true, cach: LapRap.chuanCach(cl) });
+          bai: chepBai(LapRap.robotLapCua(goc) !== null ? mm.loiGiai : cl.loiGiai), moi: (cl.loiGiai.hamCuaEmMoi || []).map(chepHam), coMoi: true, cach: LapRap.chuanCach(cl) });   // M9D2 lắp một robot của màn đội: lời giải đã điền robot khoá (maMau.doi[i])
       });
     } else if (lg) {
       ds.push({ ma: 'chuan', nhan: t('go.giaiChuan'), moTa: t('go.giaiChuanMoTa'), man: m, bai: chepBai(lg), moi: (lg.hamCuaEmMoi || []).map(chepHam), coMoi: true });
@@ -182,6 +189,10 @@
     var baiKhac = !giongBai(tt.bai, c.bai) && !(goc.maMau && giongBai(tt.bai, goc.maMau));
     function lam() {
       var kq = ghiVaoKho(kho);
+      if (c.chon && (m.chonDaChon || []).join('|') !== c.chon.join('|')) {          // M9D2: cách mẫu của đội khác đội đang chơi → chọn lại đội đó trước
+        Luu.ghiDoi(goc.ma, c.chon);
+        Choi.vao(LapRap.apDungDoi(goc, c.chon));
+      }
       if (c.cach) {
         var dang = m.cachLapDaChon || {};
         if (['than', 'tay', 'camBien'].some(function (k) { return (dang[k] || null) !== (c.cach[k] || null); })) {
@@ -239,7 +250,7 @@
   /** Xóa sao / tiến độ, cờ đã xem, bản nháp mọi màn; kemKho thì xóa cả kho hàm (và sân thử của từng hàm). Bảng cài đặt của chính Gỡ lỗi không bị xóa. */
   function xoaTienDo(kemKho) {
     Luu.xoaTienDo();
-    ManHoc.danhSach.forEach(function (m) { Luu.xoaNhap(m.ma); if (Luu.xoaLap) Luu.xoaLap(m.ma); });
+    ManHoc.danhSach.forEach(function (m) { Luu.xoaNhap(m.ma); if (Luu.xoaLap) Luu.xoaLap(m.ma); if (Luu.xoaDoi) Luu.xoaDoi(m.ma); });
     if (kemKho) {
       var ten = {};
       KhoHam.ds().forEach(function (f) { ten[f.ten] = true; });

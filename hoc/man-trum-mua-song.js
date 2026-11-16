@@ -12,9 +12,9 @@
   var GOC_TRUM_SONG = [
     'left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor',
-    'set_length', 'flow'
+    'reel_in', 'reel_out', 'flow'
   ];
-  var ROBOT_TRUM_SONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
+  var ROBOT_TRUM_SONG = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], cuonDay: true };
   var CAU_TRUC = ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'];
 
   var KHO_TRUOC = [
@@ -50,20 +50,23 @@
   ];
 
   var T_RIVER_SPAN_PASS = [
-    'calm_gate_pass(a + b)'
+    't = a + b',
+    'calm_gate_pass(t)'
   ];
   var T_CALM_TUG_RUN = [
     'tail_over_calm(d, n)',
     'tether_drop()'
   ];
   var T_FIX_CALM_TUG_SAI = [
-    'if flow_power() == 0:',
+    'p = flow_power()',
+    'if p == 0:',
     '    flip_valve()',
     'tug_corner(d, n)',
     'tether_drop()'
   ];
   var T_FIX_CALM_TUG_DUNG = [
-    'if flow_power() > 0:',
+    'p = flow_power()',
+    'if p > 0:',
     '    flip_valve()',
     'tug_corner(d, n)',
     'tether_drop()'
@@ -87,7 +90,7 @@
   function manTongHop(cfg) {
     return M.chuanHoa(Object.assign({
       chuong: 'tong-hop-song', tenChuong: 'Tổng hợp bến sông',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: JSON.parse(JSON.stringify(ROBOT_TRUM_SONG)),
       vo: 'song',
       hamGoc: GOC_TRUM_SONG.slice(),
@@ -106,7 +109,7 @@
   function manTrumSong(cfg) {
     return M.chuanHoa(Object.assign({
       chuong: 'trum-mua-song', tenChuong: 'Trùm mùa bến sông',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: JSON.parse(JSON.stringify(ROBOT_TRUM_SONG)),
       vo: 'song',
       hamGoc: GOC_TRUM_SONG.slice(),
@@ -152,8 +155,8 @@
 
     manTongHop({
       so: 2, ten: 'Đo sức nước chọn nhịp cứu hộ bến sông', hang: 'luyen',
-      deBai: 'Sola thử thách trên 2 sân: từ (1, 1) hướng Đông, ô cống K ở (2, 1) có sức nước s = flow_power() (s = 1 ở sân 1 khi bè B ở (5, 1); s = 2 ở sân 2 khi bè B ở xa tại (6, 1)). Hãy đọc s = flow_power() rồi gọi clear_river_bridge(s + 1, s) để xuồng mở cống, tiến s + 1 ô và kéo bè lùi s ô về thả tại bến q (4, 1)!',
-      veMaMau: 'Đọc s = flow_power() rồi gọi clear_river_bridge(s + 1, s).',
+      deBai: 'Sola thử thách trên 2 sân: từ (1, 1) hướng Đông, ô cống K ở (2, 1) có sức nước s = flow_power() (s = 1 ở sân 1 khi bè B ở (5, 1); s = 2 ở sân 2 khi bè B ở xa tại (6, 1)). Hãy đọc s = flow_power(), tính t = s + 1 rồi gọi clear_river_bridge(t, s) để xuồng mở cống, tiến s + 1 ô và kéo bè lùi s ô về thả tại bến q (4, 1)!',
+      veMaMau: 'Đã có s = flow_power(). Viết t = s + 1 rồi gọi clear_river_bridge(t, s).',
       san: [
         ['#V=======', '#~K~qB~~#', '#=u===H=#', '#########'],
         ['#V=======', '#~K~q~B~#', '#=u===H=#', '#########']
@@ -168,17 +171,17 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai(['s = flow_power()']),
-      loiGiai: bai(['s = flow_power()', 'clear_river_bridge(s + 1, s)']),
+      loiGiai: bai(['s = flow_power()', 't = s + 1', 'clear_river_bridge(t, s)']),
       sao: { o: 31, nhip: 16 },
       loiGiaiKhac: {
-        moTa: 'Gọi rescue_old_dock(s + 1, s) thay cho clear_river_bridge(s + 1, s)',
-        baiLam: bai(['s = flow_power()', 'rescue_old_dock(s + 1, s)'])
+        moTa: 'Gọi rescue_old_dock(t, s) thay cho clear_river_bridge(t, s)',
+        baiLam: bai(['s = flow_power()', 't = s + 1', 'rescue_old_dock(t, s)'])
       },
       loiSai: [
         cung('Truyền cố định clear_river_bridge(2, 1) theo sân 1 nên ở sân 2 lưới không vươn tới bè ở (6, 1)', bai(['clear_river_bridge(2, 1)']), ['chua-dua-vat']),
-        { moTa: 'Đảo ngược hai tham số thành clear_river_bridge(s, s + 1) nên kéo bè lùi quá bến q', baiLam: bai(['s = flow_power()', 'clear_river_bridge(s, s + 1)']), phaiCoMa: ['chua-dua-vat', 'dam-tuong'] }
+        { moTa: 'Đảo ngược hai tham số thành clear_river_bridge(s, t) nên kéo bè lùi quá bến q', baiLam: bai(['s = flow_power()', 't = s + 1', 'clear_river_bridge(s, t)']), phaiCoMa: ['chua-dua-vat', 'dam-tuong'] }
       ],
-      goiY: ['Luna: Sau khi đọc s = flow_power(), gọi clear_river_bridge(s + 1, s).', 'Luna: Ở sân 1 (s = 1) xuồng tiến 2 ô tới (3, 1) rồi kéo lùi 1 ô; ở sân 2 (s = 2) xuồng tiến 3 ô tới (4, 1) rồi kéo lùi 2 ô đều đưa B về đúng (4, 1)!']
+      goiY: ['Luna: Sau khi đọc s = flow_power(), tính t = s + 1 rồi gọi clear_river_bridge(t, s).', 'Luna: Ở sân 1 (s = 1) xuồng tiến 2 ô tới (3, 1) rồi kéo lùi 1 ô; ở sân 2 (s = 2) xuồng tiến 3 ô tới (4, 1) rồi kéo lùi 2 ô đều đưa B về đúng (4, 1)!']
     }),
 
     manTongHop({
@@ -214,8 +217,8 @@
 
     manTongHop({
       so: 4, ten: 'Neo xuồng mở cống rồi kéo bè về bến', hang: 'luyen',
-      deBai: 'Sola thử thách phối hợp neo xuồng trên 2 sân: ở kênh dưới, bè B1 ở (1, 3) đang trôi về bến q (4, 3); ở kênh trên, từ (1, 1) hướng Đông ô (2, 1) có sức nước s = flow_power() (1 ở sân 1, 2 ở sân 2). Hãy đọc s = flow_power(), gọi turn_left() nhìn van V (1, 0), gọi anchor_flip(2 - s) để chờ đúng nhịp tắt dòng cho B1 dừng tại (4, 3) rồi tiến qua cống tới (3, 1), cuối cùng gọi bridge_lay(1) kéo B2 ở (5, 1) về (4, 1)!',
-      veMaMau: 'Đọc s = flow_power(), gọi turn_left(), anchor_flip(2 - s) rồi bridge_lay(1).',
+      deBai: 'Sola thử thách phối hợp neo xuồng trên 2 sân: ở kênh dưới, bè B1 ở (1, 3) đang trôi về bến q (4, 3); ở kênh trên, từ (1, 1) hướng Đông ô (2, 1) có sức nước s = flow_power() (1 ở sân 1, 2 ở sân 2). Hãy đọc s = flow_power(), gọi turn_left() nhìn van V (1, 0), tính t = 2 - s rồi gọi anchor_flip(t) để chờ đúng nhịp tắt dòng cho B1 dừng tại (4, 3) rồi tiến qua cống tới (3, 1), cuối cùng gọi bridge_lay(1) kéo B2 ở (5, 1) về (4, 1)!',
+      veMaMau: 'Đã có s = flow_power(), turn_left(), t = 2 - s và anchor_flip(t). Thêm bridge_lay(1).',
       san: [
         ['#V======', '#~K~qB~#', '#=u==H=#', '#B~~q~~#', '########'],
         ['#V======', '#~K~qB~#', '#=u==H=#', '#B~~q~~#', '########']
@@ -229,18 +232,18 @@
         [{ nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 1 }], dong: [{ x: 2, y: 1 }, { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 4, y: 3 }] }]
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['s = flow_power()', 'turn_left()', 'anchor_flip(2 - s)']),
-      loiGiai: bai(['s = flow_power()', 'turn_left()', 'anchor_flip(2 - s)', 'bridge_lay(1)']),
+      maMau: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)']),
+      loiGiai: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)', 'bridge_lay(1)']),
       sao: { o: 42, nhip: 19 },
       loiGiaiKhac: {
         moTa: 'Gọi pull_back(1) thay cho bridge_lay(1) ở bước cuối',
-        baiLam: bai(['s = flow_power()', 'turn_left()', 'anchor_flip(2 - s)', 'pull_back(1)'])
+        baiLam: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)', 'pull_back(1)'])
       },
       loiSai: [
         cung('Truyền cố định anchor_flip(1) theo sân 1 nên ở sân 2 tắt dòng trễ làm bè dưới trôi lố qua (4, 3)', bai(['turn_left()', 'anchor_flip(1)', 'bridge_lay(1)']), ['chua-dua-vat']),
-        { moTa: 'Quên gọi bridge_lay(1) ở cuối nên bè trên ở (5, 1) chưa về bến (4, 1)', baiLam: bai(['s = flow_power()', 'turn_left()', 'anchor_flip(2 - s)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên gọi bridge_lay(1) ở cuối nên bè trên ở (5, 1) chưa về bến (4, 1)', baiLam: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Đọc s = flow_power(), quay trái rồi gọi anchor_flip(2 - s) để canh chuẩn nhịp bè dưới trôi vào (4, 3) trên cả 2 sân.', 'Luna: Sau anchor_flip(2 - s) xuồng đang ở (3, 1); gọi tiếp bridge_lay(1) để kéo bè ở (5, 1) về (4, 1)!']
+      goiY: ['Luna: Đọc s = flow_power(), quay trái, tính t = 2 - s rồi gọi anchor_flip(t) để canh chuẩn nhịp bè dưới trôi vào (4, 3) trên cả 2 sân.', 'Luna: Sau anchor_flip(t) xuồng đang ở (3, 1); gọi tiếp bridge_lay(1) để kéo bè ở (5, 1) về (4, 1)!']
     }),
 
     manTongHop({
@@ -504,8 +507,8 @@
     manTrumSong({
       so: 1, ten: 'Chế hàm thông luồng tổng hai nhịp river_span_pass(a, b)', hang: 'luyen', mucTieu: 'toi-co',
       taoHam: ['river_span_pass'],
-      deBai: 'Bước vào chương Trùm mùa Bến sông, Sola hướng dẫn chế hàm đầu tiên: river_span_pass(a, b) giúp kiểm tra mở cống khi có dòng chảy rồi tiến thẳng tổng hai chặng a + b ô bằng cách gọi calm_gate_pass(a + b). Trên 2 sân, hãy đọc s = flow_power() tại (2, 1) rồi gọi river_span_pass(s, 2) để xuồng tiến s + 2 ô tới đúng phao đích Q!',
-      veMaMau: 'Trong river_span_pass(a, b), viết calm_gate_pass(a + b). Ở chương trình chính đọc s = flow_power() rồi gọi river_span_pass(s, 2).',
+      deBai: 'Bước vào chương Trùm mùa Bến sông, Sola hướng dẫn chế hàm đầu tiên: river_span_pass(a, b) giúp kiểm tra mở cống khi có dòng chảy rồi tiến thẳng tổng hai chặng a + b ô: tính t = a + b rồi gọi calm_gate_pass(t). Trên 2 sân, hãy đọc s = flow_power() tại (2, 1) rồi gọi river_span_pass(s, 2) để xuồng tiến s + 2 ô tới đúng phao đích Q!',
+      veMaMau: 'Trong river_span_pass(a, b), viết t = a + b rồi calm_gate_pass(t). Ở chương trình chính đọc s = flow_power() rồi gọi river_span_pass(s, 2).',
       san: [
         ['#V======', '#~kQ~~~#', '#=u==H=#', '########'],
         ['#V======', '#~K~~Q~#', '#=u==H=#', '########']
@@ -523,16 +526,16 @@
       loiGiai: bai(['s = flow_power()', 'river_span_pass(s, 2)'], { hamCuaEmMoi: [hRiverSpanPass()] }),
       sao: { o: 22, nhip: 9 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra if flow_power() > 0: flip_valve() rồi gọi span_dist(a, b) trong thân hàm',
+        moTa: 'Đọc p = flow_power(), if p > 0: flip_valve() rồi gọi span_dist(a, b) trong thân hàm',
         baiLam: bai(['s = flow_power()', 'river_span_pass(s, 2)']),
-        hamCuaEmMoi: [hRiverSpanPass(['if flow_power() > 0:', '    flip_valve()', 'span_dist(a, b)'])]
+        hamCuaEmMoi: [hRiverSpanPass(['p = flow_power()', 'if p > 0:', '    flip_valve()', 'span_dist(a, b)'])]
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm river_span_pass(a, b)', baiLam: bai(['s = flow_power()', 'river_span_pass(s, 2)']), phaiCoMa: ['ham-chua-co'] },
         cung('Truyền cố định river_span_pass(0, 2) theo sân 1 nên ở sân 2 đâm vào cống K và đi thiếu bước', bai(['river_span_pass(0, 2)']), ['chua-toi-co'], { hamCuaEmMoi: [hRiverSpanPass()] }),
-        { moTa: 'Chỉ truyền calm_gate_pass(a) thay vì calm_gate_pass(a + b) trong hàm', baiLam: bai(['s = flow_power()', 'river_span_pass(s, 2)']), hamCuaEmMoi: [hRiverSpanPass(['calm_gate_pass(a)'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chỉ truyền calm_gate_pass(a) thay vì tính t = a + b rồi calm_gate_pass(t) trong hàm', baiLam: bai(['s = flow_power()', 'river_span_pass(s, 2)']), hamCuaEmMoi: [hRiverSpanPass(['calm_gate_pass(a)'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Hàm river_span_pass(a, b) chỉ cần 1 dòng: calm_gate_pass(a + b).', 'Luna: Ở sân 1 (s = 0) xuồng đi 0 + 2 = 2 ô tới (3, 1); ở sân 2 (s = 2) xuồng mở cống rồi đi 2 + 2 = 4 ô tới (5, 1)!']
+      goiY: ['Luna: Hàm river_span_pass(a, b) chỉ cần 2 dòng: t = a + b và calm_gate_pass(t).', 'Luna: Ở sân 1 (s = 0) xuồng đi 0 + 2 = 2 ô tới (3, 1); ở sân 2 (s = 2) xuồng mở cống rồi đi 2 + 2 = 4 ô tới (5, 1)!']
     }),
 
     manTrumSong({
@@ -586,18 +589,18 @@
         [{ nut: { x: 2, y: 0 }, cong: [{ x: 2, y: 2 }], dong: [{ x: 3, y: 1 }] }]
       ],
       batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
-      maMau: bai(['s = flow_power()', 'calm_tug_run("R", s + 3)']),
-      loiGiai: bai(['s = flow_power()', 'calm_tug_run("R", s + 3)'], { hamCuaEmMoi: [hCalmTugRun()] }),
+      maMau: bai(['s = flow_power()', 't = s + 3', 'calm_tug_run("R", t)']),
+      loiGiai: bai(['s = flow_power()', 't = s + 3', 'calm_tug_run("R", t)'], { hamCuaEmMoi: [hCalmTugRun()] }),
       sao: { o: 35, nhip: 16 },
       loiGiaiKhac: {
         moTa: 'Gọi deliver_tail(d, n) sau khi kiểm tra dòng chảy trong thân hàm calm_tug_run(d, n)',
-        baiLam: bai(['s = flow_power()', 'calm_tug_run("R", s + 3)']),
-        hamCuaEmMoi: [hCalmTugRun(['if flow_power() > 0:', '    flip_valve()', 'deliver_tail(d, n)'])]
+        baiLam: bai(['s = flow_power()', 't = s + 3', 'calm_tug_run("R", t)']),
+        hamCuaEmMoi: [hCalmTugRun(['p = flow_power()', 'if p > 0:', '    flip_valve()', 'deliver_tail(d, n)'])]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm calm_tug_run(d, n)', baiLam: bai(['s = flow_power()', 'calm_tug_run("R", s + 3)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Chưa tạo hàm calm_tug_run(d, n)', baiLam: bai(['s = flow_power()', 't = s + 3', 'calm_tug_run("R", t)']), phaiCoMa: ['ham-chua-co'] },
         cung('Truyền cố định calm_tug_run("R", 3) theo sân 1 nên ở sân 2 L dừng ở (2, 3), chưa tới bến (2, 4)', bai(['calm_tug_run("R", 3)']), ['chua-dua-vat'], { hamCuaEmMoi: [hCalmTugRun()] }),
-        { moTa: 'Chỉ đi cố định 2 ô tail_over_calm(d, 2) trong hàm nên L chưa tới bến q', baiLam: bai(['s = flow_power()', 'calm_tug_run("R", s + 3)']), hamCuaEmMoi: [hCalmTugRun(['tail_over_calm(d, 2)', 'tether_drop()'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chỉ đi cố định 2 ô tail_over_calm(d, 2) trong hàm nên L chưa tới bến q', baiLam: bai(['s = flow_power()', 't = s + 3', 'calm_tug_run("R", t)']), hamCuaEmMoi: [hCalmTugRun(['tail_over_calm(d, 2)', 'tether_drop()'])], phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Hàm calm_tug_run(d, n) gồm 2 dòng: tail_over_calm(d, n) và tether_drop().', 'Luna: Ở sân 1 (s = 0) xuồng đi 3 ô thả L ở (2, 3); ở sân 2 (s = 1) xuồng mở cống rồi đi 4 ô thả L ở (2, 4)!']
     }),
@@ -605,8 +608,8 @@
     manTrumSong({
       so: 4, ten: 'Sửa hàm lai dắt qua cống fix_calm_tug(d, n)', hang: 'luyen',
       hamCuaEmCan: KHO_TRUOC.concat(['river_span_pass', 'calm_tug_run']),
-      deBai: 'Kíp trực viết hàm fix_calm_tug(d, n) để lai dắt lục bình L qua cống rồi thả tại bến (2, 4), sau đó xuồng xoay trái kéo tiếp bè B ở (4, 5) về (3, 5). Nhưng điều kiện trong hàm bị viết ngược thành if flow_power() == 0: nên ở sân 1 không mở cống K còn ở sân 2 lại đóng cống k! Hãy sửa điều kiện thành if flow_power() > 0: trong fix_calm_tug(d, n).',
-      veMaMau: 'Sửa dòng if flow_power() == 0: thành if flow_power() > 0: trong hàm fix_calm_tug(d, n).',
+      deBai: 'Kíp trực viết hàm fix_calm_tug(d, n) để lai dắt lục bình L qua cống rồi thả tại bến (2, 4), sau đó xuồng xoay trái kéo tiếp bè B ở (4, 5) về (3, 5). Nhưng điều kiện trong hàm bị viết ngược thành if p == 0: nên ở sân 1 không mở cống K còn ở sân 2 lại đóng cống k! Hãy sửa điều kiện thành if p > 0: trong fix_calm_tug(d, n).',
+      veMaMau: 'Sửa dòng if p == 0: thành if p > 0: trong hàm fix_calm_tug(d, n).',
       san: [
         ['##V####', '#~~~L~#', '#=K~~=#', '#u~~~H#', '#~q~~~#', '#~~qB~#', '#######'],
         ['##V####', '#~~~L~#', '#=k~~=#', '#u~~~H#', '#~q~~~#', '#~~qB~#', '#######']
@@ -641,7 +644,7 @@
         hamCuaEmMoi: [hFixCalmTug(['calm_tug_run(d, n)'])]
       },
       loiSai: [
-        { moTa: 'Để nguyên hàm mẫu có điều kiện ngược if flow_power() == 0: nên đâm vào cống K', baiLam: bai(['fix_calm_tug("R", 4)', 'turn_left()', 'bridge_lay(1)']), hamCuaEmMoi: [hFixCalmTug(T_FIX_CALM_TUG_SAI)], phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Để nguyên hàm mẫu có điều kiện ngược if p == 0: nên đâm vào cống K', baiLam: bai(['fix_calm_tug("R", 4)', 'turn_left()', 'bridge_lay(1)']), hamCuaEmMoi: [hFixCalmTug(T_FIX_CALM_TUG_SAI)], phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
         cung('Xóa điều kiện if, luôn gọi flip_valve() theo sân 1 nên ở sân 2 làm đóng cống k', bai(['fix_calm_tug("R", 4)', 'turn_left()', 'bridge_lay(1)']), ['dam-tuong', 'chua-dua-vat'], { hamCuaEmMoi: [hFixCalmTug(['flip_valve()', 'tug_corner(d, n)', 'tether_drop()'])] })
       ],
       goiY: ['Luna: Chỉ cần đổi dấu == 0 thành > 0 ở dòng if đầu tiên của hàm fix_calm_tug(d, n).', 'Luna: Em cũng có thể gọi thẳng calm_tug_run(d, n) bên trong fix_calm_tug(d, n)!']
@@ -651,8 +654,8 @@
       so: 5, ten: 'Chế hàm neo xuồng mở cống kéo bè anchor_gate_tow(t, n)', hang: 'luyen',
       hamCuaEmCan: KHO_TRUOC.concat(['river_span_pass', 'calm_tug_run']),
       taoHam: ['anchor_gate_tow'],
-      deBai: 'Sola hướng dẫn chế hàm thứ 3 của chương Trùm: anchor_gate_tow(t, n) giúp neo xuồng chờ t nhịp rồi gạt van mở cống tiến sang phải 2 ô bằng anchor_flip(t), sau đó gọi ngay pull_back(n) kéo bè phía trước lùi n ô về bến! Hãy chế hàm anchor_gate_tow(t, n), rồi ở main đọc s = flow_power(), gọi turn_left() và anchor_gate_tow(2 - s, 1) để cứu cả 2 bè trên 2 sân!',
-      veMaMau: 'Trong anchor_gate_tow(t, n), viết anchor_flip(t) và pull_back(n). Ở main đọc s = flow_power(), gọi turn_left() và anchor_gate_tow(2 - s, 1).',
+      deBai: 'Sola hướng dẫn chế hàm thứ 3 của chương Trùm: anchor_gate_tow(t, n) giúp neo xuồng chờ t nhịp rồi gạt van mở cống tiến sang phải 2 ô bằng anchor_flip(t), sau đó gọi ngay pull_back(n) kéo bè phía trước lùi n ô về bến! Hãy chế hàm anchor_gate_tow(t, n), rồi ở main đọc s = flow_power(), gọi turn_left(), tính t = 2 - s rồi gọi anchor_gate_tow(t, 1) để cứu cả 2 bè trên 2 sân!',
+      veMaMau: 'Trong anchor_gate_tow(t, n), viết anchor_flip(t) và pull_back(n). Ở main đọc s = flow_power(), gọi turn_left(), t = 2 - s và anchor_gate_tow(t, 1).',
       san: [
         ['#V======', '#~K~qB~#', '#=u==H=#', '#B~~q~~#', '########'],
         ['#V======', '#~K~qB~#', '#=u==H=#', '#B~~q~~#', '########']
@@ -666,20 +669,20 @@
         [{ nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 1 }], dong: [{ x: 2, y: 1 }, { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 4, y: 3 }] }]
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['s = flow_power()', 'turn_left()', 'anchor_gate_tow(2 - s, 1)']),
-      loiGiai: bai(['s = flow_power()', 'turn_left()', 'anchor_gate_tow(2 - s, 1)'], { hamCuaEmMoi: [hAnchorGateTow()] }),
+      maMau: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_gate_tow(t, 1)']),
+      loiGiai: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_gate_tow(t, 1)'], { hamCuaEmMoi: [hAnchorGateTow()] }),
       sao: { o: 41, nhip: 19 },
       loiGiaiKhac: {
         moTa: 'Gọi bridge_lay(n) thay cho pull_back(n) trong thân hàm anchor_gate_tow(t, n)',
-        baiLam: bai(['s = flow_power()', 'turn_left()', 'anchor_gate_tow(2 - s, 1)']),
+        baiLam: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_gate_tow(t, 1)']),
         hamCuaEmMoi: [hAnchorGateTow(['anchor_flip(t)', 'bridge_lay(n)'])]
       },
       loiSai: [
-        { moTa: 'Chưa tạo hàm anchor_gate_tow(t, n)', baiLam: bai(['s = flow_power()', 'turn_left()', 'anchor_gate_tow(2 - s, 1)']), phaiCoMa: ['ham-chua-co'] },
+        { moTa: 'Chưa tạo hàm anchor_gate_tow(t, n)', baiLam: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_gate_tow(t, 1)']), phaiCoMa: ['ham-chua-co'] },
         cung('Truyền cố định anchor_gate_tow(1, 1) theo sân 1 nên ở sân 2 tắt dòng trễ làm bè dưới trôi lố', bai(['turn_left()', 'anchor_gate_tow(1, 1)']), ['chua-dua-vat'], { hamCuaEmMoi: [hAnchorGateTow()] }),
-        { moTa: 'Quên gọi pull_back(n) trong anchor_gate_tow(t, n) nên bè trên ở (5, 1) chưa về bến', baiLam: bai(['s = flow_power()', 'turn_left()', 'anchor_gate_tow(2 - s, 1)']), hamCuaEmMoi: [hAnchorGateTow(['anchor_flip(t)'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên gọi pull_back(n) trong anchor_gate_tow(t, n) nên bè trên ở (5, 1) chưa về bến', baiLam: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_gate_tow(t, 1)']), hamCuaEmMoi: [hAnchorGateTow(['anchor_flip(t)'])], phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Hàm anchor_gate_tow(t, n) gồm 2 dòng: anchor_flip(t) và pull_back(n).', 'Luna: Ở main đọc s = flow_power(), gọi turn_left() rồi gọi anchor_gate_tow(2 - s, 1)!']
+      goiY: ['Luna: Hàm anchor_gate_tow(t, n) gồm 2 dòng: anchor_flip(t) và pull_back(n).', 'Luna: Ở main đọc s = flow_power(), gọi turn_left(), tính t = 2 - s rồi gọi anchor_gate_tow(t, 1)!']
     }),
 
     manTrumSong({
@@ -754,9 +757,9 @@
       loiGiai: bai(['s = flow_power()', 'master_river_dock(s, 2, 1)'], { hamCuaEmMoi: [hMasterRiverDock()] }),
       sao: { o: 32, nhip: 13 },
       loiGiaiKhac: {
-        moTa: 'Gọi clear_river_bridge(a + b, n) trong thân hàm master_river_dock(a, b, n)',
+        moTa: 'Tính t = a + b rồi gọi clear_river_bridge(t, n) trong thân hàm master_river_dock(a, b, n)',
         baiLam: bai(['s = flow_power()', 'master_river_dock(s, 2, 1)']),
-        hamCuaEmMoi: [hMasterRiverDock(['clear_river_bridge(a + b, n)'])]
+        hamCuaEmMoi: [hMasterRiverDock(['t = a + b', 'clear_river_bridge(t, n)'])]
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm master_river_dock(a, b, n)', baiLam: bai(['s = flow_power()', 'master_river_dock(s, 2, 1)']), phaiCoMa: ['ham-chua-co'] },
@@ -857,7 +860,7 @@
         cung('Ở kênh trên gọi open_gate_pass(2) cố định theo sân 1 nên ở sân 2 làm đóng cống k (3, 1)', bai(['open_gate_pass(2)', 'bridge_lay(1)', 'pair_step("R", 2)', 'pair_step("L", 1)', 'calm_tug_run("R", 3)']), ['dam-tuong', 'chua-dua-vat']),
         cung('Ở kênh dưới gọi deliver_tail("R", 3) không mở cống theo sân 1 nên ở sân 2 đâm vào cống K (4, 4)', bai(['master_river_dock(1, 1, 1)', 'pair_step("R", 2)', 'pair_step("L", 1)', 'deliver_tail("R", 3)']), ['dam-tuong', 'chua-dua-vat'])
       ],
-      goiY: ['Luna: Chỉ với 4 dòng lệnh: master_river_dock(1, 1, 1), pair_step("R", 2), pair_step("L", 1) và calm_tug_run("R", 3)!', 'Luna: Cả hai hàm đều tự kiểm tra flow_power() > 0 trước khi gạt van nên chạy mượt trên cả 2 sân.']
+      goiY: ['Luna: Chỉ với 4 dòng lệnh: master_river_dock(1, 1, 1), pair_step("R", 2), pair_step("L", 1) và calm_tug_run("R", 3)!', 'Luna: Cả hai hàm đều tự đọc sức nước, chỉ gạt van khi có dòng chảy, nên chạy mượt trên cả 2 sân.']
     }),
 
     manTrumSong({
@@ -891,7 +894,8 @@
         'pair_step("R", 2)',
         'pair_step("L", 1)',
         's = flow_power()',
-        'calm_tug_run("R", s + 3)'
+        't = s + 3',
+        'calm_tug_run("R", t)'
       ]),
       sao: { o: 54, nhip: 63 },
       loiGiaiKhac: {
@@ -901,13 +905,14 @@
           'pair_step("R", 2)',
           'pair_step("L", 1)',
           's = flow_power()',
-          'tail_over_calm("R", s + 3)',
+          't = s + 3',
+          'tail_over_calm("R", t)',
           'tether_drop()'
         ])
       },
       loiSai: [
         cung('Truyền cố định calm_tug_run("R", 4) theo sân 1 nên ở sân 2 đi thiếu bước và ở sân 3 đi lố bến', bai(['master_river_dock(1, 1, 1)', 'pair_step("R", 2)', 'pair_step("L", 1)', 'calm_tug_run("R", 4)']), ['chua-dua-vat']),
-        { moTa: 'Đọc s = flow_power() trước khi sang tới (4, 3) nên luôn đọc được s = 0', baiLam: bai(['master_river_dock(1, 1, 1)', 'pair_step("R", 2)', 's = flow_power()', 'pair_step("L", 1)', 'calm_tug_run("R", s + 3)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Đọc s = flow_power() trước khi sang tới (4, 3) nên luôn đọc được s = 0', baiLam: bai(['master_river_dock(1, 1, 1)', 'pair_step("R", 2)', 's = flow_power()', 'pair_step("L", 1)', 't = s + 3', 'calm_tug_run("R", t)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau khi sang tới (4, 3) hướng Đông, hãy đọc s = flow_power() của ô (5, 3) trước mặt.', 'Luna: Cuối cùng gọi calm_tug_run("R", s + 3) để đưa L về đúng bến q trên cả 3 sân!']
     })

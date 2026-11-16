@@ -142,6 +142,7 @@
     m('squirt', 'hoi', 'Phun ra trước với lực p, "low" hay "high", rồi chờ một nhịp', 'luc-ban', 'luc-ban.4'),
     m('squirt_back', 'hoi', 'Phun ra sau với lực p rồi chờ một nhịp', 'luc-ban', 'luc-ban.5'),
     m('smart_spray', 'hoi', 'Trước mũi trống thì phun mạnh cho tia nước bay xa, có vật sát mũi thì phun nhẹ', 'luc-ban', 'luc-ban.8'),
+    m('brace_spray', 'hoi', 'Ghì xích: phun mạnh cùng lúc hai xích tiến, nước đẩy lùi và xích đẩy tới triệt tiêu nên xe đứng yên (một nhịp)', 'luc-ban', 'luc-ban.9'),
     // đợt 2: cảm biến màu, nam châm, máy ném, drone
     m('read_turn', 'mau', 'Đọc màu dưới xe: đỏ thì rẽ phải, xanh dương thì rẽ trái', 'mau', 'mau.5'),
     // chương Chế lệnh màu (go_out, come_back, line_step, trace là hàm của màn nên không có ở đây)
@@ -220,7 +221,6 @@
     m('auto_left', 'hoi', 'Quay trái, tự chọn lực phun van bên trái, rồi quay lại', 'che-luc-ban', 'che-luc-ban.2'),
     m('auto_right', 'hoi', 'Quay phải, tự chọn lực phun van bên phải, rồi quay lại', 'che-luc-ban', 'che-luc-ban.4'),
     m('squirt_left', 'hoi', 'Quay trái, phun với lực p, rồi quay lại', 'che-luc-ban', 'che-luc-ban.5'),
-    m('close_spray', 'hoi', 'Đi tới sát van rồi phun nhẹ, xe đứng yên', 'che-luc-ban', 'che-luc-ban.6'),
     m('scan_left', 'hoi', 'Hai lần: tự chọn lực phun van bên trái rồi tiến một ô', 'che-luc-ban', 'che-luc-ban.7'),
     m('auto_turn', 'hoi', 'Tự chọn lực phun van trước mặt rồi quay trái', 'che-luc-ban', 'che-luc-ban.8'),
     // chương che-do-nhiet · Hàm đo nhiệt (light, find_hot là hàm của màn nên không có ở đây)
@@ -258,7 +258,7 @@
     m('box_spray', 'hoi', 'Thùng trên băng còn chắn giếng (distance() < 2) thì chờ, rồi phun mạnh', 'trum-mua-2', 'trum-mua-2.5'),
     m('gate_push', 'hoi', 'Tới sát thùng, phun mạnh van bên trái mở cửa, rồi đẩy thùng hai ô qua cửa', 'trum-mua-2', 'trum-mua-2.6'),
     m('fire_valve', 'hoi', 'Quay trái, dập lửa trước van, fence_shot() mở van và bù giật, quay lại', 'trum-mua-2', 'trum-mua-2.7'),
-    m('far_push', 'hoi', 'Thùng cách d ô thì đẩy nó đi đúng d ô', 'trum-mua-2', 'trum-mua-2.9')
+    m('boost', 'hoi', 'Phóng: phun mạnh ra sau cùng lúc hai xích tiến, nước và xích cùng đẩy tới nên xe đi 2 ô trong một nhịp', 'trum-mua-2', 'trum-mua-2.9')
   );
 
   // lệnh gốc: nguoc là lệnh ngược (cùng bảng với SanHoc.LENH_NGUOC), null nếu không có
@@ -317,11 +317,13 @@
     g('cast_net', 'drop_net', 'Tay lưới: tung lưới theo hướng "front", "back", "left", "right" cách 2 ô để bắt bè hoặc gạt van cống'),
     g('drop_net', 'cast_net', 'Tay lưới: mở lưới thả bè đang giữ tại ô nước hiện tại'),
     g('set_length', null, 'Cuộn dây lưới: đặt độ dài dây từ 0 đến 3, với 0 là kéo bè về khoang tàu và 1 đến 3 là số ô dây dưới nước'),
+    g('reel_in', 'reel_out', 'Tời cuộn: cuộn dây lưới ngắn đi 1 ô, bè trong lưới về gần xuồng 1 ô; dây còn 1 ô thì cuộn bè vào khoang tàu'),
+    g('reel_out', 'reel_in', 'Tời cuộn: nhả dây lưới dài thêm 1 ô (tối đa 3), bè trong lưới (hay trong khoang) ra xa xuồng 1 ô'),
     g('flow_dir', null, 'Hỏi: nước ô trước mũi chảy về đâu so với mũi xuồng ("front", "back", "left", "right", "none")'),
     g('flow', null, 'Hỏi: nước ô trước mũi chảy về đâu và mạnh bao nhiêu; trả về một cặp (hướng, sức), ví dụ ("back", 2)'),
     // CẢNG SÔNG (mùa 4): cần cẩu container, mỗi lệnh một nhịp (không cần wait())
-    g('swing_left', 'swing_right', 'Cần cẩu quay cần sang trái một nấc (8 nấc một vòng, nấc 0 là hướng lên)'),
-    g('swing_right', 'swing_left', 'Cần cẩu quay cần sang phải một nấc (8 nấc một vòng)'),
+    g('swing_left', 'swing_right', 'Cần cẩu quay cần sang trái một nấc (4 nấc một vòng: 0 lên, 1 phải, 2 xuống, 3 trái)'),
+    g('swing_right', 'swing_left', 'Cần cẩu quay cần sang phải một nấc (4 nấc một vòng)'),
     g('extend', 'retract', 'Vươn cần xa thêm một ô (tầm 1 đến 3)'),
     g('retract', 'extend', 'Thu cần về gần một ô (tầm 1 đến 3)'),
     g('pick_up', 'set_down', 'Móc cẩu nhấc container trên cùng ở ô đầu cần'),

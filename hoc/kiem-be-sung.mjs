@@ -50,7 +50,7 @@ const HAM_GOI = {
   3: ['go_to_wall', 'go_safe', 'clean_step', 'go_open'],     // PDM2a: go_open thay go_get
   4: ['puff', 'puff_back', 'open_left', 'open_right', 'open_behind'],
   5: ['push', 'go_around', 'push_around', 'push_back'],
-  6: ['squirt', 'squirt_back', 'smart_spray', 'auto_spray', 'auto_left', 'auto_right', 'squirt_left', 'close_spray', 'scan_left', 'auto_turn'],
+  6: ['squirt', 'squirt_back', 'smart_spray', 'auto_spray', 'auto_left', 'auto_right', 'squirt_left', 'brace_spray', 'scan_left', 'auto_turn'],     // 14/11: brace_spray (ghì xích, luc-ban.9) thay close_spray (màn che-luc-ban.6 thành trình diễn vừa chạy vừa phun)
   7: ['switch_on', 'switch_left', 'find_warm', 'auto_on', 'scan_on', 'switch_right', 'auto_left_on']
 };
 /** Mọi tên hàm lời giải chạy tới (bắc cầu qua kho + hàm của màn + hàm mới) và mọi dòng của chúng. */

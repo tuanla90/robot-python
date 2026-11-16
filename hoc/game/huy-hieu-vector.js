@@ -563,7 +563,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot(CAU_CO_BAN, st({ nac: 1, tam: 2 }), 0, 44, 58, 42);
   });
   dk('so-am', che(function (g, c) {
-    c.robot(CAU_CO_BAN, st({ nac: 7, tam: 2 }), 0, 38, 62, 36);
+    c.robot(CAU_CO_BAN, st({ nac: 3, tam: 2 }), 0, 38, 62, 36);
     c.khoi(64, 34, 34, 22, BM.vecTimDam, [['-3', BM.vecVo, 13]]);
   }));
   dk('moc-cau', function (g, c) {
@@ -571,7 +571,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     c.robot(CAU_MOC, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }), 0, 42, 60, 42);
   });
   dk('chia-du', che(function (g, c) {
-    c.robot(CAU_MOC, st({ nac: 2, tam: 2 }, { kep: 'dong', cam: true }), 0, 36, 62, 36);
+    c.robot(CAU_MOC, st({ nac: 1, tam: 2 }, { kep: 'dong', cam: true }), 0, 36, 62, 36);
     c.khoi(64, 34, 36, 22, BM.vecCamDam, [['% //', BM.vecVo, 12]]);
   }));
   dk('quet-ma', function (g, c) {

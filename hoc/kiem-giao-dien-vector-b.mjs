@@ -128,7 +128,7 @@ console.log('\n== c. Luật phủ cho mọi vân gỗ / bảng phấn / steps() 
   const TEP = ['man-dau.js', 'man-goi.js', 'man-chon.js', 'man-lap.js', 'man-so-lenh.js'];
   const chalk = []; for (const f of TEP) for (const m of doc(f).matchAll(/h\('div', '([\w-]+) chalk'\)/g)) chalk.push(m[1]);
   const chalkThieu = chalk.filter((c) => !luatB.some((r) => r.sel.split(',').some((s) => s.trim() === 'body.ve-vector .' + c + '.chalk' || s.trim() === 'body.ve-vector #sc-lap.cao .' + c) && /background-image\s*:\s*(none|repeating-conic-gradient)/.test(r.than) && !/var\(--(wood|chalk)/.test(r.than)));
-  kiem('phần tử dựng với lớp chalk (' + chalk.join(', ') + ') có luật phủ nền ở vector (không bảng phấn)', chalk.length >= 4 && !chalkThieu.length, J(chalkThieu));
+  kiem('phần tử dựng với lớp chalk (' + chalk.join(', ') + ') có luật phủ nền ở vector (không bảng phấn)', chalk.length >= 3 && !chalkThieu.length, J(chalkThieu));   // 3/11: chọn gói thành bản đồ, bỏ hộp g-mat chalk → còn 3
 }
 
 /* ================================================================= d. icon */

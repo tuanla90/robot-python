@@ -63,7 +63,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
   } });
 
-  V.dangKy({ loai: 'o', ma: 'cua-ngach', ten: 'Miệng ngách hang ngầm', cacTrangThai: [{ mau: 0, dau: 'a' }, { mau: 0, dau: 'b' }, { mau: 1, dau: 'a' }, { mau: 2, dau: 'b' }], ve: function (g, s, H) {
+  V.dangKy({ loai: 'o', ma: 'cua-ngach', ten: 'Miệng ngách hang ngầm', cacTrangThai: [{ mau: 0, dau: 'a' }, { mau: 1, dau: 'a' }, { mau: 2, dau: 'b' }], ve: function (g, s, H) {     // hai đầu a / b cùng cặp vẽ y hệt nên mẫu không lặp cùng màu (kiem-ve-vector: hai mẫu khác nhau phải ra hình khác)
     s = s || {};
     var mau = BM[MAU_NGACH[((s.mau | 0) % MAU_NGACH.length + MAU_NGACH.length) % MAU_NGACH.length]];
     H.bo(g, 14, 14, 72, 72, 30);                                                         // vành đá màu của cặp

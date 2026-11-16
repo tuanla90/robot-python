@@ -9,12 +9,12 @@ import {FPS, Phim, W_IN, pops} from './may-phim';
 import {Nguoi} from './doc/kit-doc';
 import {CAU_S, diemTren} from './duong-ban-do';
 
-/** Cảnh 1 (8s = 240f; mỗi cảnh dừng cuối chờ Tiếp, mỗi nhịp một câu ngắn — 2/11 theo skill remotion-motion-graphics): Tại phòng CLB (nen-doc/mua-7.png), Bảng Ủy Nhiệm từ Thầy Hiệu Trưởng gửi tới CLB Robot. */
-const YEU_CAU_THI_TRAN = [
-  {ma: 'QUEST #1', noi: 'Kho hàng Chú Tùng', viec: 'Kẹt 10 đơn sát giờ xe tải chạy', mau: '#F59E0B', nen: '#FEF3C7', anh: 'tu-sot-ruot', bot: 'robot/m1/du-vui.png', xoay: -90, zoom: 1.48},
-  {ma: 'QUEST #2', noi: 'Nhà máy Cô Hạnh', viec: 'Lò hơi quá áp, kẹt van tầng cao', mau: '#EF4444', nen: '#FEE2E2', anh: 'hanh-hoang', bot: 'robot/m2/du-vui.png', xoay: -90},
-  {ma: 'QUEST #3', noi: 'Bãi tái chế Bác Sơn', viec: 'Núi sắt nhựa lẫn lộn chờ phân loại', mau: '#10B981', nen: '#D1FAE5', anh: 'sau-sot-ruot', bot: 'robot/m3/nhen-tu-vui.png', xoay: 0},
-  {ma: 'QUEST #4', noi: 'Nông trại Chị Lan', viec: 'Cánh đồng hoa Tết chờ gieo hạt', mau: '#EC4899', nen: '#FCE7F3', anh: 'lan-sot-ruot', bot: 'robot/m5/drone-cam-vui.png', xoay: 0},
+/** Cảnh 1 (8s = 240f): Tại phòng CLB (nen-doc/mua-7.png), THẦY HIỆU TRƯỞNG đứng giao việc; ba dòng nhiệm vụ hiện lần lượt theo nhịp
+ *  (user 2/11: hiện dần để biết rõ nhiệm vụ, chỉ thầy giao việc, không bày 4 người đang gặp khó). */
+const NHIEM_VU = [
+  {icon: 'Wrench', mau: '#EC4899', nen: '#FCE7F3', chu: 'Lắp robot trên xe trạm', at: 30},
+  {icon: 'Map', mau: '#0284C7', nen: '#E0F2FE', chu: 'Đi giúp 8 nơi trong thị trấn', at: 70},
+  {icon: 'Warehouse', mau: '#D97706', nen: '#FEF3C7', chu: 'Bắt đầu: kho hàng chú Tùng', at: 110},
 ];
 
 const CanhPhongClb: React.FC = () => {
@@ -25,64 +25,34 @@ const CanhPhongClb: React.FC = () => {
         transform: `scale(${1.02 + 0.02 * Math.sin(f / 60)})`}} />
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.45) 45%, rgba(15,23,42,0.9) 100%)'}} />
 
-      <Headline text="CLB ROBOT NHẬN KÈO GIẢI CỨU!" at={4} top={34} size={52} color="#FFFFFF" accent={['NHẬN KÈO']} />
+      <Headline text="THẦY GIAO VIỆC CHO CLB" at={4} top={34} size={52} color="#FFFFFF" accent={['GIAO VIỆC']} />
 
-      {/* Bảng Ủy Nhiệm: lời Thầy + 4 người nhờ (ảnh + tên nơi), không chữ phụ (y = 130 .. ~1010) */}
-      <PopIn at={14} style={{position: 'absolute', left: 36, top: 130, width: 1008, padding: '22px 24px 24px',
-        borderRadius: 34, border: `6px solid ${C.ink}`,
-        background: 'linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 100%)',
-        boxShadow: `0 16px 0 ${C.ink}, 0 28px 48px rgba(0,0,0,0.5)`, boxSizing: 'border-box'}}>
-
-        {/* Header Thầy Hiệu Trưởng cỡ lớn */}
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18,
-          padding: '14px 20px', borderRadius: 24, background: 'linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%)',
-          border: `4px solid ${C.ink}`, gap: 16}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: 18, minWidth: 0, flex: 1}}>
-            <div style={{width: 104, height: 104, borderRadius: 22, background: '#DBEAFE', border: '4px solid #FDE047', overflow: 'hidden', flexShrink: 0,
-              boxShadow: '0 6px 0 #000'}}>
-              <Img src={staticFile('nguoi/thay-giao-viec.png')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 12%'}} />
-            </div>
-            <div style={{minWidth: 0, flex: 1}}>
-              <div style={{fontSize: 21, fontWeight: 900, color: '#38BDF8', letterSpacing: '0.04em', marginBottom: 4}}>
-                LỆNH TRIỆU TẬP · THẦY HIỆU TRƯỞNG
-              </div>
-              <div style={{fontSize: 29, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.25}}>
-                “Đem công nghệ CLB mình ra giúp bà con ngay!”
-              </div>
-            </div>
-          </div>
-          <span style={{padding: '14px 22px', borderRadius: 18, background: 'linear-gradient(180deg, #FDE047 0%, #F59E0B 100%)',
-            color: C.ink, fontSize: 25, fontWeight: 900, border: '3.5px solid #FFFFFF', whiteSpace: 'nowrap', flexShrink: 0,
-            boxShadow: '0 5px 0 rgba(0,0,0,0.4)'}}>
-            8 CHIẾN DỊCH
-          </span>
+      {/* Bảng nhiệm vụ: ba dòng hiện lần lượt (y = 150 .. ~640) */}
+      <PopIn at={14} style={{position: 'absolute', left: 36, top: 150, width: 1008, padding: '24px 26px', borderRadius: 34, border: `6px solid ${C.ink}`,
+        background: 'linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 100%)', boxShadow: `0 16px 0 ${C.ink}, 0 28px 48px rgba(0,0,0,0.5)`, boxSizing: 'border-box'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18}}>
+          <Icon name="ScrollText" size={40} color={C.ink} stroke={2.6} />
+          <span style={{fontSize: 34, fontWeight: 900, color: C.ink}}>Nhiệm vụ của CLB</span>
         </div>
-
-        {/* Lưới 2x2 người nhờ: ảnh lớn + tên nơi (2/11: bỏ mã quest, KHẨN CẤP, mẫu robot, mô tả — chữ nhiều quá) */}
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18}}>
-          {YEU_CAU_THI_TRAN.map((item, i) => (
-            <PopIn key={item.ma} at={22 + i * 10} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
-              padding: '20px 20px 22px', borderRadius: 26, background: '#FFFFFF',
-              border: `5px solid ${C.ink}`, boxShadow: `0 10px 0 ${C.ink}`, boxSizing: 'border-box'}}>
-              <div style={{width: 230, height: 230, borderRadius: 28, background: item.nen,
-                border: `5px solid ${item.mau}`, boxShadow: `0 6px 0 ${C.ink}`, overflow: 'hidden'}}>
-                <Img src={staticFile(`nguoi/${item.anh}.png`)} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%'}} />
+        <div style={{display: 'flex', flexDirection: 'column', gap: 16}}>
+          {NHIEM_VU.map((n, i) => (
+            <PopIn key={n.chu} at={n.at} style={{display: 'flex', alignItems: 'center', gap: 22, padding: '18px 24px', borderRadius: 24, background: '#FFFFFF',
+              border: `5px solid ${C.ink}`, boxShadow: `0 8px 0 ${C.ink}`, boxSizing: 'border-box'}}>
+              <div style={{width: 84, height: 84, borderRadius: 22, background: n.nen, border: `4px solid ${n.mau}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                <Icon name={n.icon} size={48} color={n.mau} stroke={2.6} />
               </div>
-              <div style={{fontSize: 36, fontWeight: 900, color: C.ink, lineHeight: 1.15, textAlign: 'center'}}>{item.noi}</div>
+              <span style={{fontSize: 26, fontWeight: 900, color: '#fff', background: C.ink, borderRadius: 12, padding: '4px 14px', flexShrink: 0}}>{i + 1}</span>
+              <span style={{fontSize: 38, fontWeight: 900, color: C.ink, lineHeight: 1.15}}>{n.chu}</span>
             </PopIn>
           ))}
         </div>
       </PopIn>
 
-      <Burst at={24} x={540} y={320} color={C.yellow} r={220} />
-
-      <Mascot who="sola" x={230} h={520} at={8}
-        faces={[[8, 'surprised-sach'], [50, 'cheer'], [110, 'celebrate-jump']]}
-        says={[{at: 14, out: 120, text: 'Cả thị trấn nhờ CLB mình giải cứu!'}]}
-        bubbleW={560} bubbleTop={1180} />
-      <Mascot who="luna" x={850} h={520} at={16} side="left" lat
-        faces={[[16, 'happy'], [75, 'explaining'], [125, 'thumbs-up']]}
-        says={[{at: 126, out: 240, text: 'Thầy cấp luôn Xe Trạm Lab cho tụi mình!'}]}
+      <Nguoi anh="thay-giao-viec" doiAnh={[[126, 'thay-tu-hao']]} ten="THẦY HIỆU TRƯỞNG" mau="#1D4ED8" x={820} h={620} at={6} side="left"
+        says={[{at: 14, out: 120, text: 'CLB mình đi giúp bà con nhé!'}]} bubbleW={560} bubbleTop={1180} />
+      <Mascot who="sola" x={240} h={520} at={10}
+        faces={[[10, 'surprised-sach'], [60, 'confident'], [126, 'celebrate-jump']]}
+        says={[{at: 126, out: 240, text: 'Dạ! Tụi em lên xe trạm liền!'}]}
         bubbleW={560} bubbleTop={1180} />
     </AbsoluteFill>
   );
@@ -137,7 +107,7 @@ const CanhXeTramLab: React.FC = () => {
       {/* Lưới 2x2 trang bị Xe Trạm: hình + tên (top: 520 .. ~1010; 2/11 bỏ mô tả, nhãn trạng thái) */}
       <div style={{position: 'absolute', left: 36, right: 36, top: 520, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18}}>
         {HANG_MUC_XE_TRAM.map((h, i) => (
-          <PopIn key={h.ma} at={20 + i * 12} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+          <PopIn key={h.ma} at={30 + i * 28} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
             padding: '20px 22px 22px', borderRadius: 28, background: '#FFFFFF',
             border: `5px solid ${C.ink}`, boxShadow: `0 11px 0 ${C.ink}`, boxSizing: 'border-box'}}>
             <div style={{width: 170, height: 170, borderRadius: 26, background: h.nen, border: `5px solid ${h.mau}`,
@@ -252,11 +222,11 @@ const CanhDiemDau: React.FC = () => {
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
           <span style={{padding: '10px 24px', borderRadius: 16, background: '#0284C7', color: '#fff', fontSize: 25, fontWeight: 900,
             border: `3.5px solid ${C.ink}`, boxShadow: `0 5px 0 ${C.ink}`, whiteSpace: 'nowrap'}}>
-            STAGE 1 · 10 QUEST
+            Mùa 1 · 10 gói
           </span>
           <span style={{padding: '10px 24px', borderRadius: 16, background: '#EF4444', color: '#fff', fontSize: 25, fontWeight: 900,
             border: `3.5px solid ${C.ink}`, boxShadow: `0 5px 0 ${C.ink}`, whiteSpace: 'nowrap'}}>
-            DEADLINE: 17:00 CHIỀU
+            Hạn: 17:00
           </span>
         </div>
 
@@ -320,8 +290,8 @@ export const PHIM_MO_DAU: Phim = {
   id: 'PhimMoDau',
   doc: true,
   canh: [
-    {id: 'phong-clb', dur: 240, el: <CanhPhongClb />, sfx: [W_IN, ...pops([14, 28, 40, 52, 64], 0.3)]},
-    {id: 'xe-tram-lab', dur: 240, el: <CanhXeTramLab />, sfx: [W_IN, ...pops([22, 36, 50, 64], 0.3), [18, 'ding.wav', 0.5]]},
+    {id: 'phong-clb', dur: 240, el: <CanhPhongClb />, sfx: [W_IN, ...pops([14, 30, 70, 110], 0.3)]},
+    {id: 'xe-tram-lab', dur: 240, el: <CanhXeTramLab />, sfx: [W_IN, ...pops([30, 58, 86, 114], 0.3), [18, 'ding.wav', 0.5]]},
     {id: 'hanh-trinh', dur: 320, el: <CanhHanhTrinh />, sfx: [W_IN, ...pops([6, 20, 34, 48, 62, 76, 90], 0.28), [160, 'riser.wav', 0.5]]},
     {id: 'diem-dau', dur: 240, el: <CanhDiemDau />, sfx: [W_IN, [35, 'ding.wav', 0.8]]},
   ],

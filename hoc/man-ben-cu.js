@@ -12,9 +12,9 @@
   var GOC_BEN_CU = [
     'left_move', 'right_move', 'left_back', 'right_back', 'wait',
     'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor',
-    'set_length', 'flow'
+    'reel_in', 'reel_out', 'flow'
   ];
-  var ROBOT_BEN_CU = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] };
+  var ROBOT_BEN_CU = { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }], cuonDay: true };
   var CAU_TRUC = ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'];
 
   var KHO_TRUOC = [
@@ -37,7 +37,8 @@
   }
 
   var T_CALM_GATE_PASS = [
-    'if flow_power() > 0:',
+    'p = flow_power()',
+    'if p > 0:',
     '    flip_valve()',
     'forward(n)'
   ];
@@ -54,18 +55,21 @@
     'pair_step("R", 2)'
   ];
   var T_TAIL_OVER_CALM = [
-    'if flow_power() > 0:',
+    'p = flow_power()',
+    'if p > 0:',
     '    flip_valve()',
     'tug_corner(d, n)'
   ];
   var T_FIX_OLD_DOCK_SAI = [
-    'if flow_power() == 0:',
+    'p = flow_power()',
+    'if p == 0:',
     '    flip_valve()',
     'forward(a)',
     'pull_back(b)'
   ];
   var T_FIX_OLD_DOCK_DUNG = [
-    'if flow_power() > 0:',
+    'p = flow_power()',
+    'if p > 0:',
     '    flip_valve()',
     'forward(a)',
     'pull_back(b)'
@@ -81,7 +85,7 @@
   function manBenCu(cfg) {
     return Object.assign({
       chuong: 'ben-cu', tenChuong: 'Dọn luồng bến cũ',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: ROBOT_BEN_CU,
       vo: 'song',
       hamGoc: GOC_BEN_CU.slice(),
@@ -97,7 +101,7 @@
   function manCheBenCu(cfg) {
     return Object.assign({
       chuong: 'che-ben-cu', tenChuong: 'Chế lệnh: cứu hộ bến cũ',
-      loaiRobot: 'xuong',
+      loaiRobot: 'xuong', chinhLuoi: false,
       robot: ROBOT_BEN_CU,
       vo: 'song',
       hamGoc: GOC_BEN_CU.slice(),
@@ -219,8 +223,8 @@
 
     manBenCu({
       so: 5, ten: 'Bù sức nước dọc bờ kè cũ để mở cống', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola thử thách trên 2 sân: dọc bờ kè cũ có hàng rào = và thùng H, xuồng ở (1, 1) cần tiến tới (4, 1) để quay lên gạt van V ở (4, 0) mở cống K ở (5, 1) rồi vào phao Q ở (6, 1). Ô (2, 1) trước mũi có dòng xuôi sức 1 hoặc 2; hãy tách h, s = flow(), gọi forward(3 - s) tới đúng (4, 1), rồi gọi open_gate_pass(2) vượt cống tới Q!',
-      veMaMau: 'Đọc h, s = flow(), gọi forward(3 - s) rồi open_gate_pass(2).',
+      deBai: 'Sola thử thách trên 2 sân: dọc bờ kè cũ có hàng rào = và thùng H, xuồng ở (1, 1) cần tiến tới (4, 1) để quay lên gạt van V ở (4, 0) mở cống K ở (5, 1) rồi vào phao Q ở (6, 1). Ô (2, 1) trước mũi có dòng xuôi sức 1 hoặc 2; hãy tách h, s = flow(), tính t = 3 - s, gọi forward(t) tới đúng (4, 1), rồi gọi open_gate_pass(2) vượt cống tới Q!',
+      veMaMau: 'Đã có h, s = flow(), t = 3 - s và forward(t). Thêm open_gate_pass(2).',
       san: [
         ['####V####', '#~~~~KQ~#', '#=u===H=#', '#########'],
         ['####V####', '#~~~~KQ~#', '#=u===H=#', '#########']
@@ -234,24 +238,24 @@
         [{ nut: { x: 4, y: 0 }, cong: [{ x: 5, y: 1 }], dong: [] }]
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['h, s = flow()', 'forward(3 - s)']),
-      loiGiai: bai(['h, s = flow()', 'forward(3 - s)', 'open_gate_pass(2)']),
+      maMau: bai(['h, s = flow()', 't = 3 - s', 'forward(t)']),
+      loiGiai: bai(['h, s = flow()', 't = 3 - s', 'forward(t)', 'open_gate_pass(2)']),
       sao: { o: 19, nhip: 13 },
       loiGiaiKhac: {
         moTa: 'Dùng flow_power() thay vì tách h, s = flow()',
-        baiLam: bai(['forward(3 - flow_power())', 'open_gate_pass(2)'])
+        baiLam: bai(['p = flow_power()', 't = 3 - p', 'forward(t)', 'open_gate_pass(2)'])
       },
       loiSai: [
         { moTa: 'Chỉ tiến 1 bước forward(1) nên ở sân 1 chưa tới dưới van V đã gạt dây hụt', baiLam: bai(['forward(1)', 'open_gate_pass(2)']), phaiCoMa: ['keo-hut', 'dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Chưa gọi open_gate_pass(2) sau khi tới dưới van V ở (4, 1)', baiLam: bai(['h, s = flow()', 'forward(3 - s)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa gọi open_gate_pass(2) sau khi tới dưới van V ở (4, 1)', baiLam: bai(['h, s = flow()', 't = 3 - s', 'forward(t)']), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Từ (1, 1) tới (4, 1) là 3 ô, có dòng xuôi sức s ở (2, 1) nên chỉ cần gọi forward(3 - s).', 'Luna: Tại (4, 1), gọi open_gate_pass(2) để gạt van V ở (4, 0) và đi 2 ô tới Q ở (6, 1).']
+      goiY: ['Luna: Từ (1, 1) tới (4, 1) là 3 ô, có dòng xuôi sức s ở (2, 1) nên chỉ cần tính t = 3 - s rồi gọi forward(t).', 'Luna: Tại (4, 1), gọi open_gate_pass(2) để gạt van V ở (4, 0) và đi 2 ô tới Q ở (6, 1).']
     }),
 
     manBenCu({
       so: 6, ten: 'Chọn nhánh êm rồi mở cống bến cũ', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola dẫn xuồng tới ngã ba (4, 1) giữa hai nhánh bờ rào = và hố u: một nhánh có dòng sức 1, nhánh kia chảy xiết sức 2; ở cuối nhánh êm có van V điều khiển cống đóng K trước phao Q. Hãy gọi turn_left() rồi kiểm tra if flow_power() == 1: để đi nhánh trái (move(), tow_grab(), pair_step("L", 2)), ngược lại quay đầu u_turn() đi nhánh phải (move(), tow_grab(), pair_step("R", 2))!',
-      veMaMau: 'Quay trái kiểm tra if flow_power() == 1: để chọn nhánh êm, gạt van V và rẽ xuống Q.',
+      deBai: 'Sola dẫn xuồng tới ngã ba (4, 1) giữa hai nhánh bờ rào = và hố u: một nhánh có dòng sức 1, nhánh kia chảy xiết sức 2; ở cuối nhánh êm có van V điều khiển cống đóng K trước phao Q. Hãy gọi turn_left(), đọc p = flow_power() rồi kiểm tra if p == 1: để đi nhánh trái (move(), tow_grab(), pair_step("L", 2)), ngược lại quay đầu u_turn() đi nhánh phải (move(), tow_grab(), pair_step("R", 2))!',
+      veMaMau: 'Quay trái, đọc p = flow_power(), kiểm tra if p == 1: để chọn nhánh êm, gạt van V và rẽ xuống Q.',
       san: [
         ['#########', '#V~~~~~V#', '#~K~~~K~#', '#~Q#=uH~#', '#########'],
         ['#########', '#V~~~~~V#', '#~K~~~K~#', '#~H#=uQ~#', '#########']
@@ -265,10 +269,11 @@
         [{ nut: { x: 1, y: 1 }, cong: [{ x: 2, y: 2 }], dong: [] }, { nut: { x: 7, y: 1 }, cong: [{ x: 6, y: 2 }], dong: [] }]
       ],
       batDau: [{ x: 4, y: 1, huong: 0 }, { x: 4, y: 1, huong: 0 }],
-      maMau: bai(['turn_left()', 'if flow_power() == 1:', '    move()', '    tow_grab()']),
+      maMau: bai(['turn_left()', 'p = flow_power()', 'if p == 1:', '    move()', '    tow_grab()']),
       loiGiai: bai([
         'turn_left()',
-        'if flow_power() == 1:',
+        'p = flow_power()',
+        'if p == 1:',
         '    move()',
         '    tow_grab()',
         '    pair_step("L", 2)',
@@ -283,7 +288,8 @@
         moTa: 'Kiểm tra sức nước nhánh phải trước thay vì nhánh trái',
         baiLam: bai([
           'turn_right()',
-          'if flow_power() == 1:',
+          'p = flow_power()',
+          'if p == 1:',
           '    move()',
           '    tow_grab()',
           '    pair_step("R", 2)',
@@ -296,9 +302,9 @@
       },
       loiSai: [
         { moTa: 'Luôn rẽ phải nên ở sân 1 đi nhầm sang nhánh cống không dẫn tới phao Q', baiLam: bai(['turn_right()', 'move()', 'tow_grab()', 'pair_step("R", 2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] },
-        { moTa: 'Quên gọi tow_grab() mở cống K nên xuồng bị cống chặn trước phao Q', baiLam: bai(['turn_left()', 'if flow_power() == 1:', '    move()', '    pair_step("L", 2)', 'else:', '    u_turn()', '    move()', '    pair_step("R", 2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Quên gọi tow_grab() mở cống K nên xuồng bị cống chặn trước phao Q', baiLam: bai(['turn_left()', 'p = flow_power()', 'if p == 1:', '    move()', '    pair_step("L", 2)', 'else:', '    u_turn()', '    move()', '    pair_step("R", 2)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Luna: Quay trái bằng turn_left() rồi kiểm tra if flow_power() == 1: để biết nhánh trái có phải nhánh êm không.', 'Luna: Ở nhánh trái gọi move(), tow_grab(), pair_step("L", 2); ở nhánh phải gọi u_turn(), move(), tow_grab(), pair_step("R", 2).']
+      goiY: ['Luna: Quay trái bằng turn_left(), đọc p = flow_power() rồi kiểm tra if p == 1: để biết nhánh trái có phải nhánh êm không.', 'Luna: Ở nhánh trái gọi move(), tow_grab(), pair_step("L", 2); ở nhánh phải gọi u_turn(), move(), tow_grab(), pair_step("R", 2).']
     }),
 
     manBenCu({
@@ -346,8 +352,8 @@
 
     manBenCu({
       so: 8, ten: 'Mở cống rồi lai dắt bè qua kênh biến thiên', hang: 'bien-the', mucTieu: 'dua-vat', nhipTheo: 'tong',
-      deBai: 'Sola giao nhiệm vụ tại kênh đá cổ có cửa C và rào = trên bờ: từ (2, 1) hướng Đông, hãy gọi open_gate_pass(1) để gạt van V ở (2, 0) mở cống K ở (3, 1) và tiến vào (3, 1), rồi gọi tug_corner("R", 1) để thu đám lục bình L ở (5, 1) ra đuôi và rẽ xuống (3, 2) hướng Nam. Ô (3, 3) trước mũi có dòng xuôi sức 1 hoặc 2; hãy gọi forward(4 - flow_power()) để đưa L vào bến q ở (3, 5)!',
-      veMaMau: 'Gọi open_gate_pass(1), tug_corner("R", 1) rồi forward(4 - flow_power()).',
+      deBai: 'Sola giao nhiệm vụ tại kênh đá cổ có cửa C và rào = trên bờ: từ (2, 1) hướng Đông, hãy gọi open_gate_pass(1) để gạt van V ở (2, 0) mở cống K ở (3, 1) và tiến vào (3, 1), rồi gọi tug_corner("R", 1) để thu đám lục bình L ở (5, 1) ra đuôi và rẽ xuống (3, 2) hướng Nam. Ô (3, 3) trước mũi có dòng xuôi sức 1 hoặc 2; hãy đọc p = flow_power(), tính t = 4 - p rồi gọi forward(t) để đưa L vào bến q ở (3, 5)!',
+      veMaMau: 'Gọi open_gate_pass(1), tug_corner("R", 1), rồi p = flow_power(), t = 4 - p, forward(t).',
       san: [
         ['##V####', '#~~K~L#', '#=C~H=#', '###~###', '###~###', '###q###', '###~###', '#######'],
         ['##V####', '#~~K~L#', '#=C~H=#', '###~###', '###~###', '###q###', '###~###', '#######']
@@ -362,23 +368,23 @@
       ],
       batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
       maMau: bai(['open_gate_pass(1)', 'tug_corner("R", 1)']),
-      loiGiai: bai(['open_gate_pass(1)', 'tug_corner("R", 1)', 'forward(4 - flow_power())']),
+      loiGiai: bai(['open_gate_pass(1)', 'tug_corner("R", 1)', 'p = flow_power()', 't = 4 - p', 'forward(t)']),
       sao: { o: 33, nhip: 21 },
       loiGiaiKhac: {
-        moTa: 'Tách h, s = flow() rồi gọi forward(4 - s) ở nhánh dọc',
-        baiLam: bai(['open_gate_pass(1)', 'tug_corner("R", 1)', 'h, s = flow()', 'forward(4 - s)'])
+        moTa: 'Tách h, s = flow() thay cho p = flow_power() ở nhánh dọc',
+        baiLam: bai(['open_gate_pass(1)', 'tug_corner("R", 1)', 'h, s = flow()', 't = 4 - s', 'forward(t)'])
       },
       loiSai: [
         { moTa: 'Đếm cứng forward(2) ở nhánh dọc nên ở sân 1 lục bình L chưa tới bến q', baiLam: bai(['open_gate_pass(1)', 'tug_corner("R", 1)', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi open_gate_pass(1) nên cống K chặn không cho xuồng qua', baiLam: bai(['tug_corner("R", 1)', 'forward(4 - flow_power())']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
+        { moTa: 'Quên gọi open_gate_pass(1) nên cống K chặn không cho xuồng qua', baiLam: bai(['tug_corner("R", 1)', 'p = flow_power()', 't = 4 - p', 'forward(t)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Sau open_gate_pass(1), xuồng đứng ở (3, 1) hướng Đông, cách L ở (5, 1) đúng 2 ô trong tầm dây.', 'Luna: Gọi tug_corner("R", 1) để chuyển L ra đuôi và xuống (3, 2), rồi gọi forward(4 - flow_power()).']
+      goiY: ['Luna: Sau open_gate_pass(1), xuồng đứng ở (3, 1) hướng Đông, cách L ở (5, 1) đúng 2 ô trong tầm dây.', 'Luna: Gọi tug_corner("R", 1) để chuyển L ra đuôi và xuống (3, 2), rồi đọc p = flow_power(), t = 4 - p và gọi forward(t).']
     }),
 
     manBenCu({
       so: 9, ten: 'Đo dòng chảy trước cống cũ để quyết định gạt van', hang: 'bien-the', mucTieu: 'dua-vat', nhipTheo: 'tong',
-      deBai: 'Sola chỉ vào cống nước ở (4, 1) giữa khu bến cũ: ở sân 1 ô (3, 1) có dòng chảy ngược sức 2 và cống K đang đóng; ở sân 2 nước phẳng lặng (sức 0) và cống k đã mở sẵn! Nếu gạt van V ở (2, 0) vào ngày cống đã mở thì cống sẽ đóng sập lại. Hãy kiểm tra if flow_power() > 0: để chỉ gọi flip_valve() khi có dòng chảy, sau đó gọi forward(2) và pull_back(3) kéo bè B về bến q ở (3, 1)!',
-      veMaMau: 'Kiểm tra if flow_power() > 0: flip_valve() rồi gọi forward(2) và pull_back(3).',
+      deBai: 'Sola chỉ vào cống nước ở (4, 1) giữa khu bến cũ: ở sân 1 ô (3, 1) có dòng chảy ngược sức 2 và cống K đang đóng; ở sân 2 nước phẳng lặng (sức 0) và cống k đã mở sẵn! Nếu gạt van V ở (2, 0) vào ngày cống đã mở thì cống sẽ đóng sập lại. Hãy đọc p = flow_power(), kiểm tra if p > 0: để chỉ gọi flip_valve() khi có dòng chảy, sau đó gọi forward(2) và pull_back(3) kéo bè B về bến q ở (3, 1)!',
+      veMaMau: 'Đã có p = flow_power() và if p > 0: flip_valve(). Thêm forward(2) và pull_back(3).',
       san: [
         ['##V=====', '#~~qK~B#', '#=u==H=#', '########'],
         ['##V=====', '#~~qk~B#', '#=u==H=#', '########']
@@ -392,9 +398,10 @@
         [{ nut: { x: 2, y: 0 }, cong: [{ x: 4, y: 1 }], dong: [] }]
       ],
       batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
-      maMau: bai(['if flow_power() > 0:', '    flip_valve()']),
+      maMau: bai(['p = flow_power()', 'if p > 0:', '    flip_valve()']),
       loiGiai: bai([
-        'if flow_power() > 0:',
+        'p = flow_power()',
+        'if p > 0:',
         '    flip_valve()',
         'forward(2)',
         'pull_back(3)'
@@ -413,14 +420,14 @@
         { moTa: 'Luôn gọi flip_valve() không kiểm tra dòng nên ở sân 2 làm đóng cống k', baiLam: bai(['flip_valve()', 'forward(2)', 'pull_back(3)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
         { moTa: 'Không gạt van ở sân 1 nên bị dòng ngược sức 2 đẩy lùi và cống K vẫn đóng', baiLam: bai(['forward(2)', 'pull_back(3)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Ô (3, 1) nằm ngay trước mũi xuồng nên flow_power() trả về 2 ở sân 1 và 0 ở sân 2.', 'Luna: Sau khối if flow_power() > 0: flip_valve(), gọi forward(2) tới (4, 1) rồi pull_back(3) đưa bè B về (3, 1).']
+      goiY: ['Luna: Ô (3, 1) nằm ngay trước mũi xuồng nên flow_power() trả về 2 ở sân 1 và 0 ở sân 2.', 'Luna: Sau khối if p > 0: flip_valve(), gọi forward(2) tới (4, 1) rồi pull_back(3) đưa bè B về (3, 1).']
     }),
 
     manBenCu({
       so: 10, ten: 'Trùm: Dọn luồng bến sông cũ liên hoàn', hang: 'trum', mucTieu: 'dua-vat', nhipTheo: 'tong',
       huyHieu: { ma: 'ben-cu', ten: 'Huy hiệu Dọn luồng bến cũ' },
-      deBai: 'Sola giao bài kiểm tra Trùm chương 1 tại khu bến sông cũ: từ (4, 5) hướng Bắc với bè B ở (4, 6) sau đuôi, hãy gọi cast_net("back") và tether_grab() để bắt B ở sát đuôi. Kênh dọc có dòng xuôi ở (4, 4) mạnh 1 hoặc 2 đưa xuồng lên ngã ba (4, 1) nơi hai bên có rào cũ =, hố u và thùng H. Hãy gọi forward(4 - flow_power()) để lên đúng ngã ba (4, 1), gọi turn_to_calmer() chọn nhánh êm hơn (sức 1 ở sân 1, sức 0 ở sân 2), rồi gọi forward(3 - flow_power()) kéo B vào bến q!',
-      veMaMau: 'Kết hợp cast_net("back"), tether_grab(), forward(4 - flow_power()), turn_to_calmer() và forward(3 - flow_power()).',
+      deBai: 'Sola giao bài kiểm tra Trùm chương 1 tại khu bến sông cũ: từ (4, 5) hướng Bắc với bè B ở (4, 6) sau đuôi, hãy gọi reel_in() và wait() cho dây còn 1 ô, rồi gọi cast_net("back") bắt B ở sát đuôi (lưới bắt và chân vịt chạy chung nhịp đầu của forward(t)). Kênh dọc có dòng xuôi ở (4, 4) mạnh 1 hoặc 2 đưa xuồng lên ngã ba (4, 1) nơi hai bên có rào cũ =, hố u và thùng H. Hãy đọc p = flow_power(), tính t = 4 - p, gọi forward(t) để lên đúng ngã ba (4, 1), gọi turn_to_calmer() chọn nhánh êm hơn (sức 1 ở sân 1, sức 0 ở sân 2), rồi đọc lại p, tính t = 3 - p và gọi forward(t) kéo B vào bến q!',
+      veMaMau: 'Đã có chặng đầu (p = flow_power(), t = 4 - p, forward(t)). Thêm turn_to_calmer(), rồi đọc lại p, t = 3 - p, forward(t).',
       san: [
         ['#########', '#~q~~~~~#', '#=u=~=H=#', '####~####', '####~####', '####~####', '####B####', '#########'],
         ['#########', '#~~~~~q~#', '#=u=~=H=#', '####~####', '####~####', '####~####', '####B####', '#########']
@@ -430,32 +437,40 @@
         [{ x: 4, y: 4, huong: 0, suc: 2 }, { x: 3, y: 1, huong: 3, suc: 1 }]
       ],
       batDau: [{ x: 4, y: 5, huong: 0 }, { x: 4, y: 5, huong: 0 }],
-      maMau: bai(['cast_net("back")', 'tether_grab()', 'forward(4 - flow_power())']),
+      maMau: bai(['reel_in()', 'wait()', 'cast_net("back")', 'p = flow_power()', 't = 4 - p', 'forward(t)']),
       loiGiai: bai([
+        'reel_in()',
+        'wait()',
         'cast_net("back")',
-        'tether_grab()',
-        'forward(4 - flow_power())',
+        'p = flow_power()',
+        't = 4 - p',
+        'forward(t)',
         'turn_to_calmer()',
-        'forward(3 - flow_power())'
+        'p = flow_power()',
+        't = 3 - p',
+        'forward(t)'
       ]),
       sao: { o: 27, nhip: 17 },
       loiGiaiKhac: {
         moTa: 'Lưu sức nước vào biến s1 và s2 ở từng chặng trước khi gọi forward',
         baiLam: bai([
+          'reel_in()',
+          'wait()',
           'cast_net("back")',
-          'tether_grab()',
           's1 = flow_power()',
-          'forward(4 - s1)',
+          't = 4 - s1',
+          'forward(t)',
           'turn_to_calmer()',
           's2 = flow_power()',
-          'forward(3 - s2)'
+          't = 3 - s2',
+          'forward(t)'
         ])
       },
       loiSai: [
-        { moTa: 'Chỉ tiến 2 bước forward(2) ở chặng dọc nên ở sân 1 chưa lên tới ngã ba đã rẽ đâm vào rào cũ', baiLam: bai(['cast_net("back")', 'tether_grab()', 'forward(2)', 'turn_to_calmer()', 'forward(3 - flow_power())']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
-        { moTa: 'Dùng best_branch(2) cố định ở ngã ba nên ở sân 2 nhánh sức 0 đi thiếu 1 ô', baiLam: bai(['cast_net("back")', 'tether_grab()', 'forward(4 - flow_power())', 'best_branch(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chỉ tiến 2 bước forward(2) ở chặng dọc nên ở sân 1 chưa lên tới ngã ba đã rẽ đâm vào rào cũ', baiLam: bai(['reel_in()', 'wait()', 'cast_net("back")', 'forward(2)', 'turn_to_calmer()', 'p = flow_power()', 't = 3 - p', 'forward(t)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] },
+        { moTa: 'Dùng best_branch(2) cố định ở ngã ba nên ở sân 2 nhánh sức 0 đi thiếu 1 ô', baiLam: bai(['reel_in()', 'wait()', 'cast_net("back")', 'p = flow_power()', 't = 4 - p', 'forward(t)', 'best_branch(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Gọi cast_net("back") và tether_grab() để bắt bè B ở sát đuôi (4, 6), rồi gọi forward(4 - flow_power()) lên ngã ba (4, 1).', 'Luna: Tại ngã ba (4, 1), gọi turn_to_calmer() rồi forward(3 - flow_power()) để đưa bè B vào đúng bến q.']
+      goiY: ['Luna: Gọi reel_in(), wait() rồi cast_net("back") để bắt bè B ở sát đuôi (4, 6), rồi p = flow_power(), t = 4 - p, forward(t) lên ngã ba (4, 1).', 'Luna: Tại ngã ba (4, 1), gọi turn_to_calmer() rồi p = flow_power(), t = 3 - p, forward(t) để đưa bè B vào đúng bến q.']
     }),
 
     /* ========================================================================
@@ -464,8 +479,8 @@
     manCheBenCu({
       so: 1, ten: 'Chế hàm mở cống thông minh calm_gate_pass(n)', hang: 'lam-quen', nhipTheo: 'tong',
       taoHam: ['calm_gate_pass'],
-      deBai: 'Sola hướng dẫn: ở khu bến sông cũ, có ngày trạm cống K đóng kèm dòng chảy ngược ở ô trước mũi, có ngày cống k đã mở sẵn và nước phẳng lặng. Hãy chế hàm calm_gate_pass(n) kiểm tra if flow_power() > 0: flip_valve() rồi gọi forward(n) để vượt qua trạm cống tới phao Q!',
-      veMaMau: 'Trong hàm calm_gate_pass(n), viết if flow_power() > 0: flip_valve() rồi forward(n).',
+      deBai: 'Sola hướng dẫn: ở khu bến sông cũ, có ngày trạm cống K đóng kèm dòng chảy ngược ở ô trước mũi, có ngày cống k đã mở sẵn và nước phẳng lặng. Hãy chế hàm calm_gate_pass(n): đọc p = flow_power(), if p > 0: flip_valve(), rồi gọi forward(n) để vượt qua trạm cống tới phao Q!',
+      veMaMau: 'Trong hàm calm_gate_pass(n), viết p = flow_power(), if p > 0: flip_valve() rồi forward(n).',
       san: [
         ['##V=====', '#~~~K~Q#', '#=u==H=#', '########'],
         ['##V=====', '#~~~k~Q#', '#=u==H=#', '########']
@@ -491,7 +506,7 @@
         { moTa: 'Chưa tạo hàm calm_gate_pass(n)', baiLam: bai(['calm_gate_pass(4)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Luôn gọi flip_valve() không kiểm tra flow_power() nên ở sân 2 làm đóng cống k', baiLam: bai(['calm_gate_pass(4)']), hamCuaEmMoi: [hCalmGatePass(['flip_valve()', 'forward(n)'])], phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
-      goiY: ['Luna: Trong calm_gate_pass(n), kiểm tra if flow_power() > 0: flip_valve() rồi gọi forward(n).', 'Luna: Chương trình chính đã gọi sẵn calm_gate_pass(4).']
+      goiY: ['Luna: Trong calm_gate_pass(n), đọc p = flow_power(), kiểm tra if p > 0: flip_valve() rồi gọi forward(n).', 'Luna: Chương trình chính đã gọi sẵn calm_gate_pass(4).']
     }),
 
     manCheBenCu({
@@ -545,9 +560,9 @@
       loiGiai: bai(['rescue_old_dock(2, 3)'], { hamCuaEmMoi: [hRescueOldDock()] }),
       sao: { o: 28, nhip: 15 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra if flow_power() > 0: flip_valve() rồi gọi dock_tow_back(a, b)',
+        moTa: 'Đọc p = flow_power(), if p > 0: flip_valve() rồi gọi dock_tow_back(a, b)',
         baiLam: bai(['rescue_old_dock(2, 3)']),
-        hamCuaEmMoi: [hRescueOldDock(['if flow_power() > 0:', '    flip_valve()', 'dock_tow_back(a, b)'])]
+        hamCuaEmMoi: [hRescueOldDock(['p = flow_power()', 'if p > 0:', '    flip_valve()', 'dock_tow_back(a, b)'])]
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm rescue_old_dock(a, b)', baiLam: bai(['rescue_old_dock(2, 3)']), phaiCoMa: ['ham-chua-co'] },
@@ -592,8 +607,8 @@
     manCheBenCu({
       so: 5, ten: 'Dùng anchor_flip(n) canh bè trôi vào bến cũ', hang: 'luyen', mucTieu: 'dua-vat', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['calm_gate_pass', 'dock_tow_back', 'rescue_old_dock', 'anchor_flip']),
-      deBai: 'Sola thử thách trên 2 sân: ở kênh dưới, bè B ở (1, 3) đang trôi về Đông qua các ô (2, 3), (3, 3) hướng vào bến q ở (4, 3), nhưng nếu dòng chảy ở (4, 3) không tắt đúng lúc thì B sẽ trôi lố sang (5, 3)! Từ (1, 1) hướng Đông, ô (2, 1) trước mũi có sức nước s (1 ở sân 1, 2 ở sân 2). Hãy đọc s = flow_power(), quay trái hướng lên van V ở (1, 0) rồi gọi anchor_flip(2 - s) để chờ đúng nhịp tắt dòng cho B dừng ngay tại q (4, 3), đồng thời mở cống K ở (2, 1) cho xuồng đi qua kéo B thứ hai ở (5, 1) về q (4, 1)!',
-      veMaMau: 'Đọc s = flow_power(), gọi turn_left(), anchor_flip(2 - s) rồi pull_back(1).',
+      deBai: 'Sola thử thách trên 2 sân: ở kênh dưới, bè B ở (1, 3) đang trôi về Đông qua các ô (2, 3), (3, 3) hướng vào bến q ở (4, 3), nhưng nếu dòng chảy ở (4, 3) không tắt đúng lúc thì B sẽ trôi lố sang (5, 3)! Từ (1, 1) hướng Đông, ô (2, 1) trước mũi có sức nước s (1 ở sân 1, 2 ở sân 2). Hãy đọc s = flow_power(), quay trái hướng lên van V ở (1, 0) rồi tính t = 2 - s và gọi anchor_flip(t) để chờ đúng nhịp tắt dòng cho B dừng ngay tại q (4, 3), đồng thời mở cống K ở (2, 1) cho xuồng đi qua kéo B thứ hai ở (5, 1) về q (4, 1)!',
+      veMaMau: 'Đã có s = flow_power(), turn_left(), t = 2 - s và anchor_flip(t). Thêm pull_back(1).',
       san: [
         ['#V======', '#~K~qB~#', '#=u==H=#', '#B~~q~~#', '########'],
         ['#V======', '#~K~qB~#', '#=u==H=#', '#B~~q~~#', '########']
@@ -607,26 +622,26 @@
         [{ nut: { x: 1, y: 0 }, cong: [{ x: 2, y: 1 }], dong: [{ x: 2, y: 1 }, { x: 1, y: 3 }, { x: 3, y: 3 }, { x: 4, y: 3 }] }]
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      maMau: bai(['s = flow_power()', 'turn_left()', 'anchor_flip(2 - s)']),
-      loiGiai: bai(['s = flow_power()', 'turn_left()', 'anchor_flip(2 - s)', 'pull_back(1)']),
+      maMau: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)']),
+      loiGiai: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)', 'pull_back(1)']),
       sao: { o: 40, nhip: 19 },
       loiGiaiKhac: {
-        moTa: 'Tách h, s = flow() trước khi quay trái gọi anchor_flip(2 - s)',
-        baiLam: bai(['h, s = flow()', 'turn_left()', 'anchor_flip(2 - s)', 'pull_back(1)'])
+        moTa: 'Tách h, s = flow() thay cho s = flow_power() trước khi quay trái',
+        baiLam: bai(['h, s = flow()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)', 'pull_back(1)'])
       },
       loiSai: [
         { moTa: 'Truyền cố định anchor_flip(0) nên ở sân 1 tắt dòng quá sớm khi bè dưới mới ở (3, 3)', baiLam: bai(['turn_left()', 'anchor_flip(0)', 'pull_back(1)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên gọi pull_back(1) ở cuối nên bè trên ở (5, 1) chưa về bến (4, 1)', baiLam: bai(['s = flow_power()', 'turn_left()', 'anchor_flip(2 - s)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Quên gọi pull_back(1) ở cuối nên bè trên ở (5, 1) chưa về bến (4, 1)', baiLam: bai(['s = flow_power()', 'turn_left()', 't = 2 - s', 'anchor_flip(t)']), phaiCoMa: ['chua-dua-vat'] }
       ],
-      goiY: ['Luna: Trong nhịp turn_left() và nhịp drop_anchor() đầu của anchor_flip, bè dưới đã trôi tới (4, 3) ở sân 2 (s == 2), còn ở sân 1 (s == 1) cần chờ thêm 1 nhịp (2 - s = 1).', 'Luna: Sau anchor_flip(2 - s), xuồng đang ở (3, 1) hướng Đông; gọi pull_back(1) sẽ tung lưới bắt bè ở (5, 1) rồi kéo lùi 1 ô vào bến (4, 1)!']
+      goiY: ['Luna: Trong nhịp turn_left() và nhịp drop_anchor() đầu của anchor_flip, bè dưới đã trôi tới (4, 3) ở sân 2 (s == 2), còn ở sân 1 (s == 1) cần chờ thêm 1 nhịp (t = 2 - s = 1).', 'Luna: Sau anchor_flip(t), xuồng đang ở (3, 1) hướng Đông; gọi pull_back(1) sẽ tung lưới bắt bè ở (5, 1) rồi kéo lùi 1 ô vào bến (4, 1)!']
     }),
 
     manCheBenCu({
       so: 6, ten: 'Chế hàm mở cống rồi lai dắt qua cua tail_over_calm(d, n)', hang: 'luyen', mucTieu: 'dua-vat', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['calm_gate_pass', 'dock_tow_back', 'rescue_old_dock', 'anchor_flip']),
       taoHam: ['tail_over_calm'],
-      deBai: 'Sola hướng dẫn chế hàm thứ 5 của gói: tại góc cua trước đám lục bình L, có ngày ô trước mũi có dòng chảy và cống K ở nhánh rẽ đang đóng, có ngày nước êm và cống k đã mở sẵn. Hãy chế hàm tail_over_calm(d, n) gồm: if flow_power() > 0: flip_valve() rồi gọi tug_corner(d, n). Dùng tail_over_calm("R", 4) đưa L vào bến q ở (2, 4)!',
-      veMaMau: 'Trong hàm tail_over_calm(d, n), viết if flow_power() > 0: flip_valve() và tug_corner(d, n).',
+      deBai: 'Sola hướng dẫn chế hàm thứ 5 của gói: tại góc cua trước đám lục bình L, có ngày ô trước mũi có dòng chảy và cống K ở nhánh rẽ đang đóng, có ngày nước êm và cống k đã mở sẵn. Hãy chế hàm tail_over_calm(d, n) gồm: p = flow_power(), if p > 0: flip_valve() rồi gọi tug_corner(d, n). Dùng tail_over_calm("R", 4) đưa L vào bến q ở (2, 4)!',
+      veMaMau: 'Trong hàm tail_over_calm(d, n), viết p = flow_power(), if p > 0: flip_valve() và tug_corner(d, n).',
       san: [
         ['##V###', '#~~~L#', '#=~~=#', '#uK~H#', '#~q~~#', '#~~~~#', '######'],
         ['##V###', '#~~~L#', '#=~~=#', '#uk~H#', '#~q~~#', '#~~~~#', '######']
@@ -646,21 +661,21 @@
       loiGiaiKhac: {
         moTa: 'Gọi deliver_tail(d, n) thay cho tug_corner(d, n) trong tail_over_calm(d, n)',
         baiLam: bai(['tail_over_calm("R", 4)']),
-        hamCuaEmMoi: [hTailOverCalm(['if flow_power() > 0:', '    flip_valve()', 'deliver_tail(d, n)'])]
+        hamCuaEmMoi: [hTailOverCalm(['p = flow_power()', 'if p > 0:', '    flip_valve()', 'deliver_tail(d, n)'])]
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm tail_over_calm(d, n)', baiLam: bai(['tail_over_calm("R", 4)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Luôn gọi flip_valve() không kiểm tra flow_power() nên ở sân 2 làm đóng cống k', baiLam: bai(['tail_over_calm("R", 4)']), hamCuaEmMoi: [hTailOverCalm(['flip_valve()', 'tug_corner(d, n)'])], phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Lục bình L ở (4, 1) cách mũi xuồng ở (2, 1) đúng 2 ô trong tầm lưới.', 'Luna: Trong tail_over_calm(d, n), viết if flow_power() > 0: flip_valve() rồi gọi tug_corner(d, n).']
+      goiY: ['Luna: Lục bình L ở (4, 1) cách mũi xuồng ở (2, 1) đúng 2 ô trong tầm lưới.', 'Luna: Trong tail_over_calm(d, n), viết p = flow_power(), if p > 0: flip_valve() rồi gọi tug_corner(d, n).']
     }),
 
     manCheBenCu({
       so: 7, ten: 'Sửa hàm fix_old_dock() viết ngược điều kiện dòng chảy', hang: 'sua-ham', mucTieu: 'dua-vat', nhipTheo: 'tong',
       chinhCoDinh: true,
       hamCuaEmCan: KHO_TRUOC.concat(['calm_gate_pass', 'dock_tow_back', 'rescue_old_dock', 'anchor_flip', 'tail_over_calm']),
-      deBai: 'Sola phát hiện lỗi trong hàm fix_old_dock(a, b) của màn: hàm này cần gạt van V khi ô trước mũi có dòng chảy (flow_power() > 0), nhưng ai đó lại viết nhầm if flow_power() == 0: khiến ngày cống đóng thì không mở, còn ngày cống mở sẵn thì lại đóng sập lại! Hãy sửa lại hàm fix_old_dock(a, b) cho đúng!',
-      veMaMau: 'Đổi điều kiện flow_power() == 0 thành flow_power() > 0 (hoặc gọi rescue_old_dock(a, b)).',
+      deBai: 'Sola phát hiện lỗi trong hàm fix_old_dock(a, b) của màn: hàm này cần gạt van V khi ô trước mũi có dòng chảy (p > 0 với p = flow_power()), nhưng ai đó lại viết nhầm if p == 0: khiến ngày cống đóng thì không mở, còn ngày cống mở sẵn thì lại đóng sập lại! Hãy sửa lại hàm fix_old_dock(a, b) cho đúng!',
+      veMaMau: 'Đổi điều kiện p == 0 thành p > 0 (hoặc gọi rescue_old_dock(a, b)).',
       san: [
         ['##V=====', '#~~qK~B#', '#=u==H=#', '########'],
         ['##V=====', '#~~qk~B#', '#=u==H=#', '########']
@@ -682,7 +697,7 @@
         baiLam: bai(['fix_old_dock(2, 3)'], { hamCuaMan: [hFixOldDock(['rescue_old_dock(a, b)'])] })
       },
       loiSai: [
-        { moTa: 'Để nguyên điều kiện flow_power() == 0 chưa sửa nên cả hai sân đều hỏng', baiLam: bai(['fix_old_dock(2, 3)'], { hamCuaMan: [hFixOldDock(T_FIX_OLD_DOCK_SAI)] }), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Để nguyên điều kiện p == 0 chưa sửa nên cả hai sân đều hỏng', baiLam: bai(['fix_old_dock(2, 3)'], { hamCuaMan: [hFixOldDock(T_FIX_OLD_DOCK_SAI)] }), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Xóa mất pull_back(b) ở cuối hàm fix_old_dock(a, b)', baiLam: bai(['fix_old_dock(2, 3)'], { hamCuaMan: [hFixOldDock(['calm_gate_pass(a)'])] }), phaiCoMa: ['chua-dua-vat'] }
       ],
       goiY: ['Luna: Đổi dấu == 0 thành > 0 ở dòng đầu của fix_old_dock(a, b).', 'Luna: Hoặc thay cả thân hàm bằng một dòng rescue_old_dock(a, b).']
@@ -691,8 +706,8 @@
     manCheBenCu({
       so: 8, ten: 'Kết hợp tail_over_calm() và bù sức nước nhánh dọc', hang: 'bien-the', mucTieu: 'dua-vat', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['calm_gate_pass', 'dock_tow_back', 'rescue_old_dock', 'anchor_flip', 'tail_over_calm']),
-      deBai: 'Sola giao bài phối hợp tại khu tường cửa cũ: từ (2, 1) hướng Đông, hãy gọi tail_over_calm("R", 1) để tự kiểm tra dòng chảy ở (3, 1), gạt van V mở cống K ở (2, 3) khi cần, đồng thời thu đám lục bình L ở (4, 1) về sát mũi và rẽ xuống (2, 2) hướng Nam. Ô (2, 3) trước mũi có dòng xuôi sức 1 hoặc 2; hãy gọi forward(4 - flow_power()) để kéo L vào bến q ở (2, 5)!',
-      veMaMau: 'Gọi tail_over_calm("R", 1) rồi forward(4 - flow_power()).',
+      deBai: 'Sola giao bài phối hợp tại khu tường cửa cũ: từ (2, 1) hướng Đông, hãy gọi tail_over_calm("R", 1) để tự kiểm tra dòng chảy ở (3, 1), gạt van V mở cống K ở (2, 3) khi cần, đồng thời thu đám lục bình L ở (4, 1) về sát mũi và rẽ xuống (2, 2) hướng Nam. Ô (2, 3) trước mũi có dòng xuôi sức 1 hoặc 2; hãy đọc p = flow_power(), tính t = 4 - p rồi gọi forward(t) để kéo L vào bến q ở (2, 5)!',
+      veMaMau: 'Gọi tail_over_calm("R", 1), rồi p = flow_power(), t = 4 - p, forward(t).',
       san: [
         ['##V###', '#~~~L#', '#=~H=#', '#uK=C#', '#~~~~#', '#~q~~#', '#~~~~#', '######'],
         ['##V###', '#~~~L#', '#=~H=#', '#uk=C#', '#~~~~#', '#~q~~#', '#~~~~#', '######']
@@ -707,17 +722,17 @@
       ],
       batDau: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 1, huong: 1 }],
       maMau: bai(['tail_over_calm("R", 1)']),
-      loiGiai: bai(['tail_over_calm("R", 1)', 'forward(4 - flow_power())']),
+      loiGiai: bai(['tail_over_calm("R", 1)', 'p = flow_power()', 't = 4 - p', 'forward(t)']),
       sao: { o: 33, nhip: 16 },
       loiGiaiKhac: {
-        moTa: 'Tách h, s = flow() sau tail_over_calm("R", 1) rồi gọi forward(4 - s)',
-        baiLam: bai(['tail_over_calm("R", 1)', 'h, s = flow()', 'forward(4 - s)'])
+        moTa: 'Tách h, s = flow() thay cho p = flow_power() sau tail_over_calm("R", 1)',
+        baiLam: bai(['tail_over_calm("R", 1)', 'h, s = flow()', 't = 4 - s', 'forward(t)'])
       },
       loiSai: [
         { moTa: 'Đếm cứng forward(2) ở nhánh dọc nên ở sân 1 lục bình L dừng trước bến q', baiLam: bai(['tail_over_calm("R", 1)', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Gọi tug_corner("R", 1) mà không dùng tail_over_calm nên ở sân 1 cống K chưa mở', baiLam: bai(['tug_corner("R", 1)', 'forward(4 - flow_power())']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Gọi tug_corner("R", 1) mà không dùng tail_over_calm nên ở sân 1 cống K chưa mở', baiLam: bai(['tug_corner("R", 1)', 'p = flow_power()', 't = 4 - p', 'forward(t)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
-      goiY: ['Luna: Lệnh tail_over_calm("R", 1) vừa đảm bảo cống (2, 3) mở trên cả hai sân, vừa đưa xuồng xuống (2, 2) với L theo sau ở (2, 1).', 'Luna: Sau đó gọi forward(4 - flow_power()) để bù đúng sức chảy ở (2, 3).']
+      goiY: ['Luna: Lệnh tail_over_calm("R", 1) vừa đảm bảo cống (2, 3) mở trên cả hai sân, vừa đưa xuồng xuống (2, 2) với L theo sau ở (2, 1).', 'Luna: Sau đó đọc p = flow_power(), t = 4 - p, gọi forward(t) để bù đúng sức chảy ở (2, 3).']
     }),
 
     manCheBenCu({

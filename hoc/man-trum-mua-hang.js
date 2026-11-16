@@ -206,29 +206,31 @@
     manTH(6, 'cung-co', {
       ten: 'Lọc danh sách nốt nhạc bằng tập hợp',
       hamCuaEmCan: ['move', 'forward', 'go_echo', 'play_note', 'march_note', 'unique_notes', 'echo_crack_step'],
-      deBai: 'Ở 2 sân, đầu tiên gọi echo_crack_step() để vượt qua khối đá chuông đầu hành lang. Sau đó gọi unique_notes(a) với a = [4, 4, 7, 4] để lọc bỏ nốt trùng, vừa tiến 2 bước tới cờ vừa phát nốt 4 phá khối đá chuông thứ hai.',
+      deBai: 'Mỗi sân có một danh sách nốt a riêng. Sân 1 là a = [4, 4, 7, 4]. Ở cả 2 sân, đầu tiên gọi echo_crack_step() để vượt qua khối đá chuông đầu hành lang. Sau đó gọi unique_notes(a) để lọc bỏ nốt trùng, vừa tiến 2 bước tới cờ vừa phát nốt đầu tiên của a phá khối đá chuông thứ hai.',
       veMaMau: 'Mã mẫu thiếu unique_notes(a) nên chưa tiến qua khối đá chuông thứ hai tới cờ.',
       san: [
         ['########', '#.I.IIF#', '########'],
-        ['#########', '#.II.IIF#', '#########']
+        ['########', '#..IIF##', '########']
       ],
+      duLieuSan: ['a = [4, 4, 7, 4]', 'a = [6, 6, 2, 6]'],      // dữ liệu theo sân: khối đá chuông thứ hai ở sân 2 cần nốt 6; điền thẳng nốt của sân 1 thì đâm vào đá ở sân 2
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       chuongDa: [
         [{ x: 3, y: 1, not: 2 }],
-        [{ x: 4, y: 1, not: 5 }]
+        [{ x: 2, y: 1, not: 5 }]
       ],
       daChuong: [
         [{ x: 4, y: 1, not: 2, ben: 1 }, { x: 6, y: 1, not: 4, ben: 1 }],
-        [{ x: 5, y: 1, not: 5, ben: 1 }, { x: 7, y: 1, not: 4, ben: 1 }]
+        [{ x: 3, y: 1, not: 5, ben: 1 }, { x: 5, y: 1, not: 6, ben: 1 }]
       ],
       maMau: bai(['a = [4, 4, 7, 4]', 'echo_crack_step()']),
       loiGiai: bai(['a = [4, 4, 7, 4]', 'echo_crack_step()', 'unique_notes(a)']),
       loiSai: [
         { moTa: 'Thiếu unique_notes(a): dừng ở giữa hành lang, chưa tới cờ', baiLam: bai(['a = [4, 4, 7, 4]', 'echo_crack_step()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Dùng forward(2) cứng thay vì echo_crack_step(): ở sân 2 đâm vào đá chuông', baiLam: bai(['a = [4, 4, 7, 4]', 'forward(2)', 'play_note(2)', 'move()', 'unique_notes(a)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'], cung: true }
+        { moTa: 'Dùng forward(2) cứng thay vì echo_crack_step(): ở sân 2 đâm vào đá chuông', baiLam: bai(['a = [4, 4, 7, 4]', 'forward(2)', 'play_note(2)', 'move()', 'unique_notes(a)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'], cung: true },
+        { moTa: 'Điền thẳng nốt của sân 1: march_note(4) rồi march_note(7) không phá được đá ở sân 2', baiLam: bai(['a = [4, 4, 7, 4]', 'echo_crack_step()', 'march_note(4)', 'march_note(7)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
       ],
       sao: { o: 23, nhip: 13 },
-      goiY: ['Hàm unique_notes(a) dùng tập hợp set() để chỉ gọi march_note(x) cho mỗi nốt một lần (4 và 7).', 'Thêm dòng unique_notes(a) vào cuối chương trình.']
+      goiY: ['Hàm unique_notes(a) dùng tập hợp set() để chỉ gọi march_note(x) cho mỗi nốt một lần (ở sân 1 là 4 và 7).', 'Thêm dòng unique_notes(a) vào cuối chương trình. Điền thẳng nốt thì chỉ đúng ở một sân.']
     }),
 
     manTH(7, 'cung-co', {

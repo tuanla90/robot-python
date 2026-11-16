@@ -82,7 +82,7 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'doi-omni.16', 'doi-omni.17', 'che-doi-omni.15', 'che-doi-omni.16', 'che-doi-omni.18', 'che-doi-omni.19',      // gói 9 mùa 6: R2 ở mỏ đá (2 sân)
   'quet-ma.2', 'quet-ma.3', 'quet-ma.4', 'quet-ma.5', 'quet-ma.6', 'quet-ma.7', 'quet-ma.8', 'quet-ma.9',
   'che-quet-ma.1', 'che-quet-ma.2', 'che-quet-ma.3', 'che-quet-ma.4', 'che-quet-ma.5', 'che-quet-ma.6', 'che-quet-ma.7', 'che-quet-ma.8', 'che-quet-ma.9',
-  'ben-tau.7', 'che-ben-tau.9', 'che-duong-ray.9', 'che-nhac-doi.9', 'che-can-tai.9',
+  'ben-tau.7', 'che-ben-tau.7', 'che-ben-tau.8', 'che-ben-tau.9', 'che-duong-ray.9', 'che-nhac-doi.9', 'che-can-tai.9',
   'cang-cu.6', 'cang-cu.8', 'che-cang-cu.4', 'che-cang-cu.7', 'che-cang-cu.9',
   'doi-cang.6', 'doi-cang.8', 'che-doi-cang.2', 'che-doi-cang.5', 'che-doi-cang.7', 'che-doi-cang.9',      // gói 3–9 mùa cảng sông: đọc mã container, bến tàu, đường ray, móc đôi, cân tải, cảng cũ & đội cảng (2 sân)
   'dong-chay.2', 'dong-chay.3', 'dong-chay.4', 'dong-chay.5', 'dong-chay.6', 'dong-chay.7', 'dong-chay.8', 'dong-chay.9',
@@ -105,7 +105,9 @@ NHIEU_SAN_KHONG_TRUM.push('pho-mau.2', 'pho-mau.3', 'pho-mau.4', 'pho-mau.5', 'p
   'hang-cu.3', 'hang-cu.5', 'hang-cu.7', 'hang-cu.9',
   'che-hang-cu.2', 'che-hang-cu.4', 'che-hang-cu.6', 'che-hang-cu.8',
   'doi-hang-dong.3', 'doi-hang-dong.6', 'doi-hang-dong.8',
-  'che-doi-hang-dong.2', 'che-doi-hang-dong.4', 'che-doi-hang-dong.6', 'che-doi-hang-dong.8');      // gói 3–9 mùa hang động: cảm biến âm thanh, sân hang động, thu gai, phát nốt, nghe nốt, hang cổ & đội hang động (2 sân)
+  'che-doi-hang-dong.2', 'che-doi-hang-dong.4', 'che-doi-hang-dong.6', 'che-doi-hang-dong.8',
+  'nhac-doi.8', 'nhac-doi.9', 'cang-cu.9',
+  'can-tai.8', 'can-tai.9', 'che-can-tai.8', 'cang-cu.7');      // 15/11 dãy ngang (ghép nhịp 3f): mỗi sân một bộ số, kỷ lục ở ô khác nhau, trẻ quét read_code() / weight() giữ kỷ lục (hoc/kiem-lon-nhat.mjs kiểm riêng) ·      // 15/11 (ba mã dòng trên) luật xếp chồng bongMo.chongLuat: mỗi sân một bộ số container, trẻ phải read_code() rồi chọn giữ hay đảo (hoc/kiem-chong-luat.mjs kiểm riêng) ·      // gói 3–9 mùa hang động: cảm biến âm thanh, sân hang động, thu gai, phát nốt, nghe nốt, hang cổ & đội hang động (2 sân)
 // PDM1 (31/10, KE-HOACH-PART-DUNG-MUA.md): gói 10 mùa 1 "R1 chạy một mình" (gói robot: chương robot-hoan-thien, trum-mua-1): MỌI màn nhiều sân (mỗi sân một ngày làm việc).
 // PDM2c2 / PDM3b2 / PDM4c / PDM6c / PDM8c (31/10): gói 10 mùa 2 (nha-may-chay), gói 10 mùa 3 (tong-hop-3), gói 10 mùa 4 (drone-ke-vach), gói 10 mùa 6 (may-mo-da), gói 10 mùa cảng, gói 10 mùa sông và gói 10 mùa hang (tong-hop-hang) cũng MỌI màn nhiều sân.
 const GOI_NHIEU_SAN = new Set(['robot', 'nha-may-chay', 'tong-hop-3', 'drone-ke-vach', 'may-mo-da', 'tong-hop-cang', 'tong-hop-song', 'tong-hop-hang', 'ngay-hoi-clb'].flatMap(ma => (TT.goi.find(g => g.ma === ma) || { chuong: [] }).chuong));
@@ -116,7 +118,7 @@ kiem('nhiều sân chỉ ở màn trùm (trừ danh sách và gói 10 mùa 1), t
       assert.ok(soSan(m) >= 2 && soSan(m) <= 3, m.ma + ': gói 10 chạy một mình cần 2–3 sân, có ' + soSan(m));
       assert.equal(m.nhipTheo, 'tong', m.ma + ': gói 10 chạy một mình cần nhipTheo === "tong"');
     }
-    else if (m.hang !== 'trum' && !NHIEU_SAN_KHONG_TRUM.includes(m.ma)) assert.equal(soSan(m), 1, m.ma);
+    else if (m.hang !== 'trum' && !NHIEU_SAN_KHONG_TRUM.includes(m.ma) && !m.duLieuSan) assert.equal(soSan(m), 1, m.ma);      // 13/11: màn DỮ LIỆU THEO SÂN (man.duLieuSan) được nhiều sân dù không phải trùm: mỗi sân một bộ số để chặn mẹo điền thẳng số (hoc/kiem-du-lieu-san.cjs kiểm riêng)
     if (m.hang === 'trum') assert.equal(m.so, ds.length, m.ma + ' trùm không đứng cuối chương');
     if (ds.length === 10) assert.equal(m.hang === 'trum', m.so === 10, m.ma);
   }

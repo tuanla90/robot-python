@@ -8,7 +8,7 @@ export const FPS = 30;
 const XF = 16;          // khung chồng giữa hai cảnh (crossfade mượt 0.53s)
 const LEAD = 8;         // màn chờ ngắn trước cảnh đầu
 const SFX_GAIN = 0.55;
-const SFX_TRIM: Record<string, number> = {'wrong.wav': 0.35, 'type.wav': 0.55, 'riser.wav': 0.6, 'ding.wav': 0.8};
+const SFX_TRIM: Record<string, number> = {'wrong.wav': 0.12, 'type.wav': 0.55, 'riser.wav': 0.6, 'ding.wav': 0.8};
 
 /** [khung trong cảnh, tệp trong public/sfx, âm lượng, độ dài khung] */
 export type Sfx = [number, string, number, number?];

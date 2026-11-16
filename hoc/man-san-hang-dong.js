@@ -468,30 +468,32 @@
     manCheHangDong(5, 'luyen', {
       ten: 'Tập hợp bước sau ngách đôi',
       hamCuaEmCan: ['move', 'forward', 'count_unique', 'go_echo', 'double_tunnel'],
-      deBai: 'Sau khi vượt 2 ngách ngầm, số bước cuối tới cờ bằng đúng số phần tử phân biệt trong danh sách a = [4, 7, 4, 9, 7]. Hãy truyền count_unique(a) vào double_tunnel(...).',
+      deBai: 'Mỗi sân có một danh sách a riêng. Sau khi vượt 2 ngách ngầm, số bước cuối tới cờ bằng đúng số phần tử phân biệt trong a. Sân 1 là a = [4, 7, 4, 9, 7]. Hãy truyền count_unique(a) vào double_tunnel(...).',
       veMaMau: 'Mã mẫu truyền số cứng 1 vào double_tunnel(1) nên dừng trước cờ.',
       san: [
         ['#########', '#..######', '#########', '##.I.####', '#########', '####.IIF#', '#########'],
-        ['##########', '#.I.######', '##########', '###.I.####', '##########', '#####.IIF#', '##########']
+        ['#########', '#..######', '#########', '##..#####', '#########', '###.IIIF#', '#########']
       ],
+      duLieuSan: ['a = [4, 7, 4, 9, 7]', 'a = [5, 8, 5, 2, 6, 8]'],      // dữ liệu theo sân: sân 1 cần 3 bước cuối, sân 2 cần 4; điền thẳng số của sân 1 thì dừng trước cờ ở sân 2
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       chuongDa: [
         [{ x: 2, y: 1, not: 1, phamVi: 1 }, { x: 4, y: 3, not: 2, phamVi: 2 }],
-        [{ x: 3, y: 1, not: 1, phamVi: 2 }, { x: 5, y: 3, not: 2, phamVi: 2 }]
+        [{ x: 2, y: 1, not: 1, phamVi: 1 }, { x: 3, y: 3, not: 2, phamVi: 1 }]
       ],
       ngachHang: [
         [{ a: { x: 2, y: 1 }, b: { x: 2, y: 3 } }, { a: { x: 4, y: 3 }, b: { x: 4, y: 5 } }],
-        [{ a: { x: 3, y: 1 }, b: { x: 3, y: 3 } }, { a: { x: 5, y: 3 }, b: { x: 5, y: 5 } }]
+        [{ a: { x: 2, y: 1 }, b: { x: 2, y: 3 } }, { a: { x: 3, y: 3 }, b: { x: 3, y: 5 } }]
       ],
       maMau: bai(['a = [4, 7, 4, 9, 7]', 'double_tunnel(1)']),
       loiGiai: bai(['a = [4, 7, 4, 9, 7]', 'double_tunnel(count_unique(a))']),
       loiSai: [
-        { moTa: 'Giữ nguyên double_tunnel(1): dừng trước cờ 2 ô', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'double_tunnel(1)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Giữ nguyên double_tunnel(1): dừng trước cờ', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'double_tunnel(1)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Điền thẳng số của sân 1: double_tunnel(3) dừng trước cờ 1 ô ở sân 2', baiLam: bai(['a = [4, 7, 4, 9, 7]', 'double_tunnel(3)']), phaiCoMa: ['chua-toi-co'] }
       ],
       sao: { o: 11, nhip: 7 },
       goiY: [
-        'Danh sách a có 3 giá trị phân biệt là 4, 7, 9.',
-        'Đổi double_tunnel(1) thành double_tunnel(count_unique(a)).'
+        'Ở sân 1, a có 3 giá trị phân biệt là 4, 7, 9. Ở sân 2, a có 4 giá trị phân biệt.',
+        'Đổi double_tunnel(1) thành double_tunnel(count_unique(a)). Điền thẳng số thì chỉ đúng ở một sân.'
       ]
     }),
 

@@ -1,3 +1,10 @@
+## 2026-11-02 — Nhánh `main` (Phim Gói Mùa 1: Góp Ý Đợt 1 Của User — Đuôi Bóng, Chuyển Cảnh, Part Riêng, Góc Ngang 3D)
+- `phim-clb/src/doc/kit-doc.tsx`: đuôi bóng thoại người nhờ (`Nguoi`) cùng kiểu Mascot (to, bóng cứng, liền viền), hết tam giác nhỏ bản cũ.
+- `phim-clb/src/d10.tsx`: `Whip` cắt cảnh cũ ngay khi đoạn chồng bắt đầu, cảnh mới hiện dần 10 khung (user: chuyển cảnh thấy hai xe đè nhau).
+- `phim-clb/tools/xuat-part.mjs` (mới), `public/robot/part/`: ảnh PART RIÊNG (hai bánh, tay kẹp, hai mắt khoảng cách, hai mắt hông) vẽ bằng bộ vẽ vector game trên thân rỗng cùng điểm gắn; `TrongXe` lắp part bằng ảnh này (không cắt từ ảnh xe đủ).
+- `public/robot/ngang/` (mới), `src/doc/m1.tsx`: cảnh cơ chế tay kẹp gói 2 dùng ảnh 3D nhìn ngang (gốc Antigravity `r1_ngang_opt3_v2` 1/11), tách lớp thân / tay mở / tay cầm thùng / thùng để diễn hạ – kẹp – nâng – đi – thả. TẠM cắt lớp từ ảnh gốc; chờ ảnh part riêng cùng góc để thay.
+- `src/web/entry.tsx`: `TU_PHAT` — phim tự phát, ẩn nút Tiếp giữa phim. `tools/chup-khung.mjs`: `CANH=` / `KHUNG=` chụp một cảnh ở khung tuỳ chọn; `tools/web/nen-anh.py` thêm `robot/part`, `robot/ngang`.
+
 ## 2026-11-02 — Nhánh `main` (Phim Gói Mùa 1 Viết Lại Trên Bộ Mô Phỏng Sân Game + Chuẩn Gói 8/9/10)
 - `hoc/KE-HOACH-SUA-PHIM-GOI.md` (mới), `hoc/LUAT-SUA-PHIM-CLB.md` (mục 8), `hoc/KICH-BAN-PHIM-GOI-CLB.md`: Phỏng vấn user 2/11 chốt: mùa 1 làm mẫu; mọi gói có cảnh cơ chế trên sa bàn Lab; lệnh và hình trong phim phải thuộc gói; vật lý, hoạt cảnh, lưới giống game; chuẩn gói 8 = tổng duyệt yếu tố map, 9 = hai thiết bị (R2), 10 = tự động nhiều map.
 - `hoc/lo-trinh-hoc.js`, `hoc/kiem-combo-mua-1.mjs`, `phim-clb/src/web/ds-goi.ts`, `hoc/game/phim-clb/ds.js`: Mùa 1 đổi chỗ gói `combo` (lên gói 8, sao 210) và `hai-robot` (xuống gói 9, sao 240) cho khớp chuẩn; bộ kiểm combo sửa khẳng định thứ tự chương.

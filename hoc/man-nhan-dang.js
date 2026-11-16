@@ -30,11 +30,11 @@
   }
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo, than: than }; }
 
-  var T_SORT_LOB = ['if shape("front") == "ore":', '    aim_lob(3)', 'else:', '    aim_lob(2)'];
-  var T_ROUND_FILL = ['if shape("front") == "round":', '    fill_pit()', 'else:', '    diag_r(2)'];
-  var T_PICK_ROUND = ['if shape("left") == "round":', '    turn_left()', 'else:', '    turn_right()', 'fill_pit()'];
+  var T_SORT_LOB = ['s = shape("front")', 'if s == "ore":', '    aim_lob(3)', 'else:', '    aim_lob(2)'];
+  var T_ROUND_FILL = ['s = shape("front")', 'if s == "round":', '    fill_pit()', 'else:', '    diag_r(2)'];
+  var T_PICK_ROUND = ['s = shape("left")', 'if s == "round":', '    turn_left()', 'else:', '    turn_right()', 'fill_pit()'];
   var T_DIAG_SORT = ['diag_right()', 'sort_lob()'];
-  var T_SAFE_SORT = ['if shape("front") == "ore":', '    aim_lob(3)', 'if shape("front") == "round":', '    aim_lob(2)'];
+  var T_SAFE_SORT = ['s = shape("front")', 'if s == "ore":', '    aim_lob(3)', 's = shape("front")', 'if s == "round":', '    aim_lob(2)'];
 
   function manND(o) {
     return Object.assign({
@@ -89,8 +89,8 @@
         '......'
       ],
       batDau: { x: 2, y: 4, huong: 0 },
-      maMau: bai(['if shape("front") == "square":', '    slide_r(1)', 'fill_pit()', 'move()']),
-      loiGiai: bai(['if shape("front") == "square":', '    slide_r(1)', 'fill_pit()', 'move()']),
+      maMau: bai(['s = shape("front")', 'if s == "square":', '    slide_r(1)', 'fill_pit()', 'move()']),
+      loiGiai: bai(['s = shape("front")', 'if s == "square":', '    slide_r(1)', 'fill_pit()', 'move()']),
       sao: { o: 18, nhip: 6 },
       loiBinh: 'Lệnh shape(huong) phân biệt đá tròn ("round"), đá vuông ("square") và quặng quý ("ore") ngay tức thì mà không tốn nhịp.'
     }),
@@ -101,7 +101,7 @@
       ten: 'Quặng quý vào máng xa', hang: 'lam-quen',
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['lob', 'aim_lob'],
-      deBai: 'Trên hai sân, viên đá trước mũi xe có thể là quặng quý (`"ore"`) cần hất xa 3 ô vào máng `D` ở hàng 1, hoặc đá tròn (`"round"`) cần hất 2 ô vào máng `D` ở hàng 2. Hãy kiểm tra `if shape("front") == "ore":` để gọi `aim_lob(3)`, ngược lại (`else:`) gọi `aim_lob(2)`.',
+      deBai: 'Trên hai sân, viên đá trước mũi xe có thể là quặng quý (`"ore"`) cần hất xa 3 ô vào máng `D` ở hàng 1, hoặc đá tròn (`"round"`) cần hất 2 ô vào máng `D` ở hàng 2. Hãy đọc `s = shape("front")` rồi kiểm tra `if s == "ore":` để gọi `aim_lob(3)`, ngược lại (`else:`) gọi `aim_lob(2)`.',
       veMaMau: 'Chương trình có sẵn mới có nhánh if cho quặng "ore". Hãy viết thêm nhánh else gọi aim_lob(2).',
       goiY: [
         'Ở cuối chương trình, viết else: thẳng cột với if.',
@@ -144,11 +144,11 @@
         ]
       ],
       batDau: { x: 2, y: 4, huong: 0 },
-      maMau: bai(['if shape("front") == "ore":', '    aim_lob(3)']),
-      loiGiai: bai(['if shape("front") == "ore":', '    aim_lob(3)', 'else:', '    aim_lob(2)']),
+      maMau: bai(['s = shape("front")', 'if s == "ore":', '    aim_lob(3)']),
+      loiGiai: bai(['s = shape("front")', 'if s == "ore":', '    aim_lob(3)', 'else:', '    aim_lob(2)']),
       sao: { o: 10, nhip: 2 },
       loiSai: [
-        { moTa: 'Chưa viết nhánh else để hất viên đá tròn ở sân 2', baiLam: bai(['if shape("front") == "ore":', '    aim_lob(3)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chưa viết nhánh else để hất viên đá tròn ở sân 2', baiLam: bai(['s = shape("front")', 'if s == "ore":', '    aim_lob(3)']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Luôn gọi aim_lob(2) không phân biệt quặng quý làm quặng rơi trượt ngoài máng', baiLam: bai(['aim_lob(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       loiBinh: 'Nhờ shape("front"), R1 tự động hất quặng quý xa 3 ô và đá tròn gần 2 ô trên cả hai sân.'
@@ -159,10 +159,10 @@
       id: 6703, chuong: 'nhan-dang', so: 3, ma: 'nhan-dang.3',
       ten: 'Đá tròn hai bên hông', hang: 'luyen',
       hamCuaEmCan: ['move', 'forward', 'turn_left', 'turn_right', 'lob', 'fill_pit'],
-      deBai: 'R1 đứng giữa hai viên đá ở hai bên hông: một bên là đá tròn (`"round"`) lấp được hố sâu dẫn tới cờ, bên kia là đá vuông (`"square"`). Hãy kiểm tra `if shape("left") == "round":` để quay trái (`turn_left()`), ngược lại (`else:`) quay phải (`turn_right()`), rồi gọi `fill_pit()` và `move()` tới cờ.',
+      deBai: 'R1 đứng giữa hai viên đá ở hai bên hông: một bên là đá tròn (`"round"`) lấp được hố sâu dẫn tới cờ, bên kia là đá vuông (`"square"`). Hãy đọc `s = shape("left")` rồi kiểm tra `if s == "round":` để quay trái (`turn_left()`), ngược lại (`else:`) quay phải (`turn_right()`), rồi gọi `fill_pit()` và `move()` tới cờ.',
       veMaMau: 'Điền turn_left() vào nhánh if, thêm nhánh else gọi turn_right(), rồi gọi fill_pit() và move().',
       goiY: [
-        'Nếu shape("left") == "round" thì gọi turn_left(), ngược lại else: gọi turn_right().',
+        'Đọc s = shape("left"); nếu s == "round" thì gọi turn_left(), ngược lại else: gọi turn_right().',
         'Sau khối if/else, gọi fill_pit() và move() ở lề ngoài cùng.'
       ],
       san: [
@@ -198,12 +198,12 @@
         ]
       ],
       batDau: { x: 4, y: 2, huong: 0 },
-      maMau: bai(['if shape("left") == "round":', '    turn_left()', 'fill_pit()', 'move()']),
-      loiGiai: bai(['if shape("left") == "round":', '    turn_left()', 'else:', '    turn_right()', 'fill_pit()', 'move()']),
+      maMau: bai(['s = shape("left")', 'if s == "round":', '    turn_left()', 'fill_pit()', 'move()']),
+      loiGiai: bai(['s = shape("left")', 'if s == "round":', '    turn_left()', 'else:', '    turn_right()', 'fill_pit()', 'move()']),
       sao: { o: 21, nhip: 6 },
       loiSai: [
-        { moTa: 'Thiếu nhánh else quay phải khi đá tròn nằm bên phải ở sân 2', baiLam: bai(['if shape("left") == "round":', '    turn_left()', 'fill_pit()', 'move()']), phaiCoMa: ['nap-hut'] },
-        { moTa: 'Quên gọi move() cuối cùng để bước vào ô cờ sau khi lấp hố', baiLam: bai(['if shape("left") == "round":', '    turn_left()', 'else:', '    turn_right()', 'fill_pit()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else quay phải khi đá tròn nằm bên phải ở sân 2', baiLam: bai(['s = shape("left")', 'if s == "round":', '    turn_left()', 'fill_pit()', 'move()']), phaiCoMa: ['nap-hut'] },
+        { moTa: 'Quên gọi move() cuối cùng để bước vào ô cờ sau khi lấp hố', baiLam: bai(['s = shape("left")', 'if s == "round":', '    turn_left()', 'else:', '    turn_right()', 'fill_pit()']), phaiCoMa: ['chua-toi-co'] }
       ],
       loiBinh: 'Lệnh shape("left") và shape("right") soi ngay viên đá nằm sát hông trái hoặc hông phải của xe.'
     }),
@@ -214,10 +214,10 @@
       ten: 'Mạch quặng ngang', hang: 'luyen',
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['slide_r', 'lob', 'aim_lob'],
-      deBai: 'Ba cột liên tiếp chứa lẫn lộn quặng quý (`"ore"`) và đá tròn (`"round"`). Trong vòng lặp `for i in range(3):`, hãy kiểm tra `if shape("front") == "ore":` để gọi `aim_lob(3)`, `else:` gọi `aim_lob(2)`, rồi gọi `slide_r(1)` sang cột kế tiếp.',
+      deBai: 'Ba cột liên tiếp chứa lẫn lộn quặng quý (`"ore"`) và đá tròn (`"round"`). Trong vòng lặp `for i in range(3):`, hãy đọc `s = shape("front")` rồi kiểm tra `if s == "ore":` để gọi `aim_lob(3)`, `else:` gọi `aim_lob(2)`, rồi gọi `slide_r(1)` sang cột kế tiếp.',
       veMaMau: 'Hoàn thiện khối if/else phân loại quặng và trượt phải 1 ô trong vòng lặp 3 bước.',
       goiY: [
-        'Bên trong vòng lặp, nếu shape("front") == "ore" thì gọi aim_lob(3), else: gọi aim_lob(2).',
+        'Bên trong vòng lặp, đọc s = shape("front"); nếu s == "ore" thì gọi aim_lob(3), else: gọi aim_lob(2).',
         'Cuối mỗi bước lặp (thụt lề 4 dấu cách), gọi slide_r(1).'
       ],
       san: [
@@ -257,12 +257,12 @@
         ]
       ],
       batDau: { x: 1, y: 4, huong: 0 },
-      maMau: bai(['for i in range(3):', '    if shape("front") == "ore":', '        aim_lob(3)', '    slide_r(1)']),
-      loiGiai: bai(['for i in range(3):', '    if shape("front") == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)', '    slide_r(1)']),
+      maMau: bai(['for i in range(3):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    slide_r(1)']),
+      loiGiai: bai(['for i in range(3):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)', '    slide_r(1)']),
       sao: { o: 15, nhip: 8 },
       loiSai: [
-        { moTa: 'Thiếu nhánh else gọi aim_lob(2) cho các viên đá tròn', baiLam: bai(['for i in range(3):', '    if shape("front") == "ore":', '        aim_lob(3)', '    slide_r(1)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chỉ lặp 2 bước nên bỏ sót viên đá ở cột thứ ba', baiLam: bai(['for i in range(2):', '    if shape("front") == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)', '    slide_r(1)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Thiếu nhánh else gọi aim_lob(2) cho các viên đá tròn', baiLam: bai(['for i in range(3):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    slide_r(1)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chỉ lặp 2 bước nên bỏ sót viên đá ở cột thứ ba', baiLam: bai(['for i in range(2):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)', '    slide_r(1)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       loiBinh: 'Vòng lặp kết hợp shape("front") giúp R1 phân loại cả dãy đá và quặng không sót viên nào.'
     }),
@@ -272,10 +272,10 @@
       id: 6705, chuong: 'nhan-dang', so: 5, ma: 'nhan-dang.5',
       ten: 'Tránh đá vuông lấp hố', hang: 'luyen',
       hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'fill_pit'],
-      deBai: 'Đường lên cờ ở `(2, 1)` đi qua 2 tầng hố sâu. Ở mỗi tầng, nếu viên đá trước mặt là đá vuông (`if shape("front") == "square":`), hãy trượt sang phải 1 ô (`slide_r(1)`) để lấy viên đá tròn bên cạnh, sau đó gọi `fill_pit()` và `move()`.',
-      veMaMau: 'Trong vòng lặp 2 bước, kiểm tra shape("front") == "square" để slide_r(1) trước khi gọi fill_pit() và move().',
+      deBai: 'Đường lên cờ ở `(2, 1)` đi qua 2 tầng hố sâu. Ở mỗi tầng, nếu viên đá trước mặt là đá vuông (`s == "square"` sau khi đọc `s = shape("front")`), hãy trượt sang phải 1 ô (`slide_r(1)`) để lấy viên đá tròn bên cạnh, sau đó gọi `fill_pit()` và `move()`.',
+      veMaMau: 'Trong vòng lặp 2 bước, đọc s = shape("front"), kiểm tra s == "square" để slide_r(1) trước khi gọi fill_pit() và move().',
       goiY: [
-        'Trong vòng lặp for i in range(2):, viết if shape("front") == "square": rồi gọi slide_r(1).',
+        'Trong vòng lặp for i in range(2):, viết s = shape("front"), rồi if s == "square": và gọi slide_r(1).',
         'Sau khối if (vẫn trong vòng lặp), gọi fill_pit() và move().'
       ],
       san: [
@@ -327,11 +327,11 @@
         ]
       ],
       batDau: { x: 1, y: 7, huong: 0 },
-      maMau: bai(['for i in range(2):', '    if shape("front") == "square":', '        slide_r(1)', '    fill_pit()']),
-      loiGiai: bai(['for i in range(2):', '    if shape("front") == "square":', '        slide_r(1)', '    fill_pit()', '    move()']),
+      maMau: bai(['for i in range(2):', '    s = shape("front")', '    if s == "square":', '        slide_r(1)', '    fill_pit()']),
+      loiGiai: bai(['for i in range(2):', '    s = shape("front")', '    if s == "square":', '        slide_r(1)', '    fill_pit()', '    move()']),
       sao: { o: 19, nhip: 11 },
       loiSai: [
-        { moTa: 'Quên gọi move() sau mỗi lần fill_pit() nên xe chưa áp sát tầng tiếp theo', baiLam: bai(['for i in range(2):', '    if shape("front") == "square":', '        slide_r(1)', '    fill_pit()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên gọi move() sau mỗi lần fill_pit() nên xe chưa áp sát tầng tiếp theo', baiLam: bai(['for i in range(2):', '    s = shape("front")', '    if s == "square":', '        slide_r(1)', '    fill_pit()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Không kiểm tra đá vuông nên ném đá vuông vào hố không lấp được hố', baiLam: bai(['for i in range(2):', '    fill_pit()', '    move()']), phaiCoMa: ['roi-ho'] }
       ],
       loiBinh: 'Kiểm tra đá vuông trước khi hất giúp R1 không bao giờ ném nhầm đá vuông xuống hố.'
@@ -342,10 +342,10 @@
       id: 6706, chuong: 'nhan-dang', so: 6, ma: 'nhan-dang.6',
       ten: 'Đá vuông đè công tắc', hang: 'van-dung',
       hamCuaEmCan: ['move', 'forward', 'slide_r', 'lob', 'aim_lob'],
-      deBai: 'Đá vuông không lấp được hố nhưng rất nặng để đè công tắc `M`! Nếu trước mặt là đá vuông (`if shape("front") == "square":`), hãy gọi `aim_lob(3)` ném xa 3 ô đè công tắc `M` mở cửa `C`; ngược lại (`else:`) là đá tròn thì gọi `aim_lob(2)` lấp hố `u` cách 2 ô. Sau đó tiến 2 ô (`forward(2)`) và trượt phải 1 ô (`slide_r(1)`) tới cờ.',
+      deBai: 'Đá vuông không lấp được hố nhưng rất nặng để đè công tắc `M`! Đọc `s = shape("front")`: nếu là đá vuông (`if s == "square":`), hãy gọi `aim_lob(3)` ném xa 3 ô đè công tắc `M` mở cửa `C`; ngược lại (`else:`) là đá tròn thì gọi `aim_lob(2)` lấp hố `u` cách 2 ô. Sau đó tiến 2 ô (`forward(2)`) và trượt phải 1 ô (`slide_r(1)`) tới cờ.',
       veMaMau: 'Hoàn thiện nhánh else gọi aim_lob(2), rồi gọi forward(2) và slide_r(1) để vào ô cờ.',
       goiY: [
-        'Nếu shape("front") == "square" thì gọi aim_lob(3), else: gọi aim_lob(2).',
+        'Đọc s = shape("front"); nếu s == "square" thì gọi aim_lob(3), else: gọi aim_lob(2).',
         'Sau khối if/else, gọi forward(2) rồi slide_r(1).'
       ],
       san: [
@@ -389,12 +389,12 @@
         ]
       ],
       batDau: { x: 2, y: 5, huong: 0 },
-      maMau: bai(['if shape("front") == "square":', '    aim_lob(3)', 'forward(2)', 'slide_r(1)']),
-      loiGiai: bai(['if shape("front") == "square":', '    aim_lob(3)', 'else:', '    aim_lob(2)', 'forward(2)', 'slide_r(1)']),
+      maMau: bai(['s = shape("front")', 'if s == "square":', '    aim_lob(3)', 'forward(2)', 'slide_r(1)']),
+      loiGiai: bai(['s = shape("front")', 'if s == "square":', '    aim_lob(3)', 'else:', '    aim_lob(2)', 'forward(2)', 'slide_r(1)']),
       sao: { o: 20, nhip: 5 },
       loiSai: [
-        { moTa: 'Thiếu nhánh else gọi aim_lob(2) để lấp hố ở sân 2', baiLam: bai(['if shape("front") == "square":', '    aim_lob(3)', 'forward(2)', 'slide_r(1)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Quên gọi slide_r(1) ở cuối nên xe dừng bên trái ô cờ', baiLam: bai(['if shape("front") == "square":', '    aim_lob(3)', 'else:', '    aim_lob(2)', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else gọi aim_lob(2) để lấp hố ở sân 2', baiLam: bai(['s = shape("front")', 'if s == "square":', '    aim_lob(3)', 'forward(2)', 'slide_r(1)']), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Quên gọi slide_r(1) ở cuối nên xe dừng bên trái ô cờ', baiLam: bai(['s = shape("front")', 'if s == "square":', '    aim_lob(3)', 'else:', '    aim_lob(2)', 'forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
       loiBinh: 'Mỗi loại đá đều có công dụng riêng: đá vuông đè công tắc ở xa, đá tròn lấp hố sâu.'
     }),
@@ -405,11 +405,11 @@
       ten: 'Bậc chéo phân quặng', hang: 'van-dung',
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['lob', 'aim_lob'],
-      deBai: 'Hai viên đá nằm dọc theo bậc thang chéo. Trong vòng lặp `for i in range(2):`, hãy bước chéo lên phải (`diag_right()`), rồi kiểm tra `if shape("front") == "ore":` để gọi `aim_lob(3)`, ngược lại (`else:`) gọi `aim_lob(2)`.',
-      veMaMau: 'Trong vòng lặp 2 bước, sau diag_right() hãy dùng if/else với shape("front") == "ore" để chọn aim_lob(3) hay aim_lob(2).',
+      deBai: 'Hai viên đá nằm dọc theo bậc thang chéo. Trong vòng lặp `for i in range(2):`, hãy bước chéo lên phải (`diag_right()`), rồi đọc `s = shape("front")` và kiểm tra `if s == "ore":` để gọi `aim_lob(3)`, ngược lại (`else:`) gọi `aim_lob(2)`.',
+      veMaMau: 'Trong vòng lặp 2 bước, sau diag_right() hãy đọc s = shape("front") rồi dùng if/else với s == "ore" để chọn aim_lob(3) hay aim_lob(2).',
       goiY: [
         'Mỗi bước lặp, gọi diag_right() trước để tiến tới sát dưới viên đá.',
-        'Sau đó viết if shape("front") == "ore": gọi aim_lob(3), else: gọi aim_lob(2).'
+        'Sau đó viết s = shape("front"), rồi if s == "ore": gọi aim_lob(3), else: gọi aim_lob(2).'
       ],
       san: [
         [
@@ -456,12 +456,12 @@
         ]
       ],
       batDau: { x: 1, y: 6, huong: 0 },
-      maMau: bai(['for i in range(2):', '    diag_right()', '    if shape("front") == "ore":', '        aim_lob(3)']),
-      loiGiai: bai(['for i in range(2):', '    diag_right()', '    if shape("front") == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)']),
+      maMau: bai(['for i in range(2):', '    diag_right()', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)']),
+      loiGiai: bai(['for i in range(2):', '    diag_right()', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)']),
       sao: { o: 12, nhip: 6 },
       loiSai: [
-        { moTa: 'Thiếu nhánh else gọi aim_lob(2) cho viên đá tròn', baiLam: bai(['for i in range(2):', '    diag_right()', '    if shape("front") == "ore":', '        aim_lob(3)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Chỉ bước chéo 1 lần nên bỏ sót viên đá thứ hai', baiLam: bai(['diag_right()', 'if shape("front") == "ore":', '    aim_lob(3)', 'else:', '    aim_lob(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Thiếu nhánh else gọi aim_lob(2) cho viên đá tròn', baiLam: bai(['for i in range(2):', '    diag_right()', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Chỉ bước chéo 1 lần nên bỏ sót viên đá thứ hai', baiLam: bai(['diag_right()', 's = shape("front")', 'if s == "ore":', '    aim_lob(3)', 'else:', '    aim_lob(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       loiBinh: 'Bước chéo diag_right() đưa R1 áp sát từng viên đá trên vách chéo để shape("front") soi và phân loại.'
     }),
@@ -472,11 +472,11 @@
       ten: 'Lịch trượt lọc quặng', hang: 'van-dung',
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['slide_r', 'lob', 'aim_lob'],
-      deBai: 'Danh sách `steps = [1, 2, 1]` ghi số ô cần trượt sang phải để tới từng cột đá. Hãy duyệt `for s in steps:`, gọi `slide_r(s)`, rồi kiểm tra `if shape("front") == "ore":` gọi `aim_lob(3)`, `else:` gọi `aim_lob(2)`.',
+      deBai: 'Danh sách `steps = [1, 2, 1]` ghi số ô cần trượt sang phải để tới từng cột đá. Hãy duyệt `for s in steps:`, gọi `slide_r(s)`, rồi đọc `t = shape("front")` và kiểm tra `if t == "ore":` gọi `aim_lob(3)`, `else:` gọi `aim_lob(2)`.',
       veMaMau: 'Duyệt từng bước s trong steps, trượt phải s ô rồi phân loại quặng và đá tròn.',
       goiY: [
         'Trong vòng lặp for s in steps:, gọi slide_r(s) trước.',
-        'Tiếp theo viết if shape("front") == "ore": gọi aim_lob(3), else: gọi aim_lob(2).'
+        'Tiếp theo viết t = shape("front"), rồi if t == "ore": gọi aim_lob(3), else: gọi aim_lob(2).'
       ],
       san: [
         [
@@ -515,12 +515,12 @@
         ]
       ],
       batDau: { x: 1, y: 4, huong: 0 },
-      maMau: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(s)', '    if shape("front") == "ore":', '        aim_lob(3)']),
-      loiGiai: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(s)', '    if shape("front") == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)']),
+      maMau: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(s)', '    t = shape("front")', '    if t == "ore":', '        aim_lob(3)']),
+      loiGiai: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(s)', '    t = shape("front")', '    if t == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)']),
       sao: { o: 16, nhip: 10 },
       loiSai: [
-        { moTa: 'Thiếu nhánh else gọi aim_lob(2) cho các viên đá tròn', baiLam: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(s)', '    if shape("front") == "ore":', '        aim_lob(3)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Trượt cố định slide_r(1) thay vì slide_r(s) theo danh sách', baiLam: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(1)', '    if shape("front") == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Thiếu nhánh else gọi aim_lob(2) cho các viên đá tròn', baiLam: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(s)', '    t = shape("front")', '    if t == "ore":', '        aim_lob(3)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Trượt cố định slide_r(1) thay vì slide_r(s) theo danh sách', baiLam: bai(['steps = [1, 2, 1]', 'for s in steps:', '    slide_r(1)', '    t = shape("front")', '    if t == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)']), phaiCoMa: ['chua-dua-vat'] }
       ],
       loiBinh: 'Danh sách điều khiển quãng đường trượt, còn cảm biến shape("front") quyết định lực hất tại mỗi điểm dừng.'
     }),
@@ -532,10 +532,10 @@
       mucTieu: 'dua-vat',
       hamCuaEmCan: ['slide_r', 'lob', 'aim_lob'],
       deBai: 'Khi trước mặt không có vật nào, `shape("front")` trả về `"none"`. Trên 3 cột liên tiếp có một cột trống, một cột quặng `"ore"` và một cột đá tròn `"round"`. Trong vòng lặp `for i in range(3):`, hãy dùng hai câu `if` riêng: nếu `"ore"` thì `aim_lob(3)`, nếu `"round"` thì `aim_lob(2)`, rồi `slide_r(1)`.',
-      veMaMau: 'Thêm câu if thứ hai kiểm tra shape("front") == "round" để gọi aim_lob(2), rồi trượt phải 1 ô.',
+      veMaMau: 'Đọc lại s = shape("front"), thêm câu if thứ hai kiểm tra s == "round" để gọi aim_lob(2), rồi trượt phải 1 ô.',
       goiY: [
         'Không dùng else ở đây vì ô trống trả về "none" không được gọi aim_lob.',
-        'Viết if shape("front") == "round": gọi aim_lob(2), rồi cuối vòng lặp gọi slide_r(1).'
+        'Viết s = shape("front") lần nữa, rồi if s == "round": gọi aim_lob(2), rồi cuối vòng lặp gọi slide_r(1).'
       ],
       san: [
         [
@@ -574,12 +574,12 @@
         ]
       ],
       batDau: { x: 1, y: 4, huong: 0 },
-      maMau: bai(['for i in range(3):', '    if shape("front") == "ore":', '        aim_lob(3)', '    slide_r(1)']),
-      loiGiai: bai(['for i in range(3):', '    if shape("front") == "ore":', '        aim_lob(3)', '    if shape("front") == "round":', '        aim_lob(2)', '    slide_r(1)']),
+      maMau: bai(['for i in range(3):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    slide_r(1)']),
+      loiGiai: bai(['for i in range(3):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    s = shape("front")', '    if s == "round":', '        aim_lob(2)', '    slide_r(1)']),
       sao: { o: 15, nhip: 6 },
       loiSai: [
-        { moTa: 'Chưa thêm điều kiện kiểm tra đá tròn "round"', baiLam: bai(['for i in range(3):', '    if shape("front") == "ore":', '        aim_lob(3)', '    slide_r(1)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Dùng else thay vì if shape("front") == "round" nên xúc hụt ở ô trống', baiLam: bai(['for i in range(3):', '    if shape("front") == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)', '    slide_r(1)']), phaiCoMa: ['nap-hut'] }
+        { moTa: 'Chưa thêm điều kiện kiểm tra đá tròn "round"', baiLam: bai(['for i in range(3):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    slide_r(1)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Dùng else thay vì hỏi lại s == "round" nên xúc hụt ở ô trống', baiLam: bai(['for i in range(3):', '    s = shape("front")', '    if s == "ore":', '        aim_lob(3)', '    else:', '        aim_lob(2)', '    slide_r(1)']), phaiCoMa: ['nap-hut'] }
       ],
       loiBinh: 'Dùng hai điều kiện if cho "ore" và "round" giúp R1 tự động bỏ qua các ô trống ("none") hoặc đá vuông ("square").'
     }),
@@ -590,11 +590,11 @@
       ten: 'Trùm nhận dạng: Vượt ba tầng mỏ', hang: 'trum',
       huyHieu: 'nhan-dang',
       hamCuaEmCan: ['move', 'forward', 'lob', 'fill_pit', 'diag_r'],
-      deBai: 'Trùm chương 1! Đường lên cờ ở `(5, 1)` gồm 3 tầng liên tiếp. Ở mỗi tầng, nếu trước mặt là đá tròn (`if shape("front") == "round":`), hãy gọi `fill_pit()` để lấp hố và tiến lên 2 ô; ngược lại (`else:`, gặp đá vuông không lấp được hố) hãy gọi `diag_r(2)` để lách chéo phải 2 bước qua hố. Cuối mỗi tầng, gọi `move()` để sang tầng tiếp theo.',
-      veMaMau: 'Lặp 3 tầng: nếu shape("front") == "round" thì fill_pit(), else thì diag_r(2), rồi move().',
+      deBai: 'Trùm chương 1! Đường lên cờ ở `(5, 1)` gồm 3 tầng liên tiếp. Ở mỗi tầng, đọc `s = shape("front")`, nếu là đá tròn (`if s == "round":`), hãy gọi `fill_pit()` để lấp hố và tiến lên 2 ô; ngược lại (`else:`, gặp đá vuông không lấp được hố) hãy gọi `diag_r(2)` để lách chéo phải 2 bước qua hố. Cuối mỗi tầng, gọi `move()` để sang tầng tiếp theo.',
+      veMaMau: 'Lặp 3 tầng: đọc s = shape("front"), nếu s == "round" thì fill_pit(), else thì diag_r(2), rồi move().',
       goiY: [
         'Dùng vòng lặp for i in range(3): cho 3 tầng mỏ.',
-        'Trong mỗi tầng: if shape("front") == "round": gọi fill_pit(), else: gọi diag_r(2), rồi gọi move() ở cuối vòng lặp.'
+        'Trong mỗi tầng: s = shape("front"), if s == "round": gọi fill_pit(), else: gọi diag_r(2), rồi gọi move() ở cuối vòng lặp.'
       ],
       san: [
         [
@@ -657,12 +657,12 @@
         ]
       ],
       batDau: { x: 1, y: 10, huong: 0 },
-      maMau: bai(['for i in range(3):', '    if shape("front") == "round":', '        fill_pit()']),
-      loiGiai: bai(['for i in range(3):', '    if shape("front") == "round":', '        fill_pit()', '    else:', '        diag_r(2)', '    move()']),
+      maMau: bai(['for i in range(3):', '    s = shape("front")', '    if s == "round":', '        fill_pit()']),
+      loiGiai: bai(['for i in range(3):', '    s = shape("front")', '    if s == "round":', '        fill_pit()', '    else:', '        diag_r(2)', '    move()']),
       sao: { o: 19, nhip: 11 },
       loiSai: [
-        { moTa: 'Chưa viết nhánh else gọi diag_r(2) và lệnh move() cuối mỗi tầng', baiLam: bai(['for i in range(3):', '    if shape("front") == "round":', '        fill_pit()']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Chỉ lặp 2 tầng nên chưa lên tới cờ ở tầng thứ 3', baiLam: bai(['for i in range(2):', '    if shape("front") == "round":', '        fill_pit()', '    else:', '        diag_r(2)', '    move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Chưa viết nhánh else gọi diag_r(2) và lệnh move() cuối mỗi tầng', baiLam: bai(['for i in range(3):', '    s = shape("front")', '    if s == "round":', '        fill_pit()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Chỉ lặp 2 tầng nên chưa lên tới cờ ở tầng thứ 3', baiLam: bai(['for i in range(2):', '    s = shape("front")', '    if s == "round":', '        fill_pit()', '    else:', '        diag_r(2)', '    move()']), phaiCoMa: ['chua-toi-co'] }
       ],
       loiBinh: 'Xuất sắc! R1 đã làm chủ thấu kính shape(huong), kết hợp lấp hố và đi chéo vượt qua cả ba tầng mỏ sâu!'
     }),
@@ -678,10 +678,10 @@
       mucTieu: 'dua-vat',
       taoHam: ['sort_lob'],
       hamCuaEmCan: ['slide_r', 'lob', 'aim_lob'],
-      deBai: 'Hãy chế hàm `sort_lob()` không tham số để tự động phân loại viên đá trước mặt: nếu `shape("front") == "ore"` thì gọi `aim_lob(3)`, ngược lại (`else:`) gọi `aim_lob(2)`. Sau đó dùng `sort_lob()`, `slide_r(2)`, `sort_lob()` để lọc hai cột đá trên cả hai sân.',
-      veMaMau: 'Hoàn thiện thân hàm sort_lob() bằng if/else với shape("front") == "ore".',
+      deBai: 'Hãy chế hàm `sort_lob()` không tham số để tự động phân loại viên đá trước mặt: đọc `s = shape("front")`, nếu `s == "ore"` thì gọi `aim_lob(3)`, ngược lại (`else:`) gọi `aim_lob(2)`. Sau đó dùng `sort_lob()`, `slide_r(2)`, `sort_lob()` để lọc hai cột đá trên cả hai sân.',
+      veMaMau: 'Hoàn thiện thân hàm sort_lob() bằng s = shape("front") rồi if/else với s == "ore".',
       goiY: [
-        'Trong thân hàm sort_lob(): nếu shape("front") == "ore" gọi aim_lob(3), else: gọi aim_lob(2).',
+        'Trong thân hàm sort_lob(): đọc s = shape("front"), nếu s == "ore" gọi aim_lob(3), else: gọi aim_lob(2).',
         'Chương trình chính gọi sort_lob(), slide_r(2), sort_lob().'
       ],
       san: [
@@ -722,14 +722,14 @@
       ],
       batDau: { x: 1, y: 4, huong: 0 },
       maMau: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()'], {
-        hamCuaEmMoi: [H('sort_lob', [], ['if shape("front") == "ore":', '    aim_lob(3)'])]
+        hamCuaEmMoi: [H('sort_lob', [], ['s = shape("front")', 'if s == "ore":', '    aim_lob(3)'])]
       }),
       loiGiai: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()'], {
         hamCuaEmMoi: [H('sort_lob', [], T_SORT_LOB)]
       }),
       sao: { o: 16, nhip: 6 },
       loiSai: [
-        { moTa: 'Trong sort_lob() thiếu nhánh else gọi aim_lob(2)', baiLam: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()']), hamCuaEmMoi: [H('sort_lob', [], ['if shape("front") == "ore":', '    aim_lob(3)'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Trong sort_lob() thiếu nhánh else gọi aim_lob(2)', baiLam: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()']), hamCuaEmMoi: [H('sort_lob', [], ['s = shape("front")', 'if s == "ore":', '    aim_lob(3)'])], phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Quên gọi sort_lob() lần thứ hai sau khi trượt phải 2 ô', baiLam: bai(['sort_lob()', 'slide_r(2)']), hamCuaEmMoi: [H('sort_lob', [], T_SORT_LOB)], phaiCoMa: ['chua-dua-vat'] }
       ],
       loiBinh: 'Hàm sort_lob() đã vào kho! Từ giờ chỉ cần 1 dòng lệnh để tự động phân loại quặng và đá tròn.'
@@ -741,10 +741,10 @@
       ten: 'Chế hàm vượt tầng round_fill', hang: 'lam-quen',
       taoHam: ['round_fill'],
       hamCuaEmCan: ['move', 'forward', 'lob', 'fill_pit', 'diag_r'],
-      deBai: 'Hãy chế hàm `round_fill()` để xử lý một tầng hố sâu: nếu viên đá trước mặt là đá tròn (`if shape("front") == "round":`) thì gọi `fill_pit()`, ngược lại (`else:`, gặp đá vuông) thì gọi `diag_r(2)` lách chéo sang phải 2 bước. Chương trình chính gọi `round_fill()` và `move()` hai lần để tới cờ.',
-      veMaMau: 'Viết thân hàm round_fill() kiểm tra shape("front") == "round" chọn fill_pit() hoặc diag_r(2).',
+      deBai: 'Hãy chế hàm `round_fill()` để xử lý một tầng hố sâu: đọc `s = shape("front")`, nếu là đá tròn (`if s == "round":`) thì gọi `fill_pit()`, ngược lại (`else:`, gặp đá vuông) thì gọi `diag_r(2)` lách chéo sang phải 2 bước. Chương trình chính gọi `round_fill()` và `move()` hai lần để tới cờ.',
+      veMaMau: 'Viết thân hàm round_fill() đọc s = shape("front"), kiểm tra s == "round" để chọn fill_pit() hoặc diag_r(2).',
       goiY: [
-        'Trong round_fill(): if shape("front") == "round": gọi fill_pit(), else: gọi diag_r(2).',
+        'Trong round_fill(): s = shape("front"), if s == "round": gọi fill_pit(), else: gọi diag_r(2).',
         'Chương trình chính đã có sẵn round_fill() và move() hai lần.'
       ],
       san: [
@@ -797,14 +797,14 @@
       ],
       batDau: { x: 1, y: 7, huong: 0 },
       maMau: bai(['round_fill()', 'move()', 'round_fill()', 'move()'], {
-        hamCuaEmMoi: [H('round_fill', [], ['if shape("front") == "round":', '    fill_pit()'])]
+        hamCuaEmMoi: [H('round_fill', [], ['s = shape("front")', 'if s == "round":', '    fill_pit()'])]
       }),
       loiGiai: bai(['round_fill()', 'move()', 'round_fill()', 'move()'], {
         hamCuaEmMoi: [H('round_fill', [], T_ROUND_FILL)]
       }),
       sao: { o: 21, nhip: 8 },
       loiSai: [
-        { moTa: 'Trong round_fill() thiếu nhánh else gọi diag_r(2) khi gặp đá vuông', baiLam: bai(['round_fill()', 'move()', 'round_fill()', 'move()']), hamCuaEmMoi: [H('round_fill', [], ['if shape("front") == "round":', '    fill_pit()'])], phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Trong round_fill() thiếu nhánh else gọi diag_r(2) khi gặp đá vuông', baiLam: bai(['round_fill()', 'move()', 'round_fill()', 'move()']), hamCuaEmMoi: [H('round_fill', [], ['s = shape("front")', 'if s == "round":', '    fill_pit()'])], phaiCoMa: ['dam-tuong'] },
         { moTa: 'Quên gọi move() cuối cùng để bước vào ô cờ', baiLam: bai(['round_fill()', 'move()', 'round_fill()']), hamCuaEmMoi: [H('round_fill', [], T_ROUND_FILL)], phaiCoMa: ['chua-toi-co'] }
       ],
       loiBinh: 'Hàm round_fill() đóng gói gọn gàng quyết định lấp hố hay lách chéo tại mỗi tầng mỏ.'
@@ -875,10 +875,10 @@
       ten: 'Chế hàm chọn đá tròn pick_round', hang: 'luyen',
       taoHam: ['pick_round'],
       hamCuaEmCan: ['move', 'forward', 'turn_left', 'turn_right', 'lob', 'fill_pit'],
-      deBai: 'Hãy chế hàm `pick_round()` để kiểm tra hai bên hông: nếu `shape("left") == "round"` thì quay trái (`turn_left()`), ngược lại (`else:`) quay phải (`turn_right()`), rồi gọi `fill_pit()` để lấp hố phía đá tròn và tiến lên. Chương trình chính gọi `pick_round()` và `move()` để tới cờ.',
-      veMaMau: 'Hoàn thiện thân hàm pick_round() với if/else kiểm tra shape("left") == "round" rồi gọi fill_pit().',
+      deBai: 'Hãy chế hàm `pick_round()` để kiểm tra hai bên hông: đọc `s = shape("left")`, nếu `s == "round"` thì quay trái (`turn_left()`), ngược lại (`else:`) quay phải (`turn_right()`), rồi gọi `fill_pit()` để lấp hố phía đá tròn và tiến lên. Chương trình chính gọi `pick_round()` và `move()` để tới cờ.',
+      veMaMau: 'Hoàn thiện thân hàm pick_round() với s = shape("left") và if/else kiểm tra s == "round", rồi gọi fill_pit().',
       goiY: [
-        'Trong pick_round(): nếu shape("left") == "round" gọi turn_left(), else: gọi turn_right().',
+        'Trong pick_round(): đọc s = shape("left"), nếu s == "round" gọi turn_left(), else: gọi turn_right().',
         'Sau khối if/else trong pick_round(), gọi fill_pit().'
       ],
       san: [
@@ -915,14 +915,14 @@
       ],
       batDau: { x: 4, y: 2, huong: 0 },
       maMau: bai(['pick_round()', 'move()'], {
-        hamCuaEmMoi: [H('pick_round', [], ['if shape("left") == "round":', '    turn_left()', 'fill_pit()'])]
+        hamCuaEmMoi: [H('pick_round', [], ['s = shape("left")', 'if s == "round":', '    turn_left()', 'fill_pit()'])]
       }),
       loiGiai: bai(['pick_round()', 'move()'], {
         hamCuaEmMoi: [H('pick_round', [], T_PICK_ROUND)]
       }),
       sao: { o: 22, nhip: 6 },
       loiSai: [
-        { moTa: 'Trong pick_round() thiếu nhánh else gọi turn_right()', baiLam: bai(['pick_round()', 'move()']), hamCuaEmMoi: [H('pick_round', [], ['if shape("left") == "round":', '    turn_left()', 'fill_pit()'])], phaiCoMa: ['nap-hut'] },
+        { moTa: 'Trong pick_round() thiếu nhánh else gọi turn_right()', baiLam: bai(['pick_round()', 'move()']), hamCuaEmMoi: [H('pick_round', [], ['s = shape("left")', 'if s == "round":', '    turn_left()', 'fill_pit()'])], phaiCoMa: ['nap-hut'] },
         { moTa: 'Quên gọi move() sau pick_round() để bước vào ô cờ', baiLam: bai(['pick_round()']), hamCuaEmMoi: [H('pick_round', [], T_PICK_ROUND)], phaiCoMa: ['chua-toi-co'] }
       ],
       loiBinh: 'Hàm pick_round() giúp R1 tự xoay về phía viên đá tròn và lấp hố mở đường ngay lập tức.'
@@ -1011,10 +1011,10 @@
       mucTieu: 'dua-vat',
       taoHam: ['safe_sort'],
       hamCuaEmCan: ['slide_r', 'lob', 'aim_lob'],
-      deBai: 'Khi dãy mỏ có ô trống (`"none"`), gọi `sort_lob()` sẽ xúc hụt ở ô trống. Hãy chế hàm `safe_sort()` dùng 2 câu `if`: nếu `shape("front") == "ore"` thì gọi `aim_lob(3)`, nếu `shape("front") == "round"` thì gọi `aim_lob(2)`. Sau đó lặp 4 cột với `safe_sort()` và `slide_r(1)`.',
+      deBai: 'Khi dãy mỏ có ô trống (`"none"`), gọi `sort_lob()` sẽ xúc hụt ở ô trống. Hãy chế hàm `safe_sort()` dùng 2 câu `if`: đọc `s = shape("front")`, nếu `s == "ore"` thì gọi `aim_lob(3)`; đọc lại `s`, nếu `s == "round"` thì gọi `aim_lob(2)`. Sau đó lặp 4 cột với `safe_sort()` và `slide_r(1)`.',
       veMaMau: 'Hoàn thiện thân hàm safe_sort() bằng 2 câu if cho "ore" và "round", rồi lặp 4 bước.',
       goiY: [
-        'Trong safe_sort(): viết if shape("front") == "ore": gọi aim_lob(3), tiếp theo if shape("front") == "round": gọi aim_lob(2).',
+        'Trong safe_sort(): viết s = shape("front"), if s == "ore": gọi aim_lob(3); tiếp theo đọc lại s = shape("front"), if s == "round": gọi aim_lob(2).',
         'Trong vòng lặp for i in range(4): của chương trình chính, gọi safe_sort() rồi slide_r(1).'
       ],
       san: [
@@ -1055,15 +1055,15 @@
       ],
       batDau: { x: 1, y: 4, huong: 0 },
       maMau: bai(['for i in range(4):', '    safe_sort()', '    slide_r(1)'], {
-        hamCuaEmMoi: [H('safe_sort', [], ['if shape("front") == "ore":', '    aim_lob(3)'])]
+        hamCuaEmMoi: [H('safe_sort', [], ['s = shape("front")', 'if s == "ore":', '    aim_lob(3)'])]
       }),
       loiGiai: bai(['for i in range(4):', '    safe_sort()', '    slide_r(1)'], {
         hamCuaEmMoi: [H('safe_sort', [], T_SAFE_SORT)]
       }),
       sao: { o: 16, nhip: 9 },
       loiSai: [
-        { moTa: 'Trong safe_sort() thiếu câu if thứ hai cho đá tròn "round"', baiLam: bai(['for i in range(4):', '    safe_sort()', '    slide_r(1)']), hamCuaEmMoi: [H('safe_sort', [], ['if shape("front") == "ore":', '    aim_lob(3)'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Dùng else thay vì if shape("front") == "round" nên xúc hụt ở cột trống', baiLam: bai(['for i in range(4):', '    safe_sort()', '    slide_r(1)']), hamCuaEmMoi: [H('safe_sort', [], T_SORT_LOB)], phaiCoMa: ['nap-hut'] }
+        { moTa: 'Trong safe_sort() thiếu câu if thứ hai cho đá tròn "round"', baiLam: bai(['for i in range(4):', '    safe_sort()', '    slide_r(1)']), hamCuaEmMoi: [H('safe_sort', [], ['s = shape("front")', 'if s == "ore":', '    aim_lob(3)'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Dùng else thay vì hỏi lại s == "round" nên xúc hụt ở cột trống', baiLam: bai(['for i in range(4):', '    safe_sort()', '    slide_r(1)']), hamCuaEmMoi: [H('safe_sort', [], T_SORT_LOB)], phaiCoMa: ['nap-hut'] }
       ],
       loiBinh: 'Hàm safe_sort() chỉ hất khi gặp đúng quặng "ore" hoặc đá tròn "round", an toàn tuyệt đối trước các ô trống.'
     }),
@@ -1149,7 +1149,7 @@
       deBai: 'Hàm `sort_lob()` đang bị viết ngược tầm: gặp quặng `"ore"` lại gọi `aim_lob(2)`, còn đá tròn lại gọi `aim_lob(3)` khiến cả hai viên đá đều rơi trượt ngoài máng `D`! Hãy sửa lại thân hàm `sort_lob()` cho đúng: `"ore"` gọi `aim_lob(3)`, `else:` gọi `aim_lob(2)`.',
       veMaMau: 'Sửa lại số tầm trong aim_lob(3) và aim_lob(2) của hàm sort_lob().',
       goiY: [
-        'Trong nhánh if shape("front") == "ore":, đổi aim_lob(2) thành aim_lob(3).',
+        'Trong nhánh if s == "ore":, đổi aim_lob(2) thành aim_lob(3).',
         'Trong nhánh else:, đổi aim_lob(3) thành aim_lob(2).'
       ],
       san: [
@@ -1170,15 +1170,15 @@
       ],
       batDau: { x: 1, y: 4, huong: 0 },
       maMau: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()'], {
-        hamCuaEmMoi: [H('sort_lob', [], ['if shape("front") == "ore":', '    aim_lob(2)', 'else:', '    aim_lob(3)'])]
+        hamCuaEmMoi: [H('sort_lob', [], ['s = shape("front")', 'if s == "ore":', '    aim_lob(2)', 'else:', '    aim_lob(3)'])]
       }),
       loiGiai: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()'], {
         hamCuaEmMoi: [H('sort_lob', [], T_SORT_LOB)]
       }),
       sao: { o: 16, nhip: 6 },
       loiSai: [
-        { moTa: 'Chưa sửa lại tầm ném bị ngược trong sort_lob()', baiLam: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()']), hamCuaEmMoi: [H('sort_lob', [], ['if shape("front") == "ore":', '    aim_lob(2)', 'else:', '    aim_lob(3)'])], phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Sửa cả hai nhánh thành aim_lob(2) nên viên quặng quý rơi chưa tới máng', baiLam: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()']), hamCuaEmMoi: [H('sort_lob', [], ['if shape("front") == "ore":', '    aim_lob(2)', 'else:', '    aim_lob(2)'])], phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Chưa sửa lại tầm ném bị ngược trong sort_lob()', baiLam: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()']), hamCuaEmMoi: [H('sort_lob', [], ['s = shape("front")', 'if s == "ore":', '    aim_lob(2)', 'else:', '    aim_lob(3)'])], phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Sửa cả hai nhánh thành aim_lob(2) nên viên quặng quý rơi chưa tới máng', baiLam: bai(['sort_lob()', 'slide_r(2)', 'sort_lob()']), hamCuaEmMoi: [H('sort_lob', [], ['s = shape("front")', 'if s == "ore":', '    aim_lob(2)', 'else:', '    aim_lob(2)'])], phaiCoMa: ['chua-dua-vat'] }
       ],
       loiBinh: 'Đã sửa xong sort_lob()! Quặng quý bay xa 3 ô, đá tròn bay 2 ô chuẩn xác.'
     }),

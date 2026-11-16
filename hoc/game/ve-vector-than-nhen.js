@@ -13,7 +13,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
                       Không có lan / nhac mà buoc = 1 (người gọi cũ, ngoài sân) → như lan 0,25.
      co               (chương nhện co chân, chui gầm): bốn chân dang sát đất nằm ngang, đốt ngắn, vỏ nhỏ lại và lùi về sau, vạch bóng tối ở bụng; dáng bò vẫn chạy (bước ngắn).
    Ổ gắn KHÔNG đổi theo trạng thái (tay kẹp / cảm biến ở đúng chỗ, như part-nhen.js); camera / camSang như thân A.
-   Nhện không tay đi bốn hướng không quay mặt: VeRobot truyền hướng 0 (như bộ pixel). */
+   Nhện không tay đi bốn hướng không quay mặt: VeRobot truyền hướng 0 (như bộ pixel).
+   thanDung (3/11, user "xoay ngược nhện: chân xuống, mắt gần phía dưới"): VeVector.robot vẽ thân (và nam châm bụng) luôn đứng thẳng theo màn hình như hình gốc,
+   hướng nào cũng vậy; chỉ tay kẹp / cảm biến xoay theo hướng. Hệ thân của di = hệ màn hình. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var HUONG_DI = [[0, 1], [1, 0], [0, -1], [-1, 0]];
@@ -45,14 +47,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.bo(g, h[0] - 3.4 * s, h[1] - 3.4 * s, 6.8 * s, 6.8 * s, 1.8 * s);
     H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 2.0);
     /* 3. Đốt đùi (h ↗ kk): cong vươn chéo LÊN TRÊN ra ngoài tới đỉnh gối (cong lên) */
-    dotChan(g, h, kk, 3.6 * s, 2.8 * s, -dau * 1.4 * s * kCong);
-    g.fillStyle = H.gradDoc(g, h[0], h[1], kk[0], kk[1], [[0, BM.vecVoToi], [0.45, BM.vecVoGiua], [1, BM.vecVo]]);
+    dotChan(g, h, kk, 5.4 * s, 4.4 * s, -dau * 1.4 * s * kCong);   // 12/11: đùi dày hơn (3.6 / 2.8 → 5.4 / 4.4) cho khớp nhện của video
+    g.fillStyle = H.gradDoc(g, h[0], h[1], kk[0], kk[1], [[0, BM.vecBanh], [1, BM.vecBacToi]]);   // 12/11: đùi (đốt sát thân) màu XÁM, cẳng (đốt xa) trắng, như nhện của video
     g.fill(); H.vien(g, BM.vecVien, 2.3);
     H.duong(g, 'M' + (h[0] + (kk[0] - h[0]) * 0.22).toFixed(1) + ' ' + (h[1] + (kk[1] - h[1]) * 0.22 - 0.9).toFixed(1) +
       ' L' + (h[0] + (kk[0] - h[0]) * 0.78).toFixed(1) + ' ' + (h[1] + (kk[1] - h[1]) * 0.78 - 0.9).toFixed(1));
-    H.vien(g, BM.vecVo, 1.4);
+    H.vien(g, BM.vecBac, 1.4);
     /* 4. Đốt cẳng chân (kk ↘ bb): từ đỉnh gối mở RA XA THÂN xuống cổ chân (cong rất nhẹ 0.45 để cẳng chân vươn thẳng khỏe ra ngoài, tuyệt đối không bị cong khép hình dấu ngoặc ()) */
-    dotChan(g, kk, [bb[0], bb[1] - 1.5 * s], 3.2 * s, 2.3 * s, -dau * 0.45 * s * kCong);
+    dotChan(g, kk, [bb[0], bb[1] - 1.5 * s], 6.8 * s, 3.2 * s, -dau * 1.5 * s * kCong);   // 12/11: cẳng to ở gối, thon xuống bàn chân, cong hơn (3.2 / 2.3 / 0.45 → 6.8 / 3.2 / 1.5): dáng giáp bọc của video
     g.fillStyle = H.gradDoc(g, kk[0] + dau * 3, kk[1], bb[0] - dau * 3, bb[1], [[0, BM.vecVo], [0.55, BM.vecVoGiua], [1, BM.vecVoToi]]);
     g.fill(); H.vien(g, BM.vecVien, 2.3);
     g.beginPath();
@@ -62,12 +64,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /* 5. Khớp gối servo ở ĐỈNH CAO (kk): cụm bản lề thép chàm + lõi đèn cyan */
     var rg = (3.4 + 0.4 * n) * s;
     H.tron(g, kk[0], kk[1], rg); H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 2.1);
-    H.tron(g, kk[0], kk[1], rg * 0.48); H.to(g, BM.vecDen);
+    H.tron(g, kk[0], kk[1], rg * 0.48); H.to(g, BM.vecBacToi);   // 12/11: gối thép trơn, bỏ lõi đèn cyan (video không có chấm sáng ở khớp)
     H.tron(g, kk[0] - dau * 0.5, kk[1] - 0.5, rg * 0.2); H.to(g, BM.vecVo);
     /* 6. Cuối chân CỨNG CÁP: cổ chân thép + đế trụ hình thang vát góc đáy phẳng bám sàn */
     var fx = bb[0], fy = bb[1];
     H.bo(g, fx - 2.8 * s, fy - 4.4 * s, 5.6 * s, 2.8 * s, 0.9 * s);
-    H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.0);
+    H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 2.0);   // 12/11: cổ chân cùng màu chàm với bàn chân (video: mũi chân chàm liền khối)
     g.beginPath();
     g.moveTo(fx - 3.1 * s, fy - 2.0 * s);
     g.lineTo(fx + 3.1 * s, fy - 2.0 * s);
@@ -78,7 +80,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     g.closePath();
     H.to(g, BM.vecBanh); H.vien(g, BM.vecVien, 2.2);
     H.bo(g, fx - 2.8 * s, fy - 0.6 * s, 5.6 * s, 2.0 * s, 0.7 * s);
-    H.to(g, BM.vecDen);
+    H.to(g, BM.vecDoiR1);   // 12/11: đèn bàn chân xanh lam như đèn mắt cá chân của nhện video (trước là cyan)
   }
   /** Nội suy điểm 2D [x, y] theo hệ số t (0..1). */
   function noi(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; }
@@ -97,7 +99,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return { A: A, B: B, nhun: nhun };
   }
-  V.dangKy({ loai: 'than', ma: 'nhen', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'crouch',  'stand'], ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, tayDuoi: ['nam-cham'], oTayDuoi: { x: 50, y: 42 }, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'than', ma: 'nhen', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'crouch',  'stand'], ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, tayDuoi: ['nam-cham'], oTayDuoi: { x: 50, y: 42 }, thanDung: true, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
     s = s || {};
     var co = !!s.co, dg = dang(s), u = HUONG_DI[s.di | 0] || HUONG_DI[0], kb = co ? 0.55 : 1;
     var duoi = Math.max(0, Math.min(1, s.nhay || 0)), nen = Math.max(0, Math.min(1, -(s.nhay || 0)));   // duoi: đang bật nhảy (4 chân duỗi thẳng dài xuống); nen: nhún lấy đà trước khi nhảy

@@ -99,7 +99,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="KẸT GÓC!" at={58} den={135} x={tamO(1, 3).x + 140} y={tamO(1, 3).y - 40} />
       <DongHoBai con="6 giờ" />
       <NhanGoi so={1} ten="Chân nhện" />
-      <Sau says={[{at: 68, out: 175, text: 'Chỗ này hẹp lại toàn sắt gồ ghề, xe xích xoay mình sao lọt!'}]} at={55} />
+      <Sau says={[{at: 68, out: 175, text: 'Lối hẹp toàn sắt gồ ghề, xe xích sao lọt!'}]} at={55} />
     </NenHienTruong>
   </Shake>
 );
@@ -128,8 +128,8 @@ const G2Thu: React.FC = () => {
       <ChuNay chu="TRƠN QUÁ!" at={75} den={145} x={tamO(2, 2).x + 150} y={tamO(2, 2).y} mau={C.warn} />
       <DongHoBai con="5 giờ" />
       <NhanGoi so={2} ten="Nam châm" />
-      <Sola says={[{at: 8, out: 68, text: 'Tấm sắt phẳng lì không có chỗ bám, làm sao nhấc?'}]} mat={[[0, 'worried'], [75, 'confused']]} />
-      {f >= 90 ? <Sau says={[{at: 98, out: 230, text: 'Sắt tấm nằm bệt thế kia, tay thường không bấu vào đâu được!'}]} at={90} /> : null}
+      <Sola says={[{at: 8, out: 68, text: 'Tấm sắt phẳng lì, không chỗ bám, nhấc sao?'}]} mat={[[0, 'worried'], [75, 'confused']]} />
+      {f >= 90 ? <Sau says={[{at: 98, out: 230, text: 'Sắt nằm bệt, tay thường không bấu được!'}]} at={90} /> : null}
     </NenHienTruong>
   );
 };
@@ -162,7 +162,7 @@ const G3Thu: React.FC = () => {
       <DongHoBai con="4 giờ 20" />
       <NhanGoi so={3} ten="Cảm biến từ" />
       <Sola says={[{at: 6, out: 62, text: 'Thử hút kiện đầu tiên xem có sắt không!'}]} mat={[[0, 'confident'], [75, 'facepalm']]} />
-      {f >= 95 ? <Sau says={[{at: 102, out: 235, text: 'Bạt phủ kín thế kia, nhìn ngoài biết đâu là sắt đâu là gỗ!'}]} at={95} /> : null}
+      {f >= 95 ? <Sau says={[{at: 102, out: 235, text: 'Bạt phủ kín, nhìn sao biết sắt hay gỗ!'}]} at={95} /> : null}
     </NenHienTruong>
   );
 };
@@ -197,7 +197,7 @@ const G4Thu: React.FC = () => {
         <CodeBox lines={['go_right()', 'go_up()', 'go_right()']} x={280} y={145} w={460} size={30} title="Viết lẻ từng bước" />
         <DongHoBai con="3 giờ 40" />
         <NhanGoi so={4} ten="Quét bãi" />
-        {f >= 108 ? <Sau dang="sau-sot-ruot" says={[{at: 115, out: 245, text: 'Ba hàng giống nhau mà viết lẻ từng bước thế kia dễ nhầm lắm!'}]} at={108} /> : null}
+        {f >= 108 ? <Sau dang="sau-sot-ruot" says={[{at: 115, out: 245, text: 'Ba hàng giống nhau, viết lẻ từng bước dễ nhầm!'}]} at={108} /> : null}
       </NenHienTruong>
     </Shake>
   );
@@ -238,7 +238,7 @@ const G5Thu: React.FC = () => {
       <ChuNay chu="RÃNH SÂU!" at={68} den={140} x={tamO(2, 3).x} y={tamO(2, 3).y - 60} mau={C.warn} />
       <DongHoBai con="3 giờ" />
       <NhanGoi so={5} ten="Bật nhảy" />
-      {f >= 82 ? <Sau dang="sau-hoang" says={[{at: 90, out: 225, text: 'Cầu sắt mục gãy rồi, rãnh rộng thế bước thường sao qua!'}]} at={82} /> : null}
+      {f >= 82 ? <Sau dang="sau-hoang" says={[{at: 90, out: 225, text: 'Cầu sắt gãy rồi, rãnh rộng bước sao qua!'}]} at={82} /> : null}
     </NenHienTruong>
   );
 };
@@ -270,7 +270,7 @@ const G6Thu: React.FC = () => {
         <CodeBox lines={['magnet_n()', 'go_up()']} x={280} y={145} w={440} size={30} title="Cùng cực Đỏ (N)" />
         <DongHoBai con="2 giờ 20" />
         <NhanGoi so={6} ten="Đảo cực" />
-        {f >= 88 ? <Sau dang="sau-hoang" says={[{at: 96, out: 245, text: 'Nam châm trong loa thùng đấy, cùng màu cực Đỏ là nó đẩy văng ra!'}]} at={88} /> : null}
+        {f >= 88 ? <Sau dang="sau-hoang" says={[{at: 96, out: 245, text: 'Trong loa có nam châm, cùng cực Đỏ là văng!'}]} at={88} /> : null}
       </NenHienTruong>
     </Shake>
   );
@@ -306,7 +306,7 @@ const G7Thu: React.FC = () => {
         <CodeBox lines={['magnet_n()', 'go_up()']} x={280} y={145} w={440} size={30} title="Không đọc cực trước" />
         <DongHoBai con="1 giờ 45" gap />
         <NhanGoi so={7} ten="Đọc cực từ" />
-        {f >= 82 ? <Sau dang="sau-sot-ruot" says={[{at: 90, out: 235, text: 'Vỏ ngoài bạc hết màu sơn rồi, bật bừa là nó đẩy văng lung tung đấy!'}]} at={82} /> : null}
+        {f >= 82 ? <Sau dang="sau-sot-ruot" says={[{at: 90, out: 235, text: 'Sơn bạc màu hết, bật bừa là bị đẩy văng!'}]} at={82} /> : null}
       </NenHienTruong>
     </Shake>
   );
@@ -354,7 +354,7 @@ const G8Thu: React.FC = () => {
       </div>
       <DongHoBai con="1 giờ" />
       <NhanGoi so={8} ten="Băng chuyền cũ" />
-      {f >= 82 ? <Sau dang="sau-tin" says={[{at: 90, out: 235, text: 'Đồ từ nhà máy cô Hạnh gửi sang đấy, phải canh nhịp mới gắp kịp!'}]} at={82} /> : null}
+      {f >= 82 ? <Sau dang="sau-tin" says={[{at: 90, out: 235, text: 'Hàng cô Hạnh gửi, canh nhịp mới gắp kịp!'}]} at={82} /> : null}
     </NenHienTruong>
   );
 };
@@ -395,7 +395,7 @@ const G9Thu: React.FC = () => (
       <ChuNay chu="NẶNG QUÁ!" at={72} den={145} x={tamO(0, 3).x + 150} y={tamO(0, 3).y} />
       <DongHoBai con="30 phút" />
       <NhanGoi so={9} ten="R2 bánh xích" />
-      <Sola says={[{at: 85, out: 225, text: 'Chân nhện leo trèo giỏi nhưng không ủi nổi khối bê-tông to thế kia!'}]} mat={[[0, 'worried'], [72, 'shocked']]} />
+      <Sola says={[{at: 85, out: 225, text: 'Chân nhện leo giỏi nhưng không ủi nổi bê-tông!'}]} mat={[[0, 'worried'], [72, 'shocked']]} />
     </NenHienTruong>
   </Shake>
 );
@@ -428,7 +428,7 @@ const G10Mo: React.FC = () => (
     <Xe anh="nhen-tu" moc={[[0, 0, 4.5, 0]]} />
     <DongHoBai con="15 phút" gap />
     <NhanGoi so={10} ten="Xuất xưởng" />
-    <Sau dang="sau-sot-ruot" says={[{at: 10, out: 145, text: 'Xe thu mua tới đầu ngõ rồi, còn mẻ lớn cuối cùng này thôi!'}]} />
+    <Sau dang="sau-sot-ruot" says={[{at: 10, out: 145, text: 'Xe thu mua tới ngõ rồi, còn mẻ cuối thôi!'}]} />
   </NenHienTruong>
 );
 const ThaTayM3: React.FC = () => {

@@ -250,17 +250,17 @@
     },
     'cau': {
       khe: 'than', ten: 'Cần cẩu cảng',
-      moTa: 'Mâm xoay cảng sông với cần vươn 3 tầm, xoay 8 nấc quanh trụ cẩu.',
+      moTa: 'Mâm xoay cảng sông với cần vươn 3 tầm, quay 4 hướng quanh trụ cẩu.',
       lenh: ['swing_left', 'swing_right', 'extend', 'retract', 'rail', 'wait'],
       moTaLenh: {
-        swing_left: 'Quay cần sang trái 1 nấc trong 8 nấc một vòng',
-        swing_right: 'Quay cần sang phải 1 nấc trong 8 nấc một vòng',
+        swing_left: 'Quay cần sang trái 1 nấc, 4 nấc là một vòng',
+        swing_right: 'Quay cần sang phải 1 nấc, 4 nấc là một vòng',
         extend: 'Vươn cần ra thêm 1 tầm, tối đa tầm 3',
         retract: 'Thu cần vào 1 tầm, tối thiểu tầm 1',
         rail: 'Trượt chân cẩu trên ray 1 ô theo hướng d'
       },
       gioi: [
-        'Quay tròn 8 nấc quanh trụ, nấc 0 là phía trên và tăng dần theo chiều kim đồng hồ',
+        'Quay 4 hướng quanh trụ: nấc 0 lên, 1 phải, 2 xuống, 3 trái',
         'Vươn cần từ tầm 1 tới tầm 3 để đưa đầu cần tới đúng ô mục tiêu',
         { can: ['rail'], chu: 'rail(d) trượt chân cẩu dọc theo đường ray cảng' }
       ],
@@ -339,27 +339,34 @@
     'day-keo': {
       khe: 'tay', ten: 'Tay lưới thủy lợi',
       moTa: 'Vòng lưới phao gắn trên xuồng để tung lưới ra 4 phía bắt bè nổi, giật van cống hoặc cuộn dây chỉnh độ dài lưới.',
-      lenh: ['cast_net', 'drop_net', 'set_length'],
+      lenh: ['cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out'],
       moTaLenh: {
         cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van V',
         drop_net: 'Mở lưới thả vật đang giữ xuống đúng ô nước hiện tại của nó',
-        set_length: 'Đặt độ dài dây lưới từ 0 đến 3, với 0 là kéo vật về khoang tàu và 1 đến 3 là số ô dây dưới nước'
+        set_length: 'Đặt độ dài dây lưới từ 0 đến 3, với 0 là kéo vật về khoang tàu và 1 đến 3 là số ô dây dưới nước',
+        reel_in: 'Tời cuộn dây lưới ngắn đi 1 ô, vật trong lưới về gần xuồng 1 ô; dây còn 1 ô thì cuộn vật vào khoang tàu',
+        reel_out: 'Tời nhả dây lưới dài thêm 1 ô, tối đa 3 ô, vật trong lưới hay trong khoang ra xa xuồng 1 ô'
       },
       ghep: [
         { lenh: ['cast_net', 'wait'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van V trên bờ' },
         { lenh: ['drop_net', 'wait'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng q' },
-        { lenh: ['set_length', 'wait'], ra: 'Thu dây kéo vật về khoang tàu hoặc thả dây ra độ dài mới' }
+        { lenh: ['set_length', 'wait'], ra: 'Thu dây kéo vật về khoang tàu hoặc thả dây ra độ dài mới' },
+        { lenh: ['reel_in', 'wait'], ra: 'Cuộn dây 1 ô: vật về gần xuồng 1 ô, nấc cuối vào khoang tàu' },
+        { lenh: ['reel_out', 'wait'], ra: 'Nhả dây 1 ô: vật ra xa xuồng 1 ô' }
       ],
       gioi: [
         'cast_net(d) tung lưới theo bốn hướng quanh xuồng là front, back, left, right, mặc định là front cách xuồng 2 ô',
         'Khi xuồng di chuyển, dây lưới và vật nổi trong lưới lướt theo sau đúng quỹ đạo của xuồng; khi xuồng xoay tại chỗ thì lưới dưới nước đứng yên',
         'cast_net(d) trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van',
-        { can: ['set_length'], chu: 'set_length(n) chỉnh độ dài dây lưới từ 0 đến 3: gọi 0 để kéo vật gọn vào khoang tàu, gọi 1 đến 3 để thu ngắn hay thả dài dây dưới nước' }
+        { can: ['set_length'], chu: 'set_length(n) chỉnh độ dài dây lưới từ 0 đến 3: gọi 0 để kéo vật gọn vào khoang tàu, gọi 1 đến 3 để thu ngắn hay thả dài dây dưới nước' },
+        { can: ['reel_in'], chu: 'Mỗi nhịp tời chỉ cuộn hay nhả đúng 1 ô dây; tời làm trước chân vịt nên reel_in() ghép được với lệnh chân vịt trong cùng một nhịp' }
       ],
       khong: [
         'Không gọi cast_net(d) bắt thêm được khi trong lưới đang giữ một vật nổi',
         'Xuồng không đi đè lên chính ô dây lưới hay túi lưới đang căng dưới nước',
-        { can: ['set_length'], chu: 'Khi vật đang nằm trong khoang tàu ở độ dài 0 thì phải gọi set_length(n) thả ra mặt nước trước khi gọi drop_net()' }
+        { can: ['set_length'], chu: 'Khi vật đang nằm trong khoang tàu ở độ dài 0 thì phải gọi set_length(n) thả ra mặt nước trước khi gọi drop_net()' },
+        { can: ['reel_in'], chu: 'Xuồng tiến về phía vật trong lúc cuộn thì cán lên dây lưới và đứng yên, trừ nấc cuối khi vật đã vào khoang' },
+        { can: ['reel_out'], chu: 'Khi vật đang nằm trong khoang tàu thì phải gọi reel_out() nhả ra mặt nước trước khi gọi drop_net()' }
       ],
       luuY: ['Gọi drop_net() rồi wait() khi vật trong lưới đang nằm ngay trên ô bến hàng q để giao hàng.']
     },

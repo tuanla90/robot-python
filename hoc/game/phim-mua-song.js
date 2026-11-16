@@ -212,7 +212,7 @@
 
   /* ================================================================ 6. buoc-duoi — Cuộn dây chỉnh lưới */
   PG.dangKy('buoc-duoi', [
-    { Chu: ['Ở những khúc kênh hẹp hay bến sát góc bờ, dây lưới cố định 2 ô chưa đủ linh hoạt.', 'Nâng cấp CUỘN DÂY CHỈNH LƯỚI để thu ngắn, thả dài dây từ 1..3 ô hoặc kéo bè gọn vào khoang (0)!'],
+    { Chu: ['Ở những khúc kênh hẹp hay bến sát góc bờ, dây lưới cố định 2 ô chưa đủ linh hoạt.', 'Nâng cấp TỜI CUỘN: mỗi nhịp cuộn hay nhả dây đúng 1 ô, nấc cuối kéo bè gọn vào khoang!'],
       ve: function (m) {
         nen(m);
         var s = sanSong(m, 3, 5);
@@ -225,14 +225,14 @@
         }, 420);
       }
     },
-    { Chu: ['Gọi set_length(n) kèm wait() để đặt độ dài dây lưới: n = 0 kéo bè về khoang tàu, n = 1..3 đặt số ô dây dưới nước.', 'Khi bè đã ở đúng ô bến hoặc nhánh dòng chảy, gọi drop_net() kèm wait() để mở lưới!'],
+    { Chu: ['reel_in() cuộn dây ngắn 1 ô. reel_out() nhả dây dài 1 ô.', 'Viết reel_in() ngay trước lệnh lùi: tời cuộn và chân vịt chạy chung một nhịp!'],
       ve: function (m) {
         nen(m);
         var s = sanSong(m, 3, 5);
         dat(s, veO('ben-nhan', { xong: true }), 2, 1);
         dat(s, veV('be-go', { keo: true }), 2, 1);
         dat(s, may(XUONG_DONG, { chay: true, tay: { giu: true }, camBien: { bat: true } }, 1), 3, 1);
-        m.appendChild(code('set_length(1)\nwait()\ndrop_net()\nwait()'));
+        m.appendChild(code('reel_in()\nback()\ndrop_net()\nwait()'));
       }
     },
     { Chu: ['Chế các hàm tether_grab(), tether_drop(), tow_to_tail(), tug_corner() và deliver_tail().', 'Thu thả dây lưới mượt mà qua mọi khúc cua gấp trên bến sông!'],

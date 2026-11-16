@@ -110,7 +110,7 @@ const G1Mo: React.FC = () => (
       <ChuNay chu="CHÌM NGHỈM!" at={66} den={138} x={tamO(2, 3).x + 90} y={tamO(2, 3).y - 40} />
       <ThuyTrieuBar con="Triều lên: 10 giờ" />
       <NhanGoi so={1} ten="Thân xuồng chân vịt" />
-      <Ba dang="ba-hoang" says={[{at: 72, out: 175, text: 'Chân nhện chỉ đi trên cạn thôi, bước xuống lòng kênh sâu là chìm nghỉm ngay!'}]} at={58} />
+      <Ba dang="ba-hoang" says={[{at: 72, out: 175, text: 'Chân nhện chỉ đi cạn, xuống kênh sâu là chìm!'}]} at={58} />
     </NenHienTruong>
   </Shake>
 );
@@ -142,7 +142,7 @@ const G2Thu: React.FC = () => (
       <ChuNay chu="TRÔI XA!" at={60} den={140} x={tamO(3, 4).x + 60} y={tamO(3, 4).y - 50} />
       <ThuyTrieuBar con="Triều lên: 9 giờ" />
       <NhanGoi so={2} ten="Dây phao kéo" />
-      <Ba says={[{at: 68, out: 220, text: 'Dưới nước không có điểm tựa, mũi xuồng chạm vào là đẩy bè trôi tuột ra xa!'}]} at={54} />
+      <Ba says={[{at: 68, out: 220, text: 'Dưới nước không điểm tựa, đẩy là bè trôi tuột!'}]} at={54} />
     </NenHienTruong>
   </Shake>
 );
@@ -177,7 +177,7 @@ const G3Thu: React.FC = () => (
       <ChuNay chu="LỆCH LUỒNG!" at={68} den={142} x={tamO(2, 4).x + 110} y={tamO(2, 4).y - 40} />
       <ThuyTrieuBar con="Triều lên: 8 giờ" />
       <NhanGoi so={3} ten="Chong chóng đo nước" />
-      <Sola mat={[[0, 'normal'], [66, 'surprised']]} says={[{at: 12, out: 64, text: 'Nhìn mặt nước phẳng lặng thế này chắc đi thẳng là tới phao đích!'}, {at: 72, out: 220, text: 'Ái, dòng ngầm đẩy trôi xuống dưới rồi!'}]} />
+      <Sola mat={[[0, 'normal'], [66, 'surprised']]} says={[{at: 12, out: 64, text: 'Nước phẳng lặng, chắc đi thẳng là tới phao!'}, {at: 72, out: 220, text: 'Ái, dòng ngầm đẩy trôi xuống dưới rồi!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -211,7 +211,7 @@ const G4Thu: React.FC = () => (
       <ChuNay chu="CUỐN TRÔI!" at={58} den={140} x={tamO(3, 4).x + 60} y={tamO(3, 4).y - 45} />
       <ThuyTrieuBar con="Triều lên: 7 giờ" />
       <NhanGoi so={4} ten="Cống thủy lợi" />
-      <Ba dang="ba-sot-ruot" says={[{at: 64, out: 230, text: 'Cửa cống đang mở xả nước xiết, chạm vào van cống trên bờ kênh để đóng cửa cống trước nhé!'}]} at={50} />
+      <Ba dang="ba-sot-ruot" says={[{at: 64, out: 230, text: 'Cống xả xiết, chạm van trên bờ đóng cống trước!'}]} at={50} />
     </NenHienTruong>
   </Shake>
 );
@@ -251,7 +251,7 @@ const G5Thu: React.FC = () => (
       <ChuNay chu="TRÔI CẢ XUỒNG!" at={55} den={140} x={tamO(2, 3).x + 120} y={tamO(2, 3).y - 30} />
       <ThuyTrieuBar con="Triều lên: 6 giờ" />
       <NhanGoi so={5} ten="Thả neo giữ vị trí" />
-      <Luna mat={[[0, 'normal'], [55, 'surprised']]} says={[{at: 12, out: 52, text: 'Quăng dây kéo bè gỗ nặng giữa luồng nước xiết nào!'}, {at: 60, out: 220, text: 'Ối, bè nặng cộng nước xiết kéo trôi luôn cả xuồng!'}]} />
+      <Luna mat={[[0, 'normal'], [55, 'surprised']]} says={[{at: 12, out: 52, text: 'Quăng dây kéo bè gỗ giữa nước xiết nào!'}, {at: 60, out: 220, text: 'Ối, bè nặng, nước xiết kéo trôi cả xuồng!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -289,7 +289,7 @@ const G6Thu: React.FC = () => (
       <ChuNay chu="KẸT KHÚC CUA!" at={68} den={145} x={tamO(2, 2).x + 60} y={tamO(2, 2).y - 45} />
       <ThuyTrieuBar con="TRIỀU CƯỜNG DÂNG!" gap />
       <NhanGoi so={6} ten="Buộc dắt theo đuôi" />
-      <Ba dang="ba-hoang" says={[{at: 52, out: 230, text: 'Triều cường giật bung cọc đo nước rồi! Luồng âu thuyền gấp khúc thế này kéo thẳng sao qua!'}]} at={40} />
+      <Ba dang="ba-hoang" says={[{at: 52, out: 230, text: 'Luồng âu gấp khúc thế này, kéo thẳng sao qua!'}]} at={40} />
     </NenHienTruong>
   </Shake>
 );
@@ -322,7 +322,7 @@ const G7Thu: React.FC = () => (
       <ChuNay chu="TRÔI 2 Ô!" at={68} den={140} x={tamO(2, 4).x + 110} y={tamO(2, 4).y - 40} />
       <ThuyTrieuBar con="Triều lên: 4 giờ" />
       <NhanGoi so={7} ten="Tuple (hướng, sức nước)" />
-      <Sola mat={[[0, 'normal'], [68, 'surprised']]} says={[{at: 12, out: 64, text: 'Biết nước chảy xuống nên mình đã bù lên 1 ô rồi mà!'}, {at: 72, out: 225, text: 'Á, luồng này chảy xiết cuốn trôi tới 2 ô lận!'}]} />
+      <Sola mat={[[0, 'normal'], [68, 'surprised']]} says={[{at: 12, out: 64, text: 'Nước chảy xuống, mình bù lên 1 ô rồi mà!'}, {at: 72, out: 225, text: 'Á, luồng xiết cuốn tới 2 ô lận!'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -357,7 +357,7 @@ const G8Thu: React.FC = () => (
       <ChuNay chu="TRÔI LỆCH NHỊP!" at={65} den={140} x={tamO(3, 4).x + 70} y={tamO(3, 4).y - 40} />
       <ThuyTrieuBar con="Triều lên: 3 giờ" />
       <NhanGoi so={8} ten="Ghép cầu phao bác Sơn" />
-      <Ba dang="ba-tin" says={[{at: 66, out: 230, text: 'Băng chuyền trên bờ đẩy thùng phao sắt của bác Sơn xuống sông, không thả neo đón kịp là nước cuốn lệch nhịp cầu!'}]} at={52} />
+      <Ba dang="ba-tin" says={[{at: 66, out: 230, text: 'Phao bác Sơn tới, neo không kịp là lệch cầu!'}]} at={52} />
     </NenHienTruong>
   </Shake>
 );
@@ -393,7 +393,7 @@ const G9Thu: React.FC = () => (
       <ChuNay chu="VƯỚNG CHỐT BỜ!" at={60} den={140} x={tamO(2, 2).x + 90} y={tamO(2, 2).y - 35} />
       <ThuyTrieuBar con="Triều lên: 2 giờ" />
       <NhanGoi so={9} ten="Phối hợp R2 bờ kè" />
-      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 14, out: 58, text: 'Chốt khóa sắt nằm tít trên bờ kè đá cao kìa!'}, {at: 64, out: 220, text: 'Xuồng chỉ bơi dưới nước thôi, làm sao leo lên bờ kè mở chốt sắt?'}]} />
+      <Sola mat={[[0, 'normal'], [60, 'surprised']]} says={[{at: 14, out: 58, text: 'Chốt sắt nằm tít trên bờ kè cao kìa!'}, {at: 64, out: 220, text: 'Xuồng chỉ bơi, sao leo lên bờ kè mở chốt?'}]} />
     </NenHienTruong>
   </Shake>
 );
@@ -439,7 +439,7 @@ const ThaTayM4: React.FC = () => {
           {m.nhan}
         </div>
       ))}
-      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'Tàu thủy lợi R1 đủ 4 món nghề sông nước, thả tay đón đỉnh triều nào!'}]} />
+      <Sola mat={[[0, 'happy']]} says={[{at: 12, out: 150, text: 'Tàu R1 đủ nghề sông nước, thả tay đón triều!'}]} />
     </NenHienTruong>
   );
 };

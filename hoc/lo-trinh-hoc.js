@@ -1904,13 +1904,13 @@
   ];
   var TEN_MUA_CANG = {
     'can-cau': 'Quay cần vươn tầm', 'so-am': 'Số âm và khoảng cách',
-    'moc-cau': 'Nhấc container', 'chia-du': 'Chia lấy phần nguyên, phần dư',
+    'moc-cau': 'Nhấc container', 'chia-du': 'Chia phần nguyên, phần dư',
     'quet-ma': 'Đọc mã số', 'che-quet-ma': 'Chế lệnh: phân loại theo mã',
-    'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: giao đúng tàu',
+    'ben-tau': 'Tàu cập bến', 'che-ben-tau': 'Chế lệnh: hàng tàu nối đuôi',
     'duong-ray': 'Chạy dọc đường ray', 'che-duong-ray': 'Chế lệnh: dời bệ cẩu',
     'nhac-doi': 'Móc đôi hai tầng', 'che-nhac-doi': 'Chế lệnh: bốc nhanh',
     'can-tai': 'Đo sức nặng', 'che-can-tai': 'Chế lệnh: giữ cần an toàn',
-    'cang-cu': 'Bãi cảng cũ', 'che-cang-cu': 'Chế lệnh: vượt chướng ngại cũ',
+    'cang-cu': 'Bãi cảng cũ', 'che-cang-cu': 'Chế lệnh: qua vật cản cũ',
     'doi-cang': 'Đội cẩu và nhện', 'che-doi-cang': 'Đội cẩu và nhện phối hợp',
     'tong-hop-cang': 'Tổng hợp cảng sông', 'trum-mua-cang': 'Trùm mùa cảng sông'
   };
@@ -1995,8 +1995,8 @@
     'dong-chay': 'Đo hướng nước chảy', 'che-dong-chay': 'Chế lệnh: lựa chiều nước',
     'cong-thuy-loi': 'Mở cống dẫn nước', 'che-cong': 'Chế lệnh: điều tiết dòng',
     'tha-neo': 'Thả neo giữ nhịp', 'che-tha-neo': 'Chế lệnh: neo giữa dòng xiết',
-    'buoc-duoi': 'Thu thả dây lưới', 'che-buoc-duoi': 'Chế lệnh: thu lưới qua khúc cua',
-    'suc-nuoc': 'Đo sức nước chảy', 'che-suc-nuoc': 'Chế lệnh: chọn nhánh êm nhất',
+    'buoc-duoi': 'Thu thả dây lưới', 'che-buoc-duoi': 'Chế lệnh: thu lưới khúc cua',
+    'suc-nuoc': 'Đo sức nước chảy', 'che-suc-nuoc': 'Chế lệnh: chọn nhánh êm',
     'ben-cu': 'Dọn luồng bến cũ', 'che-ben-cu': 'Chế lệnh: cứu hộ bến cũ',
     'doi-xuong': 'Đội xuồng bắc cầu phao', 'che-doi-xuong': 'Chế lệnh: đội xuồng phối hợp',
     'tong-hop-song': 'Tổng hợp bến sông', 'trum-mua-song': 'Trùm mùa bến sông'
@@ -2085,7 +2085,7 @@
     'phat-not': 'Vừa đi vừa ngân', 'che-phat-not': 'Chế lệnh: tấu phá đá',
     'nghe-not': 'Bắt nốt chuông đá', 'che-nghe-not': 'Chế lệnh: giải mã giai điệu',
     'hang-cu': 'Qua máy cũ trong hang', 'che-hang-cu': 'Chế lệnh: qua máy cũ',
-    'doi-hang-dong': 'Lấp hố, phá đá cho nhau', 'che-doi-hang-dong': 'Chế lệnh: phối hợp trong hang',
+    'doi-hang-dong': 'Lấp hố, phá đá cho nhau', 'che-doi-hang-dong': 'Chế lệnh: cùng vượt hang',
     'tong-hop-hang': 'Một chương trình, mọi sân', 'trum-mua-hang': 'Chế lệnh: cứu hộ hang sâu'
   };
   var TEP_MUA_HANG = ['manBanhGai', 'manLoa', 'manAmThanh', 'manSanHangDong', 'manThuGai', 'manPhatNot', 'manNgheNot', 'manHangCu', 'manDoiHangDong', 'manTrumMuaHang'];
@@ -3302,7 +3302,7 @@
     TT.goi.forEach(function (g) { if (g.mua === 'mua-2' && TEN_GOI_2[g.ma]) g.ten = TEN_GOI_2[g.ma]; });
     var TEN_CHUONG_2 = {
       'xich': 'Quay hai nhịp', 'bien-xich': 'Đi xoắn ốc',       // PDM2a 31/10: gói 1 chưa cảm biến, biến đếm độ dài đoạn xoắn ốc (trước: Đếm bước để về)
-      'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy em',
+      'sung-hoi': 'Phun mở van', 'tham-so': 'Đi mấy ô tùy ý',
       'hong-ngoai': 'Còn mấy ô?', 'che-hong-ngoai': 'Chế lệnh: tới sát tường',
       'bang-chuyen': 'Canh băng chở thùng',      // PDM2a2 31/10: băng chở thùng, xích không trôi (trước: Trôi theo băng)
       'che-sung-hoi': 'Chế lệnh: mở van',
@@ -3339,6 +3339,34 @@
       if (m.doi) m.doi.forEach(function (r) { if (r && r.chinhLuoi === undefined) r.chinhLuoi = true; });
       else if (m.chinhLuoi === undefined) m.chinhLuoi = true;
     });
+    // 14/11 (KE-HOACH-GHEP-NHIP.md mục 2a): GHÌ XÍCH mở từ luc-ban.6 tới hết gói 6 Lực phun (luc-ban, che-luc-ban): phun mạnh cùng nhịp hai xích đi thẳng thì xích + giật cộng lại.
+    // CHỈ gói 6: cờ này kéo theo cú PHÓNG 2 ô (tổng ±2) mà lõi không tách được; bật cho cả gói 7–10 thì dãy cố định có phóng thắng mọi sân, phá ép cảm biến (20 màn gói 10).
+    // Gói 10 bật cờ từng màn (man-trum-mua-2.js). Gói 7–9 chưa có: xem báo cáo ghép nhịp mùa 2.
+    var iGhi = M.danhSach.indexOf(get('luc-ban.6'));
+    if (iGhi >= 0) Object.assign(get('luc-ban.6'), { chiChay: true, chinhCoDinh: true });     // màn trình diễn ghì xích: chương trình khoá, bấm Chạy là thấy
+    var goiGhi = {}; TT.goi.forEach(function (g) { if (g.ma === 'luc-ban') g.chuong.forEach(function (c) { goiGhi[c] = true; }); });
+    if (iGhi >= 0) M.danhSach.forEach(function (m, i) {
+      if (i < iGhi || !goiGhi[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.ghiXich === undefined) r.ghiXich = true; });
+      else if (m.ghiXich === undefined) m.ghiXich = true;
+    });
+    // 14/11 (mục 2b): VỪA CHẠY VỪA PHUN mở từ che-luc-ban.6 (màn trình diễn) tới hết gói 6: phun NHẸ cùng nhịp hai xích đi thẳng thì xe đi một ô rồi phun từ ô mới.
+    // Gói 10 bật cờ từng màn (man-trum-mua-2.js), như ghiXich.
+    var iChay = M.danhSach.indexOf(get('che-luc-ban.6'));
+    if (iChay >= 0) M.danhSach.forEach(function (m, i) {
+      if (i < iChay || !goiGhi[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.phunKhiChay === undefined) r.phunKhiChay = true; });
+      else if (m.phunKhiChay === undefined) m.phunKhiChay = true;
+    });
+    // 14/11 (KE-HOACH-GHEP-NHIP.md mục 3a): CẦN GẠT ĐÔI mở từ gói 5 Đường ray tới hết mùa 4 Cảng sông (gói 5–10): lệnh cẩu của bộ phận khác nhau viết liền trước wait() chạy chung MỘT nhịp
+    // (ray → quay → vươn → móc). Gói 1–4 không bật: mỗi lệnh một nhịp. Chương trình không có wait() chạy đúng số nhịp cũ. Mùa 9 không bật (màn nào cần thì tự đặt canGatDoi).
+    var GOI_GAT_DOI = ['duong-ray', 'nhac-doi', 'can-tai', 'cang-cu', 'doi-cang', 'tong-hop-cang'], chuongGat = {};
+    TT.goi.forEach(function (g) { if (g.mua === 'mua-4' && GOI_GAT_DOI.indexOf(g.ma) >= 0) g.chuong.forEach(function (c) { chuongGat[c] = true; }); });
+    M.danhSach.forEach(function (m) {
+      if (!chuongGat[m.chuong]) return;
+      if (m.doi) m.doi.forEach(function (r) { if (r && r.canGatDoi === undefined) r.canGatDoi = true; });
+      else if (m.canGatDoi === undefined) m.canGatDoi = true;
+    });
   })();
 
   // Ngưỡng sao được đo offline bằng máy chấm trên lộ trình mới, không chia tổng 3 sân.
@@ -3346,6 +3374,32 @@
   M.danhSach.forEach(function (m) {
     if (nguong && nguong[m.ma]) m.sao = Object.assign({}, m.sao, nguong[m.ma]);
   });
+  // Mùa 4–7 viết "mỗi dòng một việc" (3/11, user: bỏ biểu thức lồng, `c = read_code()` rồi `t = c // 10` rồi `if t == 1:`): lời giải dài thêm vài dòng,
+  // nên khung nới (bước 2 ô) cho vừa lời giải và lời giải khác: chương trình chính theo khung.chinh, thân hàm của em theo khung.moiHam.
+  (function () {
+    var MUA_PHANG = ['mua-4', 'mua-5', 'mua-6', 'mua-7'], chuong = {};
+    (TT.goi || []).forEach(function (g) { if (MUA_PHANG.indexOf(g.mua) >= 0) (g.chuong || []).forEach(function (c) { chuong[c] = true; }); });
+    function soDong(ds) { return (ds || []).filter(function (s) { return String(s).trim() !== ''; }).length; }      // như KhungCode: dòng trống không tính ô
+    function chan(n) { return n + (n % 2); }
+    var manMua = M.danhSach.filter(function (m) { return chuong[m.chuong] && m.khung; }), thanDai = {};      // hàm em viết ở màn trước (kho) cũng phải vừa khung màn sau gọi nó
+    function baiCua(m) {      // lời giải, lời giải khác (thân hàm có thể nằm ngoài baiLam), từng công thức khác
+      var k = m.loiGiaiKhac;
+      return [m.loiGiai, k && k.baiLam, k && { hamCuaEmMoi: k.hamCuaEmMoi }].concat((m.congThucKhac || []).map(function (c) { return { hamCuaEmMoi: c.hamCuaEmMoi }; })).filter(Boolean);
+    }
+    manMua.forEach(function (m) { baiCua(m).forEach(function (b) { (b.hamCuaEmMoi || []).forEach(function (f) { thanDai[f.ten] = Math.max(thanDai[f.ten] || 0, soDong(f.than)); }); }); });
+    manMua.forEach(function (m) {
+      var chinh = 0, than = 0;
+      baiCua(m).forEach(function (b) {
+        [b.chinh].concat((b.doi || []).map(function (r) { return r && r.chinh; })).forEach(function (c) {
+          chinh = Math.max(chinh, soDong(c));
+          (c || []).join('\n').replace(/[A-Za-z_]\w*(?=\()/g, function (ten) { than = Math.max(than, thanDai[ten] || 0); return ten; });
+        });
+        [].concat(b.hamCuaEmMoi || [], b.hamCuaMan || []).forEach(function (f) { than = Math.max(than, soDong(f.than)); });
+      });
+      var k = m.khung, cu = k.chinh === undefined ? 10 : k.chinh, cuHam = k.moiHam === undefined ? 10 : k.moiHam;
+      if (chinh > cu - (k.khoaChinh || 0) || than > cuHam - (k.khoaHam || 0)) m.khung = Object.assign({}, k, { chinh: Math.max(cu, chan(chinh + (k.khoaChinh || 0))), moiHam: Math.max(cuHam, chan(than + (k.khoaHam || 0))) });
+    });
+  })();
   // Chạy cuối lộ trình (sau mọi đoạn sửa taoHam của mùa dựng lại). Sổ lệnh: màn của mục còn trong lộ trình mà không màn nào tạo hàm đó nữa (SM1-B: trùm vong-lap.10 viết lại chỉ chế bend_left / bend_right, row thôi là hàm cốt truyện)
   // thì bỏ mục, để trang Sổ lệnh không hiện "???" mãi cho một hàm không chế được.
   if (SL && SL.ds) for (var si = SL.ds.length - 1; si >= 0; si--) {

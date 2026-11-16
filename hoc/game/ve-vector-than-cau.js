@@ -7,7 +7,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    hamGoc: swing_left, swing_right, extend, retract, wait (gốc gói 1) + rail (nâng cấp gói 5). */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
-  var NAC = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
+  var NAC = [[0, -1], [1, 0], [0, 1], [-1, 0]];      // 4 hướng cần (14/11, thay 8 nấc): 0 lên, 1 phải, 2 xuống, 3 trái (khớp SanHoc.NAC_VEC)
   V.NAC_CAU = NAC;
 
   /** Giàn cần nằm dọc trục +x từ 0 tới L, bề ngang w (đang ở hệ đã xoay). */
@@ -90,16 +90,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   V.dangKy({
     loai: 'than', ma: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'rail'], ten: 'Thân cần cẩu container',
-    oGan: { tay: { x: 50, y: 86 }, hongTrai: { x: 70, y: 54 }, hongPhai: { x: 30, y: 54 }, tren: { x: 66, y: 72 }, sau: { x: 50, y: 25 } },
+    oGan: { tay: { x: 50, y: 86 }, hongTrai: { x: 70, y: 54 }, hongPhai: { x: 30, y: 54 }, tren: { x: 66, y: 72 }, sau: { x: 50, y: 25 }, bung: { x: 50, y: 72 } },   // M9B2: ổ bung ở mép dưới vỏ, sát gốc cần (camera bụng L13 vẽ tạm theo ổ; hình ở đầu cần là gói hình sau)
     oCam: { x: 58, y: 36 }, vo: { x: 29, y: 34, w: 42, h: 39 },
     ve: function (g, s, M, H) { veDe(g, s, H); veTren(g, s, M, H); }
   });
   V.veDeCau = veDe; V.veTrenCau = veTren;
 
-  function gocNac(nac) { return (((+nac || 0) % 8) + 8) % 8 * Math.PI / 4; }      // 0 = lên, tăng theo chiều kim đồng hồ
-  /** Véc-tơ (ô) tới đầu cần ở nấc (cho phép lẻ: nội suy theo góc, độ dài như nấc gần nhất chéo / thẳng để quay mượt mà đầu cần vẫn đi qua tâm ô ở nấc nguyên). */
+  function gocNac(nac) { return (((+nac || 0) % 4) + 4) % 4 * Math.PI / 2; }      // 0 = lên, tăng theo chiều kim đồng hồ
+  /** Véc-tơ (ô) tới đầu cần ở nấc (cho phép lẻ: nội suy theo góc; 4 hướng nên cần luôn dài đúng 1 ô × tầm, quay 90° theo cung tròn). */
   function vecNac(nac) {
-    var n = (((+nac || 0) % 8) + 8) % 8, a = Math.floor(n), b = (a + 1) % 8, t = n - a;
+    var n = (((+nac || 0) % 4) + 4) % 4, a = Math.floor(n), b = (a + 1) % 4, t = n - a;
     var A = NAC[a], B = NAC[b];
     if (t === 0) return { x: A[0], y: A[1] };
     var la = Math.hypot(A[0], A[1]), lb = Math.hypot(B[0], B[1]), L = la + (lb - la) * t, ang = gocNac(n);

@@ -55,7 +55,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.tb = h('div', 'c-tb'); host.appendChild(el.tb);
     Ve.hydrate(host);
 
-    el.choi.addEventListener('click', function () { App.veGoi(); });
+    el.choi.addEventListener('click', function () { App.veMua(); });
     el.tiep.addEventListener('click', function () { var m = App.manTiepTheo(); if (m) App.vaoMan(m.ma); });
 
     // giữ logo 2 giây: bảng Gỡ lỗi

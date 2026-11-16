@@ -41,16 +41,16 @@
 
   var C_DEMO = LAP(3, 'go_right()').concat(['land()', 'take_off()'], LAP(3, 'go_right()'));
   var C_HAI_TRAM = ['for i in range(2):', '    for j in range(3):', '        go_right()', '    land()', '    take_off()', 'for j in range(3):', '    go_right()'];
-  var C_PIN_YEU = LAP(5, ['go_right()', 'go_right()', 'if battery() < 3:', '    land()', '    take_off()']);
+  var C_PIN_YEU = LAP(5, ['go_right()', 'go_right()', 'b = battery()', 'if b < 3:', '    land()', '    take_off()']);
   var C_MAI = LAP(3, 'go_right()').concat(['go_up()', 'land()', 'take_off()', 'go_down()'], LAP(4, 'go_right()'));
-  var C_IT_NHAT = LAP(8, ['go_right()', 'if battery() < 2:', '    land()', '    take_off()']);
+  var C_IT_NHAT = LAP(8, ['go_right()', 'b = battery()', 'if b < 2:', '    land()', '    take_off()']);
   var SAN_IT_NHAT = ['...PPP.PF'];
   var C_DOCK = ['for j in range(2):', '    go_right()', 'dock()', 'for j in range(3):', '    go_right()'];
   var C_STOP = ['for j in range(3):', '    go_right()', 'charge_stop()', 'for j in range(4):', '    go_right()'];
   var C_BAY_SAC = ['fly_dock(3)', 'fly_dock(3)', 'for j in range(3):', '    go_right()'];
   var T_BAY_SAC = ['for i in range(n):', '    go_right()', 'dock()'];
   var C_CAU = ['ink("yellow")', 'dot()', 'wait()', 'fly_dock(2)', 'fly_dock(3)', 'for j in range(3):', '    go_right()', 'dot()', 'wait()'];
-  var T_SAFE = ['for i in range(n):', '    go_right()', '    if battery() < 2:', '        dock()'];
+  var T_SAFE = ['for i in range(n):', '    go_right()', '    b = battery()', '    if b < 2:', '        dock()'];
 
   var DS = [
     man({
@@ -135,7 +135,7 @@
       so: 6, ten: 'Đáp khi pin yếu', hang: 'luyen', pin: [6, 7], hamCuaEmCan: [],
       deBai: 'Mười ô tới cờ. Đáp ở mọi ô thì phí nhịp và hết pin; chỉ đáp khi pin yếu: mỗi lần bay hai ô, hỏi battery(), dưới 3 thì đáp sạc rồi cất cánh. ' +
         'Hai sân: drone pin 6 có hai trạm sạc, drone pin 7 chỉ một trạm ở chỗ khác. Đáp cứng theo ô thì hỏng một sân.',
-      veMaMau: 'Chương trình có sẵn đã bay từng đôi ô. Thêm câu hỏi pin: battery() < 3.',
+      veMaMau: 'Chương trình có sẵn đã bay từng đôi ô. Thêm câu hỏi pin: b = battery() rồi if b < 3:.',
       san: [['....P...P.F'], ['......P...F']],
       batDau: { x: 0, y: 0 },
       maMau: bai(LAP(5, ['go_right()', 'go_right()'])),
@@ -175,7 +175,7 @@
       loiGiai: bai(C_IT_NHAT),
       sao: { o: 5, nhip: 14 },
       loiSai: [
-        { moTa: 'Ngưỡng 3: đáp ở ô thường, không sạc', baiLam: bai(LAP(8, ['go_right()', 'if battery() < 3:', '    land()', '    take_off()'])), phaiCoMa: [] },
+        { moTa: 'Ngưỡng 3: đáp ở ô thường, không sạc', baiLam: bai(LAP(8, ['go_right()', 'b = battery()', 'if b < 3:', '    land()', '    take_off()'])), phaiCoMa: [] },
         { moTa: 'Không đáp', baiLam: bai(LAP(8, 'go_right()')), phaiCoMa: ['het-pin'] }
       ],
       goiY: ['Pin còn 1 thì đáp: ô đó luôn là ô sạc.', 'Đáp ít thì ít nhịp.']
@@ -183,15 +183,15 @@
 
     man({
       so: 9, ten: 'Ngưỡng pin sai', hang: 'bien-the', pin: [6, 7], hamCuaEmCan: [],
-      deBai: 'Chương trình có sẵn chỉ đáp khi battery() < 1: tới lúc hỏi thì pin đã cạn. Sửa ngưỡng để drone đáp đúng trạm sạc ở cả hai sân: pin 6 hai trạm, pin 7 một trạm.',
-      veMaMau: 'Chạy thử: drone hết pin. Đổi số trong battery() < 1.',
+      deBai: 'Chương trình có sẵn chỉ đáp khi b < 1: tới lúc hỏi thì pin đã cạn. Sửa ngưỡng để drone đáp đúng trạm sạc ở cả hai sân: pin 6 hai trạm, pin 7 một trạm.',
+      veMaMau: 'Chạy thử: drone hết pin. Đổi số trong if b < 1:.',
       san: [['....P...P.F'], ['......P...F']],
       batDau: { x: 0, y: 0 },
-      maMau: bai(LAP(5, ['go_right()', 'go_right()', 'if battery() < 1:', '    land()', '    take_off()'])),
+      maMau: bai(LAP(5, ['go_right()', 'go_right()', 'b = battery()', 'if b < 1:', '    land()', '    take_off()'])),
       loiGiai: bai(C_PIN_YEU),
       sao: { o: 6, nhip: 14 },
       loiSai: [
-        { moTa: 'Không sửa: pin cạn trước khi hỏi', baiLam: bai(LAP(5, ['go_right()', 'go_right()', 'if battery() < 1:', '    land()', '    take_off()'])), phaiCoMa: ['het-pin'] }
+        { moTa: 'Không sửa: pin cạn trước khi hỏi', baiLam: bai(LAP(5, ['go_right()', 'go_right()', 'b = battery()', 'if b < 1:', '    land()', '    take_off()'])), phaiCoMa: ['het-pin'] }
       ],
       goiY: ['Pin về 0 là rơi ngay: phải đáp trước đó.', 'Thử ngưỡng 3.']
     }),
@@ -239,7 +239,7 @@
       maMau: bai(['safe_go(8)']),
       loiGiai: bai(['safe_go(8)'], { hamCuaEmMoi: [H('safe_go', ['n'], T_SAFE)] }),
       sao: { o: 7, nhip: 14 },
-      congThucKhac: [{ moTa: 'Viết thẳng land() và take_off()', hamCuaEmMoi: [H('safe_go', ['n'], ['for i in range(n):', '    go_right()', '    if battery() < 2:', '        land()', '        take_off()'])] }],
+      congThucKhac: [{ moTa: 'Viết thẳng land() và take_off()', hamCuaEmMoi: [H('safe_go', ['n'], ['for i in range(n):', '    go_right()', '    b = battery()', '    if b < 2:', '        land()', '        take_off()'])] }],
       loiSai: [
         { moTa: 'Gọi safe_go mà chưa chế hàm', baiLam: bai(['safe_go(8)']), phaiCoMa: ['ham-chua-co'] },
         { moTa: 'Bay n ô không hỏi pin', baiLam: bai(['safe_go(8)']), hamCuaEmMoi: [H('safe_go', ['n'], ['for i in range(n):', '    go_right()'])], phaiCoMa: ['het-pin'] }

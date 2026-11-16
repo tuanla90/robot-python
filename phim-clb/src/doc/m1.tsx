@@ -8,6 +8,7 @@ import {Burst, C, CodeBox, FONT, Icon, Mascot, Say, Shake, ease, pop} from '../d
 import {Phim, W_IN} from '../may-phim';
 import {BangViec, CauTreo, ChuNay, DongHo, LoaiNangCap, NenHienTruong, NhanGoi, Nguoi, TrongXe, chonDangNguoi} from './kit-doc';
 import {KhungSaBan, N, Nhip, SaBan, nhipTai, tamKhung} from './sa-ban';
+import {R1Ngang, SanNgang, ThungNgang} from '../PhimTayKep';
 
 const NEN = 'nen-doc/mua-1.png';
 const DON = ['Dạy xe chạy', 'Dọn lối', 'Thùng chạy chỗ', 'Kho lạnh', 'Ngõ cụt', 'Lối hẹp hai bên', 'Mê cung kệ', 'Tổng duyệt bến', 'Đơn kho lạnh cuối', 'Xe tải lên đường'];
@@ -159,38 +160,47 @@ const G2Thu: React.FC = () => {
     </Shake>
   );
 };
-const MAN_2_1 = {san: ['.....', '.....', '..D..', '..o..', '.....'], bd: {x: 2, y: 4, huong: 0 as const}};
-const NHIP_HUT = [N.grab(0), N.wait(1), N.move(2)];        // tay còn giơ cao: kẹp hụt; rồi đâm thùng
+// Cơ chế tay kẹp đổi độ cao (hạ / nâng) → GÓC MÁY NGANG (user 2/11): robot vẽ bằng mã SVG `R1Ngang` của PhimTayKep.tsx (bản Remotion cũ user đã duyệt:
+// vỏ bo góc, kính một mắt, 4 bánh tròn lăn theo `lan`, rãnh trượt nâng hạ `uHa`, gọng kẹp `dong`); thùng `ThungNgang`; sàn `SanNgang` (sàn y = 880).
+// Cảnh 1: tay đang giơ cao mà grab() → khép gọng giữa không, kẹp hụt. Cảnh 2: lời giải màn tay-gap.1: hạ, kẹp, nâng, đi một ô, hạ, thả vào ô đích.
 const G2Hut: React.FC = () => {
   const f = useCurrentFrame();
-  const tHut = khungNhip(1) + 8, tDam = khungNhip(3) + 8;
+  const khep = f >= 48 && f < 150;
   return (
-    <Shake hits={[tDam]} amp={10}>
-      <Lab>
-        <SaBan san={MAN_2_1.san} batDau={MAN_2_1.bd} nhip={NHIP_HUT} anhXe="kep" anhNgac="kep-ngac">
-          {(k) => <>
-            {f >= tHut ? <ChuO k={k} x={2} y={3} chu="HỤT!" at={tHut} den={tHut + 40} mau={C.warn} /> : null}
-            {f >= tDam ? <ChuO k={k} x={2} y={3} chu="CỘP!" at={tDam} den={tDam + 60} /> : null}
-          </>}
-        </SaBan>
-        <BangLenh lines={['grab()', 'wait()', 'move()']} nhip={NHIP_HUT} />
+    <Shake hits={[48]} amp={8}>
+      <SanNgang dangCao>
+        <ThungNgang x={320 + 178} y={880 - 136} />
+        <R1Ngang x={320} uHa={0} dong={khep} mat={khep ? 'ngac' : 'thuong'} />
+        {khep ? <ChuNay chu="HỤT!" at={48} den={150} x={700} y={560} mau={C.warn} co={80} /> : null}
+        <BangLenh lines={['grab()', 'wait()']} nhip={[N.grab(0), N.wait(1)]} tu={40} moiNhip={40} y={40} />
         <Luna says={S1('Tay đang giơ cao kìa?')} mat={[[0, 'thinking']]} />
-        <Sola says={S2('Phải hạ tay xuống trước!')} mat={[[0, 'confused'], [126, 'thinking']]} />
-      </Lab>
+        <Sola says={S2('Phải hạ tay xuống sàn trước!')} mat={[[0, 'confident'], [48, 'shocked'], [126, 'thinking']]} />
+      </SanNgang>
     </Shake>
   );
 };
-const NHIP_2_1 = [N.armDownGrab(0), N.armUp(1), N.move(2), N.armDownRelease(3)];   // lời giải màn tay-gap.1
-const G2Dung: React.FC = () => (
-  <Lab>
-    <SaBan san={MAN_2_1.san} batDau={MAN_2_1.bd} nhip={NHIP_2_1} anhXe="kep" anhVui="kep-vui">
-      {(k) => <Burst at={khungNhip(4) + 14} x={tamKhung(k, 2, 2).x} y={tamKhung(k, 2, 2).y} color={C.yellow} />}
-    </SaBan>
-    <BangLenh lines={['arm_down(); grab(); wait()', 'arm_up(); wait()', 'move()', 'arm_down(); release(); wait()']} nhip={NHIP_2_1} size={30} />
-    <Sola says={S1('Hạ, kẹp, nâng, đi, thả!')} mat={[[0, 'confident'], [120, 'cheer']]} />
-    <Luna says={S2('Thùng vào đúng ô đích!')} mat={[[0, 'calm'], [126, 'great-job']]} />
-  </Lab>
-);
+const G2Dung: React.FC = () => {
+  const f = useCurrentFrame();
+  const x0 = 270, O_NGANG = 250;
+  const uHa1 = ease(f, [36, 58], [0, 1]), kep = f >= 62, uNang = ease(f, [72, 96], [0, 1]);
+  const uDi = ease(f, [104, 160], [0, 1]), uHa2 = ease(f, [168, 190], [0, 1]), tha = f >= 196;
+  const uHa = f < 72 ? uHa1 : f < 168 ? 1 - uNang : uHa2;
+  const xR1 = x0 + uDi * O_NGANG;
+  const yThung = !kep || tha ? 880 - 136 : 880 - 136 - (1 - uHa) * 200;      // thùng theo tay khi đang kẹp
+  const xThung = !kep ? x0 + 178 : tha ? x0 + O_NGANG + 178 : xR1 + 178;
+  const hl = f < 36 ? undefined : f < 72 ? 0 : f < 104 ? 1 : f < 168 ? 2 : 3;
+  return (
+    <SanNgang dangCao={uHa < 0.5}>
+      <div style={{position: 'absolute', left: x0 + O_NGANG + 178 - 42, top: 862, width: 220, height: 22, borderRadius: 8, background: '#FACC15', border: '4px solid #2E2A5A', zIndex: 7}} />
+      <ThungNgang x={xThung} y={yThung} />
+      <R1Ngang x={xR1} uHa={uHa} dong={kep && !tha} lan={uDi * 4} mat={tha ? 'vui' : 'thuong'} />
+      <Burst at={198} x={x0 + O_NGANG + 178 + 68} y={800} color={C.yellow} />
+      <CodeBox lines={['arm_down(); grab(); wait()', 'arm_up(); wait()', 'move()', 'arm_down(); release(); wait()']} x={70} y={40} w={620} size={30} title="mat_lenh.py" hl={hl} />
+      <Sola says={S1('Hạ, kẹp, nâng, đi, thả!')} mat={[[0, 'confident'], [198, 'cheer']]} />
+      <Luna says={S2('Nâng lên rồi mới chạy nhé!')} mat={[[0, 'calm'], [198, 'great-job']]} />
+    </SanNgang>
+  );
+};
 
 /* ================================================================== GÓI 3 · Cảm biến khoảng cách (khoang-cach.1 "Hỏi trước khi đi") */
 const SAN_KHO_3 = ['.....', '.....', '.....', '..o..', '.....', '.....', '.....'];
@@ -292,7 +302,7 @@ const G5Thu: React.FC = () => {
       <DongHo tu={GIO(15)} den={GIO(15, 4)} dai={DUR} />
       <NhanGoi so={5} ten="Bánh lùi" />
       <Sola says={S1('Kẹp xong, quay đầu về!')} mat={[[0, 'confident'], [tQuay, 'worried']]} />
-      <Luna says={[{at: 150, out: DUR, text: 'Quay đầu tốn nhịp. Bánh chỉ tiến được à?'}]} mat={[[0, 'calm'], [150, 'thinking']]} at={100} />
+      <Luna says={[{at: tQuay + 6, out: DUR, text: 'Quay đầu tốn nhịp. Bánh chỉ tiến được à?'}]} mat={[[0, 'calm'], [tQuay, 'thinking']]} at={100} />
     </Kho>
   );
 };
@@ -312,17 +322,18 @@ const SAN_KHO_6 = ['#...#', '#o.o#', '#...#', '#o.o#', '#...#', '#...#', '#...#'
 const NHIP_QUAY = [N.move(), N.move(), N.move(), N.turnLeft(), ...N.pick(), N.turnRight()];   // kẹp thùng bên hông: phải quay cả xe, mất thêm hai nhịp
 const G6Thu: React.FC = () => {
   const f = useCurrentFrame();
+  const tQuay = khungNhip(7, 60);
   return (
     <Shake hits={[8, 20]} amp={16}>
       <Kho>
         <SaBan san={SAN_KHO_6} batDau={{x: 2, y: 6, huong: 0}} nhip={NHIP_QUAY} vo="kho" khongSan anhXe="kep-cam" tu={60}>
-          {(k) => f >= khungNhip(7, 60) ? <ChuO k={k} x={2} y={3} chu="+2 nhịp…" at={khungNhip(7, 60)} den={DUR} mau={C.warn} co={64} /> : null}
+          {(k) => f >= tQuay ? <ChuO k={k} x={2} y={3} chu="+2 nhịp…" at={tQuay} den={DUR} mau={C.warn} co={64} /> : null}
         </SaBan>
         <ChuNay chu="RẦM!" at={8} den={60} x={540} y={300} co={110} />
         <DongHo tu={GIO(15, 20)} den={GIO(15, 50)} dai={DUR} />
         <NhanGoi so={6} ten="Tay xoay" />
         <Tung dang="tu-hoang" says={S1('Kệ sập! Thùng tràn ra lối!')} />
-        <Sola says={S2('Quay cả xe mỗi thùng, lâu quá!')} mat={[[0, 'worried']]} />
+        <Sola says={[{at: tQuay + 6, out: DUR, text: 'Quay cả xe mỗi thùng, lâu quá!'}]} mat={[[0, 'worried']]} />
       </Kho>
     </Shake>
   );
@@ -360,7 +371,7 @@ const G7Thu: React.FC = () => {
       </SaBan>
       <DongHo tu={GIO(16)} den={GIO(16, 5)} dai={DUR} />
       <NhanGoi so={7} ten="Cảm biến bên" />
-      <Sola says={[{at: 14, out: 118, text: 'Hai lối y hệt… rẽ trái!'}, {at: 126, out: DUR, text: 'Toang, ngõ cụt rồi!'}]} mat={[[0, 'thinking'], [tRe, 'confident'], [tCut, 'shocked']]} />
+      <Sola says={[{at: 14, out: 118, text: 'Hai lối y hệt… rẽ trái!'}, {at: tCut + 6, out: DUR, text: 'Toang, ngõ cụt rồi!'}]} mat={[[0, 'thinking'], [tRe, 'confident'], [tCut, 'shocked']]} />
     </Kho>
   );
 };
@@ -621,8 +632,8 @@ export const PHIM_M1: Phim[] = [
     tt(1, GIO(13, 10), 'Ờ, biết chạy rồi đấy. Dọn thùng kia xem!'),
     canh('thu', DUR, <G2Thu />, DAM(khungNhip(3) + 8)),
     xe('kep', 'Có quai thì làm gì?', 'Nhấc lên! Lắp tay kẹp!', 'Tay kẹp'),
-    canh('hut', DUR, <G2Hut />, [[22, 'click.wav', 0.8], [khungNhip(1) + 8, 'wrong.wav', 0.4], ...DAM(khungNhip(3) + 8)!]),
-    canh('dung', DUR, <G2Dung />, [[22, 'click.wav', 0.8], [khungNhip(4) + 14, 'ding.wav', 0.5]]),
+    canh('hut', DUR, <G2Hut />, [[34, 'click.wav', 0.8], [48, 'wrong.wav', 0.5]]),
+    canh('dung', DUR, <G2Dung />, [[30, 'click.wav', 0.8], [62, 'click.wav', 0.5], [198, 'ding.wav', 0.5]]),
     treo('kep', 'Hạ tay, kẹp, nhấc!', 2, 'Tay gắp'),
   ]),
   mo(3, [

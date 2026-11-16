@@ -46,17 +46,17 @@
   var C_DUT = ['ink("blue")'].concat(LAP(3, ['pen_down()', 'go_right()', 'pen_up()', 'go_right()', 'go_right()']));
   var LE = ['red', 'yellow', 'red', 'yellow', 'red'];
   var C_LE = MAU(LE, ['ink(c)', 'dot()', 'go_right()']);
-  var C_MO = LAP(5, ['ink(color("here"))', 'dot()', 'go_right()']);
+  var C_MO = LAP(5, ['m = color("here")', 'ink(m)', 'dot()', 'go_right()']);
   var C_CHEP = LAP(5, ['c = color("up")', 'if c != "none":', '    ink(c)', '    dot()', 'go_right()']);
   var C_PIN = nhieu(['ink("yellow")', 'pen_down()'], LAP(4, 'go_right()'), ['dock()'], LAP(3, 'go_right()'));
   var C_AO = nhieu(['ink("green")', 'pen_down()'], LAP(3, 'go_right()'), LAP(2, 'go_down()'), LAP(3, 'go_left()'), ['go_up()']);
   var BANG_MAU = 'a = ["blue", "yellow", "green", "red"]';
   var C_COT = [BANG_MAU, 'for c in a:', '    ink(c)', '    dot()', '    go_down()'];
-  var C_DAU = ['for k in range(3):'].concat(thut(LAP(3, ['if color("here") == "yellow":', '    dot()', 'go_right()'], 'j')), thut(['if battery() < 4:', '    dock()']));
+  var C_DAU = ['for k in range(3):'].concat(thut(LAP(3, ['m = color("here")', 'if m == "yellow":', '    dot()', 'go_right()'], 'j')), thut(['b = battery()', 'if b < 4:', '    dock()']));
   // chương 2
   var T_STRIPE = ['ink(c)', 'pen_down()', 'for i in range(n):', '    go_right()', 'pen_up()'];
   var C_STRIPE = ['sow_line("red", 2)', 'go_right()', 'go_right()', 'sow_line("blue", 2)'];
-  var T_RETRACE = ['for i in range(n):', '    ink(color("here"))', '    dot()', '    go_right()'];
+  var T_RETRACE = ['for i in range(n):', '    m = color("here")', '    ink(m)', '    dot()', '    go_right()'];
   var C_RETRACE = ['retrace(3)', 'go_down()', 'retrace(2)'];
   var T_LIST = ['for c in a:', '    ink(c)', '    dot()', '    go_right()'];
   var C_LIST = ['a = ["green", "yellow", "green"]', 'b = ["blue", "blue"]', 'plant_list(a)', 'go_right()', 'plant_list(b)'];
@@ -151,7 +151,7 @@
       sao: { o: 4, nhip: 5 },
       loiSai: [
         { moTa: 'Chấm theo màu sân thứ nhất', baiLam: bai(MAU(['red', 'green', 'blue', 'yellow', 'red'], ['ink(c)', 'dot()', 'go_right()'])), phaiCoMa: ['chua-to-hinh'] },
-        { moTa: 'Đọc "right": lấy màu ô kế bên, lệch một ô', baiLam: bai(LAP(5, ['ink(color("right"))', 'dot()', 'go_right()'])), phaiCoMa: [] }
+        { moTa: 'Đọc "right": lấy màu ô kế bên, lệch một ô', baiLam: bai(LAP(5, ['m = color("right")', 'ink(m)', 'dot()', 'go_right()'])), phaiCoMa: [] }
       ],
       goiY: ['color("here") trả về tên màu ô dưới chân: đưa thẳng vào ink(…).', 'Đọc và chọn màu không tốn nhịp; dot() mới tốn.']
     }),
@@ -164,11 +164,11 @@
       mau: [['rg.b..', '......'], ['.yy.r.', '......']],
       hinh: [['......', 'rg.b..'], ['......', '.yy.r.']],
       batDau: { x: 0, y: 1 },
-      maMau: bai(LAP(5, ['ink(color("up"))', 'dot()', 'go_right()'])),
+      maMau: bai(LAP(5, ['m = color("up")', 'ink(m)', 'dot()', 'go_right()'])),
       loiGiai: bai(C_CHEP),
       sao: { o: 6, nhip: 5 },
       loiSai: [
-        { moTa: 'Không hỏi ô trống: ink("none") lỗi', baiLam: bai(LAP(5, ['ink(color("up"))', 'dot()', 'go_right()'])), phaiCoMa: ['mau-son-sai'] },
+        { moTa: 'Không hỏi ô trống: ink("none") lỗi', baiLam: bai(LAP(5, ['m = color("up")', 'ink(m)', 'dot()', 'go_right()'])), phaiCoMa: ['mau-son-sai'] },
         { moTa: 'Đọc "here": ô dưới chân chưa có màu, không chấm gì', baiLam: bai(LAP(5, ['c = color("here")', 'if c != "none":', '    ink(c)', '    dot()', 'go_right()'])), phaiCoMa: [] }
       ],
       goiY: ['"up" là ô phía trên trên bản đồ.', 'c = color("up") rồi if c != "none": mới ink(c) và dot().']
@@ -238,8 +238,8 @@
       loiGiai: bai(['ink("yellow")'].concat(C_DAU)),
       sao: { o: 10, nhip: 13 },
       loiSai: [
-        { moTa: 'Không đáp sạc: hết pin', baiLam: bai(['ink("yellow")'].concat(LAP(9, ['if color("here") == "yellow":', '    dot()', 'go_right()']))), phaiCoMa: ['het-pin'] },
-        { moTa: 'Chấm mọi ô: tô ra ngoài dấu', baiLam: bai(['ink("yellow")', 'for k in range(3):'].concat(thut(LAP(3, ['dot()', 'go_right()'], 'j')), thut(['if battery() < 4:', '    dock()']))), phaiCoMa: ['to-thua'] }
+        { moTa: 'Không đáp sạc: hết pin', baiLam: bai(['ink("yellow")'].concat(LAP(9, ['m = color("here")', 'if m == "yellow":', '    dot()', 'go_right()']))), phaiCoMa: ['het-pin'] },
+        { moTa: 'Chấm mọi ô: tô ra ngoài dấu', baiLam: bai(['ink("yellow")', 'for k in range(3):'].concat(thut(LAP(3, ['dot()', 'go_right()'], 'j')), thut(['b = battery()', 'if b < 4:', '    dock()']))), phaiCoMa: ['to-thua'] }
       ],
       goiY: ['Vòng ngoài ba chặng, vòng trong ba ô.', 'Hỏi pin ở cuối chặng, khi drone đứng trên trạm sạc.']
     }),
@@ -346,7 +346,7 @@
       congThucKhac: [{ moTa: 'Hỏi bằng ==', hamCuaEmMoi: [H('trace_marks', ['n'], ['for i in range(n):', '    c = color("up")', '    if c == "none":', '        wait()', '    else:', '        ink(c)', '        dot()', '    go_right()'])] }],
       loiSai: [
         { moTa: 'Gọi trace_marks mà chưa chế hàm', baiLam: bai(C_MARK), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'Không hỏi ô trống: ink("none") lỗi', baiLam: bai(C_MARK), hamCuaEmMoi: [H('trace_marks', ['n'], ['for i in range(n):', '    ink(color("up"))', '    dot()', '    go_right()'])], phaiCoMa: ['mau-son-sai'] }
+        { moTa: 'Không hỏi ô trống: ink("none") lỗi', baiLam: bai(C_MARK), hamCuaEmMoi: [H('trace_marks', ['n'], ['for i in range(n):', '    m = color("up")', '    ink(m)', '    dot()', '    go_right()'])], phaiCoMa: ['mau-son-sai'] }
       ],
       goiY: ['c = color("up") trong vòng lặp, rồi if c != "none":.', 'go_right() nằm ngoài if: ô trống vẫn phải bay qua.']
     }),

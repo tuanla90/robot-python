@@ -125,7 +125,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var cc = dsc.filter(function (x) { return x.ma === c; })[0];
       var ds = App.dsMan(c).slice().sort(function (a, b) { return a.so - b.so; });
       var xong = ds.filter(function (m) { return Luu.daQua(m.ma); }).length;
-      var khoi = h('div', 'c-ch'); khoi.setAttribute('data-chuong', c);
+      var voC = ds.length && ds[0].vo ? 'real' : 'lab';      // sa bàn Phòng Lab (vo rỗng) vs hiện trường cốt truyện của mùa (vo có tên nơi)
+      var khoi = h('div', 'c-ch'); khoi.setAttribute('data-chuong', c); khoi.setAttribute('data-vo', voC);
       var hd = h('div', 'c-ch-hd');
       hd.appendChild(document.createTextNode(t('chon.chuoi', { n: '' })));
       hd.appendChild(h('span', 'd', cc ? cc.so : ''));
@@ -133,6 +134,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       hd.appendChild(h('em', null, App.tenChuong(c)));
       hd.appendChild(h('span', 'c-ch-dem', t('chon.tienDo', { n: xong, tong: ds.length })));
       khoi.appendChild(hd);
+      var voRow = h('div', 'c-ch-vo-row');
+      voRow.appendChild(h('span', 'c-ch-vo', t(voC === 'lab' ? 'chon.voLab' : 'chon.voHienTruong')));
+      khoi.appendChild(voRow);
       var luoi = h('div', 'c-l5');
       ds.forEach(function (m) { luoi.appendChild(oMan(m, m === cur)); });
       khoi.appendChild(luoi);

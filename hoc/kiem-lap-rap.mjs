@@ -43,7 +43,14 @@ const bang = (a, b) => tap(a) === tap(b);
 
 /* ---------------------------------------------------------------- 1. danh mục */
 console.log('1. danh mục part');
-const GIA = { than: { 'hai-banh': 2, xich: 3, omni: 4, nhen: 4, drone: 5 }, tay: { kep: 2, xoay: 3, 'nam-cham': 3, nem: 3, hoi: 3 }, camBien: { 'khoang-cach': 1, mau: 2, camera: 2, tu: 2, 'camera-bay': 2 } };
+// M9A (3/11): danh mục 8 × 9 × 11 (mùa 9 Về CLB); năm part đầu mỗi khe giữ giá cũ. Luật ghép đọc từ bang-ghep.js (máy kiểm riêng kiem-bang-ghep.mjs chạy thử mọi ô ✔ trong lõi).
+const GIA = {
+  than: { 'hai-banh': 2, xich: 3, omni: 4, nhen: 4, drone: 5, gai: 4, xuong: 5, cau: 6 },
+  tay: { kep: 2, xoay: 3, 'nam-cham': 3, nem: 3, hoi: 3, son: 3, loa: 3, 'moc-cau': 4, 'day-keo': 3 },
+  camBien: { 'khoang-cach': 1, mau: 2, camera: 2, tu: 2, 'camera-bay': 2, 'hong-ngoai': 2, 'camera-4': 3, radar: 3, 'am-thanh': 2, 'quet-ma': 2, 'dong-chay': 2 }
+};
+// năm part đầu mỗi khe (danh mục cũ 5 × 5 × 5): các phép so với dữ liệu chụp bộ pixel và sân thử chung (xe cạn) chỉ chạy trên nhóm này
+const CU = { than: ['hai-banh', 'xich', 'omni', 'nhen', 'drone'], tay: ['kep', 'xoay', 'nam-cham', 'nem', 'hoi'], camBien: ['khoang-cach', 'mau', 'camera', 'tu', 'camera-bay'] };
 const LOAI_PART = { than: 'than', tay: 'tay', camBien: 'cam-bien' };
 for (const khe of LapRap.KHE) {
   const ds = LapRap.DANH_MUC[khe];
@@ -55,8 +62,9 @@ for (const khe of LapRap.KHE) {
 kiem('thân: loại robot đúng lõi SanHoc (hai-banh→banh, còn lại cùng tên)', LapRap.DANH_MUC.than.every((d) => d.loai === (d.ma === 'hai-banh' ? 'banh' : d.ma) && !!SanHoc.HAM_GOC[d.loai]));
 kiem('cảm biến từ (tu) là part vector riêng "tu" (P1 mùa 3) chỉ có hai hàm front_metal / front_pole', LapRap.tim('camBien', 'tu').part === 'tu' && bang(LapRap.tim('camBien', 'tu').ham, ['front_metal', 'front_pole']));
 for (const khe of LapRap.KHE) {
-  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part); return !p || !bang(d.ham, p.hamGoc); });
-  kiem('khe ' + khe + ': `ham` của từng mục đúng hamGoc của bộ phận vector', sai.length === 0, sai.map((d) => d.ma).join(','));
+  // nangCap chỉ có trong bộ vẽ khi bộ vẽ biết nó (cần cẩu rail); nâng cấp thuần lõi (omni diag_left / diag_right) thì không
+  const sai = LapRap.DANH_MUC[khe].filter((d) => { const p = VV.lay(LOAI_PART[khe], d.part); return !p || !bang(d.ham.concat((d.nangCap || []).filter((h) => p.hamGoc.includes(h)), d.tenCu || []), p.hamGoc); });
+  kiem('khe ' + khe + ': `ham` (+ nangCap có trong bộ vẽ + tenCu) của từng mục đúng hamGoc của bộ phận vector', sai.length === 0, sai.map((d) => d.ma).join(','));
 }
 {
   const sai = [];
@@ -75,7 +83,7 @@ kiem('icon dùng trong thẻ part có trong ve.js (denBanh… denCam, xu, banhRa
 
 /* ------------------------------------------------------------- 2. luật ghép */
 console.log('2. luật ghép');
-const TAYS = [null, ...LapRap.DANH_MUC.tay.map((d) => d.ma)], CAMS = [null, ...LapRap.DANH_MUC.camBien.map((d) => d.ma)], THANS = LapRap.DANH_MUC.than.map((d) => d.ma);
+const TAYS = [null, ...CU.tay], CAMS = [null, ...CU.camBien], THANS = CU.than;        // M9A: part mới (cần cẩu, xuồng…) cần sân riêng: kiem-bang-ghep.mjs
 const manDo = { ma: 'tam.do', pin: 9, lapRap: { than: THANS, tay: TAYS.slice(1), camBien: CAMS.slice(1), nganSach: 99, cachLap: [] } };
 let lech = [], soTo = 0, soDat = 0;
 for (const th of THANS) for (const ta of TAYS) for (const cb of CAMS) {
@@ -93,7 +101,7 @@ for (const th of THANS) for (const ta of TAYS) for (const cb of CAMS) {
   if (r.ok) soDat++;
   if (r.ok !== (partOk && simOk)) lech.push(th + '/' + ta + '/' + cb + ' bảng=' + r.ok + ' part=' + partOk + ' sim=' + simOk + ' ' + simLoi);
 }
-kiem('bảng luật khớp VeVector.kiemGhep VÀ SanHoc.chay ở cả ' + soTo + ' tổ hợp (' + soDat + ' ghép được)', lech.length === 0, lech.slice(0, 3).join(' | '));
+kiem('bảng luật (bang-ghep.js) khớp VeVector.kiemGhep VÀ SanHoc.chay ở cả ' + soTo + ' tổ hợp danh mục cũ 5 × 6 × 6 (' + soDat + ' ghép được)', lech.length === 0, lech.slice(0, 3).join(' | '));
 {
   const khac = [];
   for (const r of CHUP.lapRap) {

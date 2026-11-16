@@ -103,8 +103,10 @@ for (const m of rd) {
     tk.every((a, i) => tk.every((b, j) => i === j || a.gia >= b.gia || b.nhip < a.nhip || b.o < a.o)), J(tk.map((x) => [x.gia, x.nhip, x.o])));
 }
 const TENMA = (khe) => new Set(rd.flatMap((m) => m.lapRap[khe] || []));
+// M9A (3/11): danh mục lắp ráp nay 8 × 9 × 11 (mùa 9); chương rap-du vẫn dùng đúng năm part đầu mỗi khe (danh mục cũ 5 × 5 × 5)
+const CU = { than: ['hai-banh', 'xich', 'omni', 'nhen', 'drone'], tay: ['kep', 'xoay', 'nam-cham', 'nem', 'hoi'], camBien: ['khoang-cach', 'mau', 'camera', 'tu', 'camera-bay'] };
 kiem('các màn cho phép đủ năm thân, năm tay, năm não: hai-banh · xich · omni · nhen · drone / kep · xoay · nam-cham · nem · hoi / khoang-cach · mau · camera · tu · camera-bay',
-  LapRap.DANH_MUC.than.every((d) => TENMA('than').has(d.ma)) && LapRap.DANH_MUC.tay.every((d) => TENMA('tay').has(d.ma)) && LapRap.DANH_MUC.camBien.every((d) => TENMA('camBien').has(d.ma)),
+  CU.than.every((ma) => TENMA('than').has(ma)) && CU.tay.every((ma) => TENMA('tay').has(ma)) && CU.camBien.every((ma) => TENMA('camBien').has(ma)) && ['than', 'tay', 'camBien'].every((k) => [...TENMA(k)].every((ma) => CU[k].includes(ma))),
   J({ than: [...TENMA('than')], tay: [...TENMA('tay')], camBien: [...TENMA('camBien')] }));
 const mauThan = new Set(rd.flatMap((m) => m.lapRap.cachLap.map((c) => c.than))), mauTay = new Set(rd.flatMap((m) => m.lapRap.cachLap.map((c) => c.tay).filter(Boolean))), mauCam = new Set(rd.flatMap((m) => m.lapRap.cachLap.map((c) => c.camBien).filter(Boolean)));
 kiem('cách lắp MẪU dùng đủ năm thân, năm tay (kẹp, xoay, nam châm, ném, súng hơi) và ba loại não (khoảng cách, camera, từ)', mauThan.size === 5 && mauTay.size === 5 && ['khoang-cach', 'camera', 'tu'].every((x) => mauCam.has(x)), J([[...mauThan], [...mauTay], [...mauCam]]));

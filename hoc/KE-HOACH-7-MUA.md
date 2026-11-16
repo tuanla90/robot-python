@@ -254,6 +254,7 @@ Mùa cuối không có part mới. Mỗi gói **quay lại một nơi cũ giải
   Mỗi màn vẫn cần ít nhất một lời giải mẫu trong trần; trần lấy theo lời giải mẫu tốt nhất cộng một khoảng dư, nên chọn sai đội / lắp sai robot tự thua vì quá giờ.
 - **Chọn đội từ đâu**: mỗi màn nên mở 2–3 cỗ máy hợp cảnh thay vì cả tám (8 cỗ máy ghép đôi ra 28 cặp), để trẻ suy nghĩ chứ không chọn mò.
 - **Tự lắp robot**: 8 thân × 8 tay × 8 cảm biến; nhiều cặp chưa từng có luật (xuồng gắn máy ném, cần cẩu gắn loa…). Cần bảng cặp được phép trong `part.js`, mỗi màn chỉ cho chọn trong một tập nhỏ. Đây là phần lõi tốn công nhất của mùa 9.
+  Bảng ghép 8 × 8 × 8, tổ hợp lai, ai giúp ai ở thử thách nào, đôi tốt / bẫy từng gói: [KE-HOACH-MUA-9-TO-HOP.md](KE-HOACH-MUA-9-TO-HOP.md) (3/11, chờ duyệt).
 - **Dùng lại màn cũ**: sáu gói đội dư (bảng dưới) là màn hai robot dùng part cũ, hợp chương 1 chọn đội của gói nơi tương ứng.
 - **Python mới (tuỳ chọn, chưa chốt)**: chương 2 tự lắp robot là chỗ hợp để thêm thuật toán nhẹ (sắp xếp, tìm đường); bỏ thì mùa 9 chỉ ôn.
 - **Kịch bản phim** `KICH-BAN-PHIM-GOI-CLB.md` mục mùa cuối (bản "thân lai / tay lai", "bảy cỗ máy giữ bảy nơi, người nhờ kẹt ở cửa ngõ") phải viết lại theo bố cục này; có thể giữ cơn bão, đổi thành bão làm từng nơi gặp nạn.

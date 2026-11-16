@@ -1,4 +1,4 @@
-// Bộ dựng cảnh Lab dùng chung cho phim gói các mùa sau, theo khuôn mùa 1 (PhimXe, PhimTayKep, PhimKhoangCach):
+// Bộ dựng cảnh Lab dùng chung cho phim gói các mùa sau, theo khuôn mùa 1 (PhimTayKep, PhimMua2Lab):
 // sa bàn lưới trong xe trạm → Sola viết mật lệnh, bấm Chạy → robot làm đúng luật lõi của game (dòng code sáng theo nhịp) →
 // sai thì Luna chỉ HỎI dẫn, Sola tự rút ra → chạy lại đúng → thẻ "Lệnh mới" chỉ gồm lệnh của chính gói đó.
 import React from 'react';

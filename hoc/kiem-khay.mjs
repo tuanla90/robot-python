@@ -507,7 +507,7 @@ console.log('\n== 9. HuongDan: chuỗi bước, sự kiện, hạn, cờ đã xe
       (() => { const st = ChamHoc.chuanSanThu({ rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, tuong: [{ x: 0, y: 0 }], ky: [{ x: 1, y: 1, ky: 'S' }, { x: 2, y: 2, ky: 'u' }, { x: 0, y: 0, ky: 'n' }, { x: 3, y: 1, ky: '>' }, { x: 4, y: 4, ky: 'Q' }] }); const r = ChamHoc.hangSanThu(st); return st.ky.length === 2 && r[1] === '.S.>.' && r[0][0] === '#'; })() && nc.includes("'Snu<>^v'"));
   }
   { // MỖI BỘ PHẬN MỘT LỆNH MỖI NHỊP (thanh-phan.js: lenhCungNhip / lyDoCamNhip, Editor.chenTai, Palette.datCamNhip)
-    const J = (x) => JSON.stringify(x), L = (a, at, b) => TP.lenhCungNhip(a, at, b || 0), C = (ten, ds) => TP.lyDoCamNhip(ten, ds);
+    const J = (x) => JSON.stringify(x), L = (a, at, b) => TP.lenhCungNhip(a, at, b || 0), C = (ten, ds, man) => TP.lyDoCamNhip(ten, ds, man);
     const hai = ['left_move()', 'right_move()', 'wait()'];
     kiem('lenhCungNhip: chèn sau wait() là nhịp mới (rỗng); chèn trước wait() / đầu khung lấy các lệnh gốc liền đó', J(L(hai, 3)) === '[]' && J(L(hai, 2)) === '["right_move","left_move"]' && J(L(hai, 0)) === '["left_move","right_move"]', J([L(hai, 3), L(hai, 2), L(hai, 0)]));
     kiem('lenhCungNhip: chỉ dòng cùng bậc thụt (trong for), dừng ở dòng khác (lời gọi hàm), ranh nhịp go_*() của nhện / drone, bỏ qua aim()',
@@ -520,27 +520,32 @@ console.log('\n== 9. HuongDan: chuỗi bước, sự kiện, hạn, cờ đã xe
     kiem('khác bộ phận thì được (hai bánh, tay + kẹp + khớp xoay, nam châm + bánh); wait() và lời gọi hàm luôn được', duoc.every(([a, ds]) => C(a, ds) === null), duoc.filter(([a, ds]) => C(a, ds) !== null).map((x) => x[0]).join(', '));
     kiem('một nhịp một kiểu đi: trượt (omni không đi chéo) hay bắn / đẩy (xe đứng yên) không đi chung lệnh bánh',
       !!C('left_move', ['slide_left']) && !!C('slide_right', ['right_move']) && !!C('left_move', ['spray']) && !!C('spray_back', ['left_back']) && C('grab', ['slide_left']) === null);
+    { const X = (co) => Object.assign({ loaiRobot: 'xich' }, co), G = X({ ghiXich: true }), P = X({ phunKhiChay: true });
+      kiem('ghép nhịp (kieuDiGhep): xe xích có ghiXich / phunKhiChay thì phun đi chung lệnh xích (brace_spray: spray, left_move, right_move); vẫn cấm hai lệnh cùng bộ phận, trượt + xích; không cờ hay xe hai bánh thì cấm như cũ',
+        C('left_move', ['spray'], G) === null && C('right_move', ['spray', 'left_move'], G) === null && C('spray', ['left_move', 'right_move'], P) === null && C('spray_back', ['left_back'], G) === null
+        && !!C('spray', ['spray'], G) && !!C('left_move', ['left_move', 'spray'], G) && !!C('slide_left', ['left_move'], G)
+        && !!C('left_move', ['spray'], X({})) && !!C('left_move', ['spray'], { loaiRobot: 'banh', ghiXich: true }) && !!C('left_move', ['spray'], null)); }
     kiem('câu báo nói tên bộ phận và lệnh đã có ("Bánh trái đã có left_move()…", "Tay đã có arm_down()…") và cách sửa (thêm wait())',
       /^Bánh trái đã có left_move\(\)/.test(C('left_back', ['left_move'])) && /^Tay đã có arm_down\(\)/.test(C('arm_up', ['arm_down'])) && /wait\(\)/.test(C('arm_up', ['arm_down'])) && /slide_left\(\)/.test(C('left_move', ['slide_left'])));
     const nTP = fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8'), nC = fs.readFileSync(path.join(day, 'game', 'man-choi.js'), 'utf8'), nX = fs.readFileSync(path.join(day, 'game', 'xuong-ham.js'), 'utf8');
     const lenhNhip = JSON.parse(/var LENH_NHIP = (\[[^\]]*\])/.exec(nTP)[1].replace(/'/g, '"'));
     const bp = new Set(Object.values(TP.BO_PHAN_LENH).flat());
     { // lời giải / công thức khác / lời giải khác của MỌI màn gõ được theo thứ tự từ trên xuống mà không bị chặn (không có hai lệnh cùng bộ phận trong một nhịp)
-      const nap = (arr) => { const loi = []; (arr || []).forEach((d, i) => { const m = /^\s*([A-Za-z_]\w*)\s*\([^()]*\)\s*(#.*)?$/.exec(d); if (!m) return; const ly = C(m[1], L(arr.slice(0, i), i, TP.bacCua(d))); if (ly) loi.push((i + 1) + ':' + m[1]); }); return loi; };
+      const nap = (arr, man) => { const loi = []; (arr || []).forEach((d, i) => { const m = /^\s*([A-Za-z_]\w*)\s*\([^()]*\)\s*(#.*)?$/.exec(d); if (!m) return; const ly = C(m[1], L(arr.slice(0, i), i, TP.bacCua(d)), man); if (ly) loi.push((i + 1) + ':' + m[1]); }); return loi; };
       const sai = [];
       ManHoc.danhSach.forEach((m) => {
         [['loiGiai', m.loiGiai], ['loiGiaiKhac', m.loiGiaiKhac && m.loiGiaiKhac.baiLam]].concat((m.congThucKhac || []).map((c, i) => ['congThucKhac' + i, c.baiLam || c])).forEach(([ten, b]) => {
           if (!b) return;
-          [['chinh', b.chinh]].concat((b.hamCuaEmMoi || []).concat(b.hamCuaMan || []).map((h) => [h.ten, h.than])).forEach(([k, arr]) => { const l = nap(arr); if (l.length) sai.push(m.ma + ' ' + ten + ' ' + k + ' ' + l.join(',')); });
+          [['chinh', b.chinh]].concat((b.hamCuaEmMoi || []).concat(b.hamCuaMan || []).map((h) => [h.ten, h.than])).forEach(([k, arr]) => { const l = nap(arr, m); if (l.length) sai.push(m.ma + ' ' + ten + ' ' + k + ' ' + l.join(',')); });
         });
       });
       kiem('lời giải, lời giải khác, công thức khác của mọi màn không có hai lệnh cùng bộ phận (hay khác kiểu đi) trong một nhịp — người chơi gõ được', sai.length === 0, sai.slice(0, 6).join(' · '));
     }
     kiem('mọi lệnh gốc trong một nhịp (LENH_NHIP) đều thuộc một bộ phận', lenhNhip.every((l) => bp.has(l)), lenhNhip.filter((l) => !bp.has(l)).join(', '));
     kiem('Editor.chenTai kiểm trước khi chèn (khiCamNhip, trả null), render báo khay (khiNhip → Palette.datCamNhip); khung chính và Xưởng đều nối; khung chính chỉ báo "đầy khung" khi chen() === false',
-      /var lyCam = lyDoCamNhip\(tenDon\(txt\), lenhCungNhip\(arr, at, b\)\);/.test(nTP) && nTP.indexOf('var lyCam') < nTP.indexOf("arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));")
+      /var lyCam = lyDoCamNhip\(tenDon\(txt\), lenhCungNhip\(arr, at, b\), tuyChon\.man \? tuyChon\.man\(\) : null\);/.test(nTP) && nTP.indexOf('var lyCam') < nTP.indexOf("arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));")
       && /if \(!xt && tuyChon\.khiNhip\) tuyChon\.khiNhip\(this\.camNhip\(\)\);/.test(nTP) && /this\.datCamNhip = function/.test(nTP)
-      && [nC, nX].every((s) => /khiCamNhip: function \(ly\)/.test(s) && /khiNhip: function \(cam\) \{ if \(S\.pal\) S\.pal\.datCamNhip\(cam\); \}/.test(s)) && /S\.ed\.chen\(txt\) === false/.test(nC));
+      && [nC, nX].every((s) => /khiCamNhip: function \(ly\)/.test(s) && /\bman: function \(\) \{ return (manXe|A\.man)\(\); \}/.test(s) && /khiNhip: function \(cam\) \{ if \(S\.pal\) S\.pal\.datCamNhip\(cam\); \}/.test(s)) && /S\.ed\.chen\(txt\) === false/.test(nC));
   }
   kiem('cách dùng ghi ở đầu tệp huong-dan.js (CÁCH DÙNG, MỘT BƯỚC, dich / chu / xong / man.huongDan)', /CÁCH DÙNG/.test(nguonHD) && /MỘT BƯỚC/.test(nguonHD) && /man\.huongDan/.test(nguonHD) && /'chen-khoi'/.test(nguonHD) && /'doi-the'/.test(nguonHD));
 

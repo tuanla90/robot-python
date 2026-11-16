@@ -58,7 +58,7 @@ console.log('A. Lõi');
   kiem('drone gắn máy sơn cùng nam châm: lỗi cấu hình (một bụng một món)', !!loi && /một tay/i.test(loi), loi);
   let loiNhen = null;
   try { SanHoc.chay({ loaiRobot: 'nhen', hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'ink', 'dot'], mucTieu: 'toi-co', san: ['.F'], batDau: { x: 0, y: 0 } }, 'wait()\n'); } catch (e) { loiNhen = e.message; }
-  kiem('nhện gắn máy sơn vẫn là lỗi cấu hình', !!loiNhen, loiNhen);
+  kiem('nhện gắn máy sơn chạy được (M9B1 4/11, lai L6 mùa 9: bộ gieo hạt treo bụng nhện; trước đó là lỗi cấu hình)', loiNhen === null, loiNhen);
 }
 {
   // drone nâng cấp đáp đất + máy sơn: đậu rồi chấm vẫn tô (và tốn 1 pin), đáp trên P sạc

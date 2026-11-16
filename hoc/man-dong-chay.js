@@ -29,10 +29,12 @@
 
   // 5 hàm mới của Gói 3 chương che-dong-chay + 1 hàm sửa lỗi
   var T_IS_CALM_FRONT = [
-    'return flow_dir() == "none"'
+    'h = flow_dir()',
+    'return h == "none"'
   ];
   var T_FLOW_STEP = [
-    'if flow_dir() == "front":',
+    'h = flow_dir()',
+    'if h == "front":',
     '    move()',
     'else:',
     '    forward(2)'
@@ -47,13 +49,15 @@
     'tow_pair(1, n)'
   ];
   var T_FIX_FLOW_SAI = [
-    'if flow_dir() == "back":',
+    'h = flow_dir()',
+    'if h == "back":',
     '    move()',
     'else:',
     '    forward(2)'
   ];
   var T_FIX_FLOW_DUNG = [
-    'if flow_dir() == "front":',
+    'h = flow_dir()',
+    'if h == "front":',
     '    move()',
     'else:',
     '    forward(2)'
@@ -121,14 +125,16 @@
       dong: [{ x: 2, y: 1, huong: 1, suc: 1 }],
       batDau: { x: 1, y: 1, huong: 1 },
       maMau: bai([
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    move()',
         'else:',
         '    forward(2)',
         'forward(2)'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    move()',
         'else:',
         '    forward(2)',
@@ -141,7 +147,7 @@
 
     manDongChay({
       so: 2, ten: 'Xuôi dòng tiến nhanh', hang: 'lam-quen', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: trên hai sân, ô nước (2, 1) trước mũi xuồng có thể chảy xuôi ("front") hoặc đứng êm ("none"). Nếu flow_dir() == "front" thì chỉ cần move() một nhịp là qua 2 ô, ngược lại gọi forward(2). Sau đó tiến thêm 2 ô tới Q.',
+      deBai: 'Sola nhờ bạn: trên hai sân, ô nước (2, 1) trước mũi xuồng có thể chảy xuôi ("front") hoặc đứng êm ("none"). Đọc h = flow_dir(): nếu h == "front" thì chỉ cần move() một nhịp là qua 2 ô, ngược lại gọi forward(2). Sau đó tiến thêm 2 ô tới Q.',
       veMaMau: 'Viết thêm nhánh else với forward(2) rồi tiến 2 ô cuối.',
       san: [
         [
@@ -161,11 +167,13 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai([
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    move()'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    move()',
         'else:',
         '    forward(2)',
@@ -173,9 +181,10 @@
       ]),
       sao: { o: 10, nhip: 7 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra flow_dir() == "none" trước rồi mới else sang move()',
+        moTa: 'Hỏi h == "none" trước rồi mới else sang move()',
         baiLam: bai([
-          'if flow_dir() == "none":',
+          'h = flow_dir()',
+          'if h == "none":',
           '    forward(2)',
           'else:',
           '    move()',
@@ -183,7 +192,7 @@
         ])
       },
       loiSai: [
-        { moTa: 'Thiếu nhánh else nên sân nước êm bị thiếu bước', baiLam: bai(['if flow_dir() == "front":', '    move()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu nhánh else nên sân nước êm bị thiếu bước', baiLam: bai(['h = flow_dir()', 'if h == "front":', '    move()', 'forward(2)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Viết cứng forward(3) nên sân nước êm đi thiếu 1 ô tới Q', baiLam: bai(['forward(3)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Trong nhánh else, gọi forward(2) để đi đủ 2 ô khi nước êm.', 'Luna: Sau khối if / else, gọi thêm forward(2) để cập phao Q.']
@@ -191,8 +200,8 @@
 
     manDongChay({
       so: 3, ten: 'Né dòng nước ngược', hang: 'lam-quen', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: nếu ô trước mũi chảy ngược chiều xuồng (flow_dir() == "back"), bước vào đó sẽ bị đẩy lùi về chỗ cũ. Hãy kiểm tra: nếu gặp dòng "back" thì vòng xuống làn dưới bằng pair_step("R", 1), pair_step("L", 3) rồi pair_step("L", 1); ngược lại đi thẳng forward(3) tới Q.',
-      veMaMau: 'Kiểm tra flow_dir() == "back" để vòng xuống làn dưới hoặc đi thẳng.',
+      deBai: 'Sola nhờ bạn: nếu ô trước mũi chảy ngược chiều xuồng (h == "back" với h = flow_dir()), bước vào đó sẽ bị đẩy lùi về chỗ cũ. Hãy kiểm tra: nếu gặp dòng "back" thì vòng xuống làn dưới bằng pair_step("R", 1), pair_step("L", 3) rồi pair_step("L", 1); ngược lại đi thẳng forward(3) tới Q.',
+      veMaMau: 'Đã có h = flow_dir() và if h == "back":. Viết tiếp đường vòng xuống làn dưới, còn else thì đi thẳng.',
       san: [
         [
           '######',
@@ -213,11 +222,13 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai([
-        'if flow_dir() == "back":',
+        'h = flow_dir()',
+        'if h == "back":',
         '    pair_step("R", 1)'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "back":',
+        'h = flow_dir()',
+        'if h == "back":',
         '    pair_step("R", 1)',
         '    pair_step("L", 3)',
         '    pair_step("L", 1)',
@@ -228,7 +239,8 @@
       loiGiaiKhac: {
         moTa: 'Dùng turn_right(), move(), turn_left() thay cho pair_step đầu',
         baiLam: bai([
-          'if flow_dir() == "back":',
+          'h = flow_dir()',
+          'if h == "back":',
           '    turn_right()',
           '    move()',
           '    pair_step("L", 3)',
@@ -239,15 +251,15 @@
       },
       loiSai: [
         { moTa: 'Cứ đi thẳng forward(3) vào dòng ngược nên bị đẩy lùi tại chỗ', baiLam: bai(['forward(3)']), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Thiếu nhánh else cho sân nước êm', baiLam: bai(['if flow_dir() == "back":', '    pair_step("R", 1)', '    pair_step("L", 3)', '    pair_step("L", 1)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else cho sân nước êm', baiLam: bai(['h = flow_dir()', 'if h == "back":', '    pair_step("R", 1)', '    pair_step("L", 3)', '    pair_step("L", 1)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Sau pair_step("R", 1), xuồng đã ở (1, 2) và quay mặt xuống.', 'Luna: Gọi tiếp pair_step("L", 3) và pair_step("L", 1) trong nhánh if, còn nhánh else chỉ cần forward(3).']
     }),
 
     manDongChay({
       so: 4, ten: 'Mượn dòng nước ngang', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: xuồng đang ở (1, 2) hướng sang phải, cần tới Q ở (4, 3). Nếu ô trước mũi (2, 2) có dòng chảy sang phải của mũi xuồng (flow_dir() == "right"), bước vào đó sẽ tự trôi xuống hàng 3 nên chỉ cần forward(3). Ngược lại khi nước êm, hãy dùng sail_to(1, 1) rồi pair_step("L", 2).',
-      veMaMau: 'Kiểm tra flow_dir() == "right" để tận dụng dòng đẩy ngang.',
+      deBai: 'Sola nhờ bạn: xuồng đang ở (1, 2) hướng sang phải, cần tới Q ở (4, 3). Nếu ô trước mũi (2, 2) có dòng chảy sang phải của mũi xuồng (h == "right" với h = flow_dir()), bước vào đó sẽ tự trôi xuống hàng 3 nên chỉ cần forward(3). Ngược lại khi nước êm, hãy dùng sail_to(1, 1) rồi pair_step("L", 2).',
+      veMaMau: 'Đã có h = flow_dir() và if h == "right":. Thêm nhánh else cho ngày nước êm.',
       san: [
         [
           '######',
@@ -270,11 +282,13 @@
       ],
       batDau: [{ x: 1, y: 2, huong: 1 }, { x: 1, y: 2, huong: 1 }],
       maMau: bai([
-        'if flow_dir() == "right":',
+        'h = flow_dir()',
+        'if h == "right":',
         '    forward(3)'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "right":',
+        'h = flow_dir()',
+        'if h == "right":',
         '    forward(3)',
         'else:',
         '    sail_to(1, 1)',
@@ -282,9 +296,10 @@
       ]),
       sao: { o: 24, nhip: 9 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra flow_dir() != "right" trước rồi mới else',
+        moTa: 'Hỏi h != "right" trước rồi mới else',
         baiLam: bai([
-          'if flow_dir() != "right":',
+          'h = flow_dir()',
+          'if h != "right":',
           '    sail_to(1, 1)',
           '    pair_step("L", 2)',
           'else:',
@@ -293,15 +308,15 @@
       },
       loiSai: [
         { moTa: 'Dùng sail_to(1, 1) trên cả hai sân nên sân có dòng ngang bị trôi đâm bờ', baiLam: bai(['sail_to(1, 1)', 'pair_step("L", 2)']), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Thiếu nhánh else cho sân nước êm', baiLam: bai(['if flow_dir() == "right":', '    forward(3)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Thiếu nhánh else cho sân nước êm', baiLam: bai(['h = flow_dir()', 'if h == "right":', '    forward(3)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Khi xuồng hướng sang Đông, dòng chảy xuống Nam chính là bên phải mũi xuồng ("right").', 'Luna: Ở nhánh else, gọi sail_to(1, 1) để tới (2, 3) rồi gọi pair_step("L", 2) tới Q.']
     }),
 
     manDongChay({
       so: 5, ten: 'Đo hai chặng nước liên tiếp', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: luồng kênh dài 6 ô tới Q ở (7, 1) được chia làm 2 chặng, mỗi chặng 3 ô. Ở đầu mỗi chặng, hãy kiểm tra: nếu flow_dir() == "front" thì gọi forward(2), ngược lại gọi forward(3). Dùng vòng lặp for 2 lần.',
-      veMaMau: 'Đặt câu lệnh if / else kiểm tra flow_dir() == "front" bên trong vòng lặp for i in range(2).',
+      deBai: 'Sola nhờ bạn: luồng kênh dài 6 ô tới Q ở (7, 1) được chia làm 2 chặng, mỗi chặng 3 ô. Ở đầu mỗi chặng, hãy đọc h = flow_dir(): nếu h == "front" thì gọi forward(2), ngược lại gọi forward(3). Dùng vòng lặp for 2 lần.',
+      veMaMau: 'Trong vòng lặp for i in range(2) đã có h = flow_dir() và if h == "front":. Thêm nhánh else.',
       san: [
         [
           '##########',
@@ -321,29 +336,32 @@
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai([
         'for i in range(2):',
-        '    if flow_dir() == "front":',
+        '    h = flow_dir()',
+        '    if h == "front":',
         '        forward(2)'
       ]),
       loiGiai: bai([
         'for i in range(2):',
-        '    if flow_dir() == "front":',
+        '    h = flow_dir()',
+        '    if h == "front":',
         '        forward(2)',
         '    else:',
         '        forward(3)'
       ]),
       sao: { o: 10, nhip: 10 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra flow_dir() == "none" trước trong vòng lặp',
+        moTa: 'Hỏi h == "none" trước trong vòng lặp',
         baiLam: bai([
           'for i in range(2):',
-          '    if flow_dir() == "none":',
+          '    h = flow_dir()',
+          '    if h == "none":',
           '        forward(3)',
           '    else:',
           '        forward(2)'
         ])
       },
       loiSai: [
-        { moTa: 'Thiếu nhánh else nên chặng nước êm chỉ đi 0 ô', baiLam: bai(['for i in range(2):', '    if flow_dir() == "front":', '        forward(2)']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu nhánh else nên chặng nước êm chỉ đi 0 ô', baiLam: bai(['for i in range(2):', '    h = flow_dir()', '    if h == "front":', '        forward(2)']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Luôn gọi forward(2) ở cả hai chặng nên chặng nước êm đi thiếu 1 ô', baiLam: bai(['for i in range(2):', '    forward(2)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Chặng có dòng xuôi chỉ cần forward(2) là đi hết 3 ô.', 'Luna: Thêm nhánh else: forward(3) bên trong vòng lặp for.']
@@ -351,8 +369,8 @@
 
     manDongChay({
       so: 6, ten: 'Đọc chiều dòng ngang ở ngã ba', hang: 'luyen', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: xuồng ở (2, 2) hướng lên trên, cần tới Q ở (4, 1). Ô trước mũi (2, 1) có dòng chảy ngang: nếu chảy sang phải (flow_dir() == "right") thì chỉ cần move() để dòng đẩy sang (3, 1) rồi gọi pair_step("R", 1); ngược lại nếu chảy sang trái ("left") thì tránh ô đó bằng pair_step("R", 2) rồi pair_step("L", 1).',
-      veMaMau: 'Kiểm tra flow_dir() == "right" trước khi quyết định tiến vào ô (2, 1).',
+      deBai: 'Sola nhờ bạn: xuồng ở (2, 2) hướng lên trên, cần tới Q ở (4, 1). Ô trước mũi (2, 1) có dòng chảy ngang: đọc h = flow_dir(): nếu h == "right" thì chỉ cần move() để dòng đẩy sang (3, 1) rồi gọi pair_step("R", 1); ngược lại nếu chảy sang trái ("left") thì tránh ô đó bằng pair_step("R", 2) rồi pair_step("L", 1).',
+      veMaMau: 'Đọc h = flow_dir(), hỏi h == "right" trước khi quyết định tiến vào ô (2, 1).',
       san: [
         [
           '######',
@@ -373,12 +391,14 @@
       ],
       batDau: [{ x: 2, y: 2, huong: 0 }, { x: 2, y: 2, huong: 0 }],
       maMau: bai([
-        'if flow_dir() == "right":',
+        'h = flow_dir()',
+        'if h == "right":',
         '    move()',
         '    pair_step("R", 1)'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "right":',
+        'h = flow_dir()',
+        'if h == "right":',
         '    move()',
         '    pair_step("R", 1)',
         'else:',
@@ -387,9 +407,10 @@
       ]),
       sao: { o: 21, nhip: 8 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra flow_dir() == "left" trước rồi mới else',
+        moTa: 'Hỏi h == "left" trước rồi mới else',
         baiLam: bai([
-          'if flow_dir() == "left":',
+          'h = flow_dir()',
+          'if h == "left":',
           '    pair_step("R", 2)',
           '    pair_step("L", 1)',
           'else:',
@@ -406,8 +427,8 @@
 
     manDongChay({
       so: 7, ten: 'Tiến tới mép dòng chảy bằng while', hang: 'bien-the', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: trên hai sân, ô dòng chảy ngược nằm ở vị trí khác nhau trên hàng 1, còn phao Q nằm ngay bên dưới ô trước dòng chảy đó. Hãy dùng while flow_dir() == "none": để tiến cho tới sát mép dòng chảy, rồi gọi pair_step("R", 1) rẽ phải cập Q.',
-      veMaMau: 'Dùng vòng lặp while flow_dir() == "none": move() rồi rẽ phải vào Q.',
+      deBai: 'Sola nhờ bạn: trên hai sân, ô dòng chảy ngược nằm ở vị trí khác nhau trên hàng 1, còn phao Q nằm ngay bên dưới ô trước dòng chảy đó. Hãy đọc h = flow_dir(), dùng while h == "none": move() rồi đọc lại h, để tiến cho tới sát mép dòng chảy, rồi gọi pair_step("R", 1) rẽ phải cập Q.',
+      veMaMau: 'Đã có vòng while h == "none": (đọc lại h cuối thân). Thêm lệnh rẽ phải vào Q.',
       san: [
         [
           '#######',
@@ -428,26 +449,32 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai([
-        'while flow_dir() == "none":',
-        '    move()'
+        'h = flow_dir()',
+        'while h == "none":',
+        '    move()',
+        '    h = flow_dir()'
       ]),
       loiGiai: bai([
-        'while flow_dir() == "none":',
+        'h = flow_dir()',
+        'while h == "none":',
         '    move()',
+        '    h = flow_dir()',
         'pair_step("R", 1)'
       ]),
       sao: { o: 16, nhip: 9 },
       loiGiaiKhac: {
         moTa: 'Dùng turn_right() và move() sau vòng lặp while',
         baiLam: bai([
-          'while flow_dir() == "none":',
+          'h = flow_dir()',
+          'while h == "none":',
           '    move()',
+          '    h = flow_dir()',
           'turn_right()',
           'move()'
         ])
       },
       loiSai: [
-        { moTa: 'Quên rẽ phải xuống Q sau khi dừng trước dòng chảy', baiLam: bai(['while flow_dir() == "none":', '    move()']), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên rẽ phải xuống Q sau khi dừng trước dòng chảy', baiLam: bai(['h = flow_dir()', 'while h == "none":', '    move()', '    h = flow_dir()']), phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Đếm cứng forward(2) nên chỉ đúng sân đầu', baiLam: bai(['forward(2)', 'pair_step("R", 1)']), phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Khi ô trước mũi là dòng chảy, flow_dir() khác "none" nên vòng while tự dừng đúng cột của Q.', 'Luna: Sau vòng while, gọi pair_step("R", 1) để rẽ phải tiến 1 ô xuống Q.']
@@ -456,7 +483,7 @@
     manDongChay({
       so: 8, ten: 'Lướt qua dòng đón bè gỗ', hang: 'bien-the', mucTieu: 'dua-vat', nhipTheo: 'tong',
       deBai: 'Sola nhờ bạn: bè gỗ B đang đợi ở (7, 1) và bến q ở (6, 1). Đoạn đầu ở (2, 1) có thể có dòng xuôi ("front") hoặc nước êm. Hãy kiểm tra flow_dir() để tiến tới (3, 1), rồi dùng tow_pair(2, 1) tiến tới (5, 1), tung lưới bắt bè ở (7, 1) và kéo lùi vào bến (6, 1).',
-      veMaMau: 'Kiểm tra flow_dir() == "front" để tới (3, 1), sau đó gọi tow_pair(2, 1).',
+      veMaMau: 'Đã có h = flow_dir() và if/else để tới (3, 1). Thêm tow_pair(2, 1).',
       san: [
         [
           '#########',
@@ -475,13 +502,15 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai([
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    move()',
         'else:',
         '    forward(2)'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "front":',
+        'h = flow_dir()',
+        'if h == "front":',
         '    move()',
         'else:',
         '    forward(2)',
@@ -489,9 +518,10 @@
       ]),
       sao: { o: 17, nhip: 10 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra flow_dir() == "none" trước khi gọi tow_pair(2, 1)',
+        moTa: 'Hỏi h == "none" trước, rồi gọi tow_pair(2, 1)',
         baiLam: bai([
-          'if flow_dir() == "none":',
+          'h = flow_dir()',
+          'if h == "none":',
           '    forward(2)',
           'else:',
           '    move()',
@@ -499,7 +529,7 @@
         ])
       },
       loiSai: [
-        { moTa: 'Quên gọi tow_pair(2, 1) sau khi tới (3, 1)', baiLam: bai(['if flow_dir() == "front":', '    move()', 'else:', '    forward(2)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên gọi tow_pair(2, 1) sau khi tới (3, 1)', baiLam: bai(['h = flow_dir()', 'if h == "front":', '    move()', 'else:', '    forward(2)']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Chỉ gọi move() ở cả hai sân nên sân nước êm tung lưới hụt bè', baiLam: bai(['move()', 'tow_pair(2, 1)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau khối if / else, xuồng dừng ở (3, 1) trên cả hai sân.', 'Luna: Gọi tow_pair(2, 1) để tiến 2 ô tới (5, 1), bắt bè ở (7, 1) và kéo lùi 1 ô về (6, 1).']
@@ -507,8 +537,8 @@
 
     manDongChay({
       so: 9, ten: 'Lựa làn êm dọn lục bình', hang: 'bien-the', mucTieu: 'dua-vat', nhipTheo: 'tong',
-      deBai: 'Sola nhờ bạn: trên hai sân, lục bình L và bến q nằm ở làn nước êm (hàng 1 hoặc hàng 2). Nếu ô trước mũi (2, 1) có dòng ngược (flow_dir() == "back"), hãy chuyển xuống hàng 2 bằng pair_step("R", 1) và turn_left(); sau đó gọi tow_pair(2, 2) để đưa lục bình về bến q.',
-      veMaMau: 'Nếu flow_dir() == "back" thì chuyển xuống hàng 2, rồi gọi tow_pair(2, 2).',
+      deBai: 'Sola nhờ bạn: trên hai sân, lục bình L và bến q nằm ở làn nước êm (hàng 1 hoặc hàng 2). Nếu ô trước mũi (2, 1) có dòng ngược (h == "back" với h = flow_dir()), hãy chuyển xuống hàng 2 bằng pair_step("R", 1) và turn_left(); sau đó gọi tow_pair(2, 2) để đưa lục bình về bến q.',
+      veMaMau: 'Đã có h = flow_dir() và if h == "back": chuyển xuống hàng 2. Thêm tow_pair(2, 2).',
       san: [
         [
           '#######',
@@ -529,12 +559,14 @@
       ],
       batDau: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
       maMau: bai([
-        'if flow_dir() == "back":',
+        'h = flow_dir()',
+        'if h == "back":',
         '    pair_step("R", 1)',
         '    turn_left()'
       ]),
       loiGiai: bai([
-        'if flow_dir() == "back":',
+        'h = flow_dir()',
+        'if h == "back":',
         '    pair_step("R", 1)',
         '    turn_left()',
         'tow_pair(2, 2)'
@@ -543,7 +575,8 @@
       loiGiaiKhac: {
         moTa: 'Dùng turn_right(), move(), turn_left() khi gặp dòng ngược',
         baiLam: bai([
-          'if flow_dir() == "back":',
+          'h = flow_dir()',
+          'if h == "back":',
           '    turn_right()',
           '    move()',
           '    turn_left()',
@@ -551,7 +584,7 @@
         ])
       },
       loiSai: [
-        { moTa: 'Quên gọi tow_pair(2, 2) sau khi chọn làn', baiLam: bai(['if flow_dir() == "back":', '    pair_step("R", 1)', '    turn_left()']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên gọi tow_pair(2, 2) sau khi chọn làn', baiLam: bai(['h = flow_dir()', 'if h == "back":', '    pair_step("R", 1)', '    turn_left()']), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Không chuyển làn khi gặp dòng ngược nên tung lưới hụt ở hàng 1', baiLam: bai(['tow_pair(2, 2)']), phaiCoMa: ['keo-hut', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Khi hàng 1 có dòng ngược, lục bình nằm ở hàng 2 nên pair_step("R", 1) và turn_left() đưa xuồng xuống đúng làn.', 'Luna: Sau khối if, gọi tow_pair(2, 2) để tiến 2 ô, bắt lục bình và kéo lùi 2 ô vào q.']
@@ -560,7 +593,7 @@
     manDongChay({
       so: 10, ten: 'Trùm: Vượt luồng nước đôi đưa hai bè về bến', hang: 'trum', mucTieu: 'dua-vat', nhipTheo: 'tong',
       huyHieu: { ma: 'dong-chay', ten: 'Huy hiệu Đo hướng nước chảy' },
-      deBai: 'Sola giao nhiệm vụ lớn: mỗi sân có 2 bè gỗ ở hai luồng nước ngược chiều nhau (hàng 1 đi sang Đông, hàng 3 đi sang Tây). Dùng vòng lặp for 2 lần: mỗi lượt kiểm tra flow_dir() == "front" để tiến 2 ô (move() hoặc forward(2)), gọi tow_pair(1, 1) đưa bè vào bến, rồi chuyển luồng bằng pair_step("R", 2) và turn_right().',
+      deBai: 'Sola giao nhiệm vụ lớn: mỗi sân có 2 bè gỗ ở hai luồng nước ngược chiều nhau (hàng 1 đi sang Đông, hàng 3 đi sang Tây). Dùng vòng lặp for 2 lần: mỗi lượt đọc h = flow_dir(), hỏi h == "front" để tiến 2 ô (move() hoặc forward(2)), gọi tow_pair(1, 1) đưa bè vào bến, rồi chuyển luồng bằng pair_step("R", 2) và turn_right().',
       veMaMau: 'Hoàn thiện vòng lặp 2 lượt kết hợp đọc dòng chảy và kéo bè.',
       san: [
         [
@@ -585,14 +618,16 @@
       batDau: [{ x: 4, y: 1, huong: 1 }, { x: 4, y: 1, huong: 1 }],
       maMau: bai([
         'for i in range(2):',
-        '    if flow_dir() == "front":',
+        '    h = flow_dir()',
+        '    if h == "front":',
         '        move()',
         '    else:',
         '        forward(2)'
       ]),
       loiGiai: bai([
         'for i in range(2):',
-        '    if flow_dir() == "front":',
+        '    h = flow_dir()',
+        '    if h == "front":',
         '        move()',
         '    else:',
         '        forward(2)',
@@ -602,10 +637,11 @@
       ]),
       sao: { o: 30, nhip: 28 },
       loiGiaiKhac: {
-        moTa: 'Kiểm tra flow_dir() == "none" trước trong vòng lặp',
+        moTa: 'Hỏi h == "none" trước trong vòng lặp',
         baiLam: bai([
           'for i in range(2):',
-          '    if flow_dir() == "none":',
+          '    h = flow_dir()',
+          '    if h == "none":',
           '        forward(2)',
           '    else:',
           '        move()',
@@ -615,8 +651,8 @@
         ])
       },
       loiSai: [
-        { moTa: 'Thiếu tow_pair(1, 1) và bước chuyển luồng trong vòng lặp', baiLam: bai(['for i in range(2):', '    if flow_dir() == "front":', '        move()', '    else:', '        forward(2)']), phaiCoMa: ['chua-dua-vat'] },
-        { moTa: 'Quên turn_right() cuối mỗi lượt nên lượt hai không hướng dọc hàng 3', baiLam: bai(['for i in range(2):', '    if flow_dir() == "front":', '        move()', '    else:', '        forward(2)', '    tow_pair(1, 1)', '    pair_step("R", 2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Thiếu tow_pair(1, 1) và bước chuyển luồng trong vòng lặp', baiLam: bai(['for i in range(2):', '    h = flow_dir()', '    if h == "front":', '        move()', '    else:', '        forward(2)']), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên turn_right() cuối mỗi lượt nên lượt hai không hướng dọc hàng 3', baiLam: bai(['for i in range(2):', '    h = flow_dir()', '    if h == "front":', '        move()', '    else:', '        forward(2)', '    tow_pair(1, 1)', '    pair_step("R", 2)']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
       ],
       goiY: ['Luna: Sau khối if / else, gọi tow_pair(1, 1) để tiến 1 ô, bắt bè và kéo lùi 1 ô vào bến.', 'Luna: Gọi tiếp pair_step("R", 2) và turn_right() để sang luồng đối diện.']
     }),
@@ -627,8 +663,8 @@
     manCheDongChay({
       so: 1, ten: 'Chế hàm kiểm tra nước êm is_calm_front()', hang: 'lam-quen', nhipTheo: 'tong',
       taoHam: ['is_calm_front'],
-      deBai: 'Sola hướng dẫn: ta thường xuyên cần hỏi xem ô trước mũi có phải nước êm hay không. Hãy chế hàm is_calm_front() trả về kết quả so sánh return flow_dir() == "none", rồi dùng while is_calm_front(): move() để tiến tới trước dòng chảy và gọi pair_step("R", 1) vào Q.',
-      veMaMau: 'Viết return flow_dir() == "none" trong thân hàm is_calm_front().',
+      deBai: 'Sola hướng dẫn: ta thường xuyên cần hỏi xem ô trước mũi có phải nước êm hay không. Hãy chế hàm is_calm_front(): đọc h = flow_dir() rồi return h == "none", sau đó dùng while is_calm_front(): move() để tiến tới trước dòng chảy và gọi pair_step("R", 1) vào Q.',
+      veMaMau: 'Viết h = flow_dir() rồi return h == "none" trong thân hàm is_calm_front().',
       san: [
         [
           '#######',
@@ -671,9 +707,9 @@
       },
       loiSai: [
         { moTa: 'Chưa tạo hàm is_calm_front()', baiLam: bai(['while is_calm_front():', '    move()', 'pair_step("R", 1)']), phaiCoMa: ['ham-chua-co'] },
-        { moTa: 'So sánh với "front" thay vì "none"', baiLam: bai(['while is_calm_front():', '    move()', 'pair_step("R", 1)']), hamCuaEmMoi: [hIsCalmFront(['return flow_dir() == "front"'])], phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'So sánh với "front" thay vì "none"', baiLam: bai(['while is_calm_front():', '    move()', 'pair_step("R", 1)']), hamCuaEmMoi: [hIsCalmFront(['h = flow_dir()', 'return h == "front"'])], phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Nước êm là khi flow_dir() trả về chuỗi "none".', 'Luna: Trong hàm is_calm_front(), chỉ cần viết một dòng return flow_dir() == "none".']
+      goiY: ['Luna: Nước êm là khi flow_dir() trả về chuỗi "none".', 'Luna: Trong hàm is_calm_front(), chỉ cần hai dòng: h = flow_dir() và return h == "none".']
     }),
 
     manCheDongChay({
@@ -735,7 +771,7 @@
       so: 3, ten: 'Chế hàm bước đều hai ô flow_step()', hang: 'lam-quen', nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['is_calm_front']),
       taoHam: ['flow_step'],
-      deBai: 'Sola hướng dẫn: mỗi chặng 2 ô trên kênh có thể là dòng xuôi ("front") hoặc nước êm. Hãy chế hàm flow_step(): nếu flow_dir() == "front" thì gọi move(), ngược lại gọi forward(2). Nhờ vậy mỗi lần gọi flow_step() xuồng luôn tiến đúng 2 ô! Lặp 3 lần để tới Q ở (7, 1).',
+      deBai: 'Sola hướng dẫn: mỗi chặng 2 ô trên kênh có thể là dòng xuôi ("front") hoặc nước êm. Hãy chế hàm flow_step(): đọc h = flow_dir(), nếu h == "front" thì gọi move(), ngược lại gọi forward(2). Nhờ vậy mỗi lần gọi flow_step() xuồng luôn tiến đúng 2 ô! Lặp 3 lần để tới Q ở (7, 1).',
       veMaMau: 'Hoàn thiện hàm flow_step() để tiến đúng 2 ô dù có dòng xuôi hay nước êm.',
       san: [
         [
@@ -773,7 +809,7 @@
         hamCuaEmMoi: [hFlowStep()]
       },
       loiSai: [
-        { moTa: 'Thiếu nhánh else: forward(2) trong hàm flow_step()', baiLam: bai(['for i in range(3):', '    flow_step()']), hamCuaEmMoi: [hFlowStep(['if flow_dir() == "front":', '    move()'])], phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Thiếu nhánh else: forward(2) trong hàm flow_step()', baiLam: bai(['for i in range(3):', '    flow_step()']), hamCuaEmMoi: [hFlowStep(['h = flow_dir()', 'if h == "front":', '    move()'])], phaiCoMa: ['chua-toi-co'] },
         { moTa: 'Trong hàm flow_step() chỉ gọi move() nên chặng nước êm đi thiếu bước', baiLam: bai(['for i in range(3):', '    flow_step()']), hamCuaEmMoi: [hFlowStep(['move()'])], phaiCoMa: ['chua-toi-co'] }
       ],
       goiY: ['Luna: Khi có dòng xuôi "front", một lệnh move() đã đi được 2 ô (1 bước + 1 trôi).', 'Luna: Thêm nhánh else: forward(2) vào cuối hàm flow_step().']
@@ -925,7 +961,7 @@
       so: 7, ten: 'Sửa hàm đọc nhầm chiều nước fix_flow_read()', hang: 'bien-the',
       chinhCoDinh: true, nhipTheo: 'tong',
       hamCuaEmCan: KHO_TRUOC.concat(['is_calm_front', 'flow_step', 'scan_calm_side', 'tow_in_calm']),
-      deBai: 'Sola phát hiện lỗi: chương trình chính gọi fix_flow_read() 2 lần để đi 4 ô từ (1, 1) tới (5, 1) rồi gọi pair_step("R", 1) rẽ xuống Q ở (5, 2). Nhưng hàm fix_flow_read() lại kiểm tra nhầm flow_dir() == "back" thay vì "front", nên khi gặp dòng xuôi vẫn gọi forward(2) và bị trôi lố sang cột 6. Hãy sửa lại điều kiện trong hàm!',
+      deBai: 'Sola phát hiện lỗi: chương trình chính gọi fix_flow_read() 2 lần để đi 4 ô từ (1, 1) tới (5, 1) rồi gọi pair_step("R", 1) rẽ xuống Q ở (5, 2). Nhưng hàm fix_flow_read() lại kiểm tra nhầm h == "back" thay vì "front", nên khi gặp dòng xuôi vẫn gọi forward(2) và bị trôi lố sang cột 6. Hãy sửa lại điều kiện trong hàm!',
       veMaMau: 'Chương trình chính đã khóa. Hãy sửa "back" thành "front" trong hàm fix_flow_read().',
       san: [
         [
@@ -959,9 +995,9 @@
       sao: { o: 20, nhip: 10 },
       loiSai: [
         { moTa: 'Chưa sửa "back" thành "front" nên xuồng đi lố sang cột 6', baiLam: bai(['for i in range(2):', '    fix_flow_read()', 'pair_step("R", 1)'], { hamCuaMan: [hFixFlowRead(T_FIX_FLOW_SAI)] }), phaiCoMa: ['chua-toi-co'] },
-        { moTa: 'Đổi forward(2) thành move() ở nhánh else nên đoạn nước êm đi thiếu bước', baiLam: bai(['for i in range(2):', '    fix_flow_read()', 'pair_step("R", 1)'], { hamCuaMan: [hFixFlowRead(['if flow_dir() == "front":', '    move()', 'else:', '    move()'])] }), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Đổi forward(2) thành move() ở nhánh else nên đoạn nước êm đi thiếu bước', baiLam: bai(['for i in range(2):', '    fix_flow_read()', 'pair_step("R", 1)'], { hamCuaMan: [hFixFlowRead(['h = flow_dir()', 'if h == "front":', '    move()', 'else:', '    move()'])] }), phaiCoMa: ['chua-toi-co'] }
       ],
-      goiY: ['Luna: Dòng nước chảy xuôi theo mũi xuồng được trả về là "front" chứ không phải "back".', 'Luna: Đổi dòng đầu của fix_flow_read() thành if flow_dir() == "front":.']
+      goiY: ['Luna: Dòng nước chảy xuôi theo mũi xuồng được trả về là "front" chứ không phải "back".', 'Luna: Đổi điều kiện trong fix_flow_read() thành if h == "front":.']
     }),
 
     manCheDongChay({

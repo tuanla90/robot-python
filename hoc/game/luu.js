@@ -5,6 +5,7 @@
      bản nháp : duong-hoc:nhap:<ma> = { chinh, hamCuaMan }
      sân thử  : duong-hoc:san-thu:<tenHam> = cách sắp sân thử của Xưởng (xe, vật, tường), riêng từng hàm
      cách lắp : duong-hoc:lap:<ma> = { than, tay, camBien } (màn lắp ráp, lap-rap.js: mỗi khe một mã part hay null), riêng từng màn
+     đội đã chọn : duong-hoc:doi:<ma> = ['CH', 'CU'] (màn chọn đội M9D2, man.chonDoi: mã cỗ máy cho từng robot em lập trình), riêng từng màn
      đã xem   : duong-hoc:da-xem = { 'mo-khoa-dot2': true, 'mo-dau': true, 'gioi-thieu': true, … }   (bảng / lời chào chỉ hiện một lần)
      cài đặt  : duong-hoc:cai-dat = { hieuUng, nhac } (mức âm lượng 0..4; xoaHet giữ lại)
      đã mua   : duong-hoc:da-mua = { 'mua-2': true, … } (mùa bán riêng, mo-goi.js; xoaTienDo / xoaHet giữ lại)
@@ -128,6 +129,17 @@
   }
   function ghiLap(id, c) { return ghiJson(KHOA_LAP + id, { than: motMa(c && c.than), tay: motMa(c && c.tay), camBien: motMa(c && c.camBien) }); }
   function xoaLap(id) { try { kho.removeItem(KHOA_LAP + id); return true; } catch (e) { return false; } }
+
+  /* ---- đội đã chọn của màn chọn đội (M9D2, man.chonDoi, lap-rap.js): duong-hoc:doi:<ma> = ['CH', 'CU'] (mã cỗ máy, chon[k] = robot em thứ k).
+        Chỉ kiểm dạng; còn hợp lệ với màn hay không là việc của LapRap.kiemChon (giao diện bỏ lựa chọn cũ nếu hỏng). */
+  var KHOA_DOI = 'duong-hoc:doi:';
+  function docDoi(id) {
+    var d = docJson(KHOA_DOI + id);
+    if (!Array.isArray(d) || !d.length || !d.every(function (x) { return typeof x === 'string' && x; })) return null;
+    return d.slice();
+  }
+  function ghiDoi(id, chon) { return ghiJson(KHOA_DOI + id, (Array.isArray(chon) ? chon : []).filter(function (x) { return typeof x === 'string' && x; })); }
+  function xoaDoi(id) { try { kho.removeItem(KHOA_DOI + id); return true; } catch (e) { return false; } }
 
   /* ---- cờ "đã xem" (bảng chỉ hiện một lần, vd. 'mo-khoa-dot2' khi vừa mở các chương bộ phận mới) */
   function daXem(ten) {
@@ -269,6 +281,7 @@
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docSanThu: docSanThu, ghiSanThu: ghiSanThu, xoaSanThu: xoaSanThu,
     docLap: docLap, ghiLap: ghiLap, xoaLap: xoaLap,
+    docDoi: docDoi, ghiDoi: ghiDoi, xoaDoi: xoaDoi,
     daXem: daXem, datDaXem: datDaXem, xoaTienDo: xoaTienDo, xoaHet: xoaHet,
     docCaiDat: docCaiDat, ghiCaiDat: ghiCaiDat,
     daMua: daMua, datDaMua: datDaMua, xoaDaMua: xoaDaMua,
