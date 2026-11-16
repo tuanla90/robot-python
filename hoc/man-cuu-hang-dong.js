@@ -147,6 +147,16 @@
   /** Cách hai: xuồng + loa + mic, nghe nốt đá rồi ngân: n = listen(), note(n, 3). */
   var XUONG_MIC_15 = ['wait_n(6)', 'n = listen()', 'note(n, 3)', 'wait()'];
 
+  /** lap-hang-dong.6 (ba sân): hang tối trên sông ngầm, người thợ ảnh trôi dưới vách ở cột p (7 / 9 / 8), gõ chuông đá trên vách (p, 1) gọi cứu.
+   *  Cửa đá C (2, 1) chắn lối lên trạm cứu (1, 1); R1 nhện nam châm bước sang nút đè M (1, 3) trong hốc dưới, đứng giữ cửa.
+   *  Từ mũi xuồng (1, 2): hear() = khoảng cách tới chuông = p.
+   *  Xuồng tới cột p - 2 (lưới dài 2), tung lưới, lùi p - 4 ô: người tới ô nước dưới bờ (4, 2), tự lên bờ, về trạm. */
+  function san16() { return ['############', '#.C..#######', '#~~~~~~~~~~#', '#M.#########', '############']; }
+  var PL_16 = ['go_left()'];
+  var XUONG_MIC_16 = ['n = hear()', 'forward(n - 3)', 'cast_net()', 'wait()', 'for i in range(n - 4):', '    back()'];
+  /** Cách hai: hồng ngoại distance() đếm ô nước trống trước mũi xuồng tới người: k = p - 2. */
+  var XUONG_HN_16 = ['k = distance()', 'forward(k - 1)', 'cast_net()', 'wait()', 'for i in range(k - 2):', '    back()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -531,6 +541,35 @@
       sao: { o: 17, nhip: 38 },
       goiY: ['note(n, k): ngân nốt n trong k nhịp liền; xuồng vẫn trôi trong lúc ngân.', 'Đá dày phải nghe đúng nốt 3 nhịp liền, trong tầm 3 ô.', 'Dòng chảy đẩy xuồng mỗi nhịp một ô.'],
       cauDo: { doi: null, lap: 'xuong+loa', coChe: ['song-ngam', 'dong', 'da-chuong', 'ngan-dai'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 16 · đọc rồi chọn (ba sân), lai mic: người thợ ảnh trôi trong hang tối, không thấy, chỉ nghe tiếng chuông đá người gõ trên vách. hear() đo khoảng cách tới chuông, xuồng tới cách
+    //      người đúng 2 ô, tung lưới, kéo về dưới bờ. Nhện R1 đứng trên nút giữ cửa đá trên lối lên trạm. Cách hai: hồng ngoại distance() đếm ô trống tới người.
+    man9('lap-hang-dong', 6, 'luyen', {
+      ten: 'Tiếng chuông trong hang tối',
+      mucTieu: 'cuu-nguoi',
+      khung: { chinh: 12 },
+      deBai: 'Ba sân. Hang tối, người thợ ảnh trôi dưới vách, gõ chuông đá gọi cứu. Lắp xuồng có lưới, tìm người (mỗi sân một chỗ), kéo về dưới bờ cho người lên trạm.',
+      veMaMau: 'Xuồng R2 chưa có chương trình.',
+      san: [san16(), san16(), san16()],
+      them: {
+        chuongDa: [[{ x: 7, y: 1, not: 3 }], [{ x: 9, y: 1, not: 3 }], [{ x: 8, y: 1, not: 3 }]],
+        nguoi: [[{ x: 7, y: 2 }], [{ x: 9, y: 2 }], [{ x: 8, y: 2 }]],
+        tramCuu: [{ x: 1, y: 1 }]
+      },
+      doi: [may('PL', { x: 2, y: 3, huong: 3 }), khe({ x: 1, y: 2, huong: 1 }, { son: 'lam', batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      lapRap: lapR2(['xuong'], ['day-keo'], ['am-thanh', 'hong-ngoai'], 9, [
+        cach('xuong', 'day-keo', 'am-thanh', [PL_16, XUONG_MIC_16]),
+        cach('xuong', 'day-keo', 'hong-ngoai', [PL_16, XUONG_HN_16])
+      ], { moLai: ['L5'] }),
+      maMau: doiBai([PL_16, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng chỗ người của sân 1 (cột 7): sân 2, 3 lưới hụt', baiLam: doiBai([PL_16, ['forward(4)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xuồng chạy tới sát người (forward(n - 2)): lưới dài 2 ô, vướng người', baiLam: doiBai([PL_16, ['n = hear()', 'forward(n - 2)', 'cast_net()', 'wait()', 'for i in range(n - 3):', '    back()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Nhện không giữ nút: cửa đá đóng, người lên bờ mà không về trạm được', baiLam: doiBai([[], XUONG_MIC_16]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 18, nhip: 18 },
+      goiY: ['hear(): khoảng cách (số ô) tới nguồn tiếng gần nhất.', 'cast_net(): lưới dài 2 ô, bắt người cách mũi xuồng đúng 2 ô.', 'Người tới ô nước dưới bờ thì tự lên bờ.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+am-thanh', coChe: ['song-ngam', 'chuong-da', 'cua', 'nut', 'nguoi', 'luoi'], cuu: 'nguoi', meo: 'cuu-kip' }
     })
   ];
 
