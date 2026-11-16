@@ -50,6 +50,8 @@
   /** cuu-ben-song.6: xuồng chờ nhện rời bè, bắt bè phía sau, chạy vòng kênh phải sang lạch trên, nhả bè ở (3, 2). Nhện: qua bè lên cồn hút hòm sắt, chờ cầu thứ hai, lên bờ trên thả vào đích. */
   var XU_6 = ['set_length(1)', 'wait_n(4)', 'cast_net("back")', 'wait()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()'];
   var PL_6 = ['go_up()', 'go_up()', 'pull_s()', 'wait_n(8)', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'];
+  /** Xuồng khách khoá cuu-ben-song.7: lưới dài 1 bắt bè sau đuôi, chờ 5 nhịp, chạy thẳng 6 ô qua cống (bè theo sau vào bến q), nhả lưới. */
+  var XU_R3_7 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(4)', 'forward(6)', 'drop_net()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -226,6 +228,30 @@
       sao: { o: 35, nhip: 21 },
       goiY: ['Bè có xe đứng trên thì lưới không kéo được: chờ nhện xuống cồn.', 'Lưới ra sau: cast_net("back"), xuồng tiến thì bè theo sau.'],
       cauDo: { doi: ['XU', 'PL'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'sat', 'con'], cuu: 'hang', meo: 'doi-vai' }
+    }),
+    // 7 · cứu máy (dọn lối + gạt van từ xa, T3): xuồng khách (R3, khoá) buộc bè hàng sau đuôi, chờ 5 nhịp rồi chạy thẳng qua cống ra bến q.
+    //     Cống đang đóng, van V ở xa trên bờ: xe cứu hỏa phun nước trúng van (tia dừng ở van, van đổi, cống mở cuối nhịp). Tảng đá lũ cuốn nằm ngay sau cửa cống:
+    //     máy khai thác nạp đá, quay phải ném lấp hố bờ. Bẫy: xe chở hàng (gắp được đá nhưng không lấp hố, không gạt van).
+    man9('cuu-ben-song', 7, 'van-dung', {
+      ten: 'Xuồng khách sau cống',
+      deBai: 'Xuồng khách kéo bè hàng, chờ 5 nhịp rồi chạy thẳng ra bến q. Cống đóng, van ở xa trên bờ, tảng đá chắn sau cửa cống. Giúp xuồng khách ra kịp.',
+      veMaMau: 'Đọc chương trình của xuồng khoá: chờ 5 nhịp rồi forward(6).',
+      san: ['##########', '#........#', '#V.......#', '#B~~K~~q~#', '#......u.#', '##########'],
+      doi: [khe({ x: 5, y: 4, huong: 0 }), khe({ x: 3, y: 2, huong: 3 }),
+        may('XU', { x: 2, y: 3, huong: 1 }, { son: 'tim', coDinh: true })],
+      them: { vatThem: [{ x: 5, y: 3 }] },
+      chonDoi: {
+        menu: ['KT', 'CH', 'CU'],
+        cachMau: [{ chon: ['KT', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'], ['spray()', 'wait()'], XU_R3_7]) }]
+      },
+      maMau: doiBai([[], [], XU_R3_7]),
+      loiSai: [
+        { moTa: 'Không gạt van: cống đóng, xuồng khách kẹt', baiLam: doiBai([['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'], [], XU_R3_7]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không dọn đá: xuồng khách qua cống rồi vướng đá', baiLam: doiBai([[], ['spray()', 'wait()'], XU_R3_7]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 27, nhip: 13 },
+      goiY: ['Tia nước của xe cứu hỏa trúng van V thì van đổi, cống mở.', 'Máy khai thác: load() đá trước mũi, quay rồi throw() lấp hố.'],
+      cauDo: { doi: ['KT', 'CU'], lap: null, coChe: ['nuoc', 'van', 'cong', 'phun', 'nem', 'ho', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
   ];
 })();
