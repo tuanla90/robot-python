@@ -425,6 +425,10 @@
       if (j < 0) return r;
       var goc = locCoMay(r), d = CoMay.dung(chon[j], { son: sonCua(r, i), pin: r.pin !== undefined ? r.pin : man.pin, co: r.coThem || undefined });
       delete goc.son; delete goc.coThem;
+      // khe cẩu khai nac / tam: chọn cỗ máy khác vào khe thì bỏ hai trường đó (lõi chỉ nhận ở cần cẩu)
+      if (d.loaiRobot !== 'cau' && goc.batDau && (goc.batDau.nac !== undefined || goc.batDau.tam !== undefined)) {
+        goc.batDau = Object.assign({}, goc.batDau); delete goc.batDau.nac; delete goc.batDau.tam;
+      }
       return Object.assign(goc, d);
     });
     if (em.indexOf(0) >= 0) { kq.loaiRobot = kq.doi[0].loaiRobot; kq.robot = kq.doi[0].robot; kq.hamGoc = kq.doi[0].hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)

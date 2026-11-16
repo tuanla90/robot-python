@@ -205,6 +205,35 @@ console.log('Màn cũ');
   kiem('màn lắp ráp một robot: apDung không sinh trường doi, loiGiai vẫn { chinh, hamCuaMan, hamCuaEmMoi }', a1.doi === undefined && J(Object.keys(a1.loiGiai)) === '["chinh","hamCuaMan","hamCuaEmMoi"]' && a1.loaiRobot === m1.loaiRobot, m1.ma);
 }
 
+console.log('E. Mọi cách chọn đội của màn trong lộ trình dựng được sân (16/11)');
+{
+  // Khe cẩu khai batDau.nac (cuu-nha-may.8): người chơi chọn cỗ máy khác vào khe đó thì lõi từng NÉM "batDau.nac / batDau.tam chỉ dùng cho cần cẩu".
+  // apDungDoi bỏ nac / tam khi cỗ máy chọn không phải cẩu. Ở đây: mọi cách chọn hợp lệ của mọi màn chonDoi chấm được (thua thì được, ném lỗi thì hỏng).
+  const M = require(path.join(day, 'lo-trinh-hoc.js'));
+  const ds = M.danhSach.filter((m) => m.chonDoi);
+  let thu = 0; const loi = [];
+  for (const m of ds) {
+    const menu = m.chonDoi.menu, so = LapRap.soChonCua(m), combos = [];
+    (function gen(p) { if (p.length === so) return combos.push(p); for (const c of menu) if (m.chonDoi.trung || !p.includes(c)) gen(p.concat(c)); })([]);
+    for (const c of combos) {
+      let mm; try { mm = LapRap.apDungDoi(m, c); } catch (e) { continue; }   // chọn không hợp lệ: giao diện chặn trước
+      thu++;
+      let msg = '';
+      try { const r = Cham.cham(mm, mm.doi.map(() => 'wait()\n')); msg = r && r.loi ? String(r.loi) : ''; } catch (e) { msg = e.message; }
+      if (msg) loi.push(m.ma + ' ' + c.join('+') + ': ' + msg);
+    }
+  }
+  kiem('mọi cách chọn đội hợp lệ của ' + ds.length + ' màn chonDoi dựng được sân (' + thu + ' cách)', ds.length > 0 && thu > 0 && loi.length === 0, loi.slice(0, 6).join('\n      '));
+  const nac = ds.find((m) => m.doi.some((r) => r.batDau && r.batDau.nac !== undefined));
+  if (nac) {
+    const i = nac.doi.findIndex((r) => r.batDau && r.batDau.nac !== undefined), j = LapRap.robotEm(nac).indexOf(i);
+    const khac = nac.chonDoi.menu.find((x) => CoMay.dung(x, {}).loaiRobot !== 'cau');
+    const chon = LapRap.robotEm(nac).map((_, k) => k === j ? khac : nac.chonDoi.menu.find((x) => x !== khac));
+    const mm = nem(() => LapRap.apDungDoi(nac, chon)) === null ? LapRap.apDungDoi(nac, chon) : null;
+    kiem('khe cẩu khai nac (' + nac.ma + '), chọn ' + khac + ' vào khe: apDungDoi bỏ nac / tam, màn gốc giữ nac', !!mm && mm.doi[i].batDau.nac === undefined && mm.doi[i].batDau.tam === undefined && nac.doi[i].batDau.nac !== undefined, J(mm && mm.doi[i].batDau));
+  }
+}
+
 console.log('---------------------------------------------');
 console.log('ĐẠT ' + dat + ' · HỎNG ' + hong);
 process.exit(hong ? 1 : 0);
