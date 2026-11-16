@@ -145,6 +145,12 @@
   var OMNI_15 = ['for d in [2, 3]:', '    slide_r(d)', '    play_note(listen())'];
   var BANH_15 = ['turn_right()', 'for d in [2, 3]:', '    forward(d)', '    play_note(listen())'];
 
+  /** lap-clb.6: ghe chở hàng đậu ở bến hồ CLB (boong T (7, 1)) chờ container 13 nằm ở góc sân (1, 3). Bão rải hai thanh sắt lên ray cần cẩu R1 (đặt sẵn) ở (3, 2), (5, 2).
+   *  R2 tự lắp nhấc từng thanh sắt khỏi ray, đặt xuống sân (pull_deliver("D"), gói 3; dọn lối). Cẩu chạy ray sang trái rail(-6) (số âm), nhấc container, chạy về rail(6), quay cần lên, hạ lên ghe.
+   *  Cách một: drone + nam châm (bay, nhanh). Cách hai rẻ hơn: nhện + nam châm (bò, mỗi bước hai nhịp). Cùng một chương trình. */
+  var R2_16 = ['go_up()', 'pull_deliver("D")', 'go_right()', 'go_right()', 'go_up()', 'pull_deliver("D")'];
+  function cc16(cho) { return ['wait_n(' + cho + ')', 'rail(-6)', 'pick_up()', 'rail(6)', 'swing_right()', 'swing_right()', 'set_down()']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -538,6 +544,31 @@
       sao: { o: 18, nhip: 21 },
       goiY: ['listen(): nốt của tượng gần nhất.', 'for d in [2, 3]: lần lượt d = 2 rồi d = 3.', 'Omni trượt ngang bằng slide_r(d), không phải quay.'],
       cauDo: { doi: null, lap: 'omni+loa+am-thanh', coChe: ['da-chuong', 'loa', 'sat', 'kho', 'list', 'nhieu-san'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 16 · dọn lối, R1 đặt sẵn cần cẩu; R2 drone / nhện + nam châm, trộn Cảng (ray, container, ghe, rail số âm) + Bãi tái chế (sắt, pull_deliver):
+    //      sắt rải trên ray chắn bệ cẩu, R2 nhấc sắt xuống sân rồi cẩu chạy ray mang container lên ghe.
+    man9('lap-clb', 6, 'luyen', {
+      ten: 'Sắt rơi trên ray',
+      mucTieu: 'giao-tau', vo: 'cang',
+      hamCuaEmCan: HAM_EM.concat(['pull_deliver']),
+      deBai: 'Ghe chở hàng ở bến hồ CLB chờ container 13. Bão rải hai thanh sắt lên ray cần cẩu. Lắp cho Luna một robot nhấc sắt khỏi ray để cẩu chạy được.',
+      veMaMau: 'R2 chưa có chương trình. Cẩu chưa biết chờ bao lâu.',
+      san: ['#########', '#~~~~~~T#', '#RRRRRRR#', '#.......#', '#########'],
+      doi: [may('CC', { x: 7, y: 2, nac: 2, tam: 1 }), khe({ x: 3, y: 3, huong: 0 }, { son: 'lam' })],
+      them: { vatThem: [{ x: 3, y: 2, chat: 'sat' }, { x: 5, y: 2, chat: 'sat' }], chong: [{ x: 1, y: 3, cont: [{ so: 13 }] }], hangTau: { o: [{ x: 7, y: 1 }], can: [13] } },
+      lapRap: lapR2(['drone', 'nhen', 'hai-banh'], ['nam-cham', 'kep', 'moc-cau'], [], 8, [
+        cach('drone', 'nam-cham', null, [cc16(8), R2_16]),
+        cach('nhen', 'nam-cham', null, [cc16(22), R2_16])
+      ]),
+      maMau: doiBai([cc16(8), []]),
+      loiSai: [
+        { moTa: 'Cẩu chạy ray ngay: vướng thanh sắt trên ray', baiLam: doiBai([cc16(8).slice(1), R2_16]), phaiCoMa: ['het-ray'] },
+        { moTa: 'R2 chỉ nhấc thanh sắt thứ nhất', baiLam: doiBai([cc16(8), R2_16.slice(0, 2)]), phaiCoMa: ['het-ray'] },
+        { moTa: 'Quay cần một nấc: hạ container xuống ray', baiLam: doiBai([cc16(8).filter(function (d, i) { return i !== 4; }), R2_16]), phaiCoMa: ['ha-bi-chan'] }
+      ],
+      sao: { o: 35, nhip: 29 },
+      goiY: ['pull_deliver("D"): hút sắt dưới bụng, bước xuống, thả.', 'rail(-6): số âm, bệ chạy sang trái.', 'Thanh sắt nằm trên ray thì bệ cẩu không chạy qua được.'],
+      cauDo: { doi: null, lap: 'drone+nam-cham', coChe: ['sat', 'ray', 'container', 'ghe'], cuu: 'hang', meo: 'don-loi' }
     })
   ];
 
