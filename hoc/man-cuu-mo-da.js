@@ -139,6 +139,13 @@
   /** Cách hai: thêm cảm biến hồng ngoại, tiến tới khi khối đá vuông đã dạt khỏi cột đá tròn. */
   var XICH_HN_15 = ['for i in range(4):', '    forward(1)', 'tr_left()', 'if distance() == 0:', '    aim_lob(2)', 'tr_right()', 'forward(1)'];
 
+  /** lap-mo-da.6: máy khai thác trong hốc dưới hất đá tròn lấp hố trên lối về trạm cứu. */
+  var KT_16 = ['lob()'];
+  /** Cẩu + lưới (L9, giỏ cứu hộ): hố ở hàng r = 4, bệ cẩu ở hàng 2: cần đang chỉ lên, quay abs(4 - 2) = 2 nấc xuống, vớt, quay một nấc sang phải, đặt lên bờ. */
+  var CAU_16 = ['ho = (4, 4)', 'r, c = ho', 'for i in range(abs(r - 2)):', '    swing_right()', 'cast_net()', 'swing_left()', 'drop_net()'];
+  /** Cách hai rẻ hơn (xe tời bờ L3): hai bánh quay đầu xuống, tung lưới kéo người lên ô nước sát bờ, lùi nhường ô rồi tránh sang trái. */
+  var XE_16 = ['turn_left()', 'turn_left()', 'cast_net()', 'wait()', 'back()', 'turn_right()', 'move()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -521,6 +528,30 @@
       sao: { o: 37, nhip: 17 },
       goiY: ['Xích tiến vào khối đá vuông là đẩy nó đi một ô.', 'tr_left(): xích quay trái tại chỗ.'],
       cauDo: { doi: null, lap: 'xich+nem', coChe: ['thung-nang', 'ho', 'da-tron', 'nem'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 16 · cứu người, cứu kịp, lai L9 cẩu + lưới (giỏ cứu hộ): bão làm hố sâu ngập nước, thợ mỏ kẹt dưới đáy ô (4, 4), vách hố dựng đứng. Bệ cẩu ở mép hố (hàng 2), cần chỉ lên:
+    //      toạ độ hố (r, c) = (4, 4), quay abs(r - 2) = 2 nấc xuống, vớt, quay một nấc sang phải đặt lên bờ (6, 2). Máy khai thác R1 hất đá tròn lấp hố trên lối về trạm cứu.
+    //      Cách hai rẻ hơn (xe tời bờ L3): hai bánh + lưới quay đầu, kéo người lên ô nước sát bờ, lùi nhường ô.
+    man9('lap-mo-da', 6, 'cung-co', {
+      ten: 'Thợ mỏ dưới hố ngập',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Hố sâu ngập nước, thợ mỏ kẹt dưới đáy ô (4, 4). Lắp robot ở mép hố: vớt thợ mỏ lên bờ. Máy khai thác lấp hố trên lối về trạm cứu.',
+      veMaMau: 'Cần cẩu đang chỉ lên. Hố ở hàng 4, bệ ở hàng 2.',
+      san: ['##########', '#......u.#', '####.#.o##', '####~##.##', '####~#####', '##########'],
+      them: { nguoi: [{ x: 4, y: 4 }], tramCuu: [{ x: 8, y: 1 }], vatDang: ['..........', '..........', '.......r..', '..........', '..........', '..........'] },
+      doi: [may('KT', { x: 7, y: 3, huong: 0 }), khe({ x: 4, y: 2, huong: 0, nac: 0, tam: 2 }, { son: 'lam' })],
+      lapRap: lapR2(['cau', 'hai-banh'], ['day-keo'], [], 9, [
+        cach('cau', 'day-keo', null, [KT_16, CAU_16]),
+        cach('hai-banh', 'day-keo', null, [KT_16, XE_16])
+      ], { moLai: ['L9', 'L3'] }),
+      maMau: doiBai([KT_16, ['ho = (4, 4)', 'r, c = ho']]),
+      loiSai: [
+        { moTa: 'range(2 - r) rỗng: cần không quay, vớt hụt', baiLam: doiBai([KT_16, ['ho = (4, 4)', 'r, c = ho', 'for i in range(2 - r):', '    swing_right()', 'cast_net()', 'swing_left()', 'drop_net()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Máy khai thác không lấp hố: thợ mỏ không có lối về trạm', baiLam: doiBai([[], CAU_16]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 14, nhip: 9 },
+      goiY: ['r, c = ho: tách toạ độ hố thành hàng r, cột c.', 'abs(4 - 2) = 2: quay hai nấc.', 'cast_net() vớt người ở đầu cần, drop_net() đặt người lên bờ.'],
+      cauDo: { doi: null, lap: 'cau+day-keo', coChe: ['nuoc', 'nguoi', 'gio', 'ho', 'da-tron'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
     /* HẾT MOI */
   ];
