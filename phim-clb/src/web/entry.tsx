@@ -134,33 +134,41 @@ const LopPhim: React.FC<{phim: Phim; chu: Chu; xong: () => void}> = ({phim, chu,
     if (!cho) { p.seekTo(starts[k + 1]); setCanh(k + 1); }     // giữa cảnh: nhảy thẳng sang đầu cảnh sau; đang chờ cuối cảnh: chạy đoạn chuyển
     p.play();
   };
-  const chamPhim = () => {
-    const p = ref.current;
-    if (!p || het) return;
-    if (cho) tiep(); else if (p.isPlaying()) p.pause(); else p.play();
-  };
   return (
     <div style={{position: 'absolute', inset: 0, zIndex: 30, background: '#0F172A'}} data-hop="phim-clb" data-phim={phim.id}>
       <style>{'@keyframes pclb-nhip{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}'}</style>
       <Player ref={ref} component={Comp} durationInFrames={total} fps={FPS} compositionWidth={1080} compositionHeight={1920}
         style={{width: '100%', height: '100%'}} controls={false} clickToPlay={false} moveToBeginningWhenEnded={false} showVolumeControls={false} allowFullscreen={false} numberOfSharedAudioTags={24} acknowledgeRemotionLicense />
-      <div onClick={chamPhim} style={{position: 'absolute', inset: 0, zIndex: 1, cursor: 'pointer'}} />
+      {/* Lớp chắn không cho chạm màn hình làm tạm dừng phim */}
+      <div onClick={!TU_PHAT && cho ? tiep : undefined} style={{position: 'absolute', inset: 0, zIndex: 1}} />
       {dung && !cho && !het && (
         <button className="bt g-wd md-chay pc-play" data-nut="md-chay" onClick={() => ref.current?.play()} aria-label="Chạy tiếp"
-          style={{position: 'absolute', left: '50%', top: '42%', transform: 'translate(-50%, -50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 26, zIndex: 2}}>▶</button>
+          style={{position: 'absolute', left: '50%', top: '42%', transform: 'translate(-50%, -50%)', width: 64, height: 64, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2}}>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.6v12.8a1.2 1.2 0 0 0 1.8 1l10-6.4a1.2 1.2 0 0 0 0-2l-10-6.4A1.2 1.2 0 0 0 8 5.6z" /></svg>
+        </button>
       )}
-      {/* 3/11 (user): ẩn Bỏ qua và chấm cảnh khi tự phát; hết phim mới hiện nút vào game ở GIỮA màn hình. Đặt TU_PHAT = false là về hàng nút đáy cũ. */}
       {TU_PHAT ? (het ? (
         <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep' : 'pg-tiep'} onClick={xong}
           style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 'auto', height: 48, padding: '0 28px', fontSize: 19,
-            letterSpacing: 0, borderRadius: 24, zIndex: 2, animation: 'pclb-nhip 1.1s ease-in-out infinite'}}>{chu.cuoi}</button>
-      ) : null) : (
+            letterSpacing: 0, borderRadius: 24, zIndex: 3, animation: 'pclb-nhip 1.1s ease-in-out infinite'}}>{chu.cuoi}</button>
+      ) : (
+        <button className="bt g-wd md-bo-qua" data-nut={laMoDau ? 'md-bo-qua' : 'pg-bo-qua'} onClick={xong}
+          style={{position: 'absolute', top: 'auto', right: 12, bottom: 12, height: 34, padding: '0 13px', borderRadius: 999,
+            display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13.5, fontWeight: 700, zIndex: 3,
+            boxShadow: '0 0 0 2px #FFFFFF, 0 4px 12px rgba(15,23,42,0.42)'}}>
+          <span>{chu.boQua}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M5 5.8v12.4a1 1 0 0 0 1.6.8l8.6-6.2a1 1 0 0 0 0-1.6L6.6 5A1 1 0 0 0 5 5.8z" />
+            <rect x="17" y="5" width="2.8" height="14" rx="1.2" />
+          </svg>
+        </button>
+      )) : (
         <div style={{position: 'absolute', left: 12, right: 12, bottom: 12, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 2}}>
           <button className="bt g-wd md-bo-qua" data-nut={laMoDau ? 'md-bo-qua' : 'pg-bo-qua'} onClick={xong} style={{position: 'static'}}>{chu.boQua}</button>
           <div className="md-cham">{starts.map((_, i) => <i key={i} className={i === canh ? 'on' : undefined} />)}</div>
           <button className="bt g-gr md-tiep" data-nut={laMoDau ? 'md-tiep' : 'pg-tiep'} onClick={tiep}
             style={{width: 'auto', height: 36, padding: '0 16px', fontSize: 15, letterSpacing: 0, borderRadius: 18,
-              animation: cho || het ? 'pclb-nhip 1.1s ease-in-out infinite' : 'none'}}>{cuoi ? chu.cuoi : (chu.tiep || 'Tiếp') + ' ›'}</button>
+              animation: cho || het ? 'pclb-nhip 1.1s ease-in-out infinite' : 'none'}}>{cuoi ? chu.cuoi : (chu.tiep || 'Tiếp')}</button>
         </div>
       )}
     </div>

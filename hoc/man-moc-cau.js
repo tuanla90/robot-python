@@ -16,22 +16,22 @@
 
   var SAN_CANG = [
     '~~~~~~~',
-    '.D.D.D.',
-    '..DDD..',
+    '...D...',
+    '...D...',
     '.DD.DD.',
-    '..DDD..',
-    '.D.D.D.',
-    'D..D..D'
+    '...D...',
+    '...D...',
+    '...D...'
   ];
 
   var SAN_CANG_RONG = [
     '~~~~~~~',
-    '.D.D.D.',
-    '..DDD..',
+    '...D...',
+    '...D...',
     'DDD.DDD',
-    '..DDD..',
-    '.D.D.D.',
-    'D..D..D'
+    '...D...',
+    '...D...',
+    '...D...'
   ];
 
   function H(ten, thamSo, than) { return { ten: ten, thamSo: thamSo.slice(), than: than.slice() }; }

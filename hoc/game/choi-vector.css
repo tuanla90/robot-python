@@ -596,77 +596,114 @@ body.ve-vector .c-tb{left:24px;right:24px;bottom:22px;padding:9px 12px;border-ra
 body.ve-vector .g-td{font:800 20px/1 var(--px);letter-spacing:.5px;color:var(--g-vecChu);text-shadow:none;padding-top:0}
 body.ve-vector .g-tong,body.ve-vector .c-saog{height:32px;padding:0 10px 0 7px;gap:5px;border-radius:var(--r-full);font:600 15px/1 var(--mono);color:var(--g-vecChu);text-shadow:none;
   background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-1)}
-/* hộp gói: thẻ trắng bo lớn, dải đầu nhạt + chữ đậm theo trạng thái (--ac đậm / --an nhạt), không sọc gỗ, không núm */
-body.ve-vector .g-the{--ac:var(--g-vecBrand);--an:var(--g-vecBrandNhat);color:var(--g-vecChu);background:var(--g-vecThe);background-image:none;border-radius:var(--r-lg);padding:0 12px 14px;
-  box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2);transition:transform .3s cubic-bezier(.16,1,.3,1),opacity .3s ease,box-shadow .2s ease}
-body.ve-vector .g-day.tuc .g-the{transition:none}                     /* dựng lại / mở màn (man-goi.js dat(i, false)): hộp giữa hiện rõ ngay, không mờ dần lên */
-body.ve-vector .g-the.giua{box-shadow:inset 0 0 0 1.5px var(--g-vecKe),var(--elev-3)}
-body.ve-vector .g-the:not(.giua){filter:none;opacity:.55}
-body.ve-vector .g-the.dot2{--ac:var(--g-vecNgocDam);--an:var(--g-vecNgocNhat)}
-body.ve-vector .g-the.thu-thach{--ac:var(--g-vecHoPhachDam);--an:var(--g-vecHoPhachNhat)}
-body.ve-vector .g-the.xong{--ac:var(--g-vecLaDam);--an:var(--g-vecLaNhat)}
-body.ve-vector .g-the.khoa,body.ve-vector .g-the.sap{--ac:var(--g-vecChuPhu);--an:var(--g-vecTheLom);background:var(--g-vecTheLom)}
+/* hộp gói Cut the Rope (man-goi.js): hộp đồ chơi nổi khối 3D trên nền tranh mùa (.gg-nen), dải nắp màu nhấn (--ac / --an / --ad) */
+body.ve-vector .gg-nen::after{content:"";position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(var(--g-vecChuRgb),.34) 0%,rgba(var(--g-vecChuRgb),.05) 20%,rgba(var(--g-vecChuRgb),.05) 78%,rgba(var(--g-vecChuRgb),.38) 100%)}
+body.ve-vector .gg-dau .nav,body.ve-vector .gg-dau .gg-so{box-shadow:0 0 0 2.5px var(--g-vecThe),0 4px 10px rgba(var(--g-vecBongRgb),.24)}
+body.ve-vector .gg-dau .g-tong{height:36px;padding:0 12px 0 9px;box-shadow:0 0 0 2.5px var(--g-vecThe),inset 0 0 0 1.5px var(--g-vecKe),0 4px 10px rgba(var(--g-vecBongRgb),.22)}
+body.ve-vector .c-td.gg-td{height:36px;padding:0 12px;border-radius:var(--r-full);background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),0 4px 10px rgba(var(--g-vecBongRgb),.2)}
+body.ve-vector .g-the{--ac:var(--g-vecBrand);--an:var(--g-vecBrandNhat);--ad:var(--g-vecBrandDam);color:var(--g-vecChu);background:var(--g-vecThe);background-image:none;border-radius:var(--r-lg);padding:0 12px 13px;
+  box-shadow:inset 0 0 0 2px var(--g-vecKeDam),0 5px 0 var(--g-vecKeDam),0 10px 20px rgba(var(--g-vecBongRgb),.24);transition:transform .3s cubic-bezier(.16,1,.3,1),opacity .3s ease,box-shadow .2s ease}
+body.ve-vector .g-day.tuc .g-the{transition:none}
+body.ve-vector .g-the.giua{box-shadow:inset 0 0 0 2.5px var(--ac),0 6px 0 var(--ad),0 16px 30px rgba(var(--g-vecBongRgb),.34)}
+body.ve-vector .g-the:not(.giua){filter:brightness(.94);opacity:1;transform:scale(.85) translateY(6px)}
+body.ve-vector .g-the.dot2{--ac:var(--g-vecNgocDam);--an:var(--g-vecNgocNhat);--ad:var(--g-vecNgocDam)}
+body.ve-vector .g-the.thu-thach{--ac:var(--g-vecHoPhachDam);--an:var(--g-vecHoPhachNhat);--ad:var(--g-vecHoPhachChu)}
+body.ve-vector .g-the.xong{--ac:var(--g-vecLaDam);--an:var(--g-vecLaNhat);--ad:var(--g-vecLaChu)}
+body.ve-vector .g-the.khoa,body.ve-vector .g-the.sap{--ac:var(--g-vecChuPhu);--an:var(--g-vecTheLom);--ad:var(--g-vecChuPhu);background:var(--g-vecThe)}
 @media (hover:hover){
-  body.ve-vector .g-the.giua:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam),var(--elev-3)}
+  body.ve-vector .g-the.giua:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 2.5px var(--ac),0 8px 0 var(--ad),0 18px 32px rgba(var(--g-vecBongRgb),.38)}
 }
-body.ve-vector .g-the.bt:active{transform:scale(.86) translateY(1px)}
-body.ve-vector .g-the.giua.bt:active{transform:scale(.98)}
-body.ve-vector .g-so{margin:0 -12px;height:38px;padding-top:0;border-radius:var(--r-lg) var(--r-lg) 0 0;font:700 13px/1 var(--px);letter-spacing:1.2px;color:var(--ac);text-shadow:none;
-  background:var(--an);box-shadow:inset 0 -1px 0 var(--g-vecKe)}
+body.ve-vector .g-the.bt:active{transform:scale(.85) translateY(8px)}
+body.ve-vector .g-the.giua.bt:active{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ac),0 3px 0 var(--ad),0 8px 16px rgba(var(--g-vecBongRgb),.28)}
+body.ve-vector .g-so{margin:0 -12px;height:38px;padding-top:0;border-radius:var(--r-lg) var(--r-lg) 0 0;font:800 13px/1 var(--px);letter-spacing:1.3px;color:var(--ac);text-shadow:none;
+  background:var(--an);box-shadow:inset 0 -1.5px 0 var(--g-vecKe)}
 body.ve-vector .g-so::before,body.ve-vector .g-so::after{display:none}
-body.ve-vector .g-mat,body.ve-vector .g-mat.chalk{margin-top:14px;border-radius:var(--r-md);background:var(--g-vecTheLom);background-image:none;box-shadow:inset 0 0 0 1px var(--g-vecKe)}
-body.ve-vector .g-the.khoa .g-mat,body.ve-vector .g-the.sap .g-mat{background:var(--g-vecThe)}
-body.ve-vector .g-ten{font:800 20px/1.1 var(--px);color:var(--g-vecChu);text-shadow:none}
-body.ve-vector .g-mota{font:500 12.5px/1.3 var(--px);color:var(--g-vecChuPhu);text-shadow:none}
-body.ve-vector .g-dong{height:32px;padding:0 12px 0 9px;border-radius:var(--r-full);font:600 15px/1 var(--mono);color:var(--g-vecChu);text-shadow:none;
+body.ve-vector .g-mat,body.ve-vector .g-mat.chalk{margin-top:11px;padding-bottom:14px;border-radius:var(--r-md);background:var(--an);background-image:none;box-shadow:inset 0 0 0 1.5px var(--g-vecKe)}
+body.ve-vector .g-mat::before{content:"";position:absolute;left:16px;right:16px;top:10px;bottom:22px;border-radius:50%;background:radial-gradient(circle,var(--g-vecThe) 0%,transparent 72%);pointer-events:none}
+body.ve-vector .g-mat>.pxi{position:relative;z-index:1}
+body.ve-vector .g-the.khoa .g-mat,body.ve-vector .g-the.sap .g-mat{background:var(--g-vecTheLom)}
+body.ve-vector .g-the.khoa .g-mat::before,body.ve-vector .g-the.sap .g-mat::before{display:none}
+body.ve-vector .g-loai{z-index:2;border-radius:var(--r-full);font:700 10.5px/1.2 var(--px);letter-spacing:.3px;color:var(--g-vecChuPhu);background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .g-ten{margin-top:9px;font:800 19px/1.12 var(--px);color:var(--g-vecChu);text-shadow:none}
+body.ve-vector .g-mota{font:600 12px/1.25 var(--px);color:var(--g-vecChuPhu);text-shadow:none}
+body.ve-vector .g-dong{height:28px;padding:0 11px 0 8px;border-radius:var(--r-full);font:700 14px/1 var(--mono);color:var(--g-vecChu);text-shadow:none;
   background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
-body.ve-vector .g-the.khoa .g-dong,body.ve-vector .g-the.sap .g-dong{background:var(--g-vecThe)}
-body.ve-vector .g-dong .g-can{font:600 12.5px/1 var(--px);color:var(--g-vecChuPhu);padding-top:0}
+body.ve-vector .g-the.khoa .g-dong,body.ve-vector .g-the.sap .g-dong{height:34px;padding:0 14px 0 10px;background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam)}
+body.ve-vector .g-dong .g-can{font:700 13px/1 var(--px);color:var(--g-vecChuPhu);padding-top:0}
 body.ve-vector .g-dong.g-sapco{font:700 13px/1 var(--px);letter-spacing:.5px;color:var(--g-vecChuPhu);padding-top:0}
-body.ve-vector .g-xong{top:48px;right:10px;padding:4px 8px;border-radius:var(--r-full);font:700 11px/1 var(--px);color:var(--g-vecThe);background:var(--g-vecLaDam);box-shadow:var(--elev-1);transform:none}
-/* chấm vị trí: chấm tròn, chấm đang xem kéo dài thành viên thuốc tím chàm; gói thử thách: ô vuông bo xoay 45° */
+body.ve-vector .g-bar{border-radius:var(--r-full);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .g-bar-fill{border-radius:var(--r-full);background:linear-gradient(90deg,var(--g-vecBrand),var(--g-vecDen))}
+body.ve-vector .g-the.xong .g-bar-fill{background:var(--g-vecLa)}
+body.ve-vector .g-the.thu-thach .g-bar-fill{background:var(--g-vecHoPhach)}
+body.ve-vector .g-cta{border-radius:11px;font:800 14px/1 var(--px);letter-spacing:.8px;color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:0 3px 0 var(--g-vecBrandDam)}
+body.ve-vector .g-the.cur .g-cta:not(.g-cta-khoa){background:var(--g-vecLaDam);box-shadow:0 3px 0 var(--g-vecLaChu)}
+body.ve-vector .g-the.thu-thach .g-cta:not(.g-cta-khoa){background:var(--g-vecHoPhachDam);box-shadow:0 3px 0 var(--g-vecHoPhachChu)}
+body.ve-vector .g-the .g-cta.g-cta-khoa{color:var(--g-vecChuPhu);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam)}
+body.ve-vector .g-cta .vi{color:var(--g-vecThe)}
+body.ve-vector .g-the .g-cta.g-cta-khoa .vi{color:var(--g-vecChuPhu)}
+body.ve-vector .g-xong{top:46px;right:10px;padding:4px 8px;border-radius:var(--r-full);font:700 10.5px/1 var(--px);color:var(--g-vecThe);background:var(--g-vecLaDam);box-shadow:var(--elev-1);transform:none}
+body.ve-vector .g-phim{border-radius:var(--r-full);color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:0 2px 0 var(--g-vecBrandDam),var(--elev-1)}
+body.ve-vector .g-phim .vi{color:var(--g-vecThe)}
+/* thanh chấm điều hướng dưới dải hộp gói */
+body.ve-vector .gg-nav{margin-top:8px}
+body.ve-vector .gg-nav .nav{border-radius:50%;width:40px;height:40px;box-shadow:0 0 0 2.5px var(--g-vecThe),0 4px 10px rgba(var(--g-vecBongRgb),.25)}
 body.ve-vector .g-cham{gap:5px;align-items:center}
+body.ve-vector .gg-cham{flex:0 1 auto;margin:0 auto;padding:8px 13px;border-radius:var(--r-full);background:var(--g-vecThe);box-shadow:inset 0 0 0 1.5px var(--g-vecKe),0 4px 12px rgba(var(--g-vecBongRgb),.2)}
 body.ve-vector .g-ch{position:relative;width:8px;height:8px;border-radius:50%;background:var(--g-vecKeDam);box-shadow:none;transition:width .2s ease,background-color .2s ease}
+body.ve-vector .g-ch.xong{background:var(--g-vecLa)}
 body.ve-vector .g-ch.khoa,body.ve-vector .g-ch.sap{background:var(--g-vecKe);box-shadow:inset 0 0 0 1px var(--g-vecKeDam)}
 body.ve-vector .g-ch.on{width:20px;border-radius:var(--r-full);background:var(--g-vecBrand);transform:none}
 body.ve-vector .g-ch.tt{border-radius:2px;transform:rotate(45deg) scale(.85)}
 body.ve-vector .g-ch.tt.on{width:8px;border-radius:2px;background:var(--g-vecHoPhachDam);transform:rotate(45deg) scale(1.2)}
-body.ve-vector .g-ch::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}        /* vùng chạm cao 24 px (chấm chỉ 8 px) */
-/* hàng chọn mùa: các viên thuốc, mùa đang xem tím chàm đặc */
+body.ve-vector .g-ch::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}
+/* hàng chọn mùa & nút mua mùa */
 body.ve-vector .g-mua{gap:6px}
 body.ve-vector .g-mua-nut{height:30px;padding:0 12px;gap:5px;border-radius:var(--r-full);font:600 13px/1 var(--px);color:var(--g-vecChu);text-shadow:none}
 body.ve-vector .g-mua-nut.on{color:var(--g-vecThe);background:var(--g-vecBrand);box-shadow:0 3px 10px rgba(var(--g-vecBrandRgb),.28)}
 body.ve-vector .g-mua-nut.khoa{filter:none;opacity:.55}
 body.ve-vector .g-mua-nut.khoa.on{opacity:1}
-body.ve-vector .g-ban-nut{height:40px;padding:0 18px;border-radius:var(--r-sm);font:700 15px/1 var(--px);color:var(--g-vecThe);text-shadow:none;background:var(--g-vecBrand);box-shadow:0 4px 12px rgba(var(--g-vecBrandRgb),.3)}
+body.ve-vector .g-ban-nut{height:40px;padding:0 18px;border-radius:var(--r-full);font:700 15px/1 var(--px);color:var(--g-vecThe);text-shadow:none;background:var(--g-vecBrand);box-shadow:0 0 0 2.5px var(--g-vecThe),0 4px 12px rgba(var(--g-vecBrandRgb),.36)}
 @media (hover:hover){body.ve-vector .g-ban-nut:hover{background:var(--g-vecBrandDam)}}
-/* bản đồ chọn gói (man-goi.js) / chọn mùa (man-mua.js): nhãn gói / ghim mùa là thẻ trắng nổi trên ảnh; huy hiệu tròn viền trắng dày.
-   Đã qua: viền xanh lá; gói nên chơi: viền tím chàm + quầng thở; thử thách: viền hổ phách; khoá / sắp có: mờ xám;
-   ghim mùa (#sc-mua, ảnh mặt người nhờ thay huy hiệu): viền màu riêng của nơi (--mau-mua, man-mua.js). */
+/* bản đồ chọn mùa (#sc-mua, man-mua.js): 9 biển trạm chiến dịch (.m-tram) nổi khối 3D & Thẻ Nhiệm Vụ Mùa (.hop-mua-ct) */
 body.ve-vector .g-tron{background:var(--g-vecThe);box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 5px var(--g-vecKeDam),var(--elev-2)}
-body.ve-vector #sc-mua .g-tron{box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 5px var(--mau-mua,var(--g-vecKeDam)),var(--elev-2)}
-body.ve-vector .g-nut.xong .g-tron{box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 6px var(--g-vecLa),var(--elev-2)}
-body.ve-vector .g-nut.thu-thach .g-tron{box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 6px var(--g-vecHoPhachDam),var(--elev-2)}
 body.ve-vector .g-nut.cur .g-tron{box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 6px var(--g-vecBrand),var(--elev-2);animation:vec-goi 1.4s ease-in-out infinite alternate}
 @keyframes vec-goi{from{box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 6px var(--g-vecBrand),var(--elev-2),0 0 0 6px rgba(var(--g-vecBrandRgb),0)}to{box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 6px var(--g-vecBrand),var(--elev-2),0 0 0 13px rgba(var(--g-vecBrandRgb),.35)}}
 body.ve-vector .g-nut.khoa .g-tron,body.ve-vector .g-nut.sap .g-tron{filter:none;background:var(--g-vecTheLom)}
 body.ve-vector .g-nut.nope .g-tron{animation:vec-rung .32s ease-in-out 1}
-body.ve-vector .g-nhan{border-radius:12px;background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe),var(--elev-2)}
-body.ve-vector .g-nut.khoa .g-nhan,body.ve-vector .g-nut.sap .g-nhan{background:var(--g-vecTheLom)}
-body.ve-vector .g-nh-so{font:700 10px/1 var(--px);letter-spacing:.8px;color:var(--g-vecBrand)}
-body.ve-vector .g-nut.xong .g-nh-so{color:var(--g-vecLaDam)}
-body.ve-vector .g-nut.thu-thach .g-nh-so{color:var(--g-vecHoPhachDam)}
-body.ve-vector .g-nut.khoa .g-nh-so,body.ve-vector .g-nut.sap .g-nh-so{color:var(--g-vecChuPhu)}
-body.ve-vector .g-nh-ten{font:800 13px/1.15 var(--px);color:var(--g-vecChu);text-shadow:none}
-body.ve-vector .g-nh-sao{font:600 12px/1 var(--mono);color:var(--g-vecChu)}
 body.ve-vector .g-tron-so{font:600 22px/1 var(--mono);color:var(--g-vecBrand);text-shadow:none}
-body.ve-vector .g-nut.khoa .g-tron-so,body.ve-vector .g-nut.sap .g-tron-so{color:var(--g-vecChuPhu)}
-body.ve-vector .g-nh-can{font:600 11px/1 var(--px);color:var(--g-vecChuPhu)}
-@media (hover:hover){body.ve-vector .g-nut:not(.khoa):not(.sap):hover .g-tron{transform:translateY(-2px)}}
-/* ◀ và ★ nổi trên bản đồ: cùng kiểu ghim gói (viền trắng dày + bóng nổi) để đọc rõ trên ảnh */
+body.ve-vector .m-tram{background:var(--g-vecThe);box-shadow:inset 0 0 0 2px var(--mau-mua,var(--g-vecBrand)),0 3px 0 var(--g-vecVien),0 6px 14px rgba(var(--g-vecBongRgb),.28);transition:transform .16s ease,box-shadow .16s ease}
+body.ve-vector .m-nut.cur .m-tram{animation:vec-tram-cur 1.3s ease-in-out infinite alternate}
+@keyframes vec-tram-cur{from{box-shadow:inset 0 0 0 2.5px var(--mau-mua,var(--g-vecBrand)),0 3px 0 var(--g-vecVien),0 0 0 0 rgba(var(--g-vecBrandRgb),0)}to{box-shadow:inset 0 0 0 2.5px var(--mau-mua,var(--g-vecBrand)),0 3px 0 var(--g-vecVien),0 0 0 6px rgba(var(--g-vecBrandRgb),.38)}}
+body.ve-vector .m-nut.khoa .m-tram,body.ve-vector .m-nut.sap .m-tram{background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1.5px var(--g-vecKeDam),0 3px 0 var(--g-vecVien),0 5px 12px rgba(var(--g-vecBongRgb),.2)}
+body.ve-vector .m-nut:active .m-tram{transform:translateY(2px);box-shadow:inset 0 0 0 2px var(--mau-mua,var(--g-vecBrand)),0 1px 0 var(--g-vecVien)}
+@media (hover:hover){body.ve-vector .m-nut:hover .m-tram{transform:translateY(-2px)}}
+body.ve-vector .m-ava .g-tron-anh{box-shadow:0 0 0 2px var(--mau-mua,var(--g-vecBrand))}
+body.ve-vector .m-nut.khoa .m-ava .g-tron-anh,body.ve-vector .m-nut.sap .m-ava .g-tron-anh{filter:grayscale(.55) contrast(.92);opacity:.86;box-shadow:0 0 0 1.5px var(--g-vecKeDam)}
+body.ve-vector .m-ava-khoa{color:var(--g-vecThe);background:var(--g-vecChu);box-shadow:0 0 0 1.5px var(--g-vecThe)}
+body.ve-vector .m-ava-khoa .vi{color:var(--g-vecThe)}
+body.ve-vector .m-ava-xong{color:var(--g-vecThe);background:var(--g-vecLaDam);box-shadow:0 0 0 1.5px var(--g-vecThe)}
+body.ve-vector .m-ava-xong .vi{color:var(--g-vecThe)}
+body.ve-vector .m-so-mua{font:800 9.5px/1.1 var(--px);letter-spacing:.5px;color:var(--g-vecBrandDam)}
+body.ve-vector .m-nut.khoa .m-so-mua,body.ve-vector .m-nut.sap .m-so-mua{color:var(--g-vecChuPhu)}
+body.ve-vector .m-sao-nho{font:700 10.5px/1 var(--mono);color:var(--g-vecChu)}
+body.ve-vector .m-ten{font:800 12px/1.15 var(--px);color:var(--g-vecChu)}
+body.ve-vector .m-nut.khoa .m-ten,body.ve-vector .m-nut.sap .m-ten{color:var(--g-vecChuPhu)}
+body.ve-vector .d-so.m-so{height:38px;padding:0 14px 0 6px;border-radius:var(--r-full);background:var(--g-vecThe);box-shadow:0 0 0 2.5px var(--g-vecThe),inset 0 0 0 1.5px var(--g-vecKeDam),0 4px 12px rgba(var(--g-vecBongRgb),.26)}
+body.ve-vector .hop-dong-x{border-radius:50%;color:var(--g-vecChuPhu);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+@media (hover:hover){body.ve-vector .hop-dong-x:hover{color:var(--g-vecChu);background:var(--g-vecKe)}}
+body.ve-vector .m-ct-ava{background:var(--g-vecTheLom);box-shadow:0 0 0 3px var(--g-vecThe),0 0 0 5px var(--mau-mua,var(--g-vecBrand)),var(--elev-2)}
+body.ve-vector .m-ct-nhan{font:800 11px/1.1 var(--px);letter-spacing:.9px;color:var(--g-vecBrand)}
+body.ve-vector .m-ct-ten{font:800 19px/1.15 var(--px);color:var(--g-vecChu)}
+body.ve-vector .m-ct-phu{font:600 12px/1.3 var(--px);color:var(--g-vecChuPhu)}
+body.ve-vector .m-ct-tien{border-radius:var(--r-md);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .m-ct-sao-so{font:700 18px/1 var(--mono);color:var(--g-vecChu)}
+body.ve-vector .m-ct-bar{border-radius:var(--r-full);background:var(--g-vecThe);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+body.ve-vector .m-ct-bar-fill{border-radius:var(--r-full);background:linear-gradient(90deg,var(--g-vecBrand),var(--g-vecDen))}
+body.ve-vector .m-ct-khoa{padding:10px 12px;border-radius:var(--r-sm);font:600 13.5px/1.4 var(--px);color:var(--g-vecChu);background:var(--g-vecTheLom);box-shadow:inset 0 0 0 1px var(--g-vecKe)}
+/* ◀ và ★ nổi trên bản đồ: viền trắng dày + bóng nổi để đọc rõ trên ảnh */
 body.ve-vector .g-noi .nav{border-radius:50%;box-shadow:0 0 0 3px var(--g-vecThe),var(--elev-2)}
 body.ve-vector .g-noi .nav:active{box-shadow:0 0 0 3px var(--g-vecThe),var(--elev-1)}
-body.ve-vector .g-noi .g-tong{height:40px;padding:0 16px 0 11px;gap:6px;font:700 18px/1 var(--mono);box-shadow:0 0 0 3px var(--g-vecThe),inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}
+body.ve-vector .g-noi .g-tong{height:38px;padding:0 14px 0 10px;gap:6px;font:700 17px/1 var(--mono);box-shadow:0 0 0 3px var(--g-vecThe),inset 0 0 0 1.5px var(--g-vecKe),var(--elev-2)}
 
 /* --- lưới màn: tiêu đề "GÓI n · tên" (số gói phông mã tím chàm), bìa gói là thẻ trắng, vạch tiến độ bo tròn */
 body.ve-vector .c-td{font:800 calc(18px*var(--ts,1))/1 var(--px);color:var(--g-vecChu);text-shadow:none;padding-top:0}
