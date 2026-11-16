@@ -171,6 +171,18 @@
   var CAU_18 = ['for i in range(3):', '    if i > 0:', '        extend()', '    if front_metal():', '        magnet_n()', '        swing_right()', '        swing_right()', '        magnet_off()', '        swing_left()', '        swing_left()'];
   var DR_18 = ['for t in [1, 2, 3]:', '    for i in range(t):', '        go_right()', '    magnet_n()', '    wait()', '    for i in range(2 * t):', '        go_left()', '    magnet_off()', '    for i in range(t):', '        go_right()'];
 
+  /** lap-clb.9 (ba sân, ba robot): robot chở hàng cũ của CLB (R3, máy khách khoá) kẹt trong dãy kho trên: tượng đá chuông đổ chắn lối (cột x khác nhau mỗi sân, nốt khác nhau),
+   *  sau đó là cửa kho C (7, 1) mở khi có xe đè nút M (7, 2). R3 đi từng ô, bị chắn thì chờ. Xe cứu hỏa R1 (đặt sẵn) lên nút giữ cửa tới khi R3 qua, lùi, sang cờ (8, 3).
+   *  R2 tự lắp: d, n = hear(), listen() (tuple), đi tới khi còn cách tượng 3 ô (max(…, 0): đã đủ gần thì không đi), hát nốt n: tượng vỡ; về cờ (6, 3).
+   *  Cách một: nhện + loa (L7) + mic (L4): bật qua hố (2, 3) ngay trước khe, nhanh. Cách hai rẻ hơn: hai bánh + loa + mic vòng xuống hàng 4 (chậm hơn). */
+  function san19() { return ['############', '#......C..F#', '#######M####', '#.u...F.F..#', '#..........#', '############']; }
+  function da19(x, n) { return [{ x: x, y: 1, not: n }]; }
+  var NOI_19 = [{ nut: { x: 7, y: 2 }, cua: [{ x: 7, y: 1 }] }];
+  var R3_19 = ['for i in range(9):', '    while not front_clear():', '        wait()', '    forward(1)'];
+  function cu19(cho) { return ['forward(1)', 'wait_n(' + cho + ')', 'back()', 'tr_right()', 'forward(1)']; }
+  var NHEN_19 = ['jump("R")', 'd, n = hear(), listen()', 'k = max(d - 3, 0)', 'for i in range(k):', '    go_right()', 'play_note(n)', 'for i in range(3 - k):', '    go_right()'];
+  var BANH_19 = ['turn_right()', 'forward(1)', 'turn_left()', 'd, n = hear(), listen()', 'forward(d - 3)', 'play_note(n)', 'forward(8 - d)', 'turn_left()', 'forward(1)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -639,6 +651,31 @@
       sao: { o: 23, nhip: 14 },
       goiY: ['front_metal(): món ở đầu cần có phải sắt không.', 'Thùng nằm bên trái, cùng tầm với món bên phải: quay hai nấc là tới.', 'Thùng có xe đỗ lên thì không thả vào được.'],
       cauDo: { doi: null, lap: 'cau+nam-cham+tu', coChe: ['sat', 'go', 'cam-bien', 'da-chuong', 'thung-phe-lieu', 'nhieu-san'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 19 · cứu máy, giữ cửa, ba sân, ba robot (R3 máy khách khoá; R1 đặt sẵn xe cứu hỏa; R2 lai L7 + L4 nhện + loa + mic), trộn Hang động (đá chuông, hear / listen, nhện bật hố)
+    //      + Nhà máy (nút giữ cửa) + tuple, max: robot cũ CLB kẹt sau tượng đá chuông và cửa kho.
+    man9('lap-clb', 9, 'van-dung', {
+      ten: 'Robot cũ của CLB',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Robot chở hàng cũ của CLB kẹt sau tượng đá chuông và cửa kho; nó tự đi từng ô, bị chắn thì chờ. Xe cứu hỏa giữ nút cửa. Lắp cho Luna một robot nghe tượng ở xa bao nhiêu, nốt gì, rồi hát vỡ.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san19(), san19(), san19()],
+      doi: [may('CU', { x: 7, y: 3, huong: 0 }, { co: [{ x: 8, y: 3 }] }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', co: [{ x: 6, y: 3 }] }),
+        may('CH', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 10, y: 1 }] })],
+      them: { noi: [NOI_19, NOI_19, NOI_19], daChuong: [da19(3, 6), da19(4, 2), da19(5, 8)] },
+      lapRap: lapR2(['nhen', 'hai-banh', 'drone'], ['loa', 'kep', 'nam-cham'], ['am-thanh', 'khoang-cach', 'camera'], 9, [
+        cach('nhen', 'loa', 'am-thanh', [cu19(12), NHEN_19, R3_19]),
+        cach('hai-banh', 'loa', 'am-thanh', [cu19(14), BANH_19, R3_19])
+      ], { moLai: ['L7', 'L4'] }),
+      maMau: doiBai([cu19(12), [], R3_19]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (tượng gần, nốt 6): sân 2, 3 tượng không vỡ', baiLam: doiBai([cu19(12), ['jump("R")', 'play_note(6)', 'for i in range(3):', '    go_right()'], R3_19]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Hát ngay sau khi bật hố: sân 3 tượng còn xa hơn 3 ô, không vỡ', baiLam: doiBai([cu19(12), ['jump("R")', 'd, n = hear(), listen()', 'play_note(n)', 'for i in range(3):', '    go_right()'], R3_19]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Xe cứu hỏa không chờ: nhả nút khi robot cũ chưa qua cửa', baiLam: doiBai([cu19(1), NHEN_19, R3_19]), phaiCoMa: ['qua-nhieu-nhip'] }
+      ],
+      sao: { o: 52, nhip: 20 },
+      goiY: ['d, n = hear(), listen(): một dòng lấy hai giá trị (tuple).', 'max(d - 3, 0): tượng đã đủ gần thì không đi thêm.', 'Robot cũ đi từng ô, bị chắn thì chờ: chỉ cần mở lối cho nó.'],
+      cauDo: { doi: null, lap: 'nhen+loa+am-thanh', coChe: ['da-chuong', 'nut', 'cua', 'ho', 'r3', 'tuple', 'nhieu-san'], cuu: 'may', meo: 'giu-cua' }
     })
   ];
 
