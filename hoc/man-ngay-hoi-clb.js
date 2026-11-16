@@ -181,12 +181,13 @@
   function san14(x) { var a = '#.q~~~~~~#'.split(''); a[x] = 'B'; return ['##########', a.join(''), '#.########', '#........#', '##########']; }
 
   /** trum-mua-clb.5 (hai sân Bến, không dùng xuồng: bảng thân không có xuồng): xe hang động R1 hát đoạn Bến (bè 1 đoạn 5) trên lối trên.
-   *  Người rơi xuống sông, mỗi sân một chỗ; trên bờ ngay chỗ đó có cọc phao đỏ (sàn đỏ). R2 tự lắp xe bờ + tay lưới + cảm biến màu bụng: chạy dọc bờ tới khi color() == "red", tung lưới xuống sông kéo người vào sát bờ; người tự lên bờ về trạm.
-   *  Cách một: omni (mặt quay xuống sông, trượt ngang, không quay, nhanh). Cách hai: hai bánh (rẻ, quay hai lần). Ôn while, so chuỗi !=. */
+   *  Người rơi xuống sông, mỗi sân một chỗ; trên bờ, ngay sau chỗ đó có cọc neo (ô tường). R2 tự lắp xe bờ + tay lưới + cảm biến khoảng cách: chạy dọc bờ tới sát cọc,
+   *  tung lưới xuống sông kéo người vào sát bờ, rồi lùi một ô nhường lối; người tự lên bờ về trạm. (Cảm biến màu bụng không thuộc bảng part mùa 9: kiem-part-mua.)
+   *  Cách một: omni (mặt quay xuống sông, trượt ngang, không quay, nhanh). Cách hai: hai bánh (rẻ, quay hai lần). Ôn while, not cần tránh: hỏi bên trái còn trống. */
   var HD_15 = [hat(5, 1)];
-  var OMNI_15 = ['while color() != "red":', '    slide_left()', '    wait()', 'cast_net()', 'wait()', 'slide_left()', 'wait()'];
-  var BANH_15 = ['turn_left()', 'while color() != "red":', '    forward(1)', 'turn_right()', 'cast_net()', 'wait()', 'turn_left()', 'forward(1)'];
-  function san15(x) { var b = '#........#'.split(''); b[x] = 'r'; return ['##########', '#........#', b.join(''), '#~~~~~~~~#', '#~~~~~~~~#', '##########']; }
+  var OMNI_15 = ['while left_clear():', '    slide_left()', '    wait()', 'cast_net()', 'wait()', 'slide_right()', 'wait()'];
+  var BANH_15 = ['turn_left()', 'while front_clear():', '    forward(1)', 'turn_right()', 'cast_net()', 'wait()', 'turn_right()', 'forward(1)'];
+  function san15(x) { var b = '#........#'.split(''); b[x + 1] = '#'; return ['##########', '#........#', b.join(''), '#~~~~~~~~#', '#~~~~~~~~#', '##########']; }
 
   /** trum-mua-clb.6 (hai sân Nông trại, không dùng drone: bảng thân không có drone): xe hang động R1 hát đoạn Nông trại (bè 1 đoạn 6) trên lối trên.
    *  Luống mỗi sân dài khác nhau (7 ô, 9 ô). Gieo MỘT cây ở giữa luống: đứng ở đầu luống, k = distance() (hồng ngoại: số ô trống tới cuối luống), đi k // 2 ô rồi gieo.
@@ -617,30 +618,30 @@
       cauDo: { doi: null, lap: 'omni+day-keo', coChe: ['nuoc', 'cont-troi', 'luoi', 'xe-bo', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     }),
     // 15 · đổi vai, hai sân Bến (G5), không dùng xuồng (bảng thân không có xuồng): R1 xe hang động hát đoạn Bến (bè 1 đoạn 5: 1 1 5 5 6 6 5 5).
-    //      R2 tự lắp xe bờ + tay lưới + cảm biến màu: tìm cọc phao đỏ trên bờ (mỗi sân một chỗ), kéo người dưới sông vào bờ. Ôn while, !=.
+    //      R2 tự lắp xe bờ + tay lưới + khoảng cách: chạy tới sát cọc neo trên bờ (mỗi sân một chỗ), kéo người dưới sông vào bờ, lùi nhường lối. Ôn while.
     man9('trum-mua-clb', 5, 'lam-quen', {
       ten: 'Bến không có xuồng',
       vo: 'song',
       mucTieu: 'cuu-nguoi',
       hamCuaEmCan: HAM_EM.concat(['play_part']),
-      deBai: 'Hai sân Bến. Xuồng về nhà sửa! Xe hang động hát đoạn Bến. Có người rơi xuống sông, trên bờ chỗ đó cắm cọc phao đỏ, mỗi sân một chỗ. Lắp cho Luna một xe bờ: tìm cọc đỏ, tung lưới kéo người vào bờ.',
+      deBai: 'Hai sân Bến. Xuồng về nhà sửa! Xe hang động hát đoạn Bến. Có người rơi xuống sông, mỗi sân một chỗ; trên bờ ngay sau chỗ đó có cọc neo. Lắp cho Luna một xe bờ: chạy tới sát cọc, tung lưới kéo người vào bờ.',
       veMaMau: 'R2 chưa có chương trình.',
       san: [san15(4), san15(6)],
       them: { nguoi: [[{ x: 4, y: 4 }], [{ x: 6, y: 4 }]], tramCuu: [{ x: 8, y: 1 }] },
       doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 2, huong: 2 }, { son: 'lam' })],
-      lapRap: lapR2(['omni', 'hai-banh', 'drone'], ['day-keo', 'kep', 'nam-cham'], ['mau', 'camera', 'khoang-cach'], 9, [
-        cach('omni', 'day-keo', 'mau', [HD_15, OMNI_15]),
-        cach('hai-banh', 'day-keo', 'mau', [HD_15, BANH_15])
+      lapRap: lapR2(['omni', 'hai-banh', 'drone'], ['day-keo', 'kep', 'nam-cham'], ['khoang-cach', 'camera', 'hong-ngoai'], 8, [
+        cach('omni', 'day-keo', 'khoang-cach', [HD_15, OMNI_15]),
+        cach('hai-banh', 'day-keo', 'khoang-cach', [HD_15, BANH_15])
       ], { moLai: ['L3'] }),
       maMau: doiBai([HD_15, []]),
       loiSai: [
-        { moTa: 'Điền thẳng dữ liệu sân 1 (trượt 3 ô): sân 2 lưới hụt', baiLam: doiBai([HD_15, ['for i in range(3):', '    slide_left()', '    wait()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] },
-        { moTa: 'Quên wait() trong vòng lặp: mỗi nhịp chỉ trượt một lần, xe đọc màu mãi ở ô đầu', baiLam: doiBai([HD_15, ['while color() != "red":', '    slide_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['vong-vo-han'] },
-        { moTa: 'Xe đứng lì chỗ cọc: người được kéo sát bờ nhưng xe chắn lối lên', baiLam: doiBai([HD_15, ['while color() != "red":', '    slide_left()', '    wait()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] }
+        { moTa: 'Điền thẳng dữ liệu sân 1 (trượt 3 ô): sân 2 lưới hụt', baiLam: doiBai([HD_15, ['for i in range(3):', '    slide_left()', '    wait()', 'cast_net()', 'wait()', 'slide_right()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Quên wait() trong vòng lặp: mỗi nhịp chỉ trượt một lần, xe hỏi mãi ở ô đầu', baiLam: doiBai([HD_15, ['while left_clear():', '    slide_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Xe đứng lì chỗ cọc: người được kéo sát bờ nhưng xe chắn lối lên', baiLam: doiBai([HD_15, ['while left_clear():', '    slide_left()', '    wait()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
       sao: { o: 26, nhip: 31 },
-      goiY: ['color(): màu sàn dưới bụng xe, "red" là cọc phao.', 'A != B: đúng khi A khác B.', 'Xe bờ kéo người dưới nước về ô nước sát bờ; người tự lên bờ, đi về trạm.'],
-      cauDo: { doi: null, lap: 'omni+day-keo+mau', coChe: ['nguoi', 'nuoc', 'luoi', 'xe-bo', 'mau', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'nguoi', meo: 'doi-vai' }
+      goiY: ['left_clear(): ô bên trái (so với mặt xe) còn trống không. Xe quay mặt xuống sông thì bên trái là phía phải màn hình.', 'Xe kéo xong phải lùi một ô cho người lên bờ.', 'Xe bờ kéo người dưới nước về ô nước sát bờ; người tự lên bờ, đi về trạm.'],
+      cauDo: { doi: null, lap: 'omni+day-keo+khoang-cach', coChe: ['nguoi', 'nuoc', 'luoi', 'xe-bo', 'coc', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'nguoi', meo: 'doi-vai' }
     }),
     // 16 · đổi vai, hai sân Nông trại (G6), không dùng drone (bảng thân không có drone): R1 xe hang động hát đoạn Nông trại (bè 1 đoạn 6: 4 4 3 3 2 2 1 1).
     //      R2 tự lắp robot gieo hạt + hồng ngoại: luống dài khác nhau, gieo một cây ở giữa (k // 2). Ôn //.
@@ -653,7 +654,7 @@
       san: [san16(7), san16(9)],
       them: { hinh: [hinh16(7), hinh16(9)] },
       doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 4, huong: 1 }, { son: 'lam' })],
-      lapRap: lapR2(['omni', 'hai-banh', 'nhen'], ['son', 'kep', 'loa'], ['hong-ngoai', 'camera', 'mau'], 9, [
+      lapRap: lapR2(['omni', 'hai-banh', 'nhen'], ['son', 'kep', 'loa'], ['hong-ngoai', 'camera', 'khoang-cach'], 9, [
         cach('omni', 'son', 'hong-ngoai', [HD_16, OMNI_16]),
         cach('hai-banh', 'son', 'hong-ngoai', [HD_16, BANH_16])
       ]),
