@@ -74,6 +74,13 @@
   var KT_6 = ['lob()', 'forward(7)'];
   var PL_6 = ['crouch()', 'go_right()', 'go_right()', 'stand()', 'wait_n(2)', 'go_right()'];
 
+  /** cuu-clb.7: container văng vào lối hàng trên, sau đó là hố sụt. Đá tròn nằm ngay trước mũi máy khai thác (ném xa 2 ô).
+   *  Cần cẩu (vươn 2 ô) nhấc container, thu cần, hạ xuống hốc dưới. Máy khai thác nạp đá, lên lối trên, quay phải, tiến tới cách hố 2 ô, ném đá lấp hố,
+   *  qua hố tới trước thùng loa của CLB, nạp thùng, ném qua chỗ thùng vừa nằm vào kho D (xa 2 ô).
+   *  Sai thứ tự (ném trước khi tới chỗ): đá rơi chắn lối, hố còn nguyên. */
+  var CC_7 = ['pick_up()', 'retract()', 'set_down()'];
+  var KT_7 = ['load()', 'wait()', 'forward(2)', 'turn_right()', 'forward(2)', 'throw()', 'wait()', 'forward(3)', 'load()', 'wait()', 'throw()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -237,6 +244,33 @@
       sao: { o: 23, nhip: 11 },
       goiY: ['crouch(): nhện co chân chui gầm thấp; stand(): đứng lên.', 'lob(): hất vật trước mũi xa 2 ô; đá rơi xuống hố thì lấp hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
       cauDo: { doi: ['KT', 'PL'], lap: null, coChe: ['gam', 'nut-de', 'cua', 'ho', 'da-tron', 'san-khau'], cuu: 'hang', meo: 'giu-cua' }
+    }),
+    // 7 · dọn lối (bảng ghi "thứ tự": không có trong 12 mẹo, giữ ý thứ tự trong coChe), cặp #21 Cần cẩu + Khai thác, trộn Cảng (container) + Mỏ đá (ném đá lấp hố): container văng vào lối, sau đó là hố sụt. Cẩu nhấc container trước,
+    //     máy khai thác tiến tới đúng chỗ (cách hố 2 ô) rồi mới ném: ném sớm thì đá rơi chắn lối. Bẫy: xe cứu hỏa (không nhấc container, không ném). Mọi khe trên dải ray.
+    man9('cuu-clb', 7, 'van-dung', {
+      ten: 'Nhấc trước, ném sau',
+      vo: 'cang',
+      mucTieu: 'dua-vat',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Container văng vào lối, sau đó là hố sụt. Đá tròn nằm sẵn trước mũi máy khai thác. Chọn hai bạn và làm đúng thứ tự: dọn container, tới đúng chỗ rồi mới ném đá lấp hố; thùng loa sau hố vào kho D.',
+      veMaMau: 'Container còn chắn lối.',
+      san: ['###########', '#.....u.oD#', '##o.#######', '##RR#######', '###########'],
+      them: { contChan: true, chong: [{ x: 3, y: 1, cont: [{ so: 21 }] }], vatDang: ['...........', '...........', '..r........', '...........', '...........'] },
+      doi: [khe({ x: 3, y: 3, huong: 0, nac: 0, tam: 2 }), khe({ x: 2, y: 3, huong: 0 })],
+      chonDoi: {
+        menu: ['CC', 'KT', 'CU'],
+        cachMau: [{ chon: ['CC', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([CC_7, KT_7]) }]
+      },
+      maMau: doiBai([[], ['load()', 'wait()', 'forward(2)', 'turn_right()']]),
+      loiSai: [
+        { moTa: 'Ném sớm (ngay khi lên lối trên): đá rơi chắn lối, hố còn nguyên', baiLam: doiBai([CC_7, ['load()', 'wait()', 'forward(2)', 'turn_right()', 'throw()', 'wait()', 'forward(5)', 'load()', 'wait()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Cẩu không nhấc container: máy khai thác đâm container', baiLam: doiBai([[], KT_7]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Ném thùng tầm 1 (aim(1)): thùng rơi lại trước mũi, chưa vào kho', baiLam: doiBai([CC_7, KT_7.slice(0, -2).concat(['aim(1)', 'throw()', 'wait()'])]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Ném muộn (tiến 3 ô): đứng sát hố, đá bay qua hố', baiLam: doiBai([CC_7, ['load()', 'wait()', 'forward(2)', 'turn_right()', 'forward(3)', 'throw()', 'wait()', 'forward(2)', 'load()', 'wait()', 'throw()', 'wait()']]), phaiCoMa: ['roi-ho'] }
+      ],
+      sao: { o: 27, nhip: 15 },
+      goiY: ['Container chắn lối như tường: nhờ cẩu nhấc đi trước.', 'throw(): đá trong rổ bay xa 2 ô; rơi xuống hố thì lấp hố, rơi xuống lối thì chắn lối.', 'retract(): thu cần một ô.'],
+      cauDo: { doi: ['CC', 'KT'], lap: null, coChe: ['container', 'ray', 'ho', 'da-tron', 'nem', 'thu-tu'], cuu: 'hang', meo: 'don-loi' }
     })
   ];
 
