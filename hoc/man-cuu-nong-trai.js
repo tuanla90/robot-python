@@ -139,6 +139,15 @@
   var DRONE_18 = ['ink("green")', 'go_down()', 'for i in range(7):', '    go_right()', '    dot()', '    wait()', '    dot()', 'wait()'];
   /** R1 xe gieo xích: hàng 3 bị cây đổ chắn, phải vòng qua luống bùn (đã rắc cát thì không trượt), dừng ở cột 4, xuống hàng 3, gieo năm ô vàng. */
   var XICH_18 = ['for i in range(4):', '    wait()', 'forward(1)', 'tr_right()', 'forward(3)', 'tr_right()', 'forward(1)', 'tr_left()', 'ink("yellow")', 'pen_down()', 'forward(4)', 'pen_up()', 'wait()'];
+  /** lap-nong-trai.9 (ba sân): hàng 2 cột 2–6 là mẫu hoa (sàn màu, mỗi sân một bộ, dài khác nhau); luống mới hàng 2 từ cột 8. Tường giữa: lối trên qua nhà kính đổ (gầm thấp), lối dưới có cây đổ. */
+  function san19(m) { return ['#############', '#......n....#', '#' + '.' + m + '#....#', '#......H....#', '#...........#', '#############']; }
+  function hinh19(m) { return luong(13, 6, [{ y: 2, x0: 8, mau: m.replace(/\./g, '') }, { y: 4, x0: 1, mau: 'rrrrr' }]); }
+  /** R2 lap-nong-trai.9: camera đọc ô trước, bỏ ô "none", nhớ màu vào a; đi năm ô tới tường. */
+  function doc19(buoc) { return ['a = []', 'for i in range(5):', '    c = color()', '    if c != "none":', '        a.append(c)', '    ' + buoc]; }
+  function gieo19(buoc) { return ['for i in range(len(a)):', '    ink(a[i])', '    dot()', '    ' + buoc]; }
+  var NHEN_19 = doc19('go_right()').concat(['go_up()', 'crouch()', 'go_right()', 'go_right()', 'stand()', 'wait()', 'go_down()'], gieo19('go_right()'));
+  var XICH_19 = doc19('forward(1)').concat(['tr_right()', 'forward(1)', 'tr_left()', 'forward(2)', 'tr_left()', 'forward(1)', 'tr_right()'], gieo19('forward(1)'));
+  var DR_19 = hang('red', 4).concat(['land()']);
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -601,6 +610,31 @@
       sao: { o: 41, nhip: 22 },
       goiY: ['dot() trên bùn trơn: rắc cát, ô hết trơn.', 'Chấm thêm lần nữa mới gieo hạt.', 'Bánh gai bám bùn, không trượt.'],
       cauDo: { doi: null, lap: 'gai+son', coChe: ['bun', 'rac-cat', 'gieo', 'cay-do'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 19 · đọc rồi chọn, nhắc lại (ba sân, luật 13/11): mẫu hoa hàng 2 (sàn màu, mỗi sân một bộ, dài 2–4 ô, có ô trống xen). R2 camera đọc ô trước, bỏ "none", a.append(...).
+    //      Tường giữa có hai lối: trên là nhà kính đổ (gầm thấp, nhện co chân chui), dưới là cây đổ (xích ủi). Rồi gieo len(a) ô luống mới đúng màu a[i]. R1 drone gieo hàng 4.
+    //      Cách một nhện + gieo hạt + camera (chui). Cách hai xích + gieo hạt + camera (ủi, rẻ hơn). Hai bánh không chui, không ủi.
+    man9('lap-nong-trai', 9, 'cung-co', {
+      ten: 'Chui hay ủi',
+      khung: { chinh: 20, moiHam: 8 },
+      deBai: 'Ba sân. Mẫu hoa hàng 2 mỗi sân một bộ, có ô trống xen. Lắp robot đọc mẫu (bỏ ô trống), qua tường giữa (nhà kính đổ hay cây đổ), rồi gieo len(a) ô luống mới đúng màu.',
+      veMaMau: 'R2 chưa có chương trình.',
+      them: { xichDay: true },
+      san: [san19('r.g..'), san19('by.r.'), san19('g.gby')],
+      hinh: [hinh19('r.g..'), hinh19('by.r.'), hinh19('g.gby')],
+      doi: [may('DR', { x: 1, y: 4, huong: 1 }, { pin: 11 }), khe({ x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['nhen', 'xich', 'hai-banh'], ['son'], ['camera', 'camera-4'], 9, [
+        cach('nhen', 'son', 'camera', [DR_19, NHEN_19]),
+        cach('xich', 'son', 'camera', [DR_19, XICH_19])
+      ], { moLai: ['L6'] }),
+      maMau: doiBai([DR_19, ['a = []']]),
+      loiSai: [
+        { moTa: 'Điền thẳng màu của sân 1: sân 2, 3 gieo sai', baiLam: doiBai([DR_19, ['a = ["red", "green"]', 'for i in range(5):', '    go_right()'].concat(NHEN_19.slice(6))]), phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Không bỏ ô trống: a có "none"', baiLam: doiBai([DR_19, NHEN_19.filter(function (d) { return d !== '    if c != "none":'; }).map(function (d) { return d === '        a.append(c)' ? '    a.append(c)' : d; })]), phaiCoMa: ['mau-son-sai'] }
+      ],
+      sao: { o: 40, nhip: 31 },
+      goiY: ['color(): màu ô trước mặt (camera). "none" là ô trống.', 'len(a): số màu đã nhớ. a[i]: màu thứ i.', 'Nhện co chân chui gầm. Xích ủi cây đổ.'],
+      cauDo: { doi: null, lap: 'xich+son+camera', coChe: ['gieo', 'mau', 'gam-thap', 'cay-do', 'list', 'pin'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
   ];
 })();
