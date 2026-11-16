@@ -47,6 +47,9 @@
   var XU_4 = ['cast_net("back")', 'wait()', 'forward(2)', 'h, a = flow()', 'turn_left()', 'h, b = flow()', 'turn_right()', 'turn_right()', 'h, c = flow()', 'm = min(a, b, c)',
     'if m == a:', '    turn_left()', 'if m == b:', '    turn_right()', '    turn_right()', 'forward(3)', 'drop_net()', 'wait()'];
   var KT_4 = ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()'];
+  /** cuu-ben-song.6: xuồng chờ nhện rời bè, bắt bè phía sau, chạy vòng kênh phải sang lạch trên, nhả bè ở (3, 2). Nhện: qua bè lên cồn hút hòm sắt, chờ cầu thứ hai, lên bờ trên thả vào đích. */
+  var XU_6 = ['set_length(1)', 'wait_n(4)', 'cast_net("back")', 'wait()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()'];
+  var PL_6 = ['go_up()', 'go_up()', 'pull_s()', 'wait_n(8)', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -200,6 +203,29 @@
       sao: { o: 17, nhip: 12 },
       goiY: ['Người trôi mỗi nhịp một ô: đếm số ô từ người tới trước mũi xuồng.', 'Lùi một ô: người tới ô nước sát bờ thì tự lên bờ.'],
       cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'ho', 'nem', 'thac'], cuu: 'nguoi', meo: 'cuu-kip' }
+    }),
+    // 6 · đổi vai: một chiếc bè làm cầu hai lần. Lũ cuốn hòm dụng cụ sắt lên cồn giữa hai lạch nước. Bè đang nằm ở lạch dưới làm cầu: nhện bò qua bè lên cồn,
+    //     đứng trên hòm sắt hút lên (pull_s). Nhện rời bè thì xuồng tung lưới ra sau bắt bè, chạy vòng qua kênh bên phải kéo bè sang lạch trên làm cầu thứ hai;
+    //     nhện qua cầu đó lên bờ trên, thả hòm vào ô đích. Chỉ hòm sắt cần về đích (bè là gỗ). Bẫy: cần cẩu (móc không nhấc hòm sắt, không kéo bè).
+    man9('cuu-ben-song', 6, 'cung-co', {
+      ten: 'Một bè hai cầu',
+      deBai: 'Hòm sắt kẹt trên cồn giữa hai lạch nước. Chỉ có một chiếc bè. Nhện qua cầu lấy hòm, rồi bè phải sang lạch kia làm cầu lần nữa.',
+      veMaMau: 'Xuồng kéo bè khi nhện còn đứng trên bè.',
+      san: ['########', '#..D...#', '#~~~~~~#', '#..o..~#', '#~~B~~~#', '#RRRRRR#', '########'],
+      doi: [khe({ x: 5, y: 5, huong: 0 }, { batDauNuoc: { x: 4, y: 4, huong: 1 } }), khe({ x: 3, y: 5, huong: 0 })],
+      them: { vatCan: 'sat', vatChat: ['........', '........', '........', '...s....', '........', '........', '........'] },
+      chonDoi: {
+        menu: ['XU', 'PL', 'CC'],
+        cachMau: [{ chon: ['XU', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([XU_6, PL_6]) }]
+      },
+      maMau: doiBai([['set_length(1)', 'cast_net("back")', 'wait()'], ['go_up()', 'go_up()', 'pull_s()']]),
+      loiSai: [
+        { moTa: 'Xuồng kéo bè ngay: nhện còn trên bè, lưới không kéo', baiLam: doiBai([XU_6.filter(function (d) { return d !== 'wait_n(4)'; }), PL_6]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nhện qua lạch trên sớm: bè chưa tới, nhện đâm nước', baiLam: doiBai([XU_6, ['go_up()', 'go_up()', 'pull_s()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']]), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 35, nhip: 21 },
+      goiY: ['Bè có xe đứng trên thì lưới không kéo được: chờ nhện xuống cồn.', 'Lưới ra sau: cast_net("back"), xuồng tiến thì bè theo sau.'],
+      cauDo: { doi: ['XU', 'PL'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'sat', 'con'], cuu: 'hang', meo: 'doi-vai' }
     }),
   ];
 })();
