@@ -312,7 +312,7 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨nhện, xuồng⟩ + ⟨mic, loa⟩ | hai cách: đường ngách khô (nhện) hay sông ngầm (xuồng) | hàng | đọc rồi chọn |
 | 20 | ⟨xuồng, gai⟩ + loa | song ca: xuồng hát trên sông ngầm, tiếng vang đổi nhịp | — | song ca |
 
-> **Đã dựng 17/11 (M9M8, hoc/man-cuu-hang-dong.js viết lại theo khuôn G6 / G7, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt).** Lệch so với bảng:
+> **Đã dựng 16/11 (M9M8, hoc/man-cuu-hang-dong.js viết lại theo khuôn G6 / G7, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt).** Lệch so với bảng:
 > - Hàm của em: KHÔNG tạo lại `bat_wait_crack`, `bat_dict_crack`, `bat_set_march`, `echo_glide_pass`, `cave_team_clear` của G8 cũ (G9, G10 sẽ dựng lại; G9 / G10 cũ còn gọi nên đỏ). Màn mới gọi `clear_iron` (G3) ở #9, lap #12, `sonic_rail` (G4) ở lap #19, `play_part` (G1) ở #10, #20.
 > - Lõi: màn đội mục tiêu `toi-co` bắt MỌI xe tới ô F, phao Q không tính, nên màn có xuồng dùng `cuu-nguoi` / `dua-vat`. Lõi cho mọi robot có loa mà không phát trong nhịp đặt `daNgan` của đá chuông về 0: đá dày (`ben` > 1) chỉ vỡ khi chỉ một robot có loa.
 > - #2 ba sân, sổ `d = {2: 5, 4: 7, 6: 3}` (nốt chuông → nốt đá), nhện co chân chui gầm (không ngách hẹp). #3 hai hố + sàn đá ướt, bẫy drone. #4 ngách hang một cặp miệng (không "cặp màu").
