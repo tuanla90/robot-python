@@ -623,25 +623,30 @@
       cauDo: { doi: null, lap: 'drone+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'phao', 'container', 'r3'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
-    manCS('lap-cang-song', 6, 'cung-co', {
-      ten: 'Chế tạo hàm wait_slide_load cho cần cẩu',
-      r2: R_NHEN,
-      taoHam: ['wait_slide_load'],
-      hamCuaEmCan: ['slide_load', 'clear_rail', 'wait_n'],
-      deBai: 'Hãy định nghĩa hàm wait_slide_load(t, s) cho R1 gồm 2 lệnh: wait_n(t) để chờ đồng đội dọn đường ray trong t nhịp, rồi slide_load(s, 2) để trượt s bước và bốc container ở tầm 1 lên tàu! Ở chương trình chính, R2 (nhện) gọi clear_rail("R") dọn sắt ở (2, 3), còn R1 gọi wait_slide_load(3, 1) để giao kiện 45 lên tàu.',
-      veMaMau: 'Hoàn thiện hàm wait_slide_load(t, s) gồm wait_n(t) và slide_load(s, 2).',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
-      chong: [CW(2, 4, [[45, 2]])],
-      vatThem: [VS(2, 3)],
-      tau: tauDon(8, 2),
-      giao: [{ tau: 0, so: [45] }],
-      maMau: baiDoi(['wait_slide_load(3, 1)'], ['clear_rail("L")']),
-      loiGiai: baiDoi(['wait_slide_load(3, 1)'], ['clear_rail("R")'], [H_WAIT_SLIDE_LOAD]),
+    // 16 · cứu người, cứu kịp, lai L9 (cẩu + tay lưới = giỏ cứu hộ): thủy thủ kẹt dưới vũng nước sau tường, xuồng không vào được. Khe ô (4, 2), cần dài 2:
+    //      cần đang chỉ nấc 0 (lên), người ở nấc 2 (xuống, ô (4, 4) qua tường). Quay abs(dich - nac) nấc, vớt, quay sang nấc 3 đặt người lên bờ (2, 2).
+    //      Cẩu khách R1 nhấc container chắn lối đi bộ ở (2, 3). Cách một cẩu + lưới (quay cần qua tường). Cách hai rẻ hơn: hai bánh + lưới vòng qua bờ trái
+    //      tời người vào ô nước sát bờ rồi lùi nhường ô lên bờ.
+    man9('lap-cang-song', 6, 'cung-co', {
+      ten: 'Giỏ cứu hộ trên cần cẩu',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Thủy thủ kẹt dưới vũng nước sau tường. Cần cẩu gắn tay lưới thành giỏ cứu hộ: quay abs(dich - nac) nấc, vớt người, đặt lên bờ.',
+      veMaMau: 'Cần chỉ nấc 0, người ở nấc 2. Đếm số nấc phải quay bằng abs.',
+      san: ['#######', '#######', '#....##', '#R.####', '#R.~~##', '##.####', '#######'],
+      doi: [may('CC', { x: 1, y: 3, huong: 0, nac: 1, tam: 1 }, { boHam: ['rail'] }), khe({ x: 4, y: 2, huong: 0, nac: 0, tam: 2 }, { son: 'lam' })],
+      them: { contChan: true, chong: [{ x: 2, y: 3, cont: [{ so: 26 }] }], nguoi: [{ x: 4, y: 4 }], tramCuu: [{ x: 2, y: 5 }] },
+      lapRap: lapR2(['cau', 'hai-banh'], ['day-keo'], [], 9, [
+        cach('cau', 'day-keo', null, [['pick_up()', 'swing_left()', 'set_down()'], ['nac = 0', 'dich = 2', 'for i in range(abs(dich - nac)):', '    swing_right()', 'cast_net()', 'swing_right()', 'drop_net()']]),
+        cach('hai-banh', 'day-keo', null, [['pick_up()', 'swing_left()', 'set_down()'], ['turn_left()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'cast_net()', 'wait()', 'back()']])
+      ], { moLai: ['L9', 'L3'] }),
+      maMau: doiBai([['pick_up()', 'swing_left()', 'set_down()'], ['nac = 0', 'dich = 2']]),
       loiSai: [
-        { moTa: 'Hàm wait_slide_load(t, s) thiếu slide_load(s, 2) nên R1 chưa trượt và bốc hàng', baiLam: baiDoi(['wait_slide_load(3, 1)'], ['clear_rail("R")']), hamCuaEmMoi: [{ ten: 'wait_slide_load', thamSo: ['t', 's'], than: ['wait_n(t)'] }], phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'range(nac - dich) = range(-2) rỗng: cần không quay, vớt hụt', baiLam: doiBai([['pick_up()', 'swing_left()', 'set_down()'], ['nac = 0', 'dich = 2', 'for i in range(nac - dich):', '    swing_right()', 'cast_net()', 'swing_right()', 'drop_net()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Quên quay sang bờ: giỏ đặt xuống nước', baiLam: doiBai([['pick_up()', 'swing_left()', 'set_down()'], ['nac = 0', 'dich = 2', 'for i in range(abs(dich - nac)):', '    swing_right()', 'cast_net()', 'drop_net()']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 30, nhip: 8 },
-      goiY: ['Trong wait_slide_load(t, s) thêm slide_load(s, 2); ở R2 sửa clear_rail("L") thành clear_rail("R") để bước sang (3, 3).']
+      sao: { o: 12, nhip: 8 },
+      goiY: ['abs(2 - 0) = 2: quay hai nấc.', 'cast_net() vớt người ở đầu cần, drop_net() đặt người lên ô bờ ở đầu cần.'],
+      cauDo: { doi: null, lap: 'cau+day-keo', coChe: ['nuoc', 'nguoi', 'gio', 'container', 'tuong'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
     // 17 · cứu người + tạo hàm sonic_rail(): thủy thủ đã lên bờ phải đi dọc lối về trạm cứu. Container đổ chắn lối (cẩu nhấc, quay cần xuống bãi dưới),
