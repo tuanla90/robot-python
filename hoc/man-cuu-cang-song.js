@@ -357,23 +357,33 @@
       cauDo: { doi: ['CC', 'CH'], lap: null, coChe: ['container', 'thung-go', 'dich'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    manCS('cuu-cang-song', 7, 'van-dung', {
-      ten: 'Xe xích lùi nhường ray cho cẩu trượt dài',
-      r2: R_XICH,
-      hamCuaEmCan: ['slide_load', 'move', 'back', 'wait_n'],
-      deBai: 'R1 ở (1, 3) cần dùng hàm slide_load(2, 2) (trượt rail(2) sang cột 3 rồi gọi carry_by(2)) để bốc kiện 42 ở (3, 4) lên tàu. Nhưng trên ô ray (2, 3) đang có R2 (xe bánh xích) đứng hướng lên! Hãy cho R2 gọi back() lùi 1 ô xuống (2, 4), còn R1 chờ 1 nhịp bằng wait() rồi gọi slide_load(2, 2)!',
-      veMaMau: 'R2 chưa lùi khỏi đường ray (2, 3) và R1 chưa gọi slide_load(2, 2).',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 0 }],
-      chong: [CW(3, 4, [[42, 2]])],
-      tau: tauDon(7, 2),
-      giao: [{ tau: 0, so: [42] }],
-      maMau: baiDoi(['wait()'], ['wait()']),
-      loiGiai: baiDoi(['wait()', 'slide_load(2, 2)'], ['back()']),
+    // 7 · cứu máy: cần cẩu khách (R3, khoá) hỏng khớp quay: chờ 3 nhịp, chạy ray rail(5) tới cột 6, chờ tới khi dưới móc có container (read_code() khác -1)
+    //     rồi nhấc, vươn cần, hạ lên tàu. Sắt vụn nằm trên ray chắn bệ R3: nhện bước lên ô sắt, hút (pull_s: nam châm bụng), bước xuống bãi, thả ra. Container 31 nổi ở cột 2:
+    //     xuồng tung lưới, lùi 6 - 2 = 4 ô kéo nó về đúng ô dưới móc R3, nhả lưới. Bẫy: xe cứu hỏa (không hút sắt, không xuống nước).
+    man9('cuu-cang-song', 7, 'van-dung', {
+      ten: 'Cẩu khách kẹt khớp',
+      mucTieu: 'giao-tau',
+      deBai: 'Cần cẩu khách chờ 3 nhịp rồi chạy ray, chỉ nhấc được ở cột 6. Sắt vụn chắn ray của nó, container nổi ở xa. Giúp cẩu khách đưa container lên tàu.',
+      veMaMau: 'Đọc chương trình của cẩu khoá.',
+      san: ['~~~~~~T~~', '~~B~~~~~~', '~~~~~~~~~', 'RRRRRRR..', '.........', '.........', '#########'],
+      doi: [khe({ x: 3, y: 4, huong: 0 }, { batDauNuoc: { x: 4, y: 1, huong: 3 } }), khe({ x: 4, y: 4, huong: 0 }, { batDauNuoc: { x: 5, y: 2, huong: 3 } }),
+        may('CC', { x: 1, y: 3, huong: 0, nac: 0, tam: 2 }, { son: 'tim', coDinh: true })],
+      them: { contTroi: [{ x: 2, y: 1, so: 31 }], hangTau: { o: [{ x: 6, y: 0 }], can: [31] }, vatThem: [VS(4, 3)] },
+      chonDoi: {
+        menu: ['XU', 'PL', 'CU'],
+        cachMau: [{ chon: ['XU', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['cast_net()', 'wait()', 'for i in range(6 - 2):', '    back()', 'drop_net()', 'wait()'],
+          ['go_up()', 'pull_s()', 'go_down()', 'magnet_off()', 'wait()'],
+          ['wait_n(3)', 'rail(5)', 'while read_code() == -1:', '    wait()', 'pick_up()', 'extend()', 'set_down()']]) }]
+      },
+      maMau: doiBai([[], [], ['wait_n(3)', 'rail(5)', 'while read_code() == -1:', '    wait()', 'pick_up()', 'extend()', 'set_down()']]),
       loiSai: [
-        { moTa: 'R2 đứng yên trên ray (2, 3) và R1 chưa gọi slide_load(2, 2)', baiLam: baiDoi(['wait()'], ['wait()']), phaiCoMa: ['chua-giao-tau'] }
+        { moTa: 'Không dọn sắt: cẩu khách kẹt trên ray', baiLam: doiBai([['cast_net()', 'wait()', 'for i in range(6 - 2):', '    back()', 'drop_net()', 'wait()'], [], ['wait_n(3)', 'rail(5)', 'while read_code() == -1:', '    wait()', 'pick_up()', 'extend()', 'set_down()']]), phaiCoMa: ['het-ray'] },
+        { moTa: 'Xuồng kéo thiếu một ô: container không tới dưới móc', baiLam: doiBai([['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['go_up()', 'pull_s()', 'go_down()', 'magnet_off()', 'wait()'], ['wait_n(3)', 'rail(5)', 'while read_code() == -1:', '    wait()', 'pick_up()', 'extend()', 'set_down()']]), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 18, nhip: 7 },
-      goiY: ['R1 gọi wait() rồi slide_load(2, 2); R2 gọi back().']
+      sao: { o: 30, nhip: 13 },
+      goiY: ['Cẩu khách chỉ nhấc ở cột 6: kéo container 6 - 2 ô.', 'pull_s(): nhện hút sắt ở ô dưới bụng.'],
+      cauDo: { doi: ['XU', 'PL'], lap: null, coChe: ['nuoc', 'cont-troi', 'luoi', 'sat', 'ray', 'r3', 'tau'], cuu: 'may', meo: 'tiep-suc' }
     }),
 
     manCS('cuu-cang-song', 8, 'van-dung', {
