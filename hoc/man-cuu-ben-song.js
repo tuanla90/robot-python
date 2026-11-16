@@ -106,5 +106,31 @@
       goiY: ['Lưới bay thẳng tới van V: van đổi, cống mở.', 'Đá lấp hố thì không cần về đích.'],
       cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'van', 'cong', 'be', 'luoi', 'ho', 'nem'], cuu: 'hang', meo: 'don-loi' }
     }),
+    // 3 · làm cầu: bờ bên kia sụt hố, xe cứu hộ sau này cần đi qua. Hố cách bờ gần 3 ô: máy khai thác đứng trên bờ ném không tới, phải đứng trên cầu phao mới ném trúng.
+    //     Xuồng thu lưới còn 1 ô (set_length(1)), bắt bè sát mũi, lùi ba ô kéo bè vào bến q, nhả lưới. Máy khai thác nạp tảng đá trước mũi, tiến một ô chờ cầu,
+    //     lên cầu phao ném đá lấp hố. Đá phải lấp hố (không có ô đích cho đá). Bẫy: xe chở hàng (qua cầu được, gắp được đá, nhưng không lấp được hố).
+    man9('cuu-ben-song', 3, 'luyen', {
+      ten: 'Hố bên kia sông',
+      deBai: 'Bờ bên kia sụt hố. Ai ghép cầu phao, ai lấp hố? Đứng trên bờ ném không tới hố đâu.',
+      veMaMau: 'Máy khai thác ném từ bờ: đá rơi trước hố.',
+      san: ['#########', '#...u...#', '#.......#', '#~~~q~~B#', '#.......#', '#.......#', '#########'],
+      doi: [khe({ x: 4, y: 5, huong: 0 }, { batDauNuoc: { x: 6, y: 3, huong: 1 } }), khe({ x: 4, y: 5, huong: 0 }, { batDauNuoc: { x: 6, y: 3, huong: 1 } })],
+      them: { vatThem: [{ x: 4, y: 4 }] },
+      chonDoi: {
+        menu: ['XU', 'KT', 'CH'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'],
+          ['load()', 'wait()', 'move()', 'wait_n(2)', 'move()', 'throw()', 'wait()']]) }]
+      },
+      maMau: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'throw()', 'wait()']]),
+      loiSai: [
+        { moTa: 'Ném từ bờ: đá rơi trước hố', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác lên cầu sớm: chưa có bè, đâm nước', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Lưới dài 2: tung qua bè, không bắt được', baiLam: doiBai([['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'wait_n(2)', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 26, nhip: 7 },
+      goiY: ['set_length(1): lưới dài 1 ô, bắt bè sát mũi.', 'throw() ném xa 2 ô: đứng trên cầu phao mới tới hố.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'ho', 'nem', 'do-dai-luoi'], cuu: 'hang', meo: 'lam-cau' }
+    }),
   ];
 })();
