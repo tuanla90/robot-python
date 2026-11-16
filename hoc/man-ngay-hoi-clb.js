@@ -147,6 +147,20 @@
   var XICH_11 = ['while front_clear():', '    forward(1)', 'pick()', 'tr_left()', 'drop()'];
   function san11(x) { var h = '#........#'.split(''); h[x] = 'o'; return ['##########', '#........#', '#DDDDDDDD#', h.join(''), '##########']; }
 
+  /** Xe có bánh lắp loa (KE-HOACH dòng G10: robot hát nào cũng là thân có bánh / xuồng + loa): CH bỏ tay kẹp, thêm note / beat. */
+  function xeLoa(ma, bd, them) {
+    var bo = { CH: ['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release'], CU: ['spray', 'spray_back'], KT: ['load', 'throw', 'aim'] }[ma] || [];
+    return may(ma, bd, Object.assign({ tay: 'loa', boHam: bo, themHam: ['note', 'beat'], phatNot: true }, them || {}));
+  }
+
+  /** trum-mua-clb.2 (hai sân Nhà máy, không dùng xe cứu hỏa: bảng thân không có xích): xe chở hàng lắp loa R1 hát đoạn Nhà máy (bè 1 đoạn 2) rồi chạy qua cửa C về cờ.
+   *  Nút bắn N mở cửa nằm trong ngách trên lối giữa, mỗi sân một cột. R2 tự lắp xe có vòi phun: dò ngách bằng cảm biến khoảng cách, phun lên trúng N, lên ngách (cờ của R2).
+   *  Cách một: omni + vòi phun + khoảng cách mặt quay lên, trượt phải tới khi trước mặt trống (nhanh). Cách hai: hai bánh + vòi phun + khoảng cách quay phải, tiến tới khi bên trái trống, quay lên (rẻ). */
+  var CH_12 = [hat(2, 1), 'forward(7)'];
+  var OMNI_12 = ['while not front_clear():', '    slide_r(1)', 'spray()', 'wait()', 'forward(1)'];
+  var BANH_12 = ['turn_right()', 'while not left_clear():', '    forward(1)', 'turn_left()', 'spray()', 'wait()', 'forward(1)'];
+  function san12(x) { var a = '##########'.split(''), b = a.slice(); a[x] = 'N'; b[x] = 'F'; return ['##########', a.join(''), b.join(''), '#........#', '##########', '#...C...F#', '##########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -446,6 +460,30 @@
       sao: { o: 33, nhip: 18 },
       goiY: ['while front_clear(): forward(1): đi tới khi trước mặt có vật.', 'Kệ D ở hàng trên lối: quay trái rồi đặt.', 'play_part(notes): hát lần lượt từng nốt trong list.'],
       cauDo: { doi: null, lap: 'omni+kep+khoang-cach', coChe: ['thung', 'kho', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
+    }),
+    // 12 · đổi vai, hai sân Nhà máy (G2), không dùng xe cứu hỏa (bảng thân không có xích): R1 xe chở hàng lắp loa hát đoạn Nhà máy (bè 1 đoạn 2: 4 4 3 3 2 2 1 1), rồi qua cửa.
+    //      R2 tự lắp xe có vòi phun dò ngách có nút bắn (mỗi sân một cột), phun mở cửa. Ôn not, while.
+    man9('trum-mua-clb', 2, 'lam-quen', {
+      ten: 'Nhà máy không có xích',
+      hamCuaEmCan: HAM_EM.concat(['play_part']),
+      deBai: 'Hai sân Nhà máy. Xe cứu hỏa về nhà sửa! Xe chở hàng lắp loa hát đoạn Nhà máy rồi về cờ, nhưng cửa đóng. Nút bắn mở cửa nằm trong một ngách, mỗi sân một chỗ. Lắp cho Luna một robot tìm ngách, phun mở cửa.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san12(3), san12(6)],
+      them: { noi: [[{ nut: { x: 3, y: 1 }, cua: [{ x: 4, y: 5 }] }], [{ nut: { x: 6, y: 1 }, cua: [{ x: 4, y: 5 }] }]] },
+      doi: [xeLoa('CH', { x: 1, y: 5, huong: 1 }, { co: [{ x: 8, y: 5 }] }), khe({ x: 1, y: 3, huong: 0 }, { son: 'lam', co: [[{ x: 3, y: 2 }], [{ x: 6, y: 2 }]] })],
+      lapRap: lapR2(['omni', 'hai-banh', 'nhen'], ['hoi', 'kep', 'nam-cham'], ['khoang-cach', 'camera', 'hong-ngoai'], 8, [
+        cach('omni', 'hoi', 'khoang-cach', [CH_12, OMNI_12]),
+        cach('hai-banh', 'hoi', 'khoang-cach', [CH_12, BANH_12])
+      ]),
+      maMau: doiBai([CH_12, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (slide_r(2)): sân 2 phun trúng tường, cửa đóng', baiLam: doiBai([CH_12, ['slide_r(2)', 'spray()', 'wait()', 'forward(1)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Quên not: while front_clear() không chạy lần nào, phun trúng tường', baiLam: doiBai([CH_12, ['while front_clear():', '    slide_r(1)', 'spray()', 'wait()', 'forward(1)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Phun hai lần: cửa mở rồi đóng lại', baiLam: doiBai([CH_12, ['while not front_clear():', '    slide_r(1)', 'spray()', 'wait()', 'spray()', 'wait()', 'forward(1)']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 23, nhip: 36 },
+      goiY: ['front_clear(): ô trước mặt có trống không; not đảo True thành False.', 'Tia phun trúng nút N thì cửa C đổi (đóng ↔ mở).', 'Omni trượt ngang được, không cần quay.'],
+      cauDo: { doi: null, lap: 'omni+hoi+khoang-cach', coChe: ['nut-ban', 'cua', 'phun', 'loa', 'doi-vai', 'nhieu-san'], cuu: 'hang', meo: 'doi-vai' }
     })
   ];
 
