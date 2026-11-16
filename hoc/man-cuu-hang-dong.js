@@ -56,6 +56,11 @@
   var PL_2 = ['crouch()', 'go_right()', 'go_right()', 'stand()', 'wait()', 'for i in range(4):', '    go_right()'];
   function san2() { return ['#########', '#.n....F#', '#########', '#......F#', '####.####', '#########']; }
 
+  /** cuu-hang-dong.3: hang dài, hai hố sụt trên lối nhện ở hàng 3, nút đè M sau hố thứ hai; cửa đá C trên lối xe hang động (sàn đá ướt trước cửa).
+   *  Nhện bật qua hai hố, lên nút, giữ tới khi xe qua cửa, bước sang cờ. Xe hang động chờ, bám đá ướt qua cửa tới cờ. */
+  var PL_3 = ['jump("R")', 'jump("R")', 'go_right()', 'wait_n(4)', 'go_right()'];
+  var HD_3 = ['wait_n(7)', 'forward(7)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -122,6 +127,29 @@
       sao: { o: 23, nhip: 15 },
       goiY: ['n = listen(): nốt của nguồn tiếng gần nhất (ở đây là chuông đá dưới hốc).', 'd[n]: tra sổ, nốt mà đá chuông cần.', 'Đá chuông vỡ khi nghe đúng nốt trong tầm 3 ô.'],
       cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['da-chuong', 'chuong-da', 'not', 'gam', 'dict'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 3 · giữ cửa (bẫy drone): hang dài sau bão, hai hố sụt nối nhau trên lối nhện, nút đè M nằm sau hố thứ hai; cửa đá C chắn lối xe hang động trên sàn đá ướt.
+    //     Nhện bật qua hai hố lên nút, giữ cửa mở tới khi xe qua. Bẫy: drone (bay qua hố được nhưng không đè nút: bay thì không nặng lên nút).
+    man9('cuu-hang-dong', 3, 'luyen', {
+      ten: 'Hai hố trước nút',
+      deBai: 'Cửa đá chắn lối xe hang động. Nút giữ cửa nằm sau hai hố sụt. Chọn hai bạn: ai qua hai hố đứng lên nút, ai bám đá ướt qua cửa?',
+      veMaMau: 'Cửa đá còn đóng.',
+      san: ['##########', '#..IIC..F#', '##########', '#.u.u.MF.#', '##########'],
+      noi: [{ nut: { x: 6, y: 3 }, cua: [{ x: 5, y: 1 }] }],
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] })],
+      chonDoi: {
+        menu: ['HD', 'PL', 'DR'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_3, PL_3]) }]
+      },
+      maMau: doiBai([['wait_n(7)'], ['jump("R")']]),
+      loiSai: [
+        { moTa: 'Nhện nhảy một lần rồi đi bộ: rơi hố thứ hai', baiLam: doiBai([HD_3, ['jump("R")', 'go_right()', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()']]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Nhện rời nút ngay: cửa đóng trước mũi xe', baiLam: doiBai([HD_3, ['jump("R")', 'jump("R")', 'go_right()', 'go_right()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xe không chờ: tới cửa khi cửa còn đóng', baiLam: doiBai([['forward(7)'], PL_3]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 30, nhip: 17 },
+      goiY: ['jump("R") hai lần: qua hai hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.', 'Drone bay thì không đè nút.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ho', 'hai-ho', 'nhay', 'nut-de', 'cua', 'da-uot'], cuu: 'hang', meo: 'giu-cua' }
     })
   ];
 
