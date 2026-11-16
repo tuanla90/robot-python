@@ -58,6 +58,12 @@
   var CU_3 = ['spray()', 'wait()', 'tr_right()', 'wait_n(6)', 'forward(2)', 'tr_right()', 'forward(2)'];
   var XU_3 = ['forward(4)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'];
 
+  /** cuu-clb.4: kệ sắt đổ (thùng nặng) chắn lối hàng trên của xe hang động; tượng đá chuông ngã chắn lối hàng dưới của xe cứu hỏa.
+   *  Xe cứu hỏa tiến, ủi kệ vào hốc trên, lùi về lối mình, quay phải chờ đá vỡ rồi chạy về cờ.
+   *  Xe hang động chờ lối thông, tiến tới chỗ nghe được tượng (trong tầm 3), nghe nốt, hát lại: tượng vỡ; chạy về cờ. */
+  var CU_4 = ['forward(2)', 'back()', 'back()', 'tr_right()', 'forward(5)'];
+  var HD_4 = ['wait_n(2)', 'forward(3)', 'play_note(listen())', 'forward(4)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -147,6 +153,29 @@
       sao: { o: 33, nhip: 18 },
       goiY: ['Tia phun trúng van V thì cống đổi (đóng ↔ mở).', 'Bè nằm trên bến q là cầu phao.', 'Xích tiến vào thùng nặng thì đẩy thùng đi một ô.'],
       cauDo: { doi: ['CU', 'XU'], lap: null, coChe: ['nuoc', 'van', 'cong', 'phun', 'be', 'luoi', 'thung-nang'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 4 · song song, cặp #13 Cứu hỏa + Hang động, trộn Nhà máy (thùng nặng) + Hang động (đá chuông): kệ sắt đổ chắn lối xe hang động, tượng đá chuông ngã chắn lối xe cứu hỏa.
+    //     Mỗi bạn dọn lối cho bạn kia, cùng lúc: xích ủi kệ vào hốc rồi lùi về lối mình; gai qua chỗ kệ, nghe nốt tượng, hát vỡ tượng. Bẫy: máy khai thác (không ủi thùng nặng, không hát).
+    man9('cuu-clb', 4, 'luyen', {
+      ten: 'Kệ đổ và tượng đá',
+      deBai: 'Kệ sắt đổ chắn lối trên, tượng đá chuông ngã chắn lối dưới. Chọn hai bạn dọn lối cho nhau, cùng lúc, rồi cả hai về cờ.',
+      veMaMau: 'Hai lối còn bị chắn.',
+      san: ['##########', '###.######', '#..H....F#', '###.######', '###.....F#', '##########'],
+      them: { daChuong: [{ x: 5, y: 4, not: 3, ben: 1 }] },
+      doi: [khe({ x: 1, y: 2, huong: 1 }, { co: [{ x: 8, y: 2 }] }), khe({ x: 3, y: 4, huong: 0 }, { co: [{ x: 8, y: 4 }] })],
+      chonDoi: {
+        menu: ['HD', 'CU', 'KT'],
+        cachMau: [{ chon: ['HD', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_4, CU_4]) }]
+      },
+      maMau: doiBai([['wait_n(2)'], ['forward(2)']]),
+      loiSai: [
+        { moTa: 'Xe hang động hát ngay chỗ xuất phát: tượng xa 6 ô, không vỡ', baiLam: doiBai([['play_note(listen())', 'wait()', 'forward(7)'], CU_4]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xe cứu hỏa ủi xong đứng lại giữa lối trên: xe hang động vướng', baiLam: doiBai([HD_4, ['forward(2)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xe hang động không chờ: đâm kệ chưa ủi', baiLam: doiBai([['forward(3)', 'play_note(listen())', 'forward(4)'], CU_4]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 29, nhip: 13 },
+      goiY: ['Xích tiến vào thùng nặng thì đẩy thùng đi một ô.', 'listen(): nốt của đá chuông gần nhất; loa phá đá trong tầm 3 ô.', 'Hai bạn làm cùng lúc thì mới kịp.'],
+      cauDo: { doi: ['HD', 'CU'], lap: null, coChe: ['thung-nang', 'da-chuong', 'not', 'hoc'], cuu: 'hang', meo: 'song-song' }
     })
   ];
 
