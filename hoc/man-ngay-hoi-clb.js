@@ -230,6 +230,17 @@
   var BANH_19 = be19(B2).concat(['bai = d1 + d2 + d3 + d4', 'bai = bai + d5 + d6 + d7 + d8', 'play_part(bai)']);
   var SAN_19 = ['#####', '#...#', '#####', '#...#', '#####'];
 
+  /** trum-mua-clb.10 (trùm cuối, hai sân CLB): Sola và Luna tấu bài chúc mừng đủ chín đoạn (G1–G9). R1 xe hang động đặt sẵn hát bè 1 (chín list đoạn, nối bằng +).
+   *  R2 Luna tự lắp robot có loa đánh trống beat() (âm 'x'): mỗi ô nhịp 8 phách gõ ở phách 0, 3, 4, 6 (go = {0, 3, 4, 6}; i % 8 in go).
+   *  Lệch bảng: bảng ghi R3 đánh trống (khoá) + hai bạn hát; lõi choi-dieu đội chỉ nhận đúng 2 robot (san-hoc.js: 'Mục tiêu choi-dieu cho đội cần đúng 2 robot'),
+   *  nên trống do R2 (tự lắp) đánh, không có R3. Cách một: omni + loa, code set + % (gọn). Cách hai: hai bánh + loa (rẻ), chép tay một ô nhịp trong for (dài). Ôn list, set, %, in. */
+  function be20(be) { var ds = []; for (var g = 1; g <= 9; g++) ds.push(khaiDoan('d' + g, be[g])); return ds; }
+  var HD_20 = be20(B1).concat(['play_part(d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8 + d9)']);
+  var TRONG_20 = 'x . . x x . x .';
+  var OMNI_20 = ['go = {0, 3, 4, 6}', 'for i in range(72):', '    if i % 8 in go:', '        beat()', '    wait()'];
+  var BANH_20 = ['for i in range(9):', '    beat()', '    wait()', '    wait()', '    wait()', '    beat()', '    wait()', '    beat()', '    wait()', '    wait()', '    beat()', '    wait()', '    wait()'];
+  var SAN_20 = ['#######', '#.....#', '#######', '#.....#', '#######'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -731,6 +742,31 @@
       sao: { o: 29, nhip: 150 },
       goiY: ['Nối list bằng +: d1 + d2 là hai đoạn liền nhau.', 'play_part(notes): hát lần lượt từng nốt trong list.', 'Drone không mang nổi loa.'],
       cauDo: { doi: null, lap: 'omni+loa', coChe: ['loa', 'ghep-bai', 'list', 'tam-doan', 'nhieu-san'], cuu: null, meo: 'song-song' }
+    }),
+    // 20 · trùm cuối, song ca + trống, hai sân CLB: R1 xe hang động (đặt sẵn) hát bè 1 đủ chín đoạn; R2 tự lắp robot có loa đánh trống beat() theo nhịp x . . x x . x . (set + %).
+    man9('trum-mua-clb', 10, 'trum', {
+      ten: 'Bài chúc mừng ngày hội',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      khung: { chinh: 14, moiHam: 8 },
+      deBai: 'Ngày hội CLB! Sola hát bè 1 đủ chín đoạn của chín nơi. Lắp cho Luna một robot có loa đánh trống: mỗi ô nhịp 8 phách, gõ beat() ở phách 0, 3, 4, 6. Hai bạn bắt đầu cùng nhịp.',
+      veMaMau: 'Trống chưa có chương trình.',
+      san: [SAN_20, SAN_20],
+      them: { dieu: { r1: noiDieu(B1, [1, 2, 3, 4, 5, 6, 7, 8, 9]), r2: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(function () { return TRONG_20; }).join(' ') }, daChuong: [[], [{ x: 5, y: 3, not: 8, ben: 1 }]] },
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['omni', 'hai-banh', 'drone'], ['loa', 'kep', 'son'], [], 7, [
+        cach('omni', 'loa', null, [HD_20, OMNI_20]),
+        cach('hai-banh', 'loa', null, [HD_20, BANH_20])
+      ]),
+      maMau: doiBai([HD_20, ['go = {0, 3, 4, 6}']]),
+      loiSai: [
+        { moTa: 'Quên % 8: i in go chỉ đúng ở ô nhịp đầu, trống im từ ô nhịp 2', baiLam: doiBai([HD_20, ['go = {0, 3, 4, 6}', 'for i in range(72):', '    if i in go:', '        beat()', '    wait()']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Gõ sai phách (go = {0, 3, 4, 7}): phách 6 cần trống mà loa im', baiLam: doiBai([HD_20, ['go = {0, 3, 4, 7}', 'for i in range(72):', '    if i % 8 in go:', '        beat()', '    wait()']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 1 thiếu đoạn 9: Sola im trước khi trống dứt', baiLam: doiBai([be20(B1).concat(['play_part(d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8)']), OMNI_20]), phaiCoMa: ['lo-nhip'] }
+      ],
+      sao: { o: 32, nhip: 170 },
+      goiY: ['go = {0, 3, 4, 6}: một set các phách gõ; i % 8 in go: phách i có trong set.', 'beat(): gõ trống một phách; wait() cho nhịp trôi.', 'Nối chín list đoạn bằng +.'],
+      cauDo: { doi: null, lap: 'omni+loa', coChe: ['loa', 'trong', 'ghep-bai', 'list', 'set', 'chia-du', 'nhieu-san'], cuu: null, meo: 'song-song' }
     })
   ];
 
