@@ -89,6 +89,14 @@
   var SAN_5_MO = ['##########', '#.....u.F#', '######o###', '#####F.###', '##########'];
   var SAN_5_NM = ['##########', '#.....C.F#', '######M###', '#####F.###', '##########'];
 
+  /** tong-hop-clb.6 (hai sân, cứu người): sân 1 bờ sông: người áo phao rơi xuống nước ở (3, 2); sân 2 hầm mỏ: thợ mỏ kẹt ở (2, 1) trong hầm.
+   *  Cả hai sân lối về trạm cứu (8, 1) bị tượng đá chuông chắn ở (6, 1), mỗi sân một nốt. Xuồng (khe B, (5, 2) quay trái) tung lưới kéo người về trước mũi:
+   *  ô sát bờ, người tự lên bờ (sân 2 lưới vướng vách hầm, không sao). Xe hang động chạy hàng dưới tới (6, 3), nghe nốt tượng, hát: tượng vỡ, người về trạm. */
+  var HD_6 = ['forward(5)', 'play_note(listen())'];
+  var XU_6 = ['cast_net()', 'wait()'];
+  var SAN_6_SONG = ['##########', '#........#', '#~~~~~~###', '#........#', '##########'];
+  var SAN_6_HAM = ['##########', '#........#', '#~###~~###', '#........#', '##########'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -234,6 +242,31 @@
       sao: { o: 35, nhip: 26 },
       goiY: ['listen() trả 0 khi không có tượng nào trong tầm: if n > 0 thì mới hát.', 'lob(): nạp vật trước mũi rồi ném xa 2 ô; đá rơi xuống hố thì lấp hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
       cauDo: { doi: ['HD', 'KT'], lap: null, coChe: ['da-chuong', 'ho', 'da-tron', 'nut-de', 'cua', 'nhieu-san'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 6 · cứu người, nhiều sân, hai sân Bến sông (G5: người trôi, lưới) + Mỏ đá / Hang (hầm, tượng đá chuông). Xuồng kéo người dưới nước vào bờ, xe hang động hát vỡ tượng
+    //     chắn lối về trạm; mỗi sân tượng một nốt (sân cấp qua listen()). Bẫy: xe cứu hỏa (không kéo người, không phun vào người).
+    man9('tong-hop-clb', 6, 'cung-co', {
+      ten: 'Người dưới sông, thợ trong hầm',
+      vo: 'song',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Hai sân: bờ sông có người rơi xuống nước; hầm mỏ có thợ mỏ kẹt. Cả hai sân, lối về trạm cứu bị tượng đá chuông chắn, mỗi sân một nốt. Chọn hai bạn cứu người ở cả hai sân.',
+      veMaMau: 'Chưa ai kéo người, tượng còn chắn.',
+      san: [SAN_6_SONG, SAN_6_HAM],
+      them: { nguoi: [[{ x: 3, y: 2 }], [{ x: 2, y: 1 }]], tramCuu: [{ x: 8, y: 1 }], daChuong: [[{ x: 6, y: 1, not: 2, ben: 1 }], [{ x: 6, y: 1, not: 7, ben: 1 }]] },
+      doi: [khe({ x: 1, y: 3, huong: 1 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } }), khe({ x: 8, y: 3, huong: 3 }, { batDauNuoc: { x: 5, y: 2, huong: 3 } })],
+      chonDoi: {
+        menu: ['HD', 'XU', 'CU'],
+        cachMau: [{ chon: ['HD', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_6, XU_6]) }]
+      },
+      maMau: doiBai([['forward(5)'], []]),
+      loiSai: [
+        { moTa: 'Điền thẳng nốt sân 1 (play_note(2)): sân hầm tượng nốt 7, không vỡ', baiLam: doiBai([['forward(5)', 'play_note(2)'], XU_6]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Chạy đúng sân 2, thua sân 1: xuồng không kéo (sân hầm không có người dưới nước)', baiLam: doiBai([HD_6, []]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động hát khi còn xa (forward(2)): tượng cách hơn 3 ô, không vỡ', baiLam: doiBai([['forward(2)', 'play_note(listen())'], XU_6]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 13, nhip: 19 },
+      goiY: ['cast_net(): lưới dài 2, kéo người cách 2 ô về trước mũi xuồng; ô sát bờ thì người tự lên bờ.', 'listen(): nốt của tượng gần nhất; loa phá đá trong tầm 3 ô.', 'Người tự đi về trạm khi lối trống.'],
+      cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['nguoi', 'nuoc', 'luoi', 'da-chuong', 'not', 'ham', 'nhieu-san'], cuu: 'nguoi', meo: 'nhieu-san' }
     })
   ];
 
