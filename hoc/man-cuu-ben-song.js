@@ -101,6 +101,11 @@
    *  máy khai thác ở (5, 3) nhìn xuống tảng đá (5, 4). */
   var SAN_16 = ['##########', '~~~~~~~~~~', '##~.~.####', '##~u..####', '###.#o####', '##########'];
   var KT_16 = ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'];
+  /** lap-ben-song.7: dòng xiết hàng 3 (sức 2) về thác (14, 3); người xuất phát (1, 3) nên chỉ dừng ở cột lẻ cuối mỗi nhịp. Hõm bờ bắc cột 10 (xuồng R1 ở (10, 2), lùi được tới (10, 1));
+   *  hõm bờ nam (11, 4); trạm cứu (8, 2) và (10, 5); khe R2 ở bờ nam (11, 5). */
+  var SAN_17 = ['###############', '##########~####', '########..~####', '~~~~~~~~~~~~~~~', '##########.~###', '##########..###', '###############'];
+  /** Xuồng R1 lap-ben-song.7: lưới dài 1, chờ người bám phao ngay trước mũi (10, 3), tung lưới, lùi kéo người vào hõm bắc. */
+  var XU_17 = ['set_length(1)', 'wait_n(5)', 'cast_net()', 'wait()', 'back()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -512,6 +517,32 @@
       sao: { o: 16, nhip: 7 },
       goiY: ['Người trôi mỗi nhịp một ô: đếm xem bao nhiêu nhịp thì người tới trước mũi xe.', 'Xe trên bờ tung lưới: người về ô nước sát bờ rồi tự lên bờ.'],
       cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'ho', 'nem', 'thac', 'bo'], cuu: 'nguoi', meo: 'cuu-kip' }
+    }),
+    // 17 · chờ tín hiệu, lai L10 (drone thả phao): người rơi giữa dòng xiết (2 ô mỗi nhịp) về phía thác. R2 tự lắp drone mang phao bay ra giữa dòng thả phao: người trôi tới bám phao, thôi trôi.
+    //      R1 xuồng đặt sẵn trong hõm bờ bắc chờ người bám phao ngay trước mũi rồi tung lưới, lùi kéo người vào hõm; người lên bờ về trạm.
+    //      Cách một drone + lưới. Cách hai rẻ hơn: xe hai bánh + lưới đứng bờ nam tời người vào hõm nam đúng lúc người trôi qua (xuồng không cần làm gì).
+    man9('lap-ben-song', 7, 'cung-co', {
+      ten: 'Phao giữa dòng xiết',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Người rơi giữa dòng xiết, trôi hai ô mỗi nhịp về phía thác. Lắp robot giữ người lại: thả phao cho người bám, xuồng chờ người bám phao thì tới đón. Hay tời người vào bờ đúng lúc.',
+      veMaMau: 'Xuồng tung lưới khi chưa có ai bám phao.',
+      san: SAN_17,
+      doi: [may('XU', { x: 10, y: 2, huong: 2 }), khe({ x: 11, y: 5, huong: 0 }, { son: 'lam' })],
+      them: { nguoi: [{ x: 1, y: 3 }], tramCuu: [{ x: 8, y: 2 }, { x: 10, y: 5 }], thac: [{ x: 14, y: 3 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map(function (x) { return { x: x, y: 3, huong: 1, suc: 2 }; }) },
+      lapRap: lapR2(['drone', 'hai-banh', 'nhen'], ['day-keo'], [], 8, [
+        cach('drone', 'day-keo', null, [XU_17, ['go_up()', 'go_up()', 'go_left()', 'cast_net()', 'wait()']]),
+        cach('hai-banh', 'day-keo', null, [[], ['set_length(2)', 'wait_n(4)', 'cast_net()', 'wait()']])
+      ], { moLai: ['L10', 'L3'] }),
+      maMau: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], []]),
+      loiSai: [
+        { moTa: 'Xuồng tung lưới ngay: chưa có ai bám phao, lưới hụt; người bám phao sau đó không ai đón', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], ['go_up()', 'go_up()', 'go_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Drone bay ra nhưng không thả phao', baiLam: doiBai([XU_17, ['go_up()', 'go_up()', 'go_left()', 'wait()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Drone thả phao rồi xuồng không tới đón: người bám phao giữa dòng', baiLam: doiBai([[], ['go_up()', 'go_up()', 'go_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 16, nhip: 8 },
+      goiY: ['Phao thả xuống ô nước dưới bụng drone: người trôi tới thì bám, thôi trôi.', 'Xuồng chờ người bám phao ngay trước mũi rồi mới tung lưới.'],
+      cauDo: { doi: null, lap: 'drone+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'phao', 'thac', 'bo'], cuu: 'nguoi', meo: 'cho-tin-hieu' }
     }),
   ];
 })();
