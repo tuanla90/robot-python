@@ -97,6 +97,14 @@
   var SAN_6_SONG = ['##########', '#........#', '#~~~~~~###', '#........#', '##########'];
   var SAN_6_HAM = ['##########', '#........#', '#~###~~###', '#........#', '##########'];
 
+  /** tong-hop-clb.7 (ba sân, cứu máy): xe chở hàng cũ của CLB (R3, máy khách khoá) đi từng ô dọc hàng 2 về cờ (9, 2), ô trước bị chắn thì chờ.
+   *  Ô (3, 2): kệ sắt đổ (thùng nặng) ở sân 1, 2; ô (6, 2): sân 1 cửa C (nút đè M (6, 3)), sân 2, 3 tượng đá chuông (mỗi sân một nốt). Xe cứu hỏa tiến ủi kệ vào hốc (3, 1), lùi về cờ.
+   *  Xe hang động lên ô (6, 3) (sân 1 đè nút giữ cửa), nghe: có nốt thì hát vỡ tượng; chờ máy khách qua rồi sang cờ (7, 3). */
+  var R3_7 = ['for i in range(8):', '    while not front_clear():', '        wait()', '    forward(1)'];
+  var CU_7 = ['forward(1)', 'back()'];
+  var HD_7 = ['forward(1)', 'n = listen()', 'if n > 0:', '    play_note(n)', 'wait_n(5)', 'forward(1)'];
+  function san7(h, c, m) { return ['###########', '###.#######', '#..' + h + '..' + c + '..F#', '###F#.' + m + 'F###', '###########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -267,6 +275,31 @@
       sao: { o: 13, nhip: 19 },
       goiY: ['cast_net(): lưới dài 2, kéo người cách 2 ô về trước mũi xuồng; ô sát bờ thì người tự lên bờ.', 'listen(): nốt của tượng gần nhất; loa phá đá trong tầm 3 ô.', 'Người tự đi về trạm khi lối trống.'],
       cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['nguoi', 'nuoc', 'luoi', 'da-chuong', 'not', 'ham', 'nhieu-san'], cuu: 'nguoi', meo: 'nhieu-san' }
+    }),
+    // 7 · cứu máy, nhiều sân, ba sân Nhà máy (kệ đổ, cửa nút đè) + Hang (kệ đổ, tượng đá chuông) + sân CLB (tượng đá chuông), R3 xe chở hàng cũ (khoá) đi từng ô, bị chắn thì chờ.
+    //     Xe cứu hỏa ủi kệ, xe hang động đứng trên nút giữ cửa, nghe nốt tượng (if n > 0) rồi hát. Bẫy: nhện (giữ được nút, không hát), xe chở hàng (không ủi kệ).
+    man9('tong-hop-clb', 7, 'van-dung', {
+      ten: 'Xe cũ của CLB qua ba sân',
+      khung: { chinh: 14, moiHam: 8 },
+      deBai: 'Ba sân. Xe chở hàng cũ của CLB đi từng ô, ô trước bị chắn thì chờ. Trên lối của nó: kệ sắt đổ, cửa kho đóng hay tượng đá chuông, mỗi sân một kiểu. Chọn hai bạn mở lối để nó về cờ ở cả ba sân.',
+      veMaMau: 'Đọc chương trình của máy khách: ô trước bị chắn thì chờ.',
+      san: [san7('H', 'C', 'M'), san7('H', '.', '.'), san7('.', '.', '.')],
+      them: { xichDay: true, noi: [[{ nut: { x: 6, y: 3 }, cua: [{ x: 6, y: 2 }] }], [], []], daChuong: [[], [{ x: 6, y: 2, not: 5, ben: 1 }], [{ x: 6, y: 2, not: 3, ben: 1 }]] },
+      doi: [khe({ x: 3, y: 3, huong: 0 }, { co: [{ x: 3, y: 3 }] }), khe({ x: 5, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] }),
+        may('CH', { x: 1, y: 2, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 9, y: 2 }] })],
+      chonDoi: {
+        menu: ['CU', 'HD', 'PL', 'CH'],
+        cachMau: [{ chon: ['CU', 'HD'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_7, HD_7, R3_7]) }]
+      },
+      maMau: doiBai([[], [], R3_7]),
+      loiSai: [
+        { moTa: 'Chạy đúng sân 1, thua sân 2, 3: không nghe tượng (sân 1 chỉ có cửa), máy khách chờ mãi trước tượng', baiLam: doiBai([CU_7, ['forward(1)', 'wait_n(5)', 'forward(1)'], R3_7]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Xe hang động rời nút ngay: sân 1 cửa đóng, máy khách chờ mãi', baiLam: doiBai([CU_7, ['forward(1)', 'n = listen()', 'if n > 0:', '    play_note(n)', 'forward(1)'], R3_7]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Xích ủi xong đứng lại giữa lối: máy khách chờ mãi', baiLam: doiBai([['forward(1)'], HD_7, R3_7]), phaiCoMa: ['qua-nhieu-nhip'] }
+      ],
+      sao: { o: 29, nhip: 32 },
+      goiY: ['while not front_clear(): wait(): máy khách đứng chờ khi ô trước bị chắn.', 'listen() trả 0 khi không có tượng trong tầm: if n > 0 thì mới hát.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
+      cauDo: { doi: ['CU', 'HD'], lap: null, coChe: ['thung-nang', 'nut-de', 'cua', 'da-chuong', 'r3', 'nhieu-san'], cuu: 'may', meo: 'nhieu-san' }
     })
   ];
 
