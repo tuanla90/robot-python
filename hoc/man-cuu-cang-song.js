@@ -386,44 +386,64 @@
       cauDo: { doi: ['XU', 'PL'], lap: null, coChe: ['nuoc', 'cont-troi', 'luoi', 'sat', 'ray', 'r3', 'tau'], cuu: 'may', meo: 'tiep-suc' }
     }),
 
-    manCS('cuu-cang-song', 8, 'van-dung', {
-      ten: 'Dọn sắt và nhường ray cho cẩu giao hai chuyến',
-      r2: R_NHEN,
-      hamCuaEmCan: ['swing_by', 'slide_load', 'clear_rail', 'go', 'wait_n'],
-      deBai: 'Trên đường ray có mẩu sắt tại (2, 3), ứng với 2 kiện hàng [19] ở (2, 4) và [29] ở (3, 4). R2 (robot nhện) ở (2, 3) gọi clear_rail("R") để hút sắt ở (2, 3) và bước sang (3, 3), sau đó gọi tiếp go("R") sang (4, 3) nhường cả 2 cột ray cho R1! Cùng lúc đó, R1 chờ 3 nhịp bằng wait_n(3), gọi slide_load(1, 2) bốc kiện [19], gọi swing_by(2) quay cần về hướng Nam rồi gọi tiếp slide_load(1, 2) bốc kiện [29]!',
-      veMaMau: 'Hoàn thiện lệnh cho R2 bước sang (4, 3) nhường cột 3 cho R1.',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
-      chong: [CW(2, 4, [[19, 1]]), CW(3, 4, [[29, 2]])],
-      vatThem: [VS(2, 3)],
-      tau: tauDon(15, 2),
-      giao: [{ tau: 0, so: [19, 29] }],
-      maMau: baiDoi(['wait_n(3)', 'slide_load(1, 2)', 'swing_by(2)', 'slide_load(1, 2)'], ['clear_rail("R")']),
-      loiGiai: baiDoi(['wait_n(3)', 'slide_load(1, 2)', 'swing_by(2)', 'slide_load(1, 2)'], ['clear_rail("R")', 'go("R")']),
+    // 8 · cứu máy, dọn lối: cần cẩu khách (R3, khoá) chờ 5 nhịp, rail(-3) (số âm: sang trái) tới chồng container 15, nhấc, rail(6) sang phải hạ lên tàu.
+    //     Sắt vụn nằm trên ray bên trái, thùng nặng trên ray bên phải. Nhện bước lên ô sắt, hút, bước xuống bãi thả ra; xe cứu hỏa ủi thùng nặng
+    //     lên ô trống phía trên rồi lùi khỏi ray. Bẫy: drone (không hút sắt, không ủi thùng). Bảng ghi bẫy máy khai thác: nó nạp (load) được sắt vụn
+    //     như vật thường, đôi xe cứu hỏa + máy khai thác cũng thắng, nên đổi thành drone.
+    man9('cuu-cang-song', 8, 'van-dung', {
+      ten: 'Ray hai đầu bị chắn',
+      mucTieu: 'giao-tau',
+      deBai: 'Cần cẩu khách chờ 5 nhịp, chạy ray sang trái lấy container rồi sang phải lên tàu. Sắt vụn và thùng nặng chắn ray. Dọn cả hai.',
+      veMaMau: 'Đọc chương trình của cẩu khoá: rail(-3) rồi rail(6).',
+      san: ['~~~~~~~~~~', '#.#####T~~', '#####.####', '#RRRRRRR##', '##.##.####', '##########'],
+      doi: [khe({ x: 2, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0 }),
+        may('CC', { x: 4, y: 3, huong: 0, nac: 0, tam: 2 }, { son: 'tim', coDinh: true })],
+      them: { chong: [{ x: 1, y: 1, cont: [{ so: 15 }] }], hangTau: { o: [{ x: 7, y: 1 }], can: [15] }, vatThem: [VS(2, 3)], thungThem: [{ x: 5, y: 3 }] },
+      chonDoi: {
+        menu: ['PL', 'CU', 'DR'],
+        cachMau: [{ chon: ['PL', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['go_up()', 'pull_s()', 'go_down()', 'magnet_off()', 'wait()'],
+          ['move()', 'back()'],
+          ['wait_n(5)', 'rail(-3)', 'pick_up()', 'rail(6)', 'set_down()']]) }]
+      },
+      maMau: doiBai([[], [], ['wait_n(5)', 'rail(-3)', 'pick_up()', 'rail(6)', 'set_down()']]),
       loiSai: [
-        { moTa: 'R2 mới dọn ô (2, 3) sang (3, 3) mà chưa gọi go("R") sang (4, 3) nên chặn R1 ở chuyến thứ hai', baiLam: baiDoi(['wait_n(3)', 'slide_load(1, 2)', 'swing_by(2)', 'slide_load(1, 2)'], ['clear_rail("R")']), phaiCoMa: ['het-ray'] }
+        { moTa: 'Chỉ dọn sắt: cẩu khách mang container đâm thùng nặng', baiLam: doiBai([['go_up()', 'pull_s()', 'go_down()', 'magnet_off()', 'wait()'], [], ['wait_n(5)', 'rail(-3)', 'pick_up()', 'rail(6)', 'set_down()']]), phaiCoMa: ['het-ray', 'chua-giao-tau'] },
+        { moTa: 'Xe ủi thùng rồi đứng lại trên ray', baiLam: doiBai([['go_up()', 'pull_s()', 'go_down()', 'magnet_off()', 'wait()'], ['move()'], ['wait_n(5)', 'rail(-3)', 'pick_up()', 'rail(6)', 'set_down()']]), phaiCoMa: ['het-ray', 'chua-giao-tau'] }
       ],
-      sao: { o: 32, nhip: 15 },
-      goiY: ['Thêm go("R") sau clear_rail("R") ở chương trình R2 để bước sang (4, 3).']
+      sao: { o: 26, nhip: 19 },
+      goiY: ['rail(-3): bệ chạy sang trái 3 ô; rail(6): sang phải 6 ô.', 'Ủi thùng xong thì back() ra khỏi ray.'],
+      cauDo: { doi: ['PL', 'CU'], lap: null, coChe: ['ray', 'sat', 'thung-nang', 'container', 'r3', 'tau'], cuu: 'may', meo: 'don-loi' }
     }),
 
-    manCS('cuu-cang-song', 9, 'bien-the', {
-      ten: 'Phối hợp bánh gai và cần cẩu bốc cặp hàng nặng',
-      r2: R_GAI,
-      hamCuaEmCan: ['slide_load2', 'play_note', 'move', 'forward', 'wait_n'],
-      deBai: 'Thử thách Cảng sông và Hang động! Trên đường ray tại (3, 3) và (4, 3) có 2 tảng đá chuông nốt 3 và nốt 6 chắn đường R1. R2 (bánh gai) đứng ở (2, 3) hướng phải: hãy cho R2 gọi play_note(listen()) phá đá chuông (3, 3), tiến 1 ô bằng move(), gọi play_note(listen()) phá tiếp đá chuông (4, 3) rồi gọi forward(2) tiến sang (5, 3) nhường đường ray! R1 ở (1, 3) chờ 5 nhịp bằng wait_n(5) rồi gọi slide_load2(3, 2) trượt 3 ô sang cột 4 bốc đôi cặp kiện [31, 41] ở (4, 4) lên tàu!',
-      veMaMau: 'Hoàn thiện chuỗi lệnh của R2 để phá đá chuông (4, 3) và tiến sang (5, 3).',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
-      chong: [CW(4, 4, [[31, 2], [41, 2]])],
-      daChuong: [{ x: 3, y: 3, not: 3, ben: 1 }, { x: 4, y: 3, not: 6, ben: 1 }],
-      tau: tauDon(12, 2),
-      giao: [{ tau: 0, so: [31, 41] }],
-      maMau: baiDoi(['wait_n(5)', 'slide_load2(3, 2)'], ['play_note(listen())', 'move()']),
-      loiGiai: baiDoi(['wait_n(5)', 'slide_load2(3, 2)'], ['play_note(listen())', 'move()', 'play_note(listen())', 'forward(2)']),
+    // 9 · cứu máy, làm cầu: cần cẩu khách (R3, khoá) đứng trên bãi giữa sông, nhấc container 23 rồi chờ 6 nhịp, chạy ray rail(6), vươn cần hạ lên tàu.
+    //     Tảng đá đổ trên ray chắn bệ. Máy khai thác ở bờ dưới, cách bãi một luồng nước: xuồng tung lưới kéo bè về ô (4, 4) làm cầu phao,
+    //     máy khai thác chờ cầu, đi qua bè lên bãi, nạp tảng đá vào rổ. Bẫy: drone (không nạp đá, không kéo bè).
+    //     Bảng ghi "máy khai thác lăn đá lấp hố trên ray": hố lấp xong thành sàn '.', không thành ray, nên đổi thành đá chắn ray + cầu phao (mẹo làm cầu giữ nguyên).
+    man9('cuu-cang-song', 9, 'van-dung', {
+      ten: 'Cầu phao ra bãi giữa sông',
+      mucTieu: 'giao-tau',
+      deBai: 'Tảng đá chắn ray của cẩu khách trên bãi giữa sông. Kéo bè làm cầu phao cho máy khai thác sang dọn đá.',
+      veMaMau: 'Đọc chương trình của cẩu khoá: nhấc, chờ 6 nhịp rồi chạy ray.',
+      san: ['~~~~~~~T~', '~.~~~~~~~', '~RRRRRRR~', '~.......~', '~~~~~~B~~', '#.......#', '#########'],
+      doi: [khe({ x: 2, y: 5, huong: 0 }, { batDauNuoc: { x: 4, y: 4, huong: 1 } }), khe({ x: 4, y: 5, huong: 0 }, { batDauNuoc: { x: 2, y: 4, huong: 1 } }),
+        may('CC', { x: 1, y: 2, huong: 0, nac: 0, tam: 1 }, { son: 'tim', coDinh: true })],
+      them: { chong: [{ x: 1, y: 1, cont: [{ so: 23 }] }], hangTau: { o: [{ x: 7, y: 0 }], can: [23] }, vatThem: [{ x: 4, y: 2 }] },
+      chonDoi: {
+        menu: ['XU', 'KT', 'DR'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'],
+          ['wait_n(4)', 'move()', 'move()', 'load()', 'wait()'],
+          ['pick_up()', 'wait_n(6)', 'rail(6)', 'extend()', 'set_down()']]) }]
+      },
+      maMau: doiBai([[], [], ['pick_up()', 'wait_n(6)', 'rail(6)', 'extend()', 'set_down()']]),
       loiSai: [
-        { moTa: 'R2 mới phá tảng đá chuông đầu tiên và đứng ở (3, 3) nên chặn đường R1', baiLam: baiDoi(['wait_n(5)', 'slide_load2(3, 2)'], ['play_note(listen())', 'move()']), phaiCoMa: ['het-ray'] }
+        { moTa: 'Máy khai thác đi ngay: chưa có cầu, đâm nước', baiLam: doiBai([['cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'], ['move()', 'move()', 'load()', 'wait()'], ['pick_up()', 'wait_n(6)', 'rail(6)', 'extend()', 'set_down()']]), phaiCoMa: ['het-ray', 'chua-giao-tau'] },
+        { moTa: 'Xuồng kéo bè thiếu một ô', baiLam: doiBai([['cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()'], ['wait_n(4)', 'move()', 'move()', 'load()', 'wait()'], ['pick_up()', 'wait_n(6)', 'rail(6)', 'extend()', 'set_down()']]), phaiCoMa: ['het-ray', 'chua-giao-tau'] }
       ],
-      sao: { o: 27, nhip: 12 },
-      goiY: ['Thêm play_note(listen()) rồi forward(2) ở cuối chương trình R2 để phá đá chuông (4, 3) và tiến sang (5, 3).']
+      sao: { o: 29, nhip: 18 },
+      goiY: ['Bè nổi trên nước là cầu phao: xe đi qua được.', 'Máy khai thác chờ xuồng kéo bè xong mới đi.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'da', 'ray', 'r3', 'tau'], cuu: 'may', meo: 'lam-cau' }
     }),
 
     manCS('cuu-cang-song', 10, 'trum', {
