@@ -115,6 +115,13 @@
   var KT_12B = ['x = 7', 'wait_n(9)', 'load()', 'wait()', 'turn_left()', 'forward(x - 3)', 'throw()', 'wait()'];
   var NHEN_12 = ['go_left()', 'clear_iron("R")', 'go_down()', 'magnet_off()', 'go_up()'];
 
+  /** lap-clb.3: kẻ lại vạch sân sau bão. Drone R1 (đặt sẵn) kẻ vạch đỏ ngoài sân; cùng lúc R2 tự lắp kẻ vạch đỏ xanh dưới gầm sân khấu (song song; tường giữa, drone R1 không sang được).
+   *  Vạch dưới gầm đọc theo chuỗi mã "rbbrb", sổ màu là dict mau = {"r": "red", "b": "blue"}. Cách một: nhện + gieo hạt (L6) co chân chui gầm (rẻ). Cách hai: drone + gieo hạt bay qua gầm (nhanh, đắt). */
+  var DR_13 = ['ink("red")', 'pen_down()', 'for i in range(6):', '    go_right()', 'pen_up()', 'wait()'];
+  function vach13(dau) { return ['mau = {"r": "red", "b": "blue"}'].concat(dau, ['for k in "rbbrb":', '    go_right()', '    ink(mau[k])', '    dot()', 'wait()']); }
+  var NHEN_13 = vach13(['crouch()', 'go_right()']);
+  var BAY_13 = vach13(['go_right()']);
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -434,6 +441,30 @@
       sao: { o: 24, nhip: 12 },
       goiY: ['Gầu ngoạm thả từ đầu cần xuống: grab() ngoạm qua tường, release() thả ở ô đầu cần.', 'Nhện đứng lên sắt mới hút được: clear_iron(d) hút rồi bước một ô.', 'Máy khai thác nạp vật ở ô trước mũi, ném xa 2 ô, bay qua tường.'],
       cauDo: { doi: null, lap: 'cau+kep', coChe: ['sat', 'qua-tuong', 'nem', 'kho'], cuu: 'hang', meo: 'tiep-suc' }
+    }),
+    // 13 · song song, R1 đặt sẵn drone gieo hạt; R2 lai L6 nhện + gieo hạt, trộn Nông trại (gieo, tô hình) + Bãi tái chế (gầm thấp, nhện) + G8 (dict sổ ám hiệu) + chuỗi:
+    //      hai vạch kẻ cùng lúc, vạch dưới gầm sân khấu đọc từ chuỗi mã qua dict màu.
+    man9('lap-clb', 3, 'lam-quen', {
+      ten: 'Kẻ vạch dưới gầm sân khấu',
+      mucTieu: 'to-hinh',
+      deBai: 'Kẻ lại vạch sân sau bão. Drone kẻ vạch đỏ ngoài sân. Lắp cho Luna một robot kẻ vạch dưới gầm sân khấu theo mã "rbbrb", cùng lúc.',
+      veMaMau: 'R2 mới có sổ màu.',
+      san: ['##########', '#........#', '##########', '#.n......#', '##########'],
+      them: { hinh: ['..........', '.rrrrrrr..', '..........', '...rbbrb..', '..........'] },
+      doi: [may('DR', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['nhen', 'drone', 'xich'], ['son', 'kep', 'nam-cham'], [], 9, [
+        cach('nhen', 'son', null, [DR_13, NHEN_13]),
+        cach('drone', 'son', null, [DR_13, BAY_13])
+      ], { moLai: ['L6'] }),
+      maMau: doiBai([DR_13, ['mau = {"r": "red", "b": "blue"}']]),
+      loiSai: [
+        { moTa: 'Nhện quên co chân: đâm gầm sân khấu', baiLam: doiBai([DR_13, vach13(['go_right()'])]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Đọc mã sai: ink(k) thay vì ink(mau[k])', baiLam: doiBai([DR_13, NHEN_13.map(function (d) { return d === '    ink(mau[k])' ? '    ink(k)' : d; })]), phaiCoMa: ['mau-son-sai'] },
+        { moTa: 'Quên wait() cuối: ô vạch cuối chưa gieo', baiLam: doiBai([DR_13, NHEN_13.slice(0, -1)]), phaiCoMa: ['chua-to-hinh'] }
+      ],
+      sao: { o: 17, nhip: 16 },
+      goiY: ['Chuỗi "rbbrb": for k in "rbbrb" lấy từng chữ.', 'mau[k]: tra sổ màu, "r" ra "red".', 'Gầm sân khấu thấp: nhện co chân mới chui được; drone bay qua.'],
+      cauDo: { doi: null, lap: 'nhen+son', coChe: ['gieo', 'gam-thap', 'vach', 'dict', 'chuoi'], cuu: 'hang', meo: 'song-song' }
     })
   ];
 
