@@ -105,6 +105,14 @@
   var HD_7 = ['forward(1)', 'n = listen()', 'if n > 0:', '    play_note(n)', 'wait_n(5)', 'forward(1)'];
   function san7(h, c, m) { return ['###########', '###.#######', '#..' + h + '..' + c + '..F#', '###F#.' + m + 'F###', '###########']; }
 
+  /** tong-hop-clb.8 (hai sân, lắp tự do): xe chở hàng R1 (đặt sẵn) mang thùng quà từ (2, 1) vào kho D (7, 1). Ô (3, 1) bị chắn: sân 1 Kho thùng gỗ đổ, sân 2 Bãi thanh sắt rơi.
+   *  R2 tự lắp một robot dọn được cả hai: từ (1, 3) tới (3, 2), gắp vật chắn, quay phải, đặt vào hốc chứa D (4, 2). Tay kẹp gắp được cả gỗ lẫn sắt (đa năng);
+   *  nam châm chỉ hút sắt (sân Kho thua). Cách một: hai bánh + kẹp (rẻ, quay rồi tiến). Cách hai: omni + kẹp trượt ngang (nhanh, đắt). */
+  function ch8(cho) { return ['pick()', 'wait_n(' + cho + ')', 'forward(5)', 'drop()']; }
+  var BANH_8 = ['turn_right()', 'forward(2)', 'turn_left()', 'forward(1)', 'pick()', 'turn_right()', 'drop()'];
+  var OMNI_8 = ['slide_r(2)', 'forward(1)', 'pick()', 'turn_right()', 'drop()'];
+  function san8() { return ['##########', '#.oo...D##', '###.D#####', '#........#', '##########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -300,6 +308,30 @@
       sao: { o: 29, nhip: 32 },
       goiY: ['while not front_clear(): wait(): máy khách đứng chờ khi ô trước bị chắn.', 'listen() trả 0 khi không có tượng trong tầm: if n > 0 thì mới hát.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
       cauDo: { doi: ['CU', 'HD'], lap: null, coChe: ['thung-nang', 'nut-de', 'cua', 'da-chuong', 'r3', 'nhieu-san'], cuu: 'may', meo: 'nhieu-san' }
+    }),
+    // 8 · nhiều sân, lắp tự do (một robot cho hai sân khác hẳn): R1 đặt sẵn xe chở hàng; R2 tự lắp dọn vật chắn lối: sân Kho thùng gỗ, sân Bãi tái chế thanh sắt.
+    //     Tay kẹp gắp được cả hai (đa năng), nam châm chỉ hút sắt. Cách một hai bánh + kẹp (rẻ), cách hai omni + kẹp (trượt ngang, nhanh).
+    man9('tong-hop-clb', 8, 'van-dung', {
+      ten: 'Một robot cho hai sân',
+      mucTieu: 'dua-vat',
+      deBai: 'Hai sân: Kho và Bãi tái chế. Xe chở hàng mang thùng quà vào kho, nhưng lối bị chắn: sân Kho là thùng gỗ đổ, sân Bãi là thanh sắt rơi. Lắp cho Luna MỘT robot dọn được cả hai, đặt vật chắn vào hốc chứa.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san8(), san8()],
+      them: { vatChat: [null, ['..........', '...s......', '..........', '..........', '..........']] },
+      doi: [may('CH', { x: 1, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 0 }, { son: 'lam' })],
+      lapRap: lapR2(['hai-banh', 'omni', 'nhen'], ['kep', 'nam-cham', 'day-keo'], [], 6, [
+        cach('hai-banh', 'kep', null, [ch8(3), BANH_8]),
+        cach('omni', 'kep', null, [ch8(1), OMNI_8])
+      ]),
+      maMau: doiBai([ch8(3), []]),
+      loiSai: [
+        { moTa: 'Đặt vật chắn ngay trước mũi (không quay): vật nằm lại giữa lối', baiLam: doiBai([ch8(3), ['turn_right()', 'forward(2)', 'turn_left()', 'forward(1)', 'pick()', 'drop()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe chở hàng không chờ: đâm vật chắn', baiLam: doiBai([['pick()', 'forward(5)', 'drop()'], BANH_8]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quay trái khi đặt: vật rơi vào tường, không đặt được', baiLam: doiBai([ch8(3), ['turn_right()', 'forward(2)', 'turn_left()', 'forward(1)', 'pick()', 'turn_left()', 'drop()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 38, nhip: 26 },
+      goiY: ['Tay kẹp gắp được thùng gỗ lẫn thanh sắt; nam châm chỉ hút sắt.', 'Omni trượt ngang được, không cần quay.', 'Vật nằm trên ô D (hốc chứa, kho) là đã vào chỗ.'],
+      cauDo: { doi: null, lap: 'hai-banh+kep', coChe: ['thung', 'sat', 'kho', 'hoc', 'da-nang', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
     })
   ];
 
