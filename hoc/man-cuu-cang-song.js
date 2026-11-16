@@ -217,44 +217,59 @@
       cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'cont-troi', 'luoi', 'tau'], cuu: 'hang', meo: 'tiep-suc' }
     }),
 
-    manCS('cuu-cang-song', 2, 'lam-quen', {
-      ten: 'Xe kho gắp kiện gỗ dọn đường ray',
-      r2: R_BANH,
-      hamCuaEmCan: ['swing_by', 'pick', 'back'],
-      deBai: 'Trên đường ray tại (2, 3) có một kiện gỗ o rơi xuống chắn bánh ray của R1! R2 (xe hai bánh Mùa 1) đứng ở (2, 4) hướng lên: hãy cho R2 gọi pick() để gắp kiện gỗ ở (2, 3) lên tay, giúp R1 ở (1, 3) nhấc kiện container 21 ở (1, 4), quay swing_by(2), trượt rail(1) rồi gọi set_down() giao hàng lên tàu!',
-      veMaMau: 'R2 chưa gọi pick() để nhấc kiện gỗ trên đường ray (2, 3).',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 4, huong: 0 }],
-      chong: [CW(1, 4, [[21, 2]])],
-      vatThem: [{ x: 2, y: 3 }],
-      tau: tauDon(5, 2),
-      giao: [{ tau: 0, so: [21] }],
-      maMau: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['wait()']),
-      loiGiai: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['pick()']),
+    // 2 · cứu kịp: tàu chỉ đậu tới hết nhịp 9 rồi đi luôn. Container 25 trôi xa, ngoài tầm cần. Xuồng tung lưới bắt container, lùi 3 ô kéo nó về cột 3,
+    //     nhả lưới. Cẩu phải chạy ray rail(-4) (số âm: sang trái) NGAY từ đầu, trong lúc xuồng kéo; nhấc, rail(-1), vươn cần, hạ lên boong cột 2.
+    //     Cẩu chờ xuồng xong mới chạy ray thì tàu đã đi. Bảng 2 cỗ máy (đúng đôi tốt); khe trên ray, batDauNuoc cho xuồng.
+    man9('cuu-cang-song', 2, 'lam-quen', {
+      ten: 'Tàu không chờ lâu',
+      mucTieu: 'giao-tau',
+      deBai: 'Tàu chỉ đậu tới hết nhịp 9. Xuồng kéo container về, cẩu chạy ray sang trái cùng lúc rồi nhấc lên tàu.',
+      veMaMau: 'Cẩu chờ xuồng xong mới chạy ray: tàu đi mất.',
+      san: ['~~T~~~~~~', 'B~~~~~~~~', '~~~~~~~~~', '..RRRRRR.', '#########'],
+      doi: [khe({ x: 7, y: 3, huong: 0, nac: 0, tam: 2 }, { batDauNuoc: { x: 7, y: 2, huong: 3 } }), khe({ x: 6, y: 3, huong: 0 }, { batDauNuoc: { x: 2, y: 1, huong: 3 } })],
+      them: { contTroi: [{ x: 0, y: 1, so: 25 }], tau: [{ o: [{ x: 2, y: 0 }], co: 9, vang: 40 }], giao: [{ tau: 0, so: [25] }] },
+      chonDoi: {
+        menu: ['CC', 'XU'],
+        cachMau: [{ chon: ['CC', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['rail(-4)', 'wait()', 'pick_up()', 'rail(-1)', 'extend()', 'set_down()'],
+          ['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()']]) }]
+      },
+      maMau: doiBai([['wait_n(5)', 'rail(-4)', 'pick_up()', 'rail(-1)', 'extend()', 'set_down()'], ['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()']]),
       loiSai: [
-        { moTa: 'R2 đứng yên không gắp kiện gỗ ở (2, 3) nên R1 bị kẹt khi trượt rail(1)', baiLam: baiDoi(['pick_up()', 'swing_by(2)', 'rail(1)', 'set_down()'], ['wait()']), phaiCoMa: ['het-ray'] }
+        { moTa: 'Cẩu chờ xuồng xong mới chạy ray: tàu đã đi', baiLam: doiBai([['wait_n(5)', 'rail(-4)', 'pick_up()', 'rail(-1)', 'extend()', 'set_down()'], ['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-giao-tau'] },
+        { moTa: 'Không nhả lưới: cẩu không nhấc được', baiLam: doiBai([['rail(-4)', 'wait()', 'pick_up()', 'rail(-1)', 'extend()', 'set_down()'], ['cast_net()', 'wait()', 'for i in range(3):', '    back()']]), phaiCoMa: ['chua-giao-tau'] }
       ],
-      sao: { o: 17, nhip: 5 },
-      goiY: ['Ở chương trình R2, thay wait() bằng pick() để gắp kiện gỗ tại (2, 3) lên tay.']
+      sao: { o: 18, nhip: 11 },
+      goiY: ['rail(-4): số âm, bệ chạy sang trái 4 ô.', 'Hai bạn làm cùng lúc.'],
+      cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'cont-troi', 'luoi', 'tau', 'ray'], cuu: 'hang', meo: 'cuu-kip' }
     }),
 
-    manCS('cuu-cang-song', 3, 'luyen', {
-      ten: 'Nhện dọn sắt trên ray cho cẩu bốc đôi',
-      r2: R_NHEN,
-      hamCuaEmCan: ['carry2_by', 'pull_s', 'go', 'wait_n'],
-      deBai: 'R1 ở (1, 3) cần trượt sang cột 2 để bốc đôi cặp container [14, 28] tại (2, 4) lên tàu bằng carry2_by(2). Nhưng trên đường ray (2, 3) đang có mẩu sắt vụn và R2 (robot nhện)! Hãy cho R2 gọi pull_s() rồi go("R") sang (3, 3) nhường ô ray (2, 3) cho R1! R1 gọi wait_n(3), rail(1), carry2_by(2).',
-      veMaMau: 'R2 chưa gọi pull_s() và go("R") để dọn sắt và nhường ô ray (2, 3).',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 2, y: 3, huong: 1 }],
-      chong: [CW(2, 4, [[14, 1], [28, 2]])],
-      vatThem: [VS(2, 3)],
-      tau: tauDon(8, 2),
-      giao: [{ tau: 0, so: [14, 28] }],
-      maMau: baiDoi(['wait_n(3)', 'rail(1)', 'carry2_by(2)'], ['pull_s()']),
-      loiGiai: baiDoi(['wait_n(3)', 'rail(1)', 'carry2_by(2)'], ['pull_s()', 'go("R")']),
+    // 3 · đọc rồi chọn: ba container trôi, tàu chỉ nhận 14 và 32 (27 là của tàu khác). Container 32 trôi xa, ngoài tầm cần: xuồng bắt, lùi, cuộn dây kéo về cột 6, nhả lưới.
+    //     Cẩu chạy ray từng ô, read_code() đọc ô đầu cần (ô trống trả -1, số âm): số dương và khác 27 thì nhấc, vươn cần hạ lên boong.
+    //     (Bảng ghi "xuồng thả cái sai": xuồng không có đầu đọc mã, không biết cái nào sai; cái sai nằm yên, cẩu đọc rồi bỏ qua.) Bẫy: robot phân loại (không xuống nước).
+    man9('cuu-cang-song', 3, 'luyen', {
+      ten: 'Số nào lên tàu',
+      mucTieu: 'giao-tau',
+      deBai: 'Tàu chỉ nhận container 14 và 32. Container 27 của tàu khác, để yên. read_code() trả -1 khi ô trống.',
+      veMaMau: 'Cẩu nhấc cả container 27.',
+      san: ['~TTTTTT~~', '~BB~~~~~B', '~~~~~~~~~', '.RRRRRRR.', '#########'],
+      doi: [khe({ x: 1, y: 3, huong: 0, nac: 0, tam: 2 }, { batDauNuoc: { x: 4, y: 2, huong: 1 } }), khe({ x: 7, y: 3, huong: 0 }, { batDauNuoc: { x: 6, y: 1, huong: 1 } })],
+      them: { contTroi: [{ x: 1, y: 1, so: 14 }, { x: 2, y: 1, so: 27 }, { x: 8, y: 1, so: 32 }], tau: [{ o: [1, 2, 3, 4, 5, 6].map(function (x) { return { x: x, y: 0 }; }), co: 14, vang: 40 }],
+        giao: [{ tau: 0, so: [14, 32] }] },
+      chonDoi: {
+        menu: ['CC', 'XU', 'PL'],
+        cachMau: [{ chon: ['CC', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['for i in range(6):', '    c = read_code()', '    if c > 0 and c != 27:', '        pick_up()', '        extend()', '        set_down()', '        retract()', '    rail(1)'],
+          ['cast_net()', 'wait()', 'back()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]) }]
+      },
+      maMau: doiBai([['for i in range(6):', '    rail(1)'], ['cast_net()', 'wait()', 'back()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]),
       loiSai: [
-        { moTa: 'R2 hút sắt nhưng quên bước sang (3, 3) nên R1 đâm phải R2 trên ray', baiLam: baiDoi(['wait_n(3)', 'rail(1)', 'carry2_by(2)'], ['pull_s()']), phaiCoMa: ['het-ray'] }
+        { moTa: 'Không đọc số: nhấc cả container 27 lên tàu', baiLam: doiBai([['for i in range(6):', '    c = read_code()', '    if c > 0:', '        pick_up()', '        extend()', '        set_down()', '        retract()', '    rail(1)'], ['cast_net()', 'wait()', 'back()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Xuồng không kéo container 32 về: thiếu hàng', baiLam: doiBai([['for i in range(6):', '    c = read_code()', '    if c > 0 and c != 27:', '        pick_up()', '        extend()', '        set_down()', '        retract()', '    rail(1)'], []]), phaiCoMa: ['chua-giao-tau'] }
       ],
-      sao: { o: 27, nhip: 8 },
-      goiY: ['Thêm go("R") sau pull_s() ở chương trình R2.']
+      sao: { o: 22, nhip: 17 },
+      goiY: ['read_code() == -1: ô đầu cần trống.', 'if c > 0 and c != 27: có container và không phải 27.'],
+      cauDo: { doi: ['CC', 'XU'], lap: null, coChe: ['nuoc', 'cont-troi', 'luoi', 'tau', 'doc-ma'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
     manCS('cuu-cang-song', 4, 'luyen', {
