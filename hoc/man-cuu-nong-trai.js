@@ -64,6 +64,11 @@
   /** cuu-nong-trai.5: xe chở hàng chờ cây được ủi, đi tới trước cửa, gắp bao hạt, lùi, rẽ xuống khỏi lối. Xích ủi cây lên, lùi hai ô nhường chỗ. */
   var CH_5 = ['wait_n(2)', 'forward(3)', 'pick()', 'back()', 'turn_left()', 'forward(1)'];
   var CU_5 = ['move()', 'back()', 'back()'];
+  /** cuu-nong-trai.6 (hai sân): xe chở hàng gắp bao hạt ở góc kho, quay đầu, chở tới đặt cạnh luống. Drone đậu chờ (đậu không tốn pin), cất cánh, bay lên bao đọc màu hạt c = color("here"), xuống luống gieo màu c. */
+  var CH_6 = ['pick()', 'turn_left()', 'turn_left()', 'forward(5)', 'drop()'];
+  var DR_6 = ['land()', 'wait_n(9)', 'take_off()', 'go_left()', 'c = color("here")', 'go_down()', 'go_down()', 'go_left()', 'go_left()', 'ink(c)', 'pen_down()', 'for i in range(4):', '    go_right()', 'pen_up()'];
+  var SAN_6 = ['############', '#..........#', '#o.........#', '#..........#', '#..........#', '############'];
+  function MAU_6(c) { return ['............', '............', '.' + c + '..........', '............', '............', '............']; }
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -205,6 +210,32 @@
       sao: { o: 30, nhip: 16 },
       goiY: ['pick(): gắp vật trước mũi xe.', 'Bác chỉ bước khi ô kế trên lối trống: robot đứng trên lối thì bác chờ.'],
       cauDo: { doi: ['CH', 'CU'], lap: null, coChe: ['nha-kinh', 'bao-hat', 'cay-do', 'nguoi'], cuu: 'nguoi', meo: 'don-loi' }
+    }),
+    // 6 · tiếp sức, đọc màu (hai sân, luật 13/11): bao hạt giống nằm ở góc kho xa, mỗi sân một màu (đỏ / xanh dương). Drone ít pin: bay tới góc kho đọc màu rồi về gieo thì hết pin.
+    //     Xe chở hàng gắp bao, quay đầu chở tới đặt cạnh luống. Drone đậu chờ (đậu không tốn pin), cất cánh, bay lên bao đọc màu hạt c = color("here"), xuống luống gieo màu c.
+    //     Điền thẳng màu của sân 1 thì sân 2 gieo sai màu. Bẫy: robot phân loại (nam châm không hút bao hạt gỗ).
+    man9('cuu-nong-trai', 6, 'cung-co', {
+      ten: 'Bao hạt ở góc kho',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Hai sân. Bao hạt ở góc kho, mỗi sân một màu. Drone ít pin, bay tới góc kho thì không đủ pin về gieo. Ai chở bao tới gần luống? Drone đọc màu bao rồi gieo đúng màu đó.',
+      veMaMau: 'Drone chưa biết màu hạt.',
+      san: [SAN_6, SAN_6],
+      them: { vatMau: [MAU_6('r'), MAU_6('b')] },
+      hinh: [luong(12, 6, [{ y: 4, x0: 6, mau: 'rrrrr' }]), luong(12, 6, [{ y: 4, x0: 6, mau: 'bbbbb' }])],
+      doi: [khe({ x: 2, y: 2, huong: 3 }), khe({ x: 9, y: 2, huong: 0 }, { pin: 16 })],
+      chonDoi: {
+        menu: ['DR', 'CH', 'PL'],
+        cachMau: [{ chon: ['CH', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([CH_6, DR_6]) }]
+      },
+      maMau: doiBai([CH_6, ['land()', 'wait_n(9)', 'take_off()', 'go_left()']]),
+      loiSai: [
+        { moTa: 'Điền thẳng màu đỏ của sân 1: sân 2 gieo sai màu', baiLam: doiBai([CH_6, DR_6.map(function (d) { return d === 'ink(c)' ? 'ink("red")' : d; })]), phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Drone tự bay tới góc kho đọc màu: hết pin', baiLam: doiBai([[], ['for i in range(8):', '    go_left()', 'c = color("here")', 'for i in range(5):', '    go_right()', 'go_down()', 'go_down()', 'ink(c)', 'pen_down()', 'for i in range(4):', '    go_right()']]), phaiCoMa: ['het-pin'] },
+        { moTa: 'Drone bay lơ lửng chờ (không đậu): hết pin', baiLam: doiBai([CH_6, DR_6.map(function (d) { return d === 'land()' || d === 'take_off()' ? 'wait()' : d; })]), phaiCoMa: ['het-pin'] }
+      ],
+      sao: { o: 44, nhip: 24 },
+      goiY: ['color("here"): màu bao hạt ngay dưới drone.', 'land() rồi chờ: đậu không tốn pin.'],
+      cauDo: { doi: ['CH', 'DR'], lap: null, coChe: ['bao-hat', 'mau', 'gieo', 'pin', 'dau'], cuu: 'hang', meo: 'tiep-suc' }
     }),
   ];
 })();
