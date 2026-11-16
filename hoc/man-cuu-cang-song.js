@@ -176,6 +176,11 @@
   function lapR2(than, tay, cam, nganSach, cachLap, them) {
     return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
   }
+  /** R2 đã lắp sẵn (màn show chương 2): xuồng + lưới + đầu đọc mã (lai L2), như LapRap.apDung lắp ra. */
+  var XUONG_L2 = {
+    loaiRobot: 'xuong', chinhLuoi: true, robot: { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'quet-ma', o: 'tren' }], son: 'lam' },
+    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'anchor', 'unanchor', 'cast_net', 'drop_net', 'set_length', 'read_code', 'weight']
+  };
   /** Xuồng lắp loa thay tay lưới: bỏ cờ chỉnh dây lưới (set_length chỉ là nâng cấp của tay lưới). */
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
   function man9(chuong, so, hang, cfg) {
@@ -477,42 +482,51 @@
     /* ========================================================================
        CHƯƠNG 2: lap-cang-song (10 màn)
        ======================================================================== */
-    manCS('lap-cang-song', 1, 'lam-quen', {
-      ten: 'Quan sát hàm sonic_rail dọn đá chuông trên ray',
-      chiChay: true, r2: R_GAI,
-      hamCuaEmCan: ['slide_load', 'play_note', 'back', 'wait_n'],
-      deBai: 'Sang chương Lập trình cứu Cảng sông, em sẽ chế tạo các hàm phối hợp giữa cần cẩu R1 và đội robot chi viện R2! Hãy nhấn Chạy để xem R2 (bánh gai) gọi hàm sonic_rail() vừa phá đá chuông ở (2, 3) vừa lùi khỏi đường ray, giúp R1 gọi slide_load(1, 2) giao kiện 18 lên tàu.',
-      veMaMau: 'Quan sát hàm sonic_rail() của R2 phối hợp cùng slide_load(1, 2) của R1.',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, huong: 3 }],
-      chong: [CW(2, 4, [[18, 2]])],
-      daChuong: [{ x: 2, y: 3, not: 4, ben: 1 }],
-      tau: tauDon(6, 2),
-      giao: [{ tau: 0, so: [18] }],
-      maMau: baiDoi(['wait()', 'slide_load(1, 2)'], ['sonic_rail()'], [], [H_SONIC_RAIL]),
-      loiGiai: baiDoi(['wait()', 'slide_load(1, 2)'], ['sonic_rail()'], [], [H_SONIC_RAIL]),
-      sao: { o: 22, nhip: 6 },
-      goiY: ['Nhấn Chạy để xem hàm sonic_rail() hoạt động.']
+    // 11 · show: Luna lắp sẵn xuồng + lưới + đầu đọc mã (lai L2, khoá). Xuồng đọc số container nổi ngay trước mũi: số chẵn (% 2 == 0) thì tung lưới
+    //      kéo về, số lẻ thì chạy sang container kế. Cẩu chạy ray, chờ tới khi dưới móc có số, chờ thêm một nhịp cho xuồng nhả lưới, nhấc lên tàu.
+    man9('lap-cang-song', 1, 'lam-quen', {
+      ten: 'Xuồng đọc số',
+      chiChay: true, mucTieu: 'giao-tau',
+      deBai: 'Luna lắp cho xuồng đầu đọc mã. Xuồng đọc số container: chẵn thì kéo về cho cẩu, lẻ thì bỏ qua. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem xuồng chọn container nào.',
+      san: ['~~~~~~~~', '~B~~B~~~', '~~~~~~~~', '~~~~~~~~', 'RRRRRR~T', '########'],
+      doi: [may('CC', { x: 0, y: 4, huong: 0, nac: 0, tam: 2 }), Object.assign({ batDau: { x: 1, y: 2, huong: 0 } }, clone(XUONG_L2))],
+      them: { contTroi: [{ x: 1, y: 1, so: 9 }, { x: 4, y: 1, so: 14 }], hangTau: { o: [{ x: 7, y: 4 }], can: [14] } },
+      maMau: doiBai([['rail(4)', 'while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'extend()', 'set_down()'],
+        ['set_length(1)', 'for i in range(2):', '    if read_code() % 2 == 0:', '        cast_net()', '        wait()', '        back()', '        drop_net()', '        wait()', '    else:', '        turn_right()', '        forward(3)', '        turn_left()']]),
+      loiGiai: doiBai([['rail(4)', 'while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'extend()', 'set_down()'],
+        ['set_length(1)', 'for i in range(2):', '    if read_code() % 2 == 0:', '        cast_net()', '        wait()', '        back()', '        drop_net()', '        wait()', '    else:', '        turn_right()', '        forward(3)', '        turn_left()']]),
+      sao: { o: 38, nhip: 14 },
+      goiY: ['read_code() % 2 == 0: số chẵn.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+quet-ma', coChe: ['nuoc', 'cont-troi', 'luoi', 'doc-ma', 'tau'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    manCS('lap-cang-song', 2, 'lam-quen', {
-      ten: 'Chế tạo hàm sonic_rail cho bánh gai ở cảng',
-      r2: R_GAI,
-      taoHam: ['sonic_rail'],
-      hamCuaEmCan: ['slide_load', 'play_note', 'back', 'wait_n'],
-      deBai: 'Hãy định nghĩa hàm sonic_rail() cho R2 gồm 2 lệnh: play_note(listen()) để phá tảng đá chuông trước mặt, rồi back() để lùi 1 ô nhường đường ray cho cần cẩu! Ở chương trình chính, R2 đứng ở (3, 3) hướng trái gọi sonic_rail() phá đá chuông (2, 3) rồi lùi sang (4, 3), để R1 chờ 2 nhịp rồi gọi slide_load(2, 2) bốc kiện 27 ở (3, 4) lên tàu.',
-      veMaMau: 'Hoàn thiện thân hàm sonic_rail() gồm play_note(listen()) và back().',
-      bd: [{ x: 1, y: 3, nac: 2, tam: 1 }, { x: 3, y: 3, huong: 3 }],
-      chong: [CW(3, 4, [[27, 2]])],
-      daChuong: [{ x: 2, y: 3, not: 5, ben: 1 }],
-      tau: tauDon(8, 2),
-      giao: [{ tau: 0, so: [27] }],
-      maMau: baiDoi(['wait_n(2)', 'slide_load(2, 2)'], ['sonic_rail()']),
-      loiGiai: baiDoi(['wait_n(2)', 'slide_load(2, 2)'], ['sonic_rail()'], [H_SONIC_RAIL]),
+    // 12 · ép đổi cảm biến: container 18 trôi trên luồng xiết (2 ô / nhịp), không có số nào để đọc trước. Đầu đọc mã của màn trước không giúp gì;
+    //      chong chóng dòng chảy (flow) cho biết sức nước: h, s = flow() rồi chờ 6 // s - 1 nhịp, tung lưới đúng lúc container trôi tới ô (6, 1).
+    //      Xuồng lùi kéo về nước êm, nhả; cẩu chờ có số dưới móc, nhấc, quay phải hạ lên tàu. Cách hai rẻ hơn: xuồng + lưới không cảm biến, đếm sẵn wait_n(2).
+    man9('lap-cang-song', 2, 'lam-quen', {
+      ten: 'Nước chảy mạnh cỡ nào',
+      mucTieu: 'giao-tau',
+      deBai: 'Container 18 trôi trên luồng xiết. Lắp cảm biến nào để biết nước chảy nhanh cỡ nào? Tung lưới đúng lúc, kéo về cho cẩu.',
+      veMaMau: 'Xuồng tung lưới sớm quá.',
+      san: ['#########', 'B~~~~~~~~', '~~~~~~~~~', '~~~~~~~~~', '..RRRRR.T', '#########'],
+      doi: [may('CC', { x: 6, y: 4, huong: 0, nac: 0, tam: 2 }), khe({ x: 1, y: 4, huong: 0 }, { son: 'lam', batDauNuoc: { x: 6, y: 2, huong: 0 } })],
+      them: { contTroi: [{ x: 0, y: 1, so: 18 }], hangTau: { o: [{ x: 8, y: 4 }], can: [18] },
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: 2 }; }) },
+      lapRap: lapR2(['xuong'], ['day-keo'], ['dong-chay', 'quet-ma'], 10, [
+        cach('xuong', 'day-keo', 'dong-chay', [['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'],
+          ['set_length(1)', 'h, s = flow()', 'wait_n(6 // s - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
+        cach('xuong', 'day-keo', null, [['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'],
+          ['set_length(1)', 'wait_n(2)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']])
+      ], { moLai: ['L2'] }),
+      maMau: doiBai([['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
       loiSai: [
-        { moTa: 'Hàm sonic_rail() thiếu back() nên R2 vẫn đứng ở (3, 3) chặn R1 trượt rail(2)', baiLam: baiDoi(['wait_n(2)', 'slide_load(2, 2)'], ['sonic_rail()']), hamCuaEmMoi: [{ ten: 'sonic_rail', thamSo: [], than: ['play_note(listen())'] }], phaiCoMa: ['het-ray'] }
+        { moTa: 'Tung lưới ngay: container chưa tới', baiLam: doiBai([['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Tưởng nước chảy 1 ô / nhịp: chờ 6 // 1 - 1 = 5 nhịp, container trôi qua mất', baiLam: doiBai([['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'wait_n(6 // 1 - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Trong hàm sonic_rail(), thêm back() ngay dưới play_note(listen()).']
+      sao: { o: 23, nhip: 10 },
+      goiY: ['h, s = flow(): s là sức nước, 2 ô mỗi nhịp.', '6 // s: chia lấy phần nguyên.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+dong-chay', coChe: ['nuoc', 'dong', 'cont-troi', 'luoi', 'tau'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
 
     manCS('lap-cang-song', 3, 'luyen', {
