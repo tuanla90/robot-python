@@ -56,18 +56,41 @@
   /** Chương trình cẩu của lap-cang-song.3: hai lần chờ số dưới móc, nhấc, quay phải hạ lên boong; giữa hai lần quay về, thu cần, chạy ray. */
   var CAU_13 = ['for k in range(2):', '    while read_code() == -1:', '        wait()', '    wait()', '    pick_up()', '    swing_right()', '    set_down()', '    if k == 0:',
     '        swing_left()', '        retract()', '        retract()', '        rail(2)'];
+  /** lap-cang-song.3 (ba sân): sân hai luồng nước, bè nổi ở cột x1 (luồng trên) và x2 (luồng dưới). Xuồng: tiến tới khi thấy số, kéo lùi c // 10 ô, nhả, xuống luồng dưới. */
+  function san13(x1, x2) {
+    function luong(x) { return '#' + '~~~~~~'.split('').map(function (c, i) { return i + 1 === x ? 'B' : c; }).join('') + '#'; }
+    return ['########', luong(x1), '####~###', luong(x2), '#RRRRRT#', '########'];
+  }
+  var XU_13 = ['for i in range(2):', '    set_length(1)', '    while read_code() == -1:', '        move()', '    c = read_code()', '    cast_net()', '    wait()', '    for j in range(c // 10):', '        back()',
+    '    drop_net()', '    wait()', '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()'];
   /** Chương trình cẩu của lap-cang-song.4: chờ số dưới móc, chờ xe nhả lưới, nhấc, quay phải hạ lên boong. */
   var CAU_14 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'];
   /** Chương trình xuồng khách khoá của lap-cang-song.5: lưới dài 1, chờ 2 nhịp tung lần một; sang phải một ô (ba nhịp), tung lần hai. */
   var XU_15 = ['set_length(1)', 'wait_n(2)', 'cast_net()', 'wait()', 'turn_left()', 'move()', 'turn_right()', 'set_length(1)', 'cast_net()', 'wait()'];
   /** Xuồng lắp loa thay tay lưới: bỏ cờ chỉnh dây lưới (set_length chỉ là nâng cấp của tay lưới). */
-  /** lap-cang-song.8: cẩu khách R1 cuối ray nhấc container 44, quay hai nấc, vươn hạ lên tàu xanh. Thân vòng lặp của R2: nhấc, nhìn màu ô bãi, hạ đúng tàu, quay về, chạy ray. */
+  /** lap-cang-song.8: cẩu khách R1 cuối ray nhấc container 45, quay hai nấc, vươn hạ lên tàu xanh. Thân vòng lặp của R2: nhấc, nhìn màu ô bãi, hạ đúng tàu, quay về, chạy ray. */
   var CAU_R1_18 = ['pick_up()', 'swing_right()', 'swing_right()', 'extend()', 'set_down()'];
   var CAU_18_THAN = ['pick_up()', 'mau = look()', 'swing_right()', 'swing_right()', 'if mau == "blue":', '    extend()', '    set_down()', '    retract()', 'else:', '    set_down()',
     'swing_right()', 'swing_right()', 'rail(1)'];
   /** lap-cang-song.9: cẩu chờ số dưới móc, nhấc 22, quay lên hạ; thu cần, quay hai nấc xuống nhấc 35 ở chồng bãi, quay về, vươn, hạ. */
   var CAU_19 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()', 'retract()', 'swing_right()', 'swing_right()', 'pick_up()',
     'swing_left()', 'swing_left()', 'extend()', 'set_down()'];
+  /** lap-cang-song.2 (hai sân): luồng xiết hàng 1 chảy sang phải, sức suc ô mỗi nhịp (mỗi sân một sức). */
+  var SAN_12 = ['#########', '~B~~~~~~~', '~~~~~~~~~', '~~~~~~~~~', '..RRRRRRT', '#########'];
+  var CAU_12 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'retract()', 'swing_right()', 'set_down()'];
+  function dong12(suc) { return [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: suc }; }); }
+  /** lap-cang-song.8 (ba sân): cùng sân, cùng chồng; khác màu sơn ô bãi (chuỗi 3 chữ r / b cho cột 1–3), giờ tàu rời và danh sách giao. */
+  var SAN_18 = ['########', '#......#', '#RRRRRR#', '~TTTT~~~', '~TTTTTT~', '########'];
+  function chong18(ds) { return ds.map(function (so, i) { return { x: i + 1, y: 1, cont: [{ so: so }] }; }).concat([{ x: 6, y: 1, cont: [{ so: 45 }] }]); }
+  function son18(m) { return ['........', '.' + m + '....', '........', '........', '........', '........']; }
+  function tau18(coDo, coXanh) {
+    return [{ o: [1, 2, 3, 4].map(function (x) { return { x: x, y: 3 }; }), co: coDo, vang: 40 }, { o: [1, 2, 3, 4, 5, 6].map(function (x) { return { x: x, y: 4 }; }), co: coXanh, vang: 40 }];
+  }
+  /** Số chẵn lên tàu đỏ, số lẻ lên tàu xanh (khớp màu sơn ô bãi; R1 giao 45 lên tàu xanh). */
+  function giao18(ds) { return [{ tau: 0, so: ds.filter(function (n) { return n % 2 === 0; }) }, { tau: 1, so: ds.filter(function (n) { return n % 2 === 1; }).concat([45]) }]; }
+  /** cuu-cang-song.3 (hai sân): cùng sân, cùng tàu; container 27 đổi chỗ với 14. */
+  var SAN_3 = ['~TTTTTT~~', '~BB~~~~~B', '~~~~~~~~~', '.RRRRRRR.', '#########'];
+  var TAU_3 = [{ o: [1, 2, 3, 4, 5, 6].map(function (x) { return { x: x, y: 0 }; }), co: 14, vang: 40 }];
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
@@ -140,15 +163,16 @@
     // 3 · đọc rồi chọn: ba container trôi, tàu chỉ nhận 14 và 32 (27 là của tàu khác). Container 32 trôi xa, ngoài tầm cần: xuồng bắt, lùi, cuộn dây kéo về cột 6, nhả lưới.
     //     Cẩu chạy ray từng ô, read_code() đọc ô đầu cần (ô trống trả -1, số âm): số dương và khác 27 thì nhấc, vươn cần hạ lên boong.
     //     (Bảng ghi "xuồng thả cái sai": xuồng không có đầu đọc mã, không biết cái nào sai; cái sai nằm yên, cẩu đọc rồi bỏ qua.) Bẫy: robot phân loại (không xuống nước).
+    //     Hai sân (dữ liệu theo sân, luật 13/11): sân 1 container 27 ở cột 2, sân 2 ở cột 1. Bỏ qua cột điền thẳng của sân 1 thì sân 2 nhấc nhầm 27.
     man9('cuu-cang-song', 3, 'luyen', {
       ten: 'Số nào lên tàu',
       mucTieu: 'giao-tau',
-      deBai: 'Tàu chỉ nhận container 14 và 32. Container 27 của tàu khác, để yên. read_code() trả -1 khi ô trống.',
+      deBai: 'Tàu chỉ nhận container 14 và 32. Container 27 của tàu khác, để yên. Hai sân, 27 nằm chỗ khác nhau. read_code() trả -1 khi ô trống.',
       veMaMau: 'Cẩu nhấc cả container 27.',
-      san: ['~TTTTTT~~', '~BB~~~~~B', '~~~~~~~~~', '.RRRRRRR.', '#########'],
+      san: [SAN_3, SAN_3],
       doi: [khe({ x: 1, y: 3, huong: 0, nac: 0, tam: 2 }, { batDauNuoc: { x: 4, y: 2, huong: 1 } }), khe({ x: 7, y: 3, huong: 0 }, { batDauNuoc: { x: 6, y: 1, huong: 1 } })],
-      them: { contTroi: [{ x: 1, y: 1, so: 14 }, { x: 2, y: 1, so: 27 }, { x: 8, y: 1, so: 32 }], tau: [{ o: [1, 2, 3, 4, 5, 6].map(function (x) { return { x: x, y: 0 }; }), co: 14, vang: 40 }],
-        giao: [{ tau: 0, so: [14, 32] }] },
+      them: { contTroi: [[{ x: 1, y: 1, so: 14 }, { x: 2, y: 1, so: 27 }, { x: 8, y: 1, so: 32 }], [{ x: 1, y: 1, so: 27 }, { x: 2, y: 1, so: 14 }, { x: 8, y: 1, so: 32 }]],
+        tau: [TAU_3, TAU_3], giao: [[{ tau: 0, so: [14, 32] }], [{ tau: 0, so: [14, 32] }]] },
       chonDoi: {
         menu: ['CC', 'XU', 'PL'],
         cachMau: [{ chon: ['CC', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([
@@ -158,6 +182,7 @@
       maMau: doiBai([['for i in range(6):', '    rail(1)'], ['cast_net()', 'wait()', 'back()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]),
       loiSai: [
         { moTa: 'Không đọc số: nhấc cả container 27 lên tàu', baiLam: doiBai([['for i in range(6):', '    c = read_code()', '    if c > 0:', '        pick_up()', '        extend()', '        set_down()', '        retract()', '    rail(1)'], ['cast_net()', 'wait()', 'back()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Điền thẳng chỗ của sân 1 (bỏ qua ô thứ hai): sân 2 nhấc nhầm 27', baiLam: doiBai([['for i in range(6):', '    c = read_code()', '    if c > 0 and i != 1:', '        pick_up()', '        extend()', '        set_down()', '        retract()', '    rail(1)'], ['cast_net()', 'wait()', 'back()', 'reel_in()', 'wait()', 'drop_net()', 'wait()']]), phaiCoMa: ['giao-nham'] },
         { moTa: 'Xuồng không kéo container 32 về: thiếu hàng', baiLam: doiBai([['for i in range(6):', '    c = read_code()', '    if c > 0 and c != 27:', '        pick_up()', '        extend()', '        set_down()', '        retract()', '    rail(1)'], []]), phaiCoMa: ['chua-giao-tau'] }
       ],
       sao: { o: 22, nhip: 17 },
@@ -389,63 +414,69 @@
 
     // 12 · ép đổi cảm biến: container 18 trôi trên luồng xiết (2 ô / nhịp), không có số nào để đọc trước. Đầu đọc mã của màn trước không giúp gì;
     //      chong chóng dòng chảy (flow) cho biết sức nước: h, s = flow() rồi chờ 6 // s - 1 nhịp, tung lưới đúng lúc container trôi tới ô (6, 1).
-    //      Xuồng lùi kéo về nước êm, nhả; cẩu chờ có số dưới móc, nhấc, quay phải hạ lên tàu. Cách hai rẻ hơn: xuồng + lưới không cảm biến, đếm sẵn wait_n(2).
+    //      Xuồng lùi kéo về nước êm, nhả; cẩu chờ có số dưới móc, nhấc, quay phải hạ lên tàu.
+    //      Hai sân (dữ liệu theo sân, luật 13/11): sân 1 nước xiết 2 ô / nhịp, sân 2 nước thường 1 ô / nhịp (lõi chỉ có sức 1, 2). Điền thẳng wait_n(2) thua sân 2;
+    //      đầu đọc mã (cảm biến sai) chờ thấy số mới tung thì container đã trôi qua, thua cả hai sân. Chỉ một cách lắp: chỉ chong chóng đọc được sức nước.
     man9('lap-cang-song', 2, 'lam-quen', {
       ten: 'Nước chảy mạnh cỡ nào',
       mucTieu: 'giao-tau',
-      deBai: 'Container 18 trôi trên luồng xiết. Lắp cảm biến nào để biết nước chảy nhanh cỡ nào? Tung lưới đúng lúc, kéo về cho cẩu.',
+      deBai: 'Hai sân, nước chảy nhanh chậm khác nhau. Lắp cảm biến nào để biết nước chảy nhanh cỡ nào? Tung lưới đúng lúc, kéo container về cho cẩu.',
       veMaMau: 'Xuồng tung lưới sớm quá.',
-      san: ['#########', 'B~~~~~~~~', '~~~~~~~~~', '~~~~~~~~~', '..RRRRR.T', '#########'],
-      doi: [may('CC', { x: 6, y: 4, huong: 0, nac: 0, tam: 2 }), khe({ x: 1, y: 4, huong: 0 }, { son: 'lam', batDauNuoc: { x: 6, y: 2, huong: 0 } })],
-      them: { contTroi: [{ x: 0, y: 1, so: 18 }], hangTau: { o: [{ x: 8, y: 4 }], can: [18] },
-        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: 2 }; }) },
-      lapRap: lapR2(['xuong'], ['day-keo'], ['dong-chay', 'quet-ma'], 10, [
-        cach('xuong', 'day-keo', 'dong-chay', [['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'],
+      san: [SAN_12, SAN_12],
+      doi: [may('CC', { x: 7, y: 4, huong: 0, nac: 0, tam: 2 }), khe({ x: 5, y: 4, huong: 0, nac: 0, tam: 3 }, { son: 'lam', batDauNuoc: { x: 7, y: 2, huong: 0 } })],
+      them: { contTroi: [[{ x: 1, y: 1, so: 18 }], [{ x: 1, y: 1, so: 27 }]],
+        hangTau: [{ o: [{ x: 8, y: 4 }], can: [18] }, { o: [{ x: 8, y: 4 }], can: [27] }], thac: [{ x: 8, y: 1 }],
+        dong: [dong12(2), dong12(1)] },
+      lapRap: lapR2(['xuong', 'cau'], ['day-keo', 'moc-cau'], ['dong-chay', 'quet-ma'], 12, [
+        cach('xuong', 'day-keo', 'dong-chay', [CAU_12,
           ['set_length(1)', 'h, s = flow()', 'wait_n(6 // s - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
-        cach('xuong', 'day-keo', null, [['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'],
-          ['set_length(1)', 'wait_n(2)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']])
+        cach('cau', 'moc-cau', 'quet-ma', [CAU_12, ['while read_code() == -1:', '    wait()', 'pick_up()', 'swing_right()', 'set_down()']])
       ], { moLai: ['L2'] }),
-      maMau: doiBai([['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
+      maMau: doiBai([CAU_12, ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
       loiSai: [
-        { moTa: 'Tung lưới ngay: container chưa tới', baiLam: doiBai([['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
-        { moTa: 'Tưởng nước chảy 1 ô / nhịp: chờ 6 // 1 - 1 = 5 nhịp, container trôi qua mất', baiLam: doiBai([['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'], ['set_length(1)', 'wait_n(6 // 1 - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] }
+        { moTa: 'Tung lưới ngay: container chưa tới', baiLam: doiBai([CAU_12, ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Điền thẳng sức nước sân 1: wait_n(2) thắng sân 1, sân 2 (1 ô / nhịp) tung sớm', baiLam: doiBai([CAU_12, ['set_length(1)', 'wait_n(2)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Tưởng nước chảy 1 ô / nhịp: chờ 6 // 1 - 1 = 5 nhịp, container trôi qua mất', baiLam: doiBai([CAU_12, ['set_length(1)', 'wait_n(6 // 1 - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 23, nhip: 10 },
-      goiY: ['h, s = flow(): s là sức nước, 2 ô mỗi nhịp.', '6 // s: chia lấy phần nguyên.'],
+      sao: { o: 23, nhip: 13 },
+      goiY: ['h, s = flow(): s là sức nước (ô mỗi nhịp), mỗi sân một số.', '6 // s: chia lấy phần nguyên. Container cách 6 ô.'],
       cauDo: { doi: null, lap: 'xuong+day-keo+dong-chay', coChe: ['nuoc', 'dong', 'cont-troi', 'luoi', 'tau'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
 
-    // 13 · đọc rồi chọn, ôn //: hai luồng nước, mỗi luồng một container nổi. Số container chia lấy phần nguyên cho 10 là số ô phải kéo về dưới móc cẩu:
-    //      15 // 10 = 1, 37 // 10 = 3. Xuồng đọc số ô trước mũi, tung lưới, lùi c // 10 ô, nhả; quay xuống luồng dưới (đi thêm c // 10 ô về cột cũ), làm tiếp.
-    //      Hai tàu nối đuôi ở một bến: tàu đầu cần 15, tàu sau cần 37. Cẩu chờ có số dưới móc, nhấc, quay phải hạ lên boong; quay về, thu cần, chạy ray, làm tiếp.
-    //      Cách hai rẻ hơn: xuồng + lưới không đầu đọc mã, đếm sẵn 1 + 2 * i (1 rồi 3).
+    // 13 · đọc rồi chọn, ôn //: hai luồng nước, mỗi luồng một container nổi. Số container chia lấy phần nguyên cho 10 là số ô phải kéo về dưới móc cẩu
+    //      (luồng trên: ô (3, 1); luồng dưới: ô (5, 3)). Xuồng tiến tới khi đầu đọc mã thấy số trước mũi, đọc c, tung lưới, lùi c // 10 ô, nhả;
+    //      quay xuống luồng dưới, làm tiếp. Hàng tàu nối đuôi ở một bến nhận đúng thứ tự. Cẩu chờ có số dưới móc, nhấc, quay phải hạ lên boong; quay về, thu cần, chạy ray, làm tiếp.
+    //      Ba sân (dữ liệu theo sân, luật 13/11), mỗi sân một cặp số và chỗ nổi: 15 / 37, 24 / 46, 19 / 28. Chương trình điền thẳng số ô của sân 1 thua sân 2, 3.
+    //      Cách hai cùng giá, nhanh hơn: xuồng + lưới + hồng ngoại đọc distance() (số ô trống tới container), tung lưới dài d + 1 rồi thu dây về 1 (container tới thẳng ô dưới móc
+    //      ở luồng trên), không phải tiến lùi; luồng dưới lùi thêm 2 ô. Hồng ngoại cũng đọc dữ liệu của từng sân (chỗ container nổi), nên thắng cả ba sân.
     //      Bảng ghi "so // 10 là tàu, đưa container về đúng bến của tàu": giao nhiều tàu (cfg.tau) cần tàu rời đúng nhịp lời giải xong; ô q thì dua-vat đếm cả
     //      container cẩu đã nhấc lên bờ. Đổi thành: số chục là số ô kéo, hàng tàu nối đuôi (hangTau) nhận đúng thứ tự.
     man9('lap-cang-song', 3, 'luyen', {
       ten: 'Số chục là số ô',
       mucTieu: 'giao-tau', khung: { chinh: 16, moiHam: 8 },
-      deBai: 'Số chục của container là số ô phải kéo về dưới móc cẩu: c // 10. Tàu đầu cần 15, tàu sau cần 37.',
+      deBai: 'Ba sân, mỗi sân số khác. Số chục của container là số ô phải kéo về dưới móc cẩu: c // 10. Tiến tới khi đọc thấy số.',
       veMaMau: 'Xuồng kéo luồng nào cũng một ô.',
-      san: ['########', '#~B~~~~#', '####~###', '#~B~~~~#', '#RRRRRT#', '########'],
-      doi: [may('CC', { x: 3, y: 4, huong: 0, nac: 0, tam: 3 }), khe({ x: 1, y: 4, huong: 0 }, { son: 'lam', batDauNuoc: { x: 3, y: 1, huong: 3 } })],
-      them: { contTroi: [{ x: 2, y: 1, so: 15 }, { x: 2, y: 3, so: 37 }], hangTau: { o: [{ x: 6, y: 4 }], can: [15, 37] } },
-      lapRap: lapR2(['xuong'], ['day-keo'], ['quet-ma', 'dong-chay'], 10, [
-        cach('xuong', 'day-keo', 'quet-ma', [CAU_13,
-          ['for i in range(2):', '    set_length(1)', '    c = read_code()', '    cast_net()', '    wait()', '    for j in range(c // 10):', '        back()', '    drop_net()', '    wait()',
-            '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()', '        forward(c // 10)']]),
-        cach('xuong', 'day-keo', null, [CAU_13,
-          ['for i in range(2):', '    set_length(1)', '    cast_net()', '    wait()', '    for j in range(1 + 2 * i):', '        back()', '    drop_net()', '    wait()',
-            '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()', '        move()']])
+      san: [san13(2, 2), san13(1, 1), san13(2, 3)],
+      doi: [may('CC', { x: 3, y: 4, huong: 0, nac: 0, tam: 3 }), khe({ x: 1, y: 4, huong: 0 }, { son: 'lam', batDauNuoc: { x: 4, y: 1, huong: 3 } })],
+      them: {
+        contTroi: [[{ x: 2, y: 1, so: 15 }, { x: 2, y: 3, so: 37 }], [{ x: 1, y: 1, so: 24 }, { x: 1, y: 3, so: 46 }], [{ x: 2, y: 1, so: 19 }, { x: 3, y: 3, so: 28 }]],
+        hangTau: [{ o: [{ x: 6, y: 4 }], can: [15, 37] }, { o: [{ x: 6, y: 4 }], can: [24, 46] }, { o: [{ x: 6, y: 4 }], can: [19, 28] }]
+      },
+      lapRap: lapR2(['xuong'], ['day-keo'], ['quet-ma', 'hong-ngoai', 'dong-chay'], 10, [
+        cach('xuong', 'day-keo', 'quet-ma', [CAU_13, XU_13]),
+        cach('xuong', 'day-keo', 'hong-ngoai', [CAU_13, ['for i in range(2):', '    d = distance()', '    set_length(d + 1)', '    cast_net()', '    wait()', '    set_length(1)', '    wait()',
+          '    for j in range(2 * i):', '        back()', '    drop_net()', '    wait()', '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()']])
       ], { moLai: ['L2'] }),
-      maMau: doiBai([CAU_13, ['for i in range(2):', '    set_length(1)', '    cast_net()', '    wait()', '    back()', '    drop_net()', '    wait()',
-        '    turn_left()', '    forward(2)', '    turn_right()', '    move()']]),
+      maMau: doiBai([CAU_13, ['for i in range(2):', '    set_length(1)', '    while read_code() == -1:', '        move()', '    cast_net()', '    wait()', '    back()', '    drop_net()', '    wait()',
+        '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()']]),
       loiSai: [
-        { moTa: 'Luồng nào cũng kéo một ô: container 37 không tới dưới móc', baiLam: doiBai([CAU_13, ['for i in range(2):', '    set_length(1)', '    cast_net()', '    wait()', '    back()', '    drop_net()', '    wait()',
-          '    turn_left()', '    forward(2)', '    turn_right()', '    move()']]), phaiCoMa: ['qua-nhieu-nhip'] },
-        { moTa: 'Quên set_length(1) trong vòng lặp: nhả lưới xong dây về dài 2, lần sau tung hụt', baiLam: doiBai([CAU_13, ['set_length(1)', 'for i in range(2):', '    c = read_code()', '    cast_net()', '    wait()', '    for j in range(c // 10):', '        back()', '    drop_net()', '    wait()',
-          '    turn_left()', '    forward(2)', '    turn_right()', '    forward(c // 10)']]), phaiCoMa: ['qua-nhieu-nhip'] }
+        { moTa: 'Luồng nào cũng kéo một ô: container số chục 2, 3, 4 không tới dưới móc', baiLam: doiBai([CAU_13, ['for i in range(2):', '    set_length(1)', '    while read_code() == -1:', '        move()', '    cast_net()', '    wait()', '    back()', '    drop_net()', '    wait()',
+          '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Điền thẳng số ô của sân 1 (lùi 1 rồi 3): thắng sân 1, sân 2 (24 / 46) và sân 3 (19 / 28) kéo sai ô', baiLam: doiBai([CAU_13, ['for i in range(2):', '    set_length(1)', '    while read_code() == -1:', '        move()', '    cast_net()', '    wait()', '    for j in range(1 + 2 * i):', '        back()', '    drop_net()', '    wait()',
+          '    if i == 0:', '        turn_left()', '        forward(2)', '        turn_right()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Quên set_length(1) trong vòng lặp: nhả lưới xong dây về dài 2, lần sau tung hụt', baiLam: doiBai([CAU_13, ['set_length(1)'].concat(XU_13.filter(function (d) { return d !== '    set_length(1)'; }))]), phaiCoMa: ['qua-nhieu-nhip'] }
       ],
-      sao: { o: 45, nhip: 19 },
+      sao: { o: 45, nhip: 25 },
       goiY: ['c // 10: số chục của c (37 // 10 = 3).', 'Nhả lưới xong, dây lưới về dài 2: đặt lại set_length(1).'],
       cauDo: { doi: null, lap: 'xuong+day-keo+quet-ma', coChe: ['nuoc', 'cont-troi', 'luoi', 'doc-ma', 'hang-tau'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
@@ -557,34 +588,39 @@
       cauDo: { doi: null, lap: 'gai+loa+am-thanh', coChe: ['da-chuong', 'loa', 'container', 'nguoi'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
 
-    // 18 · đọc rồi chọn, lai L13 (cẩu + móc + camera bụng): bão làm mờ số trên container, chỉ còn màu sơn trên ô bãi dưới mỗi chồng (đỏ / xanh).
+    // 18 · đọc rồi chọn, lai L13 (cẩu + móc + camera bụng): ô bãi dưới mỗi chồng sơn màu tàu (đỏ / xanh).
     //      Container tự không có màu (lõi: chồng không màu) nên đổi so với bảng: cẩu nhấc container trước, camera ở đầu cần nhìn xuống ô bãi vừa trống, look() trả màu ô.
-    //      Đỏ: quay hai nấc hạ lên tàu đỏ sát ray; xanh: quay hai nấc, vươn thêm một ô hạ lên tàu xanh ngoài xa. Tàu xanh đậu 13 nhịp, tàu đỏ 21 nhịp rồi rời.
-    //      Cẩu khách R1 ở cuối ray giao container 44 lên tàu xanh. Cách hai rẻ hơn: cẩu + móc, không camera, nhìn bản đồ ghi sẵn danh sách màu.
+    //      Đỏ: quay hai nấc hạ lên tàu đỏ sát ray; xanh: quay hai nấc, vươn thêm một ô hạ lên tàu xanh ngoài xa. Tàu rời ngay sau lần hạ cuối của nó.
+    //      Cẩu khách R1 ở cuối ray giao container 45 lên tàu xanh. Ba sân (dữ liệu theo sân, luật 13/11): màu ô bãi đỏ-xanh-đỏ, xanh-đỏ-xanh, xanh-xanh-đỏ;
+    //      mỗi sân tàu đậu vừa đủ nhịp, mỗi sân một bộ số (chẵn đi tàu đỏ, lẻ đi tàu xanh). Danh sách màu điền thẳng của sân 1 giao nhầm ở sân 2, 3.
+    //      Cách hai: cẩu + móc + đầu đọc mã đọc số trước khi nhấc, số lẻ thì tàu xanh (cùng giá, cùng nhịp: camera bụng chỉ có trên cẩu và drone, drone không nhấc container).
+    //      Bảng ghi "số bị mờ, đọc màu thay số": chồng container không có màu (lõi), nên màu ở ô bãi và số vẫn đọc được.
     man9('lap-cang-song', 8, 'van-dung', {
-      ten: 'Số mờ, đọc màu ô bãi',
+      ten: 'Màu ô bãi, tàu nào',
       mucTieu: 'giao-tau',
       khung: { chinh: 16, moiHam: 8 },
-      deBai: 'Bão làm mờ số container. Ô bãi dưới mỗi container sơn màu tàu: đỏ hay xanh. Nhấc lên, nhìn màu ô, hạ lên đúng tàu.',
+      deBai: 'Ô bãi dưới mỗi container sơn màu tàu: đỏ hay xanh, mỗi sân một kiểu (số chẵn đi tàu đỏ, số lẻ đi tàu xanh). Nhấc lên, nhìn màu ô, hạ lên đúng tàu.',
       veMaMau: 'Cẩu R2 chưa có chương trình. Camera ở đầu cần đọc màu ô bãi bằng look().',
-      san: ['########', '#......#', '#RRRRRR#', '~TTTT~~~', '~TTTTTT~', '########'],
+      san: [SAN_18, SAN_18, SAN_18],
       doi: [may('CC', { x: 6, y: 2, huong: 0, nac: 0, tam: 1 }), khe({ x: 1, y: 2, huong: 0, nac: 0, tam: 1 }, { son: 'lam' })],
       them: {
-        chong: [{ x: 1, y: 1, cont: [{ so: 12 }] }, { x: 2, y: 1, cont: [{ so: 27 }] }, { x: 3, y: 1, cont: [{ so: 31 }] }, { x: 6, y: 1, cont: [{ so: 44 }] }],
-        sonBanDau: ['........', '.rbr....', '........', '........', '........', '........'],
-        tau: [{ o: [1, 2, 3, 4].map(function (x) { return { x: x, y: 3 }; }), co: 21, vang: 40 }, { o: [1, 2, 3, 4, 5, 6].map(function (x) { return { x: x, y: 4 }; }), co: 13, vang: 40 }],
-        giao: [{ tau: 0, so: [12, 31] }, { tau: 1, so: [27, 44] }]
+        chong: [chong18([12, 27, 30]), chong18([13, 28, 31]), chong18([15, 23, 34])],
+        sonBanDau: [son18('rbr'), son18('brb'), son18('bbr')],
+        tau: [tau18(21, 13), tau18(14, 22), tau18(23, 15)],
+        giao: [giao18([12, 27, 30]), giao18([13, 28, 31]), giao18([15, 23, 34])]
       },
-      lapRap: lapR2(['cau'], ['moc-cau'], ['camera-bay'], 12, [
+      lapRap: lapR2(['cau'], ['moc-cau'], ['camera-bay', 'quet-ma'], 12, [
         cach('cau', 'moc-cau', 'camera-bay', [CAU_R1_18, ['for k in range(3):'].concat(CAU_18_THAN.map(function (d) { return '    ' + d; }))]),
-        cach('cau', 'moc-cau', null, [CAU_R1_18, ['for mau in ["red", "blue", "red"]:'].concat([CAU_18_THAN[0]].concat(CAU_18_THAN.slice(2)).map(function (d) { return '    ' + d; }))])
+        cach('cau', 'moc-cau', 'quet-ma', [CAU_R1_18, ['for k in range(3):', '    so = read_code()', '    pick_up()', '    swing_right()', '    swing_right()', '    if so % 2 == 1:', '        extend()', '        set_down()', '        retract()',
+          '    else:', '        set_down()', '    swing_right()', '    swing_right()', '    rail(1)']])
       ], { moLai: ['L13'] }),
       maMau: doiBai([CAU_R1_18, []]),
       loiSai: [
         { moTa: 'Không đọc màu: container nào cũng hạ lên tàu đỏ', baiLam: doiBai([CAU_R1_18, ['for k in range(3):', '    pick_up()', '    swing_right()', '    swing_right()', '    set_down()', '    swing_right()', '    swing_right()', '    rail(1)']]), phaiCoMa: ['giao-nham'] },
+        { moTa: 'Điền thẳng màu của sân 1 (đỏ, xanh, đỏ): thắng sân 1, sân 2 và 3 giao nhầm tàu', baiLam: doiBai([CAU_R1_18, ['for mau in ["red", "blue", "red"]:'].concat([CAU_18_THAN[0]].concat(CAU_18_THAN.slice(2)).map(function (d) { return '    ' + d; }))]), phaiCoMa: ['giao-nham'] },
         { moTa: 'Cẩu R2 đứng yên: tàu rời thiếu hàng', baiLam: doiBai([CAU_R1_18, []]), phaiCoMa: ['chua-giao-tau'] }
       ],
-      sao: { o: 23, nhip: 25 },
+      sao: { o: 23, nhip: 27 },
       goiY: ['Nhấc container lên trước: ô bãi trống thì camera mới thấy màu sơn.', 'mau = look(); xanh thì extend() rồi set_down(), hạ xong retract().'],
       cauDo: { doi: null, lap: 'cau+moc-cau+camera-bay', coChe: ['ray', 'tau', 'son', 'container', 'camera'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
