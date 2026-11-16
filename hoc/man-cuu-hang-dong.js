@@ -61,6 +61,11 @@
   var PL_3 = ['jump("R")', 'jump("R")', 'go_right()', 'wait_n(4)', 'go_right()'];
   var HD_3 = ['wait_n(7)', 'forward(7)'];
 
+  /** cuu-hang-dong.4: hang dưới bị vách đá chia đôi, ngách hang nối miệng (2, 3) với miệng (5, 3) trong buồng kín có nút đè M; cửa đá C trên lối xe hang động.
+   *  Nhện bước vào miệng ngách, chui ra miệng kia trong buồng, lên nút, giữ tới khi xe qua cửa, sang cờ. */
+  var PL_4 = ['go_right()', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()'];
+  var HD_4 = ['wait_n(4)', 'forward(7)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -150,6 +155,29 @@
       sao: { o: 30, nhip: 17 },
       goiY: ['jump("R") hai lần: qua hai hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.', 'Drone bay thì không đè nút.'],
       cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ho', 'hai-ho', 'nhay', 'nut-de', 'cua', 'da-uot'], cuu: 'hang', meo: 'giu-cua' }
+    }),
+    // 4 · giữ cửa, ngách hang: bão làm đá lở bít lối vào buồng nút; chỉ còn ngách hang ngầm (hai miệng cùng màu) nối hang ngoài với buồng kín. Nhện đi vào miệng ngách,
+    //     chui ra miệng kia trong buồng, lên nút đè M, giữ cửa đá mở tới khi xe hang động qua, sang cờ. Bảng 2 cỗ máy (đúng đôi tốt).
+    man9('cuu-hang-dong', 4, 'luyen', {
+      ten: 'Ngách vào buồng nút',
+      deBai: 'Đá lở bít lối vào buồng có nút giữ cửa đá. Chỉ còn ngách hang: bước vào miệng này, chui ra miệng kia cùng màu. Nhện vào buồng giữ nút cho xe hang động qua cửa.',
+      veMaMau: 'Cửa đá còn đóng.',
+      san: ['##########', '#.....C.F#', '##########', '#...#.MF##', '##########'],
+      noi: [{ nut: { x: 6, y: 3 }, cua: [{ x: 6, y: 1 }] }],
+      them: { ngachHang: [{ a: { x: 3, y: 3 }, b: { x: 5, y: 3 } }] },
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] })],
+      chonDoi: {
+        menu: ['HD', 'PL'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_4, PL_4]) }]
+      },
+      maMau: doiBai([['wait_n(4)'], ['go_right()']]),
+      loiSai: [
+        { moTa: 'Nhện rời nút ngay: cửa đóng trước mũi xe', baiLam: doiBai([HD_4, ['go_right()', 'go_right()', 'go_right()', 'go_right()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xe không chờ: tới cửa khi cửa còn đóng', baiLam: doiBai([['forward(7)'], PL_4]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 17, nhip: 14 },
+      goiY: ['Bước vào miệng ngách là chui ra miệng kia cùng màu, giữ hướng.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ngach', 'nut-de', 'cua'], cuu: 'hang', meo: 'giu-cua' }
     })
   ];
 
