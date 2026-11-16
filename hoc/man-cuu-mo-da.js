@@ -1,18 +1,91 @@
 /* ============================================================================
-   man-cuu-mo-da.js — Mùa 9 (CLB Lập trình) · Gói 7: "Cứu hộ Mỏ đá"
-   20 màn (2 chương × 10 màn):
-   - Chương 1 (cuu-mo-da): Xe omni máy ném Mùa 7 (R1) phối hợp đồng đội R2
-     (xe hai bánh Mùa 1, xe xích Mùa 2, nhện Mùa 3, drone Mùa 6, bánh gai Mùa 8).
-     Màn 8 tạo hàm mới quarry_wait_lob; Màn 10 hợp tấu 2 bè (R1 + R2).
-   - Chương 2 (lap-mo-da): Ôn sâu danh sách 2 chiều (lưới 2D g = radar(), g[r][c])
-     và nhận dạng shape() qua 4 hàm mới: radar_front_lob (.2), radar_side_lob (.4),
-     shape_bridge_lob (.6), grid_clear_pass (.8). Màn 10 hợp tấu 2 bè kết gói.
+   man-cuu-mo-da.js - Mùa 9 CLB Sáng Tạo: Gói 7 "Mỏ đá sau bão" (dựng lại 16/11, M9M7, theo khuôn G5 / G6)
+   20 màn: cuu-mo-da (chọn đội trong menu cỗ máy) + lap-mo-da (R1 máy khai thác đặt sẵn, R2 tự lắp; lai L1 L9 L11 L12).
+   Ôn Python: lưới grid[r][c] (radar() trả lưới 3×3 quanh robot: hàng 0 trên, cột 0 trái; toạ độ (r, c) của ô).
+   Bão: dốc thành bùn trơn (I: xe trượt, bánh gai bám), đá lở bít hố (u: máy khai thác ném đá tròn lấp), đá rỗng chắn hầm (đá chuông: phát đúng nốt thì nứt vỡ),
+   khối đá vuông (thùng nặng H: xích ủi), thợ mỏ kẹt (người P).
+   Ném đá: luật NÉM ĐÀ mùa 9 (aim chỉ 1, 2; aim_lob(3) tự chạy đà rồi lùi về chỗ cũ).
+   Màn 10 mỗi chương: song ca đoạn 7 (bè 1: 1 1 5 5 6 6 5 5 | bè 2: 3 3 1 3 4 4 3 3), gọi play_part.
+   Câu đố: hoc/MUA-9-200-CAU-DO.md mục G7 (ghi chú "Đã dựng 16/11 (M9M7)": các chỗ lệch so với bảng).
    ========================================================================== */
 (function () {
   'use strict';
 
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* ---- M9M7: khung màn mùa 9 (chép từ man-cuu-nong-trai.js) ------------------------------------------ */
+  var CoMay = laNode ? require('./co-may.js') : window.CoMay;
+  var HAM_EM = ['move', 'back', 'forward', 'wait_n', 'tr_left', 'tr_right', 'turn_left', 'turn_right', 'pick', 'drop', 'go', 'walk', 'jump', 'crawl', 'pull_s', 'lob', 'aim_lob', 'slide_r'];
+  /** Robot của màn: cỗ máy `ma` (CoMay.dung) ở ô xuất phát bd, cờ riêng co, đế son ('lam' Luna, 'tim' máy khách). */
+  function may(ma, bd, them) {
+    var t = them || {};
+    var r = CoMay.dung(ma, { batDau: bd, son: t.son, pin: t.pin });
+    if (t.co) r.co = t.co;
+    if (t.coDinh) r.coDinh = true;
+    if (t.tay) r.robot.tay = t.tay;
+    if (t.tay || t.boHam || t.themHam) r.hamGoc = r.hamGoc.filter(function (h) { return (t.boHam || []).indexOf(h) < 0; }).concat(t.themHam || []);
+    if (t.phatNot) r.phatNot = true;
+    return r;
+  }
+  /** Khe robot em lập trình ở màn chọn đội / khe lắp: ô xuất phát, cờ riêng, pin (drone), đế. */
+  function khe(bd, them) { return Object.assign({ batDau: bd }, them || {}); }
+  function doiBai(ds, hamMan, hamEm) {
+    return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
+  }
+  /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
+  function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
+  function lapR2(than, tay, cam, nganSach, cachLap, them) {
+    return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
+  }
+
+  /** cuu-mo-da.1: máy khai thác hất đá tròn trước mũi xuống hố giữa dốc bùn (tầm 2), rồi lên qua hố vừa lấp tới cờ. Xe hang động chờ, bám bùn đi ngang dốc qua hố đã lấp tới cờ. */
+  var KT_1 = ['lob()', 'forward(3)'];
+  var HD_1 = ['wait_n(3)', 'forward(6)'];
+
+  function man9(chuong, so, hang, cfg) {
+    var r1 = cfg.doi[0];
+    var m = {
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'mo-da', daLapHo: true,
+      cauTruc: ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'], vaHoac: true, moXuong: true, camHamCuaEm: false,
+      hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
+      khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'toi-co',
+      deBai: cfg.deBai, veMaMau: cfg.veMaMau || '', san: cfg.san, batDau: clone(r1.batDau),
+      doi: cfg.doi.map(clone), maMau: cfg.maMau, loiSai: cfg.loiSai || [], sao: cfg.sao, goiY: cfg.goiY || [], cauDo: cfg.cauDo
+    };
+    if (r1.loaiRobot) { m.loaiRobot = r1.loaiRobot; m.robot = clone(r1.robot); m.hamGoc = r1.hamGoc.slice(); }
+    if (cfg.loiGiai) m.loiGiai = cfg.loiGiai;
+    if (cfg.chonDoi) m.chonDoi = cfg.chonDoi;
+    if (cfg.lapRap) m.lapRap = cfg.lapRap;
+    if (cfg.noi) m.noi = cfg.noi;
+    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
+    Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
+    return ManHoc.chuanHoa(m);
+  }
+
+  var MOI = [
+    /* ========================================================================
+       CHƯƠNG 1: cuu-mo-da (10 màn)
+       ======================================================================== */
+    // 1 · show (làm cầu): bão biến dốc mỏ thành bùn trơn, đá lở bít thành hố giữa dốc. Máy khai thác đứng dưới chân dốc hất viên đá tròn trước mũi bay 2 ô xuống hố: hố lấp phẳng.
+    //     Xe hang động bung gai bám bùn đi ngang dốc, qua chỗ hố vừa lấp tới cờ. Máy khai thác lên qua hố tới cờ của nó. Đội cố định KT + HD (chạy sẵn, khoá).
+    man9('cuu-mo-da', 1, 'lam-quen', {
+      ten: 'Hố giữa dốc bùn',
+      chiChay: true,
+      deBai: 'Bão biến dốc mỏ thành bùn trơn, đá lở bít thành hố. Máy khai thác hất đá tròn lấp hố, xe hang động bám bùn đi qua. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
+      san: ['#########', '#...F...#', '#.IIuIIF#', '#...o...#', '#.......#', '#########'],
+      them: { vatDang: ['.........', '.........', '.........', '....r....', '.........', '.........'] },
+      doi: [may('KT', { x: 4, y: 4, huong: 0 }, { co: [{ x: 4, y: 1 }] }), may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam', co: [{ x: 7, y: 2 }] })],
+      maMau: doiBai([KT_1, HD_1]),
+      loiGiai: doiBai([KT_1, HD_1]),
+      sao: { o: 18, nhip: 11 },
+      goiY: ['lob(): xúc đá trước mũi rồi hất xa 2 ô. Đá tròn rơi xuống hố thì lấp phẳng hố.', 'Bánh gai bung gai thì bám bùn trơn, không trượt.'],
+      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+  ];
 
   var R1_OMNI = {
     loaiRobot: 'omni',
@@ -92,7 +165,6 @@
     than: ['wait_n(w)', 'for i in range(2):', '    radar_front_lob(n)']
   };
 
-  function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
   function baiDoi(r1Chinh, r2Chinh, hamEm, hamMan) {
     return {
@@ -154,7 +226,8 @@
     return ManHoc.chuanHoa(m);
   }
 
-  ManHoc.manCuuMoDa = [
+  /* ---- BẢN CŨ (trước M9M7): giữ tạm tới khi màn mới thay đủ ---- */
+  var CU = [
     /* ========================================================================
        CHUONG 1: cuu-mo-da (10 man)
        ======================================================================== */
@@ -527,4 +600,5 @@
       goiY: ['Ở chương trình R2, gọi play_part([3, 1, 5, 3, 1, 5]).']
     })
   ];
+  ManHoc.manCuuMoDa = MOI.concat(CU.filter(function (c) { return !MOI.some(function (m) { return m.chuong === c.chuong && m.so === c.so; }); }));
 })();
