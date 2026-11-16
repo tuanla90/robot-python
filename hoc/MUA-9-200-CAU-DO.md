@@ -184,6 +184,22 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨omni, xuồng⟩ + lưới | hai cách: `min` của cặp `(nhịp, ô)` cho biết cách nào đỡ hơn | hàng | đọc rồi chọn |
 | 20 | ⟨xuồng, omni⟩ + loa | song ca: robot hát đi dọc bờ theo dòng | — | song ca |
 
+> **Đã dựng 16/11 (M9M5, hoc/man-cuu-ben-song.js viết lại theo khuôn G3 / G4, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt, lob_clear hết đỏ).** Lệch so với bảng:
+> - Gói không tạo hàm của em mới (không màn gói sau nào cần); `calm_bridge_lay`, `calmer_bridge`, `tuple_gate_tow`, `max_stream_tow`, `tether_calm_run` của G5 cũ bỏ (chỉ G5 cũ dùng). Song ca #10, #20 gọi `play_part`; #19 gọi `grab_clear()` (G4).
+> - kiem-cau-do: dọn lối nhận thêm `nap-vat` (máy khai thác nạp vật ở ô trước mũi), làm cầu nhận thêm `toi-cau` (xe tời bờ kéo bè về ô nước, robot khác đứng lên sau).
+> - #2 máy khai thác nạp tảng đá ném lấp hố (không đẩy đá lăn). #4 ba sân, bến chỉ có ở nhánh nước êm (`min` sức): không kéo bè ngược dòng (xuồng giữ bè bằng lưới không bị dòng đẩy lùi). #6 mẹo đổi vai chưa có bộ dò.
+> - #8 van ở cuối dải bùn: drone rắc cát ô bùn cuối, xích trượt dừng đúng ô rồi phun qua hố trúng van. #9 song song → tiếp sức (lõi `dua-vat` vẫn đếm container trôi đã nhấc lên bờ, nên container chắn là container trên bờ).
+> - #10 máy khai thác lắp loa hát bè 2 thay "omni đi chéo theo nhịp" (`choi-dieu` chỉ chấm hai robot hát). #11 thêm xe chở hàng làm R3 đi qua cầu phao (bộ dò làm cầu cần robot khác đứng lên ô bè).
+> - #12 mẹo song song; thêm thân hai bánh làm cách rẻ. #13 ba sân (lục bình ở cột 3, 5, 6); cách hai rẻ hơn: hai bánh + khoảng cách `while front_clear(): forward(1)`.
+> - #14 "`return` số bè" → **băng qua dòng** (hai sân, sức 2 / 1): xuồng dắt bè sau đuôi vào dòng ở cột `5 - s` thì trôi đúng tới cửa lạch có bến; xuồng R1 mở cống. Cách hai khoảng cách: lạch êm dài đúng tới cột vào dòng nên đi tới cuối lạch cũng đúng (rẻ, nhanh hơn chong chóng). `return` không ép.
+> - #15 ba sân: phao là ô sơn sẵn (`sonBanDau`): ô bãi cạn đỏ, ô đầu luồng sâu xanh. R1 xe cứu hỏa phun van mở cống (máy khai thác dọn đá trùng chuỗi sự kiện với #4). Cách hai khoảng cách (bãi cạn không trống). "Hàm trả hướng" không ép.
+> - #16 người được tời vào hõm nước không chảy cạnh bờ (ô trên dòng thì người trôi tiếp); R1 máy khai thác lấp hố lối về trạm; cách hai xuồng đứng sẵn vũng đầu nguồn (đắt, nhanh).
+> - #17 dòng xiết sức 2, người xuất phát cột lẻ nên chỉ dừng ở cột lẻ: xuồng ở cột 10 không đón được nếu không có phao. Cách hai rẻ và nhanh hơn: hai bánh + lưới tời người vào hõm nam cột 11 đúng nhịp (xuồng không làm gì; mẹo chờ tín hiệu chỉ ở cách một).
+> - #18 R1 máy khai thác lên bùn (trượt tới mép nước dừng), bước ra cầu phao ném đá qua sông vào D. Cách hai hai bánh đi bãi khô rẽ lên bùn (rẻ, 1 sao).
+> - #19 ⟨omni, xuồng⟩ → ⟨omni, hai bánh⟩ + camera / camera bốn hướng (hai sân): xuồng không tời bè về bến sát bờ đúng cột được. "`min` của cặp (nhịp, ô)" chỉ ở đề bài. Nhắc lại: xe chở hàng `grab_clear()` dọn thùng gỗ về D (G4, G1), drone rắc cát ô bùn (#8, #18), phao xanh (#15).
+> - #20 R1 máy khai thác lắp loa hát bè 1 trên bờ; R2 xuồng lắp loa vừa hát vừa trôi theo dòng, nốt thứ năm làm vỡ đá chuông nốt 4 khi tới sát (chỉ để nhìn); cách hai omni lắp loa đứng hát trên bờ (rẻ).
+> - **Nhiều sân** (`NHIEU_SAN_KHONG_TRUM` ở kiem-lo-trinh): cuu-ben-song.4, lap-ben-song.3, .4, .5, .9; mỗi màn có loiSai "điền thẳng dữ liệu sân 1".
+
 ## G6 Nông trại sau bão (ôn list) · bão: cây đổ chắn luống, trạm sạc hỏng, mương tràn
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |
