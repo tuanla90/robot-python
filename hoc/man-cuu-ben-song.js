@@ -109,6 +109,20 @@
   /** lap-ben-song.8: máy khai thác R1 nạp tảng đá (3, 6), sang cột 5, chờ cầu phao, lên bùn (trượt tới mép nước thì dừng ở (5, 4)), bước ra bè ở bến (5, 3), ném đá qua sông vào D (5, 1). Hai bản theo nhịp của xe R2 (gai / hai bánh). */
   var KT_18_GAI = ['load()', 'wait()', 'turn_left()', 'forward(2)', 'turn_left()', 'wait_n(3)', 'forward(2)', 'throw()', 'wait()'];
   var KT_18_BANH = ['load()', 'wait()', 'turn_left()', 'forward(1)', 'wait_n(6)', 'forward(1)', 'turn_left()', 'forward(2)', 'throw()', 'wait()'];
+  /** lap-ben-song.9 (hai sân): bè (c, 1), bến q (c, 2) sơn xanh (phao); lối bờ hàng 3, thùng gỗ (2, 3) chắn đầu lối, bùn (4, 3) (xe trượt qua cột 4 của sân 2). Xe chở hàng (2, 4) lùi được tới (2, 5), đích D (1, 5); drone (4, 4). */
+  function san19(c) {
+    var h1 = '#~~~~~~~~#'.split(''); h1[c] = 'B';
+    var h2 = '#~~~~~~~~#'.split(''); h2[c] = 'q';
+    return ['##########', h1.join(''), h2.join(''), '#...I....#', '##.#.#####', '#D.#######', '##########'];
+  }
+  function son19(c) {
+    var h = '..........'.split(''); h[c] = 'b';
+    return ['..........', '..........', h.join(''), '..........', '..........', '..........', '..........'];
+  }
+  var CH_19 = ['grab_clear()', 'turn_left()', 'drop()'];
+  var DR_19 = ['go_up()', 'dot()', 'go_down()'];
+  var R2_19_OMNI = ['wait_n(3)', 'while color() != "blue":', '    slide_right()', '    wait()', 'set_length(2)', 'cast_net()', 'wait()'];
+  var R2_19_BANH = ['wait_n(3)', 'turn_right()', 'while color("left") != "blue":', '    forward(1)', 'set_length(2)', 'cast_net("left")', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -568,6 +582,32 @@
       sao: { o: 28, nhip: 13 },
       goiY: ['Bánh gai bung gai thì bám bùn, dừng đúng ô.', 'Xe thường đi lên bùn từ bãi khô: trượt tới mép nước thì dừng.'],
       cauDo: { doi: null, lap: 'gai+day-keo', coChe: ['nuoc', 'be', 'luoi', 'bun', 'nem', 'bo'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 19 · đọc rồi chọn, hai sân, phong phú (nhắc lại): bè trôi giữa sông, mỗi sân một cột (6, 4); bến q ngay dưới bè, có phao xanh (việc #15).
+    //      R1 xe chở hàng gọi grab_clear() (hàm gói 4) gắp thùng gỗ chắn đầu lối bờ rồi thả vào ô đích D (việc gói 1). R3 drone rắc cát lên ô bùn trên lối (việc #8, #18).
+    //      R2 tự lắp xe bờ tay lưới (L3) chạy dọc lối, đọc màu ô nước phía trên, thấy phao xanh thì tời bè về bến. Cách một omni + camera trượt ngang (nhanh);
+    //      cách hai hai bánh + camera bốn hướng (rẻ hơn, đọc màu bên trái). So (nhịp, ô) của hai cách: min chọn cách đỡ hơn.
+    man9('lap-ben-song', 9, 'bien-the', {
+      ten: 'Tổng duyệt bến sông',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Hai sân. Xe chở hàng dọn thùng gỗ chắn lối, drone rắc cát lên bùn. Lắp xe bờ tay lưới: chạy dọc bờ, thấy phao xanh thì tời bè về bến. Omni nhanh, hai bánh rẻ: cách nào đỡ hơn?',
+      veMaMau: 'Xe chở hàng và drone đã làm xong. R2 chưa có chương trình.',
+      san: [san19(6), san19(4)],
+      doi: [may('CH', { x: 2, y: 4, huong: 0 }), khe({ x: 1, y: 3, huong: 0 }, { son: 'lam' }), may('DR', { x: 4, y: 4, huong: 0 })],
+      them: { vatThem: [[{ x: 2, y: 3 }], [{ x: 2, y: 3 }]], sonBanDau: [son19(6), son19(4)] },
+      lapRap: lapR2(['omni', 'hai-banh', 'xich'], ['day-keo'], ['camera', 'camera-4', 'hong-ngoai'], 9, [
+        cach('omni', 'day-keo', 'camera', [CH_19, R2_19_OMNI, DR_19]),
+        cach('hai-banh', 'day-keo', 'camera-4', [CH_19, R2_19_BANH, DR_19])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([CH_19, [], DR_19]),
+      loiSai: [
+        { moTa: 'Điền thẳng cột của sân 1 (trượt 5 ô): sân 2 xe trượt quá bè, lưới hụt', baiLam: doiBai([CH_19, ['wait_n(3)', 'for i in range(5):', '    slide_right()', '    wait()', 'set_length(2)', 'cast_net()', 'wait()'], DR_19]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe chở hàng không dọn thùng gỗ: xe bờ đâm thùng mãi, vòng while không dừng', baiLam: doiBai([[], R2_19_OMNI, DR_19]), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Drone không rắc cát: sân 2 xe bờ lên bùn trượt quá phao xanh, không bao giờ thấy', baiLam: doiBai([CH_19, R2_19_OMNI, []]), phaiCoMa: ['vong-vo-han'] }
+      ],
+      sao: { o: 34, nhip: 11 },
+      goiY: ['grab_clear(): gắp vật trước mũi rồi lùi một ô.', 'while color() != "blue": trượt tiếp. Thấy phao xanh thì tung lưới.', 'Drone rắc cát (dot) lên ô bùn: xe đi qua không trượt.'],
+      cauDo: { doi: null, lap: 'omni+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'thung-go', 'bun', 'rac-cat', 'bo'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
   ];
 })();
