@@ -90,6 +90,18 @@
   var CU_8 = ['forward(1)', 'back()', 'back()'];
   var PL_8 = ['jump("R")', 'wait_n(6)', 'go_right()'];
 
+  /** cuu-hang-dong.9 (ba sân): xuồng khách R3 (khoá) kéo bè hàng sau đuôi, chờ rồi chạy thẳng ra bến q (7, 4); đá chuông (5, 4) rơi chắn luồng sông ngầm.
+   *  Bờ trên (hàng 2) là lối duy nhất tới chỗ hát (đá chỉ trong tầm từ (4, 2)); thang sắt đổ (3, 2) chắn lối; chuông đá (4, 1) vang nốt của sân. */
+  var D_9 = 'd = {1: 4, 3: 8, 5: 6}';
+  function san9() { return ['##########', '###D.#####', '#..o....##', '##########', '#B~~~~~q~#', '##########']; }
+  var VC_9 = ['..........', '..........', '...s......', '..........', '..........', '..........'];
+  /** Xuồng khách khoá: buộc bè sau đuôi (lưới dài 1 ra sau), chờ chín nhịp, chạy sáu ô (bè theo vào bến q), nhả lưới. */
+  var XU_R3_9 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(9)', 'forward(6)', 'drop_net()', 'wait()'];
+  /** Nhện: bước xuống ô thang sắt, gọi clear_iron("U") (gói 3: hút sắt rồi bước lên), thả thang vào hốc chứa D. */
+  var PL_9 = ['go_down()', 'clear_iron("U")', 'magnet_off()', 'wait()'];
+  /** Xe hang động: chờ lối thông, tiến ba ô tới chỗ hát, nghe chuông, tra sổ, hát nốt đá chuông. */
+  var HD_9 = [D_9, 'wait_n(5)', 'forward(3)', 'n = listen()', 'play_note(d[n])'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -298,6 +310,36 @@
       sao: { o: 35, nhip: 13 },
       goiY: ['Đọc chương trình của máy khách: nó tới thạch nhũ, tới cửa lúc nào?', 'Xích tiến vào thùng nặng thì đẩy thùng đi một ô.', 'jump("R"): nhện bật qua hố.'],
       cauDo: { doi: ['CU', 'PL'], lap: null, coChe: ['thung-nang', 'thach-nhu', 'ho', 'nhay', 'nut-de', 'cua', 'r3'], cuu: 'may', meo: 'don-loi' }
+    }),
+    // 9 · cứu máy, phong phú (ba sân), nhắc G3 (clear_iron), G5 (xuồng kéo bè), #2 (sổ ám hiệu dict): xuồng khách (R3, khoá) kéo bè hàng ra bến q, chờ chín nhịp rồi chạy thẳng.
+    //     Đá chuông rơi chắn luồng sông ngầm; chỗ duy nhất hát tới đá là bờ trên, nhưng thang sắt đổ chắn lối. Nhện bước xuống thang, clear_iron("U") hút rồi bước lên, thả vào hốc chứa D.
+    //     Xe hang động tới chỗ hát, n = listen() (chuông đá trên hốc, mỗi sân một nốt), play_note(d[n]). Bẫy: drone (không hút sắt, không hát).
+    man9('cuu-hang-dong', 9, 'bien-the', {
+      ten: 'Xuồng khách trên sông ngầm',
+      mucTieu: 'dua-vat',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['clear_iron']),
+      deBai: 'Ba sân. Xuồng khách kéo bè hàng, chờ 9 nhịp rồi chạy ra bến q. Đá chuông chắn luồng, thang sắt đổ chắn lối tới chỗ hát. Chọn hai bạn. Nhớ clear_iron(d) và sổ d.',
+      veMaMau: 'Đọc chương trình của xuồng khách: chờ 9 nhịp rồi forward(6).',
+      san: [san9(), san9(), san9()],
+      them: { khoaTD: ['1', '3', '5'], vatChat: [VC_9, VC_9, VC_9],
+        chuongDa: [[{ x: 4, y: 1, not: 1 }], [{ x: 4, y: 1, not: 3 }], [{ x: 4, y: 1, not: 5 }]],
+        daChuong: [[{ x: 5, y: 4, not: 4, ben: 1 }], [{ x: 5, y: 4, not: 8, ben: 1 }], [{ x: 5, y: 4, not: 6, ben: 1 }]] },
+      doi: [khe({ x: 1, y: 2, huong: 1 }), khe({ x: 3, y: 1, huong: 2 }),
+        may('XU', { x: 2, y: 4, huong: 1 }, { son: 'tim', coDinh: true })],
+      chonDoi: {
+        menu: ['HD', 'PL', 'DR'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_9, PL_9, XU_R3_9]) }]
+      },
+      maMau: doiBai([[D_9], [], XU_R3_9]),
+      loiSai: [
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(4)): sân 2, 3 đá không vỡ', baiLam: doiBai([[D_9, 'wait_n(5)', 'forward(3)', 'play_note(4)'], PL_9, XU_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không dọn thang sắt: xe hang động đứng xa đá, hát không tới', baiLam: doiBai([HD_9, [], XU_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nhện hút thang rồi thả ngay trên lối: xe vướng thang', baiLam: doiBai([HD_9, ['go_down()', 'pull_s()', 'magnet_off()', 'wait()', 'go_up()'], XU_R3_9]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 43, nhip: 19 },
+      goiY: ['Đọc chương trình của xuồng khách: nó tới đá chuông lúc nào?', 'clear_iron(d): hút sắt rồi bước d (hàm em viết ở Bãi tái chế).', 'n = listen() rồi play_note(d[n]): tra sổ.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['song-ngam', 'be', 'da-chuong', 'chuong-da', 'dict', 'sat', 'r3'], cuu: 'may', meo: 'don-loi' }
     })
   ];
 
