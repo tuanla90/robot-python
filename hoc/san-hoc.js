@@ -492,6 +492,9 @@
         - MÓC CẨU (tay, TAY_MOC; pick_up đi cùng set_down; pick_up2 là nâng cấp, cần có pick_up). TÊN: đặc tả ghi hook / unhook / hook2 nhưng mùa 3 đã dạy trẻ TỰ TẠO hàm hook() / unhook() (man-bung-nhen, man-trum-mua-3)
           nên tên gốc đổi thành pick_up / set_down / pick_up2 (31/10) để kho hàm của trẻ không vỡ.
           pick_up(): nhấc container TRÊN CÙNG ở ô đầu cần ('moc-cont' { o, cont, doi, tau }); ô không có container: 'moc-hut' { o, vat: 'trong' | 'tau-vang' | 'ngoai-san' } (lỗi); đang treo: 'dang-treo' { o, cont } (lỗi).
+          CONTAINER TRÔI (16/11, mùa 9 G4; lớp cfg.contTroi): ô đầu cần không có chồng mà có container trôi thì pick_up() nhấc nó lên ('moc-cont' như trên, thêm troi: id vật nổi;
+            vật nổi thành trangThai 'moc', container thành bản ghi treo mới); xe đứng trên / xuồng khác đang giữ trong lưới: 'moc-hut' vat 'co-xe' | 'dang-keo'; pick_up2: 'moc-thieu' co 1.
+            read_code() / weight() đọc container trôi ở đầu cần như container trên cùng. cfg.giao, hangTau.can, bongMo.chongLuat (du) đếm cả số của container trôi.
           pick_up2(): nhấc HAI container trên cùng một lần, giữ thứ tự (treo = [dưới, trên]); chồng chỉ có 1: 'moc-thieu' { o, co } (lỗi, không nhấc); chồng trống: moc-hut.
           set_down(): hạ MỌI container đang treo lên ĐỈNH chồng ở ô đầu cần ('ha-cont' { o, cont, doi, tau }); không treo gì: 'khong-treo' (lỗi). Không hạ được → 'ha-bi-chan' { o, vat, cont } (lỗi), container vẫn treo; vat:
             'ngoai-san' | 'tau-vang' (ô T lúc tàu vắng) | 'nuoc' | 'tuong' | 'rao' | 'ray' (không đặt lên ray) | 'bac-thang' | 'nut' | 'ho' | 'gam-thap' | 'cua' | 'bang' | 'vat-can' | 'robot' (ô bệ / robot khác dưới đất) | 'thung-nang' | 'vat' | 'chong-day' (chồng + số hạ > 4).
@@ -526,6 +529,15 @@
           Không dùng chung với bongMo.chong. Sai thì không thắng (cham.js: sai-luat-chong, chỉ chỗ sai ĐẦU TIÊN). Hàm chấm dùng chung: SanHoc.soatChongLuat(chongLuat, chong, treo) → null (đạt) hay
           { kieu: 'treo' | 'la-mau' | 'thieu' | 'thua' | 'sai-chieu', x, y, … }. Kết quả `bongMo.chongLuat` [{ x, y, luat, mau: [..] | null, du }] (du đã đếm).
         - NHIỀU ROBOT: bệ chiếm ô như tường với xe dưới đất (xe đâm 'dong-doi'); xe đi qua ô R như sàn; đầu cần KHÔNG chặn ai (xe đứng dưới đầu cần được, nhưng set_down xuống ô có xe → ha-bi-chan 'robot'); rail bị xe chặn ('robot').
+        - CHỒNG CHẶN (M9T5, 5/11; kế hoạch mùa 9 mục 5b "Container (Cảng) | Cần cẩu | mọi xe"): CHỈ khi màn khai cfg.contChan = true (cần lớp cfg.chong, sân không có chồng thì chong: [];
+          6 màn Cảng sông cũ có nhện đứng trên ô chồng nên mặc định TẮT, màn không khai không đổi gì). Ô có chồng cao ≥ 1 là KHỐI như tường (lyDoChan 'container', laChongChan đọc bảng chồng SỐNG):
+          · xe mặt đất (bánh, xích, omni, gai, nhện, xuồng nếu lên bờ) đi / lùi / trượt / chéo / giật vào: đứng yên, mất nhịp, 'dam-tuong' vat 'container' (cham.js: "Nhờ cần cẩu nhấc container đi trước");
+            băng chuyền đẩy xe vào: 'bang-chan' vat 'container'; nhện bật: chồng ở ô giữa hay ô đáp → 'nhay-hut' vat 'container'.
+          · thùng nặng không vào ô chồng (oThungChan 'container': xích ủi → 'dam-tuong' thung-nang chan 'container'; giật / băng chuyền cũng chặn); không thả / trượt vật lên chồng (oThaChan 'container').
+          · tia phun (spray / spray_back) dừng ở ô chồng: 'ban' trung 'container' (không tới van / lửa / nút phía sau). Cảm biến khoảng cách / hồng ngoại, dây lưới thấy chồng như tường.
+          · người P đi bộ: ô chồng trên đường về trạm → 'nguoi-cho' vat 'container' (người chờ); đường về trạm vẫn tính trên sân TĨNH bỏ qua chồng (chồng dời được).
+          · drone bay qua / dừng trên ô chồng được; land() lên ô chồng → 'dap-bi-chan' vat 'container'. Cần cẩu không bị chặn (cần cao hơn mọi thứ).
+          · cẩu pick_up / pick_up2 hết container ở ô → ô thông ngay (robot đứng sau cẩu trong đội đi vào được ngay nhịp đó, robot đứng trước thì nhịp sau); set_down lên ô có xe vẫn bị chặn ('robot').
         - NHÂN (nhan/san-robot-core.js, 31/10): phép % đổi theo Python (kết quả cùng dấu số chia: -5 % 8 = 3) để bài "(b - a) % 4 lần swing_right()" chạy đúng; // vẫn Math.floor; abs / min / max có sẵn.
 
    KHAY VÀ PHẦN CỨNG (luật chế lệnh, 14/10): hai tập lệnh gốc khác nhau.
@@ -705,6 +717,20 @@
   //   T3 VÒI PHUN GẠT VAN: bóng spray / spray_back dừng ở van cống V ('van', trước 4/11 bay qua) → doiVan như lưới kéo van, sự kiện 'phun-van' { tu, o, huong, bat, soO, lenh }.
   //   T4 BÈ SẠC: lớp cfg.beSac = [{ x, y }] gắn ô sạc lên bè B ở ô đó (vật sac: true). Ô sạc đi theo bè (trôi, kéo; 'be-sac-di' { id, tu, den } cuối nhịp); drone bay / đậu trên bè sạc được sạc như ô P;
   //     land() lên bè sạc được (bè thường vẫn 'dap-bi-chan' vat), drone đậu trên bè đi theo bè ('theo-be' { id, tu, den }).
+  // M9L15 (4/11, user mở "Mở L15"; mục 4 dòng L15): DRONE + BÌNH XỊT BỤNG — tay vòi phun ('hoi') treo dưới bụng drone. Lõi nhận cấu hình vật lý (không biết bảng ghép):
+  //   drone có spray trên khay là drone mang bình xịt; bảng ghép (hoc/bang-ghep.js, ô ★ L15) chặn khi màn chưa mở L15.
+  //   · LỆNH: chỉ spray(), KHÔNG đối số ('xit-tham-so', lỗi chạy); spray_back trên khay drone = lỗi cấu hình (drone không có mũi / đuôi; daoChieu đã cấm với drone từ trước); cờ lucBan bỏ qua với drone.
+  //   · NHỊP: spray() chỉ ra lệnh (như xe), làm ở nhịp kế của drone — wait() / go_*() / land() / take_off() — TRƯỚC khi bay (như đầu sơn bụng): "spray(); go_right()" xịt ô cũ rồi bay.
+  //     Xịt được cả lúc đang bay lẫn đang đậu. Hai spray() chưa trôi nhịp: 'ban-goi-lai' (như xe). Không giật (drone lơ lửng), không có tia bay xa, không có sự kiện 'ban' / 'giat'.
+  //   · Ô DƯỚI BỤNG = ô drone đang ở. Drone mang bình xịt BAY LÊN TRÊN được ô lửa đang cháy, ô van V và nút N (drone khác vẫn bị chặn như cũ); land() không đáp xuống lửa / van / nút ('dap-bi-chan' vat 'lua' | 'van' | 'nut').
+  //     Lửa → như tia nước trúng lửa: suc giảm 1 ('lua-nho'), về 0 thì 'lua-tat' (ô thành sàn, không cháy lại; cửa chống cháy đổi cuối nhịp).
+  //     Van V → doiVan như T3 ('phun-van' { tu = o = ô đó, huong: null, soO: 0 }). Nút N → doiNut như bóng trúng nút ('nut-doi', băng đổi ngay, cửa đổi cuối nhịp).
+  //     Có tác dụng: 'xit-bung' { nhip, o, trung: 'lua' | 'van' | 'nut', lenh } (phát TRƯỚC mã cũ). Ô khác (sàn, nước, người, vật…): 'xit-hut' { nhip, o, lenh } — thông tin,
+  //     KHÔNG là lỗi, KHÔNG tính chạm người.
+  //   · BÌNH NHỎ: màn không khai danToiDa thì drone có BINH_XIT_DRONE = 3 lần xịt; khai danToiDa = n thì n. Hết bình: 'het-dan' { nhip, lenh, drone: true, binh } (lỗi), không xịt, vẫn mất nhịp.
+  //     Xịt hụt vẫn tốn một lần. Pin: xịt không tốn thêm pin.
+  //   · MỘT TAY: bình xịt không đi chung nam châm, đầu sơn, phao. Xe gắn vòi phun KHÔNG đổi (bóng bay thẳng, giật).
+  var BINH_XIT_DRONE = 3;
   var NGUOI_NOI = 'nguoi';
   var LOI_CHAM_NGUOI = { phun: 'Không phun nước vào người!', kep: 'Không kẹp người!', 'nam-cham': 'Không hút người bằng nam châm!', nem: 'Không ném vào người!', nap: 'Không nạp người vào máy ném!', moc: 'Không móc cẩu vào người!' };
   HAM_GOC.gai = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];   // BÁNH GAI (mùa 8 Hang động): đi như xe hai bánh, bám đá vôi ướt 'I' khi đang bung gai
@@ -966,7 +992,7 @@
     function layMang(l) { return l ? (nhieu && Array.isArray(l) && Array.isArray(l[0]) ? (l[i] || null) : l) : null; }
     var dieuSan = !m.dieu ? null : (nhieu && Array.isArray(m.dieu) && (Array.isArray(m.dieu[0]) || (typeof m.dieu[0] === 'string' && m.dieu[0].length > 1)) ? (m.dieu[i] || null) : m.dieu);
     return { mau: lay(m.mau), vatMau: lay(m.vatMau), vatChat: lay(m.vatChat), vatDang: lay(m.vatDang), vatThem: lay(m.vatThem), thungThem: lay(m.thungThem), cuaNhip: lay(m.cuaNhip), noi: lay(m.noi), nutBat: lay(m.nutBat), lua: lay(m.lua), demTu: lay(m.demTu), sanDoc: lay(m.sanDoc), bongMo: lay(m.bongMo), hinh: lay(m.hinh), sonBanDau: lay(m.sonBanDau), dong: lay(m.dong),
-      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao), hangTau: lay(m.hangTau), contTroi: lay(m.contTroi),
+      chong: lay(m.chong), tau: lay(m.tau), giao: lay(m.giao), hangTau: lay(m.hangTau), contTroi: lay(m.contTroi), beSac: layMang(m.beSac),   // T4 bè sạc: mảng ô như nguoi
       nguoi: layMang(m.nguoi), tramCuu: layMang(m.tramCuu), thac: layMang(m.thac),   // M9C1: người cần cứu, trạm cứu, thác (một sân: mảng ô; nhiều sân: mảng song song)
       dieu: dieuSan, ngachHang: layMang(m.ngachHang), chuongDa: layMang(m.chuongDa || m.danDoi), daChuong: layMang(m.daChuong) };
   }
@@ -1032,8 +1058,11 @@
     if (c === 'S' && (loai === 'banh' || loai === 'omni' || loai === 'gai')) return 'bac-thang';
     if (c === 'n' && loai !== 'nhen' && loai !== 'drone') return 'gam-thap';       // gầm thấp: nhện chui được khi co chân (chay() xét thêm theo chân), drone bay qua, thân khác không vào
     if (san.demTu && san.demTu[x + ',' + y] && loai !== 'drone') return 'dem-tu';  // ĐỆM TỪ (mùa 3, cfg.demTu): ô đệm là KHỐI, mọi thân dưới đất đâm như tường; drone bay qua
+    if (laChongChan(san, x, y) && loai !== 'drone' && loai !== 'cau') return 'container';   // M9T5 (cfg.contChan): ô có chồng container là KHỐI với mọi thân dưới đất; drone bay qua
     return null;
   }
+  /** M9T5: ô (x, y) đang có chồng container (cao ≥ 1) mà màn khai cfg.contChan (san.contChan = bảng chồng sống của chay(); màn không khai: null, không chặn gì). */
+  function laChongChan(san, x, y) { var ch = san.contChan && san.contChan[x + ',' + y]; return !!(ch && ch.length); }
 
   /* ----------------------------------------------------------------- chạy */
 
@@ -1300,7 +1329,9 @@
       if (laDrone) {
         if (coTay) throw new Error('Drone không gắn tay kẹp (arm_down, arm_up, grab, release): thân drone chỉ gắn được nam châm treo.');
         if (coNem) throw new Error('Drone không gắn máy ném (aim, throw, load): thân drone chỉ gắn được nam châm treo.');
-        if (coHoi) throw new Error('Drone không gắn vòi phun (spray, spray_back): thân drone chỉ gắn được nam châm treo.');
+        // M9L15 (4/11): bỏ câu ném "Drone không gắn vòi phun" — lõi nhận cấu hình vật lý; drone + vòi phun = bình xịt bụng (lai L15), bảng ghép chặn khi màn chưa mở
+        if (coHoi && (hamGoc.indexOf('spray_back') >= 0 || phanCung.indexOf('spray_back') >= 0)) throw new Error('Drone không có mũi hay đuôi: bình xịt dưới bụng chỉ xịt thẳng xuống bằng spray(), không có spray_back().');
+        if (coHoi && (coPhao || coSon)) throw new Error('Một robot chỉ có một tay: bình xịt dưới bụng drone không đi chung phao hay đầu sơn.');
         if (coCamBien || coCamTu) throw new Error('Drone không gắn cảm biến khoảng cách hay cảm biến từ (drone không có hướng mặt để đo "phía trước").');
         if (coHongNgoai) throw new Error('Drone không gắn cảm biến hồng ngoại (drone không có hướng mặt để đo "phía trước").');
       } else if (coPinCamBien) throw new Error('battery() chỉ dành cho drone (robot có pin).');
@@ -1353,7 +1384,7 @@
       keo = null;                             // xuồng: vật nổi đang giữ { id, cho: 'luoi' | 'khoang', doDai: 0..3, day: [{x,y}...] } | null
       neoCho = null;                          // xuồng: lệnh anchor() / unanchor() đang chờ wait(): {ten, dongPy}
       phaoCho = null;                         // xuồng: lệnh cast_net() / drop_net() / set_length() / reel_in() / reel_out() đang chờ wait(): {ten, dongPy, ...}
-      lai9 = { gio: null, phao: null, conPhao: true, beDau: null };   // M9C2: giỏ cứu hộ (cẩu L9), phao (drone L10), bè sạc đang đậu (drone T4)
+      lai9 = { gio: null, phao: null, conPhao: true, beDau: null, binh: null };   // M9C2: giỏ cứu hộ (cẩu L9), phao (drone L10), bè sạc đang đậu (drone T4)
       nac = laCau ? (bd.nac || 0) : null;     // cần cẩu: nấc cần 0–3 (xem NAC_VEC)
       tam = laCau ? (bd.tam || 1) : null;     // cần cẩu: tầm cần 1–3
       treo = [];                              // cần cẩu: container đang treo ở móc, đáy → đỉnh (mỗi phần tử là bản ghi container của conts)
@@ -1374,8 +1405,9 @@
         if (!coHoi) throw new Error('danToiDa chỉ dùng cho robot có vòi phun (hamGoc có spray, spray_back).');
         if (typeof rc.danToiDa !== 'number' || Math.floor(rc.danToiDa) !== rc.danToiDa || rc.danToiDa < 0) throw new Error('danToiDa phải là số nguyên không âm.');
         dan = rc.danToiDa;
-      }
-      lucBan = !!rc.lucBan && coHoi;          // vòi phun: spray(p) / spray_back(p) chọn được lực "low" / "high"; robot không vòi phun bỏ qua cờ
+      } else if (laDrone && coHoi) dan = BINH_XIT_DRONE;                    // M9L15: bình xịt bụng của drone mặc định 3 lần
+      if (laDrone && coHoi) lai9.binh = dan;                                  // M9L15: sức chứa bình (cho 'het-dan' của drone)
+      lucBan = !!rc.lucBan && coHoi && !laDrone;              // vòi phun: spray(p) / spray_back(p) chọn được lực "low" / "high"; robot không vòi phun bỏ qua cờ; M9L15: drone xịt thẳng xuống, không chọn lực
                                               // (29/10: lộ trình bật lucBan cho mọi màn từ gói 6 Lực phun, kể cả robot không vòi phun)
       xichDay = !!rc.xichDay;                 // mùa 2: xích TIẾN vào thùng nặng thì đẩy thùng 1 ô (chỉ có nghĩa với loai 'xich'; thân khác bỏ qua)
       beSung = !!rc.beSung;                   // mùa 2: bệ súng xích — xích gắn súng hơi bắn tụ thì không giật (thân khác vẫn giật; robot không súng bỏ qua cờ, để màn nhiều robot khai một chỗ)
@@ -1700,6 +1732,7 @@
       if (c === '=') return 'rao';
       if (c === 'S') return 'bac-thang';
       if (san.demTu && san.demTu[x + ',' + y]) return 'dem-tu';           // ô đệm từ là khối
+      if (laChongChan(san, x, y)) return 'container';                     // M9T5 (cfg.contChan): chồng container chặn thùng như tường
       if (cuaDong(x, y)) return lyCua(x, y);                              // cửa đang đóng (hay lửa đang cháy) chặn thùng như chặn xe
       if (thungTai(x, y)) return 'thung-nang';
       if (rb.x === x && rb.y === y && !laDrone) return 'xe';              // drone lơ lửng trên thùng, không chiếm ô
@@ -1771,7 +1804,8 @@
     /** Ô (x, y) người đi bộ được trên sân TĨNH (không xét robot, vật, cửa): như xe bánh, thêm không hố / thùng nặng lúc đầu / băng chuyền / bàn xoay / cổng / đá ướt / nước. */
     function oNguoiDiDuoc(x, y) {
       var c = oTai(san, x, y);
-      if (c === null || lyDoChan(san, 'banh', x, y)) return false;
+      var lyT = c === null ? 'ngoai-san' : lyDoChan(san, 'banh', x, y);
+      if (lyT && lyT !== 'container') return false;                          // M9T5: sân TĨNH bỏ qua chồng container (chồng dời được; oNguoiChan bắt người chờ)
       if (c === 'u' || c === 'I' || BANG[c] !== undefined || BAN_XOAY[c] !== undefined || CONG_KY[c]) return false;
       return !san.thung.some(function (t) { return t.x === x && t.y === y; });
     }
@@ -1968,6 +2002,10 @@
     // M9B2 (tương tác T2 mùa 9): cfg.contLapHo = true → set_down() lên ô hố 'u' lấp hố: container DƯỚI CÙNG đang treo thành sàn (ô thành '.', hố mất cho mọi robot), sự kiện 'lap-ho' { o, cont };
     // container còn lại (móc đôi) nằm lên trên thành chồng 1. Màn không khai thì hố vẫn chặn hạ ('ha-bi-chan' vat 'ho') như mùa 4 (màn Cảng sông cũ có ô 'u' trong tầm cần).
     var contLapHo = !!cfg.contLapHo, lapHoDs = [];
+    // M9T5: cfg.contChan = true → ô có chồng container (cao ≥ 1) chặn như tường (xem phần CẢNG SÔNG đầu tệp, đoạn CHỒNG CHẶN); san.contChan trỏ tới bảng chồng SỐNG (pick_up hết thì ô thông ngay).
+    var contChan = !!cfg.contChan;
+    if (contChan && !Array.isArray(cfg.chong)) throw new Error('contChan (chồng container chặn như tường) cần lớp cfg.chong = [{ x, y, cont: [...] }] (sân không có chồng nào thì khai chong: []).');
+    san.contChan = contChan ? chongTai : null;
     var coCau = dsRc.some(function (rc) { return (rc.loaiRobot || 'banh') === 'cau'; });
     if (taiToiDa !== null && !(laSoNguyen(taiToiDa) && taiToiDa >= 1)) throw new Error('taiToiDa (luật tải của cẩu) phải là số nguyên dương: tổng tấn đang treo × tầm phải ≤ taiToiDa.');
     if ((taiToiDa !== null || luatThap) && !coCau) throw new Error('taiToiDa / luatThap chỉ dùng cho màn có cần cẩu (loaiRobot "cau").');
@@ -2015,6 +2053,8 @@
       });
     }
     // HÀNG TÀU NỐI ĐUÔI (3d): một bến, chỉ tàu đầu hàng đậu ở boong; mỗi tàu cần đúng một số container
+    /** Số container mang số n trên sân lúc dựng: trong chồng (cfg.chong) và trôi trên nước (cfg.contTroi; 16/11 mùa 9 G4: cẩu móc lên bãi / boong được). */
+    function soContSan(n) { return conts.filter(function (c) { return c.so === n; }).length + vats.filter(function (v) { return v.noi === 'container' && v.so === n; }).length; }
     var hangTau = null, daGiaoHang = [];
     if (cfg.hangTau !== undefined && cfg.hangTau !== null) {
       var ht = cfg.hangTau;
@@ -2032,8 +2072,8 @@
       var demCan = {};
       ht.can.forEach(function (n) { demCan[n] = (demCan[n] || 0) + 1; });
       Object.keys(demCan).forEach(function (n) {
-        var co = conts.filter(function (c) { return c.so === +n; }).length;
-        if (co < demCan[n]) throw new Error('hangTau: hàng tàu cần ' + demCan[n] + ' container số ' + n + ' mà trên sân chỉ có ' + co + ' (cfg.chong).');
+        var co = soContSan(+n);
+        if (co < demCan[n]) throw new Error('hangTau: hàng tàu cần ' + demCan[n] + ' container số ' + n + ' mà trên sân chỉ có ' + co + ' (cfg.chong, cfg.contTroi).');
       });
       if (ht.cho !== undefined && ht.cho !== null) {
         if (!Array.isArray(ht.cho)) throw new Error('hangTau: cho phải là mảng ô nước [{x,y}] (chỗ vẽ tàu đang chờ).');
@@ -2059,7 +2099,7 @@
         if (!g || !laSoNguyen(g.tau) || !taus[g.tau]) throw new Error('giao: tau phải là chỉ số tàu trong cfg.tau (0–' + (taus.length - 1) + ').');
         if (!Array.isArray(g.so) || !g.so.length || !g.so.every(function (n) { return laSoNguyen(n) && n >= 1 && n <= CONT_SO_TOI_DA; })) throw new Error('giao: so phải là mảng số container (1–' + CONT_SO_TOI_DA + ') không rỗng.');
         if (giaoDs.some(function (h) { return h.tau === g.tau; })) throw new Error('giao: tàu ' + g.tau + ' khai hai lần.');
-        g.so.forEach(function (n) { if (!conts.some(function (c) { return c.so === n; })) throw new Error('giao: không có container số ' + n + ' nào trên sân (cfg.chong).'); });
+        g.so.forEach(function (n) { if (!soContSan(n)) throw new Error('giao: không có container số ' + n + ' nào trên sân (cfg.chong, cfg.contTroi).'); });
         giaoDs.push({ tau: g.tau, so: g.so.slice() });
       });
     } else if (cfg.giao !== undefined && cfg.giao !== null) throw new Error('giao chỉ dùng với mục tiêu "giao-tau".');
@@ -2118,7 +2158,7 @@
           if (mauDaNhan[m]) throw new Error('bongMo.chongLuat: hai chồng đích cùng nhận màu ' + m + ' (so % 4) mà không khai du: không biết chia thế nào.');
           mauDaNhan[m] = true;
         });
-        q.du = conts.filter(function (c) { return !q.mau || q.mau.indexOf(c.so % 4) >= 0; }).length;
+        q.du = conts.concat(vats.filter(function (v) { return v.noi === 'container'; })).filter(function (c) { return !q.mau || q.mau.indexOf(c.so % 4) >= 0; }).length;   // 16/11: kể cả container trôi
         if (q.du < 1) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): trên sân không có container nào hợp màu.');
         if (q.du > CHONG_TOI_DA) throw new Error('bongMo.chongLuat (' + q.x + ', ' + q.y + '): có ' + q.du + ' container hợp màu, chồng cao tối đa ' + CHONG_TOI_DA + '.');
       });
@@ -2434,6 +2474,7 @@
       if (c === 'n') return 'gam-thap';
       if (c === 'u') return 'ho';
       if (san.demTu && san.demTu[x + ',' + y]) return 'dem-tu';           // ô đệm từ là khối
+      if (laChongChan(san, x, y)) return 'container';                     // M9T5 (cfg.contChan): không thả vật lên chồng container
       if (thungTai(x, y)) return 'thung-nang';
       if (vatNamTai(x, y)) return 'vat';
       if (xeDatTai(x, y)) return 'dong-doi';
@@ -2642,10 +2683,14 @@
         else if (c === 'u') ly = 'ho';
         else if (c === 'S') ly = 'bac-thang';
         else if (c !== null && BANG[c] !== undefined) ly = 'bang';
+        else if (c === 'V') ly = 'van';                                                           // M9L15: drone mang bình xịt lơ lửng trên van / nút / lửa, không đáp xuống đó
+        else if (c === 'N') ly = 'nut';
+        else if (luaChay(rb.x, rb.y)) ly = 'lua';
         else if (beSacTai(rb.x, rb.y)) ly = null;                                                // M9C2 (T4): đáp lên bè sạc được (kể cả bè đang trôi)
         else if (laNuoc(san, rb.x, rb.y) && !cauPhaoTai(rb.x, rb.y)) ly = 'nuoc';                // Bến sông: không đáp xuống mặt nước (trừ cầu phao)
         else if (thungTai(rb.x, rb.y)) ly = 'thung-nang';
         else if (vatNamTai(rb.x, rb.y)) ly = 'vat';
+        else if (laChongChan(san, rb.x, rb.y)) ly = 'container';                                 // M9T5 (cfg.contChan): không đáp lên chồng container
         if (ly) { var eb = { ma: 'dap-bi-chan', nhip: nhip, o: o, vat: ly, lenh: lenhNhip }; sk.push(eb); suKienChan.push(eb); return; }
         dau = true;
         var bs = beSacTai(rb.x, rb.y); lai9.beDau = bs ? bs.id : null;
@@ -2656,7 +2701,10 @@
         var v = VEC[huongDi], nx = rb.x + v[0] * soBuoc, ny = rb.y + v[1] * soBuoc;
         var ly = lyDoChan(san, loai, nx, ny);
         if (ly === 'nuoc' && cauPhaoTai(nx, ny)) ly = null;                 // CẦU PHAO (Bến sông): xe cạn đi lên vật nổi trên nước êm như sàn
+        var xitTren = laDrone && coHoi;                                    // M9L15: drone mang bình xịt bay lên trên ô van V, nút N và ô lửa đang cháy (để xịt ô dưới bụng)
+        if (xitTren && (ly === 'van' || ly === 'nut')) ly = null;
         if (!ly) ly = lyCua(nx, ny);                           // cửa đang đóng chặn như tường
+        if (xitTren && ly === 'lua') ly = null;
         if (!ly && laXuong && congDong(nx, ny)) ly = 'cong';               // xuồng: cống đóng chặn như cửa
         if (!ly && dongDoiChanDi(nx, ny)) ly = 'dong-doi';                 // nhiều robot: đồng đội đứng đó hay định tới đó
         if (!ly && loai === 'nhen' && chan !== 'co' && oTai(san, nx, ny) === 'n') ly = 'gam-thap';       // gầm thấp: nhện phải đang co chân mới chui vào được
@@ -2900,6 +2948,7 @@
         if (l.ten === 'dot' && laDaUot(rb.x, rb.y) && !laCau) {                   // RẮC CÁT (M9B1, R): chấm lên ô đá ướt / bùn trơn 'I' dưới đầu gieo → ô thành sàn thường cho cả lượt
           racCat[rb.x + ',' + rb.y] = true;
           sk.push({ ma: 'rac-cat', nhip: nhip, o: { x: rb.x, y: rb.y }, lenh: lg });
+          return;                                                                  // rắc cát không phải chấm sơn: không ghi daSon / 'to-o' (trước 4/11 bộ vẽ vẽ thêm bông hoa của máy sơn lên ô cát)
         }
         if (l.ten === 'pen_up') { if (son.ha) { son.ha = false; sk.push({ ma: 'nhac-but', o: { x: rb.x, y: rb.y } }); } return; }
         if (l.ten === 'pen_down' && !son.ha) { son.ha = true; sk.push({ ma: 'ha-but', o: { x: rb.x, y: rb.y } }); }
@@ -2931,6 +2980,7 @@
           else if (c === 'V' && vanTai[x + ',' + y]) ly = 'van';                 // M9C2 (T3): tia phun trúng van cống V thì van đổi (như lưới kéo van)
           else if (c === 'S') ly = 'bac-thang';
           else if (cuaDong(x, y)) ly = lyCua(x, y);                         // 'lua': tia nước trúng lửa (dập)
+          else if (laChongChan(san, x, y)) ly = 'container';                // M9T5 (cfg.contChan): tia dừng ở chồng container (không tới van / lửa / nút phía sau)
           else if (thungTai(x, y)) ly = 'thung';
           else if (laNguoi(vatNamTai(x, y))) { if (dan !== null) dan++; chamNguoi(sk, { x: x, y: y }, 'phun', lenhGhi); return false; }   // M9C1: không phun vào người (không bắn, không giật, không tốn đạn)
           else if (vatNamTai(x, y)) ly = 'vat';
@@ -2957,7 +3007,11 @@
           return kqBan;
         }
         if (trung !== 'nut') return kqBan;
-        var n = nutTai[oVC.x + ',' + oVC.y];
+        doiNut(nutTai[oVC.x + ',' + oVC.y], lenhGhi);
+        return kqBan;
+      }
+      /** NÚT N đổi (bóng trúng N, hay bình xịt bụng drone xịt ô N — M9L15): băng đổi ngay, cửa đổi ở cuối nhịp. */
+      function doiNut(n, lenhGhi) {
         n.bat = !n.bat;
         sk.push({ ma: 'nut-doi', nhip: nhip, o: { x: n.x, y: n.y }, bat: n.bat });
         suKienChan.push({ ma: 'nut-doi', nhip: nhip, o: { x: n.x, y: n.y }, bat: n.bat, lenh: lenhGhi });
@@ -2967,7 +3021,44 @@
           sk.push({ ma: 'bang-doi', nhip: nhip, o: { x: +kp[0], y: +kp[1] }, bat: !bangTat[k] });
         });
         n.cua.forEach(function (dc) { dc.doi = !dc.doi; });                     // cửa đổi ở CUỐI nhịp
-        return kqBan;
+      }
+
+      /** M9L15 BÌNH XỊT BỤNG (drone + vòi phun): spray() đang chờ xịt thẳng xuống Ô DƯỚI BỤNG (ô drone đang ở), trước khi bay; không giật, không tia bay xa.
+       *  Lửa đang cháy → nhỏ đi một cỡ / tắt (như tia trúng lửa); van V → doiVan ('phun-van', tu = o); nút N → doiNut. Có tác dụng: 'xit-bung' (trước mã cũ);
+       *  ô khác: 'xit-hut' (thông tin, không lỗi, không tính chạm người). Bình nhỏ: hết thì 'het-dan' (lỗi), không xịt. */
+      function xitBung(l) {
+        if (!l) return;
+        var lenhGhi = l.dongPy ? { ten: l.ten, dongPy: l.dongPy } : null, o = { x: rb.x, y: rb.y }, k = rb.x + ',' + rb.y;
+        if (dan !== null) {
+          if (dan <= 0) {
+            var eh = { ma: 'het-dan', nhip: nhip, lenh: lenhGhi, drone: true, binh: lai9.binh };
+            sk.push(eh); suKienChan.push(eh);
+            return;
+          }
+          dan--;
+        }
+        var c = oTai(san, rb.x, rb.y);
+        if (luaChay(rb.x, rb.y)) {
+          var lb = luaTai[k];
+          sk.push({ ma: 'xit-bung', nhip: nhip, o: o, trung: 'lua', lenh: lenhGhi });
+          lb.suc--;
+          sk.push({ ma: 'lua-nho', nhip: nhip, o: { x: lb.x, y: lb.y }, suc: lb.suc });
+          if (lb.suc === 0) {
+            sk.push({ ma: 'lua-tat', nhip: nhip, o: { x: lb.x, y: lb.y } });
+            lb.cua.forEach(function (dc) { dc.doi = !dc.doi; });               // cửa chống cháy đổi ở CUỐI nhịp
+          }
+        } else if (c === 'V' && vanTai[k]) {
+          var vn = vanTai[k];
+          sk.push({ ma: 'xit-bung', nhip: nhip, o: o, trung: 'van', lenh: lenhGhi });
+          doiVan(vn);
+          sk.push({ ma: 'phun-van', nhip: nhip, tu: { x: rb.x, y: rb.y }, o: { x: vn.x, y: vn.y }, huong: null, bat: vn.bat, soO: 0, lenh: lenhGhi });
+        } else if (c === 'N' && nutTai[k]) {
+          sk.push({ ma: 'xit-bung', nhip: nhip, o: o, trung: 'nut', lenh: lenhGhi });
+          doiNut(nutTai[k], lenhGhi);
+        } else {
+          var ex = { ma: 'xit-hut', nhip: nhip, o: o, lenh: lenhGhi };
+          sk.push(ex); suKienChan.push(ex);
+        }
       }
 
       /** Thông tin về quả bóng KHÔNG tới nút: bay ra khỏi sân ('ban-hut'), phun nhẹ rơi vì hết tầm ('ban-ngan'), hay (sân có nút) bị vật cản chặn ('ban-bi-chan'). Chỉ ghi khi cú giật
@@ -3612,6 +3703,7 @@
        *  tới ô nước sát bờ thì lên ô bờ có đường về trạm ngắn nhất ('nguoi-len-bo', thả lưới đang giữ), tới trạm thì 'nguoi-toi-tram'. */
       function oNguoiChan(x, y) {
         var vq = vatNamTai(x, y);
+        if (laChongChan(san, x, y)) return 'container';                      // M9T5 (cfg.contChan): chồng container trên đường như tường, người chờ tới khi cẩu nhấc đi
         return thungTai(x, y) ? 'thung-nang' : vq ? (laNguoi(vq) ? 'nguoi' : 'vat') : lyCua(x, y) || (((!laDrone && rb.x === x && rb.y === y) || xeDatTai(x, y)) ? 'robot' : null);
       }
       /** M9C2 (T4): cuối nhịp, bè sạc đã dời ô (trôi / kéo) → 'be-sac-di' { id, tu, den } cho bộ vẽ (ô sạc vẽ theo bè). */
@@ -3809,6 +3901,17 @@
           var ch = oTai(san, o.x, o.y) === null ? [] : chongO(o.x, o.y), tauM = tauDauTai(o.x, o.y);
           if (laNguoi(vatNamTai(o.x, o.y))) return chamNguoi(sk, o, 'moc', lg);                // M9C1: móc cẩu không nhắm vào ô có người
           if (treo.length) { var edt = { ma: 'dang-treo', nhip: nhip, o: o, cont: chupTreo(), lenh: lg }; sk.push(edt); suKienChan.push(edt); return; }
+          var vTroi = ch.length || oTai(san, o.x, o.y) === null ? null : vatNoiTai(o.x, o.y);
+          if (vTroi && vTroi.noi === 'container' && vTroi.so !== undefined) {         // 16/11 (mùa 9 G4): CONTAINER TRÔI ở ô đầu cần — móc nhấc lên như container trên cùng của chồng
+            var lyTroi = xeDatTai(o.x, o.y) ? 'co-xe' : xeKhac.some(function (xk) { return xk.keoId === vTroi.id; }) ? 'dang-keo' : null;
+            if (lyTroi) { var emk = { ma: 'moc-hut', nhip: nhip, o: o, vat: lyTroi, lenh: lg }; sk.push(emk); suKienChan.push(emk); return; }
+            if (ten === 'pick_up2') { var emt1 = { ma: 'moc-thieu', nhip: nhip, o: o, co: 1, lenh: lg }; sk.push(emt1); suKienChan.push(emt1); return; }
+            var ctT = { id: conts.length + 1, so: vTroi.so, tan: vTroi.tan, x: o.x, y: o.y, trangThai: 'treo', tuTroi: vTroi.id };
+            if (taiToiDa !== null && ctT.tan * tam > taiToiDa) return quaTai(ctT.tan, tam, lg, [ctT]);
+            conts.push(ctT); vTroi.trangThai = 'moc'; treo = [ctT]; coChong = true;
+            sk.push({ ma: 'moc-cont', nhip: nhip, o: o, cont: [chupCont(ctT)], doi: false, tau: null, troi: vTroi.id });
+            return;
+          }
           if (!ch.length) { var emh = { ma: 'moc-hut', nhip: nhip, o: o, vat: oTai(san, o.x, o.y) === null ? 'ngoai-san' : (oTai(san, o.x, o.y) === 'T' && !tauM) ? 'tau-vang' : 'trong', lenh: lg }; sk.push(emh); suKienChan.push(emh); return; }
           var soLay = ten === 'pick_up2' ? 2 : 1;
           if (soLay === 2 && ch.length < 2) { var emt = { ma: 'moc-thieu', nhip: nhip, o: o, co: ch.length, lenh: lg }; sk.push(emt); suKienChan.push(emt); return; }
@@ -4054,6 +4157,7 @@
           apNamCham();                                                        // (a) lệnh nam châm (thả trước khi bay)
           if (coPhao) apPhaoDrone(hanhDong.phao);                             // M9C2 (L10): thả / thu phao ở ô dưới bụng, trước khi bay
           if (coSon) apSon(hanhDong.son);                                     // (a) đầu sơn treo dưới bụng: chấm / hạ / nhấc ở ô đang ở, TRƯỚC khi bay
+          if (coHoi) xitBung(hanhDong.hoi);                                   // M9L15: bình xịt bụng xịt ô dưới bụng, TRƯỚC khi bay (không giật)
           if (coLoa) { loa.am = null; apLoa(hanhDong.loa); }
           if (hanhDong.dap === 'land') apDap();                               // nâng cấp đáp đất: land() / take_off() (xem phần DRONE)
           else if (hanhDong.dap === 'take_off') {
@@ -4428,6 +4532,10 @@
         var canD = hangTau.coMat ? hangTau.can[hangTau.dau] : -1;
         return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: o, so: canD, tan: treo.length ? tongTan(treo) : 0, treo: treo.length, trong: canD < 0, hangTau: true, can: canD, nhip: nhip };
       }
+      if (!top && oTai(san, o.x, o.y) !== null) {                                    // 16/11 (mùa 9 G4): container trôi ở ô đầu cần đọc như container trên cùng
+        var vqT = vatNoiTai(o.x, o.y);
+        if (vqT && vqT.noi === 'container' && vqT.so !== undefined) top = { so: vqT.so, tan: vqT.tan };
+      }
       return { ma: 'doc-cam-bien', cam: MA_CAM_QUET, ham: yc.ten, tu: { x: rb.x, y: rb.y }, nac: nac, tam: tam, o: o, so: top ? top.so : -1, tan: treo.length ? tongTan(treo) : top ? top.tan : 0, treo: treo.length, trong: !top, nhip: nhip };
     }
 
@@ -4625,8 +4733,8 @@
       }
       if (yc.ten === 'wait') {
         if (laDrone) {                                           // drone: wait() = một nhịp lơ lửng, cũng tốn pin; lệnh nam châm đang chờ làm ở nhịp này
-          var hdw = { kieu: 'drone', huong: null, nc: ncCho, son: sonCho, phao: phaoCho };
-          ncCho = null; sonCho = null; phaoCho = null; lenhTon = [];
+          var hdw = { kieu: 'drone', huong: null, nc: ncCho, son: sonCho, phao: phaoCho, hoi: hoiCho };
+          ncCho = null; sonCho = null; phaoCho = null; hoiCho = null; lenhTon = [];
           return motNhip(hdw);
         }
         if (laBanh) {
@@ -4824,6 +4932,10 @@
           return false;
         }
         var luc = 'low';                                       // lực phun: không đối số = phun nhẹ (29/10); màn có cfg.lucBan nhận spray("low") / spray("high")
+        if (laDrone && yc.thamSo && yc.thamSo.length) {          // M9L15: bình xịt bụng drone không nhận đối số
+          loi = { loai: 'runtime-error', ma: 'xit-tham-so', dong: yc.dong, ten: yc.ten, thongDiep: 'Bình xịt dưới bụng drone chỉ xịt thẳng xuống: viết spray() không có đối số.' };
+          return true;
+        }
         if (yc.thamSo && yc.thamSo.length) {
           var lb = yc.thamSo.length === 1 ? yc.thamSo[0] : undefined;
           if (!lucBan) {
@@ -4970,15 +5082,15 @@
       }
       if (DRONE_DAP.indexOf(yc.ten) >= 0) {                     // drone nâng cấp: land() / take_off() mỗi lệnh một nhịp; lệnh nam châm đang chờ làm ở nhịp này
         var loaDap = loaCho; loaCho = null;
-        var hdp = { kieu: 'drone', huong: null, nc: ncCho, son: sonCho, loa: loaDap, dap: yc.ten, phao: phaoCho, lenhDi: { ten: yc.ten, dongPy: yc.dong } };
-        ncCho = null; sonCho = null; phaoCho = null; lenhTon = [];
+        var hdp = { kieu: 'drone', huong: null, nc: ncCho, son: sonCho, loa: loaDap, dap: yc.ten, phao: phaoCho, hoi: hoiCho, lenhDi: { ten: yc.ten, dongPy: yc.dong } };
+        ncCho = null; sonCho = null; phaoCho = null; hoiCho = null; lenhTon = [];
         return motNhip(hdp);
       }
       var hh = NHEN_HUONG[yc.ten];
       if (laDrone) {                                             // drone: go_*() bay 1 ô = đúng 1 nhịp; lệnh nam châm đang chờ làm ở nhịp này
         var loaDrone = loaCho; loaCho = null;
-        var hdd = { kieu: 'drone', huong: hh, nc: ncCho, son: sonCho, loa: loaDrone, phao: phaoCho, lenhDi: { ten: yc.ten, dongPy: yc.dong } };
-        ncCho = null; sonCho = null; phaoCho = null; lenhTon = [];
+        var hdd = { kieu: 'drone', huong: hh, nc: ncCho, son: sonCho, loa: loaDrone, phao: phaoCho, hoi: hoiCho, lenhDi: { ten: yc.ten, dongPy: yc.dong } };
+        ncCho = null; sonCho = null; phaoCho = null; hoiCho = null; lenhTon = [];
         return motNhip(hdd);
       }
       var tayBuoc = rutTay();                                    // lệnh tay đang chờ làm ở nhịp ĐẦU của bước

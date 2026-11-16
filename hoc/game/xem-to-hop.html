@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xem tổ hợp robot</title>
+<!-- xem-to-hop.html (M9H2, 4/11): trang xem MỌI tổ hợp hợp lệ của bảng ghép (ô ● ✔ ★ của hoc/bang-ghep.js) vẽ bằng VeVector.robot như trong game, ở cỡ ô sân và cỡ thẻ.
+     Ba phần: (1) ô bảng ghép: thân + một part; (2) bộ ba mùa 9 sẽ dùng (xem-to-hop-ds.js); (3) mọi bộ ba của một thân. Cần cẩu vẽ thêm kiểu trên sân (VeVector.veCanCau).
+     Bấm một thẻ: phóng to 4 hướng, đang làm việc / nghỉ. Máy kiểm: hoc/kiem-hinh-to-hop.mjs. Không vào sw.js (trang soát, không phải trang chơi). -->
+<link rel="stylesheet" href="font/font.css">
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--g-vecSanToi);font-family:"Google Sans Flex",system-ui,sans-serif;color:var(--g-vecVien);padding:16px;overflow-x:hidden}
+  h1{font-size:20px;margin:0 0 4px}
+  h2{font-size:16px;font-weight:700;margin:22px 0 8px}
+  h3{font-size:14px;font-weight:700;margin:14px 0 6px}
+  p.ghi{font-size:13px;margin:0 0 8px;max-width:760px;color:var(--g-vecChuPhu)}
+  .loc{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:var(--g-vecVo);border:1px solid var(--g-vecVoToi);border-radius:12px;padding:10px;position:sticky;top:0;z-index:5}
+  .loc label{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:600}
+  .loc select,.loc button{font:600 14px "Google Sans Flex",system-ui,sans-serif;min-height:44px;min-width:44px;padding:6px 10px;border-radius:8px;border:1px solid var(--g-vecVien);background:var(--g-vecVo);color:var(--g-vecVien)}
+  .loc button[aria-pressed="true"]{background:var(--g-vecDoiR1)}
+  .hang{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+  .the{background:var(--g-vecVo);border:1px solid var(--g-vecVoToi);border-radius:10px;padding:8px;max-width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left;min-height:44px}
+  .the:focus-visible{outline:3px solid var(--g-vecDoiR1);outline-offset:2px}
+  .the .hai{display:flex;gap:8px;align-items:flex-end}
+  .the .o{background:var(--g-vecSan);box-shadow:inset 0 0 0 1px var(--g-vecVoToi)}
+  .the p{margin:6px 0 0;font-size:12px;line-height:1.35;max-width:240px;overflow-wrap:anywhere}
+  .the p b{font-weight:700}
+  .the .tt{display:inline-block;min-width:1.3em;font-weight:700}
+  .the.lai{border-color:var(--g-vecCanhBao);border-width:2px}
+  .the.loi{border-color:var(--g-vecDo);border-width:2px}
+  canvas{display:block;max-width:100%}
+  #phong{display:none;background:var(--g-vecVo);border:2px solid var(--g-vecVien);border-radius:12px;padding:10px;margin:12px 0}
+  #phong.mo{display:block}
+  #phong .hang{gap:12px}
+  #phong button{font:600 14px "Google Sans Flex",system-ui,sans-serif;min-height:44px;padding:6px 12px;border-radius:8px;border:1px solid var(--g-vecVien);background:var(--g-vecVo);color:var(--g-vecVien)}
+  .nhan{font-size:12px;color:var(--g-vecChuPhu);margin:4px 0 0}
+</style>
+</head>
+<body>
+<h1>Xem tổ hợp robot</h1>
+<p class="ghi">Mọi ô <b>●</b> (part gốc), <b>✔</b> (ghép được), <b>★</b> (lai mùa 9) của bảng ghép, vẽ bằng bộ vẽ của game. Mỗi thẻ có hai cỡ: ô sân (bên trái, nền trắng) và thẻ lắp ráp. Bấm một thẻ để phóng to bốn hướng, nghỉ và đang làm việc. Thẻ viền vàng là ô ★.</p>
+<div class="loc" role="group" aria-label="Lọc và cỡ hình">
+  <label>Thân <select id="loc-than"></select></label>
+  <label>Ô <select id="loc-tt"><option value="tat-ca">● ✔ ★</option><option value="lai">chỉ ★</option><option value="moi">✔ chưa màn cũ nào dùng + ★</option></select></label>
+  <label>Ô sân <select id="co-san"><option>40</option><option selected>56</option><option>72</option></select> px</label>
+  <label>Thẻ <select id="co-the"><option>120</option><option selected>160</option><option>240</option></select> px</label>
+  <label>Hướng <select id="huong"><option value="0">lên</option><option value="1">phải</option><option value="2" selected>xuống</option><option value="3">trái</option></select></label>
+  <button id="doi" type="button" aria-pressed="false" title="Đổi màu đội: R1 xanh Sola / R2 hồng Luna" aria-label="Đổi màu đội R1 hay R2">R1</button>
+  <button id="lam" type="button" aria-pressed="false" title="Vẽ trạng thái đang làm việc (cảm biến đọc, tay bật)" aria-label="Bật tắt trạng thái đang làm việc">Đang làm</button>
+</div>
+<div id="phong" aria-live="polite"></div>
+<h2>1. Ô bảng ghép: thân + một part</h2>
+<div id="o-bang"></div>
+<h2>2. Bộ ba mùa 9 sẽ dùng (thân + tay + cảm biến)</h2>
+<p class="ghi">Gom từ MUA-9-200-CAU-DO.md cột Chương 2, cộng các lai chưa xếp màn. Nhãn: nơi dùng.</p>
+<div id="bo-ba" class="hang"></div>
+<h2>3. Mọi bộ ba của thân đang lọc</h2>
+<p class="ghi">Chọn một thân ở ô lọc để hiện (mọi tay hợp lệ hay không tay × mọi cảm biến hợp lệ hay không cảm biến).</p>
+<div id="moi-bo-ba" class="hang"></div>
+
+<script src="bang-mau.js"></script>
+<script src="../bang-ghep.js"></script>
+<script src="../co-may.js"></script>
+<script src="../lap-rap.js"></script>
+<script src="ve-vector.js"></script>
+<script src="ve-vector-than-hai-banh.js"></script>
+<script src="ve-vector-tay-kep.js"></script>
+<script src="ve-vector-than-xich.js"></script>
+<script src="ve-vector-than-nhen.js"></script>
+<script src="ve-vector-than-omni.js"></script>
+<script src="ve-vector-than-drone.js"></script>
+<script src="ve-vector-tay-nam-cham.js"></script>
+<script src="ve-vector-tay-nem.js"></script>
+<script src="ve-vector-tay-hoi.js"></script>
+<script src="ve-vector-tay-xoay.js"></script>
+<script src="ve-vector-tay-son.js"></script>
+<script src="ve-vector-than-xuong.js"></script>
+<script src="ve-vector-tay-day-keo.js"></script>
+<script src="ve-vector-cam-song.js"></script>
+<script src="ve-vector-than-cau.js"></script>
+<script src="ve-vector-tay-moc-cau.js"></script>
+<script src="ve-vector-cam-cang.js"></script>
+<script src="ve-vector-cam.js"></script>
+<script src="xem-to-hop-ds.js"></script>
+<script>
+(function () {
+  'use strict';
+  var BG = window.BangGhep, VV = window.VeVector, LR = window.LapRap, DS = window.XemToHopDs.DS;
+  var TT_HIEN = ['goc', 'duoc', 'lai'];
+  /* ô ✔ mà màn cũ đã dùng (kiem-bang-ghep.mjs in danh sách ô chưa dùng; đây là phần bù, để lọc "mới") */
+  var DA_DUNG = ['hai-banh/tay/kep', 'hai-banh/tay/hoi', 'hai-banh/tay/nam-cham', 'hai-banh/tay/son', 'hai-banh/tay/nem', 'hai-banh/camBien/camera', 'hai-banh/camBien/camera-4',
+    'xich/tay/son', 'xich/tay/loa', 'xich/camBien/camera', 'gai/tay/xoay', 'gai/tay/nem', 'gai/camBien/khoang-cach', 'gai/camBien/radar', 'nhen/tay/kep', 'drone/tay/nam-cham', 'drone/camBien/camera-bay'];      // máy kiểm kiem-hinh-to-hop.mjs so với man-*.js (cùng cách đếm của kiem-bang-ghep.mjs)
+  var $ = function (id) { return document.getElementById(id); };
+  var st = { than: '*', tt: 'tat-ca', coSan: 56, coThe: 160, huong: 2, son: '', lam: false };
+  var dpr = window.devicePixelRatio || 1;
+
+  function ten(khe, ma) { return ma ? LR.tenCua(khe, ma) : '—'; }
+  /** Trạng thái vẽ "đang làm việc": cảm biến đọc, tay bật / hạ / phun (mỗi part đọc khoá của nó, khoá thừa bỏ qua). */
+  function stCua(cfg, lam) {
+    if (!lam) return {};
+    return { than: { banh: { trai: 1, phai: 1 }, buoc: 1, quat: true, doc: true, chay: true },
+      tay: cfg.tay ? { bat: true, tuThe: 'duoi', kep: 'dong', dangBanTruoc: true, dangNem: true, day: true, mauSon: 'green', notLoa: 3, pha: 0.3, cuc: 'N' } : undefined,
+      camBien: { bat: true, mat: true } };
+  }
+  function cfgCua(than, tay, cam) { var c = LR.cauHinhCua({ than: than, tay: tay, camBien: cam }); c.son = st.son; return c; }
+  /** Một canvas robot cạnh `canh` px CSS (vẽ ở canh × dpr). Lỗi ghép: trả thẻ chữ lỗi. */
+  function hinh(cfg, huong, canh, lam, o) {
+    var cv;
+    try { VV.xoaDem(); cv = VV.robot(cfg, stCua(cfg, lam), huong, Math.round(canh * dpr)); }
+    catch (e) { var p = document.createElement('p'); p.textContent = 'Lỗi vẽ: ' + e.message; p.className = 'nhan'; return p; }
+    if (!cv) { var q = document.createElement('p'); q.textContent = 'Không vẽ được'; q.className = 'nhan'; return q; }
+    cv.style.width = (cv.width / dpr) + 'px'; cv.style.height = (cv.height / dpr) + 'px';
+    if (o) cv.className = 'o';
+    return cv;
+  }
+  /** Cần cẩu trên sân (3 × 3 ô quanh bệ): như san-ve.js veCauTrenSan, đầu cần nấc `nac`. */
+  function hinhCau(cfg, nac, canh, lam) {
+    var c = document.createElement('canvas'), n = canh * 3;
+    c.width = Math.round(n * dpr); c.height = Math.round(n * dpr); c.style.width = n + 'px'; c.style.height = n + 'px'; c.className = 'o';
+    var g = c.getContext('2d'); g.scale(dpr, dpr);
+    try { VV.veCanCau(g, { bx: n / 2, by: n / 2, nac: nac, tam: 1, o: canh, be: true, cfg: cfg, st: stCua(cfg, lam) }); } catch (e) { g.fillText('Lỗi: ' + e.message, 4, 12); }
+    return c;
+  }
+  function the(cfg, nhan, lop) {
+    var b = document.createElement('button'), hai = document.createElement('div'), p = document.createElement('p');
+    b.type = 'button'; b.className = 'the' + (lop ? ' ' + lop : '');
+    hai.className = 'hai';
+    hai.appendChild(hinh(cfg, st.huong, st.coSan, st.lam, true));
+    hai.appendChild(hinh(cfg, st.huong, st.coThe, st.lam, false));
+    if (cfg.than === 'cau') hai.appendChild(hinhCau(cfg, 4, st.coSan, st.lam));
+    p.innerHTML = nhan;
+    b.appendChild(hai); b.appendChild(p);
+    b.setAttribute('aria-label', 'Phóng to: ' + p.textContent);
+    b.title = 'Phóng to bốn hướng';
+    b.addEventListener('click', function () { phongTo(cfg, p.textContent); });
+    return b;
+  }
+  function phongTo(cfg, nhan) {
+    var k = $('phong'); k.innerHTML = ''; k.classList.add('mo');
+    var h = document.createElement('h3'); h.textContent = nhan; k.appendChild(h);
+    [false, true].forEach(function (lam) {
+      var hang = document.createElement('div'); hang.className = 'hang';
+      [0, 1, 2, 3].forEach(function (hu) { hang.appendChild(hinh(cfg, hu, 200, lam, true)); });
+      if (cfg.than === 'cau') [2, 4, 6].forEach(function (nac) { hang.appendChild(hinhCau(cfg, nac, 90, lam)); });
+      var n = document.createElement('p'); n.className = 'nhan'; n.textContent = lam ? 'Đang làm việc: lên · phải · xuống · trái' : 'Nghỉ: lên · phải · xuống · trái';
+      k.appendChild(n); k.appendChild(hang);
+    });
+    var d = document.createElement('button'); d.type = 'button'; d.textContent = 'Đóng'; d.title = 'Đóng khung phóng to'; d.setAttribute('aria-label', 'Đóng khung phóng to');
+    d.addEventListener('click', function () { k.classList.remove('mo'); k.innerHTML = ''; });
+    k.appendChild(d);
+    k.scrollIntoView({ block: 'nearest' });
+  }
+  function hopLoc(than) { return st.than === '*' || st.than === than; }
+  function hopTT(x) {
+    if (TT_HIEN.indexOf(x.tt) < 0) return false;
+    if (st.tt === 'lai') return x.tt === 'lai';
+    if (st.tt === 'moi') return x.tt === 'lai' || (x.tt === 'duoc' && DA_DUNG.indexOf(x.than + '/' + x.khe + '/' + x.ma) < 0);
+    return true;
+  }
+  function veOBang() {
+    var goc = $('o-bang'); goc.innerHTML = '';
+    BG.THAN.filter(hopLoc).forEach(function (th) {
+      var ds = BG.dsO().filter(function (x) { return x.than === th && hopTT(x); });
+      if (!ds.length) return;
+      var h = document.createElement('h3'); h.textContent = ten('than', th) + ' (' + ds.length + ' ô)'; goc.appendChild(h);
+      var hang = document.createElement('div'); hang.className = 'hang';
+      ds.forEach(function (x) {
+        var cfg = cfgCua(th, x.khe === 'tay' ? x.ma : null, x.khe === 'camBien' ? x.ma : null);
+        hang.appendChild(the(cfg, '<span class="tt">' + BG.KY_HIEU[x.tt] + '</span> <b>' + ten(x.khe, x.ma) + '</b>' + (x.lai ? ' · ' + x.lai : '') + '<br>' + th + ' + ' + x.ma, x.tt === 'lai' ? 'lai' : ''));
+      });
+      goc.appendChild(hang);
+    });
+  }
+  function nhanBa(than, tay, cam) {
+    var lai = [['tay', tay], ['camBien', cam]].map(function (k) { var o = k[1] ? BG.o(than, k[0], k[1]) : null; return o && o.tt === 'lai' ? o.lai : null; }).filter(Boolean);
+    return '<b>' + ten('than', than) + '</b> + ' + ten('tay', tay) + ' + ' + ten('camBien', cam) + (lai.length ? ' · ' + lai.join(' + ') : '');
+  }
+  function veBoBa() {
+    var goc = $('bo-ba'); goc.innerHTML = '';
+    DS.filter(function (d) { return hopLoc(d[0]); }).forEach(function (d) {
+      var ok = BG.kiemGhep(d[0], d[1], d[2], { moLai: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9', 'L10', 'L11', 'L12', 'L13', 'L14', 'L15'] }).ok;
+      goc.appendChild(the(cfgCua(d[0], d[1], d[2]), nhanBa(d[0], d[1], d[2]) + '<br>' + d[3] + (ok ? '' : ' · <b>bảng ghép chặn</b>'), ok ? '' : 'loi'));
+    });
+  }
+  function veMoiBoBa() {
+    var goc = $('moi-bo-ba'); goc.innerHTML = '';
+    if (st.than === '*') { var p = document.createElement('p'); p.className = 'nhan'; p.textContent = 'Chọn một thân để hiện.'; goc.appendChild(p); return; }
+    var th = st.than, hop = function (khe) { return [null].concat(BG.dsCua(khe).filter(function (ma) { return TT_HIEN.indexOf(BG.trangThai(th, khe, ma)) >= 0; })); };
+    hop('tay').forEach(function (tay) {
+      hop('camBien').forEach(function (cam) {
+        if (!tay && !cam) return;
+        var x = [['tay', tay], ['camBien', cam]].filter(function (k) { return k[1]; }).map(function (k) { return { than: th, khe: k[0], ma: k[1], tt: BG.trangThai(th, k[0], k[1]) }; });
+        if (st.tt !== 'tat-ca' && !x.some(hopTT)) return;
+        goc.appendChild(the(cfgCua(th, tay, cam), nhanBa(th, tay, cam), x.some(function (o) { return o.tt === 'lai'; }) ? 'lai' : ''));
+      });
+    });
+  }
+  function veHet() { veOBang(); veBoBa(); veMoiBoBa(); }
+
+  var selThan = $('loc-than');
+  [['*', 'Tất cả']].concat(BG.THAN.map(function (t) { return [t, ten('than', t)]; })).forEach(function (o) { var e = document.createElement('option'); e.value = o[0]; e.textContent = o[1]; selThan.appendChild(e); });
+  selThan.addEventListener('change', function () { st.than = selThan.value; veHet(); });
+  $('loc-tt').addEventListener('change', function (e) { st.tt = e.target.value; veHet(); });
+  $('co-san').addEventListener('change', function (e) { st.coSan = +e.target.value; veHet(); });
+  $('co-the').addEventListener('change', function (e) { st.coThe = +e.target.value; veHet(); });
+  $('huong').addEventListener('change', function (e) { st.huong = +e.target.value; veHet(); });
+  $('doi').addEventListener('click', function (e) { st.son = st.son ? '' : 'lam'; e.target.textContent = st.son ? 'R2' : 'R1'; e.target.setAttribute('aria-pressed', st.son ? 'true' : 'false'); veHet(); });
+  $('lam').addEventListener('click', function (e) { st.lam = !st.lam; e.target.setAttribute('aria-pressed', st.lam ? 'true' : 'false'); veHet(); });
+  veHet();
+})();
+</script>
+</body></html>

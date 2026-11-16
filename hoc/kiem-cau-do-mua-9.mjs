@@ -51,10 +51,12 @@ export const SU_KIEN_CHINH = [
   'lap-ho', 'rac-cat', 'nut-de', 'nut-doi', 'cua-doi', 'keo-vat', 'keo-theo', 'tha-keo', 'dat-dai-luoi', 'tha-neo', 'nho-neo',
   'moc-cont', 'ha-cont', 'gau-ngoam', 'gio-vot', 'gio-dat', 'tha-phao', 'thu-phao', 'bam-phao', 'nguoi-len-bo', 'nguoi-toi-tram',
   'sac-pin', 'cat-canh', 'nhay', 'qua-ngach', 'rung-da-chuong', 'vo-da-chuong', 'to-o', 'dich-chuyen', 'thung-di', 'tau-cap', 'tau-roi', 'chay-ray',
+  'day-vat',   // M9M3 16/11: nam châm đẩy vật từ xa (cùng cực): việc chính của dọn lối đẩy từ xa
+  'cau-hut', 'cau-tha', 'gau-tha',   // M9M2b 5/11: cẩu + nam châm (L1) hút / thả ở ô đầu cần, gầu ngoạm (L8) thả: việc chính của lai cần cẩu (gau-ngoam đã có)
   'toi-co', 'xong-dua-vat', 'xong-day-thung', 'xong-giao-tau', 'xong-cuu-nguoi', 'xong-dieu', 'xong-to-hinh', 'xong-dap-lua'
 ];
-const LAM_CAU = ['lap-ho', 'rac-cat', 'dat-dai-luoi', 'keo-theo', 'tha-keo'];
-const DON_LOI = ['nhat-vat', 'hut-vat', 'moc-cont', 'keo-vat', 'nem-vat', 'dap', 'gau-ngoam', 'gio-vot', 'thung-di'];
+const LAM_CAU = ['lap-ho', 'rac-cat', 'dat-dai-luoi', 'keo-theo', 'tha-keo', 'toi-cau'];   // M9M5: + toi-cau (xe tời bờ L3 kéo vật nổi về ô nước sát xe: ô cầu là e.den)
+const DON_LOI = ['nhat-vat', 'hut-vat', 'moc-cont', 'keo-vat', 'nem-vat', 'dap', 'gau-ngoam', 'gio-vot', 'thung-di', 'cau-hut', 'day-vat', 'nap-vat', 'vo-da-chuong'];   // M9M2b: + cau-hut (cầu trục từ L1 hút sắt khỏi lối); M9M3: + day-vat (suKienCua lấy ô vật rời đi: e.tu); M9M5: + nap-vat (máy khai thác nạp vật chắn lối vào rổ, o = ô vật) // M9M7: + vo-da-chuong (đá rỗng / đá chuông vỡ mở lối, o = ô đá)
 const CUU_KIP = ['nguoi-toi-tram', 'xong-giao-tau', 'tau-roi', 'sac-pin'];
 
 /* ------------------------------------------------------------- (a) dấu */
@@ -88,6 +90,21 @@ export function dauCua(man) {
 const khoTruoc = new Map();
 { const kho = new Map(); for (const m of M.danhSach) { khoTruoc.set(m.ma, clone([...kho.values()])); if (!m.tietKiemNhip) for (const h of (m.loiGiai && m.loiGiai.hamCuaEmMoi) || []) kho.set(h.ten, clone(h)); } }
 /** Chạy lời giải mẫu của màn qua máy chấm (kho hàm của em như cham-het: hàm các màn trước trong lộ trình + hamCuaEmMoi của màn). */
+/** (e) M9M1 5/11: cứu khai đúng. cuu 'nguoi' → chuỗi có nguoi-toi-tram / xong-cuu-nguoi; cuu 'may' → màn có robot coDinh và chuỗi robot đó có toi-co. Trả chuỗi lỗi hay ''. */
+export function kiemCuu(man, p) {
+  const ds = (p.chuoi || []).map((c) => c.chuoi || '');
+  if (man.cauDo.cuu === 'nguoi' && !ds.some((c) => /nguoi-toi-tram|xong-cuu-nguoi/.test(c))) return 'khai cứu người mà không người nào tới trạm';
+  if (man.cauDo.cuu === 'may') {
+    const doi = Array.isArray(man.doi) ? man.doi : [];
+    const k = doi.findIndex((r) => r && r.coDinh);
+    if (k < 0) return 'khai cứu máy mà màn không có robot khoá (coDinh)';
+    // M9M2b 5/11: đội có cần cẩu thì màn không dùng toi-co (cẩu không tới cờ, lõi bắt MỌI robot tới cờ) → cứu máy = robot khoá tự làm xong việc của nó
+    //   (chuỗi của nó có sự kiện chính khác xong-*, vd thung-di: ủi kệ vào đích). Màn toi-co vẫn bắt tới cờ như cũ.
+    if (man.mucTieu !== 'toi-co') { if (!(ds[k] || '').split(' → ').some((e) => e && !/^xong-/.test(e))) return 'khai cứu máy (màn ' + man.mucTieu + ') mà robot khoá R' + (k + 1) + ' không tự làm việc gì'; return ''; }
+    if (!/toi-co/.test(ds[k] || '')) return 'khai cứu máy mà robot khoá R' + (k + 1) + ' không tới cờ';
+  }
+  return '';
+}
 export function chamMau(man) {
   const hs = new Map((khoTruoc.get(man.ma) || []).map((h) => [h.ten, h]));
   for (const h of (man.loiGiai && man.loiGiai.hamCuaEmMoi) || []) hs.set(h.ten, clone(h));
@@ -113,6 +130,7 @@ export function suKienCua(kq, man) {
           if (k >= 0) ai = k;
         }
         kqDs[ai].ds.push({ nhip: v.nhip, ma: e.ma, o: e.o ? { x: e.o.x, y: e.o.y } : (e.tu ? { x: e.tu.x, y: e.tu.y } : null), bat: e.bat });
+        if (e.ma === 'keo-vat' && e.toi && e.den) kqDs[ai].ds.push({ nhip: v.nhip, ma: 'toi-cau', o: { x: e.den.x, y: e.den.y } });   // M9M5: ô vật nổi tời tới (cầu phao)
       });
     });
     (d.suKien || []).forEach((e) => { if (['toi-co', 'xong-dua-vat', 'xong-cuu-nguoi'].indexOf(e.ma) >= 0 && !kqDs[i].ds.some((x) => x.ma === e.ma)) kqDs[i].ds.push({ nhip: e.nhip || 0, ma: e.ma, o: null }); });
@@ -154,6 +172,13 @@ export function kiemMeo(meo, suKien, viTri, man) {
       const nha = suKien[a].ds.find((x) => x.ma === 'nut-de' && x.bat === false && x.nhip > e.nhip);
       const den = nha ? nha.nhip : Infinity;
       for (let b = 0; b < n; b++) { if (b === a) continue; for (const [t, p] of viTri[b]) if (t >= e.nhip && t <= den && oCua.some((c) => c.x === p.x && c.y === p.y)) return { ok: true, lyDo: 'R' + (a + 1) + ' đè nút nhịp ' + e.nhip + ', R' + (b + 1) + ' qua cửa nhịp ' + t }; }
+    }
+    // M9M2b 5/11: giữ cửa bằng vòi phun — robot A phun trúng nút N trong tường (nut-doi bật) ở nhịp t; tới lúc nút đó tắt lại, robot B (≠ A) đứng trên một ô cửa
+    for (let a = 0; a < n; a++) for (const e of suKien[a].ds) {
+      if (e.ma !== 'nut-doi' || e.bat !== true || !e.o) continue;
+      const tat = suKien[a].ds.find((x) => x.ma === 'nut-doi' && x.bat === false && x.nhip > e.nhip && x.o && x.o.x === e.o.x && x.o.y === e.o.y);
+      const den = tat ? tat.nhip : Infinity;
+      for (let b = 0; b < n; b++) { if (b === a) continue; for (const [t, p] of viTri[b]) if (t >= e.nhip && t <= den && oCua.some((c) => c.x === p.x && c.y === p.y)) return { ok: true, lyDo: 'R' + (a + 1) + ' phun bật nút nhịp ' + e.nhip + ', R' + (b + 1) + ' qua cửa nhịp ' + t }; }
     }
     return { ok: false, lyDo: 'khai giữ cửa mà không thấy robot nào đè nút (nut-de) trong lúc robot khác đứng trên ô cửa.' };
   }
@@ -202,7 +227,7 @@ if (mainModule) {
   console.log('    (140 màn cũ có ' + chuoiCu.size + ' chuỗi khác nhau; ' + (140 - chuoiCu.size) + ' màn cũ trùng chuỗi với nhau — chỉ thông tin, mùa 2–8 không có luật này)');
   console.log('    màn có cauDo trong lộ trình: ' + coDau.length + (coDau.length ? '' : ' (chưa có — gói D2 mới dựng màn; máy kiểm chứng minh bằng màn giả ở mục 2)'));
   const dau = new Map(), chuoi = new Map();
-  let aHong = 0, bHong = 0, cHong = 0, dHong = 0;
+  let aHong = 0, bHong = 0, cHong = 0, dHong = 0, eHong = 0;
   coDau.forEach((m) => {
     const la = kiemDau(m); if (la.length) { aHong++; la.forEach((l) => console.log('    (a) ' + l)); return; }
     const k = dauCua(m); if (dau.has(k)) { bHong++; console.log('    (b) ' + m.ma + ' trùng dấu với ' + dau.get(k) + ': ' + k); } else dau.set(k, m.ma);
@@ -212,12 +237,14 @@ if (mainModule) {
     else chuoi.set(p.khoa, m.ma);
     if (p.meo.ok === false) { dHong++; console.log('    (d) ' + m.ma + ': ' + p.meo.lyDo); }
     else if (p.meo.ok === null) { chuaKiem++; console.log('    (d) ' + m.ma + ': ' + p.meo.lyDo); }
+    const e = kiemCuu(m, p); if (e) { eHong++; console.log('    (e) ' + m.ma + ': ' + e); }
   });
   if (coDau.length) {
     kiem('(a) mọi dấu hợp lệ', aHong === 0, aHong);
     kiem('(b) không màn nào trùng dấu', bHong === 0, bHong);
     kiem('(c) không màn nào trùng thật (kể cả với 140 màn cũ)', cHong === 0, cHong);
     kiem('(d) mẹo khai thấy trong sự kiện (4 mẹo kiểm được)', dHong === 0, dHong);
+    kiem('(e) kiểu cứu khai đúng (nguoi: có người tới trạm; may: có robot khoá tới cờ)', eHong === 0, eHong);
   }
 
   /* ============================================================================ 2. tự chứng minh bằng màn giả */
@@ -286,6 +313,10 @@ if (mainModule) {
   kiem('(d) don-loi: nhặt ở ô không ai đi qua → không đạt', kiemMeo('don-loi', [skA('nhat-vat', 3, { x: 2, y: 2 }), trong], [vt([[1, 1, 1]]), vt([[6, 4, 2]])], { san: SAN3 }).ok === false);
   kiem('(d) cuu-kip: có nguoi-toi-tram / xong-giao-tau / tau-roi / sac-pin → đạt; không có → kêu', CUU_KIP.every((ma) => kiemMeo('cuu-kip', [skA(ma, 9, null)], [vt([])], { san: SAN3 }).ok === true) && kiemMeo('cuu-kip', [skA('nhat-vat', 9, null)], [vt([])], { san: SAN3 }).ok === false);
   kiem('(d) giu-cua: đè nút mà robot kia không đứng ô cửa trong lúc đè → không đạt', kiemMeo('giu-cua', [{ than: 'hai-banh', ds: [{ nhip: 2, ma: 'nut-de', bat: true, o: { x: 1, y: 2 } }, { nhip: 4, ma: 'nut-de', bat: false, o: { x: 1, y: 2 } }] }, trong], [vt([[2, 1, 2], [4, 2, 2]]), vt([[2, 1, 3], [6, 3, 3]])], { san: SAN3, noi: [{ nut: { x: 1, y: 2 }, cua: [{ x: 3, y: 3 }] }] }).ok === false);
+  // M9M2b: giữ cửa bằng vòi phun (nut-doi bật ở nút N trong tường)
+  const NOI_N = { san: SAN3, noi: [{ nut: { x: 1, y: 2 }, cua: [{ x: 3, y: 3 }] }] };
+  kiem('(d) giu-cua: R1 phun bật nút N nhịp 2, R2 đứng ô cửa nhịp 5 → đạt', kiemMeo('giu-cua', [{ than: 'omni', ds: [{ nhip: 2, ma: 'nut-doi', bat: true, o: { x: 1, y: 2 } }] }, trong], [vt([[2, 1, 3]]), vt([[5, 3, 3]])], NOI_N).ok === true);
+  kiem('(d) giu-cua: phun bật rồi phun tắt (nhịp 4) trước khi R2 tới cửa (nhịp 6) → không đạt', kiemMeo('giu-cua', [{ than: 'omni', ds: [{ nhip: 2, ma: 'nut-doi', bat: true, o: { x: 1, y: 2 } }, { nhip: 4, ma: 'nut-doi', bat: false, o: { x: 1, y: 2 } }] }, trong], [vt([[2, 1, 3]]), vt([[6, 3, 3]])], NOI_N).ok === false);
   // sự kiện sân gắn đúng robot: nut-de ghi ở vết R1 (pha D) nhưng R2 đứng trên nút → thuộc R2
   kiem('sự kiện sân (nut-de ở vết R1) gắn cho robot đang đứng ở ô nút (R2)', p1.suKien[1].ds.some((e) => e.ma === 'nut-de') && !p1.suKien[0].ds.some((e) => e.ma === 'nut-de'), J(p1.suKien.map((r) => r.ds.map((e) => e.ma))));
   // màn chọn đội: phanTich chạy cách mẫu đầu (macDinh) — dùng màn giả của kiem-chon-doi dạng chonDoi

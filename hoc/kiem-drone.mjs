@@ -314,9 +314,9 @@ console.log('\n== 6. Ghép sai: drone không gắn tay kẹp, tấm đẩy, máy
 {
   const cfg = (hamGoc) => () => SanHoc.chay({ san: trong(5), batDau: BD, loaiRobot: 'drone', hamGoc }, '');
   kiem('tay kẹp (arm_down, arm_up, grab, release) → lỗi cấu hình nói rõ', /Drone không gắn tay kẹp/.test(loi(cfg(BAY.concat(['arm_down', 'arm_up', 'grab', 'release'])))));
-  kiem('vòi phun spray_back → lỗi', /Drone không gắn vòi phun/.test(loi(cfg(BAY.concat(['spray_back'])))));
+  kiem('vòi phun spray_back → lỗi (M9L15 4/11: drone không có mũi / đuôi, bình xịt bụng chỉ có spray())', /Drone không có mũi hay đuôi/.test(loi(cfg(BAY.concat(['spray', 'spray_back'])))) && /Drone không có mũi hay đuôi/.test(loi(cfg(BAY.concat(['spray_back'])))));
   kiem('máy ném aim / throw / load → lỗi', /Drone không gắn máy ném/.test(loi(cfg(BAY.concat(['aim', 'throw', 'load'])))));
-  kiem('vòi phun spray → lỗi', /Drone không gắn vòi phun/.test(loi(cfg(BAY.concat(['spray'])))));
+  kiem('vòi phun spray → hợp lệ từ M9L15 (4/11, user mở lai L15 bình xịt bụng; bảng ghép chặn khi màn chưa mở L15, xem kiem-lai-mua-9.mjs)', loi(cfg(BAY.concat(['spray']))) === null);
   kiem('cảm biến khoảng cách front_clear / left_clear / right_clear → lỗi (drone không có hướng mặt)', ['front_clear', 'left_clear', 'right_clear'].every((t) => /Drone không gắn cảm biến khoảng cách/.test(loi(cfg(BAY.concat([t]))))));
   kiem('cảm biến từ front_metal → lỗi', /Drone không gắn cảm biến khoảng cách hay cảm biến từ/.test(loi(cfg(BAY.concat(['front_metal'])))));
   kiem('lệnh của xe bánh (left_move…) không thuộc drone → lỗi cấu hình', /không thuộc loại robot drone/.test(loi(cfg(BAY.concat(['left_move'])))));

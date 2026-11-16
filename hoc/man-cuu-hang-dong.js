@@ -1,12 +1,12 @@
 /* ============================================================================
-   man-cuu-hang-dong.js - Mùa 9 CLB Sáng Tạo: Gói 8 "Giải cứu Hang động"
-   20 màn (10 màn cuu-hang-dong + 10 màn lap-hang-dong):
-   - R1 (.1..9): Robot Hang động Mùa 8 (than: 'gai', tay: 'loa', camBien: am-thanh + phanAm)
-   - R2: Robot các mùa 1, 2, 3, 6, 7 chi viện (banh, xich, nhen, drone, omni)
-   - Ôn sâu dict, set, cảm biến âm thanh (hear, listen), loa phát nốt (note, beat),
-     đàn dơi phát sóng âm định vị trong hang tối (danDoi) và nhũ đá cộng hưởng (daChuong).
-   - Màn 10 mỗi chương (hang: 'trum', 3 sân, nhipTheo: 'tong'): Hợp tấu 2 bè
-     Đoạn 8 "Khúc ngân vang hang đá" sau khi cứu hộ xong Hang động Đá vôi.
+   man-cuu-hang-dong.js - Mùa 9 CLB Sáng Tạo: Gói 8 "Hang động sau bão" (dựng lại 17/11, M9M8, theo khuôn G6 / G7)
+   20 màn: cuu-hang-dong (chọn đội trong menu cỗ máy) + lap-hang-dong (R1 xe hang động đặt sẵn, R2 tự lắp; lai L4 L5 L7).
+   Ôn Python: dict (sổ tra trong code: nốt nghe được → nốt phát / hướng; KHOÁ tra do sân cấp qua listen() / hear()), set (nhớ nốt / ngách đã đi).
+   Bão: hố sụt mới (u), cửa đá (C, nút đè M giữ), sông ngầm dâng (~), đá chuông chắn lối (vỡ khi phát đúng nốt, trong tầm 3 ô hay trên tia từ mũi xe),
+   chuông đá vang (nguồn tiếng cố định: listen() trả nốt, hear() trả khoảng cách), ngách hang (chui miệng này ra miệng kia), thạch nhũ đổ (thùng nặng H).
+   Ném đá: luật NÉM ĐÀ mùa 9 (aim chỉ 1, 2; aim_lob(3) tự chạy đà rồi lùi về chỗ cũ).
+   Màn 10 mỗi chương: song ca đoạn 8 (bè 1: 4 4 3 3 2 2 1 1 | bè 2: 6 6 5 5 4 4 3 3), gọi play_part.
+   Câu đố: hoc/MUA-9-200-CAU-DO.md mục G8 (ghi chú "Đã dựng 17/11 (M9M8)": các chỗ lệch so với bảng).
    ========================================================================== */
 (function () {
   'use strict';
@@ -14,597 +14,491 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
-  var HAM_GAI = BANH.concat(['retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen']);
-  var HAM_BANH = BANH.concat(['arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'front_clear', 'left_clear', 'right_clear']);
-  var HAM_XICH = BANH.concat(['spray', 'spray_back', 'distance', 'warm']);
-  var HAM_XICH_LOA = BANH.concat(['beat', 'note', 'distance', 'warm']);
-  var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
-  var HAM_DRONE = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'land', 'take_off', 'dot', 'pen_down', 'pen_up', 'ink', 'color'];
-  var HAM_OMNI = BANH.concat(['slide_left', 'slide_right', 'load', 'throw', 'radar', 'diag_left', 'diag_right', 'aim', 'shape']);
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-  var R1_GAI = {
-    loaiRobot: 'gai', thuGai: true, phatNot: true, phanAm: true,
-    robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }] },
-    hamGoc: HAM_GAI
-  };
-  var R2_LOA = {
-    loaiRobot: 'xich', phatNot: true,
-    robot: { than: 'xich', tay: 'loa', camBien: [{ ma: 'hong-ngoai', o: 'tren' }], son: 'lam' },
-    hamGoc: HAM_XICH_LOA
-  };
-  var R_BANH = {
-    loaiRobot: 'banh',
-    robot: { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_BANH
-  };
-  var R_XICH = {
-    loaiRobot: 'xich', xichDay: true, lucBan: true,
-    robot: { than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }], son: 'lam' },
-    hamGoc: HAM_XICH
-  };
-  var R_NHEN = {
-    loaiRobot: 'nhen',
-    robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }], son: 'lam' },
-    hamGoc: HAM_NHEN
-  };
-  var R_DRONE = {
-    loaiRobot: 'drone',
-    robot: { than: 'drone', tay: 'son', camBien: [{ ma: 'camera-4', o: 'tren', taiCho: true }], son: 'lam' },
-    hamGoc: HAM_DRONE
-  };
-  var R_OMNI = {
-    loaiRobot: 'omni', omniCheo: true, chinhLuc: true, nhanDang: true, tamNemMacDinh: 2, daLapHo: true,
-    robot: { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
-    hamGoc: HAM_OMNI
-  };
-
-  var SAN_HANG = [
-    '########',
-    '#..C..F#',
-    '#.####.#',
-    '#..o..D#',
-    '########'
-  ];
-  var SAN_DUET_3 = [
-    ['########', '#......#', '#......#', '########'],
-    ['########', '#..##..#', '#......#', '########'],
-    ['########', '#......#', '#..##..#', '########']
-  ];
-
-  function ham(ten, than, thamSo) { return { ten: ten, thamSo: thamSo || [], than: than }; }
-  function baiDoi(r1, r2, hm, moi) {
-    var kq = { doi: [{ chinh: r1 }, { chinh: r2 }], hamCuaMan: hm || [] };
-    if (moi) kq.hamCuaEmMoi = moi;
-    return kq;
+  /* ---- M9M8: khung màn mùa 9 (chép từ man-cuu-mo-da.js) ------------------------------------------ */
+  var CoMay = laNode ? require('./co-may.js') : window.CoMay;
+  var HAM_EM = ['move', 'back', 'forward', 'wait_n', 'tr_left', 'tr_right', 'turn_left', 'turn_right', 'pick', 'drop', 'go', 'walk', 'jump', 'crawl', 'pull_s', 'lob', 'aim_lob', 'slide_r', 'play_note'];
+  /** Robot của màn: cỗ máy `ma` (CoMay.dung) ở ô xuất phát bd, cờ riêng co, đế son ('lam' Luna, 'tim' máy khách). */
+  function may(ma, bd, them) {
+    var t = them || {};
+    var r = CoMay.dung(ma, { batDau: bd, son: t.son, pin: t.pin });
+    if (t.co) r.co = t.co;
+    if (t.coDinh) r.coDinh = true;
+    if (t.tay) r.robot.tay = t.tay;
+    if (t.tay || t.boHam || t.themHam) r.hamGoc = r.hamGoc.filter(function (h) { return (t.boHam || []).indexOf(h) < 0; }).concat(t.themHam || []);
+    if (t.phatNot) r.phatNot = true;
+    if (t.batDauNuoc) r.batDauNuoc = t.batDauNuoc;
+    return r;
   }
-  function xe(mau, bd, them) { return Object.assign({}, mau, { batDau: bd }, them || {}); }
+  /** Khe robot em lập trình ở màn chọn đội / khe lắp: ô xuất phát, cờ riêng, pin (drone), đế. */
+  function khe(bd, them) { return Object.assign({ batDau: bd }, them || {}); }
+  function doiBai(ds, hamMan, hamEm) {
+    return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
+  }
+  /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
+  function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
+  function lapR2(than, tay, cam, nganSach, cachLap, them) {
+    return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
+  }
 
-  function manCH(chuong, so, hang, p) {
-    var r1 = xe(p.r1 || R1_GAI, p.bd[0], p.r1Them);
-    var r2 = xe(p.r2 || R_OMNI, p.bd[1], p.r2Them);
-    var kq = {
-      ma: chuong + '.' + so, ten: p.ten, chuong: chuong, so: so, hang: hang,
-      vo: 'hang-dong', loaiRobot: r1.loaiRobot, robot: r1.robot, hamGoc: r1.hamGoc,
-      thuGai: true, phatNot: true, phanAm: true, daLapHo: true,
-      mucTieu: p.mucTieu || 'toi-co',
-      deBai: p.deBai,san: p.san || SAN_HANG,
-      batDau: p.bd[0], doi: [r1, r2],
-      khung: p.khung || { chinh: 10, moiHam: 8 },
-      cauTruc: ['for', 'if', 'while', 'list', 'dict', 'set'],
-      vaHoac: true, moXuong: true, camHamCuaEm: false, bienDem: true, nhipTheoLoiGiai: true,
-      taoHam: p.taoHam || [],
-      hamCuaEmCan: p.hamCuaEmCan || [],
-      maMau: p.maMau, loiGiai: p.loiGiai, loiSai: p.loiSai || [],
-      sao: p.sao || { o: 6, nhip: 8 }, goiY: p.goiY
+  /** cuu-hang-dong.1: nhện bật qua hố sụt lên nút đè M (cửa đá mở), giữ nút tới khi xe hang động qua cửa, bước sang cờ.
+   *  Xe hang động chờ cửa mở, chạy thẳng qua cửa đá tới cờ. */
+  var PL_1 = ['jump("R")', 'wait_n(3)', 'go_right()'];
+  var HD_1 = ['wait_n(3)', 'forward(6)'];
+
+  /** cuu-hang-dong.2 (ba sân): chuông đá vang trong hốc dưới hang xe (mỗi sân một nốt 2 / 4 / 6), đá chuông chắn ngách nhện ở hàng trên (nốt 5 / 7 / 3).
+   *  Sổ ám hiệu d (bảng tra trong code): nghe chuông nốt n thì phát nốt d[n]. Khoá n do sân cấp qua listen(). */
+  var D_2 = 'd = {2: 5, 4: 7, 6: 3}';
+  /** Xe hang động: tiến ba ô tới trên hốc chuông, nghe nốt chuông, tra sổ, hát nốt đá chuông (cách 2 ô): đá vỡ; tiến về cờ. */
+  var HD_2 = [D_2, 'forward(3)', 'n = listen()', 'play_note(d[n])', 'forward(3)'];
+  /** Nhện: co chân chui gầm đá thấp, đứng lên, chờ đá chuông vỡ, đi qua chỗ đá về cờ. */
+  var PL_2 = ['crouch()', 'go_right()', 'go_right()', 'stand()', 'wait()', 'for i in range(4):', '    go_right()'];
+  function san2() { return ['#########', '#.n....F#', '#########', '#......F#', '####.####', '#########']; }
+
+  /** cuu-hang-dong.3: hang dài, hai hố sụt trên lối nhện ở hàng 3, nút đè M sau hố thứ hai; cửa đá C trên lối xe hang động (sàn đá ướt trước cửa).
+   *  Nhện bật qua hai hố, lên nút, giữ tới khi xe qua cửa, bước sang cờ. Xe hang động chờ, bám đá ướt qua cửa tới cờ. */
+  var PL_3 = ['jump("R")', 'jump("R")', 'go_right()', 'wait_n(4)', 'go_right()'];
+  var HD_3 = ['wait_n(7)', 'forward(7)'];
+
+  /** cuu-hang-dong.4: hang dưới bị vách đá chia đôi, ngách hang nối miệng (2, 3) với miệng (5, 3) trong buồng kín có nút đè M; cửa đá C trên lối xe hang động.
+   *  Nhện bước vào miệng ngách, chui ra miệng kia trong buồng, lên nút, giữ tới khi xe qua cửa, sang cờ. */
+  var PL_4 = ['go_right()', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()'];
+  var HD_4 = ['wait_n(4)', 'forward(7)'];
+
+  /** cuu-hang-dong.5: sông ngầm dâng, nhà thám hiểm mặc áo phao kẹt ở cuối luồng (7, 2) dưới vách đá; đá chuông (4, 2) rơi chắn luồng xuồng.
+   *  Xe hang động tiến một ô (đá trong tầm 3), nghe nốt, hát lại: đá vỡ. Xuồng chờ, chạy qua chỗ đá, cách người 2 ô (lưới dài 2) tung lưới, lùi hai ô kéo người tới dưới bờ đá; người lên bờ về trạm. */
+  var HD_5 = ['forward(1)', 'play_note(listen())'];
+  var XU_5 = ['wait_n(2)', 'forward(4)', 'cast_net()', 'wait()', 'back()', 'back()'];
+
+  /** cuu-hang-dong.6: sông ngầm hàng 2, bến q (4, 2) nối hai bờ; bè B (6, 2) trôi giữa sông; đá chuông (2, 2) rơi chắn luồng xuồng ở mép bờ.
+   *  Nhà thám hiểm kẹt ở bờ bên kia (7, 1) sau đá chuông thứ hai (6, 1); đá này xa bờ dưới hơn 3 ô, chỉ đứng trên cầu phao mới hát tới.
+   *  Xe hang động hát vỡ đá chắn luồng, tới dưới bến, quay lên chờ bè, lên cầu phao, nghe nốt đá thứ hai, hát lại: đá vỡ, người về trạm cứu bờ bên kia.
+   *  Xuồng chờ, chạy tới bến, tung lưới (dài 2) bắt bè, lùi hai ô kéo bè vào bến, nhả lưới. */
+  var HD_6 = ['play_note(listen())', 'forward(2)', 'turn_left()', 'wait_n(4)', 'forward(1)', 'play_note(listen())'];
+  var XU_6 = ['wait()', 'forward(3)', 'cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'];
+
+  /** Xe hang động khách khoá cuu-hang-dong.7: kẹt sau hố sụt mới (4, 1) và cửa đá (6, 1); chờ ba nhịp rồi chạy thẳng bảy ô về cờ. */
+  var HD_R3_7 = ['wait_n(3)', 'forward(7)'];
+  /** Máy khai thác: hất đá tròn trước mũi xuống hố (xa 2 ô), lên qua chỗ đá vừa xúc, rẽ phải về cờ. Nhện: lên nút đè (cửa đá mở), giữ tới khi máy khách qua cửa, sang cờ. */
+  var KT_7 = ['lob()', 'forward(1)', 'turn_right()', 'forward(1)'];
+  var PL_7 = ['go_up()', 'wait_n(4)', 'go_right()'];
+
+  /** Xe hang động khách khoá cuu-hang-dong.8: chờ bốn nhịp rồi chạy thẳng bảy ô dọc lối hang hàng 2 về cờ (8, 2). */
+  var HD_R3_8 = ['wait_n(4)', 'forward(7)'];
+  /** Xe cứu hỏa: ủi thạch nhũ đổ (thùng nặng) lên hốc trên, lùi hai ô về cờ. Nhện: bật qua hố sụt lên nút đè (cửa đá mở), giữ tới khi máy khách qua cửa, sang cờ. */
+  var CU_8 = ['forward(1)', 'back()', 'back()'];
+  var PL_8 = ['jump("R")', 'wait_n(6)', 'go_right()'];
+
+  /** cuu-hang-dong.9 (ba sân): xuồng khách R3 (khoá) kéo bè hàng sau đuôi, chờ rồi chạy thẳng ra bến q (7, 4); đá chuông (5, 4) rơi chắn luồng sông ngầm.
+   *  Bờ trên (hàng 2) là lối duy nhất tới chỗ hát (đá chỉ trong tầm từ (4, 2)); thang sắt đổ (3, 2) chắn lối; chuông đá (4, 1) vang nốt của sân. */
+  var D_9 = 'd = {1: 4, 3: 8, 5: 6}';
+  function san9() { return ['##########', '###D.#####', '#..o....##', '##########', '#B~~~~~q~#', '##########']; }
+  var VC_9 = ['..........', '..........', '...s......', '..........', '..........', '..........'];
+  /** Xuồng khách khoá: buộc bè sau đuôi (lưới dài 1 ra sau), chờ chín nhịp, chạy sáu ô (bè theo vào bến q), nhả lưới. */
+  var XU_R3_9 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(9)', 'forward(6)', 'drop_net()', 'wait()'];
+  /** Nhện: bước xuống ô thang sắt, gọi clear_iron("U") (gói 3: hút sắt rồi bước lên), thả thang vào hốc chứa D. */
+  var PL_9 = ['go_down()', 'clear_iron("U")', 'magnet_off()', 'wait()'];
+  /** Xe hang động: chờ lối thông, tiến ba ô tới chỗ hát, nghe chuông, tra sổ, hát nốt đá chuông. */
+  var HD_9 = [D_9, 'wait_n(5)', 'forward(3)', 'n = listen()', 'play_note(d[n])'];
+
+  /** R2 đã lắp sẵn (màn show chương 2): nhện + nam châm + mic (lai L4), như LapRap.apDung lắp ra. */
+  var NHEN_MIC = {
+    loaiRobot: 'nhen', robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'am-thanh', o: 'tren' }], son: 'lam' },
+    hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'hear', 'listen']
+  };
+  /** lap-hang-dong.1: xe hang động R1 hát vỡ đá chuông chắn miệng ngách (cách 3 ô). Nhện L4: co chân, nghe chuông đá cuối ngách (hear() = khoảng cách),
+   *  bò hear() - 1 ô tới hòm sắt nằm ngay trước chuông, hút, bò ra, đứng lên, xuống hốc chứa D, thả. */
+  var HD_11 = ['play_note(listen())'];
+  var NHEN_11 = ['wait()', 'crouch()', 'k = hear() - 1', 'for i in range(k):', '    go_right()', 'pull_s()', 'for i in range(k):', '    go_left()', 'stand()', 'wait()', 'go_down()', 'magnet_off()', 'wait()'];
+
+  /** lap-hang-dong.2 (ba sân): thang sắt đổ chắn lối xe hang động R1 (hàng 2) ở cột 3 / 5 / 4 tuỳ sân; chuông đá treo trên vách ngay trên cột thang (hàng 0) vang trong hang tối.
+   *  R2 nhện đi hàng 1 (mặt quay xuống), dọn thang, mang về cờ cuối hàng 1. */
+  function san12(x) { var h = '#.......F#'.split(''); h[x] = 'o'; return ['##########', '#.......F#', h.join(''), '##########']; }
+  function vc12(x) { var h = '..........'.split(''); h[x] = 's'; return ['..........', '..........', h.join(''), '..........']; }
+  var HD_12 = ['wait_n(14)', 'forward(7)'];
+  /** Cách một (mic, L4): n = hear() là khoảng cách tới chuông = số cột của thang; bò n - 1 ô tới trên thang, bước xuống, clear_iron("U") (gói 3), bò 8 - n ô về cờ. */
+  var NHEN_MIC_12 = ['n = hear()', 'for i in range(n - 1):', '    go_right()', 'go_down()', 'clear_iron("U")', 'for i in range(8 - n):', '    go_right()', 'magnet_off()', 'wait()'];
+  /** Cách hai (cảm biến từ, mặt quay xuống): bò bảy ô về cờ, ô nào front_metal() thì bước xuống hút. */
+  var NHEN_TU_12 = ['for i in range(7):', '    go_right()', '    if front_metal():', '        go_down()', '        clear_iron("U")', 'magnet_off()', 'wait()'];
+
+  /** lap-hang-dong.3 (ba sân): ngã ba hang tối (4, 3), một nhánh lên, một nhánh xuống, cuối mỗi nhánh một cờ; nhánh sai có hố sụt mới. Chuông đá trong vách cạnh ngã ba
+   *  vang một nốt (mỗi sân một nốt). Sổ đường d (bảng tra trong code): nốt → hướng ("U" lên, "D" xuống). Xe hang động R1 ở hang dưới hát vỡ đá chuông chắn lối nhện. */
+  var D_13 = 'd = {2: "U", 4: "D", 6: "U"}';
+  function san13(len) { return ['#######', '####F##', len ? '####.##' : '####u##', '#....##', len ? '####u##' : '####.##', '####F##', '#....F#', '#######']; }
+  var HD_13 = ['forward(1)', 'play_note(listen())', 'forward(3)'];
+  /** Nhện + mic (L4): chờ đá vỡ, bò ba ô tới ngã ba, nghe nốt chuông, tra sổ ra hướng, đi hai bước theo hướng đó tới cờ. */
+  var NHEN_13 = [D_13, 'wait()', 'for i in range(3):', '    go_right()', 'n = listen()', 'go(d[n])', 'go(d[n])'];
+
+  /** lap-hang-dong.4: thợ ảnh hang động kẹt cuối hang trên (8, 1) sau đá chuông B (7, 1); cửa đá (3, 1) trên lối về trạm, nút đè M (3, 2). Sông ngầm hàng 3, đá chuông A (2, 3) chắn luồng.
+   *  Xe hang động R1 lên nút giữ cửa. R2 xuồng + loa + mic (L5): nghe nốt đá A, hát lại, chạy năm ô tới gần đá B (cách 3 ô), nghe, hát lại. */
+  var HD_14 = ['forward(2)'];
+  var XUONG_14 = ['play_note(listen())', 'forward(5)', 'play_note(listen())'];
+  /** Cách hai rẻ hơn: xuồng + loa (không mic), hát thẳng nốt hai đá (4 rồi 7). */
+  var XUONG_LOA_14 = ['play_note(4)', 'forward(5)', 'play_note(7)'];
+
+  function man9(chuong, so, hang, cfg) {
+    var r1 = cfg.doi[0];
+    var m = {
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'hang-dong', daLapHo: true,
+      cauTruc: ['for', 'if', 'while', 'list', 'def', 'return', 'tuple', 'dict', 'set'], vaHoac: true, moXuong: true, camHamCuaEm: false,
+      hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
+      khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'toi-co',
+      deBai: cfg.deBai, veMaMau: cfg.veMaMau || '', san: cfg.san, batDau: clone(r1.batDau),
+      doi: cfg.doi.map(clone), maMau: cfg.maMau, loiSai: cfg.loiSai || [], sao: cfg.sao, goiY: cfg.goiY || [], cauDo: cfg.cauDo
     };
-    ['chiChay', 'chinhCoDinh', 'noi', 'cuaNhip', 'mau', 'vatMau', 'vatChat', 'vatDang', 'vatCan', 'hinh', 'dieu', 'danDoi', 'daChuong', 'ngachHang', 'nhipTheo'].forEach(function (k) {
-      if (p[k] !== undefined) kq[k] = p[k];
-    });
-    return ManHoc.chuanHoa(kq);
+    if (r1.loaiRobot) { m.loaiRobot = r1.loaiRobot; m.robot = clone(r1.robot); m.hamGoc = r1.hamGoc.slice(); }
+    if (cfg.loiGiai) m.loiGiai = cfg.loiGiai;
+    if (cfg.chonDoi) m.chonDoi = cfg.chonDoi;
+    if (cfg.lapRap) m.lapRap = cfg.lapRap;
+    if (cfg.noi) m.noi = cfg.noi;
+    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
+    Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
+    return ManHoc.chuanHoa(m);
   }
 
-  ManHoc.manCuuHangDong = [
-    // ==================== CHƯƠNG 1: cuu-hang-dong (10 màn) ====================
-    manCH('cuu-hang-dong', 1, 'lam-quen', {
-      ten: 'Sóng âm đàn dơi mở lối hang đá',
-      chiChay: true, chinhCoDinh: true, r2: R_BANH,
-      hamCuaEmCan: ['move', 'forward', 'go_echo', 'play_note', 'echo_crack_step', 'grab_clear'],
-      deBai: 'Hang động Đá vôi bị sạt lở! Trong vòm hang tối, đàn dơi phát sóng âm định vị ở (3, 1) giúp R1 dò đường và phá nhũ đá cộng hưởng ở (4, 1) bằng echo_crack_step(), trong khi R2 (xe hai bánh Mùa 1) gọi grab_clear() dọn tảng đá chắn lối dưới rồi tiến về cờ. Bấm Chạy thử để xem hai robot phối hợp.',
-      san: [
-        '########',
-        '#.....F#',
-        '########',
-        '#..o..F#',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 1 }],
-      r1Them: { co: [{ x: 6, y: 1 }] }, r2Them: { co: [{ x: 6, y: 3 }] },
-      danDoi: [{ x: 3, y: 1, not: 4 }],
-      daChuong: [{ x: 4, y: 1, not: 4 }],
-      maMau: baiDoi(['echo_crack_step()', 'forward(2)'], ['grab_clear()', 'forward(5)']),
-      loiGiai: baiDoi(['echo_crack_step()', 'forward(2)'], ['grab_clear()', 'forward(5)']),
-      sao: { o: 25, nhip: 8 },
-      goiY: ['Màn trình diễn: bấm Chạy thử để xem R1 nghe sóng âm đàn dơi phá nhũ đá và R2 dọn đá tảng.']
+  var DS_MAN = [
+    /* ========================================================================
+       CHƯƠNG 1: cuu-hang-dong (10 màn)
+       ======================================================================== */
+    // 1 · show (giữ cửa): bão làm sụt một hố mới giữa hang dưới, cửa đá trên lối xe hang động đóng. Nhện bật qua hố sụt (jump("R")) đáp lên nút đè M: cửa đá mở.
+    //     Nhện giữ nút tới khi xe hang động qua cửa, rồi bước sang cờ. Đội cố định HD + PL (chạy sẵn, khoá).
+    man9('cuu-hang-dong', 1, 'lam-quen', {
+      ten: 'Nhện giữ cửa đá',
+      chiChay: true,
+      deBai: 'Bão làm sụt một hố mới trong hang, cửa đá đóng lối xe hang động. Nhện bật qua hố, đứng lên nút giữ cửa mở. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
+      san: ['#########', '#..C...F#', '###.uMF##', '#########'],
+      noi: [{ nut: { x: 5, y: 2 }, cua: [{ x: 3, y: 1 }] }],
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }, { co: [{ x: 7, y: 1 }] }), may('PL', { x: 3, y: 2, huong: 1 }, { son: 'lam', co: [{ x: 6, y: 2 }] })],
+      maMau: doiBai([HD_1, PL_1]),
+      loiGiai: doiBai([HD_1, PL_1]),
+      sao: { o: 28, nhip: 11 },
+      goiY: ['jump("R"): nhện co chân, bật qua một ô (qua được hố) rồi đáp.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ho', 'nhay', 'nut-de', 'cua'], cuu: 'hang', meo: 'giu-cua' }
     }),
-
-    manCH('cuu-hang-dong', 2, 'lam-quen', {
-      ten: 'Xích phun van mở cửa cho bánh gai lướt đá ướt',
-      r2: R_XICH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'squirt', 'valve_step', 'go_echo', 'glide_tunnel'],
-      deBai: 'Đàn dơi phát sóng âm định vị ở (3, 1) báo vị trí ngay sau cửa C. R2 (xe xích Mùa 2) gọi valve_step(1) phun van N ở (4, 3) mở cửa C rồi tiến vào cờ (3, 3); R1 chờ 1 nhịp cho cửa mở, gọi go_echo() tiến tới chỗ đàn dơi rồi gọi glide_tunnel() thu gai trượt qua dải đá vôi ướt I tới cờ.',
-      san: [
-        '########',
-        '#.C.I.F#',
-        '#.####.#',
-        '#..FN..#',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 1 }],
-      r1Them: { co: [{ x: 6, y: 1 }] }, r2Them: { co: [{ x: 3, y: 3 }] },
-      danDoi: [{ x: 3, y: 1, not: 3 }],
-      noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 2, y: 1 }] }],
-      maMau: baiDoi(['wait_n(1)', 'go_echo()'], ['valve_step(1)']),
-      loiGiai: baiDoi(['wait_n(1)', 'go_echo()', 'glide_tunnel()'], ['valve_step(1)']),
+    // 2 · dọn lối, ôn dict (ba sân, luật 13/11): bão làm đá chuông rơi chắn ngách hẹp của nhện; chuông đá trong hốc dưới hang xe vang một nốt, mỗi sân một nốt.
+    //     Sổ ám hiệu d = {2: 5, 4: 7, 6: 3} là bảng tra trong code: nghe chuông nốt n thì đá chuông cần nốt d[n]. Xe hang động tiến tới trên hốc chuông, n = listen(),
+    //     play_note(d[n]): đá vỡ; về cờ. Nhện co chân chui gầm đá thấp, qua chỗ đá vừa vỡ về cờ. Gõ lại nốt chuông (play_note(listen())) hay điền thẳng nốt sân 1 thì đá không vỡ.
+    man9('cuu-hang-dong', 2, 'lam-quen', {
+      ten: 'Sổ ám hiệu chuông đá',
+      hamCuaEmCan: HAM_EM.concat(['crouch', 'stand']),
+      deBai: 'Ba sân. Đá chuông chắn ngách của nhện. Chuông đá dưới hốc vang một nốt, mỗi sân một nốt. Sổ d: nghe nốt n thì đá cần nốt d[n]. Xe hang động nghe, tra sổ, hát cho đá vỡ.',
+      veMaMau: 'Xe hang động có sổ d nhưng chưa nghe.',
+      san: [san2(), san2(), san2()],
+      them: { khoaTD: ['2', '4', '6'],
+        chuongDa: [[{ x: 4, y: 4, not: 2 }], [{ x: 4, y: 4, not: 4 }], [{ x: 4, y: 4, not: 6 }]],
+        daChuong: [[{ x: 4, y: 1, not: 5, ben: 1 }], [{ x: 4, y: 1, not: 7, ben: 1 }], [{ x: 4, y: 1, not: 3, ben: 1 }]] },
+      doi: [khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] }), khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 7, y: 1 }] })],
+      chonDoi: {
+        menu: ['HD', 'PL'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_2, PL_2]) }]
+      },
+      maMau: doiBai([[D_2, 'forward(3)'], []]),
       loiSai: [
-        { moTa: 'R1 quên glide_tunnel(): dừng lại ở (3, 1) trước thềm đá vôi ướt', baiLam: baiDoi(['wait_n(1)', 'go_echo()'], ['valve_step(1)']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(5)): sân 2, 3 đá không vỡ', baiLam: doiBai([[D_2, 'forward(3)', 'play_note(5)', 'forward(3)'], PL_2]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gõ lại nốt chuông (play_note(listen())), không tra sổ: đá không vỡ', baiLam: doiBai([[D_2, 'forward(3)', 'play_note(listen())', 'forward(3)'], PL_2]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Nhện quên co chân: đâm gầm đá thấp', baiLam: doiBai([HD_2, ['wait()', 'go_right()', 'go_right()', 'wait_n(2)', 'for i in range(4):', '    go_right()']]), phaiCoMa: ['gam-thap'] }
       ],
-      sao: { o: 20, nhip: 5 },
-      goiY: ['R2 gọi valve_step(1) bắn van N ở (4, 3) mở cửa C ở (2, 1) và tiến vào cờ (3, 3).', 'R1 chờ 1 nhịp, gọi go_echo() tiến tới đàn dơi (3, 1), rồi gọi glide_tunnel() thu gai trượt qua đá ướt I ở (4, 1) và bước vào cờ (6, 1).']
+      sao: { o: 23, nhip: 15 },
+      goiY: ['n = listen(): nốt của nguồn tiếng gần nhất (ở đây là chuông đá dưới hốc).', 'd[n]: tra sổ, nốt mà đá chuông cần.', 'Đá chuông vỡ khi nghe đúng nốt trong tầm 3 ô.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['da-chuong', 'chuong-da', 'not', 'gam', 'dict'], cuu: 'hang', meo: 'don-loi' }
     }),
-
-    manCH('cuu-hang-dong', 3, 'lam-quen', {
-      ten: 'Phá nhũ đá cộng hưởng mở đường cho nhện kéo sắt',
-      r2: R_NHEN, mucTieu: 'dua-vat', vatCan: 'sat',
-      hamCuaEmCan: ['move', 'forward', 'go_echo', 'play_note', 'crack_for_mate', 'clear_iron'],
-      deBai: 'Khối nhũ đá cộng hưởng ở (4, 3) đang chặn đường vận chuyển quặng sắt của R2 (nhện từ tính Mùa 3). Đàn dơi phát sóng âm định vị ở (3, 1) mang đúng tần số nốt 5: hãy để R1 gọi crack_for_mate() phá nhũ đá, giúp R2 gọi clear_iron("R") kéo quặng sắt qua (4, 3) về đích D ở (5, 3).',
-      san: [
-        '########',
-        '#....F.#',
-        '########',
-        '#.o..D.#',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
-      vatChat: ['........', '........', '........', '..s.....', '........'],
-      danDoi: [{ x: 3, y: 1, not: 5 }],
-      daChuong: [{ x: 4, y: 3, not: 5 }],
-      maMau: baiDoi(['go_echo()', 'move()'], ['go_right()', 'clear_iron("R")', 'go_right()', 'go_right()', 'magnet_off()', 'wait()']),
-      loiGiai: baiDoi(['crack_for_mate()', 'move()'], ['go_right()', 'clear_iron("R")', 'go_right()', 'go_right()', 'magnet_off()', 'wait()']),
+    // 3 · giữ cửa (bẫy drone): hang dài sau bão, hai hố sụt nối nhau trên lối nhện, nút đè M nằm sau hố thứ hai; cửa đá C chắn lối xe hang động trên sàn đá ướt.
+    //     Nhện bật qua hai hố lên nút, giữ cửa mở tới khi xe qua. Bẫy: drone (bay qua hố được nhưng không đè nút: bay thì không nặng lên nút).
+    man9('cuu-hang-dong', 3, 'luyen', {
+      ten: 'Hai hố trước nút',
+      deBai: 'Cửa đá chắn lối xe hang động. Nút giữ cửa nằm sau hai hố sụt. Chọn hai bạn: ai qua hai hố đứng lên nút, ai bám đá ướt qua cửa?',
+      veMaMau: 'Cửa đá còn đóng.',
+      san: ['##########', '#..IIC..F#', '##########', '#.u.u.MF.#', '##########'],
+      noi: [{ nut: { x: 6, y: 3 }, cua: [{ x: 5, y: 1 }] }],
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] })],
+      chonDoi: {
+        menu: ['HD', 'PL', 'DR'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_3, PL_3]) }]
+      },
+      maMau: doiBai([['wait_n(7)'], ['jump("R")']]),
       loiSai: [
-        { moTa: 'R1 chưa phát nốt phá nhũ đá ở (4, 3): R2 đâm vào nhũ đá', baiLam: baiDoi(['go_echo()', 'move()'], ['go_right()', 'clear_iron("R")', 'go_right()', 'go_right()', 'magnet_off()', 'wait()']), phaiCoMa: ['dam-tuong', 'chua-dua-vat'] }
+        { moTa: 'Nhện nhảy một lần rồi đi bộ: rơi hố thứ hai', baiLam: doiBai([HD_3, ['jump("R")', 'go_right()', 'go_right()', 'go_right()', 'wait_n(4)', 'go_right()']]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Nhện rời nút ngay: cửa đóng trước mũi xe', baiLam: doiBai([HD_3, ['jump("R")', 'jump("R")', 'go_right()', 'go_right()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xe không chờ: tới cửa khi cửa còn đóng', baiLam: doiBai([['forward(7)'], PL_3]), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 31, nhip: 10 },
-      goiY: ['Khi R1 tới (3, 1), khối nhũ đá ở (4, 3) cách đúng 3 ô Manhattan nên nằm trong tầm loa cộng hưởng.', 'Thay go_echo() của R1 bằng crack_for_mate() để R1 vừa nghe đàn dơi vừa phá nhũ đá cho R2.']
+      sao: { o: 30, nhip: 17 },
+      goiY: ['jump("R") hai lần: qua hai hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.', 'Drone bay thì không đè nút.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ho', 'hai-ho', 'nhay', 'nut-de', 'cua', 'da-uot'], cuu: 'hang', meo: 'giu-cua' }
     }),
-
-    manCH('cuu-hang-dong', 4, 'cung-co', {
-      ten: 'Omni hất đá lấp hố sâu trong hang tối',
-      r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'fill_for_mate', 'echo_crack_step'],
-      deBai: 'Trước mặt R1 là hố sụt u ở (2, 1), tiếp đến là đàn dơi phát sóng âm định vị ở (3, 1) và nhũ đá cộng hưởng ở (4, 1). R2 (xe omni Mùa 7) gọi fill_for_mate(3) hất đá qua rào lấp hố u cho R1 rồi trượt sang cờ; R1 chờ 2 nhịp rồi gọi echo_crack_step() và move() về cờ.',
-      san: [
-        '#######',
-        '#.u..F#',
-        '##=####',
-        '##o####',
-        '#..F###',
-        '#######'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      r1Them: { co: [{ x: 5, y: 1 }] }, r2Them: { co: [{ x: 3, y: 4 }] },
-      danDoi: [{ x: 3, y: 1, not: 6 }],
-      daChuong: [{ x: 4, y: 1, not: 6 }],
-      maMau: baiDoi(['wait_n(2)', 'forward(4)'], ['fill_for_mate(3)']),
-      loiGiai: baiDoi(['wait_n(2)', 'echo_crack_step()', 'move()'], ['fill_for_mate(3)']),
+    // 4 · giữ cửa, ngách hang: bão làm đá lở bít lối vào buồng nút; chỉ còn ngách hang ngầm (hai miệng cùng màu) nối hang ngoài với buồng kín. Nhện đi vào miệng ngách,
+    //     chui ra miệng kia trong buồng, lên nút đè M, giữ cửa đá mở tới khi xe hang động qua, sang cờ. Bảng 2 cỗ máy (đúng đôi tốt).
+    man9('cuu-hang-dong', 4, 'luyen', {
+      ten: 'Ngách vào buồng nút',
+      deBai: 'Đá lở bít lối vào buồng có nút giữ cửa đá. Chỉ còn ngách hang: bước vào miệng này, chui ra miệng kia cùng màu. Nhện vào buồng giữ nút cho xe hang động qua cửa.',
+      veMaMau: 'Cửa đá còn đóng.',
+      san: ['##########', '#.....C.F#', '##########', '#...#.MF##', '##########'],
+      noi: [{ nut: { x: 6, y: 3 }, cua: [{ x: 6, y: 1 }] }],
+      them: { ngachHang: [{ a: { x: 3, y: 3 }, b: { x: 5, y: 3 } }] },
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] })],
+      chonDoi: {
+        menu: ['HD', 'PL'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_4, PL_4]) }]
+      },
+      maMau: doiBai([['wait_n(4)'], ['go_right()']]),
       loiSai: [
-        { moTa: 'R1 chỉ gọi forward(4): đâm vào nhũ đá cộng hưởng ở (4, 1)', baiLam: baiDoi(['wait_n(2)', 'forward(4)'], ['fill_for_mate(3)']), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Nhện rời nút ngay: cửa đóng trước mũi xe', baiLam: doiBai([HD_4, ['go_right()', 'go_right()', 'go_right()', 'go_right()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Xe không chờ: tới cửa khi cửa còn đóng', baiLam: doiBai([['forward(7)'], PL_4]), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 28, nhip: 7 },
-      goiY: ['Sau khi hố (2, 1) được lấp, R1 gọi echo_crack_step() để tiến 2 ô tới đàn dơi (3, 1), phát nốt 6 phá nhũ đá (4, 1) và bước lên (4, 1).', 'Cuối cùng R1 gọi move() để vào cờ (5, 1).']
+      sao: { o: 17, nhip: 14 },
+      goiY: ['Bước vào miệng ngách là chui ra miệng kia cùng màu, giữ hướng.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ngach', 'nut-de', 'cua'], cuu: 'hang', meo: 'giu-cua' }
     }),
-
-    manCH('cuu-hang-dong', 5, 'cung-co', {
-      ten: 'Lướt đá ướt đè công tắc cho drone gieo rêu phát sáng',
-      r2: R_DRONE, mucTieu: 'to-hinh',
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'tunnel_crack_glide', 'span_sow'],
-      deBai: 'Thảm rêu phát sáng trong hang cần R2 (drone Mùa 6) gieo 3 ô màu "green". R1 nghe đàn dơi phát sóng âm ở (3, 1), gọi tunnel_crack_glide() để phá nhũ đá ở (4, 1) và thu gai trượt qua đá ướt I ở (4, 1) đè lên nút M ở (5, 1), mở cửa C cho R2 bay qua gieo hạt.',
-      san: [
-        '########',
-        '#...IM.#',
-        '########',
-        '#.C....#',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
-      hinh: ['........', '........', '........', '...ggg..', '........'],
-      danDoi: [{ x: 3, y: 1, not: 2 }],
-      daChuong: [{ x: 4, y: 1, not: 2 }],
-      noi: [{ nut: { x: 5, y: 1 }, cua: [{ x: 2, y: 3 }] }],
-      maMau: baiDoi(['go_echo()'], ['wait_n(7)', 'go_right()', 'go_right()', 'span_sow("green", 3)']),
-      loiGiai: baiDoi(['tunnel_crack_glide()'], ['wait_n(7)', 'go_right()', 'go_right()', 'span_sow("green", 3)']),
+    // 5 · cứu người, dọn lối + cứu kịp: sông ngầm dâng sau bão, nhà thám hiểm (áo phao) kẹt dưới vách đá cuối luồng, không có bờ để lên; đá chuông rơi chắn luồng.
+    //     Xe hang động tiến một ô, listen() rồi hát lại: đá vỡ. Xuồng qua chỗ đá, tung lưới kéo người lùi về dưới bờ đá; người tự lên bờ về trạm cứu.
+    //     Bẫy: robot phân loại (nhện không bơi, không hát). Khe thứ hai: xuồng xuất phát trong luồng, cỗ máy khác đứng ở hốc dưới.
+    man9('cuu-hang-dong', 5, 'cung-co', {
+      ten: 'Người dưới vách sông ngầm',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Sông ngầm dâng, nhà thám hiểm kẹt dưới vách đá cuối luồng. Đá chuông chắn luồng. Chọn hai bạn: ai hát vỡ đá, ai kéo người về dưới bờ đá cho người lên trạm cứu?',
+      veMaMau: 'Đá chuông còn chắn luồng.',
+      san: ['##########', '#.....####', '#~~~~~~~~#', '#.########', '##########'],
+      them: { daChuong: [{ x: 4, y: 2, not: 6, ben: 1 }], nguoi: [{ x: 7, y: 2 }], tramCuu: [{ x: 3, y: 1 }] },
+      doi: [khe({ x: 1, y: 1, huong: 1 }, { batDauNuoc: { x: 3, y: 2, huong: 1 } }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      chonDoi: {
+        menu: ['HD', 'XU', 'PL'],
+        cachMau: [{ chon: ['HD', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_5, XU_5]) }]
+      },
+      maMau: doiBai([['forward(1)'], ['wait_n(2)']]),
       loiSai: [
-        { moTa: 'R1 chưa gọi tunnel_crack_glide(): không đè được nút M ở (5, 1) nên cửa C đóng', baiLam: baiDoi(['go_echo()'], ['wait_n(7)', 'go_right()', 'go_right()', 'span_sow("green", 3)']), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Xe hang động hát ngay chỗ xuất phát: xa đá 4 ô, đá không vỡ', baiLam: doiBai([['play_note(listen())'], XU_5]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xuồng lùi một ô: người còn dưới vách, không lên bờ được', baiLam: doiBai([HD_5, XU_5.slice(0, 5)]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xuồng chạy sát người rồi mới tung lưới: lưới dài 2 ô, vướng người', baiLam: doiBai([HD_5, ['wait_n(2)', 'forward(5)', 'cast_net()', 'wait()', 'back()', 'back()', 'back()']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 30, nhip: 11 },
-      goiY: ['Hàm tunnel_crack_glide() giúp R1 tiến tới đàn dơi (3, 1), phát nốt phá nhũ đá (4, 1), thu gai lướt qua đá ướt I (4, 1) tới đè nút M (5, 1).', 'Thay go_echo() của R1 bằng tunnel_crack_glide().']
+      sao: { o: 23, nhip: 13 },
+      goiY: ['listen(): nốt của đá chuông gần nhất.', 'cast_net(): lưới dài 2 ô, bắt người cách mũi xuồng đúng 2 ô; back(): kéo người theo.', 'Người được kéo tới ô nước sát bờ thì tự lên bờ, đi về trạm cứu.'],
+      cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['song-ngam', 'da-chuong', 'not', 'nguoi', 'luoi'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
-
-    manCH('cuu-hang-dong', 6, 'cung-co', {
-      ten: 'Dọn đá chắn và phá hai tầng nhũ đá cộng hưởng',
-      r2: R_BANH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'grab_clear', 'echo_crack_step'],
-      deBai: 'Tảng đá o ở (2, 1) đang chắn trước hai đàn dơi phát sóng âm định vị ở (3, 1) và (5, 1). R2 (xe hai bánh Mùa 1) ở (2, 2) gọi grab_clear() nhặt tảng đá lùi về cờ (2, 3); R1 chờ 2 nhịp rồi gọi echo_crack_step() 2 lần liên tiếp để phá cả hai khối nhũ đá cộng hưởng và tiến về cờ.',
-      san: [
-        '#########',
-        '#.o....F#',
-        '##.######',
-        '##F######',
-        '#########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 0 }],
-      r1Them: { co: [{ x: 7, y: 1 }] }, r2Them: { co: [{ x: 2, y: 3 }] },
-      danDoi: [{ x: 3, y: 1, not: 3 }, { x: 5, y: 1, not: 7 }],
-      daChuong: [{ x: 4, y: 1, not: 3 }, { x: 6, y: 1, not: 7 }],
-      maMau: baiDoi(['wait_n(2)', 'echo_crack_step()', 'move()'], ['grab_clear()']),
-      loiGiai: baiDoi(['wait_n(2)', 'echo_crack_step()', 'echo_crack_step()', 'move()'], ['grab_clear()']),
+    // 6 · làm cầu, cứu người: sông ngầm dâng cuốn cầu phao ra giữa dòng; nhà thám hiểm kẹt ở bờ bên kia sau một khối đá chuông (xa bờ này hơn 3 ô). Đá chuông thứ hai rơi chắn luồng ở mép bờ.
+    //     Xe hang động hát vỡ đá chắn luồng; xuồng kéo bè vào bến q làm cầu phao; xe lên cầu, nghe nốt, hát vỡ đá bên kia; người về trạm cứu. Bẫy: xe chở hàng (không bơi, không hát).
+    man9('cuu-hang-dong', 6, 'cung-co', {
+      ten: 'Cầu phao trên sông ngầm',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Sông ngầm cuốn cầu phao ra giữa dòng. Nhà thám hiểm kẹt bên kia sau đá chuông, xa bờ này. Đá chuông khác chắn luồng ở mép bờ. Chọn hai bạn: ai hát, ai kéo bè vào bến q làm cầu?',
+      veMaMau: 'Bè còn trôi giữa sông.',
+      san: ['##########', '####....##', '#~~~q~B~##', '#....#####', '##########'],
+      them: { daChuong: [{ x: 2, y: 2, not: 2, ben: 1 }, { x: 6, y: 1, not: 7, ben: 1 }], nguoi: [{ x: 7, y: 1 }], tramCuu: [{ x: 4, y: 1 }] },
+      doi: [khe({ x: 2, y: 3, huong: 1 }, { batDauNuoc: { x: 3, y: 2, huong: 1 } }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      chonDoi: {
+        menu: ['HD', 'XU', 'CH'],
+        cachMau: [{ chon: ['HD', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_6, XU_6]) }]
+      },
+      maMau: doiBai([['play_note(listen())'], ['wait()']]),
       loiSai: [
-        { moTa: 'R1 chỉ gọi echo_crack_step() 1 lần: dừng trước nhũ đá thứ hai ở (6, 1)', baiLam: baiDoi(['wait_n(2)', 'echo_crack_step()', 'move()'], ['grab_clear()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Xuồng lùi một ô: bè dừng trước bến, xe không lên cầu được', baiLam: doiBai([HD_6, ['wait()', 'forward(3)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động hát ở bờ: đá bên kia xa 4 ô, không vỡ', baiLam: doiBai([['play_note(listen())', 'forward(2)', 'turn_left()', 'wait_n(4)', 'play_note(listen())'], XU_6]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động không chờ bè: đâm mặt nước, hát từ bờ', baiLam: doiBai([['play_note(listen())', 'forward(2)', 'turn_left()', 'forward(1)', 'play_note(listen())'], XU_6]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 28, nhip: 10 },
-      goiY: ['Sau khi R2 gọi grab_clear() nhặt tảng đá ở (2, 1) lùi về cờ (2, 3), đường ngang đã thông.', 'R1 gọi echo_crack_step() lần 1 lên (4, 1), gọi echo_crack_step() lần 2 lên (6, 1), rồi move() vào cờ (7, 1).']
+      sao: { o: 33, nhip: 14 },
+      goiY: ['Bè nằm trên bến q là cầu phao: xe đi lên được.', 'cast_net(): lưới dài 2 ô bắt bè; back(): kéo bè theo.', 'Loa phá đá trong tầm 3 ô quanh xe.'],
+      cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['song-ngam', 'be', 'luoi', 'da-chuong', 'not', 'nguoi'], cuu: 'nguoi', meo: 'lam-cau' }
     }),
-
-    manCH('cuu-hang-dong', 7, 'cung-co', {
-      ten: 'Xích đẩy thùng đè công tắc mở cửa ngách hang',
-      r2: R_XICH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'push_valve', 'echo_crack_step'],
-      deBai: 'Cửa C ở (2, 1) cần R2 (xe xích Mùa 2) gọi push_valve(1) đẩy thùng nặng H đè lên công tắc M rồi lùi về cờ. Sau khi chờ 2 nhịp, R1 đi qua cửa C, lắng nghe đàn dơi phát sóng âm ở (3, 1), gọi echo_crack_step() phá nhũ đá ở (4, 1), rồi bước vào ngách hang ngầm ở (5, 1) để chui sang cờ (6, 1).',
-      san: [
-        '########',
-        '#.C...F#',
-        '#.####.#',
-        '#.F.HM.#',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 3, huong: 1 }],
-      r1Them: { co: [{ x: 6, y: 1 }] }, r2Them: { co: [{ x: 2, y: 3 }] },
-      noi: [{ nut: { x: 5, y: 3 }, cua: [{ x: 2, y: 1 }] }],
-      danDoi: [{ x: 3, y: 1, not: 5 }],
-      daChuong: [{ x: 4, y: 1, not: 5 }],
-      ngachHang: [{ a: { x: 5, y: 1 }, b: { x: 6, y: 1 } }],
-      maMau: baiDoi(['wait_n(2)', 'echo_crack_step()', 'move()'], ['move()']),
-      loiGiai: baiDoi(['wait_n(2)', 'echo_crack_step()', 'move()'], ['push_valve(1)', 'back()']),
+    // 7 · cứu máy, làm cầu + giữ cửa: xe hang động khách (R3, khoá) kẹt sau hố sụt mới và cửa đá; nó chỉ chờ ba nhịp rồi chạy thẳng. Máy khai thác hất đá tròn lấp hố,
+    //     nhện lên nút đè giữ cửa đá tới khi máy khách qua. Bẫy: cần cẩu (không lấp hố, không đè nút). Bảng có cẩu nên mọi khe trên dải ray.
+    man9('cuu-hang-dong', 7, 'van-dung', {
+      ten: 'Máy khách sau hố sụt',
+      deBai: 'Xe hang động khách kẹt sau hố sụt mới và cửa đá. Đọc chương trình của nó rồi chọn hai bạn: ai lấp hố, ai giữ cửa? Ba bạn về cờ.',
+      veMaMau: 'Đọc chương trình của máy khách: chờ 3 nhịp rồi đi.',
+      san: ['##########', '#...u.C.F#', '#...oFMF.#', '#RRRRRRR.#', '##########'],
+      noi: [{ nut: { x: 6, y: 2 }, cua: [{ x: 6, y: 1 }] }],
+      them: { vatDang: ['..........', '..........', '....r.....', '..........', '..........'] },
+      doi: [khe({ x: 4, y: 3, huong: 0 }, { co: [{ x: 5, y: 2 }] }), khe({ x: 6, y: 3, huong: 0 }, { co: [{ x: 7, y: 2 }] }),
+        may('HD', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 8, y: 1 }] })],
+      chonDoi: {
+        menu: ['PL', 'KT', 'CC'],
+        cachMau: [{ chon: ['KT', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([KT_7, PL_7, HD_R3_7]) }]
+      },
+      maMau: doiBai([[], [], HD_R3_7]),
       loiSai: [
-        { moTa: 'R2 chưa đẩy thùng đè nút M: cửa C đóng chặn R1 và R2 chưa về cờ', baiLam: baiDoi(['wait_n(2)', 'echo_crack_step()', 'move()'], ['move()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Không lấp hố: máy khách rơi hố', baiLam: doiBai([['wait()', 'forward(1)'], PL_7, HD_R3_7]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Nhện rời nút sớm: cửa đá đóng trước mũi máy khách', baiLam: doiBai([KT_7, ['go_up()', 'go_right()'], HD_R3_7]), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 23, nhip: 7 },
-      goiY: ['R2 gọi push_valve(1) để đẩy thùng H từ (4, 3) sang đè nút M ở (5, 3) rồi lùi 1 ô, sau đó gọi thêm back() để về cờ (2, 3).', 'Khi R1 bước vào đầu ngách hang ở (5, 1), ngách ngầm đưa R1 sang thẳng cờ (6, 1).']
+      sao: { o: 26, nhip: 12 },
+      goiY: ['Đọc chương trình của máy khách: nó tới hố, tới cửa lúc nào?', 'lob(): xúc đá trước mũi rồi hất xa 2 ô; đá rơi xuống hố thì lấp hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
+      cauDo: { doi: ['KT', 'PL'], lap: null, coChe: ['ho', 'da-tron', 'nem', 'nut-de', 'cua', 'ray', 'r3'], cuu: 'may', meo: 'giu-cua' }
     }),
-
-    manCH('cuu-hang-dong', 8, 'cung-co', {
-      ten: 'Chế hàm: Chờ đồng đội mở đường rồi nghe dơi phá đá',
-      taoHam: ['bat_wait_crack'], r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'fill_for_mate', 'echo_crack_step'],
-      deBai: 'Để R1 chủ động đợi đồng đội mở đường rồi mới nghe sóng âm đàn dơi và phá nhũ đá cộng hưởng, hãy viết hàm bat_wait_crack(w): gọi wait_n(w) rồi gọi echo_crack_step(). Áp dụng bat_wait_crack(2) cho R1 khi R2 gọi fill_for_mate(3) lấp hố u ở (2, 1).',
-      san: [
-        '#######',
-        '#.u..F#',
-        '##=####',
-        '##o####',
-        '#..F###',
-        '#######'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      r1Them: { co: [{ x: 5, y: 1 }] }, r2Them: { co: [{ x: 3, y: 4 }] },
-      danDoi: [{ x: 3, y: 1, not: 8 }],
-      daChuong: [{ x: 4, y: 1, not: 8 }],
-      maMau: baiDoi(['bat_wait_crack(2)', 'move()'], ['fill_for_mate(3)'], [ham('bat_wait_crack', [], ['w'])]),
-      loiGiai: baiDoi(['bat_wait_crack(2)', 'move()'], ['fill_for_mate(3)'], [], [ham('bat_wait_crack', ['wait_n(w)', 'echo_crack_step()'], ['w'])]),
+    // 8 · cứu máy, dọn lối + giữ cửa: xe hang động khách (R3, khoá) chờ bốn nhịp rồi chạy thẳng dọc lối hang. Bão làm thạch nhũ đổ (thùng nặng) chắn lối, cửa đá đóng;
+    //     nút giữ cửa nằm sau một hố sụt. Xe cứu hỏa ủi thạch nhũ lên hốc rồi lùi về cờ; nhện bật qua hố giữ nút. Bẫy: drone (không ủi, bay thì không đè nút).
+    man9('cuu-hang-dong', 8, 'van-dung', {
+      ten: 'Thạch nhũ đổ chắn lối',
+      deBai: 'Xe hang động khách chờ bốn nhịp rồi chạy thẳng về cờ. Thạch nhũ đổ chắn lối, cửa đá đóng, nút giữ cửa nằm sau hố sụt. Chọn hai bạn mở đường kịp. Ba bạn về cờ.',
+      veMaMau: 'Đọc chương trình của máy khách: chờ 4 nhịp rồi đi.',
+      san: ['##########', '###.######', '#..H..C.F#', '###.##.###', '#..F.uMF.#', '##########'],
+      noi: [{ nut: { x: 6, y: 4 }, cua: [{ x: 6, y: 2 }] }],
+      doi: [khe({ x: 3, y: 3, huong: 0 }, { co: [{ x: 3, y: 4 }] }), khe({ x: 4, y: 4, huong: 1 }, { co: [{ x: 7, y: 4 }] }),
+        may('HD', { x: 1, y: 2, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 8, y: 2 }] })],
+      chonDoi: {
+        menu: ['PL', 'CU', 'DR'],
+        cachMau: [{ chon: ['CU', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_8, PL_8, HD_R3_8]) }]
+      },
+      maMau: doiBai([[], [], HD_R3_8]),
       loiSai: [
-        { moTa: 'Để trống bat_wait_crack(w): R1 không đi qua được nhũ đá', baiLam: baiDoi(['bat_wait_crack(2)', 'move()'], ['fill_for_mate(3)'], [ham('bat_wait_crack', [], ['w'])]), phaiCoMa: ['loi-cu-phap'] },
-        { moTa: 'Quên wait_n(w) trong bat_wait_crack(w): R1 lao xuống hố u trước khi R2 kịp lấp', baiLam: baiDoi(['bat_wait_crack(2)', 'move()'], ['fill_for_mate(3)'], [], [ham('bat_wait_crack', ['echo_crack_step()'], ['w'])]), phaiCoMa: ['roi-ho', 'chua-toi-co'] }
+        { moTa: 'Xe cứu hỏa ủi xong đứng lại giữa lối: máy khách vướng', baiLam: doiBai([['forward(1)'], PL_8, HD_R3_8]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Nhện rời nút sớm: cửa đá đóng trước mũi máy khách', baiLam: doiBai([CU_8, ['jump("R")', 'go_right()'], HD_R3_8]), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 29, nhip: 7 },
-      goiY: ['Trong thân hàm bat_wait_crack(w), viết 2 dòng: wait_n(w) và echo_crack_step().', 'Hàm này giúp R1 chờ w nhịp rồi tự động tiến tới đàn dơi, phát nốt phá nhũ đá và bước lên.']
+      sao: { o: 35, nhip: 13 },
+      goiY: ['Đọc chương trình của máy khách: nó tới thạch nhũ, tới cửa lúc nào?', 'Xích tiến vào thùng nặng thì đẩy thùng đi một ô.', 'jump("R"): nhện bật qua hố.'],
+      cauDo: { doi: ['CU', 'PL'], lap: null, coChe: ['thung-nang', 'thach-nhu', 'ho', 'nhay', 'nut-de', 'cua', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
-
-    manCH('cuu-hang-dong', 9, 'on-tap', {
-      ten: 'Nhện kéo sắt mở cổng cho R1 lướt qua hang ướt',
-      r2: R_NHEN,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'bat_wait_crack', 'glide_tunnel', 'pull_s'],
-      deBai: 'Cửa C ở (2, 1) nối với công tắc M ở (4, 3). R2 (nhện từ tính Mùa 3) kéo khối sắt ở (3, 3) đè lên công tắc M rồi thả nam châm và tiến về cờ. R1 gọi bat_wait_crack(5) đợi cửa mở, nghe sóng âm đàn dơi ở (3, 1) phá nhũ đá ở (4, 1), rồi gọi glide_tunnel() trượt qua đá vôi ướt I vào cờ.',
-      san: [
-        '#########',
-        '#.C..I.F#',
-        '#.#####.#',
-        '#..oM.F.#',
-        '#########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 1 }],
-      r1Them: { co: [{ x: 7, y: 1 }] }, r2Them: { co: [{ x: 6, y: 3 }] },
-      vatChat: ['.........', '.........', '.........', '...s.....', '.........'],
-      noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 2, y: 1 }] }],
-      danDoi: [{ x: 3, y: 1, not: 4 }],
-      daChuong: [{ x: 4, y: 1, not: 4 }],
-      maMau: baiDoi(['bat_wait_crack(5)'], ['go_right()', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()', 'go_right()', 'go_right()']),
-      loiGiai: baiDoi(['bat_wait_crack(5)', 'glide_tunnel()'], ['go_right()', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()', 'go_right()', 'go_right()']),
+    // 9 · cứu máy, phong phú (ba sân), nhắc G3 (clear_iron), G5 (xuồng kéo bè), #2 (sổ ám hiệu dict): xuồng khách (R3, khoá) kéo bè hàng ra bến q, chờ chín nhịp rồi chạy thẳng.
+    //     Đá chuông rơi chắn luồng sông ngầm; chỗ duy nhất hát tới đá là bờ trên, nhưng thang sắt đổ chắn lối. Nhện bước xuống thang, clear_iron("U") hút rồi bước lên, thả vào hốc chứa D.
+    //     Xe hang động tới chỗ hát, n = listen() (chuông đá trên hốc, mỗi sân một nốt), play_note(d[n]). Bẫy: drone (không hút sắt, không hát).
+    man9('cuu-hang-dong', 9, 'bien-the', {
+      ten: 'Xuồng khách trên sông ngầm',
+      mucTieu: 'dua-vat',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['clear_iron']),
+      deBai: 'Ba sân. Xuồng khách kéo bè hàng, chờ 9 nhịp rồi chạy ra bến q. Đá chuông chắn luồng, thang sắt đổ chắn lối tới chỗ hát. Chọn hai bạn. Nhớ clear_iron(d) và sổ d.',
+      veMaMau: 'Đọc chương trình của xuồng khách: chờ 9 nhịp rồi forward(6).',
+      san: [san9(), san9(), san9()],
+      them: { khoaTD: ['1', '3', '5'], vatChat: [VC_9, VC_9, VC_9],
+        chuongDa: [[{ x: 4, y: 1, not: 1 }], [{ x: 4, y: 1, not: 3 }], [{ x: 4, y: 1, not: 5 }]],
+        daChuong: [[{ x: 5, y: 4, not: 4, ben: 1 }], [{ x: 5, y: 4, not: 8, ben: 1 }], [{ x: 5, y: 4, not: 6, ben: 1 }]] },
+      doi: [khe({ x: 1, y: 2, huong: 1 }), khe({ x: 3, y: 1, huong: 2 }),
+        may('XU', { x: 2, y: 4, huong: 1 }, { son: 'tim', coDinh: true })],
+      chonDoi: {
+        menu: ['HD', 'PL', 'DR'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_9, PL_9, XU_R3_9]) }]
+      },
+      maMau: doiBai([[D_9], [], XU_R3_9]),
       loiSai: [
-        { moTa: 'R1 quên glide_tunnel() sau bat_wait_crack(5): dừng lại ở (4, 1)', baiLam: baiDoi(['bat_wait_crack(5)'], ['go_right()', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()', 'go_right()', 'go_right()']), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(4)): sân 2, 3 đá không vỡ', baiLam: doiBai([[D_9, 'wait_n(5)', 'forward(3)', 'play_note(4)'], PL_9, XU_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không dọn thang sắt: xe hang động đứng xa đá, hát không tới', baiLam: doiBai([HD_9, [], XU_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nhện hút thang rồi thả ngay trên lối: xe vướng thang', baiLam: doiBai([HD_9, ['go_down()', 'pull_s()', 'magnet_off()', 'wait()', 'go_up()'], XU_R3_9]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 30, nhip: 11 },
-      goiY: ['Sau khi bat_wait_crack(5) đưa R1 tới (4, 1), trước mặt là đá ướt I (5, 1), sàn (6, 1) và cờ (7, 1).', 'Thêm glide_tunnel() ở cuối chương trình R1 để thu gai trượt qua đá ướt vào thẳng cờ.']
+      sao: { o: 43, nhip: 19 },
+      goiY: ['Đọc chương trình của xuồng khách: nó tới đá chuông lúc nào?', 'clear_iron(d): hút sắt rồi bước d (hàm em viết ở Bãi tái chế).', 'n = listen() rồi play_note(d[n]): tra sổ.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['song-ngam', 'be', 'da-chuong', 'chuong-da', 'dict', 'sat', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
-
-    manCH('cuu-hang-dong', 10, 'trum', {
-      ten: 'Trùm Chương 1: Khúc ngân vang vòm hang đá vôi',
-      r2: R2_LOA, mucTieu: 'choi-dieu', nhipTheo: 'tong',
+    // 10 · song ca đoạn 8 (Bè 1: 4 4 3 3 2 2 1 1 | Bè 2: 6 6 5 5 4 4 3 3), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Xe hang động hát bè 1; nhện lắp loa thay nam châm (lai L7) hát bè 2 (bè 2 cao hơn bè 1 một quãng ba). Hai khối đá chuông còn sót trong hang vỡ khi nghe nốt
+    //      của mình (chỉ để nhìn). Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-hang-dong', 10, 'trum', {
+      ten: 'Song ca hang động',
+      mucTieu: 'choi-dieu',
+      deBai: 'Hang động đã thông! Nhện lắp loa thay nam châm, xe hang động hát cùng: song ca đoạn 8. Mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
       hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Hành lang Hang động Đá vôi đã thông suốt! Giữa vòm đá vang vọng tiếng sóng âm của đàn dơi, R1 và R2 cùng hợp tấu 2 bè qua 3 sân liên tiếp:\n- Bè 1 (R1): [1, 3, 5, 8, 5, 3, 1, 5]\n- Bè 2 (R2): [1, 1, 3, 5, 3, 1, 5, 1]\nHãy dùng hàm play_part(notes) cho cả hai robot.',
-      san: SAN_DUET_3,
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      dieu: { r1: '13585315', r2: '11353151' },
-      maMau: baiDoi(['play_part([1, 3, 5, 8, 5, 3, 1, 5])'], ['play_part([1, 1, 3, 5])']),
-      loiGiai: baiDoi(['play_part([1, 3, 5, 8, 5, 3, 1, 5])'], ['play_part([1, 1, 3, 5, 3, 1, 5, 1])']),
+      san: ['######', '#....#', '#....#', '######'],
+      doi: [may('HD', { x: 1, y: 1, huong: 1 }),
+        may('PL', { x: 1, y: 2, huong: 1 }, { son: 'lam', tay: 'loa', boHam: ['magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'], themHam: ['note', 'beat'], phatNot: true })],
+      them: { dieu: { r1: '4 4 3 3 2 2 1 1', r2: '6 6 5 5 4 4 3 3' }, daChuong: [{ x: 4, y: 1, not: 2, ben: 1 }, { x: 4, y: 2, not: 5, ben: 1 }] },
+      maMau: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(6)']]),
+      loiGiai: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([6, 6, 5, 5, 4, 4, 3, 3])']]),
       loiSai: [
-        { moTa: 'R2 chỉ phát 4 nốt đầu: chưa đủ 8 nốt của bè 2 trên 3 sân', baiLam: baiDoi(['play_part([1, 3, 5, 8, 5, 3, 1, 5])'], ['play_part([1, 1, 3, 5])']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_note(6)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 đảo hai nốt giữa', baiLam: doiBai([['play_part([4, 4, 3, 3, 2, 2, 1, 1])'], ['play_part([6, 6, 5, 4, 5, 4, 3, 3])']]), phaiCoMa: ['sai-not'] }
       ],
-      sao: { o: 6, nhip: 24 },
-      goiY: ['Điền đủ danh sách 8 nốt [1, 1, 3, 5, 3, 1, 5, 1] vào lệnh play_part(...) của R2.', 'Cả 3 sân đều kiểm tra sự hòa âm chính xác của 2 bè nhạc.']
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([6, 6, 5, 5, 4, 4, 3, 3]).'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['loa', 'da-chuong', 'hang-dong'], cuu: null, meo: 'song-song' }
     }),
-
-    // ==================== CHƯƠNG 2: lap-hang-dong (10 màn) ====================
-    manCH('lap-hang-dong', 1, 'lam-quen', {
-      ten: 'Từ điển giải mã sóng âm đàn dơi',
-      chiChay: true, chinhCoDinh: true, r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'fill_for_mate', 'decode_glide'],
-      deBai: 'Trong hang sâu, sóng âm định vị của đàn dơi bị vách đá vôi phản xạ lệch tần số! R1 dùng từ điển d = {2: 5, 4: 7} và hàm decode_glide(d, 1) để đổi nốt nghe được từ đàn dơi sang đúng tần số cộng hưởng của nhũ đá rồi thu gai lướt qua đá ướt, trong khi R2 (xe omni) lấp hố giúp bạn. Bấm Chạy thử để quan sát.',
-      san: [
-        '########',
-        '#.u.I.F#',
-        '##=#####',
-        '##o#####',
-        '#..F####',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      r1Them: { co: [{ x: 6, y: 1 }] }, r2Them: { co: [{ x: 3, y: 4 }] },
-      danDoi: [{ x: 3, y: 1, not: 2 }],
-      daChuong: [{ x: 4, y: 1, not: 5 }],
-      maMau: baiDoi(['d = {2: 5, 4: 7}', 'wait_n(2)', 'forward(2)', 'decode_glide(d, 1)', 'turn_left()', 'move()'], ['fill_for_mate(3)']),
-      loiGiai: baiDoi(['d = {2: 5, 4: 7}', 'wait_n(2)', 'forward(2)', 'decode_glide(d, 1)', 'turn_left()', 'move()'], ['fill_for_mate(3)']),
-      sao: { o: 37, nhip: 9 },
-      goiY: ['Màn trình diễn: bấm Chạy thử để xem R1 tra từ điển d[listen()] giải mã sóng âm đàn dơi.']
+    /* ========================================================================
+       CHƯƠNG 2: lap-hang-dong (10 màn)
+       ======================================================================== */
+    // 11 · show (đọc rồi chọn), lai L4 nhện + nam châm + mic (ra mắt): ngách gầm thấp tối om, hòm dụng cụ sắt kẹt ở cuối ngách, ngay trước một chuông đá đang vang.
+    //      Xe hang động R1 hát vỡ đá chuông chắn miệng ngách. Luna lắp sẵn nhện + nam châm + mic (khoá): co chân, hear() đo xa tới chuông, bò hear() - 1 ô tới hòm, hút, bò ra, thả vào D.
+    man9('lap-hang-dong', 1, 'lam-quen', {
+      ten: 'Nhện nghe chuông trong ngách',
+      chiChay: true,
+      khung: { chinh: 14, moiHam: 8 },
+      mucTieu: 'dua-vat',
+      deBai: 'Hòm dụng cụ sắt kẹt cuối ngách gầm thấp tối om, ngay trước chuông đá đang vang. Luna lắp cho nhện một cái mic: nghe chuông để biết hòm ở xa bao nhiêu. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem nhện nghe chuông.',
+      san: ['#########', '#..nno..#', '#D#######', '#.......#', '#########'],
+      them: { vatChat: ['.........', '.....s...', '.........', '.........', '.........'], chuongDa: [{ x: 6, y: 1, not: 3 }], daChuong: [{ x: 2, y: 1, not: 6, ben: 1 }] },
+      doi: [may('HD', { x: 1, y: 3, huong: 1 }), Object.assign({ batDau: { x: 1, y: 1, huong: 1 } }, clone(NHEN_MIC))],
+      maMau: doiBai([HD_11, NHEN_11]),
+      loiGiai: doiBai([HD_11, NHEN_11]),
+      sao: { o: 21, nhip: 26 },
+      goiY: ['hear(): khoảng cách (số ô) tới nguồn tiếng gần nhất.', 'Mic không cần mũi: nhện gắn được.', 'pull_s(): hút sắt dưới bụng nhện.'],
+      cauDo: { doi: null, lap: 'nhen+nam-cham+am-thanh', coChe: ['gam', 'ngach', 'chuong-da', 'da-chuong', 'sat', 'mic'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
-
-    manCH('lap-hang-dong', 2, 'lam-quen', {
-      ten: 'Chế hàm: Tra từ điển sóng âm dơi và tiến bước',
-      taoHam: ['bat_dict_crack'], r2: R_XICH,
-      hamCuaEmCan: ['move', 'forward', 'go_echo', 'play_note', 'valve_step'],
-      deBai: 'Khi đàn dơi phát sóng âm định vị ở phía trước, R1 có thể tiến tới chỗ đàn dơi bằng go_echo(), tra từ điển d[listen()] để phát đúng nốt cộng hưởng phá nhũ đá ngay trước mặt rồi bước lên. Hãy viết hàm bat_dict_crack(d): gọi go_echo(), gọi play_note(d[listen()]), rồi gọi move().',
-      san: [
-        '########',
-        '#..C..F#',
-        '#.####.#',
-        '#..FN..#',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 1 }],
-      r1Them: { co: [{ x: 6, y: 1 }] }, r2Them: { co: [{ x: 3, y: 3 }] },
-      noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 3, y: 1 }] }],
-      danDoi: [{ x: 4, y: 1, not: 3 }],
-      daChuong: [{ x: 5, y: 1, not: 6 }],
-      maMau: baiDoi(['d = {3: 6, 4: 8}', 'bat_dict_crack(d)', 'move()'], ['valve_step(1)'], [ham('bat_dict_crack', [], ['d'])]),
-      loiGiai: baiDoi(['d = {3: 6, 4: 8}', 'bat_dict_crack(d)', 'move()'], ['valve_step(1)'], [], [ham('bat_dict_crack', ['go_echo()', 'play_note(d[listen()])', 'move()'], ['d'])]),
+    // 12 · đọc rồi chọn (ba sân), ép đổi cảm biến: thang sắt đổ chắn lối xe hang động R1, mỗi sân một cột; chuông đá treo trên vách ngay trên cột thang vang trong hang tối.
+    //      R2 nhện + nam châm, chọn cảm biến: mic (hear() = khoảng cách tới chuông = cột thang, rồi bò đúng số ô) hay cảm biến từ (bò từng ô, front_metal() thì xuống hút).
+    //      Nhện bò hàng trên, bước xuống thang, clear_iron("U") (gói 3), mang về cờ. R1 chờ rồi chạy qua lối đã dọn.
+    man9('lap-hang-dong', 2, 'lam-quen', {
+      ten: 'Thang sắt dưới chuông',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['clear_iron']),
+      deBai: 'Ba sân. Thang sắt đổ chắn lối xe hang động, mỗi sân một cột. Chuông đá treo ngay trên cột thang. Lắp nhện + nam châm, chọn cảm biến để tìm thang, mang thang về cờ cuối hàng trên.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san12(3), san12(5), san12(4)],
+      them: { vatChat: [vc12(3), vc12(5), vc12(4)], chuongDa: [[{ x: 3, y: 0, not: 4 }], [{ x: 5, y: 0, not: 4 }], [{ x: 4, y: 0, not: 4 }]] },
+      doi: [may('HD', { x: 1, y: 2, huong: 1 }, { co: [{ x: 8, y: 2 }] }), khe({ x: 1, y: 1, huong: 2 }, { son: 'lam', co: [{ x: 8, y: 1 }] })],
+      lapRap: lapR2(['nhen'], ['nam-cham'], ['am-thanh', 'tu'], 10, [
+        cach('nhen', 'nam-cham', 'am-thanh', [HD_12, NHEN_MIC_12]),
+        cach('nhen', 'nam-cham', 'tu', [HD_12, NHEN_TU_12])
+      ], { moLai: ['L4'] }),
+      maMau: doiBai([HD_12, ['n = hear()']]),
       loiSai: [
-        { moTa: 'Để trống bat_dict_crack(d): R1 không đi qua được nhũ đá (5, 1)', baiLam: baiDoi(['d = {3: 6, 4: 8}', 'bat_dict_crack(d)', 'move()'], ['valve_step(1)'], [ham('bat_dict_crack', [], ['d'])]), phaiCoMa: ['loi-cu-phap'] },
-        { moTa: 'Dùng play_note(listen()) thay vì play_note(d[listen()]): phát nốt 3 không phá được nhũ đá nốt 6', baiLam: baiDoi(['d = {3: 6, 4: 8}', 'bat_dict_crack(d)', 'move()'], ['valve_step(1)'], [], [ham('bat_dict_crack', ['go_echo()', 'play_note(listen())', 'move()'], ['d'])]), phaiCoMa: ['dam-tuong', 'chua-toi-co'] }
+        { moTa: 'Điền thẳng cột của sân 1 (cột 3): sân 2, 3 thang còn chắn lối', baiLam: doiBai([HD_12, ['go_right()', 'go_right()', 'go_down()', 'clear_iron("U")', 'for i in range(5):', '    go_right()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Bò n ô (quên trừ 1): nhện đi quá cột thang', baiLam: doiBai([HD_12, ['n = hear()', 'for i in range(n):', '    go_right()', 'go_down()', 'clear_iron("U")', 'for i in range(7 - n):', '    go_right()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-toi-co'] }
       ],
-      sao: { o: 19, nhip: 6 },
-      goiY: ['Trong bat_dict_crack(d), viết 3 dòng: go_echo(), play_note(d[listen()]) và move().', 'Khi đứng ở (4, 1), listen() trả về 3, d[3] là 6 — đúng tần số phá nhũ đá ở (5, 1).']
+      sao: { o: 35, nhip: 25 },
+      goiY: ['hear(): số ô tới chuông. Chuông ở hàng trên vách, nên hear() bằng số cột của thang.', 'clear_iron(d): hút sắt rồi bước d (hàm em viết ở Bãi tái chế).', 'Mặt nhện quay xuống: front_metal() đọc ô ngay dưới.'],
+      cauDo: { doi: null, lap: 'nhen+nam-cham+am-thanh', coChe: ['sat', 'chuong-da', 'mic', 'thang'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
-
-    manCH('lap-hang-dong', 3, 'lam-quen', {
-      ten: 'Giải mã hai bầy dơi liên tiếp trong hành lang hẹp',
-      r2: R_BANH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'grab_clear', 'bat_dict_crack'],
-      deBai: 'Hành lang có 2 bầy dơi phát sóng âm định vị ở (3, 1) và (5, 1) ứng với 2 khối nhũ đá cộng hưởng ở (4, 1) và (6, 1). R2 gọi grab_clear() dọn tảng đá o ở (2, 1) rồi lùi về cờ; R1 chờ 2 nhịp, khai báo d = {2: 5, 4: 8} rồi gọi bat_dict_crack(d) 2 lần liên tiếp để phá cả 2 nhũ đá và tiến vào cờ.',
-      san: [
-        '#########',
-        '#.o....F#',
-        '##.######',
-        '##F######',
-        '#########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 0 }],
-      r1Them: { co: [{ x: 7, y: 1 }] }, r2Them: { co: [{ x: 2, y: 3 }] },
-      danDoi: [{ x: 3, y: 1, not: 2 }, { x: 5, y: 1, not: 4 }],
-      daChuong: [{ x: 4, y: 1, not: 5 }, { x: 6, y: 1, not: 8 }],
-      maMau: baiDoi(['d = {2: 5, 4: 8}', 'wait_n(2)', 'bat_dict_crack(d)', 'move()'], ['grab_clear()']),
-      loiGiai: baiDoi(['d = {2: 5, 4: 8}', 'wait_n(2)', 'bat_dict_crack(d)', 'bat_dict_crack(d)', 'move()'], ['grab_clear()']),
+    // 13 · đọc rồi chọn (ba sân), ôn dict: nhện + mic (L4) bò tới ngã ba hang tối; chuông đá trong vách cạnh ngã ba vang một nốt, mỗi sân một nốt. Sổ đường d = {2: "U", 4: "D", 6: "U"}
+    //      tra nốt ra hướng: n = listen(), go(d[n]) hai lần tới cờ; nhánh sai có hố sụt mới. Xe hang động R1 hát vỡ đá chuông chắn lối nhện rồi về cờ.
+    //      Cách hai: thêm nam châm (đắt hơn, cùng chương trình). Điền thẳng hướng sân 1 ("U") thì sân 2 rơi hố.
+    man9('lap-hang-dong', 3, 'luyen', {
+      ten: 'Sổ đường ngã ba',
+      khung: { chinh: 14, moiHam: 8 },
+      hamCuaEmCan: HAM_EM.concat(['go']),
+      deBai: 'Ba sân. Ngã ba hang tối, một nhánh có hố sụt mới. Chuông đá cạnh ngã ba vang một nốt, mỗi sân một nốt. Sổ d: nốt → hướng. Lắp robot nghe nốt, tra sổ, đi đúng nhánh tới cờ.',
+      veMaMau: 'Nhện có sổ d nhưng chưa nghe.',
+      san: [san13(true), san13(false), san13(true)],
+      them: { khoaTD: ['2', '4', '6'], daChuong: [{ x: 2, y: 3, not: 5, ben: 1 }],
+        chuongDa: [[{ x: 5, y: 3, not: 2 }], [{ x: 5, y: 3, not: 4 }], [{ x: 5, y: 3, not: 6 }]] },
+      doi: [may('HD', { x: 1, y: 6, huong: 1 }, { co: [{ x: 5, y: 6 }] }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', co: [{ x: 4, y: 1 }, { x: 4, y: 5 }] })],
+      lapRap: lapR2(['nhen', 'gai'], ['nam-cham'], ['am-thanh'], 9, [
+        cach('nhen', null, 'am-thanh', [HD_13, NHEN_13]),
+        cach('nhen', 'nam-cham', 'am-thanh', [HD_13, NHEN_13])
+      ], { moLai: ['L4'] }),
+      maMau: doiBai([HD_13, [D_13]]),
       loiSai: [
-        { moTa: 'R1 chỉ gọi bat_dict_crack(d) 1 lần: dừng trước nhũ đá thứ hai ở (6, 1)', baiLam: baiDoi(['d = {2: 5, 4: 8}', 'wait_n(2)', 'bat_dict_crack(d)', 'move()'], ['grab_clear()']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 29, nhip: 10 },
-      goiY: ['Mỗi lệnh bat_dict_crack(d) đưa R1 tới bầy dơi, tra từ điển phát nốt phá nhũ đá và bước lên ô nhũ đá vừa vỡ.', 'Gọi bat_dict_crack(d) 2 lần rồi move() vào cờ (7, 1).']
-    }),
-
-    manCH('lap-hang-dong', 4, 'cung-co', {
-      ten: 'Chế hàm: Tập hợp (set) lọc tiếng vọng dơi trùng lặp',
-      taoHam: ['bat_set_march'], r2: R_NHEN,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'listen_unique_step', 'pull_s'],
-      deBai: 'Trong hang vòm tròn, sóng âm của đàn dơi dội lại tạo thành các nốt trùng lặp dọc hành lang. Để R1 đi qua n ô mà chỉ phát mỗi nốt mới đúng 1 lần nhờ tập hợp s (set), hãy viết hàm bat_set_march(s, n): lặp n lần (for i in range(n):) gọi listen_unique_step(s).',
-      san: [
-        '#########',
-        '#.C....F#',
-        '#.#####.#',
-        '#..oM.F.#',
-        '#########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 1 }],
-      r1Them: { co: [{ x: 7, y: 1 }] }, r2Them: { co: [{ x: 6, y: 3 }] },
-      vatChat: ['.........', '.........', '.........', '...s.....', '.........'],
-      noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 2, y: 1 }] }],
-      danDoi: [{ x: 3, y: 1, not: 4, phamVi: 1 }, { x: 4, y: 1, not: 4, phamVi: 1 }, { x: 5, y: 1, not: 7, phamVi: 1 }],
-      daChuong: [{ x: 4, y: 1, not: 4 }, { x: 6, y: 1, not: 7 }],
-      maMau: baiDoi(['s = set()', 'wait_n(5)', 'forward(2)', 'bat_set_march(s, 3)', 'move()'], ['go_right()', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()', 'go_right()', 'go_right()'], [ham('bat_set_march', [], ['s', 'n'])]),
-      loiGiai: baiDoi(['s = set()', 'wait_n(5)', 'forward(2)', 'bat_set_march(s, 3)', 'move()'], ['go_right()', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()', 'go_right()', 'go_right()'], [], [ham('bat_set_march', ['for i in range(n):', '    listen_unique_step(s)'], ['s', 'n'])]),
-      loiSai: [
-        { moTa: 'Để trống bat_set_march(s, n): R1 đứng yên ở (3, 1)', baiLam: baiDoi(['s = set()', 'wait_n(5)', 'forward(2)', 'bat_set_march(s, 3)', 'move()'], ['go_right()', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()', 'go_right()', 'go_right()'], [ham('bat_set_march', [], ['s', 'n'])]), phaiCoMa: ['loi-cu-phap'] },
-        { moTa: 'Chỉ gọi listen_unique_step(s) 1 lần không có vòng lặp: R1 chưa tới được cờ', baiLam: baiDoi(['s = set()', 'wait_n(5)', 'forward(2)', 'bat_set_march(s, 3)', 'move()'], ['go_right()', 'pull_s()', 'go_right()', 'magnet_off()', 'wait()', 'go_right()', 'go_right()'], [], [ham('bat_set_march', ['listen_unique_step(s)'], ['s', 'n'])]), phaiCoMa: ['chua-toi-co'] }
+        { moTa: 'Điền thẳng hướng của sân 1 ("U"): sân 2 rơi hố', baiLam: doiBai([HD_13, [D_13, 'wait()', 'for i in range(3):', '    go_right()', 'go_up()', 'go_up()']]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Đi theo nốt (go(n)), không tra sổ: lệnh đi không hiểu số', baiLam: doiBai([HD_13, [D_13, 'wait()', 'for i in range(3):', '    go_right()', 'n = listen()', 'go(n)', 'go(n)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Đi một bước theo sổ: nhện dừng giữa nhánh, chưa tới cờ', baiLam: doiBai([HD_13, [D_13, 'wait()', 'for i in range(3):', '    go_right()', 'n = listen()', 'go(d[n])']]), phaiCoMa: ['chua-toi-co'] }
       ],
       sao: { o: 30, nhip: 13 },
-      goiY: ['Trong bat_set_march(s, n), viết vòng lặp: for i in range(n): rồi thụt lề gọi listen_unique_step(s).', 'Ở (3, 1) nốt 4 mới được thêm vào s và phát loa phá nhũ đá (4, 1); ở (4, 1) nốt 4 đã có trong s nên R1 đi thẳng không tốn nhịp phát lại!']
+      goiY: ['n = listen(): nốt chuông gần nhất. d[n]: hướng trong sổ.', 'go("U"): nhện bước lên; go("D"): bước xuống.', 'Bánh gai không đi lên, đi xuống mà không quay.'],
+      cauDo: { doi: null, lap: 'nhen+am-thanh', coChe: ['chuong-da', 'da-chuong', 'dict', 'nga-ba', 'ho'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
-
-    manCH('lap-hang-dong', 5, 'cung-co', {
-      ten: 'Lọc sóng âm đàn dơi và mở cổng cho drone tô màu',
-      r2: R_DRONE, mucTieu: 'to-hinh',
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'bat_set_march', 'span_sow'],
-      deBai: 'R1 khởi tạo s = set(), gọi bat_set_march(s, 3) để lọc sóng âm của đàn dơi dọc hành lang và bước lên công tắc M ở (4, 1) mở cửa C cho R2 (drone Mùa 6) bay vào gieo 3 ô rêu phát sáng màu "blue".',
-      san: [
-        '#######',
-        '#...M.#',
-        '#######',
-        '#.C...#',
-        '#######'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 1, y: 3, huong: 1 }],
-      hinh: ['.......', '.......', '.......', '...bbb.', '.......'],
-      noi: [{ nut: { x: 4, y: 1 }, cua: [{ x: 2, y: 3 }] }],
-      danDoi: [{ x: 1, y: 1, not: 3, phamVi: 1 }, { x: 2, y: 1, not: 3, phamVi: 1 }, { x: 3, y: 1, not: 6, phamVi: 1 }],
-      daChuong: [{ x: 2, y: 1, not: 3 }, { x: 4, y: 1, not: 6 }],
-      maMau: baiDoi(['s = set()', 'bat_set_march(s, 2)'], ['wait_n(6)', 'go_right()', 'go_right()', 'span_sow("blue", 3)']),
-      loiGiai: baiDoi(['s = set()', 'bat_set_march(s, 3)'], ['wait_n(6)', 'go_right()', 'go_right()', 'span_sow("blue", 3)']),
+    // 14 · dọn lối, cứu người, lai L5 xuồng + loa + mic (ra mắt): thợ ảnh hang động kẹt cuối hang trên sau một khối đá chuông; bánh gai không tới gần được (vách dày, sông ngầm ở dưới).
+    //      Đá chuông thứ hai chắn luồng sông ngầm. R2 lắp xuồng + loa + mic: nghe, hát vỡ đá chắn luồng, chạy tới gần đá kia, nghe, hát lại. Xe hang động R1 đứng nút giữ cửa đá
+    //      trên lối người về trạm. Cách hai rẻ hơn: xuồng + loa, hát thẳng hai nốt.
+    man9('lap-hang-dong', 4, 'luyen', {
+      ten: 'Xuồng hát trên sông ngầm',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Thợ ảnh kẹt cuối hang sau đá chuông. Sông ngầm bên dưới, đá chuông khác chắn luồng. Lắp xuồng có loa hát vỡ hai đá. Xe hang động giữ nút cho cửa đá mở trên lối về trạm.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['##########', '#..C.....#', '#..M######', '#~~~~~~~~#', '##########'],
+      noi: [{ nut: { x: 3, y: 2 }, cua: [{ x: 3, y: 1 }] }],
+      them: { daChuong: [{ x: 2, y: 3, not: 4, ben: 1 }, { x: 7, y: 1, not: 7, ben: 1 }], nguoi: [{ x: 8, y: 1 }], tramCuu: [{ x: 1, y: 1 }] },
+      doi: [may('HD', { x: 1, y: 2, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['xuong'], ['loa', 'day-keo'], ['am-thanh'], 10, [
+        cach('xuong', 'loa', 'am-thanh', [HD_14, XUONG_14]),
+        cach('xuong', 'loa', null, [HD_14, XUONG_LOA_14])
+      ], { moLai: ['L5'] }),
+      maMau: doiBai([HD_14, []]),
       loiSai: [
-        { moTa: 'R1 chỉ gọi bat_set_march(s, 2): chưa tới được nút M ở (4, 1) nên cửa C đóng', baiLam: baiDoi(['s = set()', 'bat_set_march(s, 2)'], ['wait_n(6)', 'go_right()', 'go_right()', 'span_sow("blue", 3)']), phaiCoMa: ['dam-tuong'] }
+        { moTa: 'Xuồng hát đá kia ở xa (chạy ba ô): cách 5 ô, đá không vỡ', baiLam: doiBai([HD_14, ['play_note(listen())', 'forward(3)', 'play_note(listen())']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động không giữ nút: cửa đá đóng trên lối người', baiLam: doiBai([['forward(1)'], XUONG_14]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xuồng chạy ngay: đâm đá chắn luồng', baiLam: doiBai([HD_14, ['forward(5)', 'play_note(listen())']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 25, nhip: 10 },
-      goiY: ['Từ (1, 1) tới nút M ở (4, 1) là 3 bước: đổi đối số thứ hai của bat_set_march(s, ...) thành 3.', 'Khi R1 đè nút M ở nhịp 5, R2 chờ xong 6 nhịp sẽ bay qua cửa C và gieo 3 ô màu "blue".']
-    }),
-
-    manCH('lap-hang-dong', 6, 'cung-co', {
-      ten: 'Chế hàm: Chờ cầu đá rồi phá nhũ đá trượt sàn ướt',
-      taoHam: ['echo_glide_pass'], r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'go_echo', 'crack_tunnel', 'radar_front_lob'],
-      deBai: 'Khi R2 (xe omni Mùa 7) dùng radar quét và hất đá tròn lấp hố sụt u ở (2, 1), R1 cần chờ w nhịp, gọi go_echo() tiến tới đàn dơi (3, 1) rồi gọi crack_tunnel() để phá nhũ đá ở (4, 1) và thu gai trượt qua dải đá vôi ướt I tới cờ. Hãy viết hàm echo_glide_pass(w): gọi wait_n(w), gọi go_echo(), rồi gọi crack_tunnel().',
-      san: [
-        '########',
-        '#.u.I.F#',
-        '##=#####',
-        '##o#####',
-        '#..F####',
-        '########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      r1Them: { co: [{ x: 6, y: 1 }] }, r2Them: { co: [{ x: 3, y: 4 }] },
-      vatDang: ['........', '........', '........', '..r.....', '........', '........'],
-      danDoi: [{ x: 3, y: 1, not: 7 }],
-      daChuong: [{ x: 4, y: 1, not: 7 }],
-      maMau: baiDoi(['echo_glide_pass(2)'], ['radar_front_lob(3)'], [ham('echo_glide_pass', [], ['w'])]),
-      loiGiai: baiDoi(['echo_glide_pass(2)'], ['radar_front_lob(3)'], [], [ham('echo_glide_pass', ['wait_n(w)', 'go_echo()', 'crack_tunnel()'], ['w'])]),
-      loiSai: [
-        { moTa: 'Để trống echo_glide_pass(w): R1 đứng yên tại chỗ', baiLam: baiDoi(['echo_glide_pass(2)'], ['radar_front_lob(3)'], [ham('echo_glide_pass', [], ['w'])]), phaiCoMa: ['loi-cu-phap'] },
-        { moTa: 'Quên wait_n(w) trong echo_glide_pass(w): R1 rơi xuống hố u trước khi R2 lấp hố', baiLam: baiDoi(['echo_glide_pass(2)'], ['radar_front_lob(3)'], [], [ham('echo_glide_pass', ['go_echo()', 'crack_tunnel()'], ['w'])]), phaiCoMa: ['roi-ho', 'chua-toi-co'] }
-      ],
-      sao: { o: 34, nhip: 7 },
-      goiY: ['Trong thân hàm echo_glide_pass(w), viết 3 dòng: wait_n(w), go_echo() và crack_tunnel().', 'Khi R1 thu gai bước lên (4, 1) là đá ướt I, R1 sẽ trượt sang (5, 1) rồi bước vào cờ (6, 1).']
-    }),
-
-    manCH('lap-hang-dong', 7, 'cung-co', {
-      ten: 'Kết hợp giải mã từ điển và lướt đá ướt qua hai vòm hang',
-      r2: R_XICH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'valve_step', 'bat_dict_crack', 'echo_glide_pass'],
-      deBai: 'Vòm hang đầu có đàn dơi ở (2, 1) cần tra từ điển d = {2: 6, 5: 8} bằng bat_dict_crack(d) để phá nhũ đá ở (3, 1); vòm hang sau có cửa C ở (4, 1) do R2 bắn van N mở. Sau khi gọi bat_dict_crack(d) và move() qua cửa C, R1 gọi echo_glide_pass(1) để tiến tới đàn dơi thứ hai ở (5, 1), phá nhũ đá (6, 1) và trượt qua đá ướt I về cờ.',
-      san: [
-        '##########',
-        '#...C.I.F#',
-        '#.######.#',
-        '#..FN....#',
-        '##########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 3, huong: 1 }],
-      r1Them: { co: [{ x: 8, y: 1 }] }, r2Them: { co: [{ x: 3, y: 3 }] },
-      noi: [{ nut: { x: 4, y: 3 }, cua: [{ x: 4, y: 1 }] }],
-      danDoi: [{ x: 2, y: 1, not: 2, phamVi: 1 }, { x: 5, y: 1, not: 5, phamVi: 2 }],
-      daChuong: [{ x: 3, y: 1, not: 6 }, { x: 6, y: 1, not: 5 }],
-      maMau: baiDoi(['d = {2: 6, 5: 8}', 'bat_dict_crack(d)', 'move()'], ['valve_step(1)']),
-      loiGiai: baiDoi(['d = {2: 6, 5: 8}', 'bat_dict_crack(d)', 'move()', 'echo_glide_pass(1)'], ['valve_step(1)']),
-      loiSai: [
-        { moTa: 'R1 quên gọi echo_glide_pass(1) sau khi qua cửa C: dừng ở (4, 1)', baiLam: baiDoi(['d = {2: 6, 5: 8}', 'bat_dict_crack(d)', 'move()'], ['valve_step(1)']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 31, nhip: 9 },
-      goiY: ['Sau bat_dict_crack(d) và move(), R1 đang đứng ở (4, 1) trước đàn dơi thứ hai (5, 1).', 'Thêm echo_glide_pass(1) để R1 tiến tới đàn dơi (5, 1), phá nhũ đá (6, 1) và lướt qua đá ướt I về cờ (8, 1).']
-    }),
-
-    manCH('lap-hang-dong', 8, 'cung-co', {
-      ten: 'Chế hàm: Phối hợp giải mã sóng âm dơi và trượt ngách hang',
-      taoHam: ['cave_team_clear'], r2: R_BANH,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'bat_dict_crack', 'glide_tunnel', 'grab_clear'],
-      deBai: 'Để R1 phối hợp nhịp nhàng với đồng đội dọn đường, hãy viết hàm cave_team_clear(w, d): gọi wait_n(w), gọi bat_dict_crack(d), rồi gọi glide_tunnel() để thu gai lướt qua dải đá vôi ướt I tới đích. Áp dụng cave_team_clear(2, d) cho R1 khi R2 gọi grab_clear() dọn đá tảng ở (2, 1).',
-      san: [
-        '#########',
-        '#.o..I.F#',
-        '##.######',
-        '##F######',
-        '#########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 2, huong: 0 }],
-      r1Them: { co: [{ x: 7, y: 1 }] }, r2Them: { co: [{ x: 2, y: 3 }] },
-      danDoi: [{ x: 3, y: 1, not: 4 }],
-      daChuong: [{ x: 4, y: 1, not: 7 }],
-      maMau: baiDoi(['d = {4: 7}', 'cave_team_clear(2, d)'], ['grab_clear()'], [ham('cave_team_clear', [], ['w', 'd'])]),
-      loiGiai: baiDoi(['d = {4: 7}', 'cave_team_clear(2, d)'], ['grab_clear()'], [], [ham('cave_team_clear', ['wait_n(w)', 'bat_dict_crack(d)', 'glide_tunnel()'], ['w', 'd'])]),
-      loiSai: [
-        { moTa: 'Để trống cave_team_clear(w, d): R1 đứng yên tại chỗ', baiLam: baiDoi(['d = {4: 7}', 'cave_team_clear(2, d)'], ['grab_clear()'], [ham('cave_team_clear', [], ['w', 'd'])]), phaiCoMa: ['loi-cu-phap'] },
-        { moTa: 'Quên glide_tunnel() trong cave_team_clear(w, d): R1 dừng lại ở (4, 1) chưa tới cờ', baiLam: baiDoi(['d = {4: 7}', 'cave_team_clear(2, d)'], ['grab_clear()'], [], [ham('cave_team_clear', ['wait_n(w)', 'bat_dict_crack(d)'], ['w', 'd'])]), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 33, nhip: 8 },
-      goiY: ['Trong cave_team_clear(w, d), viết 3 dòng: wait_n(w), bat_dict_crack(d) và glide_tunnel().', 'Sau khi bat_dict_crack(d) đưa R1 lên (4, 1), glide_tunnel() sẽ thu gai trượt qua đá ướt I ở (5, 1) rồi tiến vào cờ (7, 1).']
-    }),
-
-    manCH('lap-hang-dong', 9, 'on-tap', {
-      ten: 'Đại hợp đồng cứu hộ lòng hang đá vôi',
-      r2: R_OMNI,
-      hamCuaEmCan: ['move', 'forward', 'wait_n', 'cave_team_clear', 'bat_set_march', 'radar_front_lob'],
-      deBai: 'Cửa ải cuối trong lòng Hang động Đá vôi! R2 (xe omni Mùa 7) gọi radar_front_lob(3) hất đá tròn lấp hố sụt u ở (2, 1). R1 khởi tạo d = {3: 6} và s = set(), gọi cave_team_clear(2, d) để chờ cầu đá, giải mã đàn dơi thứ nhất (3, 1), phá nhũ đá (4, 1) và trượt qua đá ướt I (5, 1) tới (7, 1), rồi gọi bat_set_march(s, 2) lọc sóng âm đàn dơi cuối cùng vào cờ!',
-      san: [
-        '###########',
-        '#.u..I...F#',
-        '##=########',
-        '##o########',
-        '#..F#######',
-        '###########'
-      ],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 2, y: 4, huong: 0 }],
-      r1Them: { co: [{ x: 9, y: 1 }] }, r2Them: { co: [{ x: 3, y: 4 }] },
-      vatDang: ['...........', '...........', '...........', '..r........', '...........', '...........'],
-      danDoi: [{ x: 3, y: 1, not: 3, phamVi: 2 }, { x: 7, y: 1, not: 5, phamVi: 1 }, { x: 8, y: 1, not: 5, phamVi: 1 }],
-      daChuong: [{ x: 4, y: 1, not: 6 }, { x: 8, y: 1, not: 5 }],
-      maMau: baiDoi(['d = {3: 6}', 's = set()', 'cave_team_clear(2, d)'], ['radar_front_lob(3)']),
-      loiGiai: baiDoi(['d = {3: 6}', 's = set()', 'cave_team_clear(2, d)', 'bat_set_march(s, 2)'], ['radar_front_lob(3)']),
-      loiSai: [
-        { moTa: 'R1 quên gọi bat_set_march(s, 2) ở đoạn cuối: dừng tại (7, 1) trước nhũ đá cuối', baiLam: baiDoi(['d = {3: 6}', 's = set()', 'cave_team_clear(2, d)'], ['radar_front_lob(3)']), phaiCoMa: ['chua-toi-co'] }
-      ],
-      sao: { o: 45, nhip: 11 },
-      goiY: ['Sau cave_team_clear(2, d), R1 đang đứng ở (7, 1) ngay chỗ đàn dơi nốt 5.', 'Thêm bat_set_march(s, 2) để R1 phát nốt 5 phá nhũ đá (8, 1) và bước liền 2 ô vào cờ (9, 1).']
-    }),
-
-    manCH('lap-hang-dong', 10, 'trum', {
-      ten: 'Trùm Chương 2: Bản hòa âm giải cứu Hang động Đá vôi',
-      r2: R2_LOA, mucTieu: 'choi-dieu', nhipTheo: 'tong',
-      hamCuaEmCan: ['play_note', 'play_part'],
-      deBai: 'Toàn bộ Hang động Đá vôi đã được cứu hộ thành công! Dưới ánh rêu phát sáng và tiếng vỗ cánh của đàn dơi, R1 và R2 cùng tấu vang bản hòa âm khải hoàn qua 3 sân liên tiếp:\n- Bè 1 (R1): [5, 5, 6, 5, 8, 7, 5, 8]\n- Bè 2 (R2): [3, 3, 4, 3, 5, 5, 3, 5]\nHãy dùng play_part(notes) cho cả hai robot.',
-      san: SAN_DUET_3,
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 2, y: 2, huong: 1 }],
-      dieu: { r1: '55658758', r2: '33435535' },
-      maMau: baiDoi(['play_part([5, 5, 6, 5, 8, 7, 5, 8])'], ['play_part([3, 3, 4, 3])']),
-      loiGiai: baiDoi(['play_part([5, 5, 6, 5, 8, 7, 5, 8])'], ['play_part([3, 3, 4, 3, 5, 5, 3, 5])']),
-      loiSai: [
-        { moTa: 'R2 chỉ phát 4 nốt đầu: chưa hoàn thành bè 2 trên 3 sân', baiLam: baiDoi(['play_part([5, 5, 6, 5, 8, 7, 5, 8])'], ['play_part([3, 3, 4, 3])']), phaiCoMa: ['lo-nhip'] }
-      ],
-      sao: { o: 6, nhip: 24 },
-      goiY: ['Truyền đủ danh sách [3, 3, 4, 3, 5, 5, 3, 5] vào lệnh play_part(...) của R2.', 'Khi cả 3 sân đều vang đủ 8 nhịp hòa âm 2 bè, chiến dịch Giải cứu Hang động hoàn tất!']
+      sao: { o: 13, nhip: 15 },
+      goiY: ['Xuồng + loa: hát như xe có bánh, đá chuông trên mặt nước vỡ thì thành nước đi được.', 'Loa phá đá trong tầm 3 ô quanh xuồng.', 'Người chỉ bước khi ô kế trên lối trống.'],
+      cauDo: { doi: null, lap: 'xuong+loa+am-thanh', coChe: ['song-ngam', 'da-chuong', 'not', 'nguoi', 'nut-de', 'cua'], cuu: 'nguoi', meo: 'don-loi' }
     })
   ];
+
+  ManHoc.manCuuHangDong = DS_MAN;
 })();

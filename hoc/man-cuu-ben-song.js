@@ -1,8 +1,8 @@
 /* ============================================================================
-   man-cuu-ben-song.js - Mua 9: CLB Sang Tao - Goi 5: Cuu ho Ben song
-   20 man: R1 Xuong thuy loi Ben song (Mua 5) phoi hop R2 tu cac mua khac.
-   Chuong 1 (cuu-ben-song): 10 man phoi hop 2 robot cuu ho ben song.
-   Chuong 2 (lap-ben-song): 10 man on return, tuple, min/max va che ham moi.
+   man-cuu-ben-song.js - Mùa 9 CLB Sáng Tạo: Gói 5 "Bến sông sau bão" (dựng lại 16/11, M9M5, theo khuôn G3 / G4)
+   20 màn: cuu-ben-song (chọn đội trong menu cỗ máy) + lap-ben-song (R1 xuồng thủy lợi đặt sẵn, R2 tự lắp; lai L3 L10 L14, T3).
+   Ôn Python: return, tuple (h, s = flow()), min / max.
+   Câu đố: hoc/MUA-9-200-CAU-DO.md mục G5 (ghi chú "Đã dựng 16/11 (M9M5)": các chỗ lệch so với bảng).
    ========================================================================== */
 (function () {
   'use strict';
@@ -10,495 +10,632 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
-  var R1_XUONG = {
-    loaiRobot: 'xuong',
-    chinhLuoi: true,
-    robot: { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'dong-chay', o: 'tren' }] },
-    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net', 'flow_dir', 'anchor', 'unanchor', 'set_length', 'reel_in', 'reel_out', 'flow']
-  };
-
-  var R1_LOA = {
-    loaiRobot: 'xich',
-    phatNot: true,
-    robot: { than: 'xich', tay: 'loa', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] },
-    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'beat', 'note', 'distance', 'warm']
-  };
-
-  var R_BANH = {
-    loaiRobot: 'banh',
-    robot: { than: 'hai-banh', tay: 'xoay', camBien: [{ ma: 'khoang-cach', o: 'truoc', ben: true }], son: 'lam' },
-    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'front_clear', 'left_clear', 'right_clear']
-  };
-
-  var R_XICH = {
-    loaiRobot: 'xich',
-    xichDay: true,
-    lucBan: true,
-    beSung: true,
-    robot: { than: 'xich', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren', doNhiet: true }], son: 'lam' },
-    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'spray', 'spray_back', 'distance', 'warm']
-  };
-
-  var R_NHEN = {
-    loaiRobot: 'nhen',
-    daoCuc: true,
-    docCuc: true,
-    robot: { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong', docCuc: true }], son: 'lam' },
-    hamGoc: ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole']
-  };
-
-  var R_OMNI = {
-    loaiRobot: 'omni',
-    omniCheo: true,
-    chinhLuc: true,
-    nhanDang: true,
-    tamNemMacDinh: 2,
-    daLapHo: true,
-    robot: { than: 'omni', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
-    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'slide_left', 'slide_right', 'load', 'throw', 'radar', 'diag_left', 'diag_right', 'aim', 'shape']
-  };
-
-  var R_GAI = {
-    loaiRobot: 'gai',
-    thuGai: true,
-    phatNot: true,
-    phanAm: true,
-    robot: { than: 'gai', tay: 'loa', camBien: [{ ma: 'am-thanh', o: 'tren', phanAm: true }], son: 'lam' },
-    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'retract_spikes', 'extend_spikes', 'beat', 'note', 'hear', 'listen']
-  };
-
-  var H_CALM_BRIDGE_LAY = { ten: 'calm_bridge_lay', thamSo: ['n'], than: ['if flow_power() > 0:', '    flip_valve()', 'bridge_lay(n)'] };
-  var H_CALMER_BRIDGE = { ten: 'calmer_bridge', thamSo: ['a', 'n'], than: ['s = calmer_power(a)', 'bridge_lay(n)', 'return s'] };
-  var H_TUPLE_GATE_TOW = { ten: 'tuple_gate_tow', thamSo: ['n'], than: ['h, s = flow()', 'if s > 0:', '    flip_valve()', 'pull_back(n)'] };
-  var H_MAX_STREAM_TOW = { ten: 'max_stream_tow', thamSo: ['a'], than: ['b = flow_power()', 'n = max(a, b)', 'pull_back(n)', 'return n'] };
-  var H_TETHER_CALM_RUN = { ten: 'tether_calm_run', thamSo: ['d', 'n'], than: ['calm_tug_run(d, n)', 'move()'] };
-
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-  function baiDoi(r1Lines, r2Lines, hamEmMoi) {
-    return {
-      doi: [{ chinh: r1Lines }, { chinh: r2Lines }],
-      hamCuaMan: [],
-      hamCuaEmMoi: hamEmMoi ? clone(hamEmMoi) : []
-    };
+  /* ---- M9M5: khung màn mùa 9 (chép từ man-cuu-cang-song.js) ------------------------------------------ */
+  var CoMay = laNode ? require('./co-may.js') : window.CoMay;
+  var HAM_EM = ['move', 'back', 'forward', 'wait_n', 'tr_left', 'tr_right', 'turn_left', 'turn_right', 'pick', 'drop', 'go', 'walk', 'jump', 'crawl', 'pull_s'];
+  /** Robot của màn: cỗ máy `ma` (CoMay.dung) ở ô xuất phát bd, cờ riêng co, đế son ('lam' Luna, 'tim' máy khách). */
+  function may(ma, bd, them) {
+    var t = them || {};
+    var r = CoMay.dung(ma, { batDau: bd, son: t.son, pin: t.pin });
+    if (t.co) r.co = t.co;
+    if (t.coDinh) r.coDinh = true;
+    if (t.tay) r.robot.tay = t.tay;
+    if (t.tay || t.boHam || t.themHam) r.hamGoc = r.hamGoc.filter(function (h) { return (t.boHam || []).indexOf(h) < 0; }).concat(t.themHam || []);
+    if (t.phatNot) r.phatNot = true;
+    return r;
   }
-
-  function manBS(chuong, so, hang, cfg) {
-    var r1 = clone(cfg.r1 || R1_XUONG);
-    var r2 = clone(cfg.r2 || R_BANH);
-    r1.batDau = cfg.bd[0];
-    r2.batDau = cfg.bd[1];
-    if (cfg.co) {
-      r1.co = cfg.co[0];
-      r2.co = cfg.co[1];
-    }
+  /** Khe robot em lập trình ở màn chọn đội / khe lắp: ô xuất phát trên cạn, batDauNuoc (ô trên nước khi cỗ máy là xuồng), cờ, pin (drone), đế. */
+  function khe(bd, them) { return Object.assign({ batDau: bd }, them || {}); }
+  function doiBai(ds, hamMan, hamEm) {
+    return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
+  }
+  /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
+  function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
+  function lapR2(than, tay, cam, nganSach, cachLap, them) {
+    return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
+  }
+  /** R2 đã lắp sẵn (màn show chương 2): omni + tay lưới + radar (lai L3 xe tời bờ), như LapRap.apDung lắp ra. */
+  var OMNI_L3 = {
+    loaiRobot: 'omni', chinhLuoi: true, nhanDang: true, robot: { than: 'omni', tay: 'day-keo', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
+    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'slide_left', 'slide_right', 'cast_net', 'drop_net', 'set_length', 'radar', 'shape']
+  };
+  function xuongLoa(r) { r.chinhLuoi = false; return r; }
+  /** cuu-ben-song.4 (ba sân): ngã ba kênh ở ô (4, 3); nhánh trái (hàng 3, x 1–3), nhánh trên (cột 4, y 0–2), nhánh phải (hàng 3, x 5–7) chảy về ngã ba.
+   *  Mỗi sân một bộ sức (0 = nước êm); bến nhận bè q chỉ có ở ô đầu nhánh nước êm (nq: 'trai' | 'tren' | 'phai'). */
+  function san4(nq) {
+    return ['####~####', '####~####', '###u' + (nq === 'tren' ? 'q' : '~') + '####', '#~~' + (nq === 'trai' ? 'q' : '~') + '~' + (nq === 'phai' ? 'q' : '~') + '~~#',
+      '###.~####', '#..#~#..#', '#..#~#..#', '####B####', '#########'];
+  }
+  /** Xuồng cuu-ben-song.4: bắt bè phía sau, tới ngã ba, đọc ba nhánh (trên, trái, phải), chọn nhánh sức nhỏ nhất. Máy khai thác: nạp đá chắn cửa kênh, ném lấp hố. */
+  var XU_4 = ['cast_net("back")', 'wait()', 'forward(2)', 'h, a = flow()', 'turn_left()', 'h, b = flow()', 'turn_right()', 'turn_right()', 'h, c = flow()', 'm = min(a, b, c)',
+    'if m == a:', '    turn_left()', 'if m == b:', '    turn_right()', '    turn_right()', 'forward(3)', 'drop_net()', 'wait()'];
+  var KT_4 = ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()'];
+  /** cuu-ben-song.6: xuồng chờ nhện rời bè, bắt bè phía sau, chạy vòng kênh phải sang lạch trên, nhả bè ở (3, 2). Nhện: qua bè lên cồn hút hòm sắt, chờ cầu thứ hai, lên bờ trên thả vào đích. */
+  var XU_6 = ['set_length(1)', 'wait_n(4)', 'cast_net("back")', 'wait()', 'forward(2)', 'turn_left()', 'forward(2)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()'];
+  var PL_6 = ['go_up()', 'go_up()', 'pull_s()', 'wait_n(8)', 'go_up()', 'go_up()', 'magnet_off()', 'wait()'];
+  /** Xuồng khách khoá cuu-ben-song.7: lưới dài 1 bắt bè sau đuôi, chờ 5 nhịp, chạy thẳng 6 ô qua cống (bè theo sau vào bến q), nhả lưới. */
+  var XU_R3_7 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(4)', 'forward(6)', 'drop_net()', 'wait()'];
+  /** cuu-ben-song.8: xe cứu hỏa chờ drone rắc cát, chạy vào dải bùn (trượt tới ô cát dưới van), quay lên phun van. Xuồng khách khoá: bắt bè sau đuôi, chờ, chạy ra bến. */
+  var CU_8 = ['wait_n(3)', 'move()', 'spray()', 'wait()'];
+  var DR_8 = ['go_down()', 'dot()', 'go_up()', 'land()'];
+  var XU_R3_8 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(7)', 'forward(5)', 'drop_net()', 'wait()'];
+  /** cuu-ben-song.9: cẩu nhấc container chắn lối bờ, quay trái một nấc hạ lên bãi. Máy khai thác xuống bờ, chạy dọc lối, quay xuống nạp đá giữa luồng, quay trái ném lấp hố. Xuồng khách khoá. */
+  var CC_9 = ['pick_up()', 'swing_left()', 'set_down()'];
+  var KT_9 = ['turn_right()', 'turn_right()', 'move()', 'turn_left()', 'forward(5)', 'turn_right()', 'load()', 'wait()', 'turn_left()', 'throw()', 'wait()'];
+  var XU_R3_9 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(8)', 'forward(7)', 'drop_net()', 'wait()'];
+  /** lap-ben-song.2: xuồng R1 tung lưới sang trái bắt bè thứ nhất, lùi một ô kéo bè vào bến q, nhả. */
+  var XU_12 = ['cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()'];
+  /** lap-ben-song.3 (ba sân): lục bình L chắn luồng hàng 1 ở cột c; bến q của lục bình ở (c, 2); bờ hàng 3 dài tới cột c (mỏm bờ), sau đó là tường. */
+  function san13(c) {
+    var h1 = '#B~~~~~q~#'.split(''); h1[c] = 'L';
+    var h2 = '#~~~~~~~~#'.split(''); h2[c] = 'q';
+    return ['##########', h1.join(''), h2.join(''), ('#' + '.'.repeat(c) + '##########').slice(0, 10), '##########'];
+  }
+  /** Xuồng lap-ben-song.3: lưới dài 1 bắt bè sau đuôi, chờ xe bờ dọn lục bình, chạy thẳng 6 ô (bè vào bến q (7, 1)), nhả lưới. */
+  var XU_13 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(4)', 'forward(6)', 'drop_net()', 'wait()'];
+  /** lap-ben-song.4 (hai sân): luồng hàng 4 chảy sang phải (x 1–10, sức s); lạch trên ở cột 5 (cống K (5, 3), bến q (5, 2)); lạch êm hàng 5 dài tới cột 5 - s
+   *  (vào luồng ở đó thì trôi đúng tới cửa lạch); van V (8, 5) nối cống, xuồng R1 đứng ở vũng (8, 6). */
+  function san14(s) {
+    return ['############', '#####~######', '#####q######', '#####K######', '#~~~~~~~~~~#', ('#B' + '~'.repeat(4 - s) + '########').slice(0, 8) + 'V###', '########~###', '############'];
+  }
+  var NOI_14 = [{ nut: { x: 8, y: 5 }, cong: [{ x: 5, y: 3 }], dong: [] }];
+  function dong14(suc) { return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (x) { return { x: x, y: 4, huong: 1, suc: suc }; }); }
+  /** Xuồng R1 lap-ben-song.4: lưới dài 1 trúng van V ngay trước mũi, cống mở. */
+  var XU_14 = ['set_length(1)', 'cast_net()', 'wait()'];
+  /** lap-ben-song.5 (ba sân): kênh cột 5 lên ngã ba (5, 1); luồng sâu (sau: 'phai' | 'trai') có bến q, bên kia là bãi cạn (ô sàn) ngay cạnh ngã ba.
+   *  Phao: ô bãi cạn sơn đỏ, ô nước đầu luồng sâu sơn xanh. Cống K (5, 2) kẹt đóng; van V (4, 3) trên bờ, xe cứu hỏa đứng (4, 4) phun trúng van (T3). */
+  function san15(sau) {
+    return ['###########', sau === 'phai' ? '#~~~.~~~q~#' : '#~q~~~.~~~#', '#####K#####', '####V~#####', '####.~#####', '#####~#####', '#####B#####', '###########'];
+  }
+  function son15(sau) {
+    var h = '...........'.split(''); h[sau === 'phai' ? 4 : 6] = 'r'; h[sau === 'phai' ? 6 : 4] = 'b';
+    return ['...........', h.join(''), '...........', '...........', '...........', '...........', '...........', '...........'];
+  }
+  var NOI_15 = [{ nut: { x: 4, y: 3 }, cong: [{ x: 5, y: 2 }], dong: [] }];
+  var CU_15 = ['spray()', 'wait()'];
+  /** Xuồng R2 lap-ben-song.5: buộc bè sau đuôi, lên ngã ba, quay trái nhìn phao: đỏ (bãi cạn) thì quay sang phải; đi 4 ô, bè vào bến q. */
+  var XU_15 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'turn_left()', 'if color() == "red":', '    turn_right()', '    turn_right()', 'forward(4)', 'drop_net()', 'wait()'];
+  /** lap-ben-song.6: sông hàng 1 chảy sang phải về thác (9, 1); vũng nước đầu nguồn cột 2 (xuồng đứng sẵn); bờ (3, 2), (5, 2) kẹp hõm nước (4, 2) không chảy; hố (3, 3) trên lối về trạm cứu (3, 4);
+   *  máy khai thác ở (5, 3) nhìn xuống tảng đá (5, 4). */
+  var SAN_16 = ['##########', '~~~~~~~~~~', '##~.~.####', '##~u..####', '###.#o####', '##########'];
+  var KT_16 = ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'];
+  /** lap-ben-song.7: dòng xiết hàng 3 (sức 2) về thác (14, 3); người xuất phát (1, 3) nên chỉ dừng ở cột lẻ cuối mỗi nhịp. Hõm bờ bắc cột 10 (xuồng R1 ở (10, 2), lùi được tới (10, 1));
+   *  hõm bờ nam (11, 4); trạm cứu (8, 2) và (10, 5); khe R2 ở bờ nam (11, 5). */
+  var SAN_17 = ['###############', '##########~####', '########..~####', '~~~~~~~~~~~~~~~', '##########.~###', '##########..###', '###############'];
+  /** Xuồng R1 lap-ben-song.7: lưới dài 1, chờ người bám phao ngay trước mũi (10, 3), tung lưới, lùi kéo người vào hõm bắc. */
+  var XU_17 = ['set_length(1)', 'wait_n(5)', 'cast_net()', 'wait()', 'back()'];
+  /** lap-ben-song.8: máy khai thác R1 nạp tảng đá (3, 6), sang cột 5, chờ cầu phao, lên bùn (trượt tới mép nước thì dừng ở (5, 4)), bước ra bè ở bến (5, 3), ném đá qua sông vào D (5, 1). Hai bản theo nhịp của xe R2 (gai / hai bánh). */
+  var KT_18_GAI = ['load()', 'wait()', 'turn_left()', 'forward(2)', 'turn_left()', 'wait_n(3)', 'forward(2)', 'throw()', 'wait()'];
+  var KT_18_BANH = ['load()', 'wait()', 'turn_left()', 'forward(1)', 'wait_n(6)', 'forward(1)', 'turn_left()', 'forward(2)', 'throw()', 'wait()'];
+  /** lap-ben-song.9 (hai sân): bè (c, 1), bến q (c, 2) sơn xanh (phao); lối bờ hàng 3, thùng gỗ (2, 3) chắn đầu lối, bùn (4, 3) (xe trượt qua cột 4 của sân 2). Xe chở hàng (2, 4) lùi được tới (2, 5), đích D (1, 5); drone (4, 4). */
+  function san19(c) {
+    var h1 = '#~~~~~~~~#'.split(''); h1[c] = 'B';
+    var h2 = '#~~~~~~~~#'.split(''); h2[c] = 'q';
+    return ['##########', h1.join(''), h2.join(''), '#...I....#', '##.#.#####', '#D.#######', '##########'];
+  }
+  function son19(c) {
+    var h = '..........'.split(''); h[c] = 'b';
+    return ['..........', '..........', h.join(''), '..........', '..........', '..........', '..........'];
+  }
+  var CH_19 = ['grab_clear()', 'turn_left()', 'drop()'];
+  var DR_19 = ['go_up()', 'dot()', 'go_down()'];
+  var R2_19_OMNI = ['wait_n(3)', 'while color() != "blue":', '    slide_right()', '    wait()', 'set_length(2)', 'cast_net()', 'wait()'];
+  var R2_19_BANH = ['wait_n(3)', 'turn_right()', 'while color("left") != "blue":', '    forward(1)', 'set_length(2)', 'cast_net("left")', 'wait()'];
+  function dong4(trai, tren, phai) {
+    var ds = [];
+    if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
+    if (tren) [0, 1, 2].forEach(function (y) { ds.push({ x: 4, y: y, huong: 2, suc: tren }); });
+    if (phai) [5, 6, 7].forEach(function (x) { ds.push({ x: x, y: 3, huong: 3, suc: phai }); });
+    return ds;
+  }
+  function man9(chuong, so, hang, cfg) {
+    var r1 = cfg.doi[0];
     var m = {
-      chuong: chuong,
-      so: so,
-      ten: cfg.ten,
-      hang: hang,
-      vo: 'song',
-      bienDem: true,
-      loaiRobot: r1.loaiRobot,
-      daLapHo: true,
-      robot: clone(r1.robot),
-      hamGoc: r1.hamGoc.slice(),
-      cauTruc: cfg.cauTruc || ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'],
-      vaHoac: true,
-      moXuong: true,
-      camHamCuaEm: false,
-      hamCuaEmCan: cfg.hamCuaEmCan || ['move', 'forward', 'wait_n', 'bridge_lay'],
-      taoHam: cfg.taoHam || [],
-      khung: cfg.khung || { chinh: 10, moiHam: 8 },
-      mucTieu: cfg.mucTieu || 'dua-vat',
-      deBai: cfg.deBai,
-      veMaMau: cfg.veMaMau || '',
-      san: cfg.san,
-      batDau: cfg.bd[0],
-      doi: [r1, r2],
-      maMau: cfg.maMau,
-      loiGiai: cfg.loiGiai,
-      loiSai: cfg.loiSai || [],
-      sao: cfg.sao || { o: 16, nhip: 10 },
-      goiY: cfg.goiY || []
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'song', daLapHo: true,
+      cauTruc: ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'], vaHoac: true, moXuong: true, camHamCuaEm: false,
+      hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
+      khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'dua-vat',
+      deBai: cfg.deBai, veMaMau: cfg.veMaMau || '', san: cfg.san, batDau: clone(r1.batDau),
+      doi: cfg.doi.map(clone), maMau: cfg.maMau, loiSai: cfg.loiSai || [], sao: cfg.sao, goiY: cfg.goiY || [], cauDo: cfg.cauDo
     };
-    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
-    if (cfg.dong) m.dong = cfg.dong;
+    if (r1.loaiRobot) { m.loaiRobot = r1.loaiRobot; m.robot = clone(r1.robot); m.hamGoc = r1.hamGoc.slice(); }
+    if (cfg.loiGiai) m.loiGiai = cfg.loiGiai;
+    if (cfg.chonDoi) m.chonDoi = cfg.chonDoi;
+    if (cfg.lapRap) m.lapRap = cfg.lapRap;
     if (cfg.noi) m.noi = cfg.noi;
-    if (cfg.dieu) m.dieu = cfg.dieu;
-    if (cfg.vatChat) m.vatChat = cfg.vatChat;
-    if (cfg.vatDang) m.vatDang = cfg.vatDang;
-    if (cfg.chuongDa) m.chuongDa = cfg.chuongDa;
-    if (cfg.daChuong) m.daChuong = cfg.daChuong;
+    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
+    Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
     return ManHoc.chuanHoa(m);
   }
 
   ManHoc.manCuuBenSong = [
     /* ========================================================================
-       CHUONG 1: cuu-ben-song (10 man)
+       CHƯƠNG 1: cuu-ben-song (10 màn)
        ======================================================================== */
-    manBS('cuu-ben-song', 1, 'lam-quen', {
-      ten: 'Xuồng kéo bè ghép cầu phao cho xe kho',
-      chiChay: true, r2: R_BANH,
-      hamCuaEmCan: ['bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'wait_n', 'forward', 'move', 'pick', 'drop', 'turn_right'],
-      deBai: 'Bão làm trôi cầu phao ở Bến sông (Mùa 5)! Xuồng R1 tại (2, 2) gọi bridge_lay(1) kéo bè gỗ B từ (4, 2) về bến nước êm q(3, 2) rồi tháo lưới làm cầu phao. Xe hai bánh R2 (Mùa 1) ở bờ Bắc (3, 1) chờ 2 nhịp rồi tiến 2 ô qua cầu phao sang bờ Nam nhặt kiện hàng o(3, 4) đặt vào đích D(2, 3). Nhấn Chạy để quan sát!',
-      veMaMau: 'Quan sát R1 ghép cầu phao B(3, 2) cho R2 qua sông cứu hàng.',
-      san: ['#######', '#=..=.#', '#~~qB~#', '#.D...#', '#..o..#', '#######'],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
-      maMau: baiDoi(['bridge_lay(1)'], ['wait_n(2)', 'forward(2)', 'pick()', 'turn_right()', 'drop()']),
-      loiGiai: baiDoi(['bridge_lay(1)'], ['wait_n(2)', 'forward(2)', 'pick()', 'turn_right()', 'drop()']),
-      sao: { o: 24, nhip: 8 },
-      goiY: ['Nhấn Chạy để xem R1 kéo bè B về q(3, 2) làm cầu phao cho R2 qua sông.']
+    // 1 · show (làm cầu): lũ làm sụt bờ thành hố, cầu phao trôi mất. Máy khai thác nạp đá tròn, ném lấp hố bờ; xuồng tung lưới bắt bè, lùi hai ô
+    //     kéo bè về bến q làm cầu phao, nhả lưới. Máy khai thác qua hố đã lấp, lên cầu phao, nạp bao hàng ở bờ bên kia, lùi về, quay trái ném vào ô đích D.
+    //     Mục tiêu đưa vật: bè nằm trên q (cầu) và bao hàng trong D; đá lấp hố không cần về đích. Đội cố định XU + KT (chạy sẵn, khoá).
+    man9('cuu-ben-song', 1, 'lam-quen', {
+      ten: 'Cầu phao qua bờ sụt',
+      chiChay: true,
+      deBai: 'Lũ làm sụt bờ, cuốn mất cầu phao. Máy khai thác ném đá lấp hố, xuồng kéo bè làm cầu, rồi máy khai thác sang lấy bao hàng. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
+      san: ['########', '#..o...#', '#~~q~B~#', '#..u...#', '#..o...#', '#D.....#', '########'],
+      doi: [may('XU', { x: 3, y: 2, huong: 1 }), may('KT', { x: 3, y: 5, huong: 0 }, { son: 'lam' })],
+      them: { vatDang: ['........', '........', '........', '........', '...r....', '........', '........'] },
+      maMau: doiBai([['cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'],
+        ['load()', 'wait()', 'throw()', 'wait()', 'forward(3)', 'load()', 'wait()', 'for i in range(3):', '    back()', 'turn_left()', 'throw()', 'wait()']]),
+      loiGiai: doiBai([['cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'],
+        ['load()', 'wait()', 'throw()', 'wait()', 'forward(3)', 'load()', 'wait()', 'for i in range(3):', '    back()', 'turn_left()', 'throw()', 'wait()']]),
+      sao: { o: 33, nhip: 13 },
+      goiY: ['Bè nằm trên bến q là cầu phao: xe đi qua được.', 'throw(): ném vật trong rổ xa 2 ô; rơi trúng hố thì lấp hố.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'ho', 'nem'], cuu: 'hang', meo: 'lam-cau' }
     }),
-
-    manBS('cuu-ben-song', 2, 'lam-quen', {
-      ten: 'Nhện chui gầm thấp vượt cầu phao hút sắt',
-      r2: R_NHEN,
-      hamCuaEmCan: ['bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'crawl', 'walk', 'go', 'pull_s', 'pull_deliver'],
-      deBai: 'Kiện sắt vụn o(3, 3) nằm bên bờ Nam, còn đường ra bờ Bắc bị chắn bởi gầm thấp n(2, 1). Trong lúc R1 ở (2, 2) gọi bridge_lay(1) kéo bè B(4, 2) về ghép cầu phao q(3, 2), hãy lập trình cho R2 (nhện nam châm Mùa 3) gọi crawl("R") chui qua gầm thấp tới (3, 1), rồi gọi walk("DD") qua cầu phao xuống (3, 3) và pull_deliver("R") đưa kiện sắt o(3, 3) sang đích D(4, 3)!',
-      veMaMau: 'R2 chưa đi qua cầu phao và đưa kiện sắt o(3, 3) vào D(4, 3).',
-      san: ['#######', '#.n...#', '#~~qB~#', '#..oD.#', '#######'],
-      vatChat: ['.......', '.......', '.......', '...s...', '.......'],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 1, y: 1, huong: 2, chan: 'co' }],
-      maMau: baiDoi(['bridge_lay(1)'], ['crawl("R")']),
-      loiGiai: baiDoi(['bridge_lay(1)'], ['crawl("R")', 'walk("DD")', 'pull_deliver("R")']),
+    // 2 · dọn lối: lũ cuốn tảng đá tròn nằm giữa luồng nước, chắn đường xuồng kéo bè; bè hàng kẹt sau cống đóng. Xuồng tung lưới lên trúng van cống V (cống mở cuối nhịp),
+    //     quay trái tung lưới bắt bè, lùi năm ô qua ô đá vừa dọn và qua cống, kéo bè vào bến q, nhả lưới. Máy khai thác đứng trên bờ nạp tảng đá ở ô nước trước mũi,
+    //     quay phải ném lấp hố bờ sụt (đá lấp hố không cần về đích). Bảng 2 cỗ máy (đúng đôi tốt).
+    man9('cuu-ben-song', 2, 'lam-quen', {
+      ten: 'Đá chắn luồng',
+      deBai: 'Tảng đá lũ cuốn chắn luồng nước. Bè hàng kẹt sau cống đóng. Dọn đá, gạt van, kéo bè vào bến q.',
+      veMaMau: 'Xuồng lùi vướng tảng đá.',
+      san: ['##########', '#........#', '#..V.....#', '#.u~.#####', '#B~~~Kq~~#', '##########'],
+      doi: [khe({ x: 4, y: 3, huong: 2 }, { batDauNuoc: { x: 3, y: 4, huong: 0 } }), khe({ x: 4, y: 3, huong: 2 }, { batDauNuoc: { x: 3, y: 4, huong: 0 } })],
+      them: { vatThem: [{ x: 4, y: 4 }] },
+      chonDoi: {
+        menu: ['XU', 'KT'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'],
+          ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()']]) }]
+      },
+      maMau: doiBai([['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], []]),
       loiSai: [
-        { moTa: 'R2 mới chui qua gầm thấp, chưa qua cầu phao lấy kiện sắt o(3, 3)', baiLam: baiDoi(['bridge_lay(1)'], ['crawl("R")']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Máy khai thác không dọn đá: xuồng lùi vướng đá', baiLam: doiBai([['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], []]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác quên quay: đá ném vào bờ, vỡ', baiLam: doiBai([['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'throw()', 'wait()']]), phaiCoMa: ['nem-vo'] },
+        { moTa: 'Không gạt van: cống đóng, bè không qua', baiLam: doiBai([['turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 24, nhip: 12 },
-      goiY: ['Ở chương trình R2, sau crawl("R"), viết thêm walk("DD") và pull_deliver("R").']
+      sao: { o: 26, nhip: 12 },
+      goiY: ['Lưới bay thẳng tới van V: van đổi, cống mở.', 'Đá lấp hố thì không cần về đích.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'van', 'cong', 'be', 'luoi', 'ho', 'nem'], cuu: 'hang', meo: 'don-loi' }
     }),
-
-    manBS('cuu-ben-song', 3, 'luyen', {
-      ten: 'Xích vượt cầu phao đẩy thùng nặng vào đích',
-      r2: R_XICH, mucTieu: 'day-thung',
-      hamCuaEmCan: ['bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'wait_n', 'forward', 'move'],
-      deBai: 'Trên bờ Nam có thùng máy nặng H(3, 4) cần đẩy vào bệ đích D(3, 5). Hãy cho R1 ở (2, 2) gọi bridge_lay(1) kéo bè B(4, 2) về q(3, 2) làm cầu phao; R2 (xe bánh xích Mùa 2) ở (3, 1) gọi wait_n(2) chờ ghép cầu rồi gọi forward(3) vượt sông đẩy thẳng thùng H vào D(3, 5)!',
-      veMaMau: 'R2 chưa chờ cầu phao và tiến 3 ô qua sông đẩy thùng H.',
-      san: ['#######', '#=..=.#', '#~~qB~#', '#=..=.#', '#..H..#', '#..D..#', '#######'],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
-      maMau: baiDoi(['bridge_lay(1)'], ['wait_n(2)']),
-      loiGiai: baiDoi(['bridge_lay(1)'], ['wait_n(2)', 'forward(3)']),
+    // 3 · làm cầu: bờ bên kia sụt hố, xe cứu hộ sau này cần đi qua. Hố cách bờ gần 3 ô: máy khai thác đứng trên bờ ném không tới, phải đứng trên cầu phao mới ném trúng.
+    //     Xuồng thu lưới còn 1 ô (set_length(1)), bắt bè sát mũi, lùi ba ô kéo bè vào bến q, nhả lưới. Máy khai thác nạp tảng đá trước mũi, tiến một ô chờ cầu,
+    //     lên cầu phao ném đá lấp hố. Đá phải lấp hố (không có ô đích cho đá). Bẫy: xe chở hàng (qua cầu được, gắp được đá, nhưng không lấp được hố).
+    man9('cuu-ben-song', 3, 'luyen', {
+      ten: 'Hố bên kia sông',
+      deBai: 'Bờ bên kia sụt hố. Ai ghép cầu phao, ai lấp hố? Đứng trên bờ ném không tới hố đâu.',
+      veMaMau: 'Máy khai thác ném từ bờ: đá rơi trước hố.',
+      san: ['#########', '#...u...#', '#.......#', '#~~~q~~B#', '#.......#', '#.......#', '#########'],
+      doi: [khe({ x: 2, y: 5, huong: 0 }, { batDauNuoc: { x: 6, y: 3, huong: 1 } }), khe({ x: 4, y: 5, huong: 0 }, { batDauNuoc: { x: 1, y: 3, huong: 1 } })],
+      them: { vatThem: [{ x: 4, y: 4 }] },
+      chonDoi: {
+        menu: ['XU', 'KT', 'CH'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'],
+          ['load()', 'wait()', 'move()', 'wait_n(3)', 'move()', 'throw()', 'wait()']]) }]
+      },
+      maMau: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'throw()', 'wait()']]),
       loiSai: [
-        { moTa: 'R2 chỉ chờ mà chưa gọi forward(3) để qua cầu đẩy thùng H', baiLam: baiDoi(['bridge_lay(1)'], ['wait_n(2)']), phaiCoMa: ['chua-day-thung'] }
+        { moTa: 'Ném từ bờ: đá rơi trước hố', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác lên cầu sớm: chưa có bè, đâm nước', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['dam-tuong'] },
+        { moTa: 'Lưới dài 2: tung qua bè, không bắt được', baiLam: doiBai([['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'wait_n(3)', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 20, nhip: 5 },
-      goiY: ['Ở chương trình R2, sau wait_n(2) hãy gọi forward(3) để đi qua B(3, 2) và đẩy H(3, 4) vào D(3, 5).']
+      sao: { o: 26, nhip: 8 },
+      goiY: ['set_length(1): lưới dài 1 ô, bắt bè sát mũi.', 'throw() ném xa 2 ô: đứng trên cầu phao mới tới hố.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'ho', 'nem', 'do-dai-luoi'], cuu: 'hang', meo: 'lam-cau' }
     }),
-
-    manBS('cuu-ben-song', 4, 'luyen', {
-      ten: 'Mở cống tắt dòng cho omni qua cầu hất đá',
-      r2: R_OMNI,
-      hamCuaEmCan: ['open_gate_pass', 'flip_valve', 'tow_grab', 'pull_back', 'back', 'turn_left', 'turn_right', 'move', 'forward', 'wait_n', 'aim_lob', 'lob'],
-      deBai: 'Bè B trôi vào q(2, 2) nhưng dưới gầm bè đang có dòng chảy nên xe chưa qua được! R1 ở (4, 2) hãy gọi open_gate_pass(1) để tung lưới gạt van V(4, 1) (vừa tắt dòng dưới B(2, 2), vừa mở cống K(6, 2)) rồi tiến tới (5, 2) và gọi pull_back(2) kéo lục bình L(7, 2) về bến q(5, 2). R2 (xe omni Mùa 7) ở (2, 1) gọi wait_n(2), tiến 2 ô qua cầu phao tới (2, 3) rồi gọi aim_lob(3) hất viên đá o(2, 4) vào đích D(2, 6)!',
-      veMaMau: 'R1 chưa kéo lục bình L về q(5, 2); R2 chưa hất đá vào D(2, 6).',
-      san: ['#########', '#=.=V===#', '#Bq~~qKL#', '#=.===..#', '#.o.....#', '#.......#', '#.D.....#', '#########'],
-      dong: [{ x: 1, y: 2, huong: 1, suc: 1 }, { x: 2, y: 2, huong: 2, suc: 1 }],
-      noi: [{ nut: { x: 4, y: 1 }, cong: [{ x: 6, y: 2 }], dong: [{ x: 1, y: 2 }, { x: 2, y: 2 }] }],
-      bd: [{ x: 4, y: 2, huong: 1 }, { x: 2, y: 1, huong: 2 }],
-      maMau: baiDoi(['open_gate_pass(1)'], ['wait_n(2)', 'forward(2)']),
-      loiGiai: baiDoi(['open_gate_pass(1)', 'pull_back(2)'], ['wait_n(2)', 'forward(2)', 'aim_lob(3)']),
+    // 4 · đọc rồi chọn, ôn tuple + min (ba sân): ngã ba ba nhánh kênh, nước mỗi nhánh chảy về ngã ba mạnh yếu khác nhau; bến nhận bè chỉ xây ở nhánh nước êm.
+    //     Xuồng tung lưới ra sau bắt bè, tiến tới ngã ba; quay đọc h, s = flow() ba nhánh (a, b, c), m = min(a, b, c) là nhánh êm; quay về nhánh đó, kéo bè vào bến, nhả lưới.
+    //     Máy khai thác nạp tảng đá chắn cửa kênh, quay lên ném lấp hố bờ. Ba sân (dữ liệu theo sân, luật 13/11): nhánh êm phải / trên / trái; điền thẳng nhánh của sân 1 thua sân 2, 3.
+    man9('cuu-ben-song', 4, 'luyen', {
+      ten: 'Ba nhánh kênh',
+      khung: { chinh: 20, moiHam: 8 },
+      deBai: 'Ba sân. Bến nhận bè ở nhánh nước êm nhất. Đọc h, s = flow() ở cả ba nhánh, chọn nhánh có s nhỏ nhất: min(a, b, c).',
+      veMaMau: 'Xuồng mới tới ngã ba, chưa đọc nhánh nào.',
+      san: [san4('phai'), san4('tren'), san4('trai')],
+      doi: [khe({ x: 3, y: 4, huong: 1 }, { batDauNuoc: { x: 4, y: 5, huong: 0 } }), khe({ x: 3, y: 4, huong: 1 }, { batDauNuoc: { x: 4, y: 5, huong: 0 } })],
+      them: { vatThem: [[{ x: 4, y: 4 }], [{ x: 4, y: 4 }], [{ x: 4, y: 4 }]], dong: [dong4(2, 1, 0), dong4(1, 0, 2), dong4(0, 2, 1)] },
+      chonDoi: {
+        menu: ['XU', 'KT'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([XU_4, KT_4]) }]
+      },
+      maMau: doiBai([['cast_net("back")', 'wait()', 'forward(2)'], KT_4]),
       loiSai: [
-        { moTa: 'R1 quên pull_back(2) và R2 quên aim_lob(3)', baiLam: baiDoi(['open_gate_pass(1)'], ['wait_n(2)', 'forward(2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Điền thẳng nhánh của sân 1 (rẽ phải): sân 2, 3 bến ở nhánh khác', baiLam: doiBai([['cast_net("back")', 'wait()', 'forward(2)', 'turn_right()', 'forward(3)', 'drop_net()', 'wait()'], KT_4]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Dùng max thay min: kéo bè vào nhánh nước xiết nhất', baiLam: doiBai([XU_4.map(function (d) { return d === 'm = min(a, b, c)' ? 'm = max(a, b, c)' : d; }), KT_4]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác không dọn đá: xuồng vướng đá ở cửa kênh', baiLam: doiBai([XU_4, []]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 30, nhip: 8 },
-      goiY: ['R1 thêm pull_back(2) sau open_gate_pass(1); R2 thêm aim_lob(3) sau forward(2).']
+      sao: { o: 38, nhip: 13 },
+      goiY: ['h, s = flow(): h là hướng, s là sức nước (0 là nước êm).', 'm = min(a, b, c): số nhỏ nhất trong ba số.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'dong', 'be', 'luoi', 'doc-dong', 'ho'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
-
-    manBS('cuu-ben-song', 5, 'cung-co', {
-      ten: 'Bánh gai tấu nhạc phá thạch nhũ chắn luồng',
-      r2: R_GAI,
-      hamCuaEmCan: ['move', 'pull_back', 'tow_grab', 'back', 'play_note'],
-      deBai: 'Một khối đá chuông ngầm ở (3, 2) chắn ngang luồng kênh khiến xuồng R1 ở (2, 2) không thể tiến tới kéo bè B(5, 2) về bến q(3, 2). Hãy cho R2 (robot bánh gai Mùa 8) ở (2, 1) gọi play_note(listen()) cộng hưởng với chuông đá cạnh bờ để phá khối đá chuông (3, 2); R1 chờ 1 nhịp wait(), tiến 1 ô move() vào (3, 2) rồi gọi pull_back(2) kéo bè B về q(3, 2)!',
-      veMaMau: 'R1 chưa chờ đá vỡ rồi tiến lên kéo bè B về q(3, 2).',
-      san: ['########', '#=....=#', '#~~q~B~#', '########'],
-      chuongDa: [{ x: 2, y: 1, not: 3, phamVi: 4 }],
-      daChuong: [{ x: 3, y: 2, not: 3, ben: 1 }],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 2, y: 1, huong: 1 }],
-      maMau: baiDoi(['wait()'], ['play_note(listen())']),
-      loiGiai: baiDoi(['wait()', 'move()', 'pull_back(2)'], ['play_note(listen())']),
+    // 5 · cứu người, cứu kịp: người mặc áo phao rơi xuống luồng nước, trôi mỗi nhịp một ô về phía thác. Xuồng đứng trong lạch, lưới dài 1, chờ người trôi tới ngay trước mũi
+    //     rồi tung lưới, lùi một ô kéo người vào ô nước sát bờ; người tự lên bờ đi về trạm. Lối lên trạm có hố bờ sụt: máy khai thác nạp tảng đá, ném lấp hố.
+    //     Bẫy: drone (bay qua hố được nhưng không lấp hố, không kéo người).
+    man9('cuu-ben-song', 5, 'cung-co', {
+      ten: 'Người trôi về thác',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Một người rơi xuống sông, trôi mỗi nhịp một ô về phía thác. Kéo người vào bờ kịp lúc, lấp hố trên lối về trạm cứu.',
+      veMaMau: 'Xuồng tung lưới sớm quá.',
+      san: ['#########', '~~~~~~~~~', '###..~###', '#.ou#~###', '#.#.#~###', '###.#####', '#########'],
+      doi: [khe({ x: 1, y: 4, huong: 0 }, { batDauNuoc: { x: 5, y: 2, huong: 0 } }), khe({ x: 1, y: 3, huong: 1 }, { batDauNuoc: { x: 5, y: 3, huong: 0 } })],
+      them: { nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 3, y: 5 }], thac: [{ x: 8, y: 1 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: 1 }; }) },
+      chonDoi: {
+        menu: ['XU', 'KT', 'DR'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['set_length(1)', 'wait_n(4)', 'cast_net()', 'wait()', 'back()'],
+          ['load()', 'wait()', 'throw()', 'wait()']]) }]
+      },
+      maMau: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], []]),
       loiSai: [
-        { moTa: 'R1 chỉ chờ mà chưa tiến lên kéo bè B về q(3, 2)', baiLam: baiDoi(['wait()'], ['play_note(listen())']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Tung lưới ngay: người chưa tới, trôi xuống thác', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], ['load()', 'wait()', 'throw()', 'wait()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Không lấp hố: người lên bờ đứng chờ', baiLam: doiBai([['set_length(1)', 'wait_n(4)', 'cast_net()', 'wait()', 'back()'], []]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 20, nhip: 5 },
-      goiY: ['Ở chương trình R1, sau wait() hãy gọi move() và pull_back(2).']
+      sao: { o: 17, nhip: 12 },
+      goiY: ['Người trôi mỗi nhịp một ô: đếm số ô từ người tới trước mũi xuồng.', 'Lùi một ô: người tới ô nước sát bờ thì tự lên bờ.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'ho', 'nem', 'thac'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
-
-    manBS('cuu-ben-song', 6, 'cung-co', {
-      ten: 'Xe tay xoay qua bè trước khi xuồng rút cầu',
-      r2: R_BANH,
-      hamCuaEmCan: ['wait_n', 'pull_back', 'tow_grab', 'back', 'forward', 'move', 'pick_left', 'drop'],
-      deBai: 'Bè B đang bắc ngang khe nước ở (2, 2) cho R2 từ (2, 1) sang bờ Nam, nhưng bến nhận cuối cùng của bè B lại là q(4, 2)! Hãy cho R2 đi ngay từ nhịp 1: gọi forward(2) qua bè xuống (2, 3), dùng tay xoay gọi pick_left() nhặt kiện hàng o(3, 3) bên trái rồi drop() thẳng vào D(2, 4). R1 ở (4, 2) hướng Tây gọi wait_n(2) chờ R2 qua khỏi bè rồi mới gọi pull_back(2) kéo B về q(4, 2)!',
-      veMaMau: 'R1 chưa kéo bè B về q(4, 2); R2 chưa dùng pick_left() và drop().',
-      san: ['########', '#=.====#', '#~B~q~~#', '#..o...#', '#.D....#', '########'],
-      bd: [{ x: 4, y: 2, huong: 3 }, { x: 2, y: 1, huong: 2 }],
-      maMau: baiDoi(['wait_n(2)'], ['forward(2)']),
-      loiGiai: baiDoi(['wait_n(2)', 'pull_back(2)'], ['forward(2)', 'pick_left()', 'drop()']),
+    // 6 · đổi vai: một chiếc bè làm cầu hai lần. Lũ cuốn hòm dụng cụ sắt lên cồn giữa hai lạch nước. Bè đang nằm ở lạch dưới làm cầu: nhện bò qua bè lên cồn,
+    //     đứng trên hòm sắt hút lên (pull_s). Nhện rời bè thì xuồng tung lưới ra sau bắt bè, chạy vòng qua kênh bên phải kéo bè sang lạch trên làm cầu thứ hai;
+    //     nhện qua cầu đó lên bờ trên, thả hòm vào ô đích. Chỉ hòm sắt cần về đích (bè là gỗ). Bẫy: cần cẩu (móc không nhấc hòm sắt, không kéo bè).
+    man9('cuu-ben-song', 6, 'cung-co', {
+      ten: 'Một bè hai cầu',
+      deBai: 'Hòm sắt kẹt trên cồn giữa hai lạch nước. Chỉ có một chiếc bè. Nhện qua cầu lấy hòm, rồi bè phải sang lạch kia làm cầu lần nữa.',
+      veMaMau: 'Xuồng kéo bè khi nhện còn đứng trên bè.',
+      san: ['########', '#..D...#', '#~~~~~~#', '#..o..~#', '#~~B~~~#', '#RRRRRR#', '########'],
+      doi: [khe({ x: 5, y: 5, huong: 0 }, { batDauNuoc: { x: 4, y: 4, huong: 1 } }), khe({ x: 3, y: 5, huong: 0 }, { batDauNuoc: { x: 1, y: 4, huong: 1 } })],
+      them: { vatCan: 'sat', vatChat: ['........', '........', '........', '...s....', '........', '........', '........'] },
+      chonDoi: {
+        menu: ['XU', 'PL', 'CC'],
+        cachMau: [{ chon: ['XU', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([XU_6, PL_6]) }]
+      },
+      maMau: doiBai([['set_length(1)', 'cast_net("back")', 'wait()'], ['go_up()', 'go_up()', 'pull_s()']]),
       loiSai: [
-        { moTa: 'R1 kéo bè ngay khi R2 còn đứng trên bè làm R1 bị vướng lưới', baiLam: baiDoi(['pull_back(2)'], ['forward(2)', 'pick_left()', 'drop()']), phaiCoMa: ['luoi-vuong', 'chua-dua-vat'] }
+        { moTa: 'Xuồng kéo bè ngay: nhện còn trên bè, lưới không kéo', baiLam: doiBai([XU_6.filter(function (d) { return d !== 'wait_n(4)'; }), PL_6]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nhện qua lạch trên sớm: bè chưa tới, nhện đâm nước', baiLam: doiBai([XU_6, ['go_up()', 'go_up()', 'pull_s()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']]), phaiCoMa: ['dam-tuong'] }
       ],
-      sao: { o: 25, nhip: 7 },
-      goiY: ['R1 gọi wait_n(2) rồi pull_back(2); R2 gọi forward(2), pick_left(), drop().']
+      sao: { o: 35, nhip: 21 },
+      goiY: ['Bè có xe đứng trên thì lưới không kéo được: chờ nhện xuống cồn.', 'Lưới ra sau: cast_net("back"), xuồng tiến thì bè theo sau.'],
+      cauDo: { doi: ['XU', 'PL'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'sat', 'con'], cuu: 'hang', meo: 'doi-vai' }
     }),
-
-    manBS('cuu-ben-song', 7, 'van-dung', {
-      ten: 'Xích phun van mở cửa bờ Nam rồi qua cầu đẩy thùng',
-      r2: R_XICH, mucTieu: 'day-thung',
-      hamCuaEmCan: ['bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'squirt', 'tr_right', 'forward', 'move'],
-      deBai: 'Cửa C(3, 3) trên bờ Nam đang đóng kín trước thùng nặng H(3, 4), còn nút van N(5, 1) nằm trên bờ Bắc. Trong lúc R1 ở (2, 2) gọi bridge_lay(1) kéo bè B(4, 2) về q(3, 2) làm cầu phao, hãy cho R2 ở (3, 1) hướng Đông gọi squirt("low") bắn nút N(5, 1) mở cửa C(3, 3), gọi tr_right() quay mặt xuống Nam rồi gọi forward(3) qua cầu phao đẩy thùng H vào D(3, 5)!',
-      veMaMau: 'R2 chưa quay xuống và tiến 3 ô qua cầu phao đẩy thùng H.',
-      san: ['#######', '#=..=N#', '#~~qB~#', '#=.C=.#', '#..H..#', '#..D..#', '#######'],
-      noi: [{ nut: { x: 5, y: 1 }, cua: [{ x: 3, y: 3 }] }],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 3, y: 1, huong: 1 }],
-      maMau: baiDoi(['bridge_lay(1)'], ['squirt("low")', 'tr_right()']),
-      loiGiai: baiDoi(['bridge_lay(1)'], ['squirt("low")', 'tr_right()', 'forward(3)']),
+    // 7 · cứu máy (dọn lối + gạt van từ xa, T3): xuồng khách (R3, khoá) buộc bè hàng sau đuôi, chờ 5 nhịp rồi chạy thẳng qua cống ra bến q.
+    //     Cống đang đóng, van V ở xa trên bờ: xe cứu hỏa phun nước trúng van (tia dừng ở van, van đổi, cống mở cuối nhịp). Tảng đá lũ cuốn nằm ngay sau cửa cống:
+    //     máy khai thác nạp đá, quay phải ném lấp hố bờ. Bẫy: xe chở hàng (gắp được đá nhưng không lấp hố, không gạt van).
+    man9('cuu-ben-song', 7, 'van-dung', {
+      ten: 'Xuồng khách sau cống',
+      deBai: 'Xuồng khách kéo bè hàng, chờ 5 nhịp rồi chạy thẳng ra bến q. Cống đóng, van ở xa trên bờ, tảng đá chắn sau cửa cống. Giúp xuồng khách ra kịp.',
+      veMaMau: 'Đọc chương trình của xuồng khoá: chờ 5 nhịp rồi forward(6).',
+      san: ['##########', '#........#', '#V.......#', '#B~~K~~q~#', '#......u.#', '##########'],
+      doi: [khe({ x: 5, y: 4, huong: 0 }), khe({ x: 3, y: 2, huong: 3 }),
+        may('XU', { x: 2, y: 3, huong: 1 }, { son: 'tim', coDinh: true })],
+      them: { vatThem: [{ x: 5, y: 3 }] },
+      chonDoi: {
+        menu: ['KT', 'CH', 'CU'],
+        cachMau: [{ chon: ['KT', 'CU'], ghiChu: 'đôi tốt', loiGiai: doiBai([['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'], ['spray()', 'wait()'], XU_R3_7]) }]
+      },
+      maMau: doiBai([[], [], XU_R3_7]),
       loiSai: [
-        { moTa: 'R2 mới bắn van và quay phải, chưa tiến qua cầu phao đẩy thùng H', baiLam: baiDoi(['bridge_lay(1)'], ['squirt("low")', 'tr_right()']), phaiCoMa: ['chua-day-thung'] }
+        { moTa: 'Không gạt van: cống đóng, xuồng khách kẹt', baiLam: doiBai([['load()', 'wait()', 'turn_right()', 'throw()', 'wait()'], [], XU_R3_7]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không dọn đá: xuồng khách qua cống rồi vướng đá', baiLam: doiBai([[], ['spray()', 'wait()'], XU_R3_7]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 24, nhip: 6 },
-      goiY: ['Ở chương trình R2, sau squirt("low") và tr_right(), gọi thêm forward(3).']
+      sao: { o: 27, nhip: 13 },
+      goiY: ['Tia nước của xe cứu hỏa trúng van V thì van đổi, cống mở.', 'Máy khai thác: load() đá trước mũi, quay rồi throw() lấp hố.'],
+      cauDo: { doi: ['KT', 'CU'], lap: null, coChe: ['nuoc', 'van', 'cong', 'phun', 'nem', 'ho', 'r3'], cuu: 'may', meo: 'don-loi' }
     }),
-
-    manBS('cuu-ben-song', 8, 'van-dung', {
-      ten: 'Chế hàm tắt dòng ghép cầu phao',
-      r2: R_BANH, taoHam: ['calm_bridge_lay'],
-      hamCuaEmCan: ['flow_power', 'flip_valve', 'bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'turn_left', 'turn_right', 'sync_dock_pass', 'wait_n', 'cross_and_pick', 'forward', 'move', 'pick', 'drop'],
-      deBai: 'Dòng nước tại (5, 2) đang chảy mạnh. Hãy tạo hàm mới calm_bridge_lay(n) cho R1: nếu flow_power() > 0 thì gọi flip_valve() gạt van V(4, 1) tắt dòng, sau đó gọi bridge_lay(n) kéo bè về ghép cầu phao. R1 ở (4, 2) gọi calm_bridge_lay(3) kéo B(6, 2) về q(3, 2); R2 ở (3, 1) gọi sync_dock_pass(7, 2) chờ 7 nhịp rồi qua cầu nhặt o(3, 4), quay phải và drop() vào D(2, 3)!',
-      veMaMau: 'Định nghĩa hàm calm_bridge_lay(n) và gọi cho R1.',
-      san: ['########', '#=..V=.#', '#~~q~~B#', '#.D....#', '#..o...#', '########'],
-      dong: [{ x: 5, y: 2, huong: 1, suc: 1 }],
-      noi: [{ nut: { x: 4, y: 1 }, cong: [], dong: [{ x: 5, y: 2 }] }],
-      bd: [{ x: 4, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
-      maMau: baiDoi(['bridge_lay(3)'], ['sync_dock_pass(7, 2)', 'turn_right()', 'drop()']),
-      loiGiai: baiDoi(['calm_bridge_lay(3)'], ['sync_dock_pass(7, 2)', 'turn_right()', 'drop()'], [H_CALM_BRIDGE_LAY]),
+    // 8 · cứu máy, làm cầu (rắc cát): xuồng khách (R3, khoá) kẹt trong vũng tách sông, cống đóng; van V nằm trên bờ cuối một dải bùn trơn, giữa van và bùn là hố.
+    //     Xe cứu hỏa chạy vào dải bùn thì trượt một mạch rơi xuống hố, không dừng được trong tầm phun (2 ô). Drone bay xuống ô bùn cuối dải rắc cát (dot()): ô đó thành sàn,
+    //     xe trượt tới đó thì dừng, phun qua hố trúng van, cống mở; xuồng khách kéo bè ra bến q. Bẫy: xe hang động (bám bùn nhưng không phun van).
+    man9('cuu-ben-song', 8, 'van-dung', {
+      ten: 'Van trên bờ bùn',
+      deBai: 'Xuồng khách kẹt trong vũng, cống đóng. Van nằm trên dải bùn trơn: xe chạy vào bùn trượt mãi tới hố. Làm sao cho xe dừng đúng dưới van?',
+      veMaMau: 'Đọc chương trình của xuồng khoá: chờ 8 nhịp rồi forward(5). Xe cứu hỏa chạy vào bùn là trượt.',
+      san: ['##########', '####.#####', '#.VuIIII.#', '##########', '#B~K~~q~##', '##########'],
+      doi: [khe({ x: 8, y: 2, huong: 3 }), khe({ x: 4, y: 1, huong: 2 }, { pin: 8 }),
+        may('XU', { x: 2, y: 4, huong: 1 }, { son: 'tim', coDinh: true })],
+      chonDoi: {
+        menu: ['CU', 'DR', 'HD'],
+        cachMau: [{ chon: ['CU', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_8, DR_8, XU_R3_8]) }]
+      },
+      maMau: doiBai([[], [], XU_R3_8]),
       loiSai: [
-        { moTa: 'R2 quên gọi drop() sau khi quay phải nên kiện hàng chưa vào D(2, 3)', baiLam: baiDoi(['calm_bridge_lay(3)'], ['sync_dock_pass(7, 2)', 'turn_right()'], [H_CALM_BRIDGE_LAY]), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Không rắc cát: xe trượt qua van, rơi hố', baiLam: doiBai([CU_8, [], XU_R3_8]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'dot() là lệnh cuối của drone: không còn nhịp nào để rắc, xe trượt rơi hố', baiLam: doiBai([CU_8, ['go_down()', 'dot()'], XU_R3_8]), phaiCoMa: ['roi-ho'] }
       ],
-      sao: { o: 34, nhip: 12 },
-      goiY: ['Tạo hàm calm_bridge_lay(n): nếu flow_power() > 0 thì gọi flip_valve(), sau đó gọi bridge_lay(n).']
+      sao: { o: 26, nhip: 15 },
+      goiY: ['dot() trên ô bùn: rắc cát, ô thành sàn thường.', 'Xe trượt trên bùn tới ô không còn bùn thì dừng.'],
+      cauDo: { doi: ['CU', 'DR'], lap: null, coChe: ['bun', 'rac-cat', 'van', 'cong', 'phun', 'ho', 'r3'], cuu: 'may', meo: 'lam-cau' }
     }),
-
-    manBS('cuu-ben-song', 9, 'bien-the', {
-      ten: 'Tắt dòng ghép cầu phao xa cho nhện hút sắt',
-      r2: R_NHEN,
-      hamCuaEmCan: ['calm_bridge_lay', 'flow_power', 'flip_valve', 'bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'turn_left', 'turn_right', 'wait_n', 'walk', 'go', 'pull_s', 'pull_deliver'],
-      deBai: 'Bè B nằm ở (6, 2), còn dòng nước ở (5, 2) đang chảy. Hãy dùng hàm calm_bridge_lay(3) vừa chế để R1 ở (4, 2) gạt van V(4, 1) tắt dòng rồi kéo B(6, 2) lùi 3 ô về q(3, 2) và tháo lưới. R2 (nhện Mùa 3) ở (3, 1) gọi wait_n(7) chờ cầu ghép xong, gọi walk("DD") qua sông tới (3, 3) và pull_deliver("R") đưa sắt o(3, 3) vào D(4, 3)!',
-      veMaMau: 'R1 gọi calm_bridge_lay(3); R2 chờ 7 nhịp rồi qua cầu phao lấy sắt.',
-      san: ['########', '#=..V=.#', '#~~q~~B#', '#..oD..#', '########'],
-      vatChat: ['........', '........', '........', '...s....', '........'],
-      dong: [{ x: 5, y: 2, huong: 1, suc: 1 }],
-      noi: [{ nut: { x: 4, y: 1 }, cong: [], dong: [{ x: 5, y: 2 }] }],
-      bd: [{ x: 4, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
-      maMau: baiDoi(['calm_bridge_lay(3)'], ['wait_n(7)', 'walk("DD")']),
-      loiGiai: baiDoi(['calm_bridge_lay(3)'], ['wait_n(7)', 'walk("DD")', 'pull_deliver("R")']),
+    // 9 · cứu máy, tiếp sức, nhắc lại G2–G4 (container chắn lối, ray cẩu, máy ném lấp hố): xuồng khách (R3, khoá) kéo bè hàng, chờ rồi chạy thẳng vào bến q.
+    //     Tảng đá lũ cuốn nằm giữa luồng chắn xuồng khách; máy khai thác phải ra bờ sông nạp đá, nhưng container đổ chắn lối bờ duy nhất.
+    //     Cẩu nhấc container, quay sang hạ lên bãi trống; máy khai thác xuống bờ, chạy dọc lối qua chỗ container vừa dọn, quay xuống nạp đá, quay phải ném lấp hố.
+    //     Bẫy: robot phân loại (không nhấc đá, không nhấc container). Bảng ghi "song song": container trôi cẩu nhấc lên bờ không về đích được (lõi: dua-vat đếm
+    //     container đã nhấc), nên đổi thành chuỗi tiếp sức cẩu → máy khai thác → xuồng khách.
+    man9('cuu-ben-song', 9, 'bien-the', {
+      ten: 'Mở luồng cho xuồng khách',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Xuồng khách chờ rồi chạy thẳng vào bến. Đá chắn luồng, container chắn lối ra bờ sông. Ai dọn gì trước?',
+      veMaMau: 'Đọc chương trình của xuồng khoá: chờ 9 nhịp rồi forward(7).',
+      san: ['###########', '#RRRR.....#', '#.......u.#', '#B~~~~~~q~#', '###########'],
+      doi: [khe({ x: 3, y: 1, huong: 0, nac: 2, tam: 1 }), khe({ x: 1, y: 1, huong: 0 }),
+        may('XU', { x: 2, y: 3, huong: 1 }, { son: 'tim', coDinh: true })],
+      them: { contChan: true, chong: [{ x: 3, y: 2, cont: [{ so: 17 }] }], vatThem: [{ x: 6, y: 3 }] },
+      chonDoi: {
+        menu: ['KT', 'PL', 'CC'],
+        cachMau: [{ chon: ['CC', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([CC_9, KT_9, XU_R3_9]) }]
+      },
+      maMau: doiBai([[], [], XU_R3_9]),
       loiSai: [
-        { moTa: 'R2 qua cầu phao nhưng quên gọi pull_deliver("R") để đưa sắt vào D(4, 3)', baiLam: baiDoi(['calm_bridge_lay(3)'], ['wait_n(7)', 'walk("DD")']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Cẩu không dọn container: máy khai thác kẹt trên lối bờ', baiLam: doiBai([[], KT_9, XU_R3_9]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác quên quay trước khi ném: đá ném vào bờ đá, vỡ', baiLam: doiBai([CC_9, KT_9.filter(function (d, i) { return i !== KT_9.length - 3; }), XU_R3_9]), phaiCoMa: ['nem-vo'] }
       ],
-      sao: { o: 32, nhip: 15 },
-      goiY: ['Ở chương trình R2, sau wait_n(7) và walk("DD"), gọi thêm pull_deliver("R").']
+      sao: { o: 37, nhip: 19 },
+      goiY: ['Cẩu: pick_up(), quay một nấc, set_down() lên ô bãi trống.', 'Đá lấp hố thì không cần về đích.'],
+      cauDo: { doi: ['CC', 'KT'], lap: null, coChe: ['nuoc', 'container', 'ray', 'nem', 'ho', 'be', 'r3'], cuu: 'may', meo: 'tiep-suc' }
     }),
-
-    manBS('cuu-ben-song', 10, 'trum', {
-      ten: 'Hòa tấu còi xuồng mừng bến sông thông luồng',
-      r1: R1_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '1 3 5 3', r2: '3 5 8 5' },
-      hamCuaEmCan: ['play_part', 'play_note'],
-      deBai: 'Bến sông đã thông luồng an toàn! Trên lễ đài nổi, R1 và R2 cùng hòa tấu bản nhạc 4 nhịp mừng chiến thắng: R1 tấu bè [1, 3, 5, 3], còn R2 tấu bè [3, 5, 8, 5]. Hãy gọi play_part([3, 5, 8, 5]) cho R2!',
-      veMaMau: 'R2 chưa gọi play_part([3, 5, 8, 5]).',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([1, 3, 5, 3])'], ['play_note(3)']),
-      loiGiai: baiDoi(['play_part([1, 3, 5, 3])'], ['play_part([3, 5, 8, 5])']),
+    // 10 · song ca đoạn 5 "Kìa con bướm vàng" (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 3 1 3 5 4 6 5 3), giữ cho gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
+    //      Xuồng lắp loa (L5 dùng sớm, như G4) hát bè 1 dưới nước; máy khai thác lắp loa hát bè 2 trên bờ (bảng ghi "omni đi chéo theo nhịp": choi-dieu chỉ chấm hai robot hát).
+    //      Hai đá chuông lũ cuốn về bến vỡ khi nghe nốt cuối mỗi bè. Đội cố định (tay loa không có trên bảng chọn).
+    man9('cuu-ben-song', 10, 'trum', {
+      ten: 'Song ca bến sông',
+      mucTieu: 'choi-dieu',
+      deBai: 'Bến sông đã thông! Xuồng hát dưới nước, máy khai thác hát trên bờ: song ca đoạn 5. Mỗi bạn gọi play_part với bè của mình.',
+      veMaMau: 'Bè 2 mới có một nốt.',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      san: ['######', '~~~~.#', '#....#', '######'],
+      doi: [xuongLoa(may('XU', { x: 1, y: 1, huong: 1 }, { tay: 'loa', boHam: ['cast_net', 'drop_net', 'set_length', 'reel_in', 'reel_out'], themHam: ['note', 'beat'], phatNot: true })),
+        may('KT', { x: 1, y: 2, huong: 1 }, { son: 'lam', tay: 'loa', boHam: ['load', 'throw', 'aim'], themHam: ['note', 'beat'], phatNot: true })],
+      them: { dieu: { r1: '1 1 5 5 6 6 5 5', r2: '3 1 3 5 4 6 5 3' }, daChuong: [{ x: 4, y: 1, not: 5, ben: 1 }, { x: 4, y: 2, not: 3, ben: 1 }] },
+      maMau: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_note(3)']]),
+      loiGiai: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 1, 3, 5, 4, 6, 5, 3])']]),
       loiSai: [
-        { moTa: 'R2 chỉ phát 1 nốt đầu nên thiếu 3 nhịp hòa âm', baiLam: baiDoi(['play_part([1, 3, 5, 3])'], ['play_note(3)']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 mới phát một nốt', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_note(3)']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'Bè 2 đảo hai nốt đầu', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 3, 3, 5, 4, 6, 5, 3])']]), phaiCoMa: ['sai-not'] }
       ],
-      sao: { o: 18, nhip: 4 },
-      goiY: ['Ở chương trình R2, gọi play_part([3, 5, 8, 5]).']
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([3, 1, 3, 5, 4, 6, 5, 3]).'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['loa', 'da-chuong', 'nuoc', 'bo'], cuu: null, meo: 'song-song' }
     }),
 
     /* ========================================================================
-       CHUONG 2: lap-ben-song (10 man)
+       CHƯƠNG 2: lap-ben-song (10 màn)
        ======================================================================== */
-    manBS('lap-ben-song', 1, 'lam-quen', {
-      ten: 'Ghép cầu phao cho omni qua sông hất đá',
-      chiChay: true, r2: R_OMNI,
-      hamCuaEmCan: ['calm_bridge_lay', 'flow_power', 'flip_valve', 'bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'turn_left', 'turn_right', 'wait_n', 'forward', 'move', 'aim_lob', 'lob'],
-      deBai: 'Sang Chương 2, đội cứu hộ ôn lại hàm trả kết quả (return), bộ cố định (tuple) và min/max của Mùa 5! Ở màn làm mẫu này, R1 tại (4, 2) gọi calm_bridge_lay(3) gạt van V(4, 1) tắt dòng và kéo bè B(6, 2) về q(3, 2); R2 (xe omni Mùa 7) ở bờ Bắc (3, 1) chờ 7 nhịp rồi tiến 2 ô qua cầu phao xuống bờ Nam (3, 3) và gọi aim_lob(3) hất viên đá o(3, 4) vào đích D(3, 6). Nhấn Chạy để xem!',
-      veMaMau: 'Quan sát R1 tắt dòng ghép cầu cho R2 qua sông hất đá.',
-      san: ['#########', '#=..V===#', '#~~q~~B~#', '#=..====#', '#..o....#', '#.......#', '#..D....#', '#########'],
-      dong: [{ x: 5, y: 2, huong: 1, suc: 1 }],
-      noi: [{ nut: { x: 4, y: 1 }, cong: [], dong: [{ x: 5, y: 2 }] }],
-      bd: [{ x: 4, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
-      maMau: baiDoi(['calm_bridge_lay(3)'], ['wait_n(7)', 'forward(2)', 'aim_lob(3)']),
-      loiGiai: baiDoi(['calm_bridge_lay(3)'], ['wait_n(7)', 'forward(2)', 'aim_lob(3)']),
-      sao: { o: 30, nhip: 11 },
-      goiY: ['Nhấn Chạy để xem R1 và R2 phối hợp qua sông.']
+    // 11 · show (làm cầu), lai L3 xe tời bờ: cống kẹt vì bão, xuồng thủy lợi (R1) ở sau cống không ra được: tung lưới chỉ trúng cửa cống.
+    //      Luna lắp sẵn omni + tay lưới + radar (khoá) đứng trên mỏm bờ giữa sông: tung lưới sang phải dọc lòng sông, tời bè về ô nước sát xe (bến q) thành cầu phao.
+    //      Xe chở hàng (R3) gắp thùng gỗ, qua cầu phao, đặt thùng vào ô đích bờ bên kia.
+    man9('lap-ben-song', 1, 'lam-quen', {
+      ten: 'Xe tời bờ',
+      chiChay: true,
+      deBai: 'Cống kẹt, xuồng không ra được. Luna lắp cho xe omni tay lưới: đứng trên bờ tung lưới tời bè về làm cầu cho xe chở hàng. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem xe trên bờ tời bè.',
+      san: ['##########', '#..D.....#', '##.q~B~K~#', '#..o.....#', '#........#', '##########'],
+      doi: [may('XU', { x: 8, y: 2, huong: 3 }), Object.assign({ batDau: { x: 2, y: 2, huong: 0 } }, clone(OMNI_L3)), may('CH', { x: 3, y: 4, huong: 0 })],
+      maMau: doiBai([['cast_net()', 'wait()'], ['set_length(3)', 'cast_net("right")', 'wait()'], ['pick()', 'forward(2)', 'drop()']]),
+      loiGiai: doiBai([['cast_net()', 'wait()'], ['set_length(3)', 'cast_net("right")', 'wait()'], ['pick()', 'forward(2)', 'drop()']]),
+      sao: { o: 27, nhip: 6 },
+      goiY: ['Xe trên bờ tung lưới: vật bắt được về ô nước sát xe.', 'cast_net("right"): tung lưới sang bên phải xe.'],
+      cauDo: { doi: null, lap: 'omni+day-keo+radar', coChe: ['nuoc', 'be', 'luoi', 'cong', 'bo', 'thung-go'], cuu: 'hang', meo: 'lam-cau' }
     }),
-
-    manBS('lap-ben-song', 2, 'lam-quen', {
-      ten: 'Chế hàm đo dòng êm hơn và ghép cầu trả kết quả',
-      r2: R_BANH, taoHam: ['calmer_bridge'],
-      hamCuaEmCan: ['calmer_power', 'flow_power', 'bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'sync_dock_pass', 'wait_n', 'cross_and_pick', 'forward', 'move', 'pick', 'turn_right', 'drop'],
-      deBai: 'Hãy ôn lại return và min(a, b) qua hàm calmer_power(a): tạo hàm mới calmer_bridge(a, n) thực hiện s = calmer_power(a) (so sánh sức nước trước mũi với a để lấy số nhỏ hơn), gọi bridge_lay(n) ghép cầu phao rồi return s! R1 ở (3, 2) gọi s = calmer_bridge(2, 2) kéo B(5, 2) về q(3, 2); R2 ở (3, 1) gọi sync_dock_pass(3, 2), turn_right(), drop() đưa o(3, 4) vào D(2, 3).',
-      veMaMau: 'Định nghĩa hàm calmer_bridge(a, n) có return s cho R1.',
-      san: ['#######', '#=..=.#', '#~~q~B#', '#.D...#', '#..o..#', '#######'],
-      dong: [{ x: 4, y: 2, huong: 1, suc: 1 }],
-      bd: [{ x: 3, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
-      maMau: baiDoi(['bridge_lay(2)'], ['sync_dock_pass(3, 2)', 'turn_right()', 'drop()']),
-      loiGiai: baiDoi(['s = calmer_bridge(2, 2)'], ['sync_dock_pass(3, 2)', 'turn_right()', 'drop()'], [H_CALMER_BRIDGE]),
+    // 12 · ép đổi thân (song song): bè thứ hai nằm trong lạch sau cống kẹt, xuồng không vào được. Xuồng R1 kéo bè thứ nhất vào bến q ngoài sông;
+    //      R2 tự lắp xe có bánh + tay lưới đứng trên bờ dưới lạch, tung lưới tời bè thứ hai về bến q trong lạch. Lắp xuồng thì kẹt ngoài cống.
+    //      Cách một omni + lưới (trượt ngang, nhanh). Cách hai hai bánh + lưới (rẻ hơn, phải quay, chậm hơn).
+    man9('lap-ben-song', 2, 'lam-quen', {
+      ten: 'Bè sau cống kẹt',
+      deBai: 'Bè thứ hai kẹt trong lạch sau cống, xuồng không vào được. Lắp thân nào để tới gần lạch? Tung lưới từ bờ tời bè vào bến.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['#########', '#~Bq~~KB#', '#######q#', '#.......#', '#########'],
+      doi: [may('XU', { x: 4, y: 1, huong: 3 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam', batDauNuoc: { x: 1, y: 1, huong: 1 } })],
+      lapRap: lapR2(['xuong', 'omni', 'hai-banh'], ['day-keo'], [], 8, [
+        cach('omni', 'day-keo', null, [XU_12, ['for i in range(3):', '    slide_right()', '    wait()', 'cast_net()', 'wait()']]),
+        cach('hai-banh', 'day-keo', null, [XU_12, ['turn_right()', 'forward(3)', 'turn_left()', 'cast_net()', 'wait()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([XU_12, []]),
       loiSai: [
-        { moTa: 'R2 quên gọi drop() sau khi quay phải nên kiện hàng chưa đặt vào D(2, 3)', baiLam: baiDoi(['s = calmer_bridge(2, 2)'], ['sync_dock_pass(3, 2)', 'turn_right()'], [H_CALMER_BRIDGE]), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'R2 đứng yên: bè trong lạch chưa vào bến', baiLam: doiBai([XU_12, []]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe tung lưới ở chỗ xuất phát: dây không trúng lạch', baiLam: doiBai([XU_12, ['cast_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 34, nhip: 9 },
-      goiY: ['Tạo hàm calmer_bridge(a, n) gồm: s = calmer_power(a), bridge_lay(n), return s; ở R1 viết s = calmer_bridge(2, 2).']
+      sao: { o: 16, nhip: 5 },
+      goiY: ['Xuồng không qua cống kẹt: lắp thân đi trên bờ.', 'Xe trên bờ tung lưới: bè về ô nước sát mũi xe.'],
+      cauDo: { doi: null, lap: 'omni+day-keo', coChe: ['nuoc', 'be', 'luoi', 'cong', 'bo', 'lach'], cuu: 'hang', meo: 'song-song' }
     }),
-
-    manBS('lap-ben-song', 3, 'luyen', {
-      ten: 'Dùng kết quả trả về để ghép cầu cho nhện hút sắt',
-      r2: R_NHEN,
-      hamCuaEmCan: ['calmer_bridge', 'calmer_power', 'flow_power', 'bridge_lay', 'pull_back', 'tow_grab', 'tow_drop', 'back', 'wait_n', 'walk', 'go', 'pull_s', 'pull_deliver'],
-      deBai: 'Tại (5, 2) có dòng chảy sức 1 nên calmer_bridge(2, 3) sẽ trả về 1 (giá trị nhỏ hơn giữa 2 và 1) đồng thời kéo bè B(6, 2) về ghép cầu tại q(3, 2). Hãy cho R1 ở (4, 2) gọi s = calmer_bridge(2, 3); R2 (nhện Mùa 3) ở (3, 1) gọi wait_n(4) chờ ghép cầu, walk("DD") qua cầu xuống (3, 3) và pull_deliver("R") đưa sắt o(3, 3) sang D(4, 3)!',
-      veMaMau: 'R2 chưa gọi pull_deliver("R") sau khi qua cầu phao.',
-      san: ['########', '#=..=..#', '#~~q~~B#', '#..oD..#', '########'],
-      vatChat: ['........', '........', '........', '...s....', '........'],
-      dong: [{ x: 5, y: 2, huong: 1, suc: 1 }],
-      bd: [{ x: 4, y: 2, huong: 1 }, { x: 3, y: 1, huong: 2 }],
-      maMau: baiDoi(['s = calmer_bridge(2, 3)'], ['wait_n(4)', 'walk("DD")']),
-      loiGiai: baiDoi(['s = calmer_bridge(2, 3)'], ['wait_n(4)', 'walk("DD")', 'pull_deliver("R")']),
+    // 13 · dọn lối (kéo), ba sân: đám lục bình L dạt chắn luồng của xuồng, mỗi sân ở một cột (3, 5, 6). Xuồng R1 dắt bè ra bến q cuối luồng, chờ lối thông.
+    //      R2 tự lắp xe trên bờ dưới luồng: đo tầm tới mỏm bờ (cột của lục bình) rồi tung lưới sang trái tời lục bình vào bến q sát bờ. Điền thẳng số của sân 1 thì trượt sân 2, 3.
+    //      Cách một xích + lưới + hồng ngoại: d = distance(), forward(d). Cách hai rẻ hơn: hai bánh + lưới + khoảng cách: while front_clear(): forward(1).
+    man9('lap-ben-song', 3, 'luyen', {
+      ten: 'Lục bình chắn luồng',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Lục bình dạt chắn luồng, mỗi sân một chỗ. Lắp xe đi trên bờ, đo xem mỏm bờ ở đâu, tới đó tung lưới tời lục bình vào bến. Xuồng chờ lối thông rồi dắt bè ra.',
+      veMaMau: 'Xe R2 chưa có chương trình.',
+      san: [san13(3), san13(5), san13(6)],
+      doi: [may('XU', { x: 2, y: 1, huong: 1 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['xich', 'hai-banh', 'omni'], ['day-keo', 'kep'], ['hong-ngoai', 'khoang-cach', 'camera'], 8, [
+        cach('xich', 'day-keo', 'hong-ngoai', [XU_13, ['d = distance()', 'forward(d)', 'cast_net("left")', 'wait()']]),
+        cach('hai-banh', 'day-keo', 'khoang-cach', [XU_13, ['while front_clear():', '    forward(1)', 'cast_net("left")', 'wait()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([XU_13, []]),
       loiSai: [
-        { moTa: 'R2 chưa gọi pull_deliver("R") để đưa kiện sắt o(3, 3) vào D(4, 3)', baiLam: baiDoi(['s = calmer_bridge(2, 3)'], ['wait_n(4)', 'walk("DD")']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Điền thẳng forward(2) của sân 1: sân 2, 3 xe dừng sớm, lưới không trúng lục bình', baiLam: doiBai([XU_13, ['forward(2)', 'cast_net("left")', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe tung lưới ngay chỗ xuất phát: lục bình còn chắn luồng', baiLam: doiBai([XU_13, ['cast_net("left")', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 34, nhip: 12 },
-      goiY: ['Ở chương trình R2, thêm pull_deliver("R") sau walk("DD").']
+      sao: { o: 19, nhip: 13 },
+      goiY: ['d = distance(): số ô trống trước mũi xe, tới sát mỏm bờ.', 'Xe trên bờ tung lưới sang trái: lục bình về ô nước sát bờ.'],
+      cauDo: { doi: null, lap: 'xich+day-keo+hong-ngoai', coChe: ['nuoc', 'be', 'luoi', 'bo', 'luc-binh'], cuu: 'hang', meo: 'don-loi' }
     }),
-
-    manBS('lap-ben-song', 4, 'luyen', {
-      ten: 'Chế hàm tách bộ tuple dòng chảy mở cống',
-      r2: R_XICH, mucTieu: 'day-thung', taoHam: ['tuple_gate_tow'],
-      hamCuaEmCan: ['flip_valve', 'pull_back', 'tow_grab', 'back', 'turn_left', 'turn_right', 'wait_n', 'forward', 'move'],
-      deBai: 'Cảm biến flow() trả về bộ cố định 2 phần (hướng, sức). Hãy tạo hàm mới tuple_gate_tow(n) cho R1: tách h, s = flow(), nếu s > 0 thì gọi flip_valve() gạt van V(5, 1) (tắt dòng dưới bè B(2, 2) và mở cống K(6, 2)), sau đó gọi pull_back(n). R1 ở (5, 2) gọi tuple_gate_tow(2) kéo L(7, 2) qua cống về q(5, 2); R2 (xe xích) ở (2, 1) gọi wait_n(2) rồi forward(3) qua bè B(2, 2) đẩy thùng H(2, 4) vào D(2, 5)!',
-      veMaMau: 'Định nghĩa hàm tuple_gate_tow(n) tách h, s = flow() cho R1.',
-      san: ['#########', '#=.==V==#', '#Bq~~qKL#', '#=.====.#', '#.H.....#', '#.D.....#', '#########'],
-      dong: [{ x: 1, y: 2, huong: 1, suc: 1 }, { x: 2, y: 2, huong: 2, suc: 1 }, { x: 6, y: 2, huong: 1, suc: 2 }],
-      noi: [{ nut: { x: 5, y: 1 }, cong: [{ x: 6, y: 2 }], dong: [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 6, y: 2 }] }],
-      bd: [{ x: 5, y: 2, huong: 1 }, { x: 2, y: 1, huong: 2 }],
-      maMau: baiDoi(['pull_back(2)'], ['wait_n(2)', 'forward(3)']),
-      loiGiai: baiDoi(['tuple_gate_tow(2)'], ['wait_n(2)', 'forward(3)'], [H_TUPLE_GATE_TOW]),
+    // 14 · dẫn đường (kéo theo đuôi), hai sân, ôn return: luồng ngang chảy sang phải, sức 2 (sân 1) hay 1 (sân 2). Bến q nằm trong lạch phía trên, sau cống K (cột 5).
+    //      Xuồng R1 đặt sẵn tung lưới gạt van mở cống. R2 tự lắp xuồng thứ hai buộc bè sau đuôi, chạy dọc lạch êm, rẽ lên băng qua luồng: vào luồng ở cột x thì trôi tới cột x + s,
+    //      nên phải vào ở cột 5 - s. Cách một xuồng + lưới + chong chóng: hàm trả số ô đi dọc lạch (return 3 - s). Cách hai rẻ hơn: xuồng + lưới + khoảng cách, đi tới cuối lạch êm.
+    man9('lap-ben-song', 4, 'luyen', {
+      ten: 'Băng qua dòng chảy',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Hai sân, nước chảy nhanh chậm khác nhau. Xuồng R1 mở cống. Lắp xuồng thứ hai dắt bè sau đuôi, băng qua dòng chảy vào lạch có bến. Nước đẩy xuồng trôi: vào dòng ở cột nào?',
+      veMaMau: 'Xuồng R2 chưa có chương trình.',
+      san: [san14(2), san14(1)],
+      doi: [may('XU', { x: 8, y: 6, huong: 0 }), khe({ x: 2, y: 5, huong: 1 }, { son: 'lam', batDauNuoc: { x: 2, y: 5, huong: 1 } })],
+      them: { dong: [dong14(2), dong14(1)], noi: [NOI_14, NOI_14] },
+      lapRap: lapR2(['xuong'], ['day-keo'], ['dong-chay', 'khoang-cach', 'camera'], 10, [
+        cach('xuong', 'day-keo', 'dong-chay', [XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'turn_left()', 'h, s = flow()', 'turn_right()', 'forward(3 - s)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']]),
+        cach('xuong', 'day-keo', 'khoang-cach', [XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'while front_clear():', '    forward(1)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']])
+      ], { moLai: ['L2'] }),
+      maMau: doiBai([XU_14, []]),
       loiSai: [
-        { moTa: 'R1 không kiểm tra flow() để gạt van V nên dòng chảy dưới bè B(2, 2) chưa tắt, R2 lao xuống nước', baiLam: baiDoi(['pull_back(2)'], ['wait_n(2)', 'forward(3)']), phaiCoMa: ['dam-tuong', 'chua-day-thung'] }
+        { moTa: 'Điền thẳng forward(1) của sân 1: sân 2 nước chậm, xuồng trôi chưa tới cửa lạch, đâm bờ', baiLam: doiBai([XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(1)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xuồng R1 không gạt van: cống đóng, xuồng dắt bè kẹt ngoài lạch', baiLam: doiBai([[], ['set_length(1)', 'cast_net("back")', 'wait()', 'turn_left()', 'h, s = flow()', 'turn_right()', 'forward(3 - s)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 30, nhip: 6 },
-      goiY: ['Tạo hàm tuple_gate_tow(n) gồm: h, s = flow(), if s > 0: flip_valve(), rồi pull_back(n); gọi tuple_gate_tow(2) cho R1.']
+      sao: { o: 24, nhip: 12 },
+      goiY: ['h, s = flow(): s là số ô nước đẩy xuồng mỗi nhịp.', 'Vào dòng ở cột x thì trôi tới cột x + s. Cửa lạch ở cột 5.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+dong-chay', coChe: ['nuoc', 'dong', 'be', 'luoi', 'van', 'cong'], cuu: 'hang', meo: 'dan-duong' }
     }),
-
-    manBS('lap-ben-song', 5, 'cung-co', {
-      ten: 'Tách tuple mở cống kéo lục bình và cứu hàng bờ Nam',
-      r2: R_BANH,
-      hamCuaEmCan: ['tuple_gate_tow', 'flip_valve', 'pull_back', 'tow_grab', 'back', 'turn_left', 'turn_right', 'sync_dock_pass', 'wait_n', 'cross_and_pick', 'forward', 'move', 'pick', 'drop'],
-      deBai: 'Dùng lại hàm tuple_gate_tow(n) vừa chế: R1 ở (5, 2) gọi tuple_gate_tow(2) để đọc h, s = flow() tại ô (6, 2), gạt van V(5, 1) tắt dòng dưới cầu phao B(2, 2) và mở cống K(6, 2), rồi kéo lục bình L(7, 2) về bến q(5, 2)! Cùng lúc đó, R2 ở (2, 1) gọi sync_dock_pass(2, 2) qua cầu phao B(2, 2) nhặt kiện hàng o(2, 4), gọi turn_left() và drop() vào đích D(3, 3).',
-      veMaMau: 'R2 chưa gọi turn_left() và drop() để đặt kiện hàng vào D(3, 3).',
-      san: ['#########', '#=.==V==#', '#Bq~~qKL#', '#..D====#', '#.o.....#', '#########'],
-      dong: [{ x: 1, y: 2, huong: 1, suc: 1 }, { x: 2, y: 2, huong: 2, suc: 1 }, { x: 6, y: 2, huong: 1, suc: 1 }],
-      noi: [{ nut: { x: 5, y: 1 }, cong: [{ x: 6, y: 2 }], dong: [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 6, y: 2 }] }],
-      bd: [{ x: 5, y: 2, huong: 1 }, { x: 2, y: 1, huong: 2 }],
-      maMau: baiDoi(['tuple_gate_tow(2)'], ['sync_dock_pass(2, 2)']),
-      loiGiai: baiDoi(['tuple_gate_tow(2)'], ['sync_dock_pass(2, 2)', 'turn_left()', 'drop()']),
+    // 15 · đọc rồi chọn, ba sân, lai L14 (xuồng + camera): kênh lên tới ngã ba, mỗi nhánh có phao đánh dấu: phao đỏ trên bãi cạn, phao xanh ở luồng sâu.
+    //      Mỗi sân luồng sâu ở một bên (phải, trái, phải); bến q trong luồng sâu. Cống giữa kênh kẹt: R1 xe cứu hỏa phun trúng van trên bờ mở cống (T3).
+    //      R2 tự lắp xuồng dắt bè sau đuôi, tới ngã ba quay trái đọc màu phao: đỏ thì quay sang phải. Cách hai rẻ hơn: khoảng cách (front_clear(): bãi cạn không trống).
+    man9('lap-ben-song', 5, 'luyen', {
+      ten: 'Phao đỏ, phao xanh',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Ở ngã ba, phao đỏ đánh dấu bãi cạn, phao xanh đánh dấu luồng sâu. Lắp xuồng dắt bè, tới ngã ba đọc màu phao rồi chọn nhánh sâu. Xe cứu hỏa phun van mở cống.',
+      veMaMau: 'Xuồng R2 chưa có chương trình.',
+      san: [san15('phai'), san15('trai'), san15('phai')],
+      doi: [may('CU', { x: 4, y: 4, huong: 0 }), khe({ x: 5, y: 5, huong: 0 }, { son: 'lam', batDauNuoc: { x: 5, y: 5, huong: 0 } })],
+      them: { noi: [NOI_15, NOI_15, NOI_15], sonBanDau: [son15('phai'), son15('trai'), son15('phai')] },
+      lapRap: lapR2(['xuong'], ['day-keo'], ['camera', 'khoang-cach', 'dong-chay'], 10, [
+        cach('xuong', 'day-keo', 'camera', [CU_15, XU_15]),
+        cach('xuong', 'day-keo', 'khoang-cach', [CU_15, XU_15.map(function (d) { return d === 'if color() == "red":' ? 'if not front_clear():' : d; })])
+      ], { moLai: ['L14'] }),
+      maMau: doiBai([CU_15, []]),
       loiSai: [
-        { moTa: 'R2 nhặt kiện hàng o(2, 4) nhưng chưa quay trái và thả vào D(3, 3)', baiLam: baiDoi(['tuple_gate_tow(2)'], ['sync_dock_pass(2, 2)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Điền thẳng nhánh phải của sân 1: sân 2 luồng sâu bên trái, xuồng đâm bãi cạn', baiLam: doiBai([CU_15, ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'turn_right()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Nhầm màu: thấy phao xanh mới quay sang phải', baiLam: doiBai([CU_15, XU_15.map(function (d) { return d === 'if color() == "red":' ? 'if color() == "blue":' : d; })]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe cứu hỏa không phun van: cống đóng, xuồng kẹt giữa kênh', baiLam: doiBai([[], XU_15]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 34, nhip: 8 },
-      goiY: ['Ở chương trình R2, sau sync_dock_pass(2, 2) hãy gọi turn_left() và drop().']
+      sao: { o: 23, nhip: 14 },
+      goiY: ['color(): màu phao ở ô trước mũi xuồng.', 'Phao đỏ là bãi cạn: quay sang nhánh kia.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'van', 'cong', 'phun'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
-
-    manBS('lap-ben-song', 6, 'cung-co', {
-      ten: 'Chế hàm dùng max chọn quãng kéo bè và hất đá',
-      r2: R_OMNI, taoHam: ['max_stream_tow'],
-      hamCuaEmCan: ['flow_power', 'pull_back', 'tow_grab', 'back', 'lob_clear', 'aim_lob', 'lob', 'slide_r'],
-      deBai: 'Hãy ôn lại hàm max(a, b) và return: tạo hàm mới max_stream_tow(a) cho R1 thực hiện b = flow_power(), tính n = max(a, b), gọi pull_back(n) rồi return n! Tại (4, 2) có dòng chảy sức 2 nên khi R1 ở (3, 2) gọi s = max_stream_tow(1), xuồng sẽ kéo bè B(5, 2) lùi đúng 2 ô về q(3, 2). Cùng lúc đó, R2 (xe omni) ở bờ Nam (2, 3) gọi lob_clear(3) hất viên đá o(2, 4) vào đích D(2, 6)!',
-      veMaMau: 'Định nghĩa hàm max_stream_tow(a) dùng max(a, b) và return n.',
-      san: ['########', '#=....=#', '#~~q~B~#', '#..===.#', '#.o....#', '#......#', '#.D....#', '########'],
-      dong: [{ x: 4, y: 2, huong: 1, suc: 2 }],
-      bd: [{ x: 3, y: 2, huong: 1 }, { x: 2, y: 3, huong: 2 }],
-      maMau: baiDoi(['pull_back(1)'], ['lob_clear(3)']),
-      loiGiai: baiDoi(['s = max_stream_tow(1)'], ['lob_clear(3)'], [H_MAX_STREAM_TOW]),
+    // 16 · cứu kịp, lai L3 (xe tời bờ): người rơi xuống sông trôi sát bờ về phía thác. R2 tự lắp xe trên bờ tung lưới tời người vào ô nước sát bờ; người tự lên bờ về trạm.
+    //      R1 máy khai thác nạp tảng đá, ném lấp hố trên lối về trạm. Cách một hai bánh + lưới (rẻ). Cách hai xuồng + lưới đứng sẵn trong vũng đầu nguồn (đắt hơn, cứu sớm hơn).
+    man9('lap-ben-song', 6, 'cung-co', {
+      ten: 'Ném lưới từ bờ',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Một người rơi xuống sông, trôi mỗi nhịp một ô về phía thác. Lắp robot tung lưới kéo người vào bờ kịp lúc. Máy khai thác lấp hố trên lối về trạm cứu.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: SAN_16,
+      doi: [may('KT', { x: 5, y: 3, huong: 2 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam', batDauNuoc: { x: 2, y: 2, huong: 0 } })],
+      them: { nguoi: [{ x: 0, y: 1 }], tramCuu: [{ x: 3, y: 4 }], thac: [{ x: 9, y: 1 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (x) { return { x: x, y: 1, huong: 1, suc: 1 }; }) },
+      lapRap: lapR2(['hai-banh', 'xuong', 'omni'], ['day-keo'], [], 8, [
+        cach('hai-banh', 'day-keo', null, [KT_16, ['wait_n(3)', 'cast_net()', 'wait()']]),
+        cach('xuong', 'day-keo', null, [KT_16, ['set_length(1)', 'wait()', 'cast_net()', 'wait()', 'back()']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([KT_16, []]),
       loiSai: [
-        { moTa: 'R1 chỉ kéo lùi 1 ô nên bè B mới về tới (4, 2), chưa tới bến q(3, 2)', baiLam: baiDoi(['pull_back(1)'], ['lob_clear(3)']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Tung lưới ngay: người chưa tới, trôi xuống thác', baiLam: doiBai([KT_16, ['cast_net()', 'wait()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Không lấp hố: người lên bờ đứng chờ', baiLam: doiBai([[], ['wait_n(3)', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 30, nhip: 5 },
-      goiY: ['Tạo hàm max_stream_tow(a) gồm: b = flow_power(), n = max(a, b), pull_back(n), return n; ở R1 gọi s = max_stream_tow(1).']
+      sao: { o: 16, nhip: 7 },
+      goiY: ['Người trôi mỗi nhịp một ô: đếm xem bao nhiêu nhịp thì người tới trước mũi xe.', 'Xe trên bờ tung lưới: người về ô nước sát bờ rồi tự lên bờ.'],
+      cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'ho', 'nem', 'thac', 'bo'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
-
-    manBS('lap-ben-song', 7, 'van-dung', {
-      ten: 'Phá đá chuông mở luồng rồi kéo bè theo max',
-      r2: R_GAI,
-      hamCuaEmCan: ['max_stream_tow', 'flow_power', 'pull_back', 'tow_grab', 'back', 'move', 'sonic_rail', 'play_note'],
-      deBai: 'Khối đá chuông ngầm ở (3, 2) đang chắn trước mũi xuồng R1(2, 2), còn tại (4, 2) có dòng chảy sức 2. Hãy cho R2 (bánh gai Mùa 8) ở (2, 1) gọi sonic_rail() để thẩm âm chuông đá, phát nốt phá vỡ khối đá (3, 2) rồi lùi về (1, 1). R1 chờ 1 nhịp wait(), tiến 1 ô move() vào (3, 2) rồi gọi s = max_stream_tow(1) kéo bè B(5, 2) về bến q(3, 2)!',
-      veMaMau: 'R1 chưa gọi s = max_stream_tow(1) sau khi tiến vào (3, 2).',
-      san: ['########', '#..=...#', '#~~q~B~#', '########'],
-      dong: [{ x: 4, y: 2, huong: 1, suc: 2 }],
-      chuongDa: [{ x: 2, y: 1, not: 5, phamVi: 4 }],
-      daChuong: [{ x: 3, y: 2, not: 5, ben: 1 }],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 2, y: 1, huong: 1 }],
-      maMau: baiDoi(['wait()', 'move()'], ['sonic_rail()']),
-      loiGiai: baiDoi(['wait()', 'move()', 's = max_stream_tow(1)'], ['sonic_rail()']),
+    // 17 · chờ tín hiệu, lai L10 (drone thả phao): người rơi giữa dòng xiết (2 ô mỗi nhịp) về phía thác. R2 tự lắp drone mang phao bay ra giữa dòng thả phao: người trôi tới bám phao, thôi trôi.
+    //      R1 xuồng đặt sẵn trong hõm bờ bắc chờ người bám phao ngay trước mũi rồi tung lưới, lùi kéo người vào hõm; người lên bờ về trạm.
+    //      Cách một drone + lưới. Cách hai rẻ hơn: xe hai bánh + lưới đứng bờ nam tời người vào hõm nam đúng lúc người trôi qua (xuồng không cần làm gì).
+    man9('lap-ben-song', 7, 'cung-co', {
+      ten: 'Phao giữa dòng xiết',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Người rơi giữa dòng xiết, trôi hai ô mỗi nhịp về phía thác. Lắp robot giữ người lại: thả phao cho người bám, xuồng chờ người bám phao thì tới đón. Hay tời người vào bờ đúng lúc.',
+      veMaMau: 'Xuồng tung lưới khi chưa có ai bám phao.',
+      san: SAN_17,
+      doi: [may('XU', { x: 10, y: 2, huong: 2 }), khe({ x: 11, y: 5, huong: 0 }, { son: 'lam' })],
+      them: { nguoi: [{ x: 1, y: 3 }], tramCuu: [{ x: 8, y: 2 }, { x: 10, y: 5 }], thac: [{ x: 14, y: 3 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map(function (x) { return { x: x, y: 3, huong: 1, suc: 2 }; }) },
+      lapRap: lapR2(['drone', 'hai-banh', 'nhen'], ['day-keo'], [], 8, [
+        cach('drone', 'day-keo', null, [XU_17, ['go_up()', 'go_up()', 'go_left()', 'cast_net()', 'wait()']]),
+        cach('hai-banh', 'day-keo', null, [[], ['set_length(2)', 'wait_n(4)', 'cast_net()', 'wait()']])
+      ], { moLai: ['L10', 'L3'] }),
+      maMau: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], []]),
       loiSai: [
-        { moTa: 'R1 mới tiến vào (3, 2), quên gọi s = max_stream_tow(1) để kéo bè B về q(3, 2)', baiLam: baiDoi(['wait()', 'move()'], ['sonic_rail()']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Xuồng tung lưới ngay: chưa có ai bám phao, lưới hụt; người bám phao sau đó không ai đón', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], ['go_up()', 'go_up()', 'go_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Drone bay ra nhưng không thả phao', baiLam: doiBai([XU_17, ['go_up()', 'go_up()', 'go_left()', 'wait()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Drone thả phao rồi xuồng không tới đón: người bám phao giữa dòng', baiLam: doiBai([[], ['go_up()', 'go_up()', 'go_left()', 'cast_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] }
       ],
-      sao: { o: 28, nhip: 5 },
-      goiY: ['Ở chương trình R1, sau wait() và move(), gọi thêm s = max_stream_tow(1).']
+      sao: { o: 16, nhip: 8 },
+      goiY: ['Phao thả xuống ô nước dưới bụng drone: người trôi tới thì bám, thôi trôi.', 'Xuồng chờ người bám phao ngay trước mũi rồi mới tung lưới.'],
+      cauDo: { doi: null, lap: 'drone+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'phao', 'thac', 'bo'], cuu: 'nguoi', meo: 'cho-tin-hieu' }
     }),
-
-    manBS('lap-ben-song', 8, 'van-dung', {
-      ten: 'Chế hàm buộc đuôi kéo bè qua khúc cua ghép cầu',
-      r2: R_BANH, taoHam: ['tether_calm_run'],
-      hamCuaEmCan: ['calm_tug_run', 'tail_over_calm', 'flow_power', 'flip_valve', 'tug_corner', 'tow_to_tail', 'tow_grab', 'tether_grab', 'pair_step', 'tether_drop', 'turn_right', 'turn_left', 'forward', 'move', 'sync_dock_pass', 'wait_n', 'cross_and_pick', 'pick', 'drop'],
-      deBai: 'Kênh sông rẽ góc vuông tại (2, 2) nên phải thu ngắn dây lưới và rẽ qua cua mới đưa bè về bến được! Hãy tạo hàm mới tether_calm_run(d, n) cho R1 gồm: gọi calm_tug_run(d, n) (kéo bè qua khúc cua d đi n ô rồi thu lưới) và gọi move() tiến thêm 1 ô nhường mặt cầu. R1 ở (2, 2) gọi tether_calm_run("R", 2) đưa bè B(4, 2) vào q(2, 3) rồi tiến xuống (2, 5); R2 ở (1, 3) gọi sync_dock_pass(6, 2) qua cầu nhặt o(4, 3), quay phải và drop() vào D(3, 4)!',
-      veMaMau: 'Định nghĩa hàm tether_calm_run(d, n) và gọi cho R1.',
-      san: ['#######', '#=====#', '#~~~B.#', '#.q.o.#', '#.~D..#', '#.~...#', '#######'],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 1, y: 3, huong: 1 }],
-      maMau: baiDoi(['calm_tug_run("R", 2)'], ['sync_dock_pass(6, 2)', 'turn_right()', 'drop()']),
-      loiGiai: baiDoi(['tether_calm_run("R", 2)'], ['sync_dock_pass(6, 2)', 'turn_right()', 'drop()'], [H_TETHER_CALM_RUN]),
+    // 18 · làm cầu: bờ sông bùn trơn (hàng 4). Bè trôi giữa sông (5, 2); R2 tự lắp xe tay lưới đứng đúng ô bùn (5, 4) tời bè về bến q sát bờ thành cầu phao.
+    //      R1 máy khai thác nạp tảng đá trên bãi khô, đi lên bùn (trượt tới mép nước), bước ra cầu phao, ném đá qua sông vào ô đích D trên bờ bắc.
+    //      Cách một bánh gai + lưới: gai bung bám bùn, chạy dọc dải bùn dừng đúng cột. Cách hai rẻ hơn: hai bánh + lưới chạy trên bãi khô, rẽ lên bùn (trượt tới mép nước thì dừng), xong lùi ra nhường lối.
+    man9('lap-ben-song', 8, 'cung-co', {
+      ten: 'Bờ bùn trơn',
+      deBai: 'Bờ sông thành bùn trơn: xe thường lên bùn là trượt. Lắp xe tời bè về bến làm cầu phao. Máy khai thác ra cầu phao ném tảng đá qua sông vào ô đích.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['##########', '#####D####', '#~~~~B~~~#', '#~~~~q~~~#', '#IIIIIIII#', '#........#', '#..o.....#', '##########'],
+      doi: [may('KT', { x: 3, y: 5, huong: 2 }), khe({ x: 8, y: 5, huong: 3 }, { son: 'lam' })],
+      lapRap: lapR2(['gai', 'hai-banh', 'xich'], ['day-keo'], [], 8, [
+        cach('gai', 'day-keo', null, [KT_18_GAI, ['turn_right()', 'forward(1)', 'turn_left()', 'forward(3)', 'cast_net("right")', 'wait()', 'forward(1)']]),
+        cach('hai-banh', 'day-keo', null, [KT_18_BANH, ['forward(3)', 'turn_right()', 'forward(1)', 'cast_net()', 'wait()', 'back()', 'turn_right()', 'forward(1)']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([KT_18_GAI, []]),
       loiSai: [
-        { moTa: 'R2 quên gọi drop() sau khi quay phải', baiLam: baiDoi(['tether_calm_run("R", 2)'], ['sync_dock_pass(6, 2)', 'turn_right()'], [H_TETHER_CALM_RUN]), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Xe dừng lệch một cột: lưới hụt bè, không có cầu phao', baiLam: doiBai([KT_18_GAI, ['turn_right()', 'forward(1)', 'turn_left()', 'forward(2)', 'cast_net("right")', 'wait()', 'forward(1)']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không có cầu phao: máy khai thác dừng ở mép bùn, ném đá trúng bè giữa sông, vỡ', baiLam: doiBai([KT_18_GAI, []]), phaiCoMa: ['nem-vo'] }
       ],
-      sao: { o: 40, nhip: 11 },
-      goiY: ['Tạo hàm tether_calm_run(d, n) gồm 2 dòng: calm_tug_run(d, n) và move(); ở R1 gọi tether_calm_run("R", 2).']
+      sao: { o: 28, nhip: 13 },
+      goiY: ['Bánh gai bung gai thì bám bùn, dừng đúng ô.', 'Xe thường đi lên bùn từ bãi khô: trượt tới mép nước thì dừng.'],
+      cauDo: { doi: null, lap: 'gai+day-keo', coChe: ['nuoc', 'be', 'luoi', 'bun', 'nem', 'bo'], cuu: 'hang', meo: 'lam-cau' }
     }),
-
-    manBS('lap-ben-song', 9, 'bien-the', {
-      ten: 'Dắt bè qua khúc cua cho nhện vượt sông hút sắt',
-      r2: R_NHEN,
-      hamCuaEmCan: ['tether_calm_run', 'calm_tug_run', 'tail_over_calm', 'flow_power', 'flip_valve', 'tug_corner', 'tow_to_tail', 'tow_grab', 'tether_grab', 'pair_step', 'tether_drop', 'turn_right', 'turn_left', 'forward', 'move', 'wait_n', 'walk', 'go', 'pull_s', 'pull_deliver'],
-      deBai: 'Dùng lại hàm tether_calm_run("R", 2) vừa chế để R1 ở (2, 2) kéo bè B(4, 2) qua khúc cua xuống ghép cầu phao tại q(2, 3) rồi tiến xuống (2, 5). R2 (nhện Mùa 3) ở bờ Tây (1, 3) gọi wait_n(6) chờ bè ghép xong, gọi walk("RR") bước qua cầu phao sang bờ Đông (3, 3) rồi gọi pull_deliver("D") hút kiện sắt o(3, 3) đưa xuống đích D(3, 4)!',
-      veMaMau: 'R2 chưa gọi pull_deliver("D") sau khi bước qua cầu phao.',
-      san: ['#######', '#=====#', '#~~~B.#', '#.qo..#', '#.~D..#', '#.~...#', '#######'],
-      vatChat: ['.......', '.......', '.......', '...s...', '.......', '.......', '.......'],
-      bd: [{ x: 2, y: 2, huong: 1 }, { x: 1, y: 3, huong: 1 }],
-      maMau: baiDoi(['tether_calm_run("R", 2)'], ['wait_n(6)', 'walk("RR")']),
-      loiGiai: baiDoi(['tether_calm_run("R", 2)'], ['wait_n(6)', 'walk("RR")', 'pull_deliver("D")']),
+    // 19 · đọc rồi chọn, hai sân, phong phú (nhắc lại): bè trôi giữa sông, mỗi sân một cột (6, 4); bến q ngay dưới bè, có phao xanh (việc #15).
+    //      R1 xe chở hàng gọi grab_clear() (hàm gói 4) gắp thùng gỗ chắn đầu lối bờ rồi thả vào ô đích D (việc gói 1). R3 drone rắc cát lên ô bùn trên lối (việc #8, #18).
+    //      R2 tự lắp xe bờ tay lưới (L3) chạy dọc lối, đọc màu ô nước phía trên, thấy phao xanh thì tời bè về bến. Cách một omni + camera trượt ngang (nhanh);
+    //      cách hai hai bánh + camera bốn hướng (rẻ hơn, đọc màu bên trái). So (nhịp, ô) của hai cách: min chọn cách đỡ hơn.
+    man9('lap-ben-song', 9, 'bien-the', {
+      ten: 'Tổng duyệt bến sông',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Hai sân. Xe chở hàng dọn thùng gỗ chắn lối, drone rắc cát lên bùn. Lắp xe bờ tay lưới: chạy dọc bờ, thấy phao xanh thì tời bè về bến. Omni nhanh, hai bánh rẻ: cách nào đỡ hơn?',
+      veMaMau: 'Xe chở hàng và drone đã làm xong. R2 chưa có chương trình.',
+      san: [san19(6), san19(4)],
+      doi: [may('CH', { x: 2, y: 4, huong: 0 }), khe({ x: 1, y: 3, huong: 0 }, { son: 'lam' }), may('DR', { x: 4, y: 4, huong: 0 })],
+      them: { vatThem: [[{ x: 2, y: 3 }], [{ x: 2, y: 3 }]], sonBanDau: [son19(6), son19(4)] },
+      lapRap: lapR2(['omni', 'hai-banh', 'xich'], ['day-keo'], ['camera', 'camera-4', 'hong-ngoai'], 9, [
+        cach('omni', 'day-keo', 'camera', [CH_19, R2_19_OMNI, DR_19]),
+        cach('hai-banh', 'day-keo', 'camera-4', [CH_19, R2_19_BANH, DR_19])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([CH_19, [], DR_19]),
       loiSai: [
-        { moTa: 'R2 bước qua cầu phao nhưng quên gọi pull_deliver("D") để đưa sắt vào D(3, 4)', baiLam: baiDoi(['tether_calm_run("R", 2)'], ['wait_n(6)', 'walk("RR")']), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Điền thẳng cột của sân 1 (trượt 5 ô): sân 2 xe trượt quá bè, lưới hụt', baiLam: doiBai([CH_19, ['wait_n(3)', 'for i in range(5):', '    slide_right()', '    wait()', 'set_length(2)', 'cast_net()', 'wait()'], DR_19]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe chở hàng không dọn thùng gỗ: xe bờ đâm thùng mãi, vòng while không dừng', baiLam: doiBai([[], R2_19_OMNI, DR_19]), phaiCoMa: ['vong-vo-han'] },
+        { moTa: 'Drone không rắc cát: sân 2 xe bờ lên bùn trượt quá phao xanh, không bao giờ thấy', baiLam: doiBai([CH_19, R2_19_OMNI, []]), phaiCoMa: ['vong-vo-han'] }
       ],
-      sao: { o: 38, nhip: 14 },
-      goiY: ['Ở chương trình R2, sau wait_n(6) và walk("RR"), gọi thêm pull_deliver("D").']
+      sao: { o: 34, nhip: 11 },
+      goiY: ['grab_clear(): gắp vật trước mũi rồi lùi một ô.', 'while color() != "blue": trượt tiếp. Thấy phao xanh thì tung lưới.', 'Drone rắc cát (dot) lên ô bùn: xe đi qua không trượt.'],
+      cauDo: { doi: null, lap: 'omni+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'thung-go', 'bun', 'rac-cat', 'bo'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
-
-    manBS('lap-ben-song', 10, 'trum', {
-      ten: 'Bản hợp xướng sóng nước Chấn Hưng',
-      r1: R1_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
-      dieu: { r1: '5 3 1 3 5 5', r2: '3 1 5 1 3 3' },
-      hamCuaEmCan: ['play_part', 'play_note'],
-      deBai: 'Khép lại chiến dịch cứu hộ Bến sông, hai robot R1 và R2 cùng hòa tấu khúc ca sóng nước 6 nhịp: R1 phát bè [5, 3, 1, 3, 5, 5], còn R2 phát bè [3, 1, 5, 1, 3, 3]. Hãy gọi play_part([3, 1, 5, 1, 3, 3]) cho R2!',
-      veMaMau: 'R2 chưa gọi play_part([3, 1, 5, 1, 3, 3]).',
-      san: ['#####', '#...#', '#####'],
-      bd: [{ x: 1, y: 1, huong: 1 }, { x: 3, y: 1, huong: 3 }],
-      maMau: baiDoi(['play_part([5, 3, 1, 3, 5, 5])'], ['play_note(3)']),
-      loiGiai: baiDoi(['play_part([5, 3, 1, 3, 5, 5])'], ['play_part([3, 1, 5, 1, 3, 3])']),
+    // 20 · song ca đoạn 5 "Kìa con bướm vàng" (Bè 1: 1 1 5 5 6 6 5 5 | Bè 2: 3 1 3 5 4 6 5 3), giữ đúng nốt của #10 cho gói 10 ghép bài; gọi play_part (cuu-kho-hang.10 tạo).
+    //      R1 máy khai thác lắp loa hát bè 1 trên bờ bắc. R2 tự lắp loa: xuồng thả trôi theo dòng, vừa hát bè 2 vừa trôi dọc bờ về bến, tới sát đá chuông lũ cuốn (nốt 4) thì nốt thứ năm làm vỡ;
+    //      hay xe omni đứng hát trên bờ nam (rẻ hơn, đá chuông ở xa không vỡ: chỉ để nhìn, không cần cho thắng).
+    man9('lap-ben-song', 10, 'trum', {
+      ten: 'Song ca theo dòng',
+      mucTieu: 'choi-dieu',
+      hamCuaEmCan: ['play_note', 'play_part'],
+      deBai: 'Màn cuối bến sông: song ca đoạn 5. Máy khai thác hát bè 1 trên bờ. Lắp loa cho bạn hát bè 2: xuồng vừa hát vừa trôi theo dòng, hay xe đứng hát trên bờ.',
+      veMaMau: 'Bè 2 mới có bốn nốt.',
+      san: ['########', '#......#', '~~~~~~.#', '#......#', '########'],
+      doi: [may('KT', { x: 1, y: 1, huong: 1 }, { son: 'lam', tay: 'loa', boHam: ['load', 'throw', 'aim'], themHam: ['note', 'beat'], phatNot: true }),
+        khe({ x: 1, y: 3, huong: 1 }, { son: 'lam', chinhLuoi: false, batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      them: { dieu: { r1: '1 1 5 5 6 6 5 5', r2: '3 1 3 5 4 6 5 3' }, daChuong: [{ x: 6, y: 2, not: 4, ben: 1 }],
+        dong: [0, 1, 2, 3, 4].map(function (x) { return { x: x, y: 2, huong: 1, suc: 1 }; }) },
+      lapRap: lapR2(['xuong', 'omni'], ['loa'], [], 8, [
+        cach('xuong', 'loa', null, [['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 1, 3, 5, 4, 6, 5, 3])']]),
+        cach('omni', 'loa', null, [['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 1, 3, 5, 4, 6, 5, 3])']])
+      ], { moLai: ['L5'] }),
+      maMau: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 1, 3, 5])']]),
       loiSai: [
-        { moTa: 'R2 chỉ phát 1 nốt nhạc nên thiếu 5 nhịp hòa âm', baiLam: baiDoi(['play_part([5, 3, 1, 3, 5, 5])'], ['play_note(3)']), phaiCoMa: ['lo-nhip'] }
+        { moTa: 'Bè 2 mới có bốn nốt', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([3, 1, 3, 5])']]), phaiCoMa: ['lo-nhip'] },
+        { moTa: 'R2 hát nhầm bè 1', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['play_part([1, 1, 5, 5, 6, 6, 5, 5])']]), phaiCoMa: ['sai-not'] },
+        { moTa: 'R2 chờ một nhịp rồi mới hát: lệch nhịp với bè 1', baiLam: doiBai([['play_part([1, 1, 5, 5, 6, 6, 5, 5])'], ['wait()', 'play_part([3, 1, 3, 5, 4, 6, 5, 3])']]), phaiCoMa: ['lo-nhip'] }
       ],
-      sao: { o: 22, nhip: 6 },
-      goiY: ['Ở chương trình R2, gọi play_part([3, 1, 5, 1, 3, 3]).']
-    })
+      sao: { o: 7, nhip: 10 },
+      goiY: ['Bè 2: play_part([3, 1, 3, 5, 4, 6, 5, 3]).', 'Hai bạn bắt đầu cùng một nhịp.', 'Xuồng không neo thì nước đẩy trôi một ô mỗi nhịp, vẫn hát được.'],
+      cauDo: { doi: null, lap: 'xuong+loa', coChe: ['loa', 'nuoc', 'dong', 'bo', 'da-chuong'], cuu: null, meo: 'song-song' }
+    }),
   ];
 })();

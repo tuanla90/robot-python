@@ -199,6 +199,8 @@
   // BẾN SÔNG (san-hoc.js phần BẾN SÔNG): thứ chặn vật nổi / dây lưới / xuồng
   LOAI_VAT['bo'] = 'bờ (xuồng chỉ đi được trên mặt nước)'; LOAI_VAT['nuoc'] = 'mặt nước (xe cạn không xuống nước được; chỉ đi lên bè đang nằm yên trên nước êm)';
   LOAI_VAT['cong'] = 'cống đang đóng (gạt van cống bằng tay lưới thì cống mở)'; LOAI_VAT['van'] = 'van cống (gắn trên bờ, xe không đi vào được; tay lưới của xuồng tung trúng mới đổi van)';
+  // M9T5 (san-hoc.js cfg.contChan): chồng container chặn như tường; tên ngắn dùng chung cho các bảng lý do bên dưới (thêm vào sau khi các bảng được khai)
+  LOAI_VAT['container'] = 'chồng container (cao như tường; nhờ cần cẩu nhấc đi thì ô mới thông)'; TEN_CHAN_NGAN['container'] = 'chồng container';
   var LY_SONG = { 'bo': 'bờ', 'nuoc': 'mặt nước', 'cong': 'cống đang đóng', 'vat': 'một vật khác đang nằm đó', 'robot': 'chỗ một robot đang đứng', 'dong-doi': 'chỗ robot đồng đội đang đứng', 'ngoai-san': 'mép sân',
     'het-tam': 'ô rơi của lưới là mặt nước trống', 'vat-can': 'vướng vật nổi ở ô giữa', 'day-luoi': 'dây lưới đang căng dưới nước', 'co-xe': 'bè đang có xe đứng trên', 'khong-co-vat': 'ô không có bè nào' };
   // nhện nhảy hụt (san-hoc.js 'nhay-hut'): ô giữa hay ô đáp là gì
@@ -217,7 +219,9 @@
   // lý do xe không giật được (san-hoc.js 'giat-chan'): ô xe giật vào
   var LY_GIAT = { 'lua': 'đám cháy', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'cua': 'cửa đang đóng', 'nut': 'van hơi', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'vat': 'một vật nằm đất' };
   var LY_NEM = { 'dong-doi': 'chỗ robot đồng đội đang đứng', 'ngoai-san': 'ngoài sân', 'tuong': 'tường cao', 'rao': 'hàng rào thấp', 'bac-thang': 'bậc thang', 'thung-nang': 'thùng nặng', 'vat': 'ô đã có một vật nằm sẵn' };
-  var LY_DO_THUNG = { 'lua': 'đám cháy', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe', 'cua': 'cửa đang đóng', 'rao': 'hàng rào thấp', 'vat': 'một vật nằm đất' };
+  var LY_DO_THUNG = { 'container': 'chồng container', 'lua': 'đám cháy', 'dong-doi': 'robot đồng đội (đang đứng ở ô đó, hoặc cũng định đi vào ô đó cùng nhịp)', 'tuong': 'tường', 'ngoai-san': 'mép sân', 'bac-thang': 'bậc thang', 'thung-nang': 'một thùng nặng khác', 'xe': 'chính chiếc xe', 'cua': 'cửa đang đóng', 'rao': 'hàng rào thấp', 'vat': 'một vật nằm đất' };
+  LY_NHAY['container'] = 'chồng container (cao như tường, không bay qua hay đáp lên được)'; LY_DAP['container'] = 'chồng container'; LY_THA['container'] = 'chồng container';   // M9T5 (cfg.contChan)
+  LY_BAN['container'] = 'chồng container'; LY_GIAT['container'] = 'chồng container'; LY_NEM['container'] = 'chồng container';
   // Sân thử mặc định của Xưởng hàm: 5×5 trống, xe ở giữa quay lên (hướng 0).
   var SAN_THU_MAC_DINH = { rong: 5, cao: 5, batDau: { x: 2, y: 2, huong: 0 }, vat: [], tuong: [], thung: [] };
   var MAU_CHU = { red: 'r', green: 'g', blue: 'b', yellow: 'y' };       // tên màu → ký tự trong lớp màu của SanHoc
@@ -541,6 +545,8 @@
         them('tam-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + (l.nemDa ? ' Đứng yên thì tay hất chỉ ném được 1 hoặc 2 ô.' : ' Máy ném chỉ ném được 1, 2 hoặc 3 ô: đếm số ô từ xe tới ô muốn rơi rồi chọn n.'), { cho: cho(m), tam: l.tamDat });
       } else if (l.ma === 'luc-ban-sai') {
         them('luc-ban-sai', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Lực phun viết chữ thường trong dấu nháy: "low" phun nhẹ (bay 2 ô, không giật), "high" phun mạnh (bay xa, xe giật).', { cho: cho(m), luc: l.lucDat });
+      } else if (l.ma === 'xit-tham-so') {                                // M9L15: bình xịt bụng drone không nhận đối số
+        them('xit-tham-so', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Bình xịt treo dưới bụng drone xịt thẳng xuống ô drone đang ở, không chọn lực hay hướng: bay tới đúng ô rồi gọi spray().', { ten: l.ten, cho: cho(m) });
       } else if (l.ma === 'luc-chua-mo') {
         them('luc-chua-mo', 'Ở ' + viTri(m) + ': ' + l.thongDiep + ' Phun mạnh "high" mở khoá ở gói Lực phun; trước đó spray() không đối số là phun nhẹ.', { ten: l.ten, cho: cho(m) });
       } else if (l.ma === 'huong-radar-sai') {
@@ -671,6 +677,10 @@
         s2 = 'Ở nhịp ' + e0.nhip + ', robot định ' + (e0.kieu === 'lui' ? 'lùi' : e0.kieu === 'truot' ? 'trượt' : 'đi') + ' vào ô (' + e0.den.x + ', ' + e0.den.y + ') nhưng ô đó có một vật nằm đất: vật chiếm ô nên xe vướng vật và đứng yên (vẫn mất một nhịp).' +
           (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
           ' Muốn đi qua ô đó phải gắp vật lên trước (hạ tay, grab()), hoặc đi đường vòng.';
+      } else if (e0.vat === 'container') {                                    // M9T5 (cfg.contChan): chồng container chặn như tường
+        s2 = 'Ở nhịp ' + e0.nhip + ', robot đâm vào chồng container ở ô (' + e0.den.x + ', ' + e0.den.y + ') nên đứng yên (vẫn mất một nhịp).' +
+          (tuong.length > 1 ? ' Chuyện này xảy ra ' + tuong.length + ' lần.' : '') +
+          ' Nhờ cần cẩu nhấc container đi trước (pick_up()), rồi mới đi qua.';
       } else if (e0.vat === 'thung-nang' && e0.xichDay) {                    // xích đẩy thùng (mùa 2, cfg.xichDay): ô sau thùng bị chặn nên không đẩy được
         s2 = 'Ở nhịp ' + e0.nhip + ', xích tiến vào thùng nặng ở ô (' + e0.den.x + ', ' + e0.den.y + ') để đẩy nó đi, nhưng ô sau thùng, (' + e0.sau.x + ', ' + e0.sau.y + '), là ' +
           (LY_DO_THUNG[e0.chan] || e0.chan) + ' nên thùng không nhúc nhích, xích đứng yên (vẫn mất một nhịp).' +
@@ -811,8 +821,17 @@
     var hetDan = res.suKien.filter(function (e) { return e.ma === 'het-dan'; });
     if (hetDan.length) {
       var hd0 = hetDan[0];
-      them('het-dan', 'Ở nhịp ' + hd0.nhip + ', vòi phun đã hết nước nên không phun được gì (và xe cũng không giật).' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
+      if (hd0.drone) them('het-dan', 'Ở nhịp ' + hd0.nhip + ', bình xịt dưới bụng drone đã hết nước nên không xịt được gì.' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +   // M9L15: bình xịt bụng
+        ' Bình nhỏ chỉ xịt được ' + (hd0.binh || 0) + ' lần, xịt hụt cũng mất một lần: chỉ spray() khi drone đang ở ngay trên lửa, van hay nút.', { nhip: hd0.nhip, soLan: hetDan.length, drone: true, cho: cho(hd0.lenh ? (g.anhXa[hd0.lenh.dongPy] || null) : null) });
+      else them('het-dan', 'Ở nhịp ' + hd0.nhip + ', vòi phun đã hết nước nên không phun được gì (và xe cũng không giật).' + (hetDan.length > 1 ? ' Chuyện này xảy ra ' + hetDan.length + ' lần.' : '') +
         ' Màn này chỉ có ' + (man.danToiDa || 0) + ' lượt phun: dùng cho đúng chỗ.', { nhip: hd0.nhip, soLan: hetDan.length, cho: cho(hd0.lenh ? (g.anhXa[hd0.lenh.dongPy] || null) : null) });
+    }
+    var xitHut = res.suKien.filter(function (e) { return e.ma === 'xit-hut'; });       // M9L15: bình xịt bụng drone xịt ô không có lửa / van / nút (thông tin, không lỗi)
+    if (xitHut.length) {
+      var xh0 = xitHut[0];
+      cd.push({ ma: 'xit-hut', muc: 'thong-tin', nhip: xh0.nhip, soLan: xitHut.length, o: xh0.o, cho: cho(xh0.lenh ? (g.anhXa[xh0.lenh.dongPy] || null) : null),
+        loi: 'Ở nhịp ' + xh0.nhip + ', drone xịt nước xuống ô (' + xh0.o.x + ', ' + xh0.o.y + ') nhưng dưới bụng không có lửa, van hay nút nên chẳng có gì đổi.' +
+          (xitHut.length > 1 ? ' Chuyện này xảy ra ' + xitHut.length + ' lần.' : '') + ' Bình xịt chỉ xịt thẳng xuống ô drone đang ở: bay tới ngay trên chỗ cần xịt rồi mới gọi spray().' });
     }
     var banHut = res.suKien.filter(function (e) { return e.ma === 'ban-hut'; });
     if (banHut.length) {
@@ -1678,6 +1697,7 @@
         dong: lm.dong || undefined,                                         // BẾN SÔNG: lớp dòng chảy (san-hoc.js phần BẾN SÔNG)
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, hangTau: lm.hangTau || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1 người cần cứu, trạm cứu, thác
+        contTroi: lm.contTroi || undefined, beSac: lm.beSac || undefined, contLapHo: man.contLapHo === true || undefined, contChan: man.contChan === true || undefined,   // M9 L2 container trôi, T4 bè sạc, T2 container lấp hố, T5 chồng chặn như tường
         damLaThua: man.damLaThua === true,                                  // HD2: màn ép, đâm tường là thua (san-hoc.js)
         pin: Array.isArray(man.pin) ? man.pin[i] : man.pin,
         camBien: man.robot ? man.robot.camBien : undefined,
@@ -1824,6 +1844,7 @@
         dong: lm.dong || undefined,                                         // BẾN SÔNG
         chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, hangTau: lm.hangTau || undefined, taiToiDa: man.taiToiDa, luatThap: man.luatThap,   // CẢNG SÔNG
         nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined,   // M9C1
+        contTroi: lm.contTroi || undefined, beSac: lm.beSac || undefined, contLapHo: man.contLapHo === true || undefined, contChan: man.contChan === true || undefined,   // M9 L2, T4, T2, T5
         dieu: lm.dieu || man.dieu || undefined, dieuBatDau: man.dieuBatDau, dieuToiCo: man.dieuToiCo,
         ngachHang: lm.ngachHang || undefined, chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined,
         doi: mans.map(function (mi, i) {

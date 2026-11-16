@@ -287,6 +287,7 @@
     if (goc.indexOf('wait') < 0) goc.push('wait');
     if (c.than === 'cau') goc = goc.filter(function (h) { return h !== 'arm_down' && h !== 'arm_up'; });   // M9B2 (L8): gầu ngoạm trên cần cẩu chỉ grab() / release() (gầu thả từ đầu cần, không nâng hạ tay)
     if (c.than === 'cau' || c.than === 'drone') goc = goc.filter(function (h) { return h !== 'set_length'; });   // M9C2 (L9, L10): giỏ cứu hộ / phao chỉ cast_net() / drop_net() (không set_length; reel_in / reel_out lọc sau nangCap)
+    if (c.than === 'drone') goc = goc.filter(function (h) { return h !== 'spray_back'; });   // M9L15: bình xịt bụng drone chỉ spray() (xịt thẳng xuống, drone không có mũi / đuôi)
     if (!(c.than === 'drone' && coPinMan(man))) goc = goc.filter(function (h) { return h !== 'battery'; });
     // land / take_off: nâng cấp drone đáp đất để sạc (mùa 4 gói 5) chỉ khi màn mở nó trên khay
     if (!(c.than === 'drone' && (man.hamGoc || []).indexOf('land') >= 0)) goc = goc.filter(function (h) { return h !== 'land' && h !== 'take_off'; });
@@ -329,6 +330,18 @@
     ks.forEach(function (k) { delete kq[k]; });
     return kq;
   }
+  /** Ô xuất phát của khe theo cỗ máy đặt vào (16/11, mùa 9 G4 Cảng sông). r là bản sao doi[i] (đã locCoMay), sửa tại chỗ rồi trả lại.
+   *  - doi[i].batDauNuoc = { x, y, huong }: ô trên MẶT NƯỚC dùng khi cỗ máy là xuồng (loaiRobot 'xuong'); cỗ máy khác dùng batDau (ô trên cạn).
+   *    Một khe trộn xuồng với xe cạn được (lõi ném lỗi nếu xuồng xuất phát trên cạn hay xe cạn xuất phát trên nước). Trường này không đi xuống lõi.
+   *    Bản mặc định (macDinh) đặt batDau theo cỗ máy của cách mẫu và cất ô trên cạn gốc ở batDauCan, để chọn lại trên bản mặc định vẫn đúng ô.
+   *  - batDau.nac / tam (khe cẩu): cỗ máy không phải cẩu thì bỏ hai trường đó (lõi chỉ nhận ở cần cẩu). */
+  function chonBatDau(r, loai) {
+    if (r.batDauNuoc) { r.batDau = Object.assign({}, loai === 'xuong' ? r.batDauNuoc : (r.batDauCan || r.batDau)); delete r.batDauNuoc; delete r.batDauCan; }
+    if (loai !== 'cau' && r.batDau && (r.batDau.nac !== undefined || r.batDau.tam !== undefined)) {
+      r.batDau = Object.assign({}, r.batDau); delete r.batDau.nac; delete r.batDau.tam;
+    }
+    return r;
+  }
   /** Màu đế của robot thứ i trong đội: khai ở doi[i].son hay doi[i].robot.son; mặc định R2 'lam' (hồng Luna), R1 không (xanh Sola). */
   function sonCua(r, i) { return r.son || (r.robot && r.robot.son) || (i === 1 ? 'lam' : undefined); }
   function apDung(man, cach) {
@@ -343,7 +356,7 @@
     if (i !== null) {                                                                      // M9D1: màn đội, lắp cho robot thứ i (man.lapRap.robot): gắn vào man.doi[i], không đụng robot khác
       if (!man.doi[i]) throw new Error('Màn không có robot thứ ' + (i + 1) + ' để lắp.');
       if (man.doi[i].coDinh) throw new Error('Robot thứ ' + (i + 1) + ' bị khoá, không lắp được.');
-      var r = locCoMay(man.doi[i]), pinR = man.doi[i].pin !== undefined ? man.doi[i].pin : pinCua(man);
+      var r = chonBatDau(locCoMay(man.doi[i]), th.loai), pinR = man.doi[i].pin !== undefined ? man.doi[i].pin : pinCua(man);
       r.loaiRobot = th.loai;
       if (c.than === 'drone' && pinR !== undefined && pinR !== null) { ch.camBien.push({ ma: 'pin', o: 'than' }); r.pin = pinR; }
       r.robot = { than: c.than, tay: c.tay, camBien: ch.camBien };
@@ -424,7 +437,7 @@
       if (j < 0) return r;
       var goc = locCoMay(r), d = CoMay.dung(chon[j], { son: sonCua(r, i), pin: r.pin !== undefined ? r.pin : man.pin, co: r.coThem || undefined });
       delete goc.son; delete goc.coThem;
-      return Object.assign(goc, d);
+      return Object.assign(chonBatDau(goc, d.loaiRobot), d);
     });
     if (em.indexOf(0) >= 0) { kq.loaiRobot = kq.doi[0].loaiRobot; kq.robot = kq.doi[0].robot; kq.hamGoc = kq.doi[0].hamGoc; }   // trường đầu màn = R1 (quy ước màn đội)
     if (cach && cach.loiGiai) kq.loiGiai = loiGiaiCua(cach.loiGiai, man);
@@ -486,11 +499,16 @@
    * Màn lắp ráp ở dạng "bản mặc định": điền (nếu màn chưa khai) loaiRobot, robot, hamGoc và loiGiai theo cách lắp mẫu ĐẦU TIÊN (cachLap[0], cách ứng với sao 3), để mọi chỗ đọc thẳng
    * ManHoc.danhSach (máy kiểm chung, Sổ lệnh, Gỡ lỗi) thấy một màn đủ trường. Giao diện không chơi bản này mà chơi apDung(màn, cách người chơi chọn). man-chuoi-1.js gọi hàm này trong chuanHoa.
    */
+  /** macDinh: khe có batDauNuoc thì bản mặc định xuất phát ở ô của cỗ máy cách mẫu (ad.batDau, có thể trên nước), ô trên cạn gốc cất ở batDauCan (16/11). */
+  function giuBatDau(gop, r, ad) {
+    if (r && r.batDauNuoc && ad && ad.batDau) { gop.batDauCan = r.batDauCan || r.batDau; gop.batDau = ad.batDau; }
+    return gop;
+  }
   function macDinh(man) {
     var C = chonDoiCua(man), i = robotLapCua(man), a;
     if (C && Array.isArray(C.cachMau) && C.cachMau.length && kiemChon(man, C.cachMau[0].chon).ok) {   // M9D1: màn chọn đội: bản mặc định = cách mẫu đầu (đôi tốt)
       a = apDungDoi(man, C.cachMau[0]);
-      man.doi = man.doi.map(function (r, j) { return Object.assign({}, a.doi[j], r); });
+      man.doi = man.doi.map(function (r, j) { return giuBatDau(Object.assign({}, a.doi[j], r), r, a.doi[j]); });
       ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
       if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
     }
@@ -499,7 +517,7 @@
     if (i !== null && (!man.doi[i] || man.doi[i].coDinh)) return man;
     a = apDung(man, L.cachLap[0]);
     if (i !== null) {                                                                      // M9D1: lắp cho robot thứ i của màn đội: điền man.doi[i] (và trường đầu màn khi i = 0)
-      man.doi[i] = Object.assign({}, a.doi[i], man.doi[i]);
+      man.doi[i] = giuBatDau(Object.assign({}, a.doi[i], man.doi[i]), man.doi[i], a.doi[i]);
       if (i === 0) ['loaiRobot', 'robot', 'hamGoc'].forEach(function (k) { if (man[k] === undefined) man[k] = a[k]; });
       if (!man.loiGiai && a.loiGiai) man.loiGiai = a.loiGiai;
       return man;

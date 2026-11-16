@@ -15,7 +15,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    Ổ gắn KHÔNG đổi theo trạng thái (tay kẹp / cảm biến ở đúng chỗ, như part-nhen.js); camera / camSang như thân A.
    Nhện không tay đi bốn hướng không quay mặt: VeRobot truyền hướng 0 (như bộ pixel).
    thanDung (3/11, user "xoay ngược nhện: chân xuống, mắt gần phía dưới"): VeVector.robot vẽ thân (và nam châm bụng) luôn đứng thẳng theo màn hình như hình gốc,
-   hướng nào cũng vậy; chỉ tay kẹp / cảm biến xoay theo hướng. Hệ thân của di = hệ màn hình. */
+   hướng nào cũng vậy; chỉ tay kẹp / cảm biến xoay theo hướng. Hệ thân của di = hệ màn hình.
+   M9H2 (4/11, hình tổ hợp mùa 9): tayBung ['son', 'loa'] = lai L6 / L7 treo dưới bụng ở oTayDuoi như nam châm (bộ gieo hạt chấm ô dưới bụng; loa phát quanh, không theo mũi),
+   đứng thẳng cùng thân; camNoc ['radar', 'camera-4', 'am-thanh'] = lai L12 / L4 vẽ trên NÓC vỏ oNoc (50, 41) thu kNoc 0,85 (co chân: oNocCo), đứng thẳng (đọc bốn hướng tuyệt đối), giữa ăng-ten và dải mắt. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var HUONG_DI = [[0, 1], [1, 0], [0, -1], [-1, 0]];
@@ -99,7 +101,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return { A: A, B: B, nhun: nhun };
   }
-  V.dangKy({ loai: 'than', ma: 'nhen', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'crouch',  'stand'], ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, tayDuoi: ['nam-cham'], oTayDuoi: { x: 50, y: 42 }, thanDung: true, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'than', ma: 'nhen', hamGoc: ['go_up',  'go_down',  'go_left',  'go_right',  'wait',  'crouch',  'stand'], ten: 'Thân nhện bốn chân', oGan: { tay: { x: 50, y: 81 }, hongTrai: { x: 68, y: 48 }, hongPhai: { x: 32, y: 48 }, tren: { x: 68, y: 77 }, sau: { x: 38, y: 31 } }, tayDuoi: ['nam-cham'], oTayDuoi: { x: 50, y: 42 }, tayBung: ['son', 'loa'], oNoc: { x: 50, y: 41 }, oNocCo: { x: 50, y: 47 }, kNoc: 0.85, camNoc: ['radar', 'camera-4', 'am-thanh'], thanDung: true, oCam: { x: 62, y: 34 }, vo: { x: 25, y: 29, w: 50, h: 52 }, ve: function (g, s, M, H) {
     s = s || {};
     var co = !!s.co, dg = dang(s), u = HUONG_DI[s.di | 0] || HUONG_DI[0], kb = co ? 0.55 : 1;
     var duoi = Math.max(0, Math.min(1, s.nhay || 0)), nen = Math.max(0, Math.min(1, -(s.nhay || 0)));   // duoi: đang bật nhảy (4 chân duỗi thẳng dài xuống); nen: nhún lấy đà trước khi nhảy

@@ -452,7 +452,8 @@ console.log('\n== 12. (V3 / V7c1) Thân / tay / cảm biến: liệt kê từ d�
   const hopLe = [], lechLuat = []; let soCam = 0;
   // 30/10 P1 mùa 4: drone được treo máy sơn dưới bụng (như nam châm). Kỳ vọng của drone + máy sơn = kỳ vọng đã chụp của drone + nam châm cùng bộ cảm biến.
   const loiChup = new Map(CHUP.ghep.map((g) => [J(g.cfg), g.loi]));
-  const kyVong = (cfg, loi) => (cfg.than === 'drone' && cfg.tay === 'son' ? loiChup.get(J(Object.assign({}, cfg, { tay: 'nam-cham' }))) : loi);
+  // M9L15 (4/11, user mở lai L15): drone + vòi phun (bình xịt bụng) là ô ★ của bảng ghép, bộ vẽ cho qua — kỳ vọng cũng = kỳ vọng của drone + nam châm cùng bộ cảm biến.
+  const kyVong = (cfg, loi) => (cfg.than === 'drone' && (cfg.tay === 'son' || cfg.tay === 'hoi') ? loiChup.get(J(Object.assign({}, cfg, { tay: 'nam-cham' }))) : loi);
   for (const g of CHUP.ghep) {
     const cfg = g.cfg, ep = tenMoi(kyVong(cfg, g.loi));
     let ev = null;

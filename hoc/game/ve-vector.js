@@ -262,6 +262,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function oTay(than, tay, cfg) {
     if (than.khongHuong) return ['duoi'];
     if ((!cfg || cfg.oTay !== 'tay') && than.tayDuoi && than.tayDuoi.indexOf(tay.ma) >= 0 && than.oTayDuoi && ganCua(tay).indexOf('duoi') >= 0) return ['duoi'];
+    if ((!cfg || cfg.oTay !== 'tay') && than.tayBung && than.tayBung.indexOf(tay.ma) >= 0 && than.oTayDuoi) return ['duoi'];      // M9H2: lai L6 / L7 (nhện + gieo hạt / loa) treo bụng như nam châm (thân khai tayBung; gan của tay giữ như dữ liệu chụp)
     return ganCua(tay).filter(function (o) { return o === 'tay' && than.oGan[o]; });
   }
   /** Kiểm cấu hình như Part.ghep: ném Error với ĐÚNG câu báo của bộ pixel khi ghép cấm (drone + camera, drone + tay khác nam châm, camera-bay trên thân thường,
@@ -333,7 +334,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Mọi ổ đang gắn cảm biến `ma` của cfg (sau đổi 'hong' → hai ổ, sau xoay) trên canvas ô cạnh `canh`: [{ o, x, y }] — gốc tia của cảm biến (gói V4, san-ve.js oTia). */
   function diemCamBien(cfg, ma, huong, canh) {
     var t = lay('than', (cfg && cfg.than) || 'hai-banh'); if (!t) return [];
-    return doiCam(cfg && cfg.camBien).filter(function (c) { return c.ma === ma && t.oGan[c.o]; }).map(function (c) { var p = diemTrenO(t.oGan[c.o], huong, canh, t); p.o = c.o; return p; });
+    return doiCam(cfg && cfg.camBien).filter(function (c) { return c.ma === ma && t.oGan[c.o] && !choVeCam(t, c).bo; }).map(function (c) { var v = choVeCam(t, c), p = diemTrenO(v.o || t.oGan[c.o], huong, canh, t, v.dung); p.o = c.o; return p; });
+  }
+  /** M9H2: chỗ VẼ một cảm biến c ({ ma, o }) trên thân (ổ logic giữ nguyên): { o: điểm hay null (= ổ c.o), dung: đứng thẳng theo thân thanDung, bo: không vẽ bản này }.
+   *  than.camNoc + oNoc (nhện L4 / L12): mic, radar, camera bốn hướng trên NÓC vỏ, đứng thẳng (đọc bốn hướng tuyệt đối), co chân thì oNocCo, thu kNoc lần (lọt giữa ăng-ten / tay kẹp hướng lên và dải mắt);
+   *  than.camDauCan + oDauCan (cần cẩu L13): cảm biến từ / camera bụng ở ĐẦU ĐOẠN CẦN (đọc ô đầu cần), cảm biến hông chỉ vẽ một cái. Thân khác: null (ổ cũ, y nguyên). */
+  function choVeCam(than, c, sT) {
+    if (than.camNoc && than.oNoc && than.camNoc.indexOf(c.ma) >= 0) return { o: sT && sT.co && than.oNocCo ? than.oNocCo : than.oNoc, dung: !!than.thanDung, bo: false, k: than.kNoc || 0 };
+    if (than.camDauCan && than.oDauCan && than.camDauCan.indexOf(c.ma) >= 0) return { o: than.oDauCan, dung: false, bo: c.o === 'hongPhai' };
+    return { o: null, dung: false, bo: false };
   }
   /** Tâm ống kính CAMERA (gói V4: khối camera ở đuôi, than.oCam + ongKinh − diemNeo) sau xoay trên canvas ô cạnh `canh`; null nếu cfg không có camera / thân không có oCam. */
   function diemOngKinh(cfg, huong, canh) {
@@ -359,7 +368,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Dịch của tay trong hệ thân (ổ − điểm neo) và ổ đã dùng; null nếu không gắn được. */
   function dichTay(than, tay, cfg) {
     var os = oTay(than, tay, cfg)[0]; if (!os) return null;
-    var oG = than.oGan[os] || (os === 'duoi' ? than.oTayDuoi : null), neo = os === 'duoi' && tay.diemNeoDuoi ? tay.diemNeoDuoi : tay.diemNeo;     // oTayDuoi: nam châm bụng nhện (mùa 3)
+    var oG = than.oGan[os] || (os === 'duoi' ? than.oTayDuoi : null), neo = os === 'duoi' ? ((!than.khongHuong && tay.diemNeoBung) || tay.diemNeoDuoi || tay.diemNeo) : tay.diemNeo;     // oTayDuoi: nam châm bụng nhện (mùa 3); diemNeoBung (M9H2): điểm neo bụng nhện riêng của tay (drone vẫn diemNeoDuoi)
     return { o: os, x: oG.x - neo.x, y: oG.y - neo.y };
   }
   /** Độ nâng của tay (gói V6b): số k cho sẵn (hoạt cảnh nâng / hạ mượt) thì kẹp vào [0, 1]; không thì theo tư thế: 'duoi' 0, 'giua' 0,5, còn lại ('tren') 1. */
@@ -438,9 +447,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (than.thanDung) g.restore();
       if (tay && !tayDung) veTay();
       cams.forEach(function (c) {                                                       // cảm biến: vẽ ở ổ (điểm neo trùng ổ), trên thân và tay; ra = phía ngoài (dấu x) của ổ
-        var cb = lay('cam-bien', c.ma), laCam = cb.oVe === 'cam' && than.oCam, o = laCam ? than.oCam : than.oGan[c.o];     // camera (gói V4): vẽ ở đuôi (than.oCam), ổ logic giữ nguyên
-        g.save(); if (laCam && than.thanDung) { g.translate(TAM_THAN.x, TAM_THAN.y); g.rotate(-a); g.translate(-TAM_THAN.x, -TAM_THAN.y); }   // camera nằm trên vỏ: đứng thẳng theo thân thanDung
-        g.translate(o.x - cb.diemNeo.x, o.y - cb.diemNeo.y);
+        var cb = lay('cam-bien', c.ma), laCam = cb.oVe === 'cam' && than.oCam, v = choVeCam(than, c, sT), o = laCam ? than.oCam : v.o || than.oGan[c.o];     // camera (gói V4): vẽ ở đuôi (than.oCam), ổ logic giữ nguyên; M9H2: nóc nhện / đầu cần cẩu (choVeCam)
+        if (v.bo) return;
+        g.save(); if ((laCam || v.dung) && than.thanDung) { g.translate(TAM_THAN.x, TAM_THAN.y); g.rotate(-a); g.translate(-TAM_THAN.x, -TAM_THAN.y); }   // camera nằm trên vỏ: đứng thẳng theo thân thanDung
+        if (v.k) { g.translate(o.x, o.y); g.scale(v.k, v.k); g.translate(-cb.diemNeo.x, -cb.diemNeo.y); } else g.translate(o.x - cb.diemNeo.x, o.y - cb.diemNeo.y);
         cb.ve(g, Object.assign({}, sCb, { ben: c.o === 'hongTrai' ? 'trai' : c.o === 'hongPhai' ? 'phai' : null, o: c.o, ra: o.x >= TAM_THAN.x ? 1 : -1, than: than.ma }), M, H);
         g.restore();
       });
@@ -456,7 +466,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     bat: bat, datCheDo: datCheDo, apGiaoDien: apGiaoDien, LOP_GIAO_DIEN: LOP_GIAO_DIEN,
     dangKy: dangKy, lay: lay, ds: ds, coDu: coDu,
     o: o, vat: vat, robot: robot, mauDoi: mauDoi, vatKep: vatKep, vatXoay: vatXoay, hinhHoc: hinhHoc, tranCua: tranCua, tamVoi: tamVoi, nangCua: nangCua, coVatKep: coVatKep, VAT_SAN: VAT_SAN, VAT_NANG: VAT_NANG, BONG_SAN: BONG_SAN, BONG_NANG: BONG_NANG, gocXoay: gocXoay, gocCua: gocCua,
-    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, hamGoc: hamGoc, doiCam: doiCam, oTay: oTay,
+    diemTrenO: diemTrenO, diemGan: diemGan, diemO: diemO, diemCamBien: diemCamBien, diemMat: diemMat, diemOngKinh: diemOngKinh, kinhCua: kinhCua, kiemGhep: kiemGhep, hamGoc: hamGoc, doiCam: doiCam, oTay: oTay, choVeCam: choVeCam,
     xoaDem: xoaDem, _loiGia: loiGia
   };
 });

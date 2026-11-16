@@ -6,8 +6,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var MAU = { red: ['luatSonDo', 'luatSonDoSang', 'luatSonDoToi'], green: ['luatSonXanhLa', 'luatSonXanhLaSang', 'luatSonXanhLaToi'], blue: ['luatSonXanhDuong', 'luatSonXanhDuongSang', 'luatSonXanhDuongToi'], yellow: ['luatSonVang', 'luatSonVangSang', 'luatSonVangToi'] };
-  V.dangKy({ loai: 'tay', ma: 'son', hamGoc: ['ink',  'dot',  'pen_down',  'pen_up'], ten: 'Bộ gieo hạt', gan: 'tay', diemNeo: { x: 50, y: 80 }, MAU_SON: MAU, ve: function (g, s, M, H) {
+  /* M9H2 (4/11): BỘ GIEO HẠT BỤNG NHỆN (lai L6: dot() chấm ô dưới bụng như drone; s.duoi + s.than 'nhen', thân nhện tayBung, neo bụng diemNeoBung (50, 50) → tâm cy 84 hệ tay = y 76
+     của thân, sát dưới đáy vỏ như nam châm bụng): giá kẹp, hộp hạt vỏ trắng có ô kính thấy hạt màu đang chọn, miệng gieo màu hạt chĩa xuống; pen_down: miệng sáng + hạt rơi quanh. */
+  function bungNhen(g, H, c, ha, pha) {
+    var cy = 84;
+    if (ha) [[-6, 9.5], [-2.2, 11.6], [2.2, 11.6], [6, 9.5]].forEach(function (q, i) { H.tron(g, 50 + q[0], cy + q[1] + ((pha + i * 0.23) % 1) * 1.4, 1.5); H.to(g, c[0]); H.vien(g, BM.vecVien, 0.8); });
+    H.bo(g, 43, cy - 6.8, 14, 5.5, 2); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.0);
+    H.bo(g, 40, cy - 3.6, 20, 10.4, 4.6); g.fillStyle = H.gradVo(g, 40, cy - 3.6, 20, 10.4); g.fill(); H.vien(g, BM.vecVien, 2.2);
+    H.bo(g, 42.6, cy - 1.6, 14.8, 6.2, 2.8); g.fillStyle = H.gradDoc(g, 0, cy - 1.6, 0, cy + 4.6, [[0, c[2]], [1, c[1]]]); g.fill(); H.vien(g, BM.vecVien, 1.3);
+    [[45.6, 1.4], [50, 2.6], [54.4, 1.2]].forEach(function (p) { H.tron(g, p[0], cy + p[1], 1.3); H.to(g, c[0]); });
+    H.bo(g, 46, cy + 6.2, 8, 3.6, 1.6); H.to(g, ha ? c[1] : c[0]); H.vien(g, BM.vecVien, 1.6);
+  }
+  V.dangKy({ loai: 'tay', ma: 'son', hamGoc: ['ink',  'dot',  'pen_down',  'pen_up'], ten: 'Bộ gieo hạt', gan: 'tay', diemNeo: { x: 50, y: 80 }, diemNeoBung: { x: 50, y: 50 }, MAU_SON: MAU, ve: function (g, s, M, H) {
     s = s || {};
+    if (s.duoi && s.than === 'nhen') { var k0 = MAU[s.mauSon] || MAU.red; bungNhen(g, H, [BM[k0[0]], BM[k0[1]], BM[k0[2]]], s.tuThe === 'duoi', typeof s.pha === 'number' ? s.pha : 0); return; }
     var k = MAU[s.mauSon] || MAU.red, c = [BM[k[0]], BM[k[1]], BM[k[2]]], ha = s.tuThe === 'duoi';
     var pha = typeof s.pha === 'number' ? s.pha : 0, nhun = ha ? Math.sin(pha * Math.PI * 2) * 0.8 : 0, dau = (ha ? 99.5 : 95.5) + nhun * 0.4;
     /* khi hạ đầu gieo (pen_down / dot): quạt hạt giống văng tỏa tròn từ đĩa chia hạt xuống luống */
@@ -39,8 +51,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
      Khi s.bat = true (đang phát âm): thân loa & vành miệng loa phồng tròn căng hơn theo pha s.pha, lòng loa + côn loa ở tâm sáng rực màu nốt s.notLoa (1..8 hoặc 'x' = trống),
      kèm 3 vòng sóng âm tròn đồng tâm lan tỏa mượt phía trước miệng loa. */
   var MAU_NOT = { 1: BM.vecDo, 2: BM.vecVanNong, 3: BM.vecVang, 4: BM.vecXanhLa, 5: BM.vecNgoc, 6: BM.vecCong1, 7: BM.vecCong2, 8: BM.vecHong, x: BM.vecSat };
-  V.dangKy({ loai: 'tay', ma: 'loa', hamGoc: ['note', 'beat'], ten: 'Loa kèn', gan: 'tay', diemNeo: { x: 50, y: 80 }, MAU_NOT: MAU_NOT, ve: function (g, s, M, H) {
+  /* M9H2 (4/11): LOA BỤNG NHỆN (lai L7: phát nốt trong tầm 3 ô quanh nhện, không theo mũi; s.duoi + s.than 'nhen', neo bụng như bộ gieo hạt): giá kẹp, cổ loa tối,
+     miệng loa vàng tròn nhìn từ trên (lòng tối, côn sáng); đang phát (s.bat): lòng + côn sáng màu nốt, hai vòng sóng âm tròn lan QUANH loa (không chỉ phía trước). */
+  function loaBungNhen(g, H, m, bat, pha) {
+    var cy = 84, i;
+    if (bat) for (i = 0; i < 2; i++) { var t = (i + pha) / 2; H.elip(g, 50, cy + 1.5, 12.5 + t * 6, 7.5 + t * 3.6); H.vien(g, m, 2 - t * 0.6); }
+    H.bo(g, 43, cy - 6.8, 14, 5.5, 2); H.to(g, BM.vecKhop); H.vien(g, BM.vecVien, 2.0);
+    H.elip(g, 50, cy - 1.6, 5.4, 2.8); H.to(g, BM.vecDe); H.vien(g, BM.vecVien, 1.6);
+    H.elip(g, 50, cy + 2.2, 10, 5.8); g.fillStyle = H.gradDoc(g, 0, cy - 3.6, 0, cy + 8, [[0, BM.vecVangSang], [1, BM.vecVang]]); g.fill(); H.vien(g, BM.vecVien, 2.2);
+    H.elip(g, 50, cy + 2.4, 7, 3.6); H.to(g, BM.vecLoi); H.vien(g, bat ? m : BM.vecVangToi, 1.4);
+    H.elip(g, 50, cy + 2.2, bat ? 3.4 : 2.6, bat ? 2.2 : 1.4); H.to(g, bat ? m : BM.vecVangSang); H.vien(g, BM.vecVien, 1.2);
+  }
+  V.dangKy({ loai: 'tay', ma: 'loa', hamGoc: ['note', 'beat'], ten: 'Loa kèn', gan: 'tay', diemNeo: { x: 50, y: 80 }, diemNeoBung: { x: 50, y: 50 }, MAU_NOT: MAU_NOT, ve: function (g, s, M, H) {
     s = s || {};
+    if (s.duoi && s.than === 'nhen') { loaBungNhen(g, H, MAU_NOT[s.notLoa] || BM.vecVang, !!s.bat, typeof s.pha === 'number' ? Math.max(0, Math.min(1, s.pha)) : 0); return; }
     var bat = !!s.bat, pha = typeof s.pha === 'number' ? Math.max(0, Math.min(1, s.pha)) : 0, nhip = bat ? Math.sin(pha * Math.PI * 2) : 0;
     var m = MAU_NOT[s.notLoa] || BM.vecVang, laTrong = s.notLoa === 'x';
     var yM = bat ? 91.6 + 0.3 * nhip : 92, rxM = bat ? 11.6 + 0.6 * nhip : 10.6, ryM = bat ? 6.8 + 0.5 * nhip : 3.6, phinh = bat ? 2.2 + 0.5 * nhip : 0;

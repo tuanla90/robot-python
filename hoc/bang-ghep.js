@@ -11,12 +11,12 @@
    TRẠNG THÁI mỗi ô:
      'goc'      ●  part gốc của cỗ máy mùa đó (co-may.js)
      'duoc'     ✔  ghép được theo luật ba câu, lõi không chặn (máy kiểm chạy thử từng ô)
-     'lai'      ★  tổ hợp lai mới mùa 9, còn phải thêm luật (mã lai L1…L14, mục 4 kế hoạch); kiemGhep trả ok:false ma:'lai-chua-co' TRỪ KHI màn mở lai đó (opts.moLai có mã; lap-rap.js đọc man.lapRap.moLai / man.moLai — M9B1 4/11, thay cờ toàn cục MO_LAI)
+     'lai'      ★  tổ hợp lai mới mùa 9, còn phải thêm luật (mã lai L1…L15, mục 4 kế hoạch); kiemGhep trả ok:false ma:'lai-chua-co' TRỪ KHI màn mở lai đó (opts.moLai có mã; lap-rap.js đọc man.lapRap.moLai / man.moLai — M9B1 4/11, thay cờ toàn cục MO_LAI)
      'khong-mo' ·  ghép được về lý nhưng mùa 9 không mở (giữ bảng chọn nhỏ); kiemGhep trả ok:false ma:'khong-mo'
      'cam'      ✗  không ghép; lý do tiếng Việt cho trẻ theo LUẬT BA CÂU (mục 2):
                    1. đồ "phía trước" (kẹp, kẹp xoay, vòi phun, máy ném, tay lưới, gieo hạt; khoảng cách, hồng ngoại, camera trước, chong chóng) cần thân CÓ MŨI;
                    2. thân KHÔNG MŨI (nhện, drone) dùng đồ "treo bụng" hay "nhìn quanh" (nam châm, gieo hạt, đầu đọc mã; camera bốn hướng / bụng, radar, mic, cảm biến từ); cần cẩu làm mọi việc ở ô dưới đầu cần;
-                   3. ba điều cấm VÌ SỨC: drone chở nhẹ (không loa, móc cẩu, vòi phun, máy ném); xuồng không gắn đồ giật (vòi phun, máy ném); chong chóng phải nhúng nước (chỉ xuồng).
+                   3. ba điều cấm VÌ SỨC: drone chở nhẹ (không loa, móc cẩu, máy ném; chỉ mang bình xịt nhỏ — lai L15, user mở 4/11); xuồng không gắn đồ giật (vòi phun, máy ném); chong chóng phải nhúng nước (chỉ xuồng).
                    Ô cũ của lắp ráp 5 × 5 × 5 (drone + kẹp, nhện + kẹp xoay, nhện + khoảng cách…) GIỮ NGUYÊN CÂU BÁO CŨ (màn rap-* và máy kiểm kiem-lap-rap / kiem-rap-nao đang so câu đó).
 
    API:
@@ -99,7 +99,7 @@
     drone: {
       kep: { tt: 'cam', lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn tay kẹp.' },        // câu cũ
       xoay: { tt: 'cam', lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn tay kẹp xoay.' },  // câu cũ
-      hoi: { tt: 'cam', lyDo: 'Drone chỉ treo được nam châm dưới bụng, không gắn vòi phun.' },       // câu cũ
+      hoi: { tt: 'lai', lai: 'L15' },                                                                 // M9L15 (4/11): bình xịt bụng — spray() xịt thẳng xuống ô dưới drone, không giật, bình nhỏ (lõi san-hoc.js khối L15)
       'nam-cham': 'duoc',
       'moc-cau': { tt: 'cam', lyDo: 'Drone chở nhẹ, không mang nổi móc cẩu.' },
       'day-keo': { tt: 'lai', lai: 'L10' },

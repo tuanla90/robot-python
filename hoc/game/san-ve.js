@@ -108,6 +108,16 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     'dang-treo': 1, 'moc-hut': 1, 'moc-thieu': 1, 'khong-treo': 1, 'ha-bi-chan': 1, 'thap-sai': 1 };
   var TRONG_MOI = { 'troi': 1.3, 'keo-vat': 1.8, 'keo-hut': 1.4, 'keo-van': 1.6, 'buoc-duoi': 1.3, 'doi-dai-luoi': 1.3, 'tha-keo': 0.8, 'coi-duoi': 0.8, 'cong-batch': 1.1, 'tha-neo': 0.9, 'nho-neo': 0.9,
     'moc-cont': 1.4, 'ha-cont': 1.4, 'tau-roi': 1.6, 'tau-cap': 1.1, 'tau-roi-hang': 1.2, 'tau-vao': 0.9, 'het-hang-tau': 0.6, 'quay-can': 1.1, 'can-het-tam': 1.2, 'qua-tai': 1.2, 'het-ray': 1.2, 'qua-ngach': 1.15 };
+  /* MÙA 9 (M9H1, 4/11): sự kiện của lõi mùa 9 (san-hoc.js luật R, P, L1, L2, L3, L8, L9, L10, T2, T3, T4) có bước hoạt cảnh riêng (Field.nhipMua9) và trọng số thời gian (TRONG_9);
+     TUC_THI_9 không chiếm thời gian của nhịp (hiệu ứng sau vòng bước, hieuUng9). 'lap-ho' của Mỏ đá (đá lấp hố, không có cont) giữ nguyên như trước (một bước chờ). */
+  var NHIP_9 = { 'rac-cat': 1, 'cau-hut': 1, 'cau-tha': 1, 'gau-ngoam': 1, 'gau-tha': 1, 'gau-hut': 1, 'lap-ho': 1, 'nguoi-buoc': 1, 'nguoi-cho': 1, 'nguoi-troi': 1, 'nguoi-troi-chan': 1,
+    'nguoi-len-bo': 1, 'nguoi-toi-tram': 1, 'nguoi-troi-xa': 1, 'cham-nguoi': 1, 'phun-van': 1, 'theo-be': 1, 'tha-phao': 1, 'bam-phao': 1, 'thu-phao': 1, 'phao-hut': 1, 'gio-vot': 1, 'gio-dat': 1, 'gio-hut': 1,
+    'xit-bung': 1, 'xit-hut': 1 };                                                    // M9L15: bình xịt bụng drone (tia thẳng xuống ô dưới bụng; hụt thì '?')
+  var TRONG_9 = { 'rac-cat': 0.9, 'cau-hut': 1.3, 'cau-tha': 1.1, 'gau-ngoam': 1.3, 'gau-tha': 1.1, 'gio-vot': 1.3, 'gio-dat': 1.2, 'nguoi-troi': 1.2, 'nguoi-len-bo': 1.2, 'nguoi-troi-xa': 1.3,
+    'nguoi-toi-tram': 0.6, 'bam-phao': 0.5, 'tha-phao': 1.2, 'thu-phao': 0.9, 'phun-van': 0.7, 'theo-be': 1.2, 'cham-nguoi': 1.2,
+    'xit-bung': 1.2, 'xit-hut': 1 };
+  var TUC_THI_9 = { 'be-sac-di': 1, 'xong-cuu-nguoi': 1 };
+  var NAC_CAU = [[0, -1], [1, 0], [0, 1], [-1, 0]];        // 4 hướng cần cẩu (14/11, như NAC_VEC của lõi, NAC của ve-vector-than-cau.js): 0 lên, thuận chiều kim đồng hồ
 
   /** Hình mờ của máy sơn (man.hinh, một sân: mảng chuỗi r g b y '.') → mảng hàng tên màu / null; null nếu không có. */
   function dungHinh(lop) {
@@ -188,7 +198,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         hangTau: cfg.hangTau && Array.isArray(cfg.hangTau.o) && Array.isArray(cfg.hangTau.can) ? cfg.hangTau : null,                                   // CẢNG SÔNG: hàng tàu nối đuôi một bến (3d)
                  // BẾN SÔNG: dòng chảy; CẢNG SÔNG: chồng container, tàu (xem dungMuaMoi)
         taiToiDa: typeof cfg.taiToiDa === 'number' ? cfg.taiToiDa : null, luatThap: !!cfg.luatThap,
-        chuongDa: Array.isArray(cfg.chuongDa) ? cfg.chuongDa : Array.isArray(cfg.danDoi) ? cfg.danDoi : null, daChuong: Array.isArray(cfg.daChuong) ? cfg.daChuong : null, ngachHang: Array.isArray(cfg.ngachHang) ? cfg.ngachHang : null };   // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm (xem dungMuaMoi)
+        chuongDa: Array.isArray(cfg.chuongDa) ? cfg.chuongDa : Array.isArray(cfg.danDoi) ? cfg.danDoi : null, daChuong: Array.isArray(cfg.daChuong) ? cfg.daChuong : null, ngachHang: Array.isArray(cfg.ngachHang) ? cfg.ngachHang : null,   // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm (xem dungMuaMoi)
+        nguoi: Array.isArray(cfg.nguoi) ? cfg.nguoi : null, tramCuu: Array.isArray(cfg.tramCuu) ? cfg.tramCuu : null, thac: Array.isArray(cfg.thac) ? cfg.thac : null,   // MÙA 9 (luật P): người cần cứu, trạm cứu, thác
+        contTroi: Array.isArray(cfg.contTroi) ? cfg.contTroi : null, beSac: Array.isArray(cfg.beSac) ? cfg.beSac : null };                                         // MÙA 9 (L2, T4): container trôi, bè sạc (đặt trên bè B)
       this.dungMuaMoi(rows, cfg);                        // BẾN SÔNG / CẢNG SÔNG (31/10): bảng dòng chảy, cống, van, nước; ray, tàu, chồng lúc đầu
       var hg = Array.isArray(cfg.hamGoc) ? cfg.hamGoc : [];
       this.nc_ = { dat: hg.indexOf('tether') >= 0 || hg.indexOf('set_length') >= 0 || hg.indexOf('reel_in') >= 0, nang: hg.indexOf('flow') >= 0, doi: hg.indexOf('pick_up2') >= 0, can: hg.indexOf('weight') >= 0, ray: hg.indexOf('rail') >= 0 };   // nâng cấp hiện trên hình (nangCap): theo khay lệnh nếu màn đưa xuống, không thì bật dần theo vết
@@ -221,6 +233,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       (cfg.vat || []).forEach(function (o) { this.themVat(Math.floor(o.x), Math.floor(o.y), chuanMau(o.mau), o.chat === 'sat' ? 'sat' : o.chat === 'nam-cham' ? 'nam-cham' : null, o.cuc); }, this);   // cùng thứ tự với SanHoc.chay: id 1, 2, ...
       vatNoi.forEach(function (o) { this.themVat(o.x, o.y, null, null, null, o.noi); }, this);
+      this.nap9(cfg);                                              // MÙA 9: container trôi / bè sạc (đổi bè B), người cần cứu (vật noi 'nguoi', id SAU vật nổi, TRƯỚC rổ máy ném: thứ tự của SanHoc.chay)
       if (cfg.roBanDau && this.cfg.robot.tay === 'nem') {          // máy ném: rổ có sẵn một vật lúc xuất phát (id cuối cùng, như SanHoc.chay)
         var rb = typeof cfg.roBanDau === 'object' ? cfg.roBanDau : {};
         this.vat0.push({ id: this.vat0.length + 1, x: cfg.batDau.x, y: cfg.batDau.y, mau: chuanMau(rb.mau), chat: rb.chat === 'sat' ? 'sat' : 'go', ro: true });
@@ -642,6 +655,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (this.xe) this.chonXe(0);
       this.khoiVis();
       this.objs = this.vat0.map(function (o) { return { id: o.id, x: o.x, y: o.y, tt: o.ro ? 'ro' : 'dat', voLuc: 0, mau: o.mau || null, chat: o.chat || 'go', cuc: o.cuc || null, nang: 0, dx: 0, dy: 0, noi: o.noi || null, keo: false }; });
+      this.datLaiMua9();                                                                                      // MÙA 9: người (trên cạn / dưới nước), số container trôi, bè sạc; cát, hố đã lấp, phao, giỏ về lúc đầu
       this.datLaiMuaMoi();                                                                                    // BẾN SÔNG / CẢNG SÔNG: cống, van, dòng, chồng, tàu về lúc đầu
       this.oVo = [];                                                                                          // ô rơi vỡ (nem-vo): tô đỏ tới khi chạy lại
       this.keoXe = null;                                                                                        // nạp lại / thử lại thì hết cảnh kéo xe dở (chế độ Đặt xe vẫn bật: this.suaXe)
@@ -1134,7 +1148,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var nhun = this.bounce > now ? -Math.round(Math.abs(Math.sin((this.bounce - now) / 80)) * 2) : 0;
       for (var i = 0; i < this.objs.length; i++) {
         var o = this.objs[i], rg = o.rung > now ? Math.sin(now / 22) * 1.3 : 0;
-        if (o.noi && o.tt === 'dat') { this.veVatNoi(g, o, now, rg); continue; }                      // BẾN SÔNG: bè / lục bình nổi, to gần hết ô, dập dềnh, không bóng đổ (vòng bọt thay bóng)
+        if (this.co9 && this.treoCau9(o.id)) continue;                                                // MÙA 9: vật / người đang treo ở đầu cần cẩu (nam châm, gầu, giỏ) vẽ ở lớp phủ (veTreoCau9)
+        if (o.noi === 'nguoi') { if (o.tt === 'dat') this.veNguoi9(g, o, now, rg); continue; }        // MÙA 9 (luật P): người cần cứu (veNguoi9)
+        if (o.noi && o.tt === 'dat') { this.veVatNoi(g, o, now, rg); continue; }                    // BẾN SÔNG: bè / lục bình nổi, to gần hết ô, dập dềnh, không bóng đổ (vòng bọt thay bóng)
         if (o.tt === 'dat' && this.vis.dr && o.nang < 0) {                   // gói V7a: drone vừa nhả vật (thaVat: o.nang từ −(HANG − ALT) về 0): vật đang treo cao thu dần từ cỡ nâng về cỡ sàn, bóng gần lại
           var kd = Math.min(1, o.nang / -(HANG - ALT)), szd = this.coVatDat() + (this.coVatNang() - this.coVatDat()) * kd;
           this.veMotVat(g, o, 8, o.x * T + 7 + (o.dx || 0) + rg, o.y * T + this.yVatDat() + (o.dy || 0) - o.nang, szd, szd * (VeVector.BONG_SAN + (VeVector.BONG_NANG - VeVector.BONG_SAN) * kd));
@@ -1151,6 +1167,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     },
     /** Hình của vật o: thùng gỗ / khối sắt / nam châm (ve-vector-ky-hieu.js vatCua), có dải màu nếu vật mang màu, canvas đệm đúng px pixel thiết bị. (n giữ cho chữ ký cũ, không dùng.) */
     hinhVat: function (o, n, px) {
+      if (o.noi === 'container') return VeVector.vat('container-troi', px, { so: o.so, tan: o.tan, hienTan: true, keo: !!o.keo });   // MÙA 9 (L2): container trôi trên bè
+      if (o.noi === 'be' && o.sac) return VeVector.vat('be-sac', px, o.keo ? { keo: true } : {});   // MÙA 9 (T4): bè sạc (lúc sạc: đế lóe HU.sacLoe ở ô sacO như ô P)
       var hv = VeVector.vatCua(o, this.cfg && this.cfg.vo);
       if (o.noi && o.keo) hv = [hv[0], { keo: true }];                                   // BẾN SÔNG: vật đang bị dây phao kéo / buộc: vòng bọt cam
       var v = VeVector.vat(hv[0], px, hv[1]);
@@ -1311,7 +1329,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (this.docs.length) { g.setTransform(ku, 0, 0, ku, mx, my); this.veVongMauDuoi(g, now); this.veTiaCameraDuoi(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // cảm biến màu vừa đọc: vòng sáng dưới gầm
         if (v.bung) { g.setTransform(ku, 0, 0, ku, mx, my); this.veDuoiNhen(g, cx, cy, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // nhện nam châm bụng: gợn từ ở mặt ô, vật treo dưới thân
         if (v.dr) { g.setTransform(ku, 0, 0, ku, mx, my); this.veDuoiDrone(g, cx, cy, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // drone: ô sạc lóe, bóng đổ, từ trường treo, vật treo (dưới thân)
-        if (v.nc) { g.setTransform(ku, 0, 0, ku, mx, my); if (!v.dr && !v.bung) this.veSongTu(g, cx, cy - v.hop, now); this.veVatTu(g, cx, cy - v.hop, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // nam châm: sóng hút ở phía trước, vật dính / đang bị hút bay (dưới thân xe: hai càng nam châm ôm lên vật)
+        if (v.nc && !v.cau) { g.setTransform(ku, 0, 0, ku, mx, my); if (!v.dr && !v.bung) this.veSongTu(g, cx, cy - v.hop, now); this.veVatTu(g, cx, cy - v.hop, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // nam châm: sóng hút ở phía trước, vật dính / đang bị hút bay (dưới thân xe: hai càng nam châm ôm lên vật)
         if (v.nem) { g.setTransform(ku, 0, 0, ku, mx, my); this.veNgam(g, cx, cy - v.hop, now); this.veOVo(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // máy ném: vạch ngắm + ô rơi vỡ dưới thân xe
         if (this.canhBao) { g.setTransform(ku, 0, 0, ku, mx, my); this.veOCanhBao(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }          // ô trước mặt bị chặn khi thả (kẹp lẫn nam châm): ô đỏ nhấp nháy dưới thân xe
         if (this.suaXe) { g.setTransform(ku, 0, 0, ku, mx, my); this.veSuaXe(g, now); g.setTransform(1, 0, 0, 1, 0, 0); }       // sân thử, chế độ Đặt xe: viền nhấp nháy quanh xe, hoặc ô đích + chỗ cũ khi đang kéo (dưới thân xe)
@@ -1322,10 +1340,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var ttR = { wl: wL, wr: wR, ph: phC, tay: v.loa ? { tuThe: 'tren', kep: false, cam: null, bat: v.loa.den > now, notLoa: v.loa.am } : v.son ? { tuThe: v.son.ha ? 'duoi' : 'tren', kep: false, cam: null, mauSon: v.son.mau } : v.sung ? { tuThe: 'tren', kep: false, cam: null, dangBanTruoc: v.sung.truoc > now, dangBanSau: v.sung.sau > now, lucBan: v.sung.lucBan, tuLuc: v.sung.tuLuc > now } : v.nem ? { tuThe: 'tren', kep: false, cam: !!this.vatRo(), ngam: v.nem.tam, dangNem: v.nem.dang > now } : v.nc ? { tuThe: 'tren', kep: false, cam: null, bat: v.nc.bat, cuc: v.nc.cuc } : v.tay, camBien: (v.camBien || this.camBienSang(now)) ? { bat: true, mat: this.camMatSang(now) } : null, loi: v.tayDo > now && ((now / 130 | 0) & 1) === 0 ? 'tay' : null };
         if (c.robot.than === 'nhen' && v.co) ttR.co = true;                                // nhện đang CO CHÂN: ảnh part thấp sát đất
         this.hoatVec(v, ttR, now); X += (v.lacMat || 0) * ku; Y -= (v.nayMat || 0) * ku;      // gói V4: bánh theo quãng đi, kẹp / gáo tween, mắt biểu cảm (rung khi đâm, nảy khi vui)
-        if (v.xu) { g.setTransform(ku, 0, 0, ku, mx, my); this.veDayPhao(g, cx, cy, now); g.setTransform(1, 0, 0, 1, 0, 0); }      // BẾN SÔNG: dây phao từ tời tới vật kéo / phao đang bay (dưới thân xuồng)
+        if (v.xu || (this.dayKeo && this.dayKeo.toi9 === (this.xeDang || 0))) { g.setTransform(ku, 0, 0, ku, mx, my); this.veDayPhao(g, cx, cy, now); g.setTransform(1, 0, 0, 1, 0, 0); }      // MÙA 9 (L3): dây của xe tời bờ      // BẾN SÔNG: dây phao từ tời tới vật kéo / phao đang bay (dưới thân xuồng)
         var spr = v.xu ? this.spriteXuong(ttR, now, p) : v.cau ? null : VeRobot.ve(c.robot, ttR, v.d, p);      // CẢNG SÔNG: cần cẩu không có sprite, vẽ thẳng bằng VeVector.veCanCau (veCauTrenSan)
         g.imageSmoothingEnabled = false;
-        if (laTayKep(c.robot.tay)) this.veVatKep(g, X, Y, now);                           // vật trong kẹp: dưới hình robot, hai càng đè lên mép vật
+        if (laTayKep(c.robot.tay) && !v.cau) this.veVatKep(g, X, Y, now);                           // vật trong kẹp: dưới hình robot, hai càng đè lên mép vật
         var w = spr ? spr.width : 0, h = spr ? spr.height : 0, sc = 1;                     // hình robot vector đã đúng pixel thiết bị
         if (duoi || (v.bung && this.vatDinh())) g.globalAlpha = v.dr ? 0.7 : 0.66;       // nhện nam châm bụng đang mang vật: thân hơi trong cho lộ vật treo dưới                                    // vật nằm ngay dưới thân (kể cả drone lơ lửng phía trên): thân hơi trong suốt cho lộ vật
         var gocV = ((v.goc || 0) + (v.gocMem || 0)) || (v.dr && v.dr.roi ? 0.22 : 0);      // cộng góc quay mượt (gói V4); drone đã rơi: nằm nghiêng
@@ -1393,7 +1411,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veDayPhao: function (g, cx, cy, now) {
       var v = this.vis, xu = v.xu, dk = this.dayKeo, o;
       if (dk) { var p1 = this.diemXuong(cx, cy, dk.cho || 'mui'); VeVector.veDayKeo(g, { x1: p1.x, y1: p1.y, x2: dk.x2, y2: dk.y2, o: T, cang: !!dk.cang, phao: !!dk.phao, a: typeof dk.a === 'number' ? dk.a : 1 }); return; }
-      if (!xu.keo || xu.keo.cho === 'khoang' || xu.keo.doDai === 0) return;
+      if (!xu || !xu.keo || xu.keo.cho === 'khoang' || xu.keo.doDai === 0) return;
       o = this.objTheoId(xu.keo.id); if (!o) return;
       var p0 = this.diemXuong(cx, cy, xu.keo.cho), mat = null;
       if (Array.isArray(xu.keo.day) && xu.keo.day.length > 1) {
@@ -1406,6 +1424,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     veCauTrenSan: function (g, cx, cy, now, ttR) {
       var v = this.vis, ca = v.cau, c = this.cfg, nc = this.nangCap(), cfg = this.cfgRobotSon(), cb = ttR.camBien || {};
       var quet = ca.quet > now, st = { than: { mat: ttR.mat }, tay: { doi: !!ca.doi }, camBien: { bat: quet || !!cb.bat, can: !!nc.can } };
+      if (this.co9) this.veTreoCau9(g, cx, cy, now);                                     // MÙA 9: nam châm / gầu / giỏ và vật đang treo ở đầu cần (vẽ TRƯỚC cần: móc đè lên vật treo)
       var r = VeVector.veCanCau(g, { bx: cx, by: cy, nac: ca.nac + (ca.dNac || 0), tam: ca.tam + (ca.dTam || 0), o: T, be: true, cfg: cfg, st: st, treo: ca.treo, doi: !!ca.doi,
         ray: this.rayT ? (this.rayT.doc ? 'doc' : 'ngang') : false, nang: ca.nang, stCont: c.taiToiDa !== null && c.taiToiDa !== undefined ? { hienTan: true } : undefined });
       if (quet) VeVector.veTiaQuet(g, { x: r.tx, y: r.ty, o: T, pha: HU().giam() ? 0.5 : (now / 480) % 1 });
@@ -1584,6 +1603,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       HU().bongDrone(g, cx, cy + 3 - cao, Math.max(7, 13 - alt * 0.8 - cao * 0.4), Math.min(0.5, 0.24 + (4 - Math.min(4, alt)) * 0.04 + cao * 0.03));    // bóng elip mềm ở mặt ô, lệch xuống dưới thân, không làm tròn
       if (v.nc) this.veTuTreo(g, cx, cy, now);
+      if (v.xit9 && !d.roi) this.veXitBung9(g, cx, cy - alt + HANG, cy + 4, v.xit9, now);   // M9L15: tia bình xịt bụng (dưới thân drone)
       for (i = 0; i < this.objs.length; i++) {                                         // vật treo dưới bụng: nằm giữa khung bốn cánh, ngay dưới nam châm (thân drone che phần giữa)
         o = this.objs[i];
         if (o.tt !== 'cam') continue;
@@ -1591,6 +1611,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var hd = d.roi ? this.coVatDat() : this.coVatNang();                            // gói V7a, luật cỡ vật V6b: vật treo đã nhấc khỏi sàn = cỡ vật nâng, bóng xa và nhạt; drone rơi nằm đất thì cỡ sàn
         this.veMotVat(g, o, 8, cx + lech, d.roi ? cy - 1 : cy - alt + HANG, hd, hd * (d.roi ? VeVector.BONG_SAN : VeVector.BONG_NANG), rung ? 0.3 + 0.2 * Math.abs(Math.sin(now / 60)) : 0);     // treo ngay dưới thân: hai càng nam châm đè lên mép trên của vật
       }
+    },
+    /** M9L15 BÌNH XỊT BỤNG: cột nước thẳng từ bụng drone (y0) xuống mặt ô (y1), dài dần theo xi.k; hụt (xi.hut) thì nhạt hơn. */
+    veXitBung9: function (g, cx, y0, y1, xi, now) {
+      var k = Math.max(0, Math.min(1, xi.k)), yd = y0 + (y1 - y0) * k, i;
+      g.save(); g.globalAlpha = xi.hut ? 0.55 : 0.85;
+      g.strokeStyle = BM.vecNuocSang; g.lineCap = 'round'; g.lineWidth = 2.2; g.beginPath(); g.moveTo(cx, y0); g.lineTo(cx, yd); g.stroke();
+      g.strokeStyle = BM.sanTrang; g.lineWidth = 0.8; g.beginPath(); g.moveTo(cx - 0.4, y0); g.lineTo(cx - 0.4, yd); g.stroke();
+      if (k > 0.9) { g.fillStyle = BM.vecNuocSang; for (i = 0; i < 4; i++) { var a = now / 90 + i * 1.57; g.beginPath(); g.arc(cx + Math.cos(a) * 2.6, y1 + Math.sin(a) * 0.9, 0.7, 0, Math.PI * 2); g.fill(); } }
+      g.restore();
     },
     /** NAM CHÂM BỤNG NHỆN (mùa 3): gợn từ ở mặt ô (như drone) và vật đang dính vẽ ngay dưới thân (thân vẽ sau, hơi trong). Nhện rơi hố thì vật rơi theo thân (v.roi). */
     veDuoiNhen: function (g, cx, cy, now) {
@@ -1629,8 +1658,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var tl = Math.max(0, Math.min(1, d.pin / d.pinMax));
       var sac = d.sacLoe > now, nay = d.nhay > now && ((now / 90 | 0) & 1) === 0, thap = d.pin <= Math.max(1.5, d.pinMax * 0.25), nguy = thap && !d.roi && ((now / 240 | 0) & 1) === 0;
       g.restore();                                                              // gói V4: viên pin bo tròn, ruột theo mức (không làm tròn: sạc chạy mượt)
+      var mo = this.co9 && !sac && !nay && !thap && this.coGiTrenDrone();         // M9H2: sân mùa 9, ô phía trên drone có vật / bè / ký hiệu → thanh pin mờ đi cho thấy vật (sạc, đọc pin, pin thấp: vẫn rõ)
+      if (mo) { g.save(); g.globalAlpha = 0.38; }
       HU().thanhPin(g, { x: cx - tong / 2 + 1, y: cy - this.dinhDrone() - 6, W: W, tong: tong, fill: d.pin > 0 ? Math.max(1, W * tl) : 0, mau: sac ? BM.vecDen : thap ? BM.vecDo : tl <= 0.6 ? BM.vecVang : BM.vecXanhLa,
         nen: nay ? BM.vecVo : nguy ? BM.vecDoSang : BM.vecDe, vach: d.pinMax <= 16 ? d.pinMax : 0, so: so, mauSo: sac ? BM.vecDenToi : thap ? BM.vecDo : BM.vecVien });
+      if (mo) g.restore();
+    },
+    /** M9H2: ô ngay phía trên drone (thanh pin nổi đè lên) có gì cần thấy: vật / bè / người trên sân (this.objs chưa vỡ / chưa vào rổ), hay ký hiệu sân khác '.' và '~' (cờ, van, cống, bè sạc B…). */
+    coGiTrenDrone: function () {
+      var tx = Math.round(this.vis.x), ty = Math.round(this.vis.y) - 1, c = this.cfg;
+      if (ty < 0) return false;
+      var ch = c.rows[ty] && c.rows[ty][tx];
+      if (ch && ch !== '.' && ch !== '~' && ch !== ' ') return true;
+      if ((c.tramCuu || []).concat(c.thac || []).some(function (q) { return q && q.x === tx && q.y === ty; })) return true;     // trạm cứu, thác (lớp cấu hình mùa 9)
+      return this.objs.some(function (o) { return o.tt !== 'vo' && o.tt !== 'ro' && o.tt !== 'cam' && Math.round(o.x) === tx && Math.round(o.y) === ty; });
     },
     /** Gió cánh quạt xả xuống vật bị bay qua ('bay-qua'): vài hạt bụi / mảnh gỗ / bọt xanh quanh ô. */
     giuQuat: function (s) {
@@ -2290,6 +2331,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (this.sv !== 1) g.setTransform(this.sv, 0, 0, this.sv, 0, 0);          // canvas theo pixel thiết bị, vẽ theo pixel sân qua phép phóng
       g.save(); g.translate(-c.ox * T, -c.oy * T);                // canvas chỉ là cửa sổ vẽ (ox, oy, vw, vh): từ đây tới veLop vẽ theo tọa độ ô đầy đủ của lõi
       for (var y = c.oy; y < c.oy + c.vh; y++) for (var x = c.ox; x < c.ox + c.vw; x++) this.veOVec(g, x, y, c.rows[y][x], x + ',' + y, now, cf, ff);     // gói V2: mọi ô vẽ bằng hình vector đúng cỡ
+      if (this.co9) this.veSan9(g, now);                       // MÙA 9: cát đã rắc, hố đã lấp bằng container, trạm cứu, thác, phao (trên ô, dưới vật và xe)
       this.veDayNoi(g, now);                                   // gói V7a: dây nối nút ↔ cửa mờ trên sàn, sáng khi nút bật (dưới vật và xe)
       this.veDemSong(g, now);                                  // ĐỆM TỪ: vệt sóng giữa đệm và xe trong lúc xe bị kéo / đẩy (trên sàn, dưới xe)
       this.veSon(g, now);                                      // máy sơn: hình mờ cần tô + ô đã tô (trên sàn, dưới vật và xe)
@@ -2385,7 +2427,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var vanEvs = evs.filter(function (s) { return s.ma === 'van-doi' || s.ma === 'dong-doi'; }), coKeoVan = evs.some(function (s) { return s.ma === 'keo-van'; });
       var congEvs = evs.filter(function (s) { return s.ma === 'cong-doi' || s.ma === 'cong-ket'; });
       list = list.filter(function (s) { return s.ma !== 'keo-theo' && s.ma !== 'cong-doi' && s.ma !== 'cong-ket' && s.ma !== 'van-doi' && s.ma !== 'dong-doi'; });
-      if (vanEvs.length && !coKeoVan) this.apVanDoi(vanEvs);
+      // MÙA 9: be-sac-di / xong-cuu-nguoi tức thì (hieuUng9); theo-be trượt CÙNG bè đang trôi (bước 'troi' của vật đó), chỉ thành bước riêng khi bè dời không do trôi; phun-van gạt van lúc tia trúng
+      var coPhunVan = evs.some(function (s) { return s.ma === 'phun-van'; });
+      this.theoBe9 = evs.filter(function (s) { return s.ma === 'theo-be'; });
+      list = list.filter(function (s) { return !TUC_THI_9[s.ma] && !(s.ma === 'theo-be' && evs.some(function (q) { return q.ma === 'troi' && q.ai === 'vat' && q.id === s.id; })); });
+      if (vanEvs.length && !coKeoVan && !coPhunVan) this.apVanDoi(vanEvs);
       if (congEvs.length) list.push({ ma: 'cong-batch' });
       var dsT = function (arr) {
         return arr.map(function (q) { var th = self.thungTheoId(q.id); return th ? { th: th, x0: q.tu.x, y0: q.tu.y, x1: q.den.x, y1: q.den.y } : null; }).filter(function (q) { return q; });
@@ -2409,7 +2455,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (my !== this.rid) return;
         v.goc = 0; tgian = Math.max(ms * 0.3, tgian - tq);
       }
-      var TRONG = function (s) { return TRONG_MOI[s.ma] || TRONG0(s); };
+      var TRONG = function (s) { return TRONG_MOI[s.ma] || (s.ma === 'lap-ho' ? (s.cont ? 1.4 : 0) : TRONG_9[s.ma]) || TRONG0(s); };   // 'lap-ho' Mỏ đá (không cont): trọng số cũ 1
       var TRONG0 = function (s) { return s.ma === 'bang-khong-day' ? 0.5 : s.ma === 'ban-xoay' ? 0.95 : s.ma === 'dich-chuyen' ? 1.15 : s.ma === 'hut-vat' ? 1.5 : s.ma === 'day-vat' ? 1.6 : s.ma === 'dem-vat' ? 1.1 : s.ma === 'tha-vat' ? 0.8 : s.ma === 'nem-vat' ? 2.4 : s.ma === 'nem-roi' ? 0.8 : s.ma === 'nem-vo' ? 1.2 : s.ma === 'ban' ? 2.2 : s.ma === 'cua-batch' ? 1.2 : s.ma === 'sac-pin' ? 1.3 : s.ma === 'het-pin' ? 1.7 : s.ma === 'dap' || s.ma === 'cat-canh' ? 1.2 : s.ma === 'roi-ho' ? 2.5 : 1; };
       var tong = 0; list.forEach(function (s) { tong += TRONG(s); });
       if (!list.length) await ngu(tgian);
@@ -2662,6 +2708,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           if (laNhen) { v.chan = 1; v.nhacK = undefined; }
           await this.tween(per, my, function (k) { v.dx = Math.sin(k * Math.PI * 7) * (1 - k) * 2.5; });
           v.dx = 0; v.chan = 0;
+        } else if (NHIP_9[s.ma]) {                                   // MÙA 9 (M9H1): người cần cứu, cát, cẩu nam châm / gầu / giỏ, phao, bè sạc, vòi phun gạt van, container lấp hố
+          await this.nhipMua9(s, per, my, evs, vanEvs);
         } else if (NHIP_MOI[s.ma]) {                                 // BẾN SÔNG / CẢNG SÔNG (31/10): trôi, neo, dây phao, cống; cần cẩu quay / vươn / móc / hạ / ray / tàu / lỗi
           await this.nhipMuaMoi(s, per, my, evs, vanEvs);
         } else {
@@ -2675,6 +2723,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (this.xe) this.camXucDoi(evs);                                                                  // nhiều robot: cảm xúc khi tương tác (gói V4, chỉ đọc vết)          // cờ phất mạnh một nhịp khi robot tới (gói V4, chỉ vector vẽ)
       if (evs.some(function (s) { return s.ma === 'toi-co' || s.ma === 'xong-dua-vat' || s.ma === 'xong-day-thung' || s.ma === 'xong-to-hinh' || s.ma === 'xong-dieu' || s.ma === 'nut-doi' || s.ma === 'xong-giao-tau' || s.ma === 'keo-vat' || s.ma === 'van-doi' || (s.ma === 'dat-vat' && s.o && self.dichTaiO(s.o.x, s.o.y)); })) this.matSuKien('vui', 1000);   // mắt cười (gói V4)
       this.dongBoMuaMoi(e);                                                                              // BẾN SÔNG / CẢNG SÔNG: neo, kéo, cống, van, dòng tắt, vật nổi; nấc, tầm, treo, chồng, tàu đúng vết
+      if (this.co9) { this.hieuUng9(evs); this.dongBoMua9(e); }                                       // MÙA 9: bè sạc lóe, mừng cứu xong; người, phao, cát, vật treo cẩu đúng vết
       if (evs.some(function (s) { return s.ma === 'doi-thu-thang'; })) { this.baoHieu('!', 1800); v.choang = performance.now() + 1400; }
       // đồng bộ với vết (an toàn nếu có sự kiện lạ)
       if (laNhen && e.robot && e.robot.chan !== undefined) v.co = e.robot.chan === 'co';            // nhện: chân co / duỗi đúng vết
@@ -2759,8 +2808,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (m === 'troi' && s.ai === 'vat') {                                                  // vật nổi tự do trôi theo dòng
         var ov = this.objTheoId(s.id); if (!ov || !s.den) { await ngu(per); return; }
         var vx0 = ov.x, vy0 = ov.y, hx = DX[s.huong] || 0, hy = DY[s.huong] || 0;
-        await this.tween(per, my, function (k) { ov.x = vx0 + (s.den.x - vx0) * k; ov.y = vy0 + (s.den.y - vy0) * k; if (Math.random() < 0.3) self.burst(ov.x * T + 7 - hx * 5, ov.y * T + 7 - hy * 5, 1, BOT, 0.3); });
-        ov.x = s.den.x; ov.y = s.den.y; return;
+        var tb = (this.theoBe9 || []).filter(function (q) { return q.id === s.id; })[0], rx9 = v.x, ry9 = v.y;      // MÙA 9 (T4): drone đậu trên bè sạc trôi cùng bè ('theo-be')
+        await this.tween(per, my, function (k) { ov.x = vx0 + (s.den.x - vx0) * k; ov.y = vy0 + (s.den.y - vy0) * k; if (tb) { v.x = rx9 + (tb.den.x - rx9) * k; v.y = ry9 + (tb.den.y - ry9) * k; } if (Math.random() < 0.3) self.burst(ov.x * T + 7 - hx * 5, ov.y * T + 7 - hy * 5, 1, BOT, 0.3); });
+        ov.x = s.den.x; ov.y = s.den.y; if (tb) { v.x = tb.den.x; v.y = tb.den.y; } return;
       }
       if (m === 'troi-chan') {                                                               // dòng đẩy mà bị chặn ngay: rung nhẹ theo chiều dòng
         var oc = s.ai === 'vat' ? this.objTheoId(s.id) : null, chx = DX[s.huong] || 0, chy = DY[s.huong] || 0;
@@ -2780,6 +2830,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (m === 'keo-vat') {                                                                 // dây phao / lưới bay tới vật, rồi giữ ở tầm lưới hoặc kéo vật về ô đích
         var ok = this.objTheoId(s.id), pt = tam(s.tu), p1 = this.diemXuong(cx, cy, 'mui'), giuCho = s.den && s.tu && s.den.x === s.tu.x && s.den.y === s.tu.y;
         this.dayKeo = { x2: p1.x, y2: p1.y, phao: true, cang: false, a: 1, cho: 'mui' };
+        if (!xu) this.dayKeo.toi9 = this.xeDang || 0;                                        // MÙA 9 (L3): xe tời bờ cũng quăng dây (vẽ ở lớp phủ của xe đó)
         if (xu) xu.day = now + per * 0.45;
         await this.tween(per * 0.45, my, function (k) { var k2 = ease(k); self.dayKeo.x2 = p1.x + (pt.x - p1.x) * k2; self.dayKeo.y2 = p1.y + (pt.y - p1.y) * k2; });
         if (my !== this.rid) return;
@@ -2796,6 +2847,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var dx2 = o2 ? o2.x : p2.x + (DX[h] || 0) * T * dai, dy2 = o2 ? o2.y : p2.y + (DY[h] || 0) * T * dai;
         if (m === 'keo-hut' && o2 && s.vat !== 'het-tam') { dx2 = o2.x - (DX[h] || 0) * T * 0.3; dy2 = o2.y - (DY[h] || 0) * T * 0.3; }
         this.dayKeo = { x2: p2.x, y2: p2.y, phao: true, cang: false, a: 1, cho: 'mui' };
+        if (!xu) this.dayKeo.toi9 = this.xeDang || 0;                                        // MÙA 9 (L3): xe tời bờ
         if (xu) xu.day = now + per * 0.4;
         await this.tween(per * 0.4, my, function (k) { var k2 = ease(k); self.dayKeo.x2 = p2.x + (dx2 - p2.x) * k2; self.dayKeo.y2 = p2.y + (dy2 - p2.y) * k2; });
         if (my !== this.rid) return;
@@ -2923,6 +2975,308 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (e.tau && this.tauT) e.tau.forEach(function (t, i) { if (self.tauT[i]) self.tauT[i].coMat = !!t.coMat; });
       if (e.hangTau && this.hangT && typeof e.hangTau.dau === 'number') this.hangT.dau = e.hangTau.dau;      // HÀNG TÀU: số tàu đã rời đúng vết
       if (e.daChuong) this.dongBoHang(e.daChuong);                                                   // HANG ĐỘNG: đá chuông đúng vết
+    },
+
+    /* ---- MÙA 9 (M9H1, 4/11): vật và sự kiện mới của lõi mùa 9 trên sân. Mọi thứ dưới đây chỉ bật khi this.co9 (sân có lớp / robot mùa 9), nên màn cũ không đổi hình. */
+    /** Nạp (gọi trong nap, sau vật nổi): container trôi (bè B có số), bè sạc, người cần cứu (vật noi 'nguoi'); this.co9 / this.coPhao9. */
+    nap9: function (cfg) {
+      var c = this.cfg, v0 = this.vat0;
+      function beTai(q) { for (var i = 0; i < v0.length; i++) if (v0[i].noi === 'be' && v0[i].x === q.x && v0[i].y === q.y) return v0[i]; return null; }
+      (c.contTroi || []).forEach(function (q) { var b = q && beTai(q); if (b) { b.noi = 'container'; b.so = q.so; b.tan = q.tan || 1; } });
+      (c.beSac || []).forEach(function (q) { var b = q && beTai(q); if (b) b.sac = true; });
+      (c.nguoi || []).forEach(function (q) { if (q && isFinite(q.x) && isFinite(q.y)) this.themVat(Math.floor(q.x), Math.floor(q.y), null, null, null, 'nguoi'); }, this);
+      var ds = [c.robot].concat((this.cfgXe || []).map(function (x) { return x.robot; }));
+      this.coPhao9 = ds.some(function (r) { return r && r.than === 'drone' && r.tay === 'day-keo'; });
+      this.co9 = !!(c.nguoi || c.tramCuu || c.thac || c.contTroi || c.beSac || cfg.contLapHo) || this.coPhao9 ||
+        ds.some(function (r) { return r && ((r.than === 'cau' && (r.tay === 'nam-cham' || laTayKep(r.tay) || r.tay === 'day-keo')) || (r.tay === 'day-keo' && r.than !== 'xuong' && r.than !== 'cau' && r.than !== 'drone')); }) ||
+        (c.rows.some(function (r) { return r.indexOf('I') >= 0; }) && ds.some(function (r) { return r && r.tay === 'son'; }));
+    },
+    /** Trạng thái lúc đầu (datLai): người trên cạn / dưới nước, số container trôi, bè sạc; cát đã rắc, hố đã lấp, phao, giỏ, vật treo cẩu về rỗng. */
+    datLaiMua9: function () {
+      var self = this;
+      this.objs.forEach(function (o) {
+        var g0 = self.vat0[o.id - 1];
+        if (!g0) return;
+        if (g0.noi === 'container') { o.so = g0.so; o.tan = g0.tan; }
+        if (g0.sac) o.sac = true;
+        if (g0.noi === 'nguoi') o.nguoi = { can: !(self.nuocT && self.nuocT[o.x + ',' + o.y]), toiTram: false };
+      });
+      this.racCat9 = {}; this.lapHo9 = {}; this.phao9 = []; this.phaoBay9 = null; this.gio9 = null; this.tramLoe9 = {}; this.theoBe9 = [];
+    },
+    /** Vật id đang treo ở đầu cần của một cần cẩu nào đó (nam châm hút, gầu ngoạm, giỏ vớt) — veVat bỏ qua, veTreoCau9 vẽ. */
+    treoCau9: function (id) {
+      var ds = this.xe ? this.xe.map(function (x, i) { return i === this.xeDang ? this.vis : x.vis; }, this) : [this.vis];
+      return ds.some(function (v) { return v && v.cau && v.cau.mang === id; });
+    },
+    /** Tâm đầu cần (pixel sân) của cần cẩu đang xét, bệ ở (cx, cy): như veCanCau (nấc lẻ khi đang quay: nội suy theo góc, 4 hướng). */
+    dauCan9: function (cx, cy) {
+      var ca = this.vis.cau, n = ((((ca.nac + (ca.dNac || 0)) || 0) % 4) + 4) % 4, a = Math.floor(n), b = (a + 1) % 4, t = n - a, A = NAC_CAU[a], B = NAC_CAU[b], tam = ca.tam + (ca.dTam || 0), vx, vy;
+      if (t === 0) { vx = A[0]; vy = A[1]; }
+      else { var la = Math.hypot(A[0], A[1]), L = la + (Math.hypot(B[0], B[1]) - la) * t, ang = n * Math.PI / 2; vx = Math.sin(ang) * L; vy = -Math.cos(ang) * L; }
+      return { x: cx + vx * tam * T, y: cy + vy * tam * T };
+    },
+    /** Có phao ở ô (x, y) không. */
+    phaoTai9: function (x, y) { for (var i = 0; i < this.phao9.length; i++) if (this.phao9[i].x === Math.round(x) && this.phao9[i].y === Math.round(y)) return true; return false; },
+    /** Người cần cứu o (hình 'nguoi-cuu', 12,5 / 14 ô): áo phao cam + tay vẫy khi đang chờ; dưới nước nửa chìm, dập dềnh; bám phao dang tay; về trạm khoác chăn xanh + dấu tích.
+     *  Trôi xa (thua nhẹ): vòng đỏ nhấp nháy; bị chắn lối: bong bóng "…"; vừa về trạm: nảy nhẹ. */
+    veNguoi9: function (g, o, now, rg) {
+      var ng = o.nguoi || { can: true, toiTram: false }, nuoc = !ng.can, giam = HU().giam(), bam = nuoc && this.phaoTai9(o.x, o.y);
+      var cho = !ng.toiTram && !o.diBo && !bam, vay = cho && (giam || ((now / 420 + o.id * 0.37) | 0) % 2 === 0);
+      var st = ng.toiTram ? { tram: true } : nuoc ? (bam ? { nuoc: true, bam: true } : vay ? { nuoc: true, vay: 1 } : { nuoc: true }) : vay ? { vay: 1 } : {};
+      var sz = 12.5, nhap = nuoc && !giam ? Math.sin(now / 650 + o.id * 1.3) * 0.35 : 0, nay = o.mung9 > now && !giam ? Math.abs(Math.sin((o.mung9 - now) / 90)) * 1.6 : 0;
+      var x = o.x * T + 7 + (o.dx || 0) + (rg || 0), y = o.y * T + 7 + (o.dy || 0) + nhap - (o.nhay || 0) - nay;
+      if (o.xa9 && ((now / 160 | 0) & 1) === 0) { g.save(); g.strokeStyle = BM.vecLoi; g.lineWidth = 1.2; g.beginPath(); g.arc(x, y, 6.9, 0, Math.PI * 2); g.stroke(); g.restore(); }
+      if (o.loe9 > now) { g.save(); g.globalAlpha = (o.loe9 - now) / 700; g.strokeStyle = BM.vecCanhBao; g.lineWidth = 1; g.beginPath(); g.arc(x, y, 6.6, 0, Math.PI * 2); g.stroke(); g.restore(); }
+      g.drawImage(VeVector.vat('nguoi-cuu', Math.max(2, Math.round(sz * this.tiLeCua(g))), st), x - sz / 2, y - sz / 2, sz, sz);
+      if (o.cho9 > now) HU().dau(g, '…', x, y, now, 8, this.cfg.oy * T);
+    },
+    /** Lớp mùa 9 trên ô (dưới vật, xe): cát đã rắc ('rac-cat', lóe khi vừa rắc), container lấp hố ('lap-ho'), trạm cứu (chữ thập xanh), thác (bọt trắng đổ theo dòng), phao (và phao đang rơi / được thu). */
+    veSan9: function (g, now) {
+      var self = this, c = this.cfg, giam = HU().giam(), k;
+      for (k in this.racCat9) this.veCat9(g, +k.split(',')[0], +k.split(',')[1], now - this.racCat9[k]);
+      for (k in this.lapHo9) {
+        var lh = this.lapHo9[k], lx = +k.split(',')[0], ly = +k.split(',')[1], u = Math.min(1, (now - lh.t0) / 320), s = 12.6 + (1 - ease(u)) * 1.6;
+        g.drawImage(VeVector.vat('container', Math.max(2, Math.round(s * this.tiLeCua(g))), { so: lh.so, tan: lh.tan }), lx * T + 7 - s / 2, ly * T + 7 - s / 2, s, s);
+      }
+      (c.tramCuu || []).forEach(function (q) { if (q && isFinite(q.x)) self.veTram9(g, q.x, q.y, now); });
+      (c.thac || []).forEach(function (q) { if (q && isFinite(q.x)) self.veThac9(g, q.x, q.y, giam ? 0 : (now / 700) % 1); });
+      this.phao9.forEach(function (p) {
+        var nh = giam ? 0 : Math.sin(now / 700 + p.x * 1.3 + p.y) * 0.3, sz = 12;
+        g.drawImage(VeVector.vat('phao-cuu', Math.max(2, Math.round(sz * self.tiLeCua(g))), {}), p.x * T + 7 - sz / 2, p.y * T + 7 - sz / 2 + nh, sz, sz);
+      });
+      var pb = this.phaoBay9;
+      if (pb) {                                                                            // phao rơi từ bụng drone xuống mặt nước (k 0 → 1) hay được kéo lên (1 → 0): to hơn khi ở cao, bóng lệch
+        var s2 = 12 * (1 + 0.55 * (1 - pb.k)), hx = pb.x * T + 7, hy = pb.y * T + 7 - (1 - pb.k) * 6;
+        g.save(); g.globalAlpha = 0.25 * pb.k; g.fillStyle = BM.vecVien; g.beginPath(); g.ellipse(pb.x * T + 8, pb.y * T + 8, 5, 3.4, 0, 0, Math.PI * 2); g.fill(); g.restore();
+        g.drawImage(VeVector.vat('phao-cuu', Math.max(2, Math.round(s2 * this.tiLeCua(g))), {}), hx - s2 / 2, hy - s2 / 2, s2, s2);
+      }
+    },
+    /** Ô (x, y) đã rắc cát: lớp cát vàng nâu lốm đốm (vị trí hạt cố định theo ô), lóe sáng 0,4 giây khi vừa rắc (tuoi = ms từ lúc rắc). */
+    veCat9: function (g, x, y, tuoi) {
+      var x0 = x * T, y0 = y * T, i, h = (x * 73856093) ^ (y * 19349663);
+      g.save(); g.globalAlpha = 0.78 * Math.min(1, 0.35 + tuoi / 300); g.fillStyle = BM.vecBao; g.beginPath(); g.rect(x0 + 1.2, y0 + 1.2, T - 2.4, T - 2.4); g.fill(); g.globalAlpha = 1;
+      var MAU = [BM.vecDatSang, BM.vecBaoToi, BM.vecDatToi];
+      for (i = 0; i < 11; i++) { h = (Math.imul(h, 1103515245) + 12345) | 0; var px = x0 + 2 + ((h >>> 3) % 100) / 10, py = y0 + 2 + ((h >>> 11) % 100) / 10; g.fillStyle = MAU[i % 3]; g.beginPath(); g.arc(px, py, 0.55 + (i % 2) * 0.25, 0, Math.PI * 2); g.fill(); }
+      if (tuoi < 400) { g.globalAlpha = 0.6 * (1 - tuoi / 400); g.fillStyle = BM.vecVangSang; g.beginPath(); g.rect(x0 + 1.2, y0 + 1.2, T - 2.4, T - 2.4); g.fill(); }
+      g.restore();
+    },
+    /** Trạm cứu (cfg.tramCuu): tấm sân xanh nhạt viền xanh lá, chữ thập xanh lá viền tối; vừa có người tới thì vòng sáng lan ra. */
+    veTram9: function (g, x, y, now) {
+      var x0 = x * T, y0 = y * T, loe = this.tramLoe9[x + ',' + y];
+      g.save();
+      g.fillStyle = BM.vecLaNhat; g.beginPath(); g.rect(x0 + 0.8, y0 + 0.8, T - 1.6, T - 1.6); g.fill();
+      g.strokeStyle = BM.vecLa; g.lineWidth = 0.9; g.beginPath(); g.rect(x0 + 1.2, y0 + 1.2, T - 2.4, T - 2.4); g.stroke();
+      g.beginPath(); g.rect(x0 + 5.5, y0 + 2.6, 3, 8.8); g.rect(x0 + 2.6, y0 + 5.5, 8.8, 3); g.fillStyle = BM.vecXanhLa; g.fill();
+      g.strokeStyle = BM.vecLaDam; g.lineWidth = 0.5; g.stroke();
+      if (loe && now - loe < 900) { var u = (now - loe) / 900; g.globalAlpha = 1 - u; g.strokeStyle = BM.vecXanhLa; g.lineWidth = 1.2; g.beginPath(); g.arc(x0 + 7, y0 + 7, 4 + u * 6, 0, Math.PI * 2); g.stroke(); }
+      g.restore();
+    },
+    /** Thác (cfg.thac, ô nước): dải nước tối ở mép xuôi dòng (chỗ nước đổ), ba vệt bọt trắng chạy theo dòng (pha 0..1), hạt bụi nước ở mép. Hướng: dòng của ô (cfg.dong), không có thì xuống. */
+    veThac9: function (g, x, y, pha) {
+      var dg = this.dong0 && this.dong0[x + ',' + y], h = dg ? dg.huong : 2, i;
+      g.save(); g.translate(x * T + 7, y * T + 7); g.rotate((h - 2) * Math.PI / 2);
+      g.fillStyle = BM.vecNuocToi; g.globalAlpha = 0.85; g.beginPath(); g.rect(-7, 3.6, 14, 3.4); g.fill();
+      g.globalAlpha = 1; g.strokeStyle = BM.vecMatSang; g.lineCap = 'round';
+      for (i = 0; i < 3; i++) {
+        var u = (i / 3 + pha) % 1, yy = -6 + u * 9.5;
+        g.globalAlpha = 0.9 * Math.min(1, (1 - u) * 2.2); g.lineWidth = 0.9;
+        g.beginPath(); g.moveTo(-5, yy); g.quadraticCurveTo(0, yy + 1.6, 5, yy); g.stroke();
+      }
+      g.globalAlpha = 0.95; g.fillStyle = BM.vecMatSang;
+      for (i = 0; i < 4; i++) { g.beginPath(); g.arc(-5.2 + i * 3.5, 4.4 + ((i + Math.round(pha * 4)) % 2) * 0.9, 0.75, 0, Math.PI * 2); g.fill(); }
+      g.restore();
+    },
+    /** Lớp phủ, cần cẩu lai (vẽ TRƯỚC cần nên móc / ròng rọc đè lên): giỏ cứu hộ treo dưới đầu cần (tay lưới), quầng từ của nam châm đang bật (màu cực), hai hàm gầu ngoạm (tay kẹp),
+     *  và vật / người đang treo (ca.mang): cỡ nội suy theo ca.nangV (0 = sát mặt ô, 1 = treo cao: to hơn, bóng xa hơn). */
+    veTreoCau9: function (g, cx, cy, now) {
+      var v = this.vis, ca = v.cau, tay = this.cfg.robot.tay, laNC = tay === 'nam-cham', laGau = laTayKep(tay), laGio = tay === 'day-keo';
+      if (!ca || (!laNC && !laGau && !laGio && !ca.mang)) return;
+      var p = this.dauCan9(cx, cy), kN = typeof ca.nangV === 'number' ? ca.nangV : 1, o = ca.mang ? this.objTheoId(ca.mang) : null, hy = p.y + T * 0.1 * kN;
+      if (laGio) { var sg = T * 0.92; g.drawImage(VeVector.vat('gio-cuu-ho', Math.max(2, Math.round(sg * this.tiLeCua(g))), o ? { day: true } : {}), p.x - sg / 2, hy - sg / 2, sg, sg); }
+      if (laNC && v.nc && v.nc.bat) {
+        var r0 = 4.2 + (HU().giam() ? 0 : Math.sin(now / 160) * 0.7);
+        g.save(); g.globalAlpha = 0.35; g.fillStyle = v.nc.cuc === 'S' ? BM.vecLam : BM.vecDo; g.beginPath(); g.arc(p.x, hy, r0 + 2, 0, Math.PI * 2); g.fill(); g.restore();
+      }
+      if (o) {
+        if (o.noi === 'nguoi') {
+          var sn = 10.5 + kN * 1.2;
+          g.drawImage(VeVector.vat('nguoi-cuu', Math.max(2, Math.round(sn * this.tiLeCua(g))), o.nguoi && o.nguoi.toiTram ? { tram: true } : {}), p.x - sn / 2, hy - sn / 2, sn, sn);
+        } else {
+          var sz = this.coVatDat() + (this.coVatNang() - this.coVatDat()) * kN;
+          if (o.noi) g.drawImage(this.hinhVat(o, 8, Math.max(2, Math.round(sz * this.tiLeCua(g)))), p.x - sz / 2, hy - sz / 2, sz, sz);
+          else this.veMotVat(g, o, 8, p.x, hy, sz, sz * (VeVector.BONG_SAN + (VeVector.BONG_NANG - VeVector.BONG_SAN) * kN));
+        }
+      }
+      if (laNC) { g.save(); g.fillStyle = BM.vecThepToi; g.strokeStyle = v.nc && v.nc.bat ? (v.nc.cuc === 'S' ? BM.vecLam : BM.vecDo) : BM.vecVien; g.lineWidth = 0.8; g.beginPath(); g.arc(p.x, p.y + 0.6, 2.4, 0, Math.PI * 2); g.fill(); g.stroke(); g.restore(); }
+      if (laGau) {
+        var mo = o ? 3.2 : 4.6;
+        g.save(); g.strokeStyle = BM.vecThepToi; g.lineWidth = 1.3; g.lineCap = 'round';
+        g.beginPath(); g.arc(p.x + mo - 1, hy, 4.6, Math.PI * 0.62, Math.PI * 1.38); g.stroke();
+        g.beginPath(); g.arc(p.x - mo + 1, hy, 4.6, -Math.PI * 0.38, Math.PI * 0.38); g.stroke();
+        g.restore();
+      }
+    },
+    /** Một bước hoạt cảnh của sự kiện mùa 9 (NHIP_9) trong per ms. */
+    nhipMua9: async function (s, per, my, evs, vanEvs) {
+      var self = this, v = this.vis, ca = v.cau, xu = v.xu, now = performance.now(), m = s.ma, ov;
+      var BOT = [BM.vecNuocSang, BM.sanTrang];
+      function nguoiTai(o) { for (var i = 0; i < self.objs.length; i++) { var q = self.objs[i]; if (q.noi === 'nguoi' && o && Math.round(q.x) === o.x && Math.round(q.y) === o.y) return q; } return null; }
+      function lac(o2, n, bien) { return self.tween(per, my, function (k) { if (o2) o2.dx = Math.sin(k * Math.PI * n) * (1 - k) * bien; }).then(function () { if (o2) o2.dx = 0; }); }
+      if (m === 'rac-cat') {                                                                           // R: bụi cát vàng rơi xuống ô bùn trơn, ô đổi thành sàn nhám
+        if (s.o) { this.racCat9[s.o.x + ',' + s.o.y] = now; this.burst(s.o.x * T + 7, s.o.y * T + 7, 9, [BM.vecBao, BM.vecDatSang, BM.sanTrang], 0.55); }
+        await ngu(per); return;
+      }
+      if (m === 'lap-ho') {                                                                            // T2: container hạ xuống hố, nằm phẳng thành mặt sàn. 'lap-ho' của Mỏ đá (đá, không cont): như cũ
+        if (!s.cont) { await ngu(per); return; }
+        if (ca && ca.treo && ca.treo.length) { ca.nang = 1; await this.tween(per * 0.75, my, function (k) { ca.nang = 1 - ease(k); }); if (my !== this.rid) return; ca.treo = []; ca.nang = 1; }
+        if (s.o) { this.lapHo9[s.o.x + ',' + s.o.y] = { so: s.cont.so, tan: s.cont.tan, t0: performance.now() }; this.burst(s.o.x * T + 7, s.o.y * T + 8, 8, [BM.sanTrang, BM.vecDatSang, BM.sanXam], 0.6); }
+        await ngu(per * 0.25); return;
+      }
+      if (m === 'cau-hut' || m === 'gau-ngoam' || m === 'gio-vot') {                                // L1 / L8 / L9: vật (người) ở ô đầu cần lên treo dưới đầu cần
+        ov = this.objTheoId(s.vat);
+        if (ca) { ca.mang = s.vat; ca.nangV = 0; }
+        if (ov) ov.keo = false;
+        if (m === 'gio-vot') this.gio9 = s.vat;
+        if (s.o) this.burst(s.o.x * T + 7, s.o.y * T + 7, 6, m === 'cau-hut' ? [v.nc && v.nc.cuc === 'S' ? BM.vecLam : BM.vecDo, BM.sanTrang] : m === 'gio-vot' ? BOT : [BM.vecDatSang, BM.sanTrang], 0.5);
+        await this.tween(per, my, function (k) { if (ca) ca.nangV = ease(k); });
+        if (ca) ca.nangV = 1; return;
+      }
+      if (m === 'cau-tha' || m === 'gau-tha' || m === 'gio-dat') {                                  // thả: vật hạ xuống ô đầu cần, nhỏ dần về cỡ sàn, bụi khi chạm
+        ov = this.objTheoId(s.vat);
+        if (ca) { ca.mang = s.vat; ca.nangV = 1; }
+        await this.tween(per * 0.8, my, function (k) { if (ca) ca.nangV = 1 - ease(k); });
+        if (my !== this.rid) return;
+        if (ca) { ca.mang = null; ca.nangV = 1; }
+        if (m === 'gio-dat') this.gio9 = null;
+        if (ov && s.o) { ov.x = s.o.x; ov.y = s.o.y; ov.tt = 'dat'; ov.nang = 0; if (ov.nguoi) ov.nguoi.can = true; }
+        if (s.o) this.burst(s.o.x * T + 7, s.o.y * T + 9, 5, [BM.sanTrang, BM.vecDatSang], 0.5);
+        await ngu(per * 0.2); return;
+      }
+      if (m === 'gau-hut' || m === 'gio-hut' || m === 'phao-hut') {                                // không làm được: dấu '?', ô nhắm nháy đỏ, cần / drone rung nhẹ
+        this.baoHieu('?', 1300);
+        if (s.o) this.canhBao = { x: s.o.x, y: s.o.y, den: now + 900 };
+        if (ca) ca.loiCan = now + per + 400;
+        await this.tween(per, my, function (k) { if (ca) ca.dTam = Math.sin(k * Math.PI * 5) * (1 - k) * 0.05; else v.dx = Math.sin(k * Math.PI * 6) * (1 - k) * 1.1; });
+        if (ca) ca.dTam = 0; v.dx = 0; return;
+      }
+      if (m === 'tha-phao' || m === 'thu-phao') {                                                   // L10: phao rơi từ bụng drone xuống nước (bọt), hay được kéo lên
+        if (!s.o) { await ngu(per); return; }
+        var tha = m === 'tha-phao', ox = s.o.x, oy = s.o.y;
+        if (!tha) this.phao9 = this.phao9.filter(function (p) { return p.x !== ox || p.y !== oy; });
+        this.phaoBay9 = { x: ox, y: oy, k: tha ? 0 : 1 };
+        await this.tween(per * 0.75, my, function (k) { if (self.phaoBay9) self.phaoBay9.k = tha ? ease(k) : 1 - ease(k); });
+        if (my !== this.rid) return;
+        this.phaoBay9 = null;
+        if (tha) { if (!this.phaoTai9(ox, oy)) this.phao9.push({ x: ox, y: oy }); this.burst(ox * T + 7, oy * T + 7, 7, BOT, 0.55); }
+        await ngu(per * 0.25); return;
+      }
+      if (m === 'bam-phao') {                                                                          // người với lấy phao: vòng sáng quanh người, bọt
+        ov = this.objTheoId(s.id); if (ov) ov.loe9 = now + 700;
+        if (s.o) this.burst(s.o.x * T + 7, s.o.y * T + 7, 5, [BM.vecVanNong, BM.sanTrang], 0.45);
+        await ngu(per); return;
+      }
+      if (m === 'phun-van') {                                                                          // T3: tia nước vừa trúng van: cần gạt quay, cống / dòng của nhóm đổi, bọt nước bắn ra
+        if (vanEvs && vanEvs.length) this.apVanDoi(vanEvs);
+        if (s.o) { this.burst(s.o.x * T + 7, s.o.y * T + 7, 7, [BM.vecNuocSang, BM.sanTrang, BM.sanXanhLa], 0.6); }
+        await ngu(per); return;
+      }
+      if (m === 'xit-bung' || m === 'xit-hut') {                                                     // M9L15: bình xịt bụng drone: tia nước thẳng xuống ô dưới bụng, bọt ở ô; hụt thì '?'
+        var hut = m === 'xit-hut', ox9 = s.o ? s.o.x : v.x, oy9 = s.o ? s.o.y : v.y;
+        v.xit9 = { k: 0, hut: hut };
+        await this.tween(per * 0.6, my, function (k) { if (v.xit9) v.xit9.k = ease(k); });
+        if (my !== this.rid) { v.xit9 = null; return; }
+        this.burst(ox9 * T + 7, oy9 * T + 8, hut ? 5 : 10, s.trung === 'lua' ? [BM.sanTrangV1, BM.sanKem, BM.sanXam] : BOT, hut ? 0.45 : 0.7);
+        if (s.trung === 'lua') {                                                                     // lửa nhỏ đi một cỡ; 'lua-tat' (tắt hẳn) thì hơi trắng bốc lên
+          evs.filter(function (q) { return q.ma === 'lua-nho' && q.o.x === ox9 && q.o.y === oy9; }).forEach(function (q) { var l = self.luaT && self.luaT[q.o.x + ',' + q.o.y]; if (l) l.suc = q.suc; });
+          if (evs.some(function (q) { return q.ma === 'lua-tat' && q.o.x === ox9 && q.o.y === oy9; })) this.burst(ox9 * T + 7, oy9 * T + 5, 8, [BM.sanTrangV1, BM.sanXam], 0.5);
+        }
+        else if (s.trung === 'nut') {
+          var nE = evs.filter(function (q) { return q.ma === 'nut-doi'; })[0], nt9 = this.nutO(ox9, oy9); nt9.loe = now + per + 340;
+          if (nE) { if (nt9.bat !== !!nE.bat) nt9.quay = performance.now(); nt9.bat = !!nE.bat; }
+          evs.filter(function (q) { return q.ma === 'bang-doi'; }).forEach(function (q) { var k2 = q.o.x + ',' + q.o.y; if (q.bat) delete self.bangTat[k2]; else self.bangTat[k2] = true; self.bangLoe[k2] = performance.now() + 300; });
+        }
+        if (hut) { this.baoHieu('?', 1100); this.canhBao = { x: ox9, y: oy9, den: now + per + 600 }; }
+        await this.tween(per * 0.4, my, function (k) { if (v.xit9) v.xit9.k = 1 - ease(k) * 0.999; });
+        v.xit9 = null; return;
+      }
+      if (m === 'theo-be') {                                                                           // T4: drone đậu trên bè sạc dời theo bè (bè dời không do trôi: kéo lưới)
+        var tx0 = v.x, ty0 = v.y;
+        if (!s.den) { await ngu(per); return; }
+        await this.tween(per, my, function (k) { v.x = tx0 + (s.den.x - tx0) * ease(k); v.y = ty0 + (s.den.y - ty0) * ease(k); });
+        v.x = s.den.x; v.y = s.den.y; return;
+      }
+      if (m === 'cham-nguoi') {                                                                        // P: lệnh nhắm vào người không làm: robot choáng + '!', ô người nháy đỏ, người giật mình
+        this.baoHieu('!', 1500); v.choang = now + per + 900; this.matSuKien('dam', 750);
+        if (s.o) this.canhBao = { x: s.o.x, y: s.o.y, den: now + 1300 };
+        ov = nguoiTai(s.o); if (ov) ov.rung = now + per * 0.8;
+        await ngu(per); if (this.onRung) this.onRung(); return;
+      }
+      /* ---- người cần cứu (luật P): mọi bước theo id người */
+      if (m.indexOf('nguoi-') !== 0) { if (this.boQua9) this.boQua9[m] = 1; await ngu(per); return; }   // mã không phải của người mà lọt tới đây = chưa có nhánh vẽ
+      ov = this.objTheoId(s.id);
+      if (!ov) { await ngu(per); return; }
+      if (m === 'nguoi-buoc') {                                                                        // người tự bước một ô trên đường về trạm (nhún nhẹ mỗi bước, bụi chân)
+        var bx0 = ov.x, by0 = ov.y; ov.diBo = true;
+        await this.tween(per, my, function (k) { var k2 = ease(k); ov.x = bx0 + (s.den.x - bx0) * k2; ov.y = by0 + (s.den.y - by0) * k2; ov.nhay = Math.abs(Math.sin(k * Math.PI * 2)) * 0.9; });
+        ov.x = s.den.x; ov.y = s.den.y; ov.nhay = 0; ov.diBo = false;
+        this.burst(s.den.x * T + 7, s.den.y * T + 12, 2, [BM.sanTrang, BM.vecDatSang], 0.3); return;
+      }
+      if (m === 'nguoi-cho') { ov.cho9 = now + per + 500; ov.rung = now + per * 0.4; await ngu(per); return; }   // lối bị chắn: đứng chờ, bong bóng "…"
+      if (m === 'nguoi-troi') {                                                                        // trôi theo dòng như vật nổi (đều, bọt phía sau)
+        var rx0 = ov.x, ry0 = ov.y, hx = DX[s.huong] || 0, hy = DY[s.huong] || 0;
+        await this.tween(per, my, function (k) { ov.x = rx0 + (s.den.x - rx0) * k; ov.y = ry0 + (s.den.y - ry0) * k; if (Math.random() < 0.3) self.burst(ov.x * T + 7 - hx * 5, ov.y * T + 7 - hy * 5, 1, BOT, 0.3); });
+        ov.x = s.den.x; ov.y = s.den.y; return;
+      }
+      if (m === 'nguoi-troi-chan') {
+        var cx2 = DX[s.huong] || 0, cy2 = DY[s.huong] || 0;
+        await this.tween(per, my, function (k) { var a = Math.sin(k * Math.PI * 4) * (1 - k) * 1.2; ov.dx = cx2 * a; ov.dy = cy2 * a; });
+        ov.dx = 0; ov.dy = 0; return;
+      }
+      if (m === 'nguoi-len-bo') {                                                                      // từ ô nước sát bờ bước lên bờ (nhảy nhẹ, té nước), lưới đang giữ thì thả
+        if (s.thaLuoi && xu && xu.keo && xu.keo.id === s.id) { xu.keo = null; this.dayKeo = null; }
+        ov.keo = false;
+        var lx0 = ov.x, ly0 = ov.y; this.burst(lx0 * T + 7, ly0 * T + 7, 6, BOT, 0.55);
+        await this.tween(per, my, function (k) { var k2 = ease(k); ov.x = lx0 + (s.den.x - lx0) * k2; ov.y = ly0 + (s.den.y - ly0) * k2; ov.nhay = Math.sin(k * Math.PI) * 2.4; if (k > 0.5 && ov.nguoi) ov.nguoi.can = true; });
+        ov.x = s.den.x; ov.y = s.den.y; ov.nhay = 0; if (ov.nguoi) ov.nguoi.can = true; return;
+      }
+      if (m === 'nguoi-toi-tram') {                                                                    // tới trạm: khoác chăn, nảy mừng, vòng xanh ở trạm
+        if (ov.nguoi) ov.nguoi.toiTram = true; ov.mung9 = now + 900;
+        if (s.o) { this.tramLoe9[s.o.x + ',' + s.o.y] = now; this.burst(s.o.x * T + 7, s.o.y * T + 5, 7, [BM.vecXanhLa, BM.sanTrang, BM.vecCanhBao], 0.55); }
+        await ngu(per); return;
+      }
+      if (m === 'nguoi-troi-xa') {                                                                     // thua nhẹ: người rung, vòng đỏ nhấp nháy quanh người (giữ tới khi chạy lại), ô nháy đỏ; không có cảnh chìm
+        ov.xa9 = true; if (s.o) this.canhBao = { x: s.o.x, y: s.o.y, den: now + 1500 };
+        this.baoHieu('!', 1500);
+        await lac(ov, 6, 1.4); return;
+      }
+      if (this.boQua9) this.boQua9[m] = 1;                                                            // mã lọt xuống đây = chưa có nhánh vẽ (máy kiểm kiem-ve-mua-9 bật boQua9 = {} để bắt)
+      await ngu(per);
+    },
+    /** Hiệu ứng tức thì (TUC_THI_9) sau vòng bước: bè sạc dời (tia lửa điện nhỏ ở chỗ mới), cứu xong (mắt cười). */
+    hieuUng9: function (evs) {
+      var self = this;
+      evs.forEach(function (s) {
+        if (s.ma === 'be-sac-di' && s.den) self.burst(s.den.x * T + 7, s.den.y * T + 7, 3, [BM.vecCanhBao, BM.vecDen, BM.sanTrang], 0.35);
+        else if (s.ma === 'xong-cuu-nguoi') self.matSuKien('vui', 1200);
+      });
+    },
+    /** Cuối nhịp: người (vị trí, trên cạn, đã tới trạm), phao, cát, vật treo cẩu đúng vết e. */
+    dongBoMua9: function (e) {
+      var v = this.vis, self = this, r = e.robot || {};
+      if (e.nguoi) e.nguoi.forEach(function (q) {
+        var o = self.objTheoId(q.id); if (!o) return;
+        o.x = q.x; o.y = q.y; o.dx = 0; o.dy = 0; o.nhay = 0; o.diBo = false;
+        o.nguoi = { can: !!q.can, toiTram: !!q.toiTram };
+      });
+      if (e.phao) this.phao9 = e.phao.map(function (p) { return { x: p.x, y: p.y }; });
+      else if (this.coPhao9) this.phao9 = [];
+      this.phaoBay9 = null;
+      if (e.racCat) e.racCat.forEach(function (q) { var k = q.x + ',' + q.y; if (!self.racCat9[k]) self.racCat9[k] = 1; });
+      if (v.cau) {
+        if (r.dangMang !== undefined) v.cau.mang = r.dangMang || null;
+        else if (this.cfg.robot.tay === 'day-keo') v.cau.mang = this.gio9 || null;
+        v.cau.nangV = 1;
+      }
     },
 
     /** Xích: chương trình dừng khi còn quay dở thì phần quay dở mất: xoay ngược về thẳng kèm dấu '?'. */

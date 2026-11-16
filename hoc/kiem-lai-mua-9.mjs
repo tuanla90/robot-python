@@ -1,5 +1,5 @@
 /* ============================================================================
-   kiem-lai-mua-9.mjs — máy kiểm TỔ HỢP LAI mùa 9 (M9B1: L4 L5 L6 L7 L11 L12 L14 + R rắc cát; M9B2: L1 L2 L8 L13 + T2 container lấp hố; M9C1: L3 xe tời bờ + P người cần cứu; M9C2: L9 giỏ cứu hộ, L10 thả phao, T3 vòi phun gạt van, T4 bè sạc) của "Mật Lệnh Robot"
+   kiem-lai-mua-9.mjs — máy kiểm TỔ HỢP LAI mùa 9 (M9B1: L4 L5 L6 L7 L11 L12 L14 + R rắc cát; M9B2: L1 L2 L8 L13 + T2 container lấp hố; M9C1: L3 xe tời bờ + P người cần cứu; M9C2: L9 giỏ cứu hộ, L10 thả phao, T3 vòi phun gạt van, T4 bè sạc; M9L15: L15 drone + bình xịt bụng) của "Mật Lệnh Robot"
    (gói M9B1 / M9B2 4/11; kế hoạch hoc/KE-HOACH-MUA-9-TO-HOP.md mục 4, cột "Luật thêm"). Mỗi lai:
    a. BẢNG: ô ★ bị chặn khi màn không mở (ma 'lai-chua-co'), ghép được khi man.lapRap.moLai (hay man.moLai) có mã — BangGhep, LapRap.kiemGhep / kiemCachLap / apDung;
    b. LÕI: một sân nhỏ chứng minh HÀNH VI của cột "Luật thêm" (SanHoc.chay trên robot dựng bằng LapRap.apDung);
@@ -12,6 +12,8 @@
      R   chỉ dot() rắc cát (pen_down không), ô 'I' thành sàn thường cả lượt, sự kiện { ma: 'rac-cat', o }, kết quả / vết có racCat.
      M9B2: nam châm / gầu ngoạm trên cẩu không áp luật tải (vật không có tấn); gầu chỉ grab / release; container trôi = bè 'B' khai trong lớp contTroi;
            T2 chỉ bật khi màn khai cfg.contLapHo (màn Cảng sông cũ có ô 'u' trong tầm cần giữ luật "hố chặn hạ").
+     M9T5 (5/11): chồng container chặn như tường CHỈ khi màn khai cfg.contChan (6 màn Cảng sông cũ có nhện đứng trên ô chồng); drone bay qua (không đáp lên), cẩu không bị chặn;
+           người P chờ trước ô chồng (đường về trạm vẫn tính trên sân tĩnh); ô thông lại ngay khi cẩu nhấc hết (robot đứng sau cẩu trong đội đi vào được ngay nhịp đó).
      M9C1 (luật P mục 8b + L3 mục 4): người = lớp cfg.nguoi / cfg.tramCuu / cfg.thac (không ký hiệu sân mới); người là vật noi 'nguoi'; đường về trạm CỐ ĐỊNH = BFS sân tĩnh lúc khai (hay duong khai);
            người dưới nước chỉ tự lên bờ khi VỪA ĐƯỢC LƯỚI KÉO (đang trong lưới hay vừa thả) và ô sát bờ đi được; cấm chạm = lỗi chạy 'cham-nguoi' (chương trình dừng);
            thua nhẹ 'nguoi-troi-xa' khi trôi bị chặn ở mép sân / vào cống mở / ô thac; mục tiêu 'cuu-nguoi'; mục tiêu khác + có người → chờ mọi người tới trạm; chương trình hết → nhịp rỗng cho người đi tiếp.
@@ -76,7 +78,9 @@ const CAU_HINH = [
   { lai: 'L3', cach: { than: 'gai', tay: 'day-keo', camBien: null } },
   // M9C2 (4/11): cần cẩu + tay lưới (giỏ cứu hộ), drone + tay lưới (thả phao)
   { lai: 'L9', cach: { than: 'cau', tay: 'day-keo', camBien: null } },
-  { lai: 'L10', cach: { than: 'drone', tay: 'day-keo', camBien: null } }
+  { lai: 'L10', cach: { than: 'drone', tay: 'day-keo', camBien: null } },
+  // M9L15 (4/11): drone + bình xịt bụng (tay vòi phun treo dưới bụng)
+  { lai: 'L15', cach: { than: 'drone', tay: 'hoi', camBien: null } }
 ];
 const moTa = (x) => x.lai + ' ' + LapRap.moTa(x.cach);
 function manLap(x, moLai) {
@@ -235,6 +239,8 @@ console.log('b + d. lõi: hành vi đúng cột "Luật thêm", và phép b đ�
     const k = chay(lai || 'R', cach, ['..I.F', '.....'], { x: 2, y: 0, huong: 1 }, 'ink("yellow")\n' + (coDot ? 'dot()\n' : '') + 'wait()\n' + TOI + LUI);
     return { k, ok: !k.loi && k.robot.x === 2 && J(k.racCat) === J([{ x: 2, y: 0 }]) && coSk(k, 'rac-cat') && !coSk(k, 'truot-da-uot') };
   };
+  const rs = thu(() => R({ than: 'hai-banh', tay: 'son' }, true).k);
+  kiem('R: rắc cát KHÔNG là chấm sơn (không "to-o", daSon rỗng; trước 4/11 bộ vẽ vẽ bông hoa máy sơn lên ô cát)', rs && !coSk(rs, 'to-o') && Array.isArray(rs.daSon) && rs.daSon.length === 0, rs && J(rs.daSon));
   kiem('R b: xe hai bánh dot() trên ô bùn trơn I rồi tiến ra, lùi về: KHÔNG trượt (dừng ở ô đã rắc), sự kiện rac-cat, racCat = [(2, 0)]', thu(() => R({ than: 'hai-banh', tay: 'son' }, true).ok), J(thu(() => R({ than: 'hai-banh', tay: 'son' }, true).k.robot)));
   const khong = thu(() => R({ than: 'hai-banh', tay: 'son' }, false).k);
   kiem('R d: cùng sân KHÔNG dot() → trượt thẳng tới (1, 0) như luật đá ướt mùa 8, không có racCat (phép b đỏ)', khong && khong.robot.x === 1 && khong.racCat.length === 0 && !R({ than: 'hai-banh', tay: 'son' }, false).ok && coSk(khong, 'truot-da-uot'), J(khong && khong.robot));
@@ -358,6 +364,117 @@ const sk1 = (k, ma) => { for (const v of k.vet) if (v.loai === 'nhip') for (cons
   kiem('T2 d: màn không khai contLapHo (như Cảng sông cũ): hạ lên hố bị chặn ("ha-bi-chan" vat ho), xe rơi hố (phép b đỏ)', khong && !T2(false).ok && khong.suKien.some((e) => e.ma === 'ha-bi-chan' && e.vat === 'ho') && khong.dungSom === 'roi-ho');
   const KHONG_HA = 'pick_up()\nswing_right()\nretract()\nwait()\n', khongHa = thu(() => T2(true, KHONG_HA).k);
   kiem('T2 d: có contLapHo nhưng cẩu không set_down() → xe rơi hố (phép b đỏ)', khongHa && khongHa.dungSom === 'roi-ho' && !T2(true, KHONG_HA).ok);
+}
+
+/* T5 chồng container chặn như tường (M9T5, kế hoạch mục 5b "Container (Cảng) | Cần cẩu | mọi xe"): chỉ khi màn khai cfg.contChan (6 màn Cảng sông cũ có nhện đứng trên ô chồng) */
+const T5 = {};
+{
+  const BANH5 = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'], TIEN5 = 'left_move()\nright_move()\nwait()\n';
+  const NHEN5 = ['go_up', 'go_down', 'go_left', 'go_right', 'crouch', 'stand', 'wait'];
+  const CAU5 = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'set_down'];
+  const damC = (k) => k.suKien.filter((e) => e.ma === 'dam-tuong' && e.vat === 'container');
+  // một xe trên dải ['....F'], chồng 1 container ở (2, 0); xe tiến 4 lần
+  T5.xe = (cc, loai, ham, code) => SanHoc.chay({ san: ['....F'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: loai || 'banh', hamGoc: ham || BANH5, contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, code || TIEN5.repeat(4));
+  T5.xeOk = (k) => !!k && !k.loi && !k.thang && k.robot.x === 1 && k.robot.y === 0 && damC(k).length === 3 && J(damC(k)[0].den) === J({ x: 2, y: 0 });
+  kiem('T5 b (xe): xe hai bánh tiến vào ô chồng → đứng yên ở (1, 0), "dam-tuong" vat container (3 lần), không tới cờ', thu(() => T5.xeOk(T5.xe(true))), J(thu(() => T5.xe(true).suKien)));
+  const THAN = [['xich', BANH5, TIEN5.repeat(4)], ['omni', BANH5.concat(['slide_left', 'slide_right']), TIEN5.repeat(4)], ['gai', BANH5, TIEN5.repeat(4)], ['nhen', NHEN5, 'go_right()\n'.repeat(4)]];
+  THAN.forEach(([loai, ham, code]) => {
+    const k = thu(() => T5.xe(true, loai, ham, code));
+    kiem('T5 b (xe): thân ' + loai + ' cũng đâm chồng ("dam-tuong" container, đứng ở (1, 0))', k && !k.loi && !k.thang && k.robot.x === 1 && damC(k).length >= 1, k && (k.loi ? J(k.loi) : J(k.suKien.map((e) => e.ma + ':' + (e.vat || '')))));
+  });
+  const cu = thu(() => T5.xe(false));
+  kiem('T5 d (xe): màn KHÔNG khai contChan (như Cảng sông cũ) → xe đi qua ô chồng tới cờ (phép b đỏ)', cu && cu.thang && !T5.xeOk(cu), cu && J(cu.robot));
+  let saiCH = null; try { SanHoc.chay({ san: ['...F'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: BANH5, contChan: true }, TIEN5); } catch (e) { saiCH = e.message; }
+  kiem('T5 (cấu hình): khai contChan mà không có lớp cfg.chong → lỗi cấu hình', /contChan/.test(saiCH || ''), saiCH);
+  // nhện bật: đáp lên chồng / bay qua chồng ở ô giữa → nhảy hụt như tường
+  const nhay = (rows, ch, cc) => SanHoc.chay({ san: rows, batDau: { x: 0, y: 0, huong: 0 }, loaiRobot: 'nhen', hamGoc: NHEN5, contChan: cc, chong: ch }, 'crouch()\nwait()\nstand()\ngo_right()\n');
+  const nd = thu(() => nhay(['.u..'], [{ x: 2, y: 0, cont: [{ so: 1 }] }], true)), ng = thu(() => nhay(['....'], [{ x: 1, y: 0, cont: [{ so: 1 }] }], true));
+  kiem('T5 b (nhện nhảy): bật qua hố mà ô đáp là chồng → "nhay-hut" vat container (ô đáp), nhện ở lại (0, 0)', nd && nd.robot.x === 0 && nd.suKien.some((e) => e.ma === 'nhay-hut' && e.vat === 'container' && !e.giua), nd && J(nd.suKien));
+  kiem('T5 b (nhện nhảy): chồng ở ô giữa (cao như tường) → "nhay-hut" giua, nhện ở lại (0, 0)', ng && ng.robot.x === 0 && ng.suKien.some((e) => e.ma === 'nhay-hut' && e.vat === 'container' && e.giua), ng && J(ng.suKien));
+  const nhCu = thu(() => nhay(['.u..'], [{ x: 2, y: 0, cont: [{ so: 1 }] }], false));
+  kiem('T5 d (nhện nhảy): không khai contChan → nhện đáp lên ô chồng (2, 0) như cũ (phép b đỏ)', nhCu && nhCu.robot.x === 2 && !nhCu.suKien.some((e) => e.ma === 'nhay-hut'), nhCu && J(nhCu.robot));
+  // băng chuyền đẩy xe vào ô chồng: đứng im như gặp tường ('bang-chan')
+  const bg = thu(() => SanHoc.chay({ san: ['.>..'], batDau: { x: 1, y: 0, huong: 0 }, hamGoc: BANH5, contChan: true, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, 'wait()\nwait()\nwait()\n'));
+  const skVet5 = (k) => k.vet.filter((v) => v.loai === 'nhip').flatMap((v) => v.suKien || []);
+  kiem('T5 b (băng chuyền): băng đẩy xe về ô chồng → "bang-chan" vat container (vết nhịp), xe đứng im ở (1, 0)', bg && bg.robot.x === 1 && skVet5(bg).some((e) => e.ma === 'bang-chan' && e.vat === 'container'), bg && J(skVet5(bg)));
+  // cẩu nhấc chồng 2 container: nhấc 1 vẫn chặn, nhấc hết thì ô thông; xe (robot 2) tới cờ
+  //   sân ['.....', '....F']: cẩu (2, 0) nấc 2 (xuống; cẩu 4 hướng 14/11) tầm 1 → đầu cần (2, 1) = ô chồng; hạ sang nấc 1 → (3, 0), ngoài đường xe; xe (0, 1) quay phải
+  T5.cau = (code) => SanHoc.chay({ san: ['.....', '....F'], contChan: true, chong: [{ x: 2, y: 1, cont: [{ so: 1 }, { so: 2 }] }], doi: [
+    { batDau: { x: 2, y: 0, nac: 2, tam: 1 }, loaiRobot: 'cau', hamGoc: CAU5 },
+    { batDau: { x: 0, y: 1, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH5, co: [{ x: 4, y: 1 }] }] },
+    [code, TIEN5.repeat(10)]);
+  const NHAC = 'pick_up()\nswing_left()\nset_down()\nswing_right()\npick_up()\nswing_left()\nset_down()\n';
+  const ca = thu(() => T5.cau(NHAC)), xe2 = ca && ca.doi[1];
+  const damCau = xe2 ? xe2.suKien.filter((e) => e.ma === 'dam-tuong' && e.vat === 'container').map((e) => e.nhip) : [];
+  T5.cauOk = (k) => !!k && !k.loi && J(k.doi[1].robot) === J({ x: 4, y: 1, huong: 1 }) && k.doi[1].suKien.some((e) => e.ma === 'dam-tuong' && e.vat === 'container');
+  kiem('T5 b (cẩu): chồng 2 container — xe đâm khi còn chồng (cả sau lần nhấc đầu), cẩu nhấc hết thì ô thông, xe qua tới cờ (4, 1); đâm ở nhịp ' + J(damCau), T5.cauOk(ca) && damCau.length >= 2 && damCau[damCau.length - 1] >= 2,
+    ca && (ca.loi ? J(ca.loi) : J(ca.doi.map((d) => [d.robot, d.suKien.map((e) => e.nhip + ':' + e.ma + ':' + (e.vat || ''))]))));
+  const caKhong = thu(() => T5.cau('pick_up()\nswing_left()\nset_down()\n' +'wait()\n'.repeat(6)));
+  kiem('T5 d (cẩu): cẩu chỉ nhấc 1 trong 2 container → ô vẫn chặn, xe không tới cờ (phép b đỏ)', caKhong && !T5.cauOk(caKhong) && caKhong.doi[1].robot.x === 1, caKhong && J(caKhong.doi[1].robot));
+
+  // THÙNG NẶNG: xích ủi thùng (xichDay) vào ô chồng → thùng không đi, xích đứng yên ('dam-tuong' thung-nang chan container); băng chuyền đẩy thùng vào chồng → 'thung-bang-chan'
+  const xu = (cc) => SanHoc.chay({ san: ['.H...'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'xich', hamGoc: BANH5, xichDay: true, contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, TIEN5 + TIEN5);
+  T5.xuOk = (k) => !!k && !k.loi && J(k.thung) === J([{ id: 1, x: 1, y: 0 }]) && k.robot.x === 0 && k.suKien.filter((e) => e.ma === 'dam-tuong' && e.vat === 'thung-nang' && e.xichDay && e.chan === 'container').length === 2;
+  const xu1 = thu(() => xu(true)), xu0 = thu(() => xu(false));
+  kiem('T5 b (thùng): xích ủi thùng nặng về ô chồng → thùng đứng ở (1, 0), xích đứng yên ở (0, 0), "dam-tuong" thung-nang xichDay chan container', T5.xuOk(xu1), xu1 && J(xu1.suKien));
+  kiem('T5 d (thùng): không khai contChan → xích ủi thùng lên ô chồng rồi qua (thùng tới (3, 0); phép b đỏ)', xu0 && !T5.xuOk(xu0) && xu0.thung[0].x === 3, xu0 && J(xu0.thung));
+  const bt = (cc) => SanHoc.chay({ san: ['.>..', '....'], batDau: { x: 0, y: 1, huong: 1 }, thung: [{ x: 1, y: 0 }], hamGoc: BANH5, contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, 'wait()\nwait()\nwait()\n');
+  const bt1 = thu(() => bt(true)), bt0 = thu(() => bt(false));
+  kiem('T5 b (thùng): băng chuyền đẩy thùng về ô chồng → "thung-bang-chan", thùng đứng ở (1, 0)', bt1 && J(bt1.thung) === J([{ id: 1, x: 1, y: 0 }]) && skVet5(bt1).some((e) => e.ma === 'thung-bang-chan' && J(e.den) === J({ x: 2, y: 0 })), bt1 && J(skVet5(bt1)));
+  kiem('T5 d (thùng): không khai contChan → băng đẩy thùng lên ô chồng (2, 0) (phép b đỏ)', bt0 && bt0.thung[0].x === 2, bt0 && J(bt0.thung));
+
+  // TIA PHUN: tia dừng ở ô chồng — không tới lửa (2, 0) / nút N (2, 0) phía sau
+  const tp = (cc, rows, them) => SanHoc.chay(Object.assign({ san: rows, batDau: { x: 0, y: 0, huong: 1 }, hamGoc: BANH5.concat(['spray']), contChan: cc, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }] }, them || {}), 'spray()\nwait()\n');
+  const banTp = (k) => skVet5(k).filter((e) => e.ma === 'ban')[0];
+  const tl1 = thu(() => tp(true, ['....'], { lua: [{ x: 2, y: 0, suc: 1 }] })), tl0 = thu(() => tp(false, ['....'], { lua: [{ x: 2, y: 0, suc: 1 }] }));
+  kiem('T5 b (tia phun): tia spray() dừng ở ô chồng (1, 0) ("ban" trung container), lửa phía sau còn nguyên', tl1 && !tl1.loi && banTp(tl1) && banTp(tl1).trung === 'container' && J(banTp(tl1).o) === J({ x: 1, y: 0 }) && tl1.lua[0].suc === 1, tl1 && J(skVet5(tl1)));
+  kiem('T5 d (tia phun): không khai contChan → tia bay qua ô chồng dập lửa (2, 0) (phép b đỏ)', tl0 && tl0.lua[0].suc === 0 && banTp(tl0).trung === 'lua', tl0 && J(tl0.lua));
+  const tn1 = thu(() => tp(true, ['..N.'])), tn0 = thu(() => tp(false, ['..N.']));
+  kiem('T5 b (tia phun): nút N sau ô chồng không đổi (không "nut-doi")', tn1 && !tn1.loi && banTp(tn1).trung === 'container' && !skVet5(tn1).some((e) => e.ma === 'nut-doi'), tn1 && J(skVet5(tn1)));
+  kiem('T5 d (tia phun): không khai contChan → tia trúng nút N, "nut-doi" (phép b đỏ)', tn0 && skVet5(tn0).some((e) => e.ma === 'nut-doi'), tn0 && J(skVet5(tn0)));
+
+  // NGƯỜI P: đường về trạm (0, 0) → (3, 0) tính trên sân TĨNH (qua ô chồng (1, 0)); chồng còn thì người chờ ('nguoi-cho' vat container), cẩu (1, 2) nấc 0 tầm 2 nhấc đi (nhịp 3) thì người đi tiếp
+  const ng5 = (cc, code) => SanHoc.chay({ san: ['....', '....', '....'], batDau: { x: 1, y: 2, nac: 0, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU5, mucTieu: 'cuu-nguoi', contChan: cc, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }], nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }] }, code);
+  const NG_NHAC = 'wait()\nwait()\npick_up()\nretract()\nset_down()\n' + 'wait()\n'.repeat(3);
+  const choNg = (k) => k.vet.filter((v) => v.loai === 'nhip' && (v.suKien || []).some((e) => e.ma === 'nguoi-cho' && e.vat === 'container')).map((v) => v.nhip);
+  const ngA = thu(() => ng5(true, NG_NHAC)), ngB = thu(() => ng5(true, 'wait()\n'.repeat(8))), ngC = thu(() => ng5(false, NG_NHAC));
+  kiem('T5 b (người): người chờ trước ô chồng ở nhịp 1, 2 ("nguoi-cho" container), cẩu nhấc đi ở nhịp 3 thì người đi tiếp, tới trạm nhịp 5 (thắng)', ngA && !ngA.loi && ngA.thang && ngA.nhip === 5 && J(choNg(ngA)) === J([1, 2]), ngA && J(choNg(ngA)) + ' nhip ' + ngA.nhip);
+  kiem('T5 b (người): cẩu không nhấc → người chờ mãi ở (0, 0), không thắng', ngB && !ngB.thang && ngB.nguoi[0].x === 0 && choNg(ngB).length === 8, ngB && J(ngB.nguoi));
+  kiem('T5 d (người): không khai contChan → người đi thẳng qua ô chồng, tới trạm nhịp 3 (phép b đỏ)', ngC && ngC.thang && ngC.nhip === 3 && !choNg(ngC).length, ngC && ngC.nhip);
+
+  // DRONE: bay qua / dừng trên ô chồng được; land() lên ô chồng → 'dap-bi-chan' vat container
+  const BAY5 = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
+  const dq = thu(() => SanHoc.chay({ san: ['...F'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY5, contChan: true, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }, { x: 2, y: 0, cont: [{ so: 1 }, { so: 2 }] }] }, 'go_right()\nwait()\ngo_right()\ngo_right()\n'));
+  kiem('T5 b (drone): drone bay qua hai ô chồng, dừng một nhịp trên chồng, tới cờ (3, 0), không "dam-tuong"', dq && !dq.loi && dq.thang && dq.robot.x === 3 && !dq.suKien.some((e) => e.ma === 'dam-tuong'), dq && J(dq.suKien));
+  const dap5 = (cc) => SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY5.concat(['land', 'take_off']), contChan: cc, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }] }, 'go_right()\nland()\ntake_off()\n');
+  const dp1 = thu(() => dap5(true)), dp0 = thu(() => dap5(false));
+  kiem('T5 b (drone): land() trên ô chồng → "dap-bi-chan" vat container, không đáp', dp1 && !dp1.loi && dp1.suKien.some((e) => e.ma === 'dap-bi-chan' && e.vat === 'container') && !skVet5(dp1).some((e) => e.ma === 'dap'), dp1 && J(skVet5(dp1)));
+  kiem('T5 d (drone): không khai contChan → land() đáp lên ô chồng như cũ (phép b đỏ)', dp0 && skVet5(dp0).some((e) => e.ma === 'dap') && !dp0.suKien.some((e) => e.ma === 'dap-bi-chan'), dp0 && J(skVet5(dp0)));
+  // THẢ VẬT: tay kẹp release() xuống ô chồng → 'tha-bi-chan' vat container, vật vẫn ở tay
+  const TAY5 = BANH5.concat(['arm_down', 'arm_up', 'grab', 'release']);
+  const th5 = (cc) => SanHoc.chay({ san: ['.o..'], batDau: { x: 0, y: 0, huong: 1 }, hamGoc: TAY5, contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }] }, 'arm_down()\ngrab()\nwait()\narm_up()\nwait()\n' + TIEN5 + 'arm_down()\nrelease()\nwait()\n');
+  const th1 = thu(() => th5(true)), th0 = thu(() => th5(false));
+  kiem('T5 b (thả vật): release() xuống ô chồng → "tha-bi-chan" vat container, vật vẫn ở tay', th1 && !th1.loi && th1.suKien.some((e) => e.ma === 'tha-bi-chan' && e.vat === 'container') && th1.vat[0].trangThai === 'cam', th1 && J(th1.suKien));
+  kiem('T5 d (thả vật): không khai contChan → vật nằm lên ô chồng (2, 0) như cũ (phép b đỏ)', th0 && th0.vat[0].trangThai === 'dat' && th0.vat[0].x === 2, th0 && J(th0.vat));
+
+  // LỜI VIỆT (cham.js): màn khai contChan → cham.js đưa cờ xuống lõi; chẩn đoán "dam-tuong" nói chồng container + nhờ cần cẩu; người chờ nói "chồng container"
+  const ChamHoc = require(path.join(day, 'cham.js'));
+  const man5 = (cc) => ({ ma: 't5', san: ['....F'], batDau: { x: 0, y: 0, huong: 1 }, loaiRobot: 'banh', hamGoc: BANH5, mucTieu: 'toi-co', contChan: cc, chong: [{ x: 2, y: 0, cont: [{ so: 1 }] }], cauTruc: ['for'] });
+  const CHINH5 = ['for i in range(4):', '    left_move()', '    right_move()', '    wait()'];
+  const cv1 = thu(() => ChamHoc.cham(man5(true), { chinh: CHINH5 }, [])), cv0 = thu(() => ChamHoc.cham(man5(false), { chinh: CHINH5 }, []));
+  const dt5 = cv1 && cv1.chanDoan.filter((d) => d.ma === 'dam-tuong')[0];
+  kiem('T5 (lời Việt): cham.js đưa contChan xuống lõi; "dam-tuong" nói "chồng container" ở ô (2, 0) và "Nhờ cần cẩu nhấc container đi trước"', cv1 && !cv1.thang && dt5 && /chồng container ở ô \(2, 0\)/.test(dt5.loi) && /Nhờ cần cẩu nhấc container đi trước/.test(dt5.loi), cv1 && J(cv1.chanDoan));
+  kiem('T5 d (lời Việt): màn không khai contChan → cùng chương trình thắng, không "dam-tuong" (phép trên đỏ)', cv0 && cv0.thang && !cv0.chanDoan.some((d) => d.ma === 'dam-tuong'), cv0 && J(cv0.chanDoan));
+  const mNg5 = { ma: 't5n', san: ['....', '....', '....'], batDau: { x: 1, y: 2, nac: 0, tam: 2 }, loaiRobot: 'cau', hamGoc: CAU5, mucTieu: 'cuu-nguoi', contChan: true, chong: [{ x: 1, y: 0, cont: [{ so: 1 }] }], nguoi: [{ x: 0, y: 0 }], tramCuu: [{ x: 3, y: 0 }], cauTruc: ['for'] };
+  const cn5 = thu(() => ChamHoc.cham(mNg5, { chinh: ['for i in range(4):', '    wait()'] }, []));
+  kiem('T5 (lời Việt): người chờ vì chồng → lời "chua-cuu-nguoi" nói ô (1, 0) "có chồng container"', cn5 && !cn5.thang && cn5.chanDoan.some((d) => d.ma === 'chua-cuu-nguoi' && /\(1, 0\) trên đường về trạm có chồng container/.test(d.loi)), cn5 && J(cn5.chanDoan));
+  // màn giả soát trên trình duyệt: ThuMua9.vao('cont-chan') (hoc/game/thu-mua-9.js manContChan) qua cham.js — xích đâm chồng 2 lần, cẩu nhấc, xích ủi thùng vào đích
+  const T9 = thu(() => require(path.join(day, 'game', 'thu-mua-9.js')));
+  const mcc = T9 && thu(() => T9.manContChan()), rcc = mcc && thu(() => ChamHoc.cham(mcc, mcc.maMau, []));
+  const dtc = rcc && rcc.chanDoan.filter((d) => d.ma === 'dam-tuong')[0];
+  kiem("T5 (màn giả 'cont-chan'): lời giải nạp sẵn qua cham.js thắng ở nhịp 5, chẩn đoán đâm chồng container 2 lần (soát trên trình duyệt)", rcc && rcc.thang && rcc.soNhip === 5 && dtc && dtc.soLan === 2 && /chồng container ở ô \(1, 2\)/.test(dtc.loi), rcc && J([rcc.thang, rcc.soNhip, rcc.chanDoan]));
+  const rcc0 = mcc && thu(() => ChamHoc.cham(Object.assign({}, mcc, { contChan: false }), mcc.maMau, []));
+  kiem("T5 d (màn giả 'cont-chan'): bỏ contChan → xích ủi thẳng qua ô chồng, thắng ở nhịp 3, không đâm (phép trên đỏ)", rcc0 && rcc0.thang && rcc0.soNhip === 3 && !rcc0.chanDoan.some((d) => d.ma === 'dam-tuong'), rcc0 && J([rcc0.soNhip, rcc0.chanDoan]));
 }
 
 /* ============================================================ M9C1 (4/11): L3 xe tời bờ, P người cần cứu */
@@ -574,6 +691,121 @@ const vetNhip = (k) => k.vet.filter((v) => v.loai === 'nhip');
   kiem('L9: một tay — giỏ cứu hộ không đi chung móc cẩu trên đầu cần (lõi báo)', /giỏ cứu hộ .* không đi chung móc cẩu/.test(mt9 || ''), mt9);
   const ts9 = thu(() => L9(GIO, 'cast_net("front")\n'));
   kiem('L9: cast_net("front") trên cẩu → lỗi chạy lời Việt (giỏ thả ngay ở đầu cần)', ts9 && ts9.loi && /không nhận đối số/.test(ts9.loi.thongDiep), ts9 && J(ts9.loi));
+}
+
+/* ============================================================ M9L15 (4/11, user mở "Mở L15"): drone + bình xịt bụng (tay vòi phun 'hoi' treo dưới bụng drone)
+   Luật: 1 chỉ spray() không đối số (spray_back / daoChieu sung trên drone = lỗi cấu hình; spray(p) = lỗi chạy 'xit-tham-so');
+         2 một spray() = một nhịp (làm ở nhịp kế: wait / go_* / land / take_off, TRƯỚC khi bay), xịt cả lúc bay lẫn lúc đậu; drone mang bình bay lên trên lửa / van V / nút N;
+         3 ô dưới bụng: lửa → 'lua-nho' / 'lua-tat'; V → doiVan, 'phun-van' tu = o; N → 'nut-doi'; ô khác → 'xit-hut' (không lỗi, không chạm người);
+         4 bình mặc định 3 lần (danToiDa khai thì theo màn), hết → 'het-dan' { drone: true, binh } (lỗi), vẫn mất nhịp; 5 có tác dụng → 'xit-bung' { o, trung } TRƯỚC mã cũ.
+         Xe gắn vòi phun KHÔNG đổi (bóng bay thẳng, giật). */
+{
+  const BX = { than: 'drone', tay: 'hoi' }, BAY_L15 = ['go_up', 'go_down', 'go_left', 'go_right', 'wait'];
+  const SAN_LUA = ['.=..F'];                                                                 // hàng rào '=' (xe không qua, drone bay qua), lửa ở (2, 0), cờ (4, 0)
+  const L15 = (lai, cach, code, them) => chay(lai, cach, SAN_LUA, { x: 0, y: 0 }, code, Object.assign({ lua: [{ x: 2, y: 0, suc: 1 }], mucTieu: 'dap-lua' }, them || {}));
+  const XIT_LUA = 'go_right()\ngo_right()\nspray()\ngo_right()\ngo_right()\n';
+  const okLua = (k) => !k.loi && k.thang && coSk(k, 'lua-tat') && !coSk(k, 'ban') && !coSk(k, 'giat') && sk1(k, 'xit-bung') && sk1(k, 'xit-bung').trung === 'lua' && J(sk1(k, 'xit-bung').o) === J({ x: 2, y: 0 }) && k.robot.x === 4;
+  const l15 = thu(() => L15('L15', BX, XIT_LUA));
+  const nhipXit = l15 && vetNhip(l15).find((v) => v.suKien.some((e) => e.ma === 'xit-bung'));
+  const thuTu = nhipXit && nhipXit.suKien.map((e) => e.ma);
+  kiem('L15 b (luật 2, 3, 5): drone bay qua rào lên ô lửa (2, 0), spray() xịt thẳng xuống: "xit-bung" trung lua TRƯỚC "lua-nho" / "lua-tat", cùng nhịp bay tiếp; không "ban", không "giat"; dập lửa xong tới cờ → thắng',
+    l15 && okLua(l15) && thuTu && thuTu.indexOf('xit-bung') < thuTu.indexOf('lua-nho') && thuTu.indexOf('lua-nho') < thuTu.indexOf('lua-tat') && thuTu.indexOf('lua-tat') < thuTu.indexOf('di') && l15.nhip === 4,
+    l15 && (J(l15.loi) + ' ' + skNg(l15)));
+  kiem('L15 d: cùng sân, chương trình KHÔNG spray() → lửa còn, không thắng (phép b đỏ)', !thu(() => okLua(L15('L15', BX, 'go_right()\ngo_right()\ngo_right()\ngo_right()\n'))));
+  kiem('L15 d: drone KHÔNG gắn vòi phun (spray không có trên khay) → phép b đỏ (lửa chặn drone như cũ: "dam-tuong" vat lua)',
+    !thu(() => okLua(L15('L15', { than: 'drone', tay: null }, XIT_LUA))) && thu(() => { const k = L15('L15', { than: 'drone', tay: null }, 'go_right()\ngo_right()\n'); return k.robot.x === 1 && k.suKien.some((e) => e.ma === 'dam-tuong' && e.vat === 'lua'); }));
+  kiem('L15 d: màn CHƯA mở L15 (moLai khác) → lắp ráp chặn drone + vòi phun, phép b đỏ', !thu(() => okLua(L15('L1', BX, XIT_LUA))));
+  const suc2 = thu(() => L15('L15', BX, 'go_right()\ngo_right()\nspray()\nwait()\nspray()\nwait()\n', { lua: [{ x: 2, y: 0, suc: 2 }] }));
+  kiem('L15 b (luật 3): lửa suc 2 cần hai lần xịt (xịt lúc lơ lửng bằng wait()): "lua-nho" suc 1 rồi "lua-tat"', suc2 && !suc2.loi && suc2.thang === false && suc2.lua[0].suc === 0 && vetNhip(suc2).filter((v) => v.suKien.some((e) => e.ma === 'xit-bung')).length === 2, suc2 && skNg(suc2));
+
+  /* luật 3: van V giữa nước (xe không tới được), tia không bay — tu = o, soO 0, huong null; cống đổi cuối nhịp */
+  const van = thu(() => chay('L15', BX, ['..~~~', '~~~V~', '~K~~~', '#####'], { x: 0, y: 0 }, 'go_right()\ngo_right()\ngo_right()\ngo_down()\nspray()\nwait()\n'));
+  const pv = van && sk1(van, 'phun-van');
+  kiem('L15 b (luật 3): drone bay ra van V (3, 1) giữa nước, spray(): "xit-bung" trung van, "phun-van" tu = o = (3, 1), soO 0, huong null; van bật, cống K (1, 2) mở',
+    van && !van.loi && sk1(van, 'xit-bung') && sk1(van, 'xit-bung').trung === 'van' && pv && J(pv.tu) === J({ x: 3, y: 1 }) && J(pv.o) === J({ x: 3, y: 1 }) && pv.soO === 0 && pv.huong === null && van.van[0].bat === true && van.cong[0].mo === true,
+    van && (J(van.loi) + ' ' + skNg(van)));
+  kiem('L15 d: drone không gắn vòi phun → van V chặn ("dam-tuong" vat van), van không đổi (phép b đỏ)',
+    thu(() => { const k = chay('L15', { than: 'drone', tay: null }, ['..~~~', '~~~V~', '~K~~~', '#####'], { x: 0, y: 0 }, 'go_right()\ngo_right()\ngo_right()\ngo_down()\n'); return k.robot.y === 0 && k.suKien.some((e) => e.ma === 'dam-tuong' && e.vat === 'van') && k.van[0].bat === false; }));
+
+  /* luật 3: nút N */
+  const nut = thu(() => chay('L15', BX, ['.N.C.F'], { x: 0, y: 0 }, 'go_right()\nspray()\ngo_right()\ngo_right()\ngo_right()\ngo_right()\n'));
+  kiem('L15 b (luật 3): drone lên trên nút N (1, 0), spray(): "xit-bung" trung nut, "nut-doi", cửa C (3, 0) mở cuối nhịp, drone bay qua cửa tới cờ',
+    nut && !nut.loi && sk1(nut, 'xit-bung') && sk1(nut, 'xit-bung').trung === 'nut' && coSk(nut, 'nut-doi') && nut.thang && nut.robot.x === 5, nut && (J(nut.loi) + ' ' + skNg(nut)));
+  kiem('L15 d: cùng sân không spray() → cửa đóng chặn drone, không thắng (phép b đỏ)', !thu(() => chay('L15', BX, ['.N.C.F'], { x: 0, y: 0 }, 'go_right()\ngo_right()\ngo_right()\ngo_right()\ngo_right()\n').thang));
+
+  /* luật 3: xịt hụt — ô sàn, ô có người: thông tin, không lỗi, không chạm người */
+  const hut = thu(() => chay('L15', BX, ['~~~', '..F'], { x: 0, y: 0 }, 'spray()\nwait()\ngo_right()\nspray()\nwait()\n', { nguoi: [{ x: 1, y: 0 }], tramCuu: [{ x: 0, y: 1 }] }));
+  const hutDs = hut ? hut.suKien.filter((e) => e.ma === 'xit-hut') : [];
+  kiem('L15 b (luật 3): xịt ô nước trống và ô có người (1, 0) → hai "xit-hut" { o } (không lỗi, không "cham-nguoi", không "xit-bung")',
+    hut && !hut.loi && hutDs.length === 2 && J(hutDs[1].o) === J({ x: 1, y: 0 }) && !coSk(hut, 'cham-nguoi') && !coSk(hut, 'xit-bung'), hut && (J(hut.loi) + ' ' + skNg(hut)));
+
+  /* luật 4: bình nhỏ */
+  const het = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nwait()\nspray()\nwait()\nspray()\nwait()\nspray()\nwait()\n'));
+  const hd = het && het.suKien.filter((e) => e.ma === 'het-dan');
+  kiem('L15 b (luật 4): bình mặc định 3 lần: ba "xit-hut" rồi lần thứ tư "het-dan" { drone: true, binh: 3 }, không xịt, vẫn mất nhịp (4 nhịp)',
+    het && !het.loi && hd.length === 1 && hd[0].drone === true && hd[0].binh === 3 && het.suKien.filter((e) => e.ma === 'xit-hut').length === 3 && het.nhip === 4 && het.sung && het.sung.dan === 0, het && skNg(het));
+  const het1 = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nwait()\nspray()\nwait()\n', { danToiDa: 1 }));
+  kiem('L15 b (luật 4): màn khai danToiDa = 1 → lần thứ hai đã "het-dan" binh 1', het1 && het1.suKien.filter((e) => e.ma === 'het-dan').length === 1 && sk1(het1, 'het-dan').binh === 1 && het1.suKien.filter((e) => e.ma === 'xit-hut').length === 1, het1 && skNg(het1));
+  kiem('L15 d: cùng chương trình nhưng danToiDa = 5 → không "het-dan" (phép b đỏ)', !thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nwait()\nspray()\nwait()\nspray()\nwait()\nspray()\nwait()\n', { danToiDa: 5 }).suKien.some((e) => e.ma === 'het-dan')));
+
+  /* luật 1: lệnh */
+  const ts = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray("high")\nwait()\n', { lucBan: true }));
+  kiem('L15 (luật 1): spray("high") trên drone → lỗi chạy "xit-tham-so" lời Việt (kể cả màn bật lucBan)', ts && ts.loi && ts.loi.ma === 'xit-tham-so' && /không có đối số/.test(ts.loi.thongDiep), ts && J(ts.loi));
+  let sb = null; try { SanHoc.chay({ san: ['...'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY_L15.concat(['spray', 'spray_back']) }, ''); } catch (e) { sb = e.message; }
+  kiem('L15 (luật 1): spray_back trên khay drone → lỗi cấu hình "không có mũi hay đuôi"', /không có mũi hay đuôi/.test(sb || ''), sb);
+  let dc = null; try { SanHoc.chay({ san: ['...'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY_L15.concat(['spray']), daoChieu: ['sung'] }, ''); } catch (e) { dc = e.message; }
+  kiem('L15 (luật 1): daoChieu "sung" trên drone → lỗi cấu hình (luật cũ: daoChieu chỉ cho xe có bánh)', /daoChieu chỉ dùng cho robot có hai bánh/.test(dc || ''), dc);
+  const khay = thu(() => LapRap.apDung({ ma: 't', lapRap: { moLai: ['L15'] } }, BX).hamGoc);
+  kiem('L15 (luật 1): lắp ráp drone + vòi phun chỉ đưa spray lên khay (không spray_back)', khay && khay.indexOf('spray') >= 0 && khay.indexOf('spray_back') < 0, J(khay));
+
+  /* luật 2: nhịp — xịt ô cũ rồi mới bay; xịt lúc đậu; land không xuống lửa */
+  const dap = thu(() => SanHoc.chay({ san: ['....'], batDau: { x: 0, y: 0 }, loaiRobot: 'drone', hamGoc: BAY_L15.concat(['land', 'take_off', 'spray']), lua: [{ x: 1, y: 0, suc: 1 }] }, 'go_right()\nland()\nspray()\nwait()\ngo_right()\nland()\nspray()\ntake_off()\n'));
+  kiem('L15 b (luật 2): land() xuống ô lửa → "dap-bi-chan" vat lua; spray() lúc đang lơ lửng dập lửa; drone đáp ở (2, 0), spray() lúc đang đậu → "xit-hut" rồi cất cánh',
+    dap && !dap.loi && dap.suKien.some((e) => e.ma === 'dap-bi-chan' && e.vat === 'lua') && dap.lua[0].suc === 0 && dap.suKien.filter((e) => e.ma === 'xit-hut').length === 1 && J(sk1(dap, 'xit-hut').o) === J({ x: 2, y: 0 }), dap && skNg(dap));
+  const goi = thu(() => chay('L15', BX, ['.....'], { x: 0, y: 0 }, 'spray()\nspray()\nwait()\n'));
+  kiem('L15 (luật 2): hai spray() chưa trôi nhịp → "ban-goi-lai" (như xe), chỉ một lần xịt', goi && goi.suKien.some((e) => e.ma === 'ban-goi-lai') && goi.suKien.filter((e) => e.ma === 'xit-hut').length === 1, goi && J(goi.suKien.map((e) => e.ma)));
+
+  /* xe gắn vòi phun KHÔNG đổi */
+  const xe = thu(() => SanHoc.chay({ san: ['.....', '#####'], batDau: { x: 2, y: 0, huong: 1 }, hamGoc: BANH.concat(['spray']), lucBan: true }, 'spray("high")\nwait()\nspray()\nwait()\n'));
+  kiem('L15: xe gắn vòi phun không đổi — tia "ban" bay thẳng, spray("high") giật lùi một ô, không "xit-bung" / "xit-hut"',
+    xe && !xe.loi && xe.suKien.length >= 0 && vetNhip(xe).filter((v) => v.suKien.some((e) => e.ma === 'ban')).length === 2 && coSk(xe, 'giat') && xe.robot.x === 1 && !coSk(xe, 'xit-bung') && !coSk(xe, 'xit-hut'), xe && skNg(xe));
+}
+
+/* 16/11 (mùa 9 G4 Cảng sông): CẨU MÓC CONTAINER TRÔI — vòng "xuồng kéo container về tầm cần, cẩu nhấc lên bãi / boong".
+   Ô đầu cần không có chồng mà có container trôi (lớp contTroi): pick_up nhấc nó (moc-cont, troi = id vật nổi), read_code / weight đọc nó;
+   bè thường: moc-hut 'trong'; xuồng khác đang giữ trong lưới: moc-hut 'dang-keo'; nhả lưới rồi thì nhấc được. */
+console.log('\nT6 cẩu móc container trôi');
+{
+  const CAU6 = ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'pick_up', 'pick_up2', 'set_down', 'read_code', 'weight'];
+  const cau6 = (bd) => ({ batDau: bd, loaiRobot: 'cau', hamGoc: CAU6, camBien: [{ ma: 'quet-ma', o: 'tren' }] });
+  const skDs = (k) => vetNhip(k).flatMap((v) => (v.suKien || []).map((e) => Object.assign({ nhip: v.nhip }, e)));
+  const SAN6 = ['.~B~~', '.~~~~', '.....'];
+  const a = thu(() => SanHoc.chay(Object.assign(cau6({ x: 0, y: 0, nac: 1, tam: 2 }), { san: SAN6, contTroi: [{ x: 2, y: 0, so: 12, tan: 2 }] }),
+    'a = read_code()\nb = weight()\npick_up()\nretract()\nswing_right()\nextend()\nset_down()\n'));
+  const docA = a ? skDs(a).filter((e) => e.ma === 'doc-cam-bien') : [], mocA = a ? skDs(a).find((e) => e.ma === 'moc-cont') : null;
+  kiem('T6 a: cẩu đọc container trôi (read_code 12, weight 2), pick_up nhấc (moc-cont troi), hạ lên bờ (0, 2) thành chồng; vật nổi thành trangThai moc',
+    a && !a.loi && docA.length >= 2 && docA[0].so === 12 && docA[1].tan === 2 && mocA && mocA.troi !== undefined && J(mocA.cont) === J([{ so: 12, tan: 2 }]) &&
+    J(a.chong) === J([{ x: 0, y: 2, cont: [{ so: 12, tan: 2 }] }]) && a.vat.some((v) => v.noi === 'container' && v.trangThai === 'moc'), a && (a.loi ? J(a.loi) : skNg(a) + ' chong ' + J(a.chong)));
+  const b = thu(() => SanHoc.chay(Object.assign(cau6({ x: 0, y: 0, nac: 1, tam: 2 }), { san: ['.~B~~'] }), 'a = read_code()\npick_up()\n'));
+  kiem('T6 b: bè thường (không container) — read_code −1, pick_up moc-hut trong', b && !b.loi && skDs(b).some((e) => e.ma === 'doc-cam-bien' && e.so === -1) && skDs(b).some((e) => e.ma === 'moc-hut' && e.vat === 'trong'), b && skNg(b));
+  const c2 = thu(() => SanHoc.chay(Object.assign(cau6({ x: 0, y: 0, nac: 1, tam: 2 }), { san: SAN6, contTroi: [{ x: 2, y: 0, so: 12 }] }), 'pick_up2()\n'));
+  kiem('T6 c: pick_up2 vào container trôi — moc-thieu co 1, không nhấc', c2 && skDs(c2).some((e) => e.ma === 'moc-thieu' && e.co === 1) && !skDs(c2).some((e) => e.ma === 'moc-cont'), c2 && skNg(c2));
+  const XU6 = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'cast_net', 'drop_net'];
+  const d = thu(() => SanHoc.chay({ san: ['.~B~~', '.~~~~', '.~~~~'], contTroi: [{ x: 2, y: 0, so: 12 }], doi: [
+    { batDau: { x: 2, y: 2, huong: 0 }, loaiRobot: 'xuong', hamGoc: XU6 }, cau6({ x: 0, y: 0, nac: 1, tam: 2 })] },
+    ['cast_net()\nwait()\nwait()\ndrop_net()\nwait()\n', 'wait()\npick_up()\nwait()\nwait()\npick_up()\n']));
+  const skD = d ? d.doi[1].suKien : [];
+  kiem('T6 d: xuồng đang giữ container trong lưới — cẩu moc-hut dang-keo; xuồng nhả lưới rồi cẩu nhấc được (moc-cont)',
+    d && !d.loi && skD.some((e) => e.ma === 'moc-hut' && e.vat === 'dang-keo') && (d.doi[1].vet || []).some((v) => v.loai === 'nhip' && (v.suKien || []).some((e) => e.ma === 'moc-cont')), d && (d.loi ? J(d.loi) : J(skD.map((e) => e.nhip + ':' + e.ma + ':' + (e.vat || '')))));
+  // giao container trôi lên tàu: cfg.giao / hangTau.can đếm cả số của container trôi (trước 16/11 lõi ném "không có container số … (cfg.chong)")
+  const SAN6T = ['~~~B~~~', '~~~~~~~', '~~~T~~~', '.......'], LEN6 = 'pick_up()\nretract()\nretract()\nset_down()\n';
+  const tau6 = (them, code) => thu(() => SanHoc.chay(Object.assign(cau6({ x: 3, y: 3, nac: 0, tam: 3 }), { san: SAN6T, nhipToiDa: 40, mucTieu: 'giao-tau' }, them), code));
+  const e6 = tau6({ contTroi: [{ x: 3, y: 0, so: 7 }], hangTau: { o: [{ x: 3, y: 2 }], can: [7], cho: [{ x: 4, y: 2 }] } }, LEN6);
+  kiem('T6 e: hàng tàu cần container số 7 đang trôi — cẩu móc lên boong: thắng (xong-giao-tau), daGiaoHang [7]', e6 && !e6.loi && e6.thang === true && J(e6.daGiaoHang) === '[7]', e6 && (e6.loi ? J(e6.loi) : skNg(e6)));
+  const f6 = tau6({ contTroi: [{ x: 3, y: 0, so: 12 }], tau: [{ o: [{ x: 3, y: 2 }], co: 6, vang: 4 }], giao: [{ tau: 0, so: [12] }] }, LEN6 + 'wait()\nwait()\nwait()\n');
+  kiem('T6 f: tàu chu kỳ (đậu 6 nhịp) + giao [12] đang trôi — hạ kịp lên boong, tàu rời mang đi: thắng', f6 && !f6.loi && f6.thang === true && coSk(f6, 'tau-roi'), f6 && (f6.loi ? J(f6.loi) : skNg(f6)));
+  const g6 = tau6({ contTroi: [{ x: 3, y: 0, so: 12 }], tau: [{ o: [{ x: 3, y: 2 }], co: 3, vang: 4 }], giao: [{ tau: 0, so: [12] }] }, LEN6 + 'wait()\nwait()\nwait()\n');
+  kiem('T6 g: tàu chỉ đậu 3 nhịp — rời trước khi hạ (ha-bi-chan tau-vang): không thắng (phép f đỏ khi trễ)', g6 && !g6.loi && g6.thang === false && coSk(g6, 'ha-bi-chan'), g6 && (g6.loi ? J(g6.loi) : skNg(g6)));
 }
 
 console.log('\nĐẠT ' + dat + ' · HỎNG ' + hong);

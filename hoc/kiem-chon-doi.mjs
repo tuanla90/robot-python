@@ -196,10 +196,59 @@ console.log('B. Lắp ráp cho một robot của màn đội (man.lapRap.robot =
 console.log('Màn cũ');
 {
   const M = require(path.join(day, 'lo-trinh-hoc.js'));
-  const doi = M.danhSach.filter((m) => Array.isArray(m.doi)), rap = M.danhSach.filter((m) => m.lapRap);
-  kiem('lộ trình: chưa màn nào khai chonDoi / lapRap.robot (D2 mới dựng màn); mọi màn đội vẫn 2 robot', doi.every((m) => !m.chonDoi && LapRap.robotLapCua(m) === null && m.doi.length === 2) && rap.every((m) => LapRap.robotLapCua(m) === null), doi.length + ' màn đội, ' + rap.length + ' màn lắp');
-  const m1 = rap[0], a1 = LapRap.apDung(m1, m1.lapRap.cachLap[0]);
+  // M9M1 (5/11): màn mùa 9 dựng lại (khai man.cauDo) được dùng chonDoi / lapRap.robot / 3 robot; màn CŨ (không cauDo) giữ dạng 2 robot, lắp một robot
+  const cu = M.danhSach.filter((m) => !m.cauDo), doi = cu.filter((m) => Array.isArray(m.doi)), rap = cu.filter((m) => m.lapRap);
+  kiem('lộ trình: màn cũ (không cauDo) không khai chonDoi / lapRap.robot; mọi màn đội cũ vẫn 2 robot', doi.every((m) => !m.chonDoi && LapRap.robotLapCua(m) === null && m.doi.length === 2) && rap.every((m) => LapRap.robotLapCua(m) === null), doi.length + ' màn đội, ' + rap.length + ' màn lắp');
+  const m9 = M.danhSach.filter((m) => m.cauDo);
+  kiem('lộ trình: màn mùa 9 dựng lại (cauDo) có màn chọn đội và màn lắp robot thứ i', m9.length === 0 || (m9.some((m) => m.chonDoi) && m9.some((m) => m.lapRap && LapRap.robotLapCua(m) !== null)), m9.length + ' màn cauDo');
+  const m1 = rap.find((m) => !Array.isArray(m.doi)), a1 = LapRap.apDung(m1, m1.lapRap.cachLap[0]);
   kiem('màn lắp ráp một robot: apDung không sinh trường doi, loiGiai vẫn { chinh, hamCuaMan, hamCuaEmMoi }', a1.doi === undefined && J(Object.keys(a1.loiGiai)) === '["chinh","hamCuaMan","hamCuaEmMoi"]' && a1.loaiRobot === m1.loaiRobot, m1.ma);
+}
+
+console.log('E. Mọi cách chọn đội của màn trong lộ trình dựng được sân (16/11)');
+{
+  // Khe cẩu khai batDau.nac (cuu-nha-may.8): người chơi chọn cỗ máy khác vào khe đó thì lõi từng NÉM "batDau.nac / batDau.tam chỉ dùng cho cần cẩu".
+  // apDungDoi bỏ nac / tam khi cỗ máy chọn không phải cẩu. Ở đây: mọi cách chọn hợp lệ của mọi màn chonDoi chấm được (thua thì được, ném lỗi thì hỏng).
+  const M = require(path.join(day, 'lo-trinh-hoc.js'));
+  const ds = M.danhSach.filter((m) => m.chonDoi);
+  let thu = 0; const loi = [];
+  for (const m of ds) {
+    const menu = m.chonDoi.menu, so = LapRap.soChonCua(m), combos = [];
+    (function gen(p) { if (p.length === so) return combos.push(p); for (const c of menu) if (m.chonDoi.trung || !p.includes(c)) gen(p.concat(c)); })([]);
+    for (const c of combos) {
+      let mm; try { mm = LapRap.apDungDoi(m, c); } catch (e) { continue; }   // chọn không hợp lệ: giao diện chặn trước
+      thu++;
+      let msg = '';
+      try { const r = Cham.cham(mm, mm.doi.map(() => 'wait()\n')); msg = r && r.loi ? String(r.loi) : ''; } catch (e) { msg = e.message; }
+      if (msg) loi.push(m.ma + ' ' + c.join('+') + ': ' + msg);
+    }
+  }
+  kiem('mọi cách chọn đội hợp lệ của ' + ds.length + ' màn chonDoi dựng được sân (' + thu + ' cách)', ds.length > 0 && thu > 0 && loi.length === 0, loi.slice(0, 6).join('\n      '));
+  const nac = ds.find((m) => m.doi.some((r) => r.batDau && r.batDau.nac !== undefined));
+  if (nac) {
+    const i = nac.doi.findIndex((r) => r.batDau && r.batDau.nac !== undefined), j = LapRap.robotEm(nac).indexOf(i);
+    const khac = nac.chonDoi.menu.find((x) => CoMay.dung(x, {}).loaiRobot !== 'cau');
+    const chon = LapRap.robotEm(nac).map((_, k) => k === j ? khac : nac.chonDoi.menu.find((x) => x !== khac));
+    const mm = nem(() => LapRap.apDungDoi(nac, chon)) === null ? LapRap.apDungDoi(nac, chon) : null;
+    kiem('khe cẩu khai nac (' + nac.ma + '), chọn ' + khac + ' vào khe: apDungDoi bỏ nac / tam, màn gốc giữ nac', !!mm && mm.doi[i].batDau.nac === undefined && mm.doi[i].batDau.tam === undefined && nac.doi[i].batDau.nac !== undefined, J(mm && mm.doi[i].batDau));
+  }
+  // G4 Cảng sông: khe trộn xuồng với xe cạn — doi[i].batDauNuoc là ô trên mặt nước dùng khi cỗ máy là xuồng; trường này không đi xuống lõi
+  const gia = { ma: 'gia-nuoc', ten: 'khe nước', san: ['...F', '~~~~', '~~~~'],
+    doi: [{ batDau: { x: 0, y: 0, huong: 1 }, batDauNuoc: { x: 0, y: 1, huong: 1 }, co: [{ x: 3, y: 0 }] }, { batDau: { x: 1, y: 0, huong: 1 }, batDauNuoc: { x: 1, y: 2, huong: 1 }, son: 'lam', co: [{ x: 3, y: 0 }] }],
+    chonDoi: { menu: ['XU', 'CH'], cachMau: [{ chon: ['XU', 'CH'], loiGiai: { doi: [{ chinh: ['wait()'] }, { chinh: ['wait()'] }] } }] } };
+  const kq = [['XU', 'CH'], ['CH', 'XU']].map((c) => { const m = LapRap.apDungDoi(gia, c); let loi = ''; try { const r = Cham.cham(m, m.doi.map(() => 'wait()\n')); loi = r.loi ? String(r.loi) : ''; } catch (e) { loi = e.message; } return { m, loi }; });
+  kiem('khe batDauNuoc: xuồng vào khe xuất phát trên nước, xe chở hàng vào khe xuất phát trên cạn, cả hai cách chấm được; batDauNuoc không đi xuống lõi',
+    J(kq[0].m.doi.map((r) => [r.loaiRobot, r.batDau])) === J([['xuong', { x: 0, y: 1, huong: 1 }], ['banh', { x: 1, y: 0, huong: 1 }]]) &&
+    J(kq[1].m.doi.map((r) => [r.loaiRobot, r.batDau])) === J([['banh', { x: 0, y: 0, huong: 1 }], ['xuong', { x: 1, y: 2, huong: 1 }]]) &&
+    kq.every((k) => !k.loi && k.m.doi.every((r) => r.batDauNuoc === undefined)), J(kq.map((k) => [k.m.doi.map((r) => r.batDau), k.loi])));
+  // bản mặc định (macDinh, lộ trình đọc thẳng): xuồng của cách mẫu xuất phát trên nước; chọn lại trên bản mặc định (xe vào khe đó) về ô trên cạn gốc
+  const md = LapRap.macDinh(clone(gia));
+  let loiMd = ''; try { const r = Cham.cham(md, md.doi.map(() => 'wait()\n')); loiMd = r.loi ? String(r.loi) : ''; } catch (e) { loiMd = e.message; }
+  const lai = LapRap.apDungDoi(md, ['CH', 'XU']);
+  let loiLai = ''; try { const r = Cham.cham(lai, lai.doi.map(() => 'wait()\n')); loiLai = r.loi ? String(r.loi) : ''; } catch (e) { loiLai = e.message; }
+  kiem('khe batDauNuoc, bản mặc định: xuồng cách mẫu xuất phát trên nước, chấm được; chọn lại CH + XU trên bản mặc định: CH về ô cạn gốc, XU ra nước',
+    J(md.doi[0].batDau) === J({ x: 0, y: 1, huong: 1 }) && !loiMd && J(lai.doi.map((r) => r.batDau)) === J([{ x: 0, y: 0, huong: 1 }, { x: 1, y: 2, huong: 1 }]) && !loiLai,
+    J([md.doi.map((r) => r.batDau), loiMd, lai.doi.map((r) => r.batDau), loiLai]));
 }
 
 console.log('---------------------------------------------');

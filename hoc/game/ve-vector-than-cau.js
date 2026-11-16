@@ -4,7 +4,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    cabin vỏ trắng chuẩn gia đình thân R1 (kính + mắt màu đội + ăng-ten + vệt sáng) giữa mâm, chốt chân cần ở mép trước mâm và một ĐOẠN CẦN ngắn trước mặt.
    Trạng thái s: ray (nâng cấp chạy trên ray: hai giá bánh ray; true / 'doc' = giá dọc theo thân, 'ngang' = giá ngang), coCan (ẩn đoạn cần ngắn:
    veCanCau đã vẽ cần thật), mat (mắt biểu cảm).
-   hamGoc: swing_left, swing_right, extend, retract, wait (gốc gói 1) + rail (nâng cấp gói 5). */
+   hamGoc: swing_left, swing_right, extend, retract, wait (gốc gói 1) + rail (nâng cấp gói 5).
+   M9H2 (4/11, lai L13): camDauCan ['tu', 'camera-bay'] đọc Ô ĐẦU CẦN nên vẽ ở đầu cần: thẻ lắp ráp (VeVector.robot) đặt ở oDauCan cạnh đầu đoạn cần ngắn (một cái, không đôi hông);
+   trên sân veBeCau bỏ qua, veCanCau vẽ cạnh ròng rọc đầu cần thật (veCamDauCan), mặt đọc chĩa ra ngoài theo cần. Tay lai (gầu L8, nam châm L1, giỏ L9): s.trenCan chỉ vẽ tời. */
 (function (root) {
   var V = root.VeVector || (typeof module === 'object' && require('./ve-vector.js'));
   var NAC = [[0, -1], [1, 0], [0, 1], [-1, 0]];      // 4 hướng cần (14/11, thay 8 nấc): 0 lên, 1 phải, 2 xuống, 3 trái (khớp SanHoc.NAC_VEC)
@@ -91,11 +93,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   V.dangKy({
     loai: 'than', ma: 'cau', hamGoc: ['swing_left', 'swing_right', 'extend', 'retract', 'wait', 'rail'], ten: 'Thân cần cẩu container',
     oGan: { tay: { x: 50, y: 86 }, hongTrai: { x: 70, y: 54 }, hongPhai: { x: 30, y: 54 }, tren: { x: 66, y: 72 }, sau: { x: 50, y: 25 }, bung: { x: 50, y: 72 } },   // M9B2: ổ bung ở mép dưới vỏ, sát gốc cần (camera bụng L13 vẽ tạm theo ổ; hình ở đầu cần là gói hình sau)
-    oCam: { x: 58, y: 36 }, vo: { x: 29, y: 34, w: 42, h: 39 },
+    oCam: { x: 58, y: 36 }, vo: { x: 29, y: 34, w: 42, h: 39 }, oDauCan: { x: 66, y: 90 }, camDauCan: ['tu', 'camera-bay'],
     ve: function (g, s, M, H) { veDe(g, s, H); veTren(g, s, M, H); }
   });
   V.veDeCau = veDe; V.veTrenCau = veTren;
 
+  var TAY_THAY_MOC = ['nam-cham', 'kep', 'day-keo'];       // M9H2: tay lai của cần cẩu treo ở đầu cáp thay cho móc (bảng ghép: ★ L1, L8, L9)
+  V.TAY_THAY_MOC_CAU = TAY_THAY_MOC;
   function gocNac(nac) { return (((+nac || 0) % 4) + 4) % 4 * Math.PI / 2; }      // 0 = lên, tăng theo chiều kim đồng hồ
   /** Véc-tơ (ô) tới đầu cần ở nấc (cho phép lẻ: nội suy theo góc; 4 hướng nên cần luôn dài đúng 1 ô × tầm, quay 90° theo cung tròn). */
   function vecNac(nac) {
@@ -120,6 +124,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (tay && tay.diemNeo) { g.save(); g.translate(than.oGan.tay.x - tay.diemNeo.x, than.oGan.tay.y - tay.diemNeo.y); tay.ve(g, Object.assign({}, st.tay || {}, { than: 'cau', trenCan: true }), M, H); g.restore(); }
     V.doiCam(cfg.camBien).forEach(function (cb) {
       var d = V.lay('cam-bien', cb.ma), p = than.oGan[cb.o]; if (!d || !p) return;
+      if (than.camDauCan && than.camDauCan.indexOf(cb.ma) >= 0) return;                    // M9H2: cảm biến đọc ô đầu cần vẽ ở đầu cần thật (veCanCau → veCamDauCan)
       g.save(); g.translate(p.x - d.diemNeo.x, p.y - d.diemNeo.y);
       d.ve(g, Object.assign({}, st.camBien || {}, { ben: cb.o === 'hongTrai' ? 'trai' : cb.o === 'hongPhai' ? 'phai' : null, o: cb.o, ra: p.x >= 50 ? 1 : -1, than: 'cau' }), M, H);
       g.restore();
@@ -141,6 +146,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     gianCan(g, H, L, w);
     H.tron(g, L, 0, w * 0.64); H.to(g, BM.vecThep); H.vien(g, BM.vecVien, Math.max(1, w * 0.14));                                                   // ròng rọc đầu cần
     H.tron(g, L, 0, w * 0.25); H.to(g, BM.vecCanhBao);
+    veCamDauCan(g, o, L, w, c);
     g.restore();
     H.tron(g, rx, ry, c * 0.06); H.to(g, BM.vecThepToi); H.vien(g, BM.vecVien, Math.max(1, c * 0.02));
     if (treo.length) {
@@ -156,9 +162,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var hy = ty + c * 0.1;
       if (o.bong !== false) { H.elip(g, tx + c * 0.1, hy + c * 0.13, c * 0.1, c * 0.06); H.to(g, H.rgba(BM.vecBongRgb, 0.25)); }
       g.beginPath(); g.moveTo(tx, ty); g.lineTo(tx, hy); H.vien(g, BM.vecVien, Math.max(1.4, c * 0.035)); H.vien(g, BM.vecBacToi, Math.max(0.8, c * 0.015));
-      if (V.veMocCau) V.veMocCau(g, tx, hy, c * 0.14, !!o.doi);
+      if (V.veMocCau && !(o.cfg && TAY_THAY_MOC.indexOf(o.cfg.tay) >= 0)) V.veMocCau(g, tx, hy, c * 0.14, !!o.doi);     // M9H2: tay lai THAY CHỖ MÓC (L1 nam châm, L8 gầu, L9 giỏ: san-ve.js veTreoCau9 vẽ ở đầu cáp) — chỉ còn cáp
     }
     return { tx: tx, ty: ty };
   }
   V.veCanCau = veCanCau;
+  /** M9H2: cảm biến đọc ô đầu cần (than.camDauCan: từ, camera bụng — lai L13) vẽ CẠNH RÒNG RỌC đầu cần thật, trong hệ của cần đã xoay (gốc = chân cần, +x dọc cần, đầu cần ở x = L):
+   *  lùi khỏi ròng rọc 1,5 bề cần, lệch sang một bên 1,1 bề cần, mặt đọc (+y của hình cảm biến) chĩa ra ngoài theo cần; cỡ ~0,2 ô. Không có thì không vẽ gì. */
+  function veCamDauCan(g, o, L, w, c) {
+    var than = V.lay('than', 'cau'), cfg = o.cfg || {}, da = {};
+    V.doiCam(cfg.camBien).forEach(function (cb) {
+      if (da[cb.ma] || !than.camDauCan || than.camDauCan.indexOf(cb.ma) < 0) return;
+      var d = V.lay('cam-bien', cb.ma); if (!d) return;
+      da[cb.ma] = 1;
+      g.save(); g.translate(L - w * 1.5, -w * 1.1); g.rotate(-Math.PI / 2); g.scale(c / 100 * V.CO_THAN * 0.9, c / 100 * V.CO_THAN * 0.9); g.translate(-d.diemNeo.x, -d.diemNeo.y);
+      d.ve(g, Object.assign({}, (o.st && o.st.camBien) || {}, { ben: null, o: cb.o, ra: 1, than: 'cau', dauCan: true }), V.mauDoi(cfg.son), V.H);
+      g.restore();
+    });
+  }
+  V.veCamDauCan = veCamDauCan;
 })(typeof window !== 'undefined' ? window : globalThis);

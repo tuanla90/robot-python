@@ -286,7 +286,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (m.huongDan || (window.HuongDanMan && HuongDanMan[m.ma])) anBongD();
         else hienDeBai();
         if (window.HuongDan) HuongDan.vaoMan(m);                                        // man.huongDan (nếu màn khai): sáng nút / khối phải chạm, từng bước
-        Array.prototype.forEach.call(document.querySelectorAll('.chinh-khoa .ck-chu'), function (e) { e.textContent = t(m.chiChay ? 'choi.chiChayNhan' : 'choi.chinhKhoaNhan'); });     // nhãn ổ khóa (khung chính và bản trong Xưởng): màn trình diễn (chỉ Chạy) hay main cố định (sửa hàm)
+        Array.prototype.forEach.call(document.querySelectorAll('.chinh-khoa .ck-chu'), function (e) {                // nhãn ổ khóa (khung chính và bản trong Xưởng): màn trình diễn (chỉ Chạy) hay main cố định (sửa hàm)
+          var nhan = t(m.chiChay ? 'choi.chiChayNhan' : 'choi.chinhKhoaNhan');
+          e.textContent = nhan;
+          e.parentNode.setAttribute('title', nhan); e.parentNode.setAttribute('aria-label', nhan); e.parentNode.setAttribute('role', 'img');   // M9H2: màn đội có thẻ R1 / R2 / R3 thì chỉ còn ổ khóa (choi.css .co-doi), tên đọc qua title / aria-label
+        });
       });
     }
     if (window.ThePart && m.doi && m.doiThu) ThePart.choMan(manCuaXe(m, 0), function () { ThePart.doiThu(m, batDau); });     // đối thủ part mạnh: thẻ "ĐỐI THỦ" thay cho thẻ bộ phận của R2
@@ -342,6 +346,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       hinh: lm.hinh || undefined, sonBanDau: lm.sonBanDau || undefined, mucBanDau: m.mucBanDau,                          // máy sơn: hình mờ cần tô của sân này, màu sơn lúc đầu
       vo: m.vo,                                                                                  // vỏ hình của mùa (30/10: 'nong-trai' ở mùa 4)
       dong: lm.dong || undefined,                                                                // BẾN SÔNG (31/10): lớp dòng chảy của sân này
+      nguoi: lm.nguoi || undefined, tramCuu: lm.tramCuu || undefined, thac: lm.thac || undefined, contTroi: lm.contTroi || undefined, contLapHo: !!m.contLapHo, contChan: !!m.contChan,   // MÙA 9: người cần cứu, trạm, thác, container trôi, container lấp hố, chồng container chặn như tường (T5)
+      beSac: lm.beSac || undefined,                                                              // MÙA 9 (T4): bè sạc
       hangTau: lm.hangTau || undefined, chong: lm.chong || undefined, tau: lm.tau || undefined, giao: lm.giao || undefined, taiToiDa: m.taiToiDa, luatThap: m.luatThap, hamGoc: m.hamGoc,   // CẢNG SÔNG: chồng container, tàu, danh sách giao, luật tải / tháp; khay lệnh để hình biết nâng cấp (móc đôi, cân, ray, buộc đuôi, flow)
       chuongDa: lm.chuongDa || undefined, daChuong: lm.daChuong || undefined, ngachHang: lm.ngachHang || undefined,     // HANG ĐỘNG (mùa 8): chuông đá, đá chuông, ngách hang ngầm của sân này
       doiKhang: !!m.doiKhang,
@@ -788,7 +794,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var nguongO = k.nguongO !== undefined ? k.nguongO : ss.o;
     var okO = nguongO === undefined || k.soO <= nguongO, okN = ss.nhip === undefined || k.soNhip <= ss.nhip || !!(re && k.re);
     var duaVat = m.mucTieu === 'dua-vat' || m.mucTieu === 'day-thung';
-    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : m.mucTieu === 'to-hinh' ? 'thang.tieuDe.toHinh' : m.mucTieu === 'dap-lua' ? 'thang.tieuDe.dapLua' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
+    var hop = TP.Hop.mo(t(m.mucTieu === 'day-thung' ? 'thang.tieuDe.dayThung' : m.mucTieu === 'bong-mo' ? 'thang.tieuDe.bongMo' : m.mucTieu === 'to-hinh' ? 'thang.tieuDe.toHinh' : m.mucTieu === 'dap-lua' ? 'thang.tieuDe.dapLua' : m.mucTieu === 'cuu-nguoi' ? 'thang.tieuDe.cuuNguoi' : duaVat ? 'thang.tieuDe.duaVat' : 'thang.tieuDe'), 'hop-thang');
     hop.hop.setAttribute('data-sao', k.sao);
     var st = h('div', 'th-sao');
     for (var i = 0; i < 3; i++) { var w = h('span', 'th-s' + (i < k.sao ? ' on' : '')); w.appendChild(Ve.sao(i < k.sao, 4)); w.style.animationDelay = (0.15 + i * 0.22) + 's'; st.appendChild(w); }

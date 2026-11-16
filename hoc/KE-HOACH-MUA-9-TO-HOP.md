@@ -31,7 +31,7 @@ Mỗi thân trả lời hai câu: **có mũi không** (một hướng "phía tr�
 1. **Đồ "phía trước" cần thân có mũi**: tay kẹp, kẹp xoay, vòi phun, máy ném, tay lưới, bộ gieo hạt dạng bút; cảm biến khoảng cách, hồng ngoại, camera trước, chong chóng.
 2. **Thân không mũi dùng đồ "treo bụng" hay "nhìn quanh"**: nam châm, bộ gieo hạt (chấm ô dưới bụng), đầu đọc mã; camera bốn hướng / camera bụng, radar tròn, mic, cảm biến từ (nhện: cạnh trước cố định, đã có).
    Cần cẩu làm mọi việc **ở ô dưới đầu cần**.
-3. **Ba điều cấm vì sức**: drone chở nhẹ (không loa, không móc cẩu, không vòi phun / máy ném vì giật); xuồng không gắn đồ giật (vòi phun, máy ném làm xuồng trôi); chong chóng phải nhúng nước (chỉ xuồng).
+3. **Ba điều cấm vì sức**: drone chở nhẹ (không loa, không móc cẩu, không máy ném vì giật; chỉ mang bình xịt nhỏ — lai L15, user mở 4/11); xuồng không gắn đồ giật (vòi phun, máy ném làm xuồng trôi); chong chóng phải nhúng nước (chỉ xuồng).
 
 Một robot một tay, một cảm biến (giữ luật hiện nay). Lý do ghép sai luôn nói theo ba câu trên, không nói tên luật lõi.
 
@@ -50,7 +50,7 @@ Ký hiệu: **●** part gốc của cỗ máy · **✔** ghép được theo ba
 | Bánh gai | ✔ | ✔ | ✔ | ✗ | ★ L3 | ✔ | ✔ | ● |
 | Xuồng | ✗ (kẹp không với tới mặt nước) | ✗ giật | ✗ | ✗ | ● | ✗ | ✗ giật | ★ L5 |
 | Nhện | ✔ (không xoay: không mũi) | ✗ không mũi | ● | ✗ | ✗ không mũi | ★ L6 | ✗ không mũi | ★ L7 |
-| Drone | ✗ | ✗ giật | ✔ | ✗ nặng | ★ L10 (thả phao) | ● | ✗ giật | ✗ nặng |
+| Drone | ✗ | ★ L15 (bình xịt bụng, user mở 4/11) | ✔ | ✗ nặng | ★ L10 (thả phao) | ● | ✗ giật | ✗ nặng |
 | Cần cẩu | ★ L8 (gầu ngoạm) | ✗ | ★ L1 | ● | ★ L9 (giỏ cứu hộ) | ✗ | ✗ | ✗ |
 
 ### 3b. Thân × cảm biến
@@ -66,7 +66,7 @@ Ký hiệu: **●** part gốc của cỗ máy · **✔** ghép được theo ba
 | Drone | ✗ | ✗ | ✗ | · | ✗ | ● bụng / bốn hướng | ★ L11 | · |
 | Cần cẩu | ✗ | ✗ | ★ L13 | ● | ✗ | ★ L13 bụng (ô đầu cần) | ✗ | ✗ |
 
-Khi làm lõi (gói M9A, 3/11) bảng một chỗ ở `hoc/bang-ghep.js` tách thêm: kẹp / kẹp xoay (cần cẩu + xoay ✗, nhện + xoay ✗), camera trước / bốn hướng / bụng, và giữ part cũ **màu bụng**. **Nhện + camera trước ✔** (ngoại lệ, như cảm biến từ 31/10: đọc theo cạnh trước cố định) vì màn `rap-nao.10` đang cho nhện chọn camera. Tổng 160 ô: ● 16 · ✔ 60 · ★ 21 · · 6 · ✗ 57.
+Khi làm lõi (gói M9A, 3/11) bảng một chỗ ở `hoc/bang-ghep.js` tách thêm: kẹp / kẹp xoay (cần cẩu + xoay ✗, nhện + xoay ✗), camera trước / bốn hướng / bụng, và giữ part cũ **màu bụng**. **Nhện + camera trước ✔** (ngoại lệ, như cảm biến từ 31/10: đọc theo cạnh trước cố định) vì màn `rap-nao.10` đang cho nhện chọn camera. Tổng 160 ô: ● 16 · ✔ 60 · ★ 22 · · 6 · ✗ 56 (4/11: drone + vòi phun ✗ → ★ L15).
 
 Tính nhanh: theo bảng, mùa 9 mở **8 thân · 8 tay · 8 cảm biến**, nhưng mỗi màn chương 2 chỉ đưa **2–3 thẻ mỗi khe** (mục 7, đường cong).
 
@@ -99,9 +99,10 @@ Mỗi cái ra mắt ở chương 2 của **một** gói (màn 1 lắp sẵn kho�
 | T2 | Container lấp hố | `set_down()` lên ô hố: container thành sàn (hố mất) | | G3 |
 | T3 | Vòi phun gạt van cống | tia phun trúng van `V` thì van đổi (như trúng van `N`) | | G5 |
 | T4 | Bè sạc | ô sạc đặt trên bè nổi, đi theo bè | trạm sạc nổi | G6 |
+| L15 | Drone + Vòi phun (**bình xịt bụng**, user mở 4/11) | chỉ `spray()` không đối số, xịt thẳng xuống **ô dưới bụng** (drone mang bình bay lên trên được lửa, van `V`, nút `N`; không đáp xuống đó): lửa nhỏ đi / tắt, van đổi (kể cả van giữa nước), nút đổi; ô khác: xịt hụt (thông tin); không giật; bình 3 lần (màn khai `danToiDa` thì theo màn), hết thì `het-dan` | drone phun nước chữa cháy, phun thuốc | chưa xếp (gói dựng màn) |
 | P | **Người cần cứu** | mục 8b | | G1 |
 
-Vẫn **✗** (bài học "vì sức"): drone gắn loa / móc / vòi phun / máy ném; xuồng gắn đồ giật; móc cẩu trên xe; chong chóng ngoài xuồng. Mỗi lai có máy kiểm riêng chạy một sân nhỏ.
+Vẫn **✗** (bài học "vì sức"): drone gắn loa / móc / máy ném (vòi phun mở thành L15 bình xịt nhỏ, 4/11); xuồng gắn đồ giật; móc cẩu trên xe; chong chóng ngoài xuồng. Mỗi lai có máy kiểm riêng chạy một sân nhỏ.
 
 **Bùn trơn sau bão** là yếu tố chung của mùa 9 (luật `I` mùa 8 có sẵn, đổi hình thành bùn nâu ở nơi không phải hang): tạo nhu cầu cho bánh gai (bám) và drone (rắc cát) ở mọi nơi.
 
