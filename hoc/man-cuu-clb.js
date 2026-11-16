@@ -87,6 +87,14 @@
   var CC_8 = ['pick_up()', 'swing_right()', 'set_down()'];
   var HD_8 = ['forward(1)', 'turn_right()', 'forward(4)', 'play_note(listen())'];
 
+  /** cuu-clb.9: xe chở hàng cũ của CLB (R3, khoá) đi từng ô dọc lối hàng 2, ô trước bị chắn thì đứng chờ. Kệ sắt đổ (thùng nặng) chắn lối ở cột 3, cửa kho C ở cột 6 (nút M dưới cửa).
+   *  Xe cứu hỏa (khe A) ủi kệ vào hốc trên, lùi về cờ ở ô xuất phát. Khe B (cách xa nút): xe chở hàng chạy năm ô, quay lên nút (máy khách đã chờ sẵn trước cửa), sang cờ.
+   *  Nhện ở khe B cũng giữ được nút nhưng mỗi bước hai nhịp: máy khách chờ lâu, quá trần nhịp. */
+  var R3_9 = ['for i in range(8):', '    while not front_clear():', '        wait()', '    forward(1)'];
+  var CU_9 = ['forward(1)', 'back()'];
+  var CH_9 = ['forward(5)', 'turn_left()', 'forward(1)', 'turn_right()', 'forward(1)'];
+  var PL_9 = ['for i in range(5):', '    go_right()', 'go_up()', 'wait_n(2)', 'go_right()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -302,6 +310,33 @@
       sao: { o: 20, nhip: 11 },
       goiY: ['Container chắn lối như tường: nhờ cẩu nhấc đi trước.', 'listen(): nốt của đá chuông gần nhất; loa phá đá trong tầm 3 ô (đếm ngang + dọc).', 'Người tự bước về trạm cứu khi ô kế trên lối trống.'],
       cauDo: { doi: ['HD', 'CC'], lap: null, coChe: ['nguoi', 'container', 'ray', 'da-chuong', 'not', 'kho'], cuu: 'nguoi', meo: 'don-loi' }
+    }),
+    // 9 · cứu máy, đọc rồi chọn (phong phú: Nhà máy thùng nặng + Kho nút đè + R3), bảng 4 cỗ máy: xe chở hàng cũ của CLB (R3, khoá) đi từng ô, bị chắn thì chờ (while not front_clear()).
+    //     Kệ sắt đổ chắn lối, cửa kho đóng, nút giữ cửa ở xa. Hai cặp đều qua: xích + xe chở hàng (nhanh, trong trần nhịp) hay xích + nhện (mỗi bước hai nhịp: qua, nhưng quá trần).
+    //     Bẫy: xuồng (sân không có nước). Đọc chương trình máy khách để biết nó chờ, rồi chọn bạn tới nút nhanh nhất.
+    man9('cuu-clb', 9, 'bien-the', {
+      ten: 'Xe chở hàng cũ của CLB',
+      khung: { chinh: 14, moiHam: 8 },
+      deBai: 'Xe chở hàng cũ của CLB đi từng ô, ô trước bị chắn thì đứng chờ. Kệ sắt đổ chắn lối, cửa kho đóng, nút giữ cửa ở xa. Đọc chương trình của nó, chọn hai bạn để nó về cờ nhanh nhất. Ba bạn về cờ.',
+      veMaMau: 'Đọc chương trình của máy khách: ô trước bị chắn thì chờ.',
+      san: ['###########', '###.#######', '#..H..C..F#', '###F##MF###', '#......#~~#', '###########'],
+      noi: [{ nut: { x: 6, y: 3 }, cua: [{ x: 6, y: 2 }] }],
+      doi: [khe({ x: 3, y: 3, huong: 0 }, { co: [{ x: 3, y: 3 }], batDauNuoc: { x: 8, y: 4, huong: 1 } }), khe({ x: 1, y: 4, huong: 1 }, { co: [{ x: 7, y: 3 }], batDauNuoc: { x: 9, y: 4, huong: 3 } }),
+        may('CH', { x: 1, y: 2, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 9, y: 2 }] })],
+      chonDoi: {
+        menu: ['CH', 'CU', 'PL', 'XU'],
+        cachMau: [{ chon: ['CU', 'CH'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_9, CH_9, R3_9]) },
+          { chon: ['CU', 'PL'], ghiChu: 'qua được, nhưng nhện mỗi bước hai nhịp: quá trần', loiGiai: doiBai([CU_9, PL_9, R3_9]) }]
+      },
+      maMau: doiBai([[], [], R3_9]),
+      loiSai: [
+        { moTa: 'Không ủi kệ: máy khách chờ mãi trước kệ', baiLam: doiBai([[], CH_9, R3_9]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Xe quay nhầm phải: không lên nút, máy khách chờ mãi trước cửa', baiLam: doiBai([CU_9, ['forward(5)', 'turn_right()', 'forward(1)', 'turn_left()', 'forward(1)'], R3_9]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Xích ủi xong đứng lại giữa lối: máy khách chờ mãi', baiLam: doiBai([['forward(1)'], CH_9, R3_9]), phaiCoMa: ['qua-nhieu-nhip'] }
+      ],
+      sao: { o: 28, nhip: 13 },
+      goiY: ['while not front_clear(): wait(): máy khách đứng chờ khi ô trước bị chắn.', 'Xích tiến vào thùng nặng thì đẩy thùng đi một ô.', 'Nhện mỗi bước mất hai nhịp: ai tới nút nhanh hơn?'],
+      cauDo: { doi: ['CU', 'CH'], lap: null, coChe: ['thung-nang', 'nut-de', 'cua', 'r3', 'cho-truoc'], cuu: 'may', meo: 'doc-roi-chon' }
     })
   ];
 
