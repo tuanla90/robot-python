@@ -96,6 +96,11 @@
   function hangXe(c, n) { return ['ink("' + c + '")', 'pen_down()', 'forward(' + n + ')', 'pen_up()', 'wait()']; }
   /** lap-nong-trai.2: drone R1 gieo luống trên rồi đáp xuống đậu chờ (đậu không tốn pin). */
   var DR_12 = hang('red', 4).concat(['land()']);
+  /** lap-nong-trai.3: nhện gieo hạt (L6) gieo ô dưới bụng: ba ô, nhảy qua mương sụt, gieo, co chân chui qua nhà kính đổ, duỗi chân, gieo hai ô. */
+  var NHEN_13 = ['ink("green")', 'for i in range(2):', '    dot()', '    go_right()', 'dot()', 'crouch()', 'wait()', 'stand()', 'go_right()', 'dot()', 'crouch()',
+    'for i in range(3):', '    go_right()', 'stand()', 'dot()', 'wait()', 'go_right()', 'dot()', 'wait()'];
+  /** Drone R2 lap-nong-trai.3: bay qua mương, qua nhà kính, gieo theo danh sách a (1 gieo, 0 bỏ qua). */
+  var DRONE_13 = ['ink("green")', 'a = [1, 1, 1, 0, 1, 0, 0, 1, 1]', 'for g in a:', '    if g == 1:', '        dot()', '    go_right()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -411,6 +416,30 @@
       sao: { o: 20, nhip: 9 },
       goiY: ['Drone bay qua cây đổ. Xích ủi cây đi trước.', 'Hai bánh gặp cây đổ thì đứng im.'],
       cauDo: { doi: null, lap: 'drone+son', coChe: ['cay-do', 'gieo', 'pin'], cuu: 'hang', meo: 'song-song' }
+    }),
+    // 13 · song song, lai L6 nhện + bộ gieo hạt (ra mắt), luống bị mương sụt (hố 1 ô) và nhà kính đổ (gầm thấp) cắt ngang. Drone R1 ít pin gieo luống trên rồi đậu.
+    //      Cách một nhện + gieo hạt (L6): gieo ô dưới bụng, nhảy qua hố, co chân chui gầm (rẻ). Cách hai drone + gieo hạt: bay qua hết, gieo theo danh sách a (1 gieo, 0 bỏ qua) (nhanh, đắt).
+    //      Hai bánh rơi hố. R1 gieo luống trên cùng lúc (song song).
+    man9('lap-nong-trai', 3, 'luyen', {
+      ten: 'Nhện gieo hạt',
+      khung: { chinh: 20, moiHam: 8 },
+      deBai: 'Luống dưới bị mương sụt và nhà kính đổ cắt ngang: xe có bánh rơi hố, không chui gầm. Lắp robot gieo luống dưới. Nhện gắn bộ gieo hạt thì gieo ô dưới bụng.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['############', '#..........#', '#...u.nn...#', '#..........#', '############'],
+      hinh: luong(12, 5, [{ y: 1, x0: 1, mau: 'rrrrr' }, { y: 2, x0: 1, mau: 'ggg.g..gg' }]),
+      doi: [may('DR', { x: 1, y: 1, huong: 1 }, { pin: 11 }), khe({ x: 1, y: 2, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['nhen', 'drone', 'hai-banh'], ['son'], [], 8, [
+        cach('nhen', 'son', null, [DR_12, NHEN_13]),
+        cach('drone', 'son', null, [DR_12, DRONE_13])
+      ], { moLai: ['L6'] }),
+      maMau: doiBai([DR_12, []]),
+      loiSai: [
+        { moTa: 'Nhện bước thẳng vào mương: rơi hố', baiLam: doiBai([DR_12, ['ink("green")', 'for i in range(4):', '    dot()', '    go_right()']]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Nhện quên co chân trước khi chui: đâm nhà kính đổ', baiLam: doiBai([DR_12, NHEN_13.slice(0, 10).concat(['for i in range(3):', '    go_right()'])]), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 34, nhip: 23 },
+      goiY: ['Nhện gieo ô dưới bụng: dot() rồi mới bước.', 'Nhảy: crouch(), wait(), stand() cùng go_right(). Chui gầm: co chân rồi đi.'],
+      cauDo: { doi: null, lap: 'nhen+son', coChe: ['gieo', 'ho', 'gam-thap', 'nha-kinh', 'pin'], cuu: 'hang', meo: 'song-song' }
     }),
   ];
 })();
