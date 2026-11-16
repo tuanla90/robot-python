@@ -438,18 +438,20 @@
       cauDo: { doi: null, lap: 'hai-banh+nam-cham+tu', coChe: ['nam-cham', 'sat', 'day-tu-xa'], cuu: 'hang', meo: 'don-loi' }
     }),
 
-    // 16 · lai L1 cẩu + nam châm: thanh sắt thứ hai nằm trên ô đích của robot phân loại; ô đích của nó là hốc kín sau tường cao (nhện không với tới).
-    //      Cẩu vươn cần hút sắt, quay cần thả vào hốc kín. (Một cách lắp: khe cẩu cần nac nên không đổi thân được; kẹp thì rẻ hơn mà làm y hệt nên bỏ.)
+    // 16 · lai L1 cẩu + nam châm: thanh sắt thứ hai nằm trên ô đích của robot phân loại; ô đích của nó là hốc sau hàng rào thấp (nhện không vào được).
+    //      Cẩu vươn cần qua rào hút sắt, quay cần thả vào hốc. Cách hai rẻ hơn: drone + nam châm bay qua rào (cùng nhịp, nhiều ô lệnh hơn). Khe không khai nac (cẩu mặc định nac 0) để drone dùng chung khe.
     man9('lap-bai-tai-che', 6, 'cung-co', {
-      ten: 'Hốc sau tường cao',
+      ten: 'Hốc sau hàng rào',
       mucTieu: 'dua-vat',
-      deBai: 'Một thanh sắt chiếm ô đích của robot phân loại. Chỗ của nó là hốc kín sau tường cao. Lắp robot đưa sắt vào hốc.',
+      deBai: 'Một thanh sắt chiếm ô đích của robot phân loại. Chỗ của nó là hốc sau hàng rào, nhện không vào được. Lắp robot đưa sắt vào hốc.',
       veMaMau: 'Cẩu mới vươn cần.',
-      san: ['########', '#.o.X###', '########', '####.#D#', '########'],
-      doi: [may('PL', { x: 1, y: 1, huong: 1 }), khe({ x: 4, y: 3, huong: 0, nac: 0 }, { son: 'lam' })],
+      san: ['########', '#.o.X###', '####=###', '####.=D#', '########'],
+      doi: [may('PL', { x: 1, y: 1, huong: 1 }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam' })],
       them: { vatChat: ['........', '..s.s...', '........', '........', '........'] },
-      lapRap: lapR2(['cau'], ['nam-cham'], [], 9, [
-        cach('cau', 'nam-cham', null, [['walk("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['extend()', 'magnet_n()', 'swing_right()', 'magnet_off()']])
+      lapRap: lapR2(['cau', 'drone'], ['nam-cham'], [], 9, [
+        cach('cau', 'nam-cham', null, [['walk("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['extend()', 'magnet_n()', 'swing_right()', 'magnet_off()']]),
+        cach('drone', 'nam-cham', null, [['walk("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'],
+          ['go_up()', 'go_up()', 'magnet_n()', 'wait()', 'go_down()', 'go_down()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()']])
       ], { moLai: ['L1'] }),
       maMau: doiBai([['walk("R")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['extend()']]),
       loiSai: [
@@ -457,7 +459,7 @@
       ],
       sao: { o: 25, nhip: 10 },
       goiY: ['Nam châm trên đầu cần hút sắt ở ô dưới đầu cần.', 'swing_right() quay cần sang phải.'],
-      cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'qua-tuong', 'hoc-kin'], cuu: 'hang', meo: 'don-loi' }
+      cauDo: { doi: null, lap: 'cau+nam-cham', coChe: ['sat', 'qua-rao', 'hoc-kin'], cuu: 'hang', meo: 'don-loi' }
     }),
 
     // 17 · lai L6 nhện + gieo hạt: dải bùn trơn trước lối robot phân loại, cuối dải là hố. Nhện gieo hạt leo lên ô rẽ (trên là tường nên dừng được trên bùn),
