@@ -36,6 +36,11 @@
   function lapR2(than, tay, cam, nganSach, cachLap, them) {
     return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
   }
+  /** R2 đã lắp sẵn (màn show chương 2): omni + tay lưới + radar (lai L3 xe tời bờ), như LapRap.apDung lắp ra. */
+  var OMNI_L3 = {
+    loaiRobot: 'omni', chinhLuoi: true, nhanDang: true, robot: { than: 'omni', tay: 'day-keo', camBien: [{ ma: 'radar', o: 'tren', nhanDang: true }], son: 'lam' },
+    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'slide_left', 'slide_right', 'cast_net', 'drop_net', 'set_length', 'radar', 'shape']
+  };
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
   /** cuu-ben-song.4 (ba sân): ngã ba kênh ở ô (4, 3); nhánh trái (hàng 3, x 1–3), nhánh trên (cột 4, y 0–2), nhánh phải (hàng 3, x 5–7) chảy về ngã ba.
    *  Mỗi sân một bộ sức (0 = nước êm); bến nhận bè q chỉ có ở ô đầu nhánh nước êm (nq: 'trai' | 'tren' | 'phai'). */
@@ -338,5 +343,21 @@
     /* ========================================================================
        CHƯƠNG 2: lap-ben-song (10 màn)
        ======================================================================== */
+    // 11 · show (làm cầu), lai L3 xe tời bờ: cống kẹt vì bão, xuồng thủy lợi (R1) ở sau cống không ra được: tung lưới chỉ trúng cửa cống.
+    //      Luna lắp sẵn omni + tay lưới + radar (khoá) đứng trên mỏm bờ giữa sông: tung lưới sang phải dọc lòng sông, tời bè về ô nước sát xe (bến q) thành cầu phao.
+    //      Xe chở hàng (R3) gắp thùng gỗ, qua cầu phao, đặt thùng vào ô đích bờ bên kia.
+    man9('lap-ben-song', 1, 'lam-quen', {
+      ten: 'Xe tời bờ',
+      chiChay: true,
+      deBai: 'Cống kẹt, xuồng không ra được. Luna lắp cho xe omni tay lưới: đứng trên bờ tung lưới tời bè về làm cầu cho xe chở hàng. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem xe trên bờ tời bè.',
+      san: ['##########', '#..D.....#', '##.q~B~K~#', '#..o.....#', '#........#', '##########'],
+      doi: [may('XU', { x: 8, y: 2, huong: 3 }), Object.assign({ batDau: { x: 2, y: 2, huong: 0 } }, clone(OMNI_L3)), may('CH', { x: 3, y: 4, huong: 0 })],
+      maMau: doiBai([['cast_net()', 'wait()'], ['set_length(3)', 'cast_net("right")', 'wait()'], ['pick()', 'forward(2)', 'drop()']]),
+      loiGiai: doiBai([['cast_net()', 'wait()'], ['set_length(3)', 'cast_net("right")', 'wait()'], ['pick()', 'forward(2)', 'drop()']]),
+      sao: { o: 27, nhip: 6 },
+      goiY: ['Xe trên bờ tung lưới: vật bắt được về ô nước sát xe.', 'cast_net("right"): tung lưới sang bên phải xe.'],
+      cauDo: { doi: null, lap: 'omni+day-keo+radar', coChe: ['nuoc', 'be', 'luoi', 'cong', 'bo', 'thung-go'], cuu: 'hang', meo: 'lam-cau' }
+    }),
   ];
 })();

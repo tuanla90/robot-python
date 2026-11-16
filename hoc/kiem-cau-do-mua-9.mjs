@@ -55,7 +55,7 @@ export const SU_KIEN_CHINH = [
   'cau-hut', 'cau-tha', 'gau-tha',   // M9M2b 5/11: cẩu + nam châm (L1) hút / thả ở ô đầu cần, gầu ngoạm (L8) thả: việc chính của lai cần cẩu (gau-ngoam đã có)
   'toi-co', 'xong-dua-vat', 'xong-day-thung', 'xong-giao-tau', 'xong-cuu-nguoi', 'xong-dieu', 'xong-to-hinh', 'xong-dap-lua'
 ];
-const LAM_CAU = ['lap-ho', 'rac-cat', 'dat-dai-luoi', 'keo-theo', 'tha-keo'];
+const LAM_CAU = ['lap-ho', 'rac-cat', 'dat-dai-luoi', 'keo-theo', 'tha-keo', 'toi-cau'];   // M9M5: + toi-cau (xe tời bờ L3 kéo vật nổi về ô nước sát xe: ô cầu là e.den)
 const DON_LOI = ['nhat-vat', 'hut-vat', 'moc-cont', 'keo-vat', 'nem-vat', 'dap', 'gau-ngoam', 'gio-vot', 'thung-di', 'cau-hut', 'day-vat', 'nap-vat'];   // M9M2b: + cau-hut (cầu trục từ L1 hút sắt khỏi lối); M9M3: + day-vat (suKienCua lấy ô vật rời đi: e.tu); M9M5: + nap-vat (máy khai thác nạp vật chắn lối vào rổ, o = ô vật)
 const CUU_KIP = ['nguoi-toi-tram', 'xong-giao-tau', 'tau-roi', 'sac-pin'];
 
@@ -130,6 +130,7 @@ export function suKienCua(kq, man) {
           if (k >= 0) ai = k;
         }
         kqDs[ai].ds.push({ nhip: v.nhip, ma: e.ma, o: e.o ? { x: e.o.x, y: e.o.y } : (e.tu ? { x: e.tu.x, y: e.tu.y } : null), bat: e.bat });
+        if (e.ma === 'keo-vat' && e.toi && e.den) kqDs[ai].ds.push({ nhip: v.nhip, ma: 'toi-cau', o: { x: e.den.x, y: e.den.y } });   // M9M5: ô vật nổi tời tới (cầu phao)
       });
     });
     (d.suKien || []).forEach((e) => { if (['toi-co', 'xong-dua-vat', 'xong-cuu-nguoi'].indexOf(e.ma) >= 0 && !kqDs[i].ds.some((x) => x.ma === e.ma)) kqDs[i].ds.push({ nhip: e.nhip || 0, ma: e.ma, o: null }); });
