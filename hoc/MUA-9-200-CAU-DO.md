@@ -225,6 +225,25 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨nhện, xích⟩ + gieo hạt | hai cách: chui (nhện) hay ủi (xích); `len(a)` ô phải gieo quyết định | hàng | đọc rồi chọn |
 | 20 | ⟨nhện, xích, omni⟩ + loa | song ca: drone không hát; chọn thân hát được, đi qua luống không giẫm hoa | — | song ca |
 
+> **Đã dựng 16/11 (M9M6, hoc/man-cuu-nong-trai.js viết lại theo khuôn G5, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt).** Lệch so với bảng:
+> - Gói không tạo hàm của em mới. Song ca #10, #20 gọi `play_part`; #9 gọi `grab_clear()` (G4) và `clear_iron("D")` (G2).
+> - Xe cứu hỏa (cỗ máy CU) ủi được cây đổ (thùng nặng). Xích **lắp ráp** chỉ ủi khi màn khai `xichDay: true` (#11, #12, #19 khai). Drone gieo đè lên cây đổ và vật, nên cây đổ không chắn luống của drone: cây đổ chắn ô sạc hoặc chắn lối của robot dưới đất.
+> - Pin chỉ khai cho khe drone (khe xe có pin thì kiem-cau-do lỗi); drone đặt vào khe kia của màn đội thì không giới hạn pin.
+> - #3 thêm cửa nhà kính có nút N (xe cứu hỏa phun nút mở cửa). #4 cát rắc trên bùn để xích dừng đúng dưới ô sạc. #5 xe chở hàng đi qua ô cây vừa ủi (bộ dò dọn lối cần robot khác đứng lên ô đó).
+> - #6 hai sân, màu bao hạt đỏ / xanh dương đọc bằng color("here") của drone, thay "nạp màu". #7 máy khai thác nạp đá rồi ném ra bãi trống (không đẩy đá tròn); bảng có cẩu nên mọi khe trên dải ray.
+> - #8 thêm ô sạc bờ thứ hai có bao hạt (xe chở hàng gắp). #9 song song: xe chở hàng `grab_clear()` gắp bao hạt, robot phân loại `clear_iron("D")` hút cày sắt khỏi ô sạc thứ hai.
+> - #10 xe cứu hỏa và xe chở hàng cùng lắp loa hát hai bè (drone không mang loa, `choi-dieu` chỉ chấm hai robot hát), thay "drone lượn theo nhịp".
+> - #12 mẹo song song (không dọn lối): drone R1 đủ pin gieo luống trên; cách drone + gieo hạt và cách xích + gieo hạt (ủi cây) đều thắng, hai bánh kẹt. #13 mẹo song song; cách hai drone + gieo hạt theo danh sách 0 / 1; ô luống bỏ qua ô gầm (hình mờ không đặt trên gầm thấp).
+> - #14 ba sân: luống mẫu là sàn màu, nhện đi dưới đọc color("up"), `a.append`, nhảy mương rồi gieo theo a; cách hai drone + gieo hạt + camera bốn hướng bay qua mương.
+> - #15 ba sân: ruộng bậc thang `a = [3, 3]` hai bậc đầu, bậc cuối `while front_clear()` tới cây đổ (mỗi sân một chỗ); cách hai omni trượt xuống bậc (nhanh hơn).
+> - #16 cày sắt đè ô sạc giữa luống (không nằm trên luống): drone R1 phải đáp sạc giữa đường; cách hai nhện + nam châm bụng (rẻ hơn).
+> - #17 ba sân: bao hạt chắn lối ở ô trên / dưới / phải của R2, đọc `radar()` rồi quay, gắp; R1 xe cứu hỏa đi qua ô bao vừa gắp (sân 1) để ủi cây đổ cuối lối. Cách hai hai bánh + kẹp + radar (rẻ hơn).
+> - #18 mỗi ô bùn `dot()` hai lần (lần đầu rắc cát, lần hai gieo, có `wait()` giữa); R1 xe gieo xích (dựng sẵn) vòng qua luống bùn đã rắc cát xuống gieo hàng 3 (làm cầu). Cách hai drone + gieo hạt (nhanh hơn một nhịp).
+> - #19 ba sân: thêm camera trước đọc mẫu hoa có ô trống (`if c != "none"`), qua tường giữa bằng nhà kính đổ (nhện chui) hay cây đổ (xích ủi), gieo `len(a)` ô theo `a[i]`; cách hai xích (rẻ, nhanh hơn).
+> - #20 R1 xe cứu hỏa lắp loa hát bè 1; R2 đứng hát tại chỗ (`play_part` chặn nhịp nên không đi được trong lúc hát), phần "đi qua luống không giẫm hoa" bỏ; luống hoa sơn sẵn cạnh R2 chỉ để nhìn. Cách nhện + loa (lai L7), xích + loa (rẻ hơn), omni + loa.
+> - Song ca #10, #20 khai mẹo song song như G5.
+> - **Nhiều sân** (`NHIEU_SAN_KHONG_TRUM` ở kiem-lo-trinh): cuu-nong-trai.6, lap-nong-trai.4, .5, .7, .9; mỗi màn có loiSai "điền thẳng dữ liệu sân 1".
+
 ## G7 Mỏ đá sau bão (ôn lưới `grid[r][c]`) · bão: dốc thành bùn trơn, đá lở bít hố, thợ mỏ kẹt
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |
