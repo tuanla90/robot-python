@@ -81,6 +81,12 @@
   var CC_7 = ['pick_up()', 'retract()', 'set_down()'];
   var KT_7 = ['load()', 'wait()', 'forward(2)', 'turn_right()', 'forward(2)', 'throw()', 'wait()', 'forward(3)', 'load()', 'wait()', 'throw()', 'wait()'];
 
+  /** cuu-clb.8: bác bảo vệ kẹt trong dãy kho trên (hàng 1), lối ra trạm cứu bị tượng đá chuông đổ chắn. Hành lang dưới (hàng 3) bị container văng chắn.
+   *  Cần cẩu nhấc container, quay phải, hạ xuống ô trống cuối ray. Xe hang động lên hành lang, quay phải, qua chỗ container, tới dưới tượng (cách 2 ô), nghe nốt, hát lại: tượng vỡ.
+   *  Bác bảo vệ tự đi về trạm cứu khi lối trống. */
+  var CC_8 = ['pick_up()', 'swing_right()', 'set_down()'];
+  var HD_8 = ['forward(1)', 'turn_right()', 'forward(4)', 'play_note(listen())'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -271,6 +277,31 @@
       sao: { o: 27, nhip: 15 },
       goiY: ['Container chắn lối như tường: nhờ cẩu nhấc đi trước.', 'throw(): đá trong rổ bay xa 2 ô; rơi xuống hố thì lấp hố, rơi xuống lối thì chắn lối.', 'retract(): thu cần một ô.'],
       cauDo: { doi: ['CC', 'KT'], lap: null, coChe: ['container', 'ray', 'ho', 'da-tron', 'nem', 'thu-tu'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 8 · cứu người, dọn lối (bảng: cặp HD + CC, "gai phát nốt dẫn bác đi theo tiếng": lõi chưa có người đi theo tiếng, đổi thành gai hát vỡ tượng đá chuông chắn lối bác),
+    //     trộn Kho (người trên cạn) + Cảng (container) + Hang (đá chuông): bác bảo vệ kẹt trong dãy kho, tượng đá chuông đổ chắn lối ra; container văng chắn hành lang dưới.
+    //     Cẩu nhấc container, gai qua chỗ vừa dọn tới dưới tượng, hát vỡ tượng; bác tự đi về trạm cứu. Bẫy: robot phân loại (không hát, không nhấc container). Mọi khe trên dải ray.
+    man9('cuu-clb', 8, 'van-dung', {
+      ten: 'Bác bảo vệ trong kho',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Bác bảo vệ kẹt trong dãy kho, tượng đá chuông đổ chắn lối ra. Hành lang dưới có container văng chắn. Chọn hai bạn mở lối cho bác về trạm cứu.',
+      veMaMau: 'Tượng đá còn chắn lối bác.',
+      san: ['###########', '#.........#', '###########', '##.......##', '##RRRR.####', '###########'],
+      them: { contChan: true, chong: [{ x: 5, y: 3, cont: [{ so: 8 }] }], daChuong: [{ x: 7, y: 1, not: 5, ben: 1 }], nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 9, y: 1 }] },
+      doi: [khe({ x: 3, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0, nac: 0, tam: 1 })],
+      chonDoi: {
+        menu: ['HD', 'CC', 'PL'],
+        cachMau: [{ chon: ['HD', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_8, CC_8]) }]
+      },
+      maMau: doiBai([['forward(1)'], []]),
+      loiSai: [
+        { moTa: 'Cẩu không nhấc container: xe hang động kẹt, hát xa tượng 5 ô', baiLam: doiBai([['forward(1)', 'turn_right()', 'forward(4)', 'play_note(listen())'], []]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động hát khi mới qua container: tượng cách 4 ô', baiLam: doiBai([['forward(1)', 'turn_right()', 'forward(2)', 'play_note(listen())'], CC_8]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Cẩu hạ container lại xuống hành lang: xe hang động kẹt', baiLam: doiBai([HD_8, ['pick_up()', 'set_down()']]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 20, nhip: 11 },
+      goiY: ['Container chắn lối như tường: nhờ cẩu nhấc đi trước.', 'listen(): nốt của đá chuông gần nhất; loa phá đá trong tầm 3 ô (đếm ngang + dọc).', 'Người tự bước về trạm cứu khi ô kế trên lối trống.'],
+      cauDo: { doi: ['HD', 'CC'], lap: null, coChe: ['nguoi', 'container', 'ray', 'da-chuong', 'not', 'kho'], cuu: 'nguoi', meo: 'don-loi' }
     })
   ];
 
