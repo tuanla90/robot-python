@@ -496,7 +496,7 @@
       ten: 'Cát cho xe cứu hỏa',
       mucTieu: 'cuu-nguoi',
       taoHam: ['push_valve'],
-      hamCuaEmCan: HAM_EM.concat(['turn_left', 'turn_right', 'push_valve']),
+      hamCuaEmCan: HAM_EM.concat(['turn_left', 'turn_right']),
       deBai: 'Công nhân kẹt, thùng H chắn lối ra trạm cứu. Xe cứu hỏa phải qua vệt dầu để đẩy thùng. Viết push_valve(n): tiến n ô rồi lùi một ô.',
       veMaMau: 'Hàm push_valve chưa có.',
       san: ['##########', '####.#####', '#.......##', '#..IIu####', '###..#####', '##########'],
