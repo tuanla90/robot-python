@@ -75,6 +75,15 @@
   }
   /** Xuồng lap-ben-song.3: lưới dài 1 bắt bè sau đuôi, chờ xe bờ dọn lục bình, chạy thẳng 6 ô (bè vào bến q (7, 1)), nhả lưới. */
   var XU_13 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(4)', 'forward(6)', 'drop_net()', 'wait()'];
+  /** lap-ben-song.4 (hai sân): luồng hàng 4 chảy sang phải (x 1–10, sức s); lạch trên ở cột 5 (cống K (5, 3), bến q (5, 2)); lạch êm hàng 5 dài tới cột 5 - s
+   *  (vào luồng ở đó thì trôi đúng tới cửa lạch); van V (8, 5) nối cống, xuồng R1 đứng ở vũng (8, 6). */
+  function san14(s) {
+    return ['############', '#####~######', '#####q######', '#####K######', '#~~~~~~~~~~#', ('#B' + '~'.repeat(4 - s) + '########').slice(0, 8) + 'V###', '########~###', '############'];
+  }
+  var NOI_14 = [{ nut: { x: 8, y: 5 }, cong: [{ x: 5, y: 3 }], dong: [] }];
+  function dong14(suc) { return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (x) { return { x: x, y: 4, huong: 1, suc: suc }; }); }
+  /** Xuồng R1 lap-ben-song.4: lưới dài 1 trúng van V ngay trước mũi, cống mở. */
+  var XU_14 = ['set_length(1)', 'cast_net()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -413,6 +422,30 @@
       sao: { o: 19, nhip: 13 },
       goiY: ['d = distance(): số ô trống trước mũi xe, tới sát mỏm bờ.', 'Xe trên bờ tung lưới sang trái: lục bình về ô nước sát bờ.'],
       cauDo: { doi: null, lap: 'xich+day-keo+hong-ngoai', coChe: ['nuoc', 'be', 'luoi', 'bo', 'luc-binh'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 14 · dẫn đường (kéo theo đuôi), hai sân, ôn return: luồng ngang chảy sang phải, sức 2 (sân 1) hay 1 (sân 2). Bến q nằm trong lạch phía trên, sau cống K (cột 5).
+    //      Xuồng R1 đặt sẵn tung lưới gạt van mở cống. R2 tự lắp xuồng thứ hai buộc bè sau đuôi, chạy dọc lạch êm, rẽ lên băng qua luồng: vào luồng ở cột x thì trôi tới cột x + s,
+    //      nên phải vào ở cột 5 - s. Cách một xuồng + lưới + chong chóng: hàm trả số ô đi dọc lạch (return 3 - s). Cách hai rẻ hơn: xuồng + lưới + khoảng cách, đi tới cuối lạch êm.
+    man9('lap-ben-song', 4, 'luyen', {
+      ten: 'Băng qua dòng chảy',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Hai sân, nước chảy nhanh chậm khác nhau. Xuồng R1 mở cống. Lắp xuồng thứ hai dắt bè sau đuôi, băng qua dòng chảy vào lạch có bến. Nước đẩy xuồng trôi: vào dòng ở cột nào?',
+      veMaMau: 'Xuồng R2 chưa có chương trình.',
+      san: [san14(2), san14(1)],
+      doi: [may('XU', { x: 8, y: 6, huong: 0 }), khe({ x: 2, y: 5, huong: 1 }, { son: 'lam', batDauNuoc: { x: 2, y: 5, huong: 1 } })],
+      them: { dong: [dong14(2), dong14(1)], noi: [NOI_14, NOI_14] },
+      lapRap: lapR2(['xuong'], ['day-keo'], ['dong-chay', 'khoang-cach', 'camera'], 10, [
+        cach('xuong', 'day-keo', 'dong-chay', [XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'turn_left()', 'h, s = flow()', 'turn_right()', 'forward(3 - s)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']]),
+        cach('xuong', 'day-keo', 'khoang-cach', [XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'while front_clear():', '    forward(1)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']])
+      ], { moLai: ['L2'] }),
+      maMau: doiBai([XU_14, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng forward(1) của sân 1: sân 2 nước chậm, xuồng trôi chưa tới cửa lạch, đâm bờ', baiLam: doiBai([XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(1)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xuồng R1 không gạt van: cống đóng, xuồng dắt bè kẹt ngoài lạch', baiLam: doiBai([[], ['set_length(1)', 'cast_net("back")', 'wait()', 'turn_left()', 'h, s = flow()', 'turn_right()', 'forward(3 - s)', 'turn_left()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 24, nhip: 12 },
+      goiY: ['h, s = flow(): s là số ô nước đẩy xuồng mỗi nhịp.', 'Vào dòng ở cột x thì trôi tới cột x + s. Cửa lạch ở cột 5.'],
+      cauDo: { doi: null, lap: 'xuong+day-keo+dong-chay', coChe: ['nuoc', 'dong', 'be', 'luoi', 'van', 'cong'], cuu: 'hang', meo: 'dan-duong' }
     }),
   ];
 })();
