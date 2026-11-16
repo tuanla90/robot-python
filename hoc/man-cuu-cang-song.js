@@ -76,9 +76,11 @@
   var CAU_19 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()', 'retract()', 'swing_right()', 'swing_right()', 'pick_up()',
     'swing_left()', 'swing_left()', 'extend()', 'set_down()'];
   /** lap-cang-song.2 (hai sân): luồng xiết hàng 1 chảy sang phải, sức suc ô mỗi nhịp (mỗi sân một sức). */
-  var SAN_12 = ['#########', '~B~~~~~~~', '~~~~~~~~~', '~~~~~~~~~', '..RRRRRRT', '#########'];
-  var CAU_12 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'retract()', 'swing_right()', 'set_down()'];
-  function dong12(suc) { return [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: suc }; }); }
+  var SAN_12 = ['#########', '~B~~~~~~.', '~~~~~~~~#', '~~~~~~~~#', '~~~~~~~.#', '##RRRRRRT', '#########'];
+  var CAU_12 = ['while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'swing_right()', 'set_down()'];
+  /** Cẩu cách xe bờ: chạy ray tới cột 7, thu cần một nấc (đầu cần ô (7, 3) trước mũi xe), chờ số, nhấc, thu thêm một nấc rồi quay phải hạ lên tàu (8, 5). */
+  var CAU_12_XE = ['rail(2)', 'retract()', 'while read_code() == -1:', '    wait()', 'wait()', 'pick_up()', 'retract()', 'swing_right()', 'set_down()'];
+  function dong12(suc) { return [0, 1, 2, 3, 4, 5, 6, 7].map(function (x) { return { x: x, y: 1, huong: 1, suc: suc }; }); }
   /** lap-cang-song.8 (ba sân): cùng sân, cùng chồng; khác màu sơn ô bãi (chuỗi 3 chữ r / b cho cột 1–3), giờ tàu rời và danh sách giao. */
   var SAN_18 = ['########', '#......#', '#RRRRRR#', '~TTTT~~~', '~TTTTTT~', '########'];
   function chong18(ds) { return ds.map(function (so, i) { return { x: i + 1, y: 1, cont: [{ so: so }] }; }).concat([{ x: 6, y: 1, cont: [{ so: 45 }] }]); }
@@ -412,31 +414,34 @@
       cauDo: { doi: null, lap: 'xuong+day-keo+quet-ma', coChe: ['nuoc', 'cont-troi', 'luoi', 'doc-ma', 'tau'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
 
-    // 12 · ép đổi cảm biến: container 18 trôi trên luồng xiết (2 ô / nhịp), không có số nào để đọc trước. Đầu đọc mã của màn trước không giúp gì;
-    //      chong chóng dòng chảy (flow) cho biết sức nước: h, s = flow() rồi chờ 6 // s - 1 nhịp, tung lưới đúng lúc container trôi tới ô (6, 1).
-    //      Xuồng lùi kéo về nước êm, nhả; cẩu chờ có số dưới móc, nhấc, quay phải hạ lên tàu.
-    //      Hai sân (dữ liệu theo sân, luật 13/11): sân 1 nước xiết 2 ô / nhịp, sân 2 nước thường 1 ô / nhịp (lõi chỉ có sức 1, 2). Điền thẳng wait_n(2) thua sân 2;
-    //      đầu đọc mã (cảm biến sai) chờ thấy số mới tung thì container đã trôi qua, thua cả hai sân. Chỉ một cách lắp: chỉ chong chóng đọc được sức nước.
+    // 12 · ép đổi cảm biến: container trôi trên luồng hàng 1 (chảy sang phải), không có số nào để đọc trước. Đầu đọc mã của màn trước không giúp gì;
+    //      chong chóng dòng chảy (flow) cho biết sức nước: h, s = flow() rồi chờ 4 // s - 1 nhịp, tung lưới đúng lúc container trôi tới ô (5, 1) trước mũi xuồng.
+    //      Xuồng lùi kéo về ô (5, 2) dưới móc, nhả; cẩu chờ có số dưới móc, nhấc, quay phải hạ lên tàu (8, 5).
+    //      Hai sân (dữ liệu theo sân, luật 13/11): sân 1 nước xiết 2 ô / nhịp, sân 2 nước thường 1 ô / nhịp (lõi chỉ có sức 1, 2). Điền thẳng wait_n(1) thua sân 2,
+    //      tưởng 1 ô / nhịp thua sân 1. Bẫy: xuồng + lưới + đầu đọc mã chờ thấy số trước mũi mới tung thì vòng chờ không dừng, thua cả hai sân (loiSai với robot mặc định báo chưa gắn cảm biến).
+    //      Cách hai rẻ hơn, chậm hơn, không đọc: xe hai bánh + lưới (L3) đứng ở ô bờ (7, 4), cuối dòng (container dừng ở (7, 1) vì (8, 1) là bờ), chờ đủ lâu cho sân chậm nhất
+    //      rồi tung lưới 3 ô tời container về (7, 3); cẩu chạy ray tới cột 7, thu cần đón. Cẩu không với tới hàng 1 (tầm 3 từ hàng 5), nên phải có R2 kéo container.
     man9('lap-cang-song', 2, 'lam-quen', {
       ten: 'Nước chảy mạnh cỡ nào',
       mucTieu: 'giao-tau',
-      deBai: 'Hai sân, nước chảy nhanh chậm khác nhau. Lắp cảm biến nào để biết nước chảy nhanh cỡ nào? Tung lưới đúng lúc, kéo container về cho cẩu.',
+      deBai: 'Hai sân, nước chảy nhanh chậm khác nhau. Lắp cảm biến nào để biết nước chảy nhanh cỡ nào? Tung lưới đúng lúc, kéo container về cho cẩu. Hay lắp xe rẻ, chờ ở bờ cuối dòng.',
       veMaMau: 'Xuồng tung lưới sớm quá.',
       san: [SAN_12, SAN_12],
-      doi: [may('CC', { x: 7, y: 4, huong: 0, nac: 0, tam: 2 }), khe({ x: 5, y: 4, huong: 0, nac: 0, tam: 3 }, { son: 'lam', batDauNuoc: { x: 7, y: 2, huong: 0 } })],
+      doi: [may('CC', { x: 5, y: 5, huong: 0, nac: 0, tam: 3 }), khe({ x: 7, y: 4, huong: 0 }, { son: 'lam', batDauNuoc: { x: 5, y: 2, huong: 0 } })],
       them: { contTroi: [[{ x: 1, y: 1, so: 18 }], [{ x: 1, y: 1, so: 27 }]],
-        hangTau: [{ o: [{ x: 8, y: 4 }], can: [18] }, { o: [{ x: 8, y: 4 }], can: [27] }], thac: [{ x: 8, y: 1 }],
+        hangTau: [{ o: [{ x: 8, y: 5 }], can: [18] }, { o: [{ x: 8, y: 5 }], can: [27] }],
         dong: [dong12(2), dong12(1)] },
-      lapRap: lapR2(['xuong', 'cau'], ['day-keo', 'moc-cau'], ['dong-chay', 'quet-ma'], 12, [
+      lapRap: lapR2(['xuong', 'hai-banh'], ['day-keo'], ['dong-chay', 'quet-ma'], 12, [
         cach('xuong', 'day-keo', 'dong-chay', [CAU_12,
-          ['set_length(1)', 'h, s = flow()', 'wait_n(6 // s - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
-        cach('cau', 'moc-cau', 'quet-ma', [CAU_12, ['while read_code() == -1:', '    wait()', 'pick_up()', 'swing_right()', 'set_down()']])
-      ], { moLai: ['L2'] }),
+          ['set_length(1)', 'h, s = flow()', 'wait_n(4 // s - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
+        cach('hai-banh', 'day-keo', null, [CAU_12_XE, ['set_length(3)', 'wait_n(5)', 'cast_net()', 'wait()']])
+      ], { moLai: ['L2', 'L3'] }),
       maMau: doiBai([CAU_12, ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]),
       loiSai: [
         { moTa: 'Tung lưới ngay: container chưa tới', baiLam: doiBai([CAU_12, ['set_length(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
-        { moTa: 'Điền thẳng sức nước sân 1: wait_n(2) thắng sân 1, sân 2 (1 ô / nhịp) tung sớm', baiLam: doiBai([CAU_12, ['set_length(1)', 'wait_n(2)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
-        { moTa: 'Tưởng nước chảy 1 ô / nhịp: chờ 6 // 1 - 1 = 5 nhịp, container trôi qua mất', baiLam: doiBai([CAU_12, ['set_length(1)', 'wait_n(6 // 1 - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] }
+        { moTa: 'Điền thẳng sức nước sân 1: wait_n(1) thắng sân 1, sân 2 (1 ô / nhịp) tung sớm', baiLam: doiBai([CAU_12, ['set_length(1)', 'wait_n(1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Tưởng nước chảy 1 ô / nhịp: chờ 4 // 1 - 1 = 3 nhịp, sân 1 container trôi qua mất', baiLam: doiBai([CAU_12, ['set_length(1)', 'wait_n(4 // 1 - 1)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['qua-nhieu-nhip'] },
+        { moTa: 'Bẫy ép đổi cảm biến: giữ đầu đọc mã của màn trước, chờ thấy số trước mũi mới tung (xuồng + lưới + đầu đọc mã thua cả hai sân: vòng chờ không dừng, lưới hụt)', baiLam: doiBai([CAU_12, ['set_length(1)', 'while read_code() == -1:', '    wait()', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-gan-cam-bien'] }
       ],
       sao: { o: 23, nhip: 13 },
       goiY: ['h, s = flow(): s là sức nước (ô mỗi nhịp), mỗi sân một số.', '6 // s: chia lấy phần nguyên. Container cách 6 ô.'],
