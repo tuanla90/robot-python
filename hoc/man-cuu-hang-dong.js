@@ -71,6 +71,13 @@
   var HD_5 = ['forward(1)', 'play_note(listen())'];
   var XU_5 = ['wait_n(2)', 'forward(4)', 'cast_net()', 'wait()', 'back()', 'back()'];
 
+  /** cuu-hang-dong.6: sông ngầm hàng 2, bến q (4, 2) nối hai bờ; bè B (6, 2) trôi giữa sông; đá chuông (2, 2) rơi chắn luồng xuồng ở mép bờ.
+   *  Nhà thám hiểm kẹt ở bờ bên kia (7, 1) sau đá chuông thứ hai (6, 1); đá này xa bờ dưới hơn 3 ô, chỉ đứng trên cầu phao mới hát tới.
+   *  Xe hang động hát vỡ đá chắn luồng, tới dưới bến, quay lên chờ bè, lên cầu phao, nghe nốt đá thứ hai, hát lại: đá vỡ, người về trạm cứu bờ bên kia.
+   *  Xuồng chờ, chạy tới bến, tung lưới (dài 2) bắt bè, lùi hai ô kéo bè vào bến, nhả lưới. */
+  var HD_6 = ['play_note(listen())', 'forward(2)', 'turn_left()', 'wait_n(4)', 'forward(1)', 'play_note(listen())'];
+  var XU_6 = ['wait()', 'forward(3)', 'cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -208,6 +215,30 @@
       sao: { o: 23, nhip: 13 },
       goiY: ['listen(): nốt của đá chuông gần nhất.', 'cast_net(): lưới dài 2 ô, bắt người cách mũi xuồng đúng 2 ô; back(): kéo người theo.', 'Người được kéo tới ô nước sát bờ thì tự lên bờ, đi về trạm cứu.'],
       cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['song-ngam', 'da-chuong', 'not', 'nguoi', 'luoi'], cuu: 'nguoi', meo: 'cuu-kip' }
+    }),
+    // 6 · làm cầu, cứu người: sông ngầm dâng cuốn cầu phao ra giữa dòng; nhà thám hiểm kẹt ở bờ bên kia sau một khối đá chuông (xa bờ này hơn 3 ô). Đá chuông thứ hai rơi chắn luồng ở mép bờ.
+    //     Xe hang động hát vỡ đá chắn luồng; xuồng kéo bè vào bến q làm cầu phao; xe lên cầu, nghe nốt, hát vỡ đá bên kia; người về trạm cứu. Bẫy: xe chở hàng (không bơi, không hát).
+    man9('cuu-hang-dong', 6, 'cung-co', {
+      ten: 'Cầu phao trên sông ngầm',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Sông ngầm cuốn cầu phao ra giữa dòng. Nhà thám hiểm kẹt bên kia sau đá chuông, xa bờ này. Đá chuông khác chắn luồng ở mép bờ. Chọn hai bạn: ai hát, ai kéo bè vào bến q làm cầu?',
+      veMaMau: 'Bè còn trôi giữa sông.',
+      san: ['##########', '####....##', '#~~~q~B~##', '#....#####', '##########'],
+      them: { daChuong: [{ x: 2, y: 2, not: 2, ben: 1 }, { x: 6, y: 1, not: 7, ben: 1 }], nguoi: [{ x: 7, y: 1 }], tramCuu: [{ x: 4, y: 1 }] },
+      doi: [khe({ x: 2, y: 3, huong: 1 }), khe({ x: 1, y: 3, huong: 0 }, { batDauNuoc: { x: 1, y: 2, huong: 1 } })],
+      chonDoi: {
+        menu: ['HD', 'XU', 'CH'],
+        cachMau: [{ chon: ['HD', 'XU'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_6, XU_6]) }]
+      },
+      maMau: doiBai([['play_note(listen())'], ['wait()']]),
+      loiSai: [
+        { moTa: 'Xuồng lùi một ô: bè dừng trước bến, xe không lên cầu được', baiLam: doiBai([HD_6, ['wait()', 'forward(3)', 'cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động hát ở bờ: đá bên kia xa 4 ô, không vỡ', baiLam: doiBai([['play_note(listen())', 'forward(2)', 'turn_left()', 'wait_n(4)', 'play_note(listen())'], XU_6]), phaiCoMa: ['chua-cuu-nguoi'] },
+        { moTa: 'Xe hang động không chờ bè: đâm mặt nước, hát từ bờ', baiLam: doiBai([['play_note(listen())', 'forward(2)', 'turn_left()', 'forward(1)', 'play_note(listen())'], XU_6]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 33, nhip: 14 },
+      goiY: ['Bè nằm trên bến q là cầu phao: xe đi lên được.', 'cast_net(): lưới dài 2 ô bắt bè; back(): kéo bè theo.', 'Loa phá đá trong tầm 3 ô quanh xe.'],
+      cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['song-ngam', 'be', 'luoi', 'da-chuong', 'not', 'nguoi'], cuu: 'nguoi', meo: 'lam-cau' }
     })
   ];
 
