@@ -106,6 +106,9 @@
   var SAN_17 = ['###############', '##########~####', '########..~####', '~~~~~~~~~~~~~~~', '##########.~###', '##########..###', '###############'];
   /** Xuồng R1 lap-ben-song.7: lưới dài 1, chờ người bám phao ngay trước mũi (10, 3), tung lưới, lùi kéo người vào hõm bắc. */
   var XU_17 = ['set_length(1)', 'wait_n(5)', 'cast_net()', 'wait()', 'back()'];
+  /** lap-ben-song.8: máy khai thác R1 nạp tảng đá (3, 6), sang cột 5, chờ cầu phao, lên bùn (trượt tới mép nước thì dừng ở (5, 4)), bước ra bè ở bến (5, 3), ném đá qua sông vào D (5, 1). Hai bản theo nhịp của xe R2 (gai / hai bánh). */
+  var KT_18_GAI = ['load()', 'wait()', 'turn_left()', 'forward(2)', 'turn_left()', 'wait_n(3)', 'forward(2)', 'throw()', 'wait()'];
+  var KT_18_BANH = ['load()', 'wait()', 'turn_left()', 'forward(1)', 'wait_n(6)', 'forward(1)', 'turn_left()', 'forward(2)', 'throw()', 'wait()'];
   function dong4(trai, tren, phai) {
     var ds = [];
     if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
@@ -543,6 +546,28 @@
       sao: { o: 16, nhip: 8 },
       goiY: ['Phao thả xuống ô nước dưới bụng drone: người trôi tới thì bám, thôi trôi.', 'Xuồng chờ người bám phao ngay trước mũi rồi mới tung lưới.'],
       cauDo: { doi: null, lap: 'drone+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'phao', 'thac', 'bo'], cuu: 'nguoi', meo: 'cho-tin-hieu' }
+    }),
+    // 18 · làm cầu: bờ sông bùn trơn (hàng 4). Bè trôi giữa sông (5, 2); R2 tự lắp xe tay lưới đứng đúng ô bùn (5, 4) tời bè về bến q sát bờ thành cầu phao.
+    //      R1 máy khai thác nạp tảng đá trên bãi khô, đi lên bùn (trượt tới mép nước), bước ra cầu phao, ném đá qua sông vào ô đích D trên bờ bắc.
+    //      Cách một bánh gai + lưới: gai bung bám bùn, chạy dọc dải bùn dừng đúng cột. Cách hai rẻ hơn: hai bánh + lưới chạy trên bãi khô, rẽ lên bùn (trượt tới mép nước thì dừng), xong lùi ra nhường lối.
+    man9('lap-ben-song', 8, 'cung-co', {
+      ten: 'Bờ bùn trơn',
+      deBai: 'Bờ sông thành bùn trơn: xe thường lên bùn là trượt. Lắp xe tời bè về bến làm cầu phao. Máy khai thác ra cầu phao ném tảng đá qua sông vào ô đích.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['##########', '#####D####', '#~~~~B~~~#', '#~~~~q~~~#', '#IIIIIIII#', '#........#', '#..o.....#', '##########'],
+      doi: [may('KT', { x: 3, y: 5, huong: 2 }), khe({ x: 8, y: 5, huong: 3 }, { son: 'lam' })],
+      lapRap: lapR2(['gai', 'hai-banh', 'xich'], ['day-keo'], [], 8, [
+        cach('gai', 'day-keo', null, [KT_18_GAI, ['turn_right()', 'forward(1)', 'turn_left()', 'forward(3)', 'cast_net("right")', 'wait()', 'forward(1)']]),
+        cach('hai-banh', 'day-keo', null, [KT_18_BANH, ['forward(3)', 'turn_right()', 'forward(1)', 'cast_net()', 'wait()', 'back()', 'turn_right()', 'forward(1)']])
+      ], { moLai: ['L3'] }),
+      maMau: doiBai([KT_18_GAI, []]),
+      loiSai: [
+        { moTa: 'Xe dừng lệch một cột: lưới hụt bè, không có cầu phao', baiLam: doiBai([KT_18_GAI, ['turn_right()', 'forward(1)', 'turn_left()', 'forward(2)', 'cast_net("right")', 'wait()', 'forward(1)']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Không có cầu phao: máy khai thác dừng ở mép bùn, ném đá trúng bè giữa sông, vỡ', baiLam: doiBai([KT_18_GAI, []]), phaiCoMa: ['nem-vo'] }
+      ],
+      sao: { o: 28, nhip: 13 },
+      goiY: ['Bánh gai bung gai thì bám bùn, dừng đúng ô.', 'Xe thường đi lên bùn từ bãi khô: trượt tới mép nước thì dừng.'],
+      cauDo: { doi: null, lap: 'gai+day-keo', coChe: ['nuoc', 'be', 'luoi', 'bun', 'nem', 'bo'], cuu: 'hang', meo: 'lam-cau' }
     }),
   ];
 })();
