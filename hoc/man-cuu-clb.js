@@ -123,17 +123,17 @@
   var BAY_13 = vach13(['go_right()']);
 
   /** lap-clb.4 (ba sân): hồ CLB sau bão, kênh cột 5 lên ngã ba (5, 1). Một nhánh là bãi cạn (ô bờ, phao đỏ), nhánh kia là luồng sâu (phao xanh) có bến q; mỗi sân luồng sâu ở một bên.
-   *  Cống K (5, 2) đóng; xuồng R1 (đặt sẵn) đứng cạnh van V, tung lưới gạt van mở cống. R2 tự lắp xuồng dắt bè sau đuôi lên ngã ba, đọc phao rồi chọn nhánh sâu, bè vào bến q.
+   *  Lục bình trôi chắn kênh, cống K (5, 2) đóng. Xuồng R1 (đặt sẵn) tung lưới bắt lục bình, lùi kéo nó vào bến q bên (4, 4), rồi quay lên tung lưới gạt van V mở cống. R2 tự lắp xuồng dắt bè sau đuôi lên ngã ba, đọc phao rồi chọn nhánh sâu, bè vào bến q.
    *  Cách một: camera (quay trái nhìn phao, đỏ thì quay sang phải). Cách hai: radar (đọc lưới 3×3 g[1][0], không phải quay nhìn; đắt hơn, nhanh hơn). */
-  function san14(sau) { return ['###########', sau === 'phai' ? '#~~~.~~~q~#' : '#~q~~~.~~~#', '#####K#####', '###V~~#####', '#####~#####', '#####~#####', '#####B#####', '###########']; }
+  function san14(sau) { return ['###########', sau === 'phai' ? '#~~~.~~~q~#' : '#~q~~~.~~~#', '#####K#####', '##V~~~#####', '##~~qL#####', '#####~#####', '#####B#####', '###########']; }
   function son14(sau) {
     var h = '...........'.split(''); h[sau === 'phai' ? 4 : 6] = 'r'; h[sau === 'phai' ? 6 : 4] = 'b';
     return ['...........', h.join(''), '...........', '...........', '...........', '...........', '...........', '...........'];
   }
-  var NOI_14 = [{ nut: { x: 3, y: 3 }, cong: [{ x: 5, y: 2 }], dong: [] }];
-  var XU_14 = ['cast_net()', 'wait()'];
-  var CAM_14 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'turn_left()', 'if color() == "red":', '    turn_right()', '    turn_right()', 'forward(4)', 'drop_net()', 'wait()'];
-  var RADAR_14 = ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'g = radar()', 'if g[1][0] == "#":', '    turn_right()', 'else:', '    turn_left()', 'forward(4)', 'drop_net()', 'wait()'];
+  var NOI_14 = [{ nut: { x: 2, y: 3 }, cong: [{ x: 5, y: 2 }], dong: [] }];
+  var XU_14 = ['cast_net()', 'wait()', 'back()', 'drop_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()'];
+  var CAM_14 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(3)', 'forward(4)', 'turn_left()', 'if color() == "red":', '    turn_right()', '    turn_right()', 'forward(4)', 'drop_net()', 'wait()'];
+  var RADAR_14 = ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(3)', 'forward(4)', 'g = radar()', 'if g[1][0] == "#":', '    turn_right()', 'else:', '    turn_left()', 'forward(4)', 'drop_net()', 'wait()'];
 
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
@@ -485,10 +485,10 @@
       ten: 'Phao màu trong hồ',
       mucTieu: 'dua-vat', vo: 'song',
       khung: { chinh: 16, moiHam: 8 },
-      deBai: 'Ba sân. Ở ngã ba, phao đỏ là bãi cạn, phao xanh là luồng sâu; mỗi sân luồng sâu ở một bên. Xuồng gạt van mở cống. Lắp cho Luna một xuồng dắt bè vào bến trong luồng sâu.',
+      deBai: 'Ba sân. Ở ngã ba, phao đỏ là bãi cạn, phao xanh là luồng sâu; mỗi sân luồng sâu ở một bên. Xuồng kéo lục bình khỏi kênh, gạt van mở cống. Lắp cho Luna một xuồng dắt bè vào bến trong luồng sâu.',
       veMaMau: 'R2 chưa có chương trình.',
       san: [san14('phai'), san14('trai'), san14('trai')],
-      doi: [may('XU', { x: 4, y: 3, huong: 3 }), khe({ x: 5, y: 5, huong: 0 }, { son: 'lam', batDauNuoc: { x: 5, y: 5, huong: 0 } })],
+      doi: [may('XU', { x: 3, y: 4, huong: 1 }), khe({ x: 5, y: 5, huong: 0 }, { son: 'lam', batDauNuoc: { x: 5, y: 5, huong: 0 } })],
       them: { noi: [NOI_14, NOI_14, NOI_14], sonBanDau: [son14('phai'), son14('trai'), son14('trai')] },
       lapRap: lapR2(['xuong', 'hai-banh', 'drone'], ['day-keo', 'kep', 'loa'], ['camera', 'radar', 'dong-chay'], 10, [
         cach('xuong', 'day-keo', 'camera', [XU_14, CAM_14]),
@@ -496,12 +496,12 @@
       ], { moLai: ['L14'] }),
       maMau: doiBai([XU_14, []]),
       loiSai: [
-        { moTa: 'Điền thẳng dữ liệu sân 1 (rẽ phải): sân 2, 3 luồng sâu bên trái, xuồng đâm bãi cạn', baiLam: doiBai([XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'forward(4)', 'turn_right()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Điền thẳng dữ liệu sân 1 (rẽ phải): sân 2, 3 luồng sâu bên trái, xuồng đâm bãi cạn', baiLam: doiBai([XU_14, ['set_length(1)', 'cast_net("back")', 'wait()', 'wait_n(3)', 'forward(4)', 'turn_right()', 'forward(4)', 'drop_net()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Nhầm màu: thấy phao xanh mới quay sang phải', baiLam: doiBai([XU_14, CAM_14.map(function (d) { return d === 'if color() == "red":' ? 'if color() == "blue":' : d; })]), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Đọc nhầm ô radar g[0][1] (ô phía trên): luôn rẽ trái', baiLam: doiBai([XU_14, RADAR_14.map(function (d) { return d === 'if g[1][0] == "#":' ? 'if g[0][1] == "#":' : d; })]), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Xuồng R1 không gạt van: cống đóng, bè kẹt giữa kênh', baiLam: doiBai([[], CAM_14]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 26, nhip: 14 },
+      sao: { o: 40, nhip: 18 },
       goiY: ['color(): màu phao ở ô trước mũi xuồng. Đỏ là bãi cạn.', 'g = radar(): lưới 3×3, g[1][0] là ô bên trái xuồng, "#" là bờ.', 'cast_net() trúng van V thì van gạt, cống mở.'],
       cauDo: { doi: null, lap: 'xuong+day-keo+camera', coChe: ['nuoc', 'be', 'luoi', 'mau', 'van', 'cong', 'nhieu-san'], cuu: 'hang', meo: 'doc-roi-chon' }
     })
