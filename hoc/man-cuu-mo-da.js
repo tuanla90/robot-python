@@ -111,6 +111,19 @@
   var KT_12 = ['radar_front_lob(2)'];
   var GAI_12 = ['forward(3)', 'turn_left()', 'aim_lob(2)', 'forward(3)', 'turn_right()', 'forward(3)'];
 
+  /** lap-mo-da.3: sân nhện ba sân, mũi khoan sắt nằm ở một ngách phía trên hành lang (cột 3, 5, 4 tuỳ sân); máy khai thác hất quặng vào máng ở hầm dưới. */
+  function san13(xMui) {
+    var h1 = '##.....###'.split(''); h1[xMui] = 'o';
+    return ['##########', h1.join(''), '#......nD#', '##########', '#.oD.....#', '##########'];
+  }
+  function vc13(xMui) { var h1 = '..........'.split(''); h1[xMui] = 's'; return ['..........', h1.join(''), '..........', '..........', '..........', '..........']; }
+  var VD_13 = ['..........', '..........', '..........', '..........', '..q.......', '..........'];
+  var KT_13 = ['lob()'];
+  /** Nhện đọc radar (L12): ô trên đầu (g[0][1]) có vật là mũi khoan, lên hút, xuống; hết ngách thì co chân chui gầm đá lở tới máng, thả. */
+  var NHEN_13 = ['for i in range(5):', '    go_right()', '    g = radar()', '    if g[0][1] == "V":', '        go_up()', '        pull_s()', '        go_down()', 'crouch()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()'];
+  /** Cách hai: nhện + cảm biến từ (nhện quay mặt lên, front_metal() đọc ngách phía trên). */
+  var NHEN_TU_13 = ['for i in range(5):', '    go_right()', '    if front_metal():', '        go_up()', '        pull_s()', '        go_down()', 'crouch()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -424,6 +437,30 @@
       sao: { o: 40, nhip: 16 },
       goiY: ['g[0][1] là ô ngay phía trên robot. "V" là có vật.', 'Thân omni vào bùn là trượt tới cuối dốc. Bánh gai bám bùn.'],
       cauDo: { doi: null, lap: 'gai+nem', coChe: ['bun', 'ho', 'da-tron', 'nem', 'radar'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 13 · đọc rồi chọn (ba sân, ôn lưới grid[r][c]), lai L12 nhện + nam châm + radar (ra mắt): đá lở vùi mũi khoan sắt vào một ngách phía trên hành lang, mỗi sân một ngách.
+    //      Nhện đi dọc hành lang, mỗi ô đọc radar: g[0][1] (ô ngay trên) là "V" thì lên hút, xuống; cuối hành lang đá lở chỉ còn gầm thấp: co chân chui qua tới máng, thả.
+    //      Cách hai: nhện + cảm biến từ (quay mặt lên, front_metal()). Xe có bánh không chui gầm, không hút sắt. Máy khai thác R1 hất quặng vào máng hầm dưới (song song).
+    man9('lap-mo-da', 3, 'luyen', {
+      ten: 'Mũi khoan trong ngách',
+      mucTieu: 'dua-vat',
+      deBai: 'Ba sân. Đá lở vùi mũi khoan sắt vào một ngách phía trên hành lang, mỗi sân một ngách. Lắp robot tìm mũi khoan, mang qua gầm đá lở tới máng D.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san13(3), san13(5), san13(4)],
+      them: { vatChat: [vc13(3), vc13(5), vc13(4)], vatDang: [VD_13, VD_13, VD_13] },
+      doi: [may('KT', { x: 1, y: 4, huong: 1 }), khe({ x: 1, y: 2, huong: 0 }, { son: 'lam' })],
+      lapRap: lapR2(['nhen', 'omni', 'hai-banh'], ['nam-cham', 'kep'], ['radar', 'tu'], 10, [
+        cach('nhen', 'nam-cham', 'radar', [KT_13, NHEN_13]),
+        cach('nhen', 'nam-cham', 'tu', [KT_13, NHEN_TU_13])
+      ], { moLai: ['L12'] }),
+      maMau: doiBai([KT_13, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng ngách của sân 1 (cột 3): sân 2, 3 mũi khoan còn trong ngách', baiLam: doiBai([KT_13, ['go_right()', 'go_right()', 'go_up()', 'pull_s()', 'go_down()', 'for i in range(3):', '    go_right()', 'crouch()', 'go_right()', 'go_right()', 'magnet_off()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Quên co chân: nhện đứng thẳng không chui được gầm đá lở', baiLam: doiBai([KT_13, NHEN_13.filter(function (d) { return d !== 'crouch()'; })]), phaiCoMa: ['gam-thap'] }
+      ],
+      sao: { o: 23, nhip: 24 },
+      goiY: ['g = radar(): g[0][1] là ô ngay trên robot. "V" là có vật.', 'pull_s(): hút sắt dưới bụng. magnet_off(): thả.', 'crouch(): co chân chui gầm thấp.'],
+      cauDo: { doi: null, lap: 'nhen+nam-cham+radar', coChe: ['sat', 'gam', 'ngach', 'radar', 'nem'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
     /* HẾT MOI */
   ];
