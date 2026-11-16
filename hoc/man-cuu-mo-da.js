@@ -41,9 +41,10 @@
     return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
   }
 
-  /** cuu-mo-da.1: máy khai thác hất đá tròn trước mũi xuống hố giữa dốc bùn (tầm 2), rồi lên qua hố vừa lấp tới cờ. Xe hang động chờ, bám bùn đi ngang dốc qua hố đã lấp tới cờ. */
-  var KT_1 = ['lob()', 'forward(3)'];
-  var HD_1 = ['wait_n(3)', 'forward(6)'];
+  /** cuu-mo-da.1: máy khai thác hất đá tròn trước mũi xuống hố thứ nhất giữa dốc bùn (tầm 2), trượt sang hai ô hất viên thứ hai xuống hố thứ hai, chờ xe hang động đi qua rồi lên qua hố vừa lấp tới cờ.
+   *  Xe hang động phát nốt 5 làm nứt vỡ khối đá rỗng chắn trước cờ, chờ, bám bùn đi ngang dốc qua hai hố đã lấp tới cờ. */
+  var KT_1 = ['lob()', 'slide_r(2)', 'lob()', 'wait()', 'forward(3)'];
+  var HD_1 = ['note(5)', 'wait()', 'wait_n(2)', 'forward(6)'];
 
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
@@ -74,16 +75,16 @@
     man9('cuu-mo-da', 1, 'lam-quen', {
       ten: 'Hố giữa dốc bùn',
       chiChay: true,
-      deBai: 'Bão biến dốc mỏ thành bùn trơn, đá lở bít thành hố. Máy khai thác hất đá tròn lấp hố, xe hang động bám bùn đi qua. Bấm Chạy.',
+      deBai: 'Bão biến dốc mỏ thành bùn trơn, đá lở bít thành hố. Máy khai thác hất đá tròn lấp hai hố. Xe hang động hát nốt 5 phá đá rỗng, bám bùn đi qua. Bấm Chạy.',
       veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
-      san: ['#########', '#...F...#', '#.IIuIIF#', '#...o...#', '#.......#', '#########'],
-      them: { vatDang: ['.........', '.........', '.........', '....r....', '.........', '.........'] },
-      doi: [may('KT', { x: 4, y: 4, huong: 0 }, { co: [{ x: 4, y: 1 }] }), may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam', co: [{ x: 7, y: 2 }] })],
+      san: ['#########', '#....F..#', '#.IuIuIF#', '#..o.o..#', '#.......#', '#########'],
+      them: { vatDang: ['.........', '.........', '.........', '...r.r...', '.........', '.........'], daChuong: [{ x: 6, y: 2, not: 5, ben: 1 }] },
+      doi: [may('KT', { x: 3, y: 4, huong: 0 }, { co: [{ x: 5, y: 1 }] }), may('HD', { x: 1, y: 2, huong: 1 }, { son: 'lam', co: [{ x: 7, y: 2 }] })],
       maMau: doiBai([KT_1, HD_1]),
       loiGiai: doiBai([KT_1, HD_1]),
-      sao: { o: 18, nhip: 11 },
-      goiY: ['lob(): xúc đá trước mũi rồi hất xa 2 ô. Đá tròn rơi xuống hố thì lấp phẳng hố.', 'Bánh gai bung gai thì bám bùn trơn, không trượt.'],
-      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem'], cuu: 'hang', meo: 'lam-cau' }
+      sao: { o: 27, nhip: 12 },
+      goiY: ['lob(): xúc đá trước mũi rồi hất xa 2 ô. Đá tròn rơi xuống hố thì lấp phẳng hố.', 'Bánh gai bung gai thì bám bùn trơn, không trượt.', 'note(5): phát nốt 5. Đá rỗng nghe đúng nốt của nó thì nứt vỡ.'],
+      cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['bun', 'ho', 'da-tron', 'nem', 'da-rong'], cuu: 'hang', meo: 'lam-cau' }
     }),
   ];
 
