@@ -160,6 +160,17 @@
   var DR_17 = ['go_up()', 'go_up()', 'go_right()', 'cast_net()', 'wait()', 'go_down()'];
   var BANH_17 = ['forward(2)', 'turn_left()', 'wait_n(2)', 'cast_net()', 'wait()'];
 
+  /** lap-clb.8 (ba sân): sau bão, đồ hội trại (gỗ) lẫn sắt nằm thành hàng bên phải cần cẩu (6..8, 2); ba thùng sắt vụn D bên trái (2..4, 2). Xe hang động R1 (đặt sẵn) đỗ trên nắp thùng giữa,
+   *  tượng đá chuông đổ chắn lối ra (3, 3). Mỗi sân sắt nằm ở chỗ khác, tượng một nốt khác. R1 nghe nốt, hát vỡ tượng, chạy ra (3, 4) nhường thùng. R2 tự lắp phân loại: chỉ sắt vào thùng (gỗ để yên).
+   *  Cách một: cẩu + nam châm (L1) + cảm biến từ ở đầu cần (L13): front_metal() mới hút, quay cần sang thùng cùng tầm, thả, quay về, vươn tiếp (nhanh).
+   *  Cách hai rẻ hơn: drone + nam châm không cảm biến: bay tới từng món, bật nam châm (gỗ không dính), bay sang thùng thả, bay về (chậm, ít sao). Cẩu không cảm biến cũng thắng nhưng quá trần nhịp. */
+  function san18() { return ['##########', '##########', '#.DDDRooo#', '###.#R####', '###.######', '##########']; }
+  function da18(n) { return [{ x: 3, y: 3, not: n }]; }
+  function chat18(m) { return ['..........', '..........', '......' + m + '.', '..........', '..........', '..........']; }
+  var HD_18 = ['play_note(listen())', 'forward(2)'];
+  var CAU_18 = ['for i in range(3):', '    if i > 0:', '        extend()', '    if front_metal():', '        magnet_n()', '        swing_right()', '        swing_right()', '        magnet_off()', '        swing_left()', '        swing_left()'];
+  var DR_18 = ['for t in [1, 2, 3]:', '    for i in range(t):', '        go_right()', '    magnet_n()', '    wait()', '    for i in range(2 * t):', '        go_left()', '    magnet_off()', '    for i in range(t):', '        go_right()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -603,6 +614,31 @@
       sao: { o: 13, nhip: 9 },
       goiY: ['Bác trôi hai ô mỗi nhịp, chỉ dừng ở cột chẵn. Xe bờ ở cột 11.', 'Phao thả xuống ô dưới bụng drone; bác trôi tới thì bám, thôi trôi.', 'Xe bờ chờ bác bám phao rồi mới tung lưới.'],
       cauDo: { doi: null, lap: 'drone+day-keo', coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'phao', 'thac', 'bo', 'xe-bo'], cuu: 'nguoi', meo: 'cho-tin-hieu' }
+    }),
+    // 18 · đọc rồi chọn, ba sân (chất từng món do sân cấp qua cảm biến từ), R1 đặt sẵn xe hang động; R2 lai L1 + L13 cẩu + nam châm + cảm biến từ, trộn Nhà máy (sắt, gỗ, phân loại)
+    //      + Hang động (tượng đá chuông, listen) + Cảng (cần cẩu): đồ hội trại lẫn sắt, chỉ sắt vào thùng; tượng đá chuông đè thùng.
+    man9('lap-clb', 8, 'cung-co', {
+      ten: 'Đồ hội trại lẫn sắt',
+      mucTieu: 'dua-vat', vo: 'cang',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Ba sân. Đồ hội trại bằng gỗ lẫn sắt; mỗi sân sắt nằm một chỗ khác. Xe hang động đỗ trên thùng giữa, tượng đá chuông chắn lối ra. Lắp cho Luna một robot chỉ bỏ sắt vào thùng, gỗ để yên.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: [san18(), san18(), san18()],
+      doi: [may('HD', { x: 3, y: 2, huong: 2 }), khe({ x: 5, y: 2, huong: 0, nac: 1, tam: 1 }, { son: 'lam' })],
+      them: { vatCan: 'sat', vatChat: [chat18('s.s'), chat18('.ss'), chat18('ss.')], daChuong: [da18(5), da18(3), da18(7)] },
+      lapRap: lapR2(['cau', 'drone', 'hai-banh'], ['nam-cham', 'kep', 'moc-cau'], ['tu', 'camera-bay', 'khoang-cach'], 11, [
+        cach('cau', 'nam-cham', 'tu', [HD_18, CAU_18]),
+        cach('drone', 'nam-cham', null, [HD_18, DR_18])
+      ], { moLai: ['L1', 'L13'] }),
+      maMau: doiBai([HD_18, []]),
+      loiSai: [
+        { moTa: 'Điền thẳng dữ liệu sân 1 (sắt ở tầm 1 và 3): sân 2, 3 nam châm hút gỗ, bỏ sót sắt', baiLam: doiBai([HD_18, ['magnet_n()', 'swing_right()', 'swing_right()', 'magnet_off()', 'swing_left()', 'swing_left()', 'extend()', 'extend()', 'magnet_n()', 'swing_right()', 'swing_right()', 'magnet_off()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Xe hang động không hát: tượng còn chắn, xe đứng lại trên thùng giữa', baiLam: doiBai([['forward(2)'], CAU_18]), phaiCoMa: ['tha-bi-chan'] },
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(5)): sân 2, 3 tượng không vỡ', baiLam: doiBai([['play_note(5)', 'forward(2)'], CAU_18]), phaiCoMa: ['tha-bi-chan'] }
+      ],
+      sao: { o: 23, nhip: 14 },
+      goiY: ['front_metal(): món ở đầu cần có phải sắt không.', 'Thùng nằm bên trái, cùng tầm với món bên phải: quay hai nấc là tới.', 'Thùng có xe đỗ lên thì không thả vào được.'],
+      cauDo: { doi: null, lap: 'cau+nam-cham+tu', coChe: ['sat', 'go', 'cam-bien', 'da-chuong', 'thung-phe-lieu', 'nhieu-san'], cuu: 'hang', meo: 'doc-roi-chon' }
     })
   ];
 
