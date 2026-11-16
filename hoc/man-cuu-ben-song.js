@@ -37,6 +37,23 @@
     return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
   }
   function xuongLoa(r) { r.chinhLuoi = false; return r; }
+  /** cuu-ben-song.4 (ba sân): ngã ba kênh ở ô (4, 3); nhánh trái (hàng 3, x 1–3), nhánh trên (cột 4, y 0–2), nhánh phải (hàng 3, x 5–7) chảy về ngã ba.
+   *  Mỗi sân một bộ sức (0 = nước êm); bến nhận bè q chỉ có ở ô đầu nhánh nước êm (nq: 'trai' | 'tren' | 'phai'). */
+  function san4(nq) {
+    return ['####~####', '####~####', '###u' + (nq === 'tren' ? 'q' : '~') + '####', '#~~' + (nq === 'trai' ? 'q' : '~') + '~' + (nq === 'phai' ? 'q' : '~') + '~~#',
+      '###.~####', '#..#~#..#', '#..#~#..#', '####B####', '#########'];
+  }
+  /** Xuồng cuu-ben-song.4: bắt bè phía sau, tới ngã ba, đọc ba nhánh (trên, trái, phải), chọn nhánh sức nhỏ nhất. Máy khai thác: nạp đá chắn cửa kênh, ném lấp hố. */
+  var XU_4 = ['cast_net("back")', 'wait()', 'forward(2)', 'h, a = flow()', 'turn_left()', 'h, b = flow()', 'turn_right()', 'turn_right()', 'h, c = flow()', 'm = min(a, b, c)',
+    'if m == a:', '    turn_left()', 'if m == b:', '    turn_right()', '    turn_right()', 'forward(3)', 'drop_net()', 'wait()'];
+  var KT_4 = ['load()', 'wait()', 'turn_left()', 'throw()', 'wait()'];
+  function dong4(trai, tren, phai) {
+    var ds = [];
+    if (trai) [1, 2, 3].forEach(function (x) { ds.push({ x: x, y: 3, huong: 1, suc: trai }); });
+    if (tren) [0, 1, 2].forEach(function (y) { ds.push({ x: 4, y: y, huong: 2, suc: tren }); });
+    if (phai) [5, 6, 7].forEach(function (x) { ds.push({ x: x, y: 3, huong: 3, suc: phai }); });
+    return ds;
+  }
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -131,6 +148,31 @@
       sao: { o: 26, nhip: 7 },
       goiY: ['set_length(1): lưới dài 1 ô, bắt bè sát mũi.', 'throw() ném xa 2 ô: đứng trên cầu phao mới tới hố.'],
       cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'ho', 'nem', 'do-dai-luoi'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 4 · đọc rồi chọn, ôn tuple + min (ba sân): ngã ba ba nhánh kênh, nước mỗi nhánh chảy về ngã ba mạnh yếu khác nhau; bến nhận bè chỉ xây ở nhánh nước êm.
+    //     Xuồng tung lưới ra sau bắt bè, tiến tới ngã ba; quay đọc h, s = flow() ba nhánh (a, b, c), m = min(a, b, c) là nhánh êm; quay về nhánh đó, kéo bè vào bến, nhả lưới.
+    //     Máy khai thác nạp tảng đá chắn cửa kênh, quay lên ném lấp hố bờ. Ba sân (dữ liệu theo sân, luật 13/11): nhánh êm phải / trên / trái; điền thẳng nhánh của sân 1 thua sân 2, 3.
+    man9('cuu-ben-song', 4, 'luyen', {
+      ten: 'Ba nhánh kênh',
+      khung: { chinh: 20, moiHam: 8 },
+      deBai: 'Ba sân. Bến nhận bè ở nhánh nước êm nhất. Đọc h, s = flow() ở cả ba nhánh, chọn nhánh có s nhỏ nhất: min(a, b, c).',
+      veMaMau: 'Xuồng mới tới ngã ba, chưa đọc nhánh nào.',
+      san: [san4('phai'), san4('tren'), san4('trai')],
+      doi: [khe({ x: 3, y: 4, huong: 1 }, { batDauNuoc: { x: 4, y: 5, huong: 0 } }), khe({ x: 3, y: 4, huong: 1 }, { batDauNuoc: { x: 4, y: 5, huong: 0 } })],
+      them: { vatThem: [[{ x: 4, y: 4 }], [{ x: 4, y: 4 }], [{ x: 4, y: 4 }]], dong: [dong4(2, 1, 0), dong4(1, 0, 2), dong4(0, 2, 1)] },
+      chonDoi: {
+        menu: ['XU', 'KT'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([XU_4, KT_4]) }]
+      },
+      maMau: doiBai([['cast_net("back")', 'wait()', 'forward(2)'], KT_4]),
+      loiSai: [
+        { moTa: 'Điền thẳng nhánh của sân 1 (rẽ phải): sân 2, 3 bến ở nhánh khác', baiLam: doiBai([['cast_net("back")', 'wait()', 'forward(2)', 'turn_right()', 'forward(3)', 'drop_net()', 'wait()'], KT_4]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Dùng max thay min: kéo bè vào nhánh nước xiết nhất', baiLam: doiBai([XU_4.map(function (d) { return d === 'm = min(a, b, c)' ? 'm = max(a, b, c)' : d; }), KT_4]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác không dọn đá: xuồng vướng đá ở cửa kênh', baiLam: doiBai([XU_4, []]), phaiCoMa: ['dam-tuong'] }
+      ],
+      sao: { o: 38, nhip: 13 },
+      goiY: ['h, s = flow(): h là hướng, s là sức nước (0 là nước êm).', 'm = min(a, b, c): số nhỏ nhất trong ba số.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'dong', 'be', 'luoi', 'doc-dong', 'ho'], cuu: 'hang', meo: 'doc-roi-chon' }
     }),
   ];
 })();
