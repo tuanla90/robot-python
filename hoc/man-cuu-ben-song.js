@@ -134,7 +134,7 @@
       deBai: 'Bờ bên kia sụt hố. Ai ghép cầu phao, ai lấp hố? Đứng trên bờ ném không tới hố đâu.',
       veMaMau: 'Máy khai thác ném từ bờ: đá rơi trước hố.',
       san: ['#########', '#...u...#', '#.......#', '#~~~q~~B#', '#.......#', '#.......#', '#########'],
-      doi: [khe({ x: 4, y: 5, huong: 0 }, { batDauNuoc: { x: 6, y: 3, huong: 1 } }), khe({ x: 4, y: 5, huong: 0 }, { batDauNuoc: { x: 6, y: 3, huong: 1 } })],
+      doi: [khe({ x: 2, y: 5, huong: 0 }, { batDauNuoc: { x: 6, y: 3, huong: 1 } }), khe({ x: 4, y: 5, huong: 0 }, { batDauNuoc: { x: 1, y: 3, huong: 1 } })],
       them: { vatThem: [{ x: 4, y: 4 }] },
       chonDoi: {
         menu: ['XU', 'KT', 'CH'],
@@ -185,8 +185,8 @@
       mucTieu: 'cuu-nguoi',
       deBai: 'Một người rơi xuống sông, trôi mỗi nhịp một ô về phía thác. Kéo người vào bờ kịp lúc, lấp hố trên lối về trạm cứu.',
       veMaMau: 'Xuồng tung lưới sớm quá.',
-      san: ['#########', '~~~~~~~~~', '###..~###', '#.ou#~###', '###.#~###', '###.#####', '#########'],
-      doi: [khe({ x: 1, y: 3, huong: 1 }, { batDauNuoc: { x: 5, y: 2, huong: 0 } }), khe({ x: 1, y: 3, huong: 1 }, { batDauNuoc: { x: 5, y: 2, huong: 0 } })],
+      san: ['#########', '~~~~~~~~~', '###..~###', '#.ou#~###', '#.#.#~###', '###.#####', '#########'],
+      doi: [khe({ x: 1, y: 4, huong: 0 }, { batDauNuoc: { x: 5, y: 2, huong: 0 } }), khe({ x: 1, y: 3, huong: 1 }, { batDauNuoc: { x: 5, y: 3, huong: 0 } })],
       them: { nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 3, y: 5 }], thac: [{ x: 8, y: 1 }],
         dong: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: 1 }; }) },
       chonDoi: {
@@ -212,7 +212,7 @@
       deBai: 'Hòm sắt kẹt trên cồn giữa hai lạch nước. Chỉ có một chiếc bè. Nhện qua cầu lấy hòm, rồi bè phải sang lạch kia làm cầu lần nữa.',
       veMaMau: 'Xuồng kéo bè khi nhện còn đứng trên bè.',
       san: ['########', '#..D...#', '#~~~~~~#', '#..o..~#', '#~~B~~~#', '#RRRRRR#', '########'],
-      doi: [khe({ x: 5, y: 5, huong: 0 }, { batDauNuoc: { x: 4, y: 4, huong: 1 } }), khe({ x: 3, y: 5, huong: 0 })],
+      doi: [khe({ x: 5, y: 5, huong: 0 }, { batDauNuoc: { x: 4, y: 4, huong: 1 } }), khe({ x: 3, y: 5, huong: 0 }, { batDauNuoc: { x: 1, y: 4, huong: 1 } })],
       them: { vatCan: 'sat', vatChat: ['........', '........', '........', '...s....', '........', '........', '........'] },
       chonDoi: {
         menu: ['XU', 'PL', 'CC'],
