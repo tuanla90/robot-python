@@ -40,7 +40,7 @@
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
-      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'song',
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'song', daLapHo: true,
       cauTruc: ['for', 'if', 'while', 'list', 'def', 'return', 'tuple'], vaHoac: true, moXuong: true, camHamCuaEm: false,
       hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
       khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'dua-vat',
@@ -79,6 +79,32 @@
       sao: { o: 33, nhip: 13 },
       goiY: ['Bè nằm trên bến q là cầu phao: xe đi qua được.', 'throw(): ném vật trong rổ xa 2 ô; rơi trúng hố thì lấp hố.'],
       cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'ho', 'nem'], cuu: 'hang', meo: 'lam-cau' }
+    }),
+    // 2 · dọn lối: lũ cuốn tảng đá tròn nằm giữa luồng nước, chắn đường xuồng kéo bè; bè hàng kẹt sau cống đóng. Xuồng tung lưới lên trúng van cống V (cống mở cuối nhịp),
+    //     quay trái tung lưới bắt bè, lùi năm ô qua ô đá vừa dọn và qua cống, kéo bè vào bến q, nhả lưới. Máy khai thác đứng trên bờ nạp tảng đá ở ô nước trước mũi,
+    //     quay phải ném lấp hố bờ sụt (đá lấp hố không cần về đích). Bảng 2 cỗ máy (đúng đôi tốt).
+    man9('cuu-ben-song', 2, 'lam-quen', {
+      ten: 'Đá chắn luồng',
+      deBai: 'Tảng đá lũ cuốn chắn luồng nước. Bè hàng kẹt sau cống đóng. Dọn đá, gạt van, kéo bè vào bến q.',
+      veMaMau: 'Xuồng lùi vướng tảng đá.',
+      san: ['##########', '#........#', '#..V.....#', '#.u~.#####', '#B~~~Kq~~#', '##########'],
+      doi: [khe({ x: 4, y: 3, huong: 2 }, { batDauNuoc: { x: 3, y: 4, huong: 0 } }), khe({ x: 4, y: 3, huong: 2 }, { batDauNuoc: { x: 3, y: 4, huong: 0 } })],
+      them: { vatThem: [{ x: 4, y: 4 }] },
+      chonDoi: {
+        menu: ['XU', 'KT'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'],
+          ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()']]) }]
+      },
+      maMau: doiBai([['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], []]),
+      loiSai: [
+        { moTa: 'Máy khai thác không dọn đá: xuồng lùi vướng đá', baiLam: doiBai([['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], []]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Máy khai thác quên quay: đá ném vào bờ, vỡ', baiLam: doiBai([['cast_net()', 'wait()', 'turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'throw()', 'wait()']]), phaiCoMa: ['nem-vo'] },
+        { moTa: 'Không gạt van: cống đóng, bè không qua', baiLam: doiBai([['turn_left()', 'cast_net()', 'wait()', 'for i in range(5):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'turn_right()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+      ],
+      sao: { o: 26, nhip: 12 },
+      goiY: ['Lưới bay thẳng tới van V: van đổi, cống mở.', 'Đá lấp hố thì không cần về đích.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'van', 'cong', 'be', 'luoi', 'ho', 'nem'], cuu: 'hang', meo: 'don-loi' }
     }),
   ];
 })();

@@ -56,7 +56,7 @@ export const SU_KIEN_CHINH = [
   'toi-co', 'xong-dua-vat', 'xong-day-thung', 'xong-giao-tau', 'xong-cuu-nguoi', 'xong-dieu', 'xong-to-hinh', 'xong-dap-lua'
 ];
 const LAM_CAU = ['lap-ho', 'rac-cat', 'dat-dai-luoi', 'keo-theo', 'tha-keo'];
-const DON_LOI = ['nhat-vat', 'hut-vat', 'moc-cont', 'keo-vat', 'nem-vat', 'dap', 'gau-ngoam', 'gio-vot', 'thung-di', 'cau-hut', 'day-vat'];   // M9M2b: + cau-hut (cầu trục từ L1 hút sắt khỏi lối); M9M3: + day-vat (suKienCua lấy ô vật rời đi: e.tu)
+const DON_LOI = ['nhat-vat', 'hut-vat', 'moc-cont', 'keo-vat', 'nem-vat', 'dap', 'gau-ngoam', 'gio-vot', 'thung-di', 'cau-hut', 'day-vat', 'nap-vat'];   // M9M2b: + cau-hut (cầu trục từ L1 hút sắt khỏi lối); M9M3: + day-vat (suKienCua lấy ô vật rời đi: e.tu); M9M5: + nap-vat (máy khai thác nạp vật chắn lối vào rổ, o = ô vật)
 const CUU_KIP = ['nguoi-toi-tram', 'xong-giao-tau', 'tau-roi', 'sac-pin'];
 
 /* ------------------------------------------------------------- (a) dấu */
