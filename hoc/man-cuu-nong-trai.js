@@ -85,6 +85,17 @@
     '    for i in range(n):', '        go_right()', '        dot()', '    go_right()'];
   var CH_9 = ['grab_clear()'];
   var PL_9 = ['go_up()', 'clear_iron("D")'];
+  /** R2 đã lắp sẵn (màn show chương 2): xích + bộ gieo hạt + camera trước, như LapRap.apDung lắp ra. Màn khai xichDay: xích lắp ráp cũng ủi được cây đổ (như xe cứu hỏa). */
+  var XICH_GIEO = {
+    loaiRobot: 'xich', robot: { than: 'xich', tay: 'son', camBien: [{ ma: 'camera', o: 'tren' }], son: 'lam' },
+    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'ink', 'dot', 'pen_down', 'pen_up', 'color']
+  };
+  /** Drone R1 gieo một hàng n + 1 ô màu c sang phải (bút hạ). */
+  function hang(c, n) { return ['ink("' + c + '")', 'pen_down()', 'for i in range(' + n + '):', '    go_right()', 'pen_up()']; }
+  /** Xe gieo hạt R2 hạ bút chạy thẳng n ô: gieo cả ô xuất phát (xích ủi cây đổ trên đường đi). */
+  function hangXe(c, n) { return ['ink("' + c + '")', 'pen_down()', 'forward(' + n + ')', 'pen_up()', 'wait()']; }
+  /** lap-nong-trai.2: drone R1 gieo luống trên rồi đáp xuống đậu chờ (đậu không tốn pin). */
+  var DR_12 = hang('red', 4).concat(['land()']);
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -356,6 +367,50 @@
       sao: { o: 7, nhip: 10 },
       goiY: ['Bè 2: play_part([6, 2, 5, 1, 4, 5, 3, 1]).'],
       cauDo: { doi: ['CU', 'CH'], lap: null, coChe: ['loa', 'da-chuong', 'nong-trai'], cuu: null, meo: 'song-song' }
+    }),
+
+    /* ========================================================================
+       CHƯƠNG 2: lap-nong-trai (10 màn)
+       ======================================================================== */
+    // 11 · show (song song): drone R1 ít pin, chỉ đủ gieo luống trên. Luna lắp sẵn xích + bộ gieo hạt + camera (khoá): hạ bút chạy dọc luống dưới,
+    //      vừa ủi cây đổ đi trước vừa gieo hạt. Màn khai xichDay: xích lắp ráp ủi được cây như xe cứu hỏa.
+    man9('lap-nong-trai', 1, 'lam-quen', {
+      ten: 'Xe vừa ủi vừa gieo',
+      chiChay: true,
+      deBai: 'Drone ít pin, chỉ gieo được luống trên. Luna lắp cho xe xích bộ gieo hạt: hạ bút chạy dọc luống dưới, vừa ủi cây đổ vừa gieo. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem xe xích gieo hạt.',
+      san: ['##########', '#........#', '#........#', '#........#', '##########'],
+      them: { thungThem: [{ x: 4, y: 3 }], xichDay: true },
+      hinh: luong(10, 5, [{ y: 1, x0: 2, mau: 'ggggg' }, { y: 3, x0: 2, mau: 'yyyyy' }]),
+      doi: [may('DR', { x: 2, y: 1, huong: 1 }, { pin: 10 }), Object.assign({ batDau: { x: 2, y: 3, huong: 1 } }, clone(XICH_GIEO))],
+      maMau: doiBai([hang('green', 4), hangXe('yellow', 4)]),
+      loiGiai: doiBai([hang('green', 4), hangXe('yellow', 4)]),
+      sao: { o: 16, nhip: 7 },
+      goiY: ['pen_down(): xe chạy tới đâu gieo hạt tới đó.', 'Xích tiến vào ô cây đổ thì đẩy cây đi một ô.'],
+      cauDo: { doi: null, lap: 'xich+son+camera', coChe: ['cay-do', 'gieo', 'pin'], cuu: 'hang', meo: 'song-song' }
+    }),
+    // 12 · song song, ép đổi thân: drone R1 ít pin chỉ gieo được luống trên; luống dưới dài, có cây đổ nằm giữa. R2 tự lắp thân có bộ gieo hạt gieo luống dưới.
+    //      Cách một drone + gieo hạt: bay qua cây (nhanh). Cách hai xích + gieo hạt: hạ bút chạy thẳng, ủi cây đi trước (rẻ hơn). Hai bánh không qua được cây.
+    man9('lap-nong-trai', 2, 'lam-quen', {
+      ten: 'Luống dưới có cây đổ',
+      deBai: 'Drone R1 chỉ đủ pin gieo luống trên. Lắp robot gieo luống dưới: cây đổ nằm giữa luống. Thân nào qua được cây?',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['##########', '#........#', '#........#', '#........#', '##########'],
+      them: { thungThem: [{ x: 3, y: 3 }], xichDay: true },
+      hinh: luong(10, 5, [{ y: 1, x0: 1, mau: 'rrrrr' }, { y: 3, x0: 1, mau: 'bbbbbbb' }]),
+      doi: [may('DR', { x: 1, y: 1, huong: 1 }, { pin: 11 }), khe({ x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      lapRap: lapR2(['drone', 'xich', 'hai-banh'], ['son'], [], 8, [
+        cach('drone', 'son', null, [DR_12, hang('blue', 6)]),
+        cach('xich', 'son', null, [DR_12, hangXe('blue', 6)])
+      ]),
+      maMau: doiBai([DR_12, []]),
+      loiSai: [
+        { moTa: 'R2 đứng yên: luống dưới chưa gieo', baiLam: doiBai([DR_12, []]), phaiCoMa: ['chua-to-hinh'] },
+        { moTa: 'Drone R1 gieo luôn luống dưới: hết pin', baiLam: doiBai([hang('red', 4).concat(['go_down()', 'go_down()', 'ink("blue")', 'pen_down()', 'for i in range(6):', '    go_left()']), []]), phaiCoMa: ['het-pin'] }
+      ],
+      sao: { o: 20, nhip: 9 },
+      goiY: ['Drone bay qua cây đổ. Xích ủi cây đi trước.', 'Hai bánh gặp cây đổ thì đứng im.'],
+      cauDo: { doi: null, lap: 'drone+son', coChe: ['cay-do', 'gieo', 'pin'], cuu: 'hang', meo: 'song-song' }
     }),
   ];
 })();
