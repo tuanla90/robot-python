@@ -53,6 +53,15 @@
   var SAN_1_KHO = ['##########', '#.IIu#####', '###.######', '###F##.F##', '##########'];
   var SAN_1_NM = ['##########', '#...##N###', '###C##.###', '###F##.F##', '##########'];
 
+  /** tong-hop-clb.2 (hai sân: Bãi tái chế + Cảng): sắt vụn rơi trên ray cần cẩu (mỗi sân hai thanh, chỗ khác nhau); container chờ ở góc ray, ghe đậu ở boong T tới hết nhịp 47.
+   *  Nhện (khe B, mặt quay phải) bò dọc ray: ô bên phải có sắt (front_metal()) thì bước lên, pull_deliver("D") (gói 3) thả sắt xuống sân, bò lên lại; hết ray thì xuống sân.
+   *  Cần cẩu (khe A) chờ ray trống, chạy ray sang phải, móc container, chạy về, quay cần lên, hạ lên ghe. Viết thẳng chỗ sắt của sân 1 thì sân 2 vướng sắt. */
+  var PL_2 = ['for i in range(4):', '    go_right()', '    pull_deliver("D")', '    go_up()', 'go_down()'];
+  function cc2(cho) { return ['wait_n(' + cho + ')', 'rail(6)', 'pick_up()', 'rail(-6)', 'swing_right()', 'swing_right()', 'set_down()', 'wait()']; }
+  function san2() { return ['#########', '#T~~~~~~#', '#RRRRRRR#', '#.......#', '#########']; }
+  var TAU_2 = { o: [{ x: 1, y: 1 }], co: 47, vang: 60 };
+  function sat2(a, b) { return [{ x: a, y: 2, chat: 'sat' }, { x: b, y: 2, chat: 'sat' }]; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -100,6 +109,32 @@
       sao: { o: 20, nhip: 12 },
       goiY: ['Mỗi sân chạy cùng một chương trình: thiếu việc của sân nào thì sân đó thua.', 'Bánh gai bung gai bám bùn trơn; xe khác vào bùn là trượt thẳng.', 'Tia phun trúng nút N thì cửa C đổi (đóng ↔ mở).'],
       cauDo: { doi: ['HD', 'CU'], lap: null, coChe: ['bun', 'ho', 'nut-ban', 'cua', 'kho', 'nha-may', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
+    }),
+    // 2 · nhiều sân, hai sân Bãi tái chế (G3: sắt, nhện, pull_deliver) + Cảng (G4: ray, container, ghe). Sắt rơi trên ray, mỗi sân một chỗ: nhện đọc front_metal() dọn từng thanh,
+    //     cẩu chạy ray đưa container lên ghe. Bẫy: drone (bay qua ray nhưng không có nam châm). Mọi khe trên dải ray.
+    man9('tong-hop-clb', 2, 'lam-quen', {
+      ten: 'Sắt trên ray, container lên ghe',
+      mucTieu: 'giao-tau', vo: 'cang',
+      hamCuaEmCan: HAM_EM.concat(['pull_deliver']),
+      khung: { chinh: 14, moiHam: 8 },
+      deBai: 'Hai sân: Bãi tái chế và Cảng. Bão rải sắt lên ray cần cẩu, mỗi sân một chỗ. Chọn hai bạn: ai dọn sắt khỏi ray, ai đưa container lên ghe? Một chương trình qua cả hai sân.',
+      veMaMau: 'Nhện chưa biết chỗ nào có sắt.',
+      san: [san2(), san2()],
+      them: { vatThem: [sat2(3, 5), sat2(4, 6)], chong: [[{ x: 7, y: 3, cont: [{ so: 13 }] }], [{ x: 7, y: 3, cont: [{ so: 8 }] }]], tau: [[TAU_2], [TAU_2]], giao: [[{ tau: 0, so: [13] }], [{ tau: 0, so: [8] }]] },
+      doi: [khe({ x: 1, y: 2, nac: 2, tam: 1 }), khe({ x: 2, y: 2 })],
+      chonDoi: {
+        menu: ['CC', 'PL', 'DR'],
+        cachMau: [{ chon: ['CC', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([cc2(30), PL_2]) }]
+      },
+      maMau: doiBai([cc2(30), ['for i in range(4):', '    go_right()', 'go_down()']]),
+      loiSai: [
+        { moTa: 'Chạy đúng sân 1, thua sân 2: nhện dọn thẳng cột 3 và 5 (chỗ sắt sân 1), sân 2 sắt ở cột 4 và 6 còn trên ray', baiLam: doiBai([cc2(30), ['go_right()', 'pull_deliver("D")', 'go_up()', 'go_right()', 'go_right()', 'pull_deliver("D")', 'go_up()', 'go_right()', 'go_down()']]), phaiCoMa: ['het-ray'] },
+        { moTa: 'Nhện không xuống sân: đứng chắn ray', baiLam: doiBai([cc2(30), PL_2.slice(0, -1)]), phaiCoMa: ['het-ray'] },
+        { moTa: 'Cẩu không chờ: vướng sắt trên ray', baiLam: doiBai([cc2(30).slice(1), PL_2]), phaiCoMa: ['het-ray'] }
+      ],
+      sao: { o: 35, nhip: 112 },
+      goiY: ['front_metal(): ô bên phải nhện có sắt không.', 'pull_deliver("D"): hút sắt dưới bụng, bước xuống, thả.', 'Thanh sắt nằm trên ray thì bệ cẩu không chạy qua được.'],
+      cauDo: { doi: ['CC', 'PL'], lap: null, coChe: ['sat', 'ray', 'container', 'ghe', 'cam-bien', 'nhieu-san'], cuu: 'hang', meo: 'nhieu-san' }
     })
   ];
 
