@@ -1,10 +1,13 @@
 /* ============================================================================
-   man-cuu-bai-tai-che.js - Mùa 9 CLB Sáng Tạo: Gói 3 "Cứu hộ Bãi tái chế"
-   20 màn (10 màn cuu-bai-tai-che + 10 màn lap-bai-tai-che):
-   - R1 (.1..9): Robot nhện Bãi tái chế Mùa 3 (than: 'nhen', tay: 'nam-cham', camBien: tu)
-   - R2: Robot các mùa khác đến chi viện (xich, banh, omni, gai)
-   - Màn 10 mỗi chương (hang: 'trum'): Hợp tấu 2 bè Đoạn 3 "Kìa con bướm vàng"
-     (Bè 1: 5 5 4 4 3 3 2 2 | Bè 2: 3 1 2 4 1 3 5 5)
+   man-cuu-bai-tai-che.js - Mùa 9 Về CLB: Gói 3 "Bãi tái chế sau bão" (M9M3 16/11; dựng lại theo khuôn G1 / G2: man-cuu-kho-hang.js, man-cuu-nha-may.js)
+   Câu đố: hoc/MUA-9-200-CAU-DO.md mục G3 (20 dòng); luật: hoc/KE-HOACH-MUA-9-TO-HOP.md. Bão: phế liệu gỗ lẫn sắt, khe (hố) mới, đệm từ, bùn trơn.
+   - Chương 1 cuu-bai-tai-che: CHỌN ĐỘI (man.chonDoi). Đôi tốt: Robot phân loại (PL, nhện + nam châm bụng + cảm biến từ) + Xe chở hàng (CH): sắt cho nam châm, gỗ cho kẹp.
+   - Chương 2 lap-bai-tai-che: R1 robot phân loại đặt sẵn, Luna TỰ LẮP R2 (man.lapRap.robot = 1). Tổ hợp đích: nhện + kẹp + cảm biến từ (đổi tay, giữ thân).
+     Lai: L12 nhện + camera bốn hướng, L1 cẩu + nam châm, L6 nhện + gieo hạt, L7 nhện + loa; T2 container lấp hố (chương 1).
+   - Mỗi màn khai man.cauDo (máy kiểm hoc/kiem-cau-do-mua-9.mjs). Ôn Python G3: CHUỖI (walk("RRD"), front_pole() / color() trả chuỗi), and / or trong điều kiện.
+   - Hàm của em do gói này tạo mà gói sau gọi: clear_iron(d) [pull_s(), go(d)] (man-cuu-clb.js, man-cuu-hang-dong.js gọi),
+     pull_deliver(d) [pull_s(), go(d), magnet_off(), wait()] (man-cuu-ben-song.js, man-cuu-mo-da.js, man-cuu-nong-trai.js gọi).
+   - Màn 10 mỗi chương: song ca đoạn 3 "Kìa con bướm vàng" (Bè 1: 5 5 4 4 3 3 2 2 | Bè 2: 3 1 2 4 1 3 5 5), giữ để gói 10 ghép bài; dùng play_part (cuu-kho-hang.10 tạo).
    ========================================================================== */
 (function () {
   'use strict';
@@ -12,6 +15,56 @@
   var laNode = (typeof module !== 'undefined' && module.exports);
   var ManHoc = laNode ? require('./man-chuoi-1.js') : window.ManHoc;
 
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* ---- M9M3: khung màn mùa 9 (chép từ man-cuu-nha-may.js) --------------------------------------------- */
+  var CoMay = laNode ? require('./co-may.js') : window.CoMay;
+  var HAM_EM = ['move', 'back', 'forward', 'wait_n', 'tr_left', 'tr_right', 'turn_left', 'turn_right', 'pick', 'drop', 'go', 'walk', 'jump', 'crawl', 'pull_s'];
+  /** Robot của màn: cỗ máy `ma` (CoMay.dung) ở ô xuất phát bd, cờ riêng co, đế son ('lam' Luna, 'tim' máy khách). */
+  function may(ma, bd, them) {
+    var t = them || {};
+    var r = CoMay.dung(ma, { batDau: bd, son: t.son, pin: t.pin });
+    if (t.co) r.co = t.co;
+    if (t.coDinh) r.coDinh = true;
+    if (t.tay) r.robot.tay = t.tay;
+    if (t.tay || t.boHam || t.themHam) r.hamGoc = r.hamGoc.filter(function (h) { return (t.boHam || []).indexOf(h) < 0; }).concat(t.themHam || []);
+    if (t.phatNot) r.phatNot = true;
+    return r;
+  }
+  /** Khe robot em lập trình ở màn chọn đội / khe lắp: chỉ ô xuất phát, cờ, pin (drone), đế. */
+  function khe(bd, them) { return Object.assign({ batDau: bd }, them || {}); }
+  function doiBai(ds, hamMan, hamEm) {
+    return { doi: ds.map(function (c) { return { chinh: c.slice() }; }), hamCuaMan: clone(hamMan || []), hamCuaEmMoi: clone(hamEm || []) };
+  }
+  /** Hàm của em tạo ở gói này (gói sau còn gọi). */
+  var H_CLEAR_IRON = { ten: 'clear_iron', thamSo: ['d'], than: ['pull_s()', 'go(d)'] };
+  var H_PULL_DELIVER = { ten: 'pull_deliver', thamSo: ['d'], than: ['pull_s()', 'go(d)', 'magnet_off()', 'wait()'] };
+  /** Một cách lắp mẫu (màn tự lắp, lapRap.robot = 1): part của R2 + lời giải cả đội. */
+  function cach(than, tay, cam, ds, hamEm) { return { than: than, tay: tay || null, camBien: cam || null, loiGiai: doiBai(ds, [], hamEm) }; }
+  function lapR2(than, tay, cam, nganSach, cachLap, them) {
+    return Object.assign({ robot: 1, than: than, tay: tay, camBien: cam, nganSach: nganSach, dungKho: true, cachLap: cachLap }, them || {});
+  }
+  function man9(chuong, so, hang, cfg) {
+    var r1 = cfg.doi[0];
+    var m = {
+      chuong: chuong, so: so, ten: cfg.ten, hang: hang, vo: 'tai-che',
+      cauTruc: ['for', 'if', 'while', 'list'], vaHoac: true, moXuong: true, camHamCuaEm: false,
+      hamCuaEmCan: cfg.hamCuaEmCan || HAM_EM, taoHam: cfg.taoHam || [],
+      khung: cfg.khung || { chinh: 12, moiHam: 8 }, mucTieu: cfg.mucTieu || 'toi-co',
+      deBai: cfg.deBai, veMaMau: cfg.veMaMau || '', san: cfg.san, batDau: clone(r1.batDau),
+      doi: cfg.doi.map(clone), maMau: cfg.maMau, loiSai: cfg.loiSai || [], sao: cfg.sao, goiY: cfg.goiY || [], cauDo: cfg.cauDo
+    };
+    if (r1.loaiRobot) { m.loaiRobot = r1.loaiRobot; m.robot = clone(r1.robot); m.hamGoc = r1.hamGoc.slice(); }
+    if (cfg.loiGiai) m.loiGiai = cfg.loiGiai;
+    if (cfg.chonDoi) m.chonDoi = cfg.chonDoi;
+    if (cfg.lapRap) m.lapRap = cfg.lapRap;
+    if (cfg.noi) m.noi = cfg.noi;
+    if (cfg.chiChay) { m.chiChay = true; m.chinhCoDinh = true; }
+    Object.keys(cfg.them || {}).forEach(function (k) { m[k] = cfg.them[k]; });
+    return ManHoc.chuanHoa(m);
+  }
+
+  /* ---- BẢN CŨ: khung màn cũ (xoá khi dựng xong 20 màn) ---- */
   var BANH = ['left_move', 'right_move', 'left_back', 'right_back', 'wait'];
   var HAM_NHEN = ['go_up', 'go_down', 'go_left', 'go_right', 'wait', 'crouch', 'stand', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole'];
   var HAM_XICH = BANH.concat(['spray', 'spray_back', 'distance', 'warm']);
@@ -64,7 +117,6 @@
     than: ['pull_s()', 'go(d)', 'magnet_off()', 'wait()']
   };
 
-  function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
   function baiDoi(r1Chinh, r2Chinh, hamEm, hamMan) {
     return {
@@ -129,22 +181,24 @@
     /* ========================================================================
        CHƯƠNG 1: cuu-bai-tai-che (10 màn)
        ======================================================================== */
-    manTC('cuu-bai-tai-che', 1, 'lam-quen', {
-      ten: 'Nhện hút sắt dọn đường cho xe xích',
-      chiChay: true, r2: R_XICH,
-      hamCuaEmCan: ['go', 'pull_s', 'move', 'forward', 'wait_n'],
-      deBai: 'Chào mừng em đến Gói 3: Cứu hộ Bãi tái chế! R1 là robot nhện nam châm bụng Mùa 3, còn R2 là xe bánh xích Mùa 2. Mẩu sắt vụn tại (2, 1) đang cản đường R2: R1 gọi pull_s() hút sắt vào bụng rồi gọi go("D") bước xuống cờ F(2, 2), mở đường cho R2 chờ 3 nhịp rồi tiến thẳng 3 ô tới cờ F(4, 1). Nhấn Chạy để quan sát!',
-      veMaMau: 'Quan sát R1 hút sắt dưới bụng nhường đường cho R2.',
-      san: ['######', '#...F#', '##F###', '######'],
-      bd: [{ x: 2, y: 1, huong: 1 }, { x: 1, y: 1, huong: 1 }],
-      co: [[{ x: 2, y: 2 }], [{ x: 4, y: 1 }]],
-      vatThem: [{ x: 2, y: 1, chat: 'sat' }],
-      maMau: baiDoi(['pull_s()', 'go("D")'], ['wait_n(3)', 'forward(3)']),
-      loiGiai: baiDoi(['pull_s()', 'go("D")'], ['wait_n(3)', 'forward(3)']),
-      sao: { o: 14, nhip: 6 },
-      goiY: ['Nhấn Chạy để xem R1 hút sắt ở (2, 1) rồi bước xuống F(2, 2) nhường đường cho R2.']
+    // 1 · show: phân loại phế liệu. Nhện hút thanh sắt dưới bụng đưa vào ô đích hàng trên; xe chở hàng gắp thùng gỗ đưa vào ô đích hàng dưới (chạy sẵn, khoá).
+    //     Đội cố định PL + CH (màn chạy sẵn không qua bảng chọn). walk("RR"): chuỗi đường đi, mỗi chữ một bước.
+    man9('cuu-bai-tai-che', 1, 'lam-quen', {
+      ten: 'Sắt một bên, gỗ một bên',
+      chiChay: true, mucTieu: 'dua-vat',
+      deBai: 'Bão trộn sắt với gỗ. Nhện hút sắt, xe gắp gỗ, mỗi thứ vào một ô đích. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem mỗi bạn làm gì.',
+      san: ['#########', '#..o.D###', '#########', '#.o.D####', '#########'],
+      doi: [may('PL', { x: 1, y: 1, huong: 1 }), may('CH', { x: 1, y: 3, huong: 1 }, { son: 'lam' })],
+      them: { vatChat: ['.........', '...s.....', '.........', '..g......', '.........'] },
+      maMau: doiBai([['walk("RR")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['pick()', 'forward(2)', 'drop()']]),
+      loiGiai: doiBai([['walk("RR")', 'pull_s()', 'walk("RR")', 'magnet_off()', 'wait()'], ['pick()', 'forward(2)', 'drop()']]),
+      sao: { o: 38, nhip: 12 },
+      goiY: ['walk("RR"): đi hai bước sang phải, mỗi chữ R một bước.'],
+      cauDo: { doi: ['PL', 'CH'], lap: null, coChe: ['sat', 'go'], cuu: 'hang', meo: 'song-song' }
     }),
 
+    /* ---- BẢN CŨ (xoá dần khi dựng lại) ---- */
     manTC('cuu-bai-tai-che', 2, 'lam-quen', {
       ten: 'Nhện nhảy qua hố và xe xích phun van',
       r2: R_XICH,
@@ -163,7 +217,6 @@
       sao: { o: 18, nhip: 7 },
       goiY: ['Thêm walk("RR") sau jump("R") ở chương trình R1.']
     }),
-
     manTC('cuu-bai-tai-che', 3, 'luyen', {
       ten: 'Đảo cực hút nam châm chữ N mở lối cho xe kho',
       r2: R_BANH,
@@ -182,7 +235,6 @@
       sao: { o: 14, nhip: 6 },
       goiY: ['Ở chương trình R1, gọi pull_n() trước go("D") để hút mẩu nam châm cực N ở (2, 1).']
     }),
-
     manTC('cuu-bai-tai-che', 4, 'luyen', {
       ten: 'Omni hất đá lấp hố thứ hai cho nhện',
       r2: R_OMNI,
@@ -200,7 +252,6 @@
       sao: { o: 18, nhip: 5 },
       goiY: ['R2 gọi lob() trước slide_r(1) để hất viên đá o(3, 2) lấp hố u(3, 1) ngay ở nhịp 2, trước khi R1 nhảy tới ở nhịp 3!']
     }),
-
     manTC('cuu-bai-tai-che', 5, 'cung-co', {
       ten: 'Chui gầm thấp mang sắt về đích D',
       r2: R_XICH, mucTieu: 'dua-vat', vatCan: 'sat',
@@ -219,7 +270,6 @@
       sao: { o: 15, nhip: 10 },
       goiY: ['Sau pull_s(), R1 gọi walk("RRR"), magnet_off(), wait() để mang sắt tới D(4, 1) và thả xuống.']
     }),
-
     manTC('cuu-bai-tai-che', 6, 'cung-co', {
       ten: 'Bánh gai phá đá chuông cho nhện qua gầm thấp',
       r2: R_GAI,
@@ -238,7 +288,6 @@
       sao: { o: 13, nhip: 8 },
       goiY: ['Thêm play_note(listen()) ở đầu chương trình R2.']
     }),
-
     manTC('cuu-bai-tai-che', 7, 'van-dung', {
       ten: 'Cảm biến từ đọc cực nam châm mở đường',
       r2: R_BANH,
@@ -257,7 +306,6 @@
       sao: { o: 16, nhip: 7 },
       goiY: ['Thêm go("R") ở cuối chương trình R1 để bước sang cờ F(3, 2) sau khi hút mẩu nam châm.']
     }),
-
     manTC('cuu-bai-tai-che', 8, 'van-dung', {
       ten: 'Nhện giữ nút đè M cho omni trượt ngang',
       r2: R_OMNI,
@@ -276,7 +324,6 @@
       sao: { o: 16, nhip: 7 },
       goiY: ['Sau jump("R"), R1 gọi wait_n(2) giữ cửa mở cho R2 qua, rồi gọi go("R") vào cờ F(4, 1).']
     }),
-
     manTC('cuu-bai-tai-che', 9, 'bien-the', {
       ten: 'Phối hợp ba nhịp: Phá đá, hút sắt và đẩy thùng',
       r2: R_GAI, mucTieu: 'dua-vat', vatCan: 'sat',
@@ -296,7 +343,6 @@
       sao: { o: 23, nhip: 10 },
       goiY: ['R2 thêm slide_stop() sau play_note(listen()); R1 thêm magnet_off() và wait() sau walk("RRR").']
     }),
-
     manTC('cuu-bai-tai-che', 10, 'trum', {
       ten: 'Hợp tấu bãi tái chế: Đoạn 3 Kìa con bướm vàng',
       r1: R1_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
@@ -314,10 +360,6 @@
       sao: { o: 24, nhip: 8 },
       goiY: ['Ở chương trình R2, gọi play_part([3, 1, 2, 4, 1, 3, 5, 5]).']
     }),
-
-    /* ========================================================================
-       CHƯƠNG 2: lap-bai-tai-che (10 màn)
-       ======================================================================== */
     manTC('lap-bai-tai-che', 1, 'lam-quen', {
       ten: 'Quan sát hàm clear_iron dọn sắt nhanh',
       chiChay: true, r2: R_XICH,
@@ -333,7 +375,6 @@
       sao: { o: 17, nhip: 6 },
       goiY: ['Nhấn Chạy để xem hàm clear_iron("D") hoạt động.']
     }),
-
     manTC('lap-bai-tai-che', 2, 'lam-quen', {
       ten: 'Chế tạo hàm clear_iron cho robot nhện',
       r2: R_BANH,
@@ -353,7 +394,6 @@
       sao: { o: 17, nhip: 6 },
       goiY: ['Trong hàm clear_iron(d), thêm go(d) ngay dưới pull_s().']
     }),
-
     manTC('lap-bai-tai-che', 3, 'luyen', {
       ten: 'Dọn sắt và đè nút mở cửa bằng clear_iron',
       r2: R_XICH,
@@ -373,7 +413,6 @@
       sao: { o: 17, nhip: 7 },
       goiY: ['Thay go("U") của R1 bằng clear_iron("U").']
     }),
-
     manTC('lap-bai-tai-che', 4, 'luyen', {
       ten: 'Chế tạo hàm hop_over nhảy vượt rào và bước tới',
       r2: R_OMNI,
@@ -393,7 +432,6 @@
       sao: { o: 21, nhip: 8 },
       goiY: ['Trong hàm hop_over(d), thêm go(d) ngay dưới jump(d).']
     }),
-
     manTC('lap-bai-tai-che', 5, 'cung-co', {
       ten: 'Sửa lỗi hàm hop_over phối hợp xe xích phun van',
       r2: R_XICH,
@@ -414,7 +452,6 @@
       sao: { o: 20, nhip: 5 },
       goiY: ['Đổi thứ tự trong hop_over(d) thành jump(d) rồi go(d); ở R2 thêm squirt("low") trước back().']
     }),
-
     manTC('lap-bai-tai-che', 6, 'cung-co', {
       ten: 'Chế tạo hàm pull_deliver giao sắt vào đích',
       r2: R_OMNI, mucTieu: 'dua-vat', vatCan: 'sat',
@@ -434,7 +471,6 @@
       sao: { o: 19, nhip: 9 },
       goiY: ['Trong hàm pull_deliver(d), thêm magnet_off() và wait() sau go(d).']
     }),
-
     manTC('lap-bai-tai-che', 7, 'van-dung', {
       ten: 'Kết hợp lob_clear và pull_deliver qua hố sâu',
       r2: R_OMNI, mucTieu: 'dua-vat', vatCan: 'sat',
@@ -452,7 +488,6 @@
       sao: { o: 29, nhip: 9 },
       goiY: ['Ở chương trình R1, thêm pull_deliver("R") sau clear_iron("R").']
     }),
-
     manTC('lap-bai-tai-che', 8, 'van-dung', {
       ten: 'Xe kho chuyền kiện gỗ và nhện giao sắt',
       r2: R_BANH, mucTieu: 'dua-vat',
@@ -470,7 +505,6 @@
       sao: { o: 22, nhip: 5 },
       goiY: ['Thêm wait() và drop_right() sau pick() ở chương trình R2.']
     }),
-
     manTC('lap-bai-tai-che', 9, 'bien-the', {
       ten: 'Tổng duyệt Bãi tái chế - Hang động',
       r2: R_GAI,
@@ -490,7 +524,6 @@
       sao: { o: 28, nhip: 8 },
       goiY: ['R1 gọi clear_iron("R") rồi hop_over("R"); R2 gọi wait_n(3) rồi echo_glide().']
     }),
-
     manTC('lap-bai-tai-che', 10, 'trum', {
       ten: 'Hợp tấu hàm play_part: Đoạn 3 Kìa con bướm vàng',
       r1: R1_LOA, r2: R_GAI, mucTieu: 'choi-dieu',
@@ -507,6 +540,6 @@
       ],
       sao: { o: 24, nhip: 8 },
       goiY: ['Điền đủ 8 nốt [3, 1, 2, 4, 1, 3, 5, 5] vào lệnh play_part(...) của R2.']
-    })
+    }),
   ];
 })();
