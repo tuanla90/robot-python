@@ -118,6 +118,10 @@
   function bac15(xuong) { return ['a = [3, 3]', 'ink("green")', 'for n in a:', '    pen_down()', '    forward(n - 1)', '    pen_up()'].concat(xuong, ['    forward(1)', 'pen_down()', 'while front_clear():', '    forward(1)', 'pen_up()']); }
   var XE_15 = bac15(['    turn_right()', '    forward(1)', '    turn_left()']);
   var OMNI_15 = bac15(['    slide_right()', '    wait()']);
+  /** lap-nong-trai.6: drone R1 ít pin gieo luống mười ô, giữa đường đáp ô sạc (7, 1) sạc đầy rồi gieo tiếp, gieo xong đáp đậu. */
+  var DR_16 = ['ink("red")', 'pen_down()', 'for i in range(6):', '    go_right()', 'land()', 'take_off()', 'pen_down()', 'for i in range(3):', '    go_right()', 'land()'];
+  /** R2 lap-nong-trai.6: bật nam châm, lên hút cày sắt trên ô sạc, lùi một ô, thả cày ra khỏi luống. */
+  var HUT_16 = ['magnet_n()', 'go_up()', 'go_up()', 'go_down()', 'magnet_off()', 'wait()'];
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -505,6 +509,31 @@
       sao: { o: 34, nhip: 19 },
       goiY: ['for n in a: lần lượt từng số ô của mỗi bậc.', 'pen_down() gieo luôn ô đang đứng: đi n - 1 bước là gieo n ô.', 'while front_clear(): đi tới khi thấy cây đổ.'],
       cauDo: { doi: null, lap: 'hai-banh+son+khoang-cach', coChe: ['gieo', 'cay-do', 'list', 'pin'], cuu: 'hang', meo: 'song-song' }
+    }),
+    // 16 · dọn lối (ô sạc): cày sắt bão thổi rơi đè ô sạc giữa luống. Drone R1 ít pin, phải đáp ô sạc giữa đường mới gieo đủ mười ô.
+    //      Cách một drone + nam châm treo: bay lên hút cày, lùi, thả ra ngoài luống (nhanh). Cách hai nhện + nam châm bụng: đứng trùm lên cày, hút, lùi, thả (rẻ hơn).
+    //      Thân xuồng không lên bờ được; tay kẹp không gắn lên drone.
+    man9('lap-nong-trai', 6, 'luyen', {
+      ten: 'Cày sắt đè ô sạc',
+      khung: { chinh: 16, moiHam: 8 },
+      deBai: 'Bão thổi cày sắt rơi đè ô sạc giữa luống. Drone R1 ít pin, phải đáp ô sạc mới gieo đủ luống. Lắp robot nhấc cày ra khỏi ô sạc kịp lúc R1 bay tới.',
+      veMaMau: 'R2 chưa có chương trình.',
+      san: ['############', '#......P...#', '#..........#', '#..........#', '############'],
+      them: { vatThem: [{ x: 7, y: 1, chat: 'sat' }] },
+      hinh: luong(12, 5, [{ y: 1, x0: 1, mau: 'rrrrrrrrrr' }]),
+      doi: [may('DR', { x: 1, y: 1, huong: 1 }, { pin: 15 }), khe({ x: 7, y: 3, huong: 0 }, { son: 'lam' })],
+      lapRap: lapR2(['drone', 'nhen', 'xuong'], ['nam-cham', 'kep'], [], 8, [
+        cach('drone', 'nam-cham', null, [DR_16, HUT_16]),
+        cach('nhen', 'nam-cham', null, [DR_16, HUT_16])
+      ]),
+      maMau: doiBai([DR_16, []]),
+      loiSai: [
+        { moTa: 'R2 đứng yên: cày đè ô sạc, R1 không đáp được', baiLam: doiBai([DR_16, []]), phaiCoMa: ['het-pin'] },
+        { moTa: 'Hút cày rồi thả lại ngay trên ô sạc', baiLam: doiBai([DR_16, ['magnet_n()', 'go_up()', 'go_up()', 'magnet_off()', 'wait()']]), phaiCoMa: ['het-pin'] }
+      ],
+      sao: { o: 19, nhip: 13 },
+      goiY: ['Nam châm treo hút sắt ở ô ngay dưới robot.', 'magnet_off() thả cày ở ô dưới robot: thả ra ngoài luống.'],
+      cauDo: { doi: null, lap: 'drone+nam-cham', coChe: ['sat', 'sac', 'pin', 'gieo'], cuu: 'hang', meo: 'don-loi' }
     }),
   ];
 })();
