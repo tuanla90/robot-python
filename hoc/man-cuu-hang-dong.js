@@ -78,6 +78,12 @@
   var HD_6 = ['play_note(listen())', 'forward(2)', 'turn_left()', 'wait_n(4)', 'forward(1)', 'play_note(listen())'];
   var XU_6 = ['wait()', 'forward(3)', 'cast_net()', 'wait()', 'back()', 'back()', 'drop_net()', 'wait()'];
 
+  /** Xe hang động khách khoá cuu-hang-dong.7: kẹt sau hố sụt mới (4, 1) và cửa đá (6, 1); chờ ba nhịp rồi chạy thẳng bảy ô về cờ. */
+  var HD_R3_7 = ['wait_n(3)', 'forward(7)'];
+  /** Máy khai thác: hất đá tròn trước mũi xuống hố (xa 2 ô), lên qua chỗ đá vừa xúc, rẽ phải về cờ. Nhện: lên nút đè (cửa đá mở), giữ tới khi máy khách qua cửa, sang cờ. */
+  var KT_7 = ['lob()', 'forward(1)', 'turn_right()', 'forward(1)'];
+  var PL_7 = ['go_up()', 'wait_n(4)', 'go_right()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -239,6 +245,30 @@
       sao: { o: 33, nhip: 14 },
       goiY: ['Bè nằm trên bến q là cầu phao: xe đi lên được.', 'cast_net(): lưới dài 2 ô bắt bè; back(): kéo bè theo.', 'Loa phá đá trong tầm 3 ô quanh xe.'],
       cauDo: { doi: ['HD', 'XU'], lap: null, coChe: ['song-ngam', 'be', 'luoi', 'da-chuong', 'not', 'nguoi'], cuu: 'nguoi', meo: 'lam-cau' }
+    }),
+    // 7 · cứu máy, làm cầu + giữ cửa: xe hang động khách (R3, khoá) kẹt sau hố sụt mới và cửa đá; nó chỉ chờ ba nhịp rồi chạy thẳng. Máy khai thác hất đá tròn lấp hố,
+    //     nhện lên nút đè giữ cửa đá tới khi máy khách qua. Bẫy: cần cẩu (không lấp hố, không đè nút). Bảng có cẩu nên mọi khe trên dải ray.
+    man9('cuu-hang-dong', 7, 'van-dung', {
+      ten: 'Máy khách sau hố sụt',
+      deBai: 'Xe hang động khách kẹt sau hố sụt mới và cửa đá. Đọc chương trình của nó rồi chọn hai bạn: ai lấp hố, ai giữ cửa? Ba bạn về cờ.',
+      veMaMau: 'Đọc chương trình của máy khách: chờ 3 nhịp rồi đi.',
+      san: ['##########', '#...u.C.F#', '#...oFMF.#', '#RRRRRRR.#', '##########'],
+      noi: [{ nut: { x: 6, y: 2 }, cua: [{ x: 6, y: 1 }] }],
+      them: { vatDang: ['..........', '..........', '....r.....', '..........', '..........'] },
+      doi: [khe({ x: 4, y: 3, huong: 0 }, { co: [{ x: 5, y: 2 }] }), khe({ x: 6, y: 3, huong: 0 }, { co: [{ x: 7, y: 2 }] }),
+        may('HD', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true, co: [{ x: 8, y: 1 }] })],
+      chonDoi: {
+        menu: ['PL', 'KT', 'CC'],
+        cachMau: [{ chon: ['KT', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([KT_7, PL_7, HD_R3_7]) }]
+      },
+      maMau: doiBai([[], [], HD_R3_7]),
+      loiSai: [
+        { moTa: 'Không lấp hố: máy khách rơi hố', baiLam: doiBai([['wait()', 'forward(1)'], PL_7, HD_R3_7]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Nhện rời nút sớm: cửa đá đóng trước mũi máy khách', baiLam: doiBai([KT_7, ['go_up()', 'go_right()'], HD_R3_7]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 26, nhip: 12 },
+      goiY: ['Đọc chương trình của máy khách: nó tới hố, tới cửa lúc nào?', 'lob(): xúc đá trước mũi rồi hất xa 2 ô; đá rơi xuống hố thì lấp hố.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
+      cauDo: { doi: ['KT', 'PL'], lap: null, coChe: ['ho', 'da-tron', 'nem', 'nut-de', 'cua', 'ray', 'r3'], cuu: 'may', meo: 'giu-cua' }
     })
   ];
 
