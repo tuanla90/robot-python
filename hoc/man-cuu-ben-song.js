@@ -137,15 +137,15 @@
         menu: ['XU', 'KT', 'CH'],
         cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
           ['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'],
-          ['load()', 'wait()', 'move()', 'wait_n(2)', 'move()', 'throw()', 'wait()']]) }]
+          ['load()', 'wait()', 'move()', 'wait_n(3)', 'move()', 'throw()', 'wait()']]) }]
       },
       maMau: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'throw()', 'wait()']]),
       loiSai: [
         { moTa: 'Ném từ bờ: đá rơi trước hố', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] },
         { moTa: 'Máy khai thác lên cầu sớm: chưa có bè, đâm nước', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['dam-tuong'] },
-        { moTa: 'Lưới dài 2: tung qua bè, không bắt được', baiLam: doiBai([['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'wait_n(2)', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
+        { moTa: 'Lưới dài 2: tung qua bè, không bắt được', baiLam: doiBai([['cast_net()', 'wait()', 'for i in range(3):', '    back()', 'drop_net()', 'wait()'], ['load()', 'wait()', 'move()', 'wait_n(3)', 'move()', 'throw()', 'wait()']]), phaiCoMa: ['chua-dua-vat'] }
       ],
-      sao: { o: 26, nhip: 7 },
+      sao: { o: 26, nhip: 8 },
       goiY: ['set_length(1): lưới dài 1 ô, bắt bè sát mũi.', 'throw() ném xa 2 ô: đứng trên cầu phao mới tới hố.'],
       cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'be', 'luoi', 'ho', 'nem', 'do-dai-luoi'], cuu: 'hang', meo: 'lam-cau' }
     }),
@@ -173,6 +173,33 @@
       sao: { o: 38, nhip: 13 },
       goiY: ['h, s = flow(): h là hướng, s là sức nước (0 là nước êm).', 'm = min(a, b, c): số nhỏ nhất trong ba số.'],
       cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'dong', 'be', 'luoi', 'doc-dong', 'ho'], cuu: 'hang', meo: 'doc-roi-chon' }
+    }),
+    // 5 · cứu người, cứu kịp: người mặc áo phao rơi xuống luồng nước, trôi mỗi nhịp một ô về phía thác. Xuồng đứng trong lạch, lưới dài 1, chờ người trôi tới ngay trước mũi
+    //     rồi tung lưới, lùi một ô kéo người vào ô nước sát bờ; người tự lên bờ đi về trạm. Lối lên trạm có hố bờ sụt: máy khai thác nạp tảng đá, ném lấp hố.
+    //     Bẫy: drone (bay qua hố được nhưng không lấp hố, không kéo người).
+    man9('cuu-ben-song', 5, 'cung-co', {
+      ten: 'Người trôi về thác',
+      mucTieu: 'cuu-nguoi',
+      deBai: 'Một người rơi xuống sông, trôi mỗi nhịp một ô về phía thác. Kéo người vào bờ kịp lúc, lấp hố trên lối về trạm cứu.',
+      veMaMau: 'Xuồng tung lưới sớm quá.',
+      san: ['#########', '~~~~~~~~~', '###..~###', '#.ou#~###', '###.#~###', '###.#####', '#########'],
+      doi: [khe({ x: 1, y: 3, huong: 1 }, { batDauNuoc: { x: 5, y: 2, huong: 0 } }), khe({ x: 1, y: 3, huong: 1 }, { batDauNuoc: { x: 5, y: 2, huong: 0 } })],
+      them: { nguoi: [{ x: 1, y: 1 }], tramCuu: [{ x: 3, y: 5 }], thac: [{ x: 8, y: 1 }],
+        dong: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (x) { return { x: x, y: 1, huong: 1, suc: 1 }; }) },
+      chonDoi: {
+        menu: ['XU', 'KT', 'DR'],
+        cachMau: [{ chon: ['XU', 'KT'], ghiChu: 'đôi tốt', loiGiai: doiBai([
+          ['set_length(1)', 'wait_n(4)', 'cast_net()', 'wait()', 'back()'],
+          ['load()', 'wait()', 'throw()', 'wait()']]) }]
+      },
+      maMau: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], []]),
+      loiSai: [
+        { moTa: 'Tung lưới ngay: người chưa tới, trôi xuống thác', baiLam: doiBai([['set_length(1)', 'cast_net()', 'wait()', 'back()'], ['load()', 'wait()', 'throw()', 'wait()']]), phaiCoMa: ['nguoi-troi-xa'] },
+        { moTa: 'Không lấp hố: người lên bờ đứng chờ', baiLam: doiBai([['set_length(1)', 'wait_n(4)', 'cast_net()', 'wait()', 'back()'], []]), phaiCoMa: ['chua-cuu-nguoi'] }
+      ],
+      sao: { o: 17, nhip: 12 },
+      goiY: ['Người trôi mỗi nhịp một ô: đếm số ô từ người tới trước mũi xuồng.', 'Lùi một ô: người tới ô nước sát bờ thì tự lên bờ.'],
+      cauDo: { doi: ['XU', 'KT'], lap: null, coChe: ['nuoc', 'dong', 'nguoi', 'luoi', 'ho', 'nem', 'thac'], cuu: 'nguoi', meo: 'cuu-kip' }
     }),
   ];
 })();
