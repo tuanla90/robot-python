@@ -107,6 +107,14 @@
   var CH_11B = ['pick()', 'wait()', 'forward(6)', 'drop()'];
   var OMNI_11 = ['slide_r(3)', 'cast_net()', 'wait()'];
 
+  /** lap-clb.2: bão hất thanh sắt của giàn đèn vào hốc kín sau tường (chỉ có lối từ ô khe của Luna). Máy khai thác R1 (đặt sẵn) đứng dưới, ném được qua tường kho
+   *  nhưng không với tới hốc. R2 tự lắp lấy thanh sắt ra, đặt trước mũi máy khai thác (tiếp sức); máy khai thác nạp, quay trái, chạy tới cách kho 2 ô, ném qua tường vào D.
+   *  Cách một: cẩu + gầu ngoạm (L8) ngoạm qua tường, quay cần, thả (nhanh). Cách hai rẻ hơn: nhện + nam châm bò vào hốc, clear_iron("R") (gói 3), bò xuống thả, lùi lên (chậm). */
+  var KT_12A = ['x = 7', 'wait_n(3)', 'load()', 'wait()', 'turn_left()', 'forward(x - 3)', 'throw()', 'wait()'];
+  var GAU_12 = ['grab()', 'swing_left()', 'release()'];
+  var KT_12B = ['x = 7', 'wait_n(9)', 'load()', 'wait()', 'turn_left()', 'forward(x - 3)', 'throw()', 'wait()'];
+  var NHEN_12 = ['go_left()', 'clear_iron("R")', 'go_down()', 'magnet_off()', 'go_up()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -401,6 +409,31 @@
       sao: { o: 36, nhip: 15 },
       goiY: ['Tay lưới trên xe có bánh (xe tời bờ): cast_net() kéo thùng gỗ cách 2 ô về ô trước mũi.', 'Omni trượt ngang được, không cần quay.', 'Thùng nằm trên ô D2 là đã vào hốc chứa.'],
       cauDo: { doi: null, lap: 'hai-banh+day-keo', coChe: ['thung', 'keo', 'kho', 'hoc'], cuu: 'hang', meo: 'don-loi' }
+    }),
+    // 12 · tiếp sức, R1 đặt sẵn máy khai thác (đổi chỗ với #14: xuồng đặt sẵn sang #14), trộn Nhà máy (gầu ngoạm L8) + Bãi tái chế (nhện, sắt, clear_iron) + Mỏ đá (ném qua tường):
+    //      thanh sắt trong hốc kín sau tường; R2 tự lắp lấy ra đặt trước mũi máy khai thác, máy khai thác ném qua tường vào kho D.
+    man9('lap-clb', 2, 'lam-quen', {
+      ten: 'Thanh sắt trong hốc kín',
+      mucTieu: 'dua-vat',
+      hamCuaEmCan: HAM_EM.concat(['clear_iron']),
+      deBai: 'Thanh sắt của giàn đèn rơi vào hốc kín sau tường. Máy khai thác ném được vào kho nhưng không tới được hốc. Lắp cho Luna một robot lấy thanh sắt ra trước mũi máy khai thác.',
+      veMaMau: 'R2 chưa có chương trình. Máy khai thác chưa biết phải chờ bao lâu.',
+      san: ['##########', '######oRR#', '#######.##', '#D#.....##', '##########'],
+      doi: [may('KT', { x: 7, y: 3, huong: 0 }), khe({ x: 7, y: 1, huong: 0, nac: 3, tam: 1 }, { son: 'lam' })],
+      them: { vatChat: ['..........', '......s...', '..........', '..........', '..........'] },
+      lapRap: lapR2(['cau', 'nhen', 'hai-banh'], ['kep', 'nam-cham', 'moc-cau'], [], 8, [
+        cach('cau', 'kep', null, [KT_12A, GAU_12]),
+        cach('nhen', 'nam-cham', null, [KT_12B, NHEN_12])
+      ], { moLai: ['L8'] }),
+      maMau: doiBai([KT_12A, []]),
+      loiSai: [
+        { moTa: 'Máy khai thác không chờ: nạp hụt khi thanh sắt chưa tới', baiLam: doiBai([['x = 7', 'load()', 'wait()', 'turn_left()', 'forward(x - 3)', 'throw()', 'wait()'], GAU_12]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'Gầu ngoạm rồi thả lại ngay trong hốc', baiLam: doiBai([KT_12A, ['grab()', 'release()']]), phaiCoMa: ['chua-dua-vat'] },
+        { moTa: 'forward(x - 4): ném từ cột 4, thanh sắt rơi trúng tường kho', baiLam: doiBai([['x = 7', 'wait_n(3)', 'load()', 'wait()', 'turn_left()', 'forward(x - 4)', 'throw()', 'wait()'], GAU_12]), phaiCoMa: ['nem-vo'] }
+      ],
+      sao: { o: 24, nhip: 12 },
+      goiY: ['Gầu ngoạm thả từ đầu cần xuống: grab() ngoạm qua tường, release() thả ở ô đầu cần.', 'Nhện đứng lên sắt mới hút được: clear_iron(d) hút rồi bước một ô.', 'Máy khai thác nạp vật ở ô trước mũi, ném xa 2 ô, bay qua tường.'],
+      cauDo: { doi: null, lap: 'cau+kep', coChe: ['sat', 'qua-tuong', 'nem', 'kho'], cuu: 'hang', meo: 'tiep-suc' }
     })
   ];
 
