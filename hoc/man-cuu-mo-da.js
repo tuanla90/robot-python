@@ -73,6 +73,11 @@
   var HD_5 = ['forward(3)', 'play_note(listen())'];
   var KT_5 = ['wait_n(4)', 'forward(3)', 'load()', 'wait()', 'turn_left()', 'aim(1)', 'throw()', 'wait()', 'forward(1)'];
 
+  /** cuu-mo-da.6: khối đá vuông (thùng nặng) ở đầu lối hàng 1, hố sụt ở (4, 1) giữa lối, xe goòng D ở (6, 1); thùng đá (container) ở ngách (4, 2); dải ray hàng 3 (1, 3)–(4, 3).
+   *  Cần cẩu: nhấc thùng đá ở ngách, vươn cần thêm một ô, hạ thùng đá xuống hố (hố thành sàn). Xe cứu hỏa: rời ray lên đầu lối, quay phải, ủi khối đá qua hố đã lấp vào xe goòng. */
+  var CC_6 = ['pick_up()', 'extend()', 'set_down()'];
+  var CU_6 = ['forward(2)', 'tr_right()', 'forward(4)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -218,6 +223,31 @@
       sao: { o: 26, nhip: 20 },
       goiY: ['Thợ mỏ chỉ bước khi ô kế trên lối trống: robot đứng trên lối thì thợ mỏ chờ.', 'listen() rồi play_note(...): hát lại nốt của đá rỗng.', 'Đá tròn rơi xuống hố thì lấp hố: ngách thành chỗ đứng.'],
       cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['da-rong', 'not', 'bun', 'nem', 'ho', 'nguoi'], cuu: 'nguoi', meo: 'don-loi' }
+    }),
+    // 6 · làm cầu (T2 thùng đá lấp hố): khối đá vuông (thùng nặng) phải vào xe goòng, hố sụt giữa lối. Cần cẩu nhấc thùng đá ở ngách, vươn cần, hạ xuống hố: hố thành sàn.
+    //     Xe cứu hỏa ủi khối đá qua chỗ hố vừa lấp vào xe goòng. Bẫy: máy khai thác (không ủi thùng nặng, không nhấc thùng đá; ném đá vuông xuống hố thì đá vỡ, không lấp).
+    //     Bảng có cẩu nên mọi khe trên dải ray.
+    man9('cuu-mo-da', 6, 'cung-co', {
+      ten: 'Thùng đá lấp hố',
+      mucTieu: 'day-thung',
+      deBai: 'Khối đá vuông phải vào xe goòng D, nhưng hố sụt chắn giữa lối. Chọn hai bạn: ai lấp hố bằng thùng đá, ai ủi khối đá nặng?',
+      veMaMau: 'Hố còn chắn lối.',
+      san: ['########', '#.H.u.D#', '#.##.###', '#RRRR###', '########'],
+      them: { contChan: true, contLapHo: true, chong: [{ x: 4, y: 2, cont: [{ so: 7 }] }] },
+      doi: [khe({ x: 1, y: 3, huong: 0 }), khe({ x: 4, y: 3, huong: 0 })],
+      chonDoi: {
+        menu: ['KT', 'CU', 'CC'],
+        cachMau: [{ chon: ['CU', 'CC'], ghiChu: 'đôi tốt', loiGiai: doiBai([CU_6, CC_6]) }]
+      },
+      maMau: doiBai([['forward(2)', 'tr_right()', 'forward(4)'], []]),
+      loiSai: [
+        { moTa: 'Không lấp hố: xích ủi tới hố thì rơi', baiLam: doiBai([CU_6, []]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Cẩu hạ thùng đá ngay ngách (quên vươn cần): hố còn đó', baiLam: doiBai([CU_6, ['pick_up()', 'set_down()']]), phaiCoMa: ['roi-ho'] },
+        { moTa: 'Xích quên quay: tiến thẳng đâm tường', baiLam: doiBai([['forward(2)', 'forward(4)'], CC_6]), phaiCoMa: ['chua-day-thung'] }
+      ],
+      sao: { o: 17, nhip: 10 },
+      goiY: ['Cẩu hạ thùng đá xuống ô hố: hố thành sàn đi được.', 'Xích tiến vào ô thùng nặng thì đẩy thùng đi một ô.'],
+      cauDo: { doi: ['CU', 'CC'], lap: null, coChe: ['thung-nang', 'container', 'ho', 'ray', 'xe-goong'], cuu: 'hang', meo: 'lam-cau' }
     }),
     /* HẾT MOI */
   ];
