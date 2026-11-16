@@ -108,6 +108,18 @@ Mẹo, cơ chế, đội được xếp để không màn nào trùng bộ dấu
 | 19 | ⟨nhện, omni⟩ + kẹp | hai cách: nhện nhảy khe hay omni trượt hành lang | hàng | đọc rồi chọn |
 | 20 | **nhện + loa (L7)** | song ca: nhện hát lần đầu, PL nhảy theo | — | song ca |
 
+> **Đã dựng 16/11 (M9M3, hoc/man-cuu-bai-tai-che.js viết lại theo khuôn G2, 20 màn có `cauDo`, kiem-cau-do-mua-9 đạt a–e).** Lệch so với bảng:
+> - #2 tạo `pull_deliver(d)`, #3 tạo `clear_iron(d)` (thân như bản cũ; gói sau còn gọi). `hop_over` không tạo lại (chỉ G3 cũ dùng). kiem-cau-do thêm `day-vat` (nam châm đẩy từ xa) vào sự kiện chính + dọn lối cho #15.
+> - #5, #9 khe cẩu không khai `nac` (mặc định 0): khai `nac` thì chọn cỗ máy khác vào khe đó lõi ném lỗi. (cuu-nha-may.8 của G2 còn lỗi này.)
+> - #5 đôi bẫy CH + CC thắng 2 sao (cẩu lấp khe, xe kẹp gắp sắt): nhanh hơn đôi tốt, nhiều ô hơn. #6 máy khai thác một mình thắng 2 sao (đi về cả hành lang).
+> - #7 gỗ không chắn nhện (nam châm bụng đứng trên vật được): thùng gỗ chắn xe cứu hỏa tới kệ; gỗ đặt vào hốc. Mỗi xe một cờ ở ô cuối của nó (toi-co dừng robot khi tới cờ).
+> - #8 R3 mang sắt qua cửa (dua-vat) thay vì tới cờ. Bẫy xuồng đổi thành xe cứu hỏa (xuồng xuất phát trên cạn thì lõi ném lỗi); xích + drone cũng thắng 3 sao.
+> - #9 ô khe thứ hai do máy khai thác ném gỗ lấp (`daLapHo`); bẫy CH gắp được gỗ nhưng không lấp được khe. #10 bè 2 do máy khai thác lắp loa (nhện chương 1 không gắn loa, song ca cần hai bè).
+> - Chương 2 (≥ 2 cách lắp, cách hai rẻ hơn hay nhanh hơn): #12 gỗ nằm trên ô đích của PL; cách hai hai bánh + kẹp · #13 điều kiện `not front_metal() and front_pole() == "none"`, cách hai hai bánh + kẹp ·
+>   #14 `while color("up") != "red"`, cách hai hai bánh + kẹp · #15 cách hai hai bánh + kẹp (chỉ 1 sao) · #16 rào thấp thay tường cao, cách hai drone + nam châm (rẻ, nhiều ô) ·
+>   #17 cách hai drone + gieo hạt (đắt, nhanh) · #18 bỏ thùng nặng (xích không ủi được thùng nặng; vòi phun không nằm trong tay chọn): xích + kẹp đi vòng là cách rẻ, nhện + kẹp nhảy khe là cách nhanh; mẹo cứu kịp (người, không phải robot, đi lên ô đã dọn nên bộ dò dọn lối không thấy) ·
+>   #19 nhện và omni cùng giá: omni nhanh hơn, nhện ít ô hơn; PL giữ nút M cho thùng gỗ qua cửa · #20 nhện hát bè 2 trong tầm 3 ô của đá chuông; robot thứ nhất là xe chở hàng lắp loa sẵn hát bè 1 rồi về cờ (toi-co), thay cho "PL nhảy theo" (nhện không có lệnh nhảy theo nhịp).
+
 ## G4 Cảng sông sau bão (ôn số âm, `abs`, `%`, `//`) · bão: container rơi xuống sông trôi, tàu đậu ít nhịp, thủy thủ rơi xuống nước
 
 | # | Đội / lắp | Câu đố | Cứu | Mẹo |

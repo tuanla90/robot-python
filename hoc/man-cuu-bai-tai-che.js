@@ -176,7 +176,7 @@
       deBai: 'Người kẹt sau thanh sắt. Lối tới thanh sắt rẽ qua một khe. Hạ container lấp khe, dọn sắt cho người đi ra trạm cứu.',
       veMaMau: 'Khe chưa lấp.',
       san: ['##########', '#....o...#', '#####u..##', '#####.#.##', '#####RRR##', '##########'],
-      doi: [khe({ x: 7, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0, nac: 0 })],
+      doi: [khe({ x: 7, y: 4, huong: 0 }), khe({ x: 5, y: 4, huong: 0 })],
       them: { contLapHo: true, chong: [{ x: 5, y: 3, cont: [{ so: 3 }] }], vatChat: ['..........', '.....s....', '..........', '..........', '..........', '..........'],
         nguoi: [{ x: 1, y: 1, duong: [{ x: 2, y: 1 }, { x: 3, y: 1 }, { x: 4, y: 1 }, { x: 5, y: 1 }, { x: 6, y: 1 }, { x: 7, y: 1 }, { x: 8, y: 1 }] }], tramCuu: [{ x: 8, y: 1 }] },
       chonDoi: {
@@ -243,7 +243,8 @@
     }),
 
     // 8 · cứu máy: robot phân loại khách (R3, khoá) chờ cửa C mở. Nút M nằm trên dải bùn trơn; xe chở hàng vào bùn là trượt tới hố.
-    //     Drone rắc cát ô dưới nút; xe dừng ở ô cát, quay lên đứng giữ nút cho R3 qua cửa. Bẫy: xuồng (không lên bờ).
+    //     Drone rắc cát ô dưới nút; xe dừng ở ô cát, quay lên đứng giữ nút cho R3 qua cửa. Bẫy: đôi không có drone (xe nào vào bùn cũng trượt rơi hố).
+//     (Bảng ghi bẫy xuồng: xuồng xuất phát trên cạn thì lõi ném lỗi, không thua êm, nên đổi xuồng thành xe cứu hỏa; xích + drone cũng thắng.)
     man9('cuu-bai-tai-che', 8, 'van-dung', {
       ten: 'Cát dưới nút đè',
       mucTieu: 'dua-vat',
@@ -255,7 +256,7 @@
         may('PL', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true })],
       them: { vatChat: ['.........', '..s......', '.........', '.........', '.........', '.........'] },
       chonDoi: {
-        menu: ['CH', 'DR', 'XU'],
+        menu: ['CH', 'DR', 'CU'],
         cachMau: [{ chon: ['CH', 'DR'], ghiChu: 'đôi tốt', loiGiai: doiBai([
           ['wait_n(3)', 'move()', 'turn_left()', 'move()'],
           ['go_up()', 'dot()', 'for i in range(4):', '    go_right()']]) }]
@@ -278,7 +279,7 @@
       deBai: 'Robot phân loại mang sắt qua khe rộng hai ô. Nó chỉ đi bộ, không nhảy. Lấp cả hai ô khe kịp lúc.',
       veMaMau: 'Đọc chương trình của robot khoá.',
       san: ['#########', '#.ouu.D##', '###.o####', '###RR####', '#########'],
-      doi: [khe({ x: 3, y: 3, huong: 0, nac: 0 }), khe({ x: 4, y: 3, huong: 0 }),
+      doi: [khe({ x: 3, y: 3, huong: 0 }), khe({ x: 4, y: 3, huong: 0 }),
         may('PL', { x: 1, y: 1, huong: 1 }, { son: 'tim', coDinh: true })],
       them: { vatCan: 'sat', contLapHo: true, daLapHo: true, chong: [{ x: 3, y: 2, cont: [{ so: 5 }] }], vatChat: ['.........', '..s......', '....g....', '.........', '.........'] },
       chonDoi: {
