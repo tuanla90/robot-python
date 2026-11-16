@@ -47,6 +47,15 @@
   var PL_1 = ['jump("R")', 'wait_n(3)', 'go_right()'];
   var HD_1 = ['wait_n(3)', 'forward(6)'];
 
+  /** cuu-hang-dong.2 (ba sân): chuông đá vang trong hốc dưới hang xe (mỗi sân một nốt 2 / 4 / 6), đá chuông chắn ngách nhện ở hàng trên (nốt 5 / 7 / 3).
+   *  Sổ ám hiệu d (bảng tra trong code): nghe chuông nốt n thì phát nốt d[n]. Khoá n do sân cấp qua listen(). */
+  var D_2 = 'd = {2: 5, 4: 7, 6: 3}';
+  /** Xe hang động: tiến ba ô tới trên hốc chuông, nghe nốt chuông, tra sổ, hát nốt đá chuông (cách 2 ô): đá vỡ; tiến về cờ. */
+  var HD_2 = [D_2, 'forward(3)', 'n = listen()', 'play_note(d[n])', 'forward(3)'];
+  /** Nhện: co chân chui gầm đá thấp, đứng lên, chờ đá chuông vỡ, đi qua chỗ đá về cờ. */
+  var PL_2 = ['crouch()', 'go_right()', 'go_right()', 'stand()', 'wait()', 'for i in range(4):', '    go_right()'];
+  function san2() { return ['#########', '#.n....F#', '#########', '#......F#', '####.####', '#########']; }
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -86,6 +95,33 @@
       sao: { o: 28, nhip: 11 },
       goiY: ['jump("R"): nhện co chân, bật qua một ô (qua được hố) rồi đáp.', 'Nút đè chỉ giữ cửa mở khi có robot đứng trên nút.'],
       cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['ho', 'nhay', 'nut-de', 'cua'], cuu: 'hang', meo: 'giu-cua' }
+    }),
+    // 2 · dọn lối, ôn dict (ba sân, luật 13/11): bão làm đá chuông rơi chắn ngách hẹp của nhện; chuông đá trong hốc dưới hang xe vang một nốt, mỗi sân một nốt.
+    //     Sổ ám hiệu d = {2: 5, 4: 7, 6: 3} là bảng tra trong code: nghe chuông nốt n thì đá chuông cần nốt d[n]. Xe hang động tiến tới trên hốc chuông, n = listen(),
+    //     play_note(d[n]): đá vỡ; về cờ. Nhện co chân chui gầm đá thấp, qua chỗ đá vừa vỡ về cờ. Gõ lại nốt chuông (play_note(listen())) hay điền thẳng nốt sân 1 thì đá không vỡ.
+    man9('cuu-hang-dong', 2, 'lam-quen', {
+      ten: 'Sổ ám hiệu chuông đá',
+      hamCuaEmCan: HAM_EM.concat(['crouch', 'stand']),
+      deBai: 'Ba sân. Đá chuông chắn ngách của nhện. Chuông đá dưới hốc vang một nốt, mỗi sân một nốt. Sổ d: nghe nốt n thì đá cần nốt d[n]. Xe hang động nghe, tra sổ, hát cho đá vỡ.',
+      veMaMau: 'Xe hang động có sổ d nhưng chưa nghe.',
+      san: [san2(), san2(), san2()],
+      them: { khoaTD: ['2', '4', '6'],
+        chuongDa: [[{ x: 4, y: 4, not: 2 }], [{ x: 4, y: 4, not: 4 }], [{ x: 4, y: 4, not: 6 }]],
+        daChuong: [[{ x: 4, y: 1, not: 5, ben: 1 }], [{ x: 4, y: 1, not: 7, ben: 1 }], [{ x: 4, y: 1, not: 3, ben: 1 }]] },
+      doi: [khe({ x: 1, y: 3, huong: 1 }, { co: [{ x: 7, y: 3 }] }), khe({ x: 1, y: 1, huong: 1 }, { co: [{ x: 7, y: 1 }] })],
+      chonDoi: {
+        menu: ['HD', 'PL'],
+        cachMau: [{ chon: ['HD', 'PL'], ghiChu: 'đôi tốt', loiGiai: doiBai([HD_2, PL_2]) }]
+      },
+      maMau: doiBai([[D_2, 'forward(3)'], []]),
+      loiSai: [
+        { moTa: 'Điền thẳng nốt của sân 1 (play_note(5)): sân 2, 3 đá không vỡ', baiLam: doiBai([[D_2, 'forward(3)', 'play_note(5)', 'forward(3)'], PL_2]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Gõ lại nốt chuông (play_note(listen())), không tra sổ: đá không vỡ', baiLam: doiBai([[D_2, 'forward(3)', 'play_note(listen())', 'forward(3)'], PL_2]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Nhện quên co chân: đâm gầm đá thấp', baiLam: doiBai([HD_2, ['wait()', 'go_right()', 'go_right()', 'wait_n(2)', 'for i in range(4):', '    go_right()']]), phaiCoMa: ['gam-thap'] }
+      ],
+      sao: { o: 23, nhip: 15 },
+      goiY: ['n = listen(): nốt của nguồn tiếng gần nhất (ở đây là chuông đá dưới hốc).', 'd[n]: tra sổ, nốt mà đá chuông cần.', 'Đá chuông vỡ khi nghe đúng nốt trong tầm 3 ô.'],
+      cauDo: { doi: ['HD', 'PL'], lap: null, coChe: ['da-chuong', 'chuong-da', 'not', 'gam', 'dict'], cuu: 'hang', meo: 'don-loi' }
     })
   ];
 
