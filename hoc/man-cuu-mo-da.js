@@ -146,6 +146,13 @@
   /** Cách hai rẻ hơn (xe tời bờ L3): hai bánh quay đầu xuống, tung lưới kéo người lên ô nước sát bờ, lùi nhường ô rồi tránh sang trái. */
   var XE_16 = ['turn_left()', 'turn_left()', 'cast_net()', 'wait()', 'back()', 'turn_right()', 'move()'];
 
+  /** lap-mo-da.7: máy khai thác chạy thẳng một mạch qua cửa mở, qua cửa đóng (phải mở kịp), tới cờ. */
+  var KT_17 = ['forward(7)'];
+  /** Omni + vòi phun + hồng ngoại: nhìn lên lối hầm, chờ tới khi thấy máy khai thác (warm()), phun ra sau trúng nút: cửa trước mở, cửa sau đóng; trượt phải về cờ. */
+  var OMNI_17 = ['while not warm():', '    wait()', 'spray_back()', 'wait()', 'slide_r(1)'];
+  /** Cách hai rẻ hơn: hai bánh, chờ y như vậy rồi quay phải, tiến một ô về cờ. */
+  var XE_17 = ['while not warm():', '    wait()', 'spray_back()', 'wait()', 'turn_right()', 'move()'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -552,6 +559,29 @@
       sao: { o: 14, nhip: 9 },
       goiY: ['r, c = ho: tách toạ độ hố thành hàng r, cột c.', 'abs(4 - 2) = 2: quay hai nấc.', 'cast_net() vớt người ở đầu cần, drop_net() đặt người lên bờ.'],
       cauDo: { doi: null, lap: 'cau+day-keo', coChe: ['nuoc', 'nguoi', 'gio', 'ho', 'da-tron'], cuu: 'nguoi', meo: 'cuu-kip' }
+    }),
+    // 17 · chờ tín hiệu, omni + vòi phun: bão làm kẹt hệ cửa hầm, một nút điều khiển hai cửa: phun trúng nút thì cửa trước (đang mở) đóng, cửa sau (đang đóng) mở.
+    //      Máy khai thác phải qua cửa trước rồi mới tới cửa sau: phun sớm là cửa trước đóng ập trước mũi, không phun là cửa sau còn đóng.
+    //      Robot đứng dưới lối hầm, cảm biến hồng ngoại nhìn lên: warm() là máy khai thác (máy nóng) vừa qua cửa trước, ngay trên đầu; phun ra sau trúng nút. Cách hai: hai bánh (rẻ hơn).
+    man9('lap-mo-da', 7, 'van-dung', {
+      ten: 'Một nút hai cửa',
+      deBai: 'Một nút điều khiển hai cửa hầm: phun trúng nút thì cửa đang mở đóng lại, cửa đang đóng mở ra. Máy khai thác phải qua cửa mở trước. Lắp robot chờ đúng lúc rồi phun nút.',
+      veMaMau: 'Máy khai thác chạy thẳng một mạch, không chờ.',
+      san: ['##########', '#..c..C.F#', '####.#####', '####.F####', '####.#####', '####N#####', '##########'],
+      noi: [{ nut: { x: 4, y: 5 }, cua: [{ x: 3, y: 1 }, { x: 6, y: 1 }] }],
+      doi: [may('KT', { x: 1, y: 1, huong: 1 }, { co: [{ x: 8, y: 1 }] }), khe({ x: 4, y: 3, huong: 0 }, { son: 'lam', co: [{ x: 5, y: 3 }] })],
+      lapRap: lapR2(['omni', 'hai-banh'], ['hoi', 'nem'], ['hong-ngoai', 'radar'], 9, [
+        cach('omni', 'hoi', 'hong-ngoai', [KT_17, OMNI_17]),
+        cach('hai-banh', 'hoi', 'hong-ngoai', [KT_17, XE_17])
+      ]),
+      maMau: doiBai([KT_17, []]),
+      loiSai: [
+        { moTa: 'Phun ngay không chờ: cửa trước đóng ập trước mũi máy khai thác', baiLam: doiBai([KT_17, ['spray_back()', 'wait()', 'slide_r(1)']]), phaiCoMa: ['chua-toi-co'] },
+        { moTa: 'Phun ra trước (spray): tia bay lên lối hầm, không trúng nút', baiLam: doiBai([KT_17, ['while not warm():', '    wait()', 'spray()', 'wait()', 'slide_r(1)']]), phaiCoMa: ['chua-toi-co'] }
+      ],
+      sao: { o: 17, nhip: 9 },
+      goiY: ['warm(): vật trước cảm biến đang nóng (máy đang chạy).', 'spray_back(): phun ra sau đuôi.', 'while not warm(): wait(): chờ tới khi thấy máy.'],
+      cauDo: { doi: null, lap: 'omni+hoi+hong-ngoai', coChe: ['nut-ban', 'cua', 'hong-ngoai', 'voi-phun'], cuu: 'hang', meo: 'cho-tin-hieu' }
     }),
     /* HẾT MOI */
   ];
