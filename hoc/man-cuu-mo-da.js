@@ -96,6 +96,15 @@
   var DR_9 = ['for i in range(3):', '    go_up()', 'for i in range(3):', '    go_right()', 'dot()', 'wait()'];
   var HD_9 = ['sonic_rail()'];
 
+  /** R2 đã lắp sẵn (màn show chương 2): bánh gai + máy ném + radar, như LapRap.apDung lắp ra. */
+  var GAI_NEM = {
+    loaiRobot: 'gai', robot: { than: 'gai', tay: 'nem', camBien: [{ ma: 'radar', o: 'tren' }], son: 'lam' },
+    hamGoc: ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'retract_spikes', 'extend_spikes', 'aim', 'throw', 'load', 'radar', 'shape']
+  };
+  /** lap-mo-da.1: xe gai ném tiến hai ô trên dốc bùn (bám, không trượt), quay lên, hất đá tròn trước mũi xa 2 ô xuống hố, lùi về cờ. Máy khai thác chờ rồi chạy qua hố đã lấp tới cờ. */
+  var GAI_11 = ['forward(2)', 'turn_left()', 'aim(2)', 'lob()', 'back()'];
+  var KT_11 = ['wait_n(5)', 'forward(6)'];
+
   function man9(chuong, so, hang, cfg) {
     var r1 = cfg.doi[0];
     var m = {
@@ -366,6 +375,25 @@
       sao: { o: 7, nhip: 10 },
       goiY: ['Bè 2: play_part([3, 3, 1, 3, 4, 4, 3, 3]).'],
       cauDo: { doi: ['KT', 'HD'], lap: null, coChe: ['loa', 'da-chuong', 'mo-da'], cuu: null, meo: 'song-song' }
+    }),
+    /* ========================================================================
+       CHƯƠNG 2: lap-mo-da (10 màn)
+       ======================================================================== */
+    // 11 · show (làm cầu): hố chắn lối máy khai thác R1; viên đá tròn nằm dưới hố, chỗ đứng hất đá là dốc bùn: máy khai thác (omni) vào bùn là trượt quá.
+    //      Luna lắp sẵn bánh gai + máy ném + radar (khoá): bám bùn dừng đúng chỗ, quay lên hất đá xuống hố, lùi về cờ. R1 chạy qua hố đã lấp tới cờ.
+    man9('lap-mo-da', 1, 'lam-quen', {
+      ten: 'Xe gai ném đá',
+      chiChay: true,
+      deBai: 'Hố chắn lối máy khai thác. Chỗ đứng hất đá là dốc bùn: bánh omni vào là trượt. Luna lắp bánh gai cho xe ném: bám bùn, dừng đúng chỗ, hất đá lấp hố. Bấm Chạy.',
+      veMaMau: 'Bấm Chạy xem xe gai ném đá.',
+      san: ['#########', '#..u...F#', '#..o....#', '#.IIIIII#', '#..F....#', '#########'],
+      them: { vatDang: ['.........', '.........', '...r.....', '.........', '.........', '.........'] },
+      doi: [may('KT', { x: 1, y: 1, huong: 1 }, { co: [{ x: 7, y: 1 }] }), Object.assign({ batDau: { x: 1, y: 3, huong: 1 }, co: [{ x: 3, y: 4 }] }, clone(GAI_NEM))],
+      maMau: doiBai([KT_11, GAI_11]),
+      loiGiai: doiBai([KT_11, GAI_11]),
+      sao: { o: 27, nhip: 13 },
+      goiY: ['Bánh gai bung gai thì bám bùn: dừng được giữa dốc.', 'lob(): xúc đá trước mũi, hất xa 2 ô.'],
+      cauDo: { doi: null, lap: 'gai+nem+radar', coChe: ['bun', 'ho', 'da-tron', 'nem'], cuu: 'hang', meo: 'lam-cau' }
     }),
     /* HẾT MOI */
   ];
