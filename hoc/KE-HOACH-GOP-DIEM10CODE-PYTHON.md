@@ -8,7 +8,8 @@ Thay cho mục 5 của [KE-HOACH-GOP-DIEM10CODE.md](KE-HOACH-GOP-DIEM10CODE.md) 
 
 1. **Giữ lịch sử: cách A** (thay `main` của `diem10code-python` bằng lịch sử game này, `main` cũ cất ở nhánh lưu trữ).
 2. **Bản Ôn thi = bản 5 mùa** của `diem10code-python` (`hoc/KE-HOACH-4-MUA-COT-LOI.md`: 4 mùa cốt lõi + mùa Tổ hợp).
-3. **Bản Ôn thi không có khái niệm `wait()`**: mỗi lệnh tự chiếm một nhịp. Bản đầy đủ giữ `wait()` như hiện nay.
+3. **Bản Ôn thi không có lệnh chốt nhịp**: mỗi lệnh tự chiếm một nhịp. `wait()` chỉ còn nghĩa "đứng yên một nhịp"
+   (Mùa 5 Đồng đội dùng để hai xe nhường nhau). Bản đầy đủ giữ luật nhịp như hiện nay (quyết định 11).
 4. **Tính phí: mua "bản đầy đủ" một lần cho mọi game** diem10code (Python, logic, SQL...). Bản Ôn thi không bán. Bỏ
    bán lẻ từng mùa 49.000đ.
 5. **Thứ tự: nối thành một game dùng chung lõi trước, sửa sau.** Bản Ôn thi chạy trên đúng lõi của bản đầy đủ ngay từ
@@ -18,7 +19,9 @@ Thay cho mục 5 của [KE-HOACH-GOP-DIEM10CODE.md](KE-HOACH-GOP-DIEM10CODE.md) 
 8. **Mang `phim-clb/` sang** repo mới (cách A mang sẵn cả cây).
 9. **5 mùa theo bản mới nhất**: `KE-HOACH-4-MUA-COT-LOI.md` (6/11): Kho hàng, Bãi tái chế, Bến sông, Nông trại, Tổ hợp.
 10. **Hai bản gần nhau nhất có thể**: cùng tên lệnh, tên part, Sổ lệnh, giao diện ở mọi chỗ; chỉ khác đúng chỗ bắt buộc vì
-    bỏ `wait()` (mục 2.1).
+    không có lệnh chốt nhịp (mục 2.1).
+11. **Tách `act()` khỏi `wait()`** (user 17/11 đêm): `act()` = cho các lệnh vừa ra (bánh, tay, nam châm, sơn...) chạy
+    trong nhịp này, chỉ có ở bản đầy đủ; `wait()` = đứng yên một nhịp, cùng nghĩa ở cả hai bản. Làm ở GĐ 8, sau khi gộp xong.
 
 Không còn câu hỏi treo (mục 9), trừ phần đính chính ngay dưới.
 
@@ -125,7 +128,7 @@ Chưa game nào nối đăng nhập / Premium thật: khung `window.D10` và đ�
 | Nguồn thiết kế | `diem10code-python/hoc/KE-HOACH-4-MUA-COT-LOI.md` (6/11) | game này |
 | Mùa | 1 Kho hàng (hai bánh, kẹp, khoảng cách) · 2 Bãi tái chế (nhện, nam châm, cảm ứng từ) · 3 Bến sông (xuồng, dây phao kéo, camera màu) · 4 Nông trại (drone, vòi phun, hồng ngoại) · 5 Tổ hợp (chưa thiết kế) | 9 mùa, 9 nơi |
 | Phạm vi Python | `def`, `for`, `if`/`while`, biến, tham số, chuỗi, `and`/`or`/`elif`, `list`; **không** `tuple`, `dict`, `set`, lưới 2 chiều | thêm `tuple`, `min`/`max`, `%` `//` `abs`, lưới 2 chiều, `dict`, `set`, hai robot, lắp ráp |
-| Lệnh di chuyển | hai bánh, xuồng: `forward()` `backward()` `turn_left()` `turn_right()`; nhện, drone: **giữ đúng tên** `go_up()` `go_down()` `go_left()` `go_right()`; **không `wait()`**, mỗi lệnh một nhịp | hai bánh, xuồng: `left_move()` / `right_move()` + `wait()`; nhện, drone: `go_*()` + `wait()` |
+| Lệnh di chuyển | hai bánh, xuồng: `forward()` `backward()` `turn_left()` `turn_right()`; nhện, drone: **giữ đúng tên** `go_up()` `go_down()` `go_left()` `go_right()`; **không `act()`**, mỗi lệnh một nhịp, `wait()` = đứng yên một nhịp | hai bánh, xuồng: `left_move()` / `right_move()` + `act()` (nay còn là `wait()`, đổi ở GĐ 8); nhện, drone: `go_*()` |
 | Khuôn mùa | lưới 4 cột (thân, tay, cảm biến, sân) × 8 hàng (chỉ xem, đoán rồi chạy, điền chỗ trống, sắp xếp, sửa lỗi, viết có gợi ý, viết hàm, tự lực) = 32 màn | 10 gói × 2 chương × 10 màn |
 | Màn | **mã riêng** (kiểu Mạch Đèn), tiến độ tách khỏi bản đầy đủ | như hiện nay |
 | Phim, bản đồ | dùng lại phim và bản đồ của bản đầy đủ cho 4 nơi trùng (Kho hàng, Bãi tái chế, Bến sông, Nông trại) khi đã khớp part; lúc đầu chưa bật | giữ phim CLB, bản đồ 9 nơi |
@@ -145,20 +148,21 @@ Chưa game nào nối đăng nhập / Premium thật: khung `window.D10` và đ�
     `HAM_GOC.banh` của bản đầy đủ.
   - Nhện, drone: `go_*` giữ nguyên tên, chỉ tự chốt nhịp.
   - Tay, cảm biến: lệnh tay tự chiếm một nhịp; lệnh cảm biến không tốn nhịp (như hiện nay).
-  - `wait()` không có trong khay, không có trong Sổ lệnh của bản Ôn thi.
+  - Không có lệnh chốt nhịp (`act()`, hay `wait()` dùng để chốt). `wait()` chỉ hiện ở khay / Sổ lệnh bản Ôn thi với nghĩa
+    "đứng yên một nhịp", ở mùa cần nhường nhau (Mùa 5 Đồng đội).
 - **Ô tay tác động** (luật chung của bản 5 mùa): thân có mũi (hai bánh, xuồng) thì ô trước mũi; thân không mũi (nhện,
   drone) thì ô đang đứng. Đối chiếu với lõi hiện nay ở giai đoạn 2, chỗ nào khác thì theo cờ `banOnThi`.
 - **Mọi tổ hợp thân + tay** được phép ở bản Ôn thi (chuỗi đổi part từng món một giữa các mùa).
 - **Giữ hai bản gần nhau nhất** (quyết định 10). Chỉ ba chỗ được khác:
-  1. không có `wait()`;
-  2. hai bánh và xuồng dùng `forward()` / `backward()` / `turn_left()` / `turn_right()` (bỏ `wait()` thì
+  1. không có `act()` (lệnh chốt nhịp);
+  2. hai bánh và xuồng dùng `forward()` / `backward()` / `turn_left()` / `turn_right()` (không có `act()` thì
      `left_move()` / `right_move()` không còn ghép thành bước đi được);
   3. ô tay tác động theo luật bản 5 mùa nếu lõi hiện nay khác.
   Mọi thứ khác dùng chung: tên lệnh tay và cảm biến (`grab()`, `distance()`, `magnet_n()`...), tên part, hình
   robot, Sổ lệnh, khay, hộp thoại, chấm sao, lời sai (`loiSai` cùng mã). Máy kiểm `kiem-ban-on-thi.mjs` báo mọi tên
   lệnh có ở bản Ôn thi mà bản đầy đủ không có, ngoài 4 lệnh di chuyển trên.
 - **Máy kiểm**: `hoc/kiem-ban-on-thi.mjs` chạy mọi `loiGiai` chương `t*` (3 sao, mọi sân), và bộ dò cú pháp chặn
-  `wait(`, `tuple`, `{`, `set(`, `[..][..]` trong `loiGiai` / `maMau` của bản Ôn thi.
+  `act(`, `tuple`, `{`, `set(`, `[..][..]` trong `loiGiai` / `maMau` của bản Ôn thi; `wait(` chỉ được ở mùa có hai xe.
 
 ### 2.2 Nội dung khởi đầu (để "nối trước, sửa sau")
 
@@ -295,13 +299,15 @@ kiểm xanh. Máy kiểm chạy **lần lượt từng tệp** (`npm test` vốn
 | **0. Dọn** | Commit hay bỏ bản sửa khay hàm / chip 122.1; gộp `claude/mua-9-tiep` (qua `/push-main`); trong `diem10code-python`: lấy lại 6 tệp xoá dở vào nhánh lưu trữ (không mất), cất `trace-banh.mjs` | game, `diem10code-python` | `git status` sạch cả hai repo; `npm test` của game: số bộ đạt bằng nền trước khi gộp |
 | **1. Chuyển nhà** (cách A) | Nhánh `luu-tru/tach-5-11` = `main` cũ; đẩy `main` game lên `diem10code-python` (push ép, khi user bảo); commit `docs/tach-5-11/`; README mới; README game cũ trỏ sang, archive repo cũ | `diem10code-python` | `git log` đủ lịch sử game; `npm start` mở game ở cổng 4180; `npm test` cùng kết quả như repo cũ |
 | **2. Lõi chung: chế độ mỗi lệnh một nhịp** (theo đính chính: mang lõi bản 5 mùa vào sau cờ, lệnh `forward` / `backward`) | `cfg.banOnThi` trong `san-hoc.js`: `up` / `down` / `turn_left` / `turn_right` cho hai bánh, xuồng (mang từ a618cf4, thêm theo cờ thay vì thay `HAM_GOC`); `go_*` nhện, drone tự chốt nhịp; lệnh tay tự chốt; ô tay tác động theo luật bản 5 mùa; Sổ lệnh / khay ẩn `wait` khi cờ bật | `hoc/san-hoc.js`, `cham.js`, `so-lenh.js` | `kiem-mot-nhip.mjs` mới (mỗi lệnh đúng một nhịp, lệnh ngược, đâm tường, tay trước mũi / tại chỗ); **mọi máy kiểm cũ giữ nguyên kết quả** (bản đầy đủ không đổi) |
-| **3. Một game hai bản** (theo đính chính: nội dung là 144–160 màn bản 5 mùa, không phải 45 màn a618cf4) | `ban.js` (bản suy ra từ tiền tố chương `t`), hai thẻ chọn bản ở trang đầu + Cài đặt, chữ theo bản; `lo-trinh-on-thi.js` khai 5 mùa; nạp 45 màn mùa 1 của bản tách thành `t1-*`; mùa 2–5 "Sắp có"; bản Ôn thi ẩn phim và bản đồ | `hoc/`, `hoc/game/` | `kiem-ban-on-thi.mjs`: 45/45 lời giải 3 sao, 0 `wait(` / `tuple` / `dict` / lưới trong bản Ôn thi; đổi bản giữ sao hai bên; `?man=t1-than.3` mở thẳng bản Ôn thi; chụp 375px |
+| **3. Một game hai bản** (theo đính chính: nội dung là 144–160 màn bản 5 mùa, không phải 45 màn a618cf4) | `ban.js` (bản suy ra từ tiền tố chương `t`), hai thẻ chọn bản ở trang đầu + Cài đặt, chữ theo bản; `lo-trinh-on-thi.js` khai 5 mùa; nạp 45 màn mùa 1 của bản tách thành `t1-*`; mùa 2–5 "Sắp có"; bản Ôn thi ẩn phim và bản đồ | `hoc/`, `hoc/game/` | `kiem-ban-on-thi.mjs`: 45/45 lời giải 3 sao, 0 `act(` / `tuple` / `dict` / lưới trong bản Ôn thi; đổi bản giữ sao hai bên; `?man=t1-than.3` mở thẳng bản Ôn thi; chụp 375px |
 | **4. Nối diem10code** | `d10.js`, `luu.js` theo hồ sơ + gộp, `quyenChoi` (bản Ôn thi mở, bản đầy đủ theo cờ đã mua), `sw.js` phạm vi riêng; phía `tin_hoc`: khoá `gamePython`, script đồng bộ, thẻ Sân chơi, cờ "bản đầy đủ" dùng cho mọi game | cả hai repo | chơi máy tính rồi mở điện thoại cùng tài khoản thấy đúng sao; khách chơi được `t5-*`; chưa mua chạm thẻ Bản đầy đủ hay mở thẳng `?man=` bản đầy đủ → hộp mua → mua xong về đúng chỗ |
 | **5. Sửa: nội dung bản Ôn thi** | Dựng lại mùa 1 theo lưới 4×8 (8 dạng bài); thêm cơ chế 3 dạng còn thiếu (đoán rồi chạy, sắp xếp, điền chỗ trống); viết mùa 2 Bãi tái chế, 3 Bến sông, 4 Nông trại theo chuỗi đổi part; thiết kế mùa 5 Tổ hợp | `hoc/` | mỗi mùa 32 màn, máy kiểm từng dạng bài, bộ dò phạm vi xanh |
 | **6. Sửa: làm đẹp** | Mục 5.3 việc 3–9 | `hoc/game/` | ảnh trước / sau ở 320, 375, 768, 1280px; 0 nút dưới 44px; `kiem-bang-mau` xanh; không màn nào cuộn ngang |
 | **7. Mở mùa ẩn bản đầy đủ** | Bỏ `an: true` từng mùa khi đã soát trên trình duyệt (mùa 4 còn soát 200 màn) | `thu-tu-chuong.js` | danh sách soát từng mùa trong `hoc/ban-giao/`; `kiem-lo-trinh` xanh |
+| **8. Tách `act()` khỏi `wait()`** (quyết định 11) | Lõi: thêm lệnh gốc `act()` làm đúng việc của `wait()` hiện nay (chạy lệnh đang chờ; không có gì chờ thì đứng yên), nên kết quả không đổi; máy chấm thêm lời nhắc nhẹ (thông tin, không trừ sao): `wait()` khi đang có lệnh chờ → "dùng `act()`". `wait()` vẫn chạy lệnh chờ như cũ để bài người chơi đã lưu không hỏng. Nội dung: script đổi `wait()` → `act()` trong `loiGiai` / `maMau` (4004 chỗ, 121 tệp `man-*.js`) theo vết chạy: lần gọi nào có lệnh chờ thì đổi, chỗ chỉ đứng yên (drone lơ lửng, `while not front_clear(): wait()`, hai xe nhường nhau) giữ `wait()`; dòng trong vòng lặp gặp cả hai thì đổi thành `act()`. Khay, Sổ lệnh, lời sai `quen-wait` (giữ mã, đổi chữ), khoảng 20 tệp `hoc/game`, phim `phim-mua-*` / `phim-clb` soát tay | `hoc/san-hoc.js`, `cham.js`, `so-lenh.js`, `man-*.js`, `hoc/game/`, `phim-clb/` | so kết quả 2229 màn trước / sau đổi tên bằng md5 (cách ở mục 6.1), chỉ được khác lời nhắc mới; `kiem-act.mjs`: `act()` = `wait()` có lệnh chờ, bài cũ toàn `wait()` vẫn 3 sao; 0 `wait()` có lệnh chờ trong lời giải; `npm test` bằng nền |
 
-GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệp), mỗi phiên một mùa.
+GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệp), mỗi phiên một mùa. GĐ 8 đụng mọi tệp màn bản đầy đủ:
+làm một mình, không song song với GĐ 7 hay phiên viết màn nào.
 
 ### 6.1 Tình trạng 17/11 tối
 
@@ -344,9 +350,9 @@ GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệ
     chứ không phải hàm cốt truyện); bản Ôn thi không được nạp kho hàm cốt truyện của bản đầy đủ (`pick`, `drop`, `forward(n)`,
     `turn_left` đã là hàm em tự làm ở bản đầy đủ, `man-tay-gap.js`, `man-tham-so.js`); phần giao diện của bản 5 mùa
     (`hoc/game/*`, 36 tệp, +1605 dòng: chọn đội, chọn tâm, huy hiệu, vẽ nông trại / bè, khay hàm).
-  - **Câu hỏi cho user:** bản 5 mùa mới nhất vẫn dùng `wait()` ở Mùa 5 Đồng đội (23 chỗ, nghĩa "đứng yên một nhịp" để hai
-    xe nhường nhau), trong khi quyết định 3 là không có `wait()`. Lõi đang giữ `wait()` là đứng yên một nhịp ở bản Ôn thi.
-    `pick()` / `drop()` cũng là chỗ khác thứ tư so với mục 2.1 (bản đầy đủ dùng `arm_down` / `grab` / `arm_up`).
+  - **Đã trả lời (17/11 đêm):** `wait()` ở Mùa 5 Đồng đội (23 chỗ, đứng yên một nhịp) giữ nguyên, vì user chọn tách
+    `act()` khỏi `wait()` (quyết định 11): bản Ôn thi không có lệnh chốt nhịp, `wait()` chỉ là đứng yên. Lõi GĐ 2 đã đúng như vậy.
+  - **Câu hỏi cho user:** `pick()` / `drop()` là chỗ khác thứ tư so với mục 2.1 (bản đầy đủ dùng `arm_down` / `grab` / `arm_up`).
 
 ---
 
@@ -373,7 +379,7 @@ GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệ
 
 - Viết lại game bằng React / Vite như hai game kia. Game là JS thường, chạy tốt, máy kiểm đầy đủ; chuyển công nghệ là
   việc rất lớn mà không thêm gì cho người chơi.
-- Bỏ `wait()` ở bản đầy đủ, đổi luật bản đầy đủ, đổi hình robot.
+- Đổi luật nhịp bản đầy đủ, đổi hình robot. (`wait()` không bị bỏ: GĐ 8 chỉ thêm tên `act()` cho việc chốt nhịp.)
 - XP / huy hiệu chung diem10code.
 
 ---
@@ -382,3 +388,8 @@ GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệ
 
 Đã trả lời hết (17/11): quyết định 1–10 ở đầu tệp, ngọn bản 5 mùa và tên lệnh ở phần đính chính.
 Câu hỏi mới phát sinh khi làm thì ghi thêm ở đây.
+
+- 17/11 đêm: tách `act()` khỏi `wait()`? **Có, tên `act()`** (quyết định 11, GĐ 8). Tên khác đã loại: `go` (em tự đặt
+  `go(d)`, khoảng 700 lần gọi), `run`, `step`, `beat` (lệnh loa) đã có trong màn; `next` trùng hàm có sẵn của Python; `play`
+  dễ hiểu nhầm là phát nhạc; `tick` là từ chuyên ngành.
+- Còn treo: `pick()` / `drop()` ở bản Ôn thi (mục 6.1).
