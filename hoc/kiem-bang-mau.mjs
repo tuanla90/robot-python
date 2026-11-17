@@ -76,6 +76,8 @@ const CHEN = {   // phần gói A1 chèn thêm (bỏ đi khi so với bản nề
 const VAI_NEN_TRANG = 'vecNenSau';   // V7b (28/10): mặc định vector → nền tĩnh là nền trang vector (chàm nhạt), không còn nâu gỗ goToiV11
 const NGOAI_LE = [
   { tep: 'hoc/game/choi.html', re: /<meta name="theme-color" content="(#[0-9a-f]+)">/, vai: VAI_NEN_TRANG, ly: 'thẻ meta theme-color (thanh trình duyệt) đọc trước khi chạy JS' },
+  { tep: 'hoc/game/on-thi.html', re: /<meta name="theme-color" content="(#[0-9a-f]+)">/, vai: VAI_NEN_TRANG, ly: 'trang bản Ôn thi (GĐ 3): như choi.html' },
+  { tep: 'hoc/game/chon-ban.html', re: /<meta name="theme-color" content="(#[0-9a-f]+)">/, vai: VAI_NEN_TRANG, ly: 'trang chọn bản (cửa vào): như choi.html' },
   { tep: 'hoc/game/manifest.webmanifest', re: /"background_color": "(#[0-9a-f]+)"/, vai: VAI_NEN_TRANG, ly: 'manifest PWA là JSON tĩnh' },
   { tep: 'hoc/game/manifest.webmanifest', re: /"theme_color": "(#[0-9a-f]+)"/, vai: VAI_NEN_TRANG, ly: 'manifest PWA là JSON tĩnh' },
   { tep: 'hoc/dong-goi-artifact.py', re: /background:(#[0-9a-f]+)\}/, vai: VAI_NEN_TRANG, ly: 'nền trang Artifact trước khi gói JS nạp' }

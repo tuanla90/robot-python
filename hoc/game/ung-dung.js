@@ -233,13 +233,25 @@
   App.veDau = function () { App.hien('dau'); };
 
   /* --------------------------------------------------------- co giãn khung */
+  /** Bố cục máy tính (layout web): cửa sổ ngang, đủ rộng. Khung 1040 × 640: màn chơi bày sân to bên trái, code + khay bên phải;
+   *  các màn khác giữ khung 360 ở giữa (choi.css, mục MÁY TÍNH). Quyết một lần lúc mở trang (App.web); kéo cửa sổ qua ngưỡng thì tải lại trang. */
+  var KHUNG_WEB = 1040;
+  function laWeb() {
+    var vv = window.visualViewport, w = vv ? vv.width : window.innerWidth, hh = vv ? vv.height : window.innerHeight;
+    return w >= 900 && w >= hh * 1.25;
+  }
+  App.web = laWeb();
   function vua() {
     var st = document.getElementById('stage');
     var vv = window.visualViewport;
     var w = vv ? vv.width : window.innerWidth, hh = vv ? vv.height : window.innerHeight;
+    if (laWeb() !== App.web) { location.reload(); return; }     // đổi điện thoại / máy tính: dựng lại màn chơi theo bố cục mới (tiến độ, bản nháp đã lưu)
     var doc = w <= 520 && hh > w;                      // điện thoại cầm dọc: lấp đầy màn hình
-    var sh = 640, s = Math.min(w / 360, hh / 640);
+    var rong = App.web ? KHUNG_WEB : 360;
+    var sh = 640, s = Math.min(w / rong, hh / 640);
     if (doc) { s = w / 360; sh = Math.max(640, Math.min(900, hh / s)); s = Math.min(s, hh / sh); }
+    st.style.setProperty('--sw', rong + 'px');
+    document.body.classList.toggle('web', App.web);
     st.style.setProperty('--sh', sh + 'px');
     st.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
     document.body.classList.toggle('dien-thoai', doc);

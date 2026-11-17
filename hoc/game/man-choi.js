@@ -70,7 +70,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     E.fb = q('.fblock'); E.bar = q('.sanbar'); E.tong = q('.clock .tong'); E.hamDem = q('.p-prog .ham-dem');
     q('.chinh-khoa .ck-ic').appendChild(Ve.khoa(2, true));                       // ổ khóa nhỏ ở tiêu đề khung chương trình (chỉ hiện khi màn có chinhCoDinh)
 
-    S.field = new SanVe.Field(q('#field'), { kich: 210, catMep: true });          // catMep: bỏ hàng / cột mép toàn tường khi vẽ (sân thử Xưởng không bật)
+    var web = !!(window.App && App.web);                                       // bố cục máy tính (ung-dung.js): sân 430, ô to tới 112 px
+    S.field = new SanVe.Field(q('#field'), web ? { kich: 430, oToiDa: 112, catMep: true } : { kich: 210, catMep: true });          // catMep: bỏ hàng / cột mép toàn tường khi vẽ (sân thử Xưởng không bật)
     S.field.onRung = function () { if (window.AmThanh) AmThanh.phat('dam'); E.ffr.classList.remove('rung'); void E.ffr.offsetWidth; E.ffr.classList.add('rung'); };
     E.ffr = q('.ffr');
 

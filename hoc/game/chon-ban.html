@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mật Lệnh Robot</title>
+<meta name="theme-color" content="#e8e6f6">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon/icon-192.png">
+<link rel="apple-touch-icon" href="icon/icon-192.png">
+<link rel="stylesheet" href="font/font.css">
+<!-- bảng màu theo vai: nạp TRƯỚC mọi thứ dùng màu; ghi biến CSS --g-<vai> -->
+<script src="bang-mau.js"></script>
+<!--
+  chon-ban.html — TRANG CHỌN BẢN, cửa vào của game (/, index.html, manifest đều trỏ về đây).
+  Hai bản cùng một lõi (hoc/ban.js): Ôn thi THPT (on-thi.html, 5 mùa) và Bản đầy đủ (choi.html, 9 mùa).
+  Mỗi thẻ ghi số sao em đã có ở bản đó (đọc khóa tiến độ của bản: on-thi:tien-do, duong-hoc:tien-do) và đánh dấu bản chơi lần trước
+  (khóa chon-ban:cuoi). Không tự chuyển trang: lần nào mở game cũng được chọn. Màu chỉ lấy từ biến --g-* của bang-mau.js.
+-->
+<style>
+  :root{
+    --px:"Google Sans Flex",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --r-md:16px; --r-lg:24px; --r-full:9999px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;
+    background:var(--g-vecNenSau);color:var(--g-vecChu);font-family:var(--px);
+    -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
+  }
+  .khung{width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  h1{margin:0;font:800 40px/1.2 var(--px);letter-spacing:.5px}
+  h1::after{content:"";display:block;width:56px;height:5px;margin:12px auto 0;border-radius:var(--r-full);background:linear-gradient(90deg,var(--g-vecBrand),var(--g-vecDen))}
+  .phu{margin:12px 0 0;font:500 15px/1.4 var(--px);color:var(--g-vecChuPhu)}
+  .hoi{margin:28px 0 12px;font:700 13px/1 var(--px);letter-spacing:1.5px;text-transform:uppercase;color:var(--g-vecChuPhu)}
+  .the-ds{width:100%;display:flex;flex-direction:column;gap:14px}
+  a.the{
+    position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:18px 20px 16px;text-align:left;
+    border-radius:var(--r-lg);background:var(--g-vecThe);color:var(--g-vecChu);text-decoration:none;
+    box-shadow:0 0 0 1.5px var(--g-vecKe),0 4px 14px rgba(var(--g-vecBongRgb),.07);
+    transition:transform .12s ease,box-shadow .12s ease;
+  }
+  a.the:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--g-vecBrandRgb),.45)}
+  a.the:active{transform:translateY(2px)}
+  @media (hover:hover){ a.the:hover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--g-vecBrand),0 10px 26px rgba(var(--g-vecBrandRgb),.18)} }
+  a.the.chinh{background:var(--g-vecBrand);color:var(--g-vecThe);box-shadow:0 6px 18px rgba(var(--g-vecBrandRgb),.32)}
+  @media (hover:hover){ a.the.chinh:hover{background:var(--g-vecBrandDam)} }
+  .the-nhan{font:700 12px/1 var(--px);letter-spacing:1.2px;text-transform:uppercase;opacity:.75}
+  .the-ten{font:800 24px/1.15 var(--px)}
+  .the-mo{font:500 14px/1.4 var(--px);opacity:.85}
+  .the-duoi{display:flex;align-items:center;gap:10px;margin-top:6px;font:700 14px/1 var(--px)}
+  .sao{display:inline-flex;align-items:center;gap:4px}
+  .sao svg{width:16px;height:16px;fill:var(--g-vecVang)}
+  .tiep{display:none;padding:4px 10px;border-radius:var(--r-full);font:700 12px/1 var(--px);background:var(--g-vecNenSau);color:var(--g-vecBrandDam)}
+  a.the.cuoi .tiep{display:inline-block}
+  .clb{margin-top:26px;font:600 13px/1 var(--px);color:var(--g-vecChuPhu)}
+  /* máy tính (cửa sổ ngang, đủ rộng): hai thẻ đứng cạnh nhau */
+  @media (min-width:760px) and (min-height:480px){
+    .khung{max-width:760px}
+    .the-ds{flex-direction:row}
+    a.the{flex:1 1 0;min-height:200px;padding:24px 26px 20px}
+    .the-duoi{margin-top:auto}
+  }
+</style>
+</head>
+<body>
+<main class="khung">
+  <h1>MẬT LỆNH ROBOT</h1>
+  <p class="phu">Học Python bằng cách ra lệnh cho robot</p>
+  <div class="hoi" id="hoi">Chọn chế độ chơi</div>
+  <div class="the-ds">
+    <a class="the chinh" href="on-thi.html" data-ban="on-thi">
+      <span class="the-nhan">5 mùa · 160 màn</span>
+      <span class="the-ten">Ôn thi THPT</span>
+      <span class="the-mo">Ôn Python cho kỳ thi tốt nghiệp: lệnh, vòng lặp, điều kiện, hàm, danh sách, qua từng chiếc robot.</span>
+      <span class="the-duoi"><span class="sao" data-sao="on-thi:tien-do"></span><span class="tiep">Chơi lần trước</span></span>
+    </a>
+    <a class="the" href="choi.html" data-ban="day-du">
+      <span class="the-nhan">Cả hành trình</span>
+      <span class="the-ten">Bản đầy đủ</span>
+      <span class="the-mo">Theo CLB robot qua kho hàng, nhà máy, bãi tái chế và các mùa tiếp theo, có phim kể chuyện.</span>
+      <span class="the-duoi"><span class="sao" data-sao="duong-hoc:tien-do"></span><span class="tiep">Chơi lần trước</span></span>
+    </a>
+  </div>
+  <div class="clb">CLB Tin học · THPT Hoa Phượng</div>
+</main>
+<script>
+(function () {
+  'use strict';
+  var KHOA_CUOI = 'chon-ban:cuoi';
+  function doc(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function ghi(k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* chạy không lưu */ } }
+  /* tổng sao đã có của một bản (khóa tiến độ { phienBan, sao: { ma: số } }) */
+  function tongSao(khoa) {
+    try { var d = JSON.parse(doc(khoa) || 'null'), s = 0; if (d && d.sao) for (var k in d.sao) s += +d.sao[k] || 0; return s; } catch (e) { return 0; }
+  }
+  var SAO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></svg>';
+  var q = location.search || '';                                             // giữ ?debug=1 … khi sang trang bản
+  [].forEach.call(document.querySelectorAll('a.the'), function (a) {
+    var o = a.querySelector('[data-sao]'), n = tongSao(o.getAttribute('data-sao'));
+    o.innerHTML = n ? SAO + '<span>' + n + '</span>' : '';
+    if (doc(KHOA_CUOI) === a.getAttribute('data-ban')) a.classList.add('cuoi');
+    if (q) a.href = a.getAttribute('href') + q;
+    a.addEventListener('click', function () { ghi(KHOA_CUOI, a.getAttribute('data-ban')); });
+  });
+})();
+</script>
+</body>
+</html>

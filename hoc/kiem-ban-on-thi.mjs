@@ -7,6 +7,7 @@
      4. Kho lưu tách: luu.js của bản Ôn thi ghi 'on-thi:…', không đụng 'duong-hoc:…' của bản đầy đủ, và ngược lại.
      5. Trang: on-thi.html đặt BAN_GAME trước ban.js, ban.js ngay sau bang-mau.js, chỉ nạp nội dung ../on-thi/; choi.html không đặt BAN_GAME;
         mọi script hai trang nạp đều có trên đĩa.
+     6. Cửa vào (18/11): chon-ban.html dẫn tới hai bản; server.mjs, index.html, manifest vào trang chọn bản; sw.js cất cả ba trang.
    Chạy: node hoc/kiem-ban-on-thi.mjs   (npm test chạy cùng các máy kiem-*.mjs khác) */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -142,6 +143,23 @@ console.log('kiem-ban-on-thi: hai bản trên một lõi');
   ok(noiDungDu.length === 0, 'on-thi.html không nạp nội dung bản đầy đủ', noiDungDu.join(', '));
   ok(ot.some((s) => s.src === '../on-thi/lo-trinh-hoc.js'), 'on-thi.html nạp ../on-thi/lo-trinh-hoc.js');
   ok(!du.some((s) => s.src && /on-thi\//.test(s.src)), 'choi.html không nạp nội dung bản Ôn thi');
+}
+
+/* 6. Cửa vào (18/11): trang chọn bản là cửa vào duy nhất, dẫn tới đủ hai bản; bộ đệm không mạng có cả ba trang */
+{
+  const GOC = path.dirname(HOC);
+  const doc = (f) => fs.readFileSync(f, 'utf8');
+  const cb = doc(path.join(GAME, 'chon-ban.html'));
+  const href = [...cb.matchAll(/<a class="the[^"]*" href="([^"]+)" data-ban="([^"]+)"/g)].map((x) => x[2] + '=' + x[1]).sort().join(' ');
+  ok(href === 'day-du=choi.html on-thi=on-thi.html', 'chon-ban.html: hai thẻ, day-du → choi.html, on-thi → on-thi.html', href);
+  ok(/data-sao="on-thi:tien-do"/.test(cb) && /data-sao="duong-hoc:tien-do"/.test(cb), 'chon-ban.html đọc sao của mỗi bản ở khóa của bản đó');
+  ok(/chon-ban:cuoi/.test(cb) && /chon-ban:cuoi/.test(doc(path.join(GAME, 'man-dau.js'))), 'trang chọn bản và trang đầu mỗi bản cùng ghi / đọc khóa chon-ban:cuoi');
+  const sv = doc(path.join(GOC, 'server.mjs'));
+  ok(/'\/':\s*'\/hoc\/game\/chon-ban\.html'/.test(sv) && /'\/hoc':\s*'\/hoc\/game\/chon-ban\.html'/.test(sv), 'server.mjs: / và /hoc vào trang chọn bản');
+  ok(/location\.replace\('hoc\/game\/chon-ban\.html'\)/.test(doc(path.join(GOC, 'index.html'))), 'index.html chuyển vào trang chọn bản');
+  ok(JSON.parse(doc(path.join(GAME, 'manifest.webmanifest'))).start_url === 'chon-ban.html', 'manifest: start_url là trang chọn bản');
+  const trang = /var TRANG = \[([^\]]*)\]/.exec(doc(path.join(GAME, 'sw.js')));
+  ok(!!trang && ['chon-ban.html', 'choi.html', 'on-thi.html'].every((t) => trang[1].includes("'" + t + "'")), 'sw.js cất cả ba trang (và script của chúng) cho chơi không mạng', trang && trang[1]);
 }
 
 console.log(`ĐẠT ${dat} · HỎNG ${hong}`);
