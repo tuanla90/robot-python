@@ -28,7 +28,8 @@ const MUA = {
   'mua-9': {
     than: ['hai-banh', 'xich', 'nhen', 'cau', 'xuong', 'drone', 'omni', 'gai'],
     tay: () => ['kep', 'xoay', 'hoi', 'nam-cham', 'moc-cau', 'day-keo', 'son', 'nem', 'loa'],
-    cam: () => ['khoang-cach', 'hong-ngoai', 'tu', 'quet-ma', 'dong-chay', 'camera-4', 'radar', 'am-thanh'],
+    // 16/11: camera trước / camera bụng là part mùa 9 theo bảng đã duyệt (KE-HOACH-MUA-9-TO-HOP.md mục 3b, lai L13 cẩu + camera bụng, L14 xuồng + camera trước, G6 xích + gieo hạt + camera trước)
+    cam: () => ['khoang-cach', 'hong-ngoai', 'tu', 'quet-ma', 'dong-chay', 'camera-4', 'camera', 'camera-bay', 'radar', 'am-thanh'],
     goiDoi: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   }
 };
@@ -56,6 +57,7 @@ function muaCuaPart(loai, ma) {
     if (loai === 'tay' && [...s.tay(10), ...s.tay(5)].includes(ma)) return i;
     if (loai === 'cam' && s.cam(10).includes(ma)) return i;
   }
+  if (loai === 'cam' && (ma === 'camera' || ma === 'camera-bay')) return THU_MUA.indexOf('mua-6');      // cùng họ camera-4 của mùa drone (R2 mùa 9 mang được)
   return 99;        // part mùa sau (omni, máy ném…) hay mã lạ
 }
 
