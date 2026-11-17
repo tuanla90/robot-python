@@ -1,16 +1,17 @@
 /* ============================================================================
    sw.js — "Robot Chấn Hưng": SERVICE WORKER cho chơi KHÔNG CẦN MẠNG.
-   Cài đặt: đọc choi.html, lấy mọi <script src> / <link href> (kể cả tệp ngoài hoc/game như ../san-hoc.js,
+   Cài đặt: đọc ba trang (chon-ban.html trang chọn bản, choi.html bản đầy đủ, on-thi.html bản Ôn thi), lấy mọi <script src> / <link href> (kể cả tệp ngoài hoc/game như ../san-hoc.js,
    ../../nhan/san-robot-core.js), đọc font/font.css lấy các tệp .woff2, rồi cất hết vào bộ đệm.
    Khi chạy: mọi yêu cầu GET cùng nguồn đi MẠNG TRƯỚC (luôn có bản mới nhất, chép đè vào bộ đệm);
    mất mạng hoặc mạng chậm quá HEN_MS thì lấy bản trong bộ đệm.
-   Tệp mới trong choi.html tự được cất ở lần cài sau; đổi BAN khi muốn bỏ hẳn bộ đệm cũ.
+   Tệp mới trong các trang tự được cất ở lần cài sau; đổi BAN khi muốn bỏ hẳn bộ đệm cũ.
    ========================================================================== */
 'use strict';
 
-var BAN = 'duong-hoc-v5';      // 01/11: v4 → v5 đóng gói đủ 90 phim gói CLB cho cả 9 mùa (mua-1..mua-9) & hiện nút ▶ khi bật Mở hết
+var BAN = 'duong-hoc-v6';      // 18/11: v5 → v6 cất thêm trang chọn bản (cửa vào mới, start_url) và bản Ôn thi (on-thi.html + hoc/on-thi/); v5 (01/11) đóng gói đủ 90 phim gói CLB
 var HEN_MS = 4000;
-var THEM = ['choi.html', 'manifest.webmanifest', 'font/font.css', 'icon/icon-192.png', 'icon/icon-512.png', 'icon/icon-maskable-512.png', 'phim-clb/a/ban-do/dai-9.webp'];      // dai-9: nền bản đồ chọn màn (man-chon.js)
+var TRANG = ['chon-ban.html', 'choi.html', 'on-thi.html'];
+var THEM = ['manifest.webmanifest', 'font/font.css', 'icon/icon-192.png', 'icon/icon-512.png', 'icon/icon-maskable-512.png', 'phim-clb/a/ban-do/dai-9.webp'];      // dai-9: nền bản đồ chọn màn (man-chon.js)
 
 function dsTep(html, re) {
   var kq = [], m;
@@ -20,9 +21,9 @@ function dsTep(html, re) {
 
 async function catHet() {
   var c = await caches.open(BAN);
-  var html = await (await fetch('choi.html', { cache: 'no-cache' })).text();
+  var html = (await Promise.all(TRANG.map(async function (t) { return (await fetch(t, { cache: 'no-cache' })).text(); }))).join('\n');
   var css = await (await fetch('font/font.css', { cache: 'no-cache' })).text();
-  var ds = THEM
+  var ds = TRANG.concat(THEM)
     .concat(dsTep(html, /<script src="([^"]+)"/g))
     .concat(dsTep(html, /<link [^>]*href="([^"]+)"/g))
     .concat(dsTep(css, /url\(([^)]+\.woff2)\)/g).map(function (f) { return 'font/' + f; }))

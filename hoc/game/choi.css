@@ -29,7 +29,7 @@ button{font:inherit;border:0;padding:0;margin:0;cursor:pointer;color:inherit;bac
 input{font:inherit}
 .pxi{display:block;flex:none}
 
-#stage{position:absolute;left:50%;top:50%;width:360px;height:var(--sh,640px);transform:translate(-50%,-50%);transform-origin:50% 50%;visibility:hidden}
+#stage{position:absolute;left:50%;top:50%;width:var(--sw,360px);height:var(--sh,640px);transform:translate(-50%,-50%);transform-origin:50% 50%;visibility:hidden}
 body.san-sang #stage{visibility:visible}
 .screen{
   width:360px;height:var(--sh,640px);position:absolute;left:0;top:0;overflow:hidden;overflow:clip;
@@ -1340,3 +1340,24 @@ body.ve-vector .cd-ai-the{font:700 11.5px/1 var(--px);color:var(--g-vecBrandDam)
 .gl.g-thn{color:var(--g-camSangV3)}.gl.g-thn::after{background:var(--g-goSangV4)}
 /* mùa 8: chip khoá "ngang" / "doc" và tên từ điển dài hơn một chữ: chip rộng theo chữ, xuống dòng khi chật */
 .chon-chuoi .cs.bien{flex:1 1 auto;white-space:nowrap}
+
+/* ---------- MÁY TÍNH (layout web, 18/11): body.web khi cửa sổ ngang đủ rộng (ung-dung.js laWeb, khung --sw 1040 × 640) ----------
+   Màn chơi bày ra hai cột: trái là sân 440 × 440 (Field kich 430, ô tới 112 px) và hàng nút Chạy / Nhịp / Lại / Gợi ý dưới sân;
+   phải là khung code + khay khối cao hết màn. Các màn khác (trang đầu, chọn mùa / gói / màn, lắp robot, chọn đội) và Xưởng hàm
+   giữ khung điện thoại 360 ở giữa. */
+body.web #stage>*:not(#sc-choi):not(#lop-hop):not(#lop-chan):not(.hd-vien):not(.hd-bong){left:calc((var(--sw,360px) - 360px) / 2)}   /* màn, phim mở đầu, phim gói: khung 360 ở giữa */
+body.web #lop-chan,body.web #lop-hop{width:var(--sw,360px)}                                         /* lớp chặn bấm, nền mờ của hộp thoại: phủ cả khung */
+body.web #sc-choi{left:0;width:var(--sw,360px);padding:16px 20px;display:grid;grid-template-columns:440px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);column-gap:20px}
+body.web #sc-choi>.deco{grid-column:1/-1;grid-row:1/-1}
+body.web #sc-choi>.top{grid-column:1/-1;grid-row:1;height:42px;margin-bottom:10px}
+body.web #sc-choi>.fblock{grid-column:1;grid-row:2;height:auto;margin:0;flex-direction:column;gap:10px;align-self:start}
+body.web #sc-choi>.fblock .ffr{width:440px;height:440px}
+body.web #sc-choi .side{width:440px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+body.web #sc-choi .side .sanbar{grid-column:1/-1}
+body.web #sc-choi .side .cbtn{height:40px;justify-content:center;font-size:calc(16px*var(--kp))}
+body.web #sc-choi .side .mini{grid-column:span 2;height:40px;margin:0}
+body.web #sc-choi .side .clock{grid-column:span 2;height:40px;margin:0}
+body.web #sc-choi>.low{grid-column:2;grid-row:2;min-height:0;gap:12px}
+body.web #sc-choi>.low .pan.p-prog{flex:1 1 56%;width:auto;min-width:0}
+body.web #sc-choi>.low .pan.p-pal{flex:1 1 44%;width:auto;min-width:0}
+body.web #sc-choi>.ovwrap{left:calc((var(--sw,360px) - 360px) / 2)}

@@ -383,6 +383,28 @@ làm một mình, không song song với GĐ 7 hay phiên viết màn nào.
   - **Chuyển GĐ 4:** người đã chơi bản 5 mùa cũ có sao ở khóa `duong-hoc:` (mã `m1-c1-than.*`); trang Ôn thi mới đọc
     `on-thi:`, nên cần chuyển một lần (chép khóa mã `m[1-5]-c*` sang `on-thi:`) khi biết bản cũ đã chạy ở địa chỉ nào.
     `index.html` vẫn vào bản đầy đủ; trang vào (khách vào bản Ôn thi) và `sw.js` (chưa có tệp `on-thi/`) làm cùng `quyenChoi`.
+    (18/11: trang vào và `sw.js` đã làm ở mục 6.2; GĐ 4 chỉ còn `quyenChoi` cho thẻ Bản đầy đủ.)
+
+### 6.2 Trang chọn bản + bố cục web (18/11, nhánh `claude/web-chon-ban`)
+
+Làm sớm việc 1 và 5 của mục 5.3 (user 18/11: "cho phép chọn chế độ ngay đầu game, cung cấp khả năng chơi ở layout web").
+
+- **Trang chọn bản** `hoc/game/chon-ban.html`: cửa vào của game (`/`, `/hoc` ở `server.mjs`, `index.html`, `start_url` của
+  manifest). Hai thẻ: Ôn thi THPT (thẻ chính, 5 mùa · 160 màn) và Bản đầy đủ; mỗi thẻ ghi tổng sao đã có ở bản đó (đọc
+  `on-thi:tien-do` / `duong-hoc:tien-do`) và nhãn "Chơi lần trước" (khóa `chon-ban:cuoi`, trang đầu mỗi bản ghi lại). Không tự
+  chuyển trang: lần nào mở cũng được chọn. Giữ chuỗi `?…` khi sang trang bản. Màu chỉ lấy `--g-vec*`. Từ 760px: hai thẻ cạnh nhau.
+  Thẻ "Đổi bản" ở trang đầu mỗi bản vẫn còn (đổi thẳng, không qua trang chọn). GĐ 4: thẻ Bản đầy đủ hỏi `quyenChoi`.
+- **Bố cục web** (`ung-dung.js` `App.web`, `choi.css` mục MÁY TÍNH): cửa sổ rộng từ 900px và ngang (rộng ≥ 1,25 × cao) thì
+  khung 1040 × 640 thay cho 360 × 640, co theo cửa sổ như cũ. Màn chơi: trái là sân 440px (`SanVe.Field` kích 430, ô tối đa
+  112) + hàng nút Chạy / Nhịp / Lại / Gợi ý + ×1 / Đề bài / Nhịp, phải là code + khay. Mọi màn khác, phim mở đầu, phim gói giữ
+  khung 360 ở giữa; lớp chặn bấm và nền mờ hộp thoại (`#lop-hop`) phủ cả khung. Kéo cửa sổ qua ngưỡng thì tải lại trang (bản
+  nháp đã lưu). Điện thoại, máy tính bảng dọc: không đổi.
+- **`sw.js`** `duong-hoc-v6`: cất cả ba trang (chọn bản, bản đầy đủ, bản Ôn thi) cùng script của chúng (276 tệp, có 25 tệp
+  `hoc/on-thi/`), nên mở từ màn hình chính không mạng vẫn vào được cả hai bản.
+- Soát trình duyệt (1366×768, 1024×768, 375×812): trang chọn bản; trang đầu, bản đồ, hộp mùa, thẻ gói, lưới màn, màn chơi,
+  bong bóng hướng dẫn, hộp thắng ở cả hai bản; màn nhiều thiết bị (`m4-c4-san.6`, thanh đổi thiết bị); điện thoại như cũ.
+- Còn để sau (mục 5.3 việc 2–4, 6–9): trang lộ trình riêng bản Ôn thi, lưới màn / bản đồ hai cột trên web (giờ vẫn khung 360
+  ở giữa), nền tối.
 
 ---
 

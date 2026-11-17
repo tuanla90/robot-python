@@ -77,6 +77,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     nut.appendChild(el.choi); nut.appendChild(el.tiep);
     host.appendChild(nut);
 
+    if (window.Ban) { try { Luu.kho.setItem('chon-ban:cuoi', Ban.ma); } catch (e) { /* chạy không lưu */ } }   // trang chọn bản (chon-ban.html) đánh dấu bản chơi lần trước
     if (window.Ban) {                                                // GĐ 3 (17/11): thẻ đổi bản, sang trang của bản còn lại (cùng máy, tiến độ hai bản tách nhau)
       el.ban = h('a', 'bt g-wd d-ban'); el.ban.setAttribute('data-nut', 'doi-ban'); el.ban.href = Ban.trangKia;
       el.ban.appendChild(h('span', 'd-ban-nhan', t('dau.doiBan')));

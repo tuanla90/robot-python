@@ -1,5 +1,5 @@
 // Máy chủ tĩnh cho Railway và chạy thử trên máy: không cần build, không cần gói ngoài.
-//   /          → Mật Lệnh Robot (hoc/game/choi.html)
+//   /          → Mật Lệnh Robot, trang chọn bản (hoc/game/chon-ban.html: Ôn thi THPT on-thi.html / Bản đầy đủ choi.html)
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
@@ -11,8 +11,8 @@ const root = resolve(fileURLToPath(new URL('./', import.meta.url)));
 const thuMucMo = ['hoc', 'nhan'].map((d) => resolve(root, d));
 const port = Number(process.env.PORT || 4180);
 const chuyen = {
-  '/': '/hoc/game/choi.html',
-  '/hoc': '/hoc/game/choi.html',
+  '/': '/hoc/game/chon-ban.html',
+  '/hoc': '/hoc/game/chon-ban.html',
 };
 const types = {
   '.css': 'text/css; charset=utf-8',
