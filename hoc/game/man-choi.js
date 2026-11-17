@@ -887,7 +887,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (tiep && tiep.chuong !== (m.manGoc || m).chuong) tiep = null;               // xong màn cuối chương: về lưới màn của gói, không tự sang chương / gói mới
     var coDoi = !!(m.manGoc || m).chonDoi;
     var hang = h('div', 'hop-hang' + (m.lapRap || coDoi ? ' ba' : ''));
-    if (coDoi && !m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t((m.manGoc || m).chonDoi.khe ? 'doi.lap' : 'doi.doi'), function () { TP.Hop.dong(); if (window.App && App.doiDoi) App.doiDoi(); }, 'doi-doi'));   // M9D2 màn chọn đội: đổi đội rồi chơi lại
+    var khe = coDoi && !!(m.manGoc || m).chonDoi.khe;                               // bản Ôn thi mùa 5: màn chọn part (chonDoi.khe) thì nút là "Lắp lại"
+    if (coDoi && !m.lapRap && !khe) hang.appendChild(TP.Hop.nut('g-or', t('doi.doi'), function () { TP.Hop.dong(); if (window.App && App.doiDoi) App.doiDoi(); }, 'doi-doi'));   // M9D2 màn chọn đội: đổi đội rồi chơi lại
+    if (khe && !m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('doi.lap'), function () { TP.Hop.dong(); if (window.App && App.doiDoi) App.doiDoi(); }, 'doi-doi'));
     if (m.lapRap) hang.appendChild(TP.Hop.nut('g-or', t('thang.lapLai'), function () { TP.Hop.dong(); if (window.App && App.lapLai) App.lapLai(); }, 'lap-lai'));
     hang.appendChild(TP.Hop.nut('g-wd', t('thang.choiLai'), function () { TP.Hop.dong(); S.duDoanChon = null; datLaiChay(); }, 'choi-lai'));
     hang.appendChild(TP.Hop.nut('g-gr', tiep ? t('thang.manTiep') : t('thang.hetChuoi'), function () {

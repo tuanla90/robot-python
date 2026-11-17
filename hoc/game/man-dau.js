@@ -77,6 +77,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     nut.appendChild(el.choi); nut.appendChild(el.tiep);
     host.appendChild(nut);
 
+    if (window.Ban) {                                                // GĐ 3 (17/11): thẻ đổi bản, sang trang của bản còn lại (cùng máy, tiến độ hai bản tách nhau)
+      el.ban = h('a', 'bt g-wd d-ban'); el.ban.setAttribute('data-nut', 'doi-ban'); el.ban.href = Ban.trangKia;
+      el.ban.appendChild(h('span', 'd-ban-nhan', t('dau.doiBan')));
+      el.ban.appendChild(h('span', 'd-ban-ten', t(Ban.laOnThi ? 'dau.banDayDu' : 'dau.banOnThi')));
+      host.appendChild(el.ban);
+    }
+
     el.hang = h('div', 'd-hang'); host.appendChild(el.hang);
     el.tb = h('div', 'c-tb'); host.appendChild(el.tb);
     Ve.hydrate(host);

@@ -64,6 +64,7 @@
   'use strict';
 
   var laNode = (typeof module !== 'undefined' && module.exports);
+  var Ban = laNode ? require('./ban.js') : (window.Ban || {});                // bản đang chơi (ban.js): part mùa 5 của bản Ôn thi
   var KHE = ['than', 'tay', 'camBien'];
   var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Não' };
 
@@ -639,8 +640,8 @@
     if (tatCaLenh) return tatCaLenh;
     var kq = [];
     KHE.forEach(function (k) { DANH_MUC[k].forEach(function (d) { d.ham.concat(d.nangCap || []).forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
-    var P = CM().PART;                                                                     // part mùa 5 dùng lệnh hiện hành (co-may.js)
-    ['than', 'tay', 'cam'].forEach(function (k) { Object.keys(P[k]).forEach(function (m) { P[k][m].lenh.forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
+    var P = CM().PART;                                                                     // part mùa 5 dùng lệnh hiện hành (co-may.js); chỉ bản Ôn thi (bản đầy đủ: turn_right… là hàm em tự làm)
+    if (Ban.laOnThi) ['than', 'tay', 'cam'].forEach(function (k) { Object.keys(P[k]).forEach(function (m) { P[k][m].lenh.forEach(function (h) { if (kq.indexOf(h) < 0) kq.push(h); }); }); });
     return (tatCaLenh = kq);
   }
   /** Chỉ số (từ 0) các dòng của `dong` gọi một lệnh gốc của part (mọi part trong danh mục) mà robot của `man` KHÔNG có; wait() thì thân nào cũng có. */

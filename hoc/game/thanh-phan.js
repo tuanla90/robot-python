@@ -823,7 +823,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       else if (RE_CL_CAM.test(cl[i])) tok.push({ vt: 'cam', ci: i, t: cl[i] });
       else return null;
     }
-    var chiCam = cl.every(function (c) { return RE_CL_CAM.test(c) || /^(?:front_pole\(\)|[A-Za-z_]\w*)\s*(?:==|!=)\s*"[^"]*"$/.test(c); });      // màn vaHoac: cảm biến, front_pole() == "N", c == "R" đều tách ô để ghép and / or
+    var chiCam = !OT ? tok.every(function (x) { return x.vt === 'cam' || x.vt === 'noi'; }) : cl.every(function (c) { return RE_CL_CAM.test(c) || /^(?:front_pole\(\)|[A-Za-z_]\w*)\s*(?:==|!=)\s*"[^"]*"$/.test(c); });      // màn vaHoac: cảm biến, front_pole() == "N", c == "R" đều tách ô để ghép and / or
     if (!CHE_MAU && !coVePin && !(CHE_VH && chiCam)) return null;          // chỉ màn drone có pin: chỉ điều kiện có battery() mới tách ô (các `if d == "U":` giữ cách cũ); màn vaHoac (mùa 3): điều kiện toàn cảm biến cũng tách
     return { loai: 'dkm', ten: '', tien: m[1], ds: tok.map(function (x) { return x.t; }), noi: ' ', hau: m[3], laFor: false, tok: tok, cl: cl, nx: nx };
   }
@@ -987,9 +987,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (dk) return '<span class="kw ' + (dk[1] === 'while' ? 'wh' : 'if') + '">' + dk[1] + ' </span>' + oDieuKien(dk[2]) + '<span class="pu">:</span>';
     if (/^else\s*:\s*$/.test(text)) return '<span class="kw if">else</span><span class="pu">:</span>';
     var gd = RE_GAN_DEM.exec(text);                                                  // n = 0
-    if (gd) return '<span class="vr dem">' + esc(gd[1]) + '</span><span class="pu"> = </span>' + oDoiSo(gd[2], 0);
+    if (gd) return '<span class="vr dem">' + esc(gd[1]) + '</span><span class="pu"> = </span>' + (OT ? oDoiSo(gd[2], 0) : '<span class="lit">' + gd[2] + '</span>');   // bản Ôn thi: số của biến đếm chạm đổi được
     var td = RE_TANG_DEM.exec(text);                                                 // n = n + 1
-    if (td && td[1] === td[2]) return '<span class="vr dem">' + esc(td[1]) + '</span><span class="pu"> = </span><span class="vr dem">' + esc(td[2]) + '</span><span class="pu"> + </span>' + oDoiSo(td[3], 0);
+    if (td && td[1] === td[2]) return '<span class="vr dem">' + esc(td[1]) + '</span><span class="pu"> = </span><span class="vr dem">' + esc(td[2]) + '</span><span class="pu"> + </span>' + (OT ? oDoiSo(td[3], 0) : '<span class="lit">' + td[3] + '</span>');
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = lopHamDong(m[1]);
@@ -1071,7 +1071,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function kieuBienCua(ten) { return (tuyChon.kieuBien && tuyChon.kieuBien(ten)) || 'so'; }   // 'so' | 'don' (một chữ) | 'ghep' (chuỗi chữ) của một đối số của hàm đang sửa
     /** Kiểu ô của đối số k trong dòng đã tách d: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi ghép) | 'bien' (ô biến của if) | 'dl' (chữ so sánh của if). */
     function kieuArg(d, k) {
-      if (d && (d.ten === 'magnet_n' || d.ten === 'magnet_s')) return 'hnc';   // magnet_n("up") của nhện: bảng chọn bốn hướng
+      if (OT && d && (d.ten === 'magnet_n' || d.ten === 'magnet_s')) return 'hnc';   // magnet_n("up") của nhện: bảng chọn bốn hướng
       if (d && d.loai === 'td') return 'td';
       if (d && d.loai === 'bt') return 'bt';
       if (d && d.cau) {                                                    // dòng danh sách: tên danh sách · phần tử · đối số của lời gọi hàm
@@ -1090,7 +1090,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (d.ten === 'ink' || d.ten === 'seed') return 'mau';               // ink(c), seed(c): bảng chọn bốn màu
       if (d.ten === 'color' && huongCam().length) return 'huong';          // c = color("up"): bảng chọn hướng camera (mùa 4)
       if (d.ten === 'spray' || d.ten === 'spray_back') return 'luc';       // spray(p): bảng chọn lực "low" / "high"
-      if (d.ten === 'cast_net') return 'luoi';                             // cast_net("left"): bảng chọn hướng tung lưới theo mũi xuồng
+      if (OT && d.ten === 'cast_net') return 'luoi';                             // cast_net("left"): bảng chọn hướng tung lưới theo mũi xuồng
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
       if (kd === 'td' && CHE_TD) return 'tdten';                           // mùa 8: follow(a) — đối số là một sổ (từ điển / tập hợp): chọn tên sổ
       return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' || kd === 'luc' ? kd : 'so';
@@ -1456,20 +1456,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (o.vt === 'op') { ed.datSo(i, o.t === '==' ? '!=' : '==', kk); return; }
       if (o.vt === 'noi') { ed.datSo(i, o.t === 'and' ? 'or' : 'and', kk); return; }
-      if (o.vt === 'rhs' && CHE_VH && !CHE_MAU) {                                                // màn vaHoac (mùa 2): chữ so sánh đổi vòng; front_pole() thì "N" "S" "none", biến chuỗi thì U D L R
+      if (OT && o.vt === 'rhs' && CHE_VH && !CHE_MAU) {                                                // màn vaHoac (mùa 2): chữ so sánh đổi vòng; front_pole() thì "N" "S" "none", biến chuỗi thì U D L R
         var dsChu = /^front_pole/.test(d.cl[o.ci]) ? ['"N"', '"S"', '"none"'] : chuCuaVong(lay(), i, d.cl[o.ci]);
         ed.datSo(i, dsChu[(dsChu.indexOf(o.t) + 1) % dsChu.length], kk); return;
       }
       var bien = bienGanMau(lay(), i);
-      if (CHE_LIST || CHE_VH) bienTam('bien', i).forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });          // biến vòng for c in seen: (danh sách màu) cũng so được với màu: if c == "red":
-      if (CHE_MAU && CHE_VH) bienDuoc().forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });                   // mùa 3: giao(c) thân còn trống, chưa suy được c là màu mà vẫn phải viết được if c == "red":
+      if (CHE_LIST || (OT && CHE_VH)) bienTam('bien', i).forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });          // biến vòng for c in seen: (danh sách màu) cũng so được với màu: if c == "red":
+      if (OT && CHE_MAU && CHE_VH) bienDuoc().forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });                   // mùa 3: giao(c) thân còn trống, chưa suy được c là màu mà vẫn phải viết được if c == "red":
       if (o.vt === 'rhs') {
         chonMau({ neo: so, gia: o.t, bien: bien, khiChon: function (v) { ed.datSo(i, v, kk); } });
         return;
       }
       var cam = camDuoc(), cl = d.cl[o.ci], coDong = d.cl.length;
       chonDkm({
-        neo: so, cam: cam, bien: bien, bienDon: CHE_LIST ? vongListTai(i) : [], gia: cl, pin: CHE_PIN,
+        neo: so, cam: cam, bien: bien, bienDon: OT && CHE_LIST ? vongListTai(i) : [], gia: cl, pin: CHE_PIN,
         ghep: cam.length ? { coThem: coDong < 2 && o.ci === coDong - 1, coBo: coDong > 1 } : null,
         khiChon: function (v) { ed.datVe(i, o.ci, v); },
         khiGhep: function (nx) { ed.themVe(i, nx, CHE_MAU && /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== GOI_MAU ? GOI_MAU + ' != "red"' : (cam[0] + '()')); },
@@ -1607,7 +1607,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (i = 0; i < tong; i++) {
         var khoa = i >= dung, t = tx[i], slot = sl[i];
         var laFor = !slot && t !== undefined && /^\s*for\s/.test(t), laIf = !slot && t !== undefined && laRe(t), laWh = !slot && t !== undefined && /^\s*while\s/.test(t);
-        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : (boThut(t).trim() ? '' : ' o-trong')))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && cheDkm() && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
+        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : (!OT || boThut(t).trim() ? '' : ' o-trong')))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && cheDkm() && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
           (!xt && runIdx === i ? ' on' : '') + (!xt && loiSet[i] ? ' err' : '');
         strips[i].innerHTML = '';
         rows[i].classList.remove('cao');
@@ -1737,13 +1737,14 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (chiDoc()) { baoChiDoc(); return false; }
       if (chiSapXep()) { baoSapXep(); return false; }
       at = Math.max(0, Math.min(at, arr.length));
-      var dien = at < arr.length && !boThut(arr[at]).trim();     // chèn vào ô trống có sẵn: điền luôn ô đó, không đẩy dòng xuống
+      var dien = OT && at < arr.length && !boThut(arr[at]).trim();     // bản Ôn thi: chèn vào ô trống có sẵn thì điền luôn ô đó, không đẩy dòng xuống
       if (!dien && arr.length >= dung) { this.nhay(); return false; }
       this.anHoan(); hienX = -1;
       var b = bac === undefined || bac === null ? this.bacMacDinh(at, txt) : Math.max(0, Math.min(bac, toiDaBac(arr, at)));
-      var lyCam = (!OT || hopNhip()) ? lyDoCamNhip(tenDon(txt), lenhCungNhip(arr, at, b), tuyChon.man ? tuyChon.man() : null) : null;         // bộ phận đã có lệnh trong nhịp này (hay khác kiểu đi): không chèn, báo lý do; bản Ôn thi: thân SO_NHIP tự chốt nhịp, không chặn
+      var lyCam = lyDoCamNhip(tenDon(txt), lenhCungNhip(arr, at, b), tuyChon.man ? tuyChon.man() : null);         // bộ phận đã có lệnh trong nhịp này (hay khác kiểu đi): không chèn, báo lý do
+      if (OT && !hopNhip()) lyCam = null;                                                                          // bản Ôn thi: thân SO_NHIP tự chốt nhịp, không chặn
       if (lyCam) { if (tuyChon.khiCamNhip) tuyChon.khiCamNhip(lyCam); baoHd('cam-nhip', { dong: at }); return null; }
-      arr.splice(at, dien ? 1 : 0, datBac(thichNghi(txt, at, b), b));
+      if (dien) arr[at] = datBac(thichNghi(txt, at, b), b); else arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));
       chuanHoaBac(arr);
       var oSau = dien ? oTrongTu(arr, at + 1) : -1;                // còn ô trống phía sau: khối kế tiếp điền vào đó
       sel = oSau >= 0 ? oSau : Math.min(at + 1, dung - 1); daChon = false;
@@ -1932,7 +1933,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.nap = function (layMoi, dungMoi) {
       this.anHoan(); dongChonSo(); hienX = -1; anMeo();
       lay = layMoi; if (dungMoi !== undefined) dung = dungMoi;
-      var oDau = oTrongTu(lay(), 0);                                // code mẫu còn ô trống: chọn sẵn ô trống đầu tiên
+      var oDau = OT ? oTrongTu(lay(), 0) : -1;                                // code mẫu còn ô trống: chọn sẵn ô trống đầu tiên
       runIdx = -1; loiSet = {}; lapSet = {}; xt = null; viTri = null; sel = oDau >= 0 ? oDau : Math.min(lay().length, Math.max(0, dung - 1)); daChon = false; this.render();
       this.vuaTieuDe();
     };

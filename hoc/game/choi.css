@@ -337,6 +337,8 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .d-tiep{width:224px;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:700 calc(14px*var(--kp))/1 var(--px);color:var(--ink);padding-top:3px}
 .d-tiep .d-tiep-ten{max-width:204px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 calc(11px*var(--kp))/1 var(--px);color:var(--g-goV11)}
 .d-tiep.het{filter:saturate(.3)}
+.d-ban{flex:none;margin-top:12px;width:224px;height:38px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font:700 calc(13px*var(--kp))/1 var(--px);color:var(--ink)}
+.d-ban .d-ban-nhan{font-weight:500;opacity:.7}
 .d-hang{flex:none;margin-top:auto;margin-bottom:10px;padding-top:24px;display:flex;align-items:center;gap:10px}
 .d-so{flex:none;height:36px;padding:2px 14px 0;display:flex;align-items:center;gap:8px;font:700 calc(15px*var(--kp))/1 var(--px);color:var(--g-xanhLo);text-shadow:0 1px 0 var(--g-moSangV1)}
 .d-so>span[data-i]{margin-bottom:2px}

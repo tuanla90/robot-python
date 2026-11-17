@@ -403,6 +403,9 @@
       'dau.choi': 'CHƠI',
       'dau.tiep': 'Chơi tiếp · {id}',
       'dau.xongHet': 'Em đã qua hết các màn!',
+      'dau.doiBan': 'Đổi bản',                         // GĐ 3: thẻ đổi bản ở trang đầu (man-dau.js, Ban.trangKia)
+      'dau.banDayDu': 'Bản đầy đủ · 9 mùa',
+      'dau.banOnThi': 'Ôn thi THPT · 5 mùa',
       // màn chọn gói (man-goi.js)
       'goi.tieuDe': 'CHỌN GÓI',
       'goi.ve': 'Về màn đầu',

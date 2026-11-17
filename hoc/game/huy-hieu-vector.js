@@ -870,7 +870,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     'm4-c3-cam-bien': { than: 'drone', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] },
     'm4-c4-san': { than: 'drone', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }, { ma: 'camera', o: 'tren' }] }
   };
-  function cot(ma, f) { dk(ma, function (g, c, tt) { f(g, c, ROBOT_COT[ma], tt); }); }
+  var gHH = typeof globalThis !== 'undefined' ? globalThis : window, laOT = !!((gHH.Ban && gHH.Ban.laOnThi) || gHH.BAN_GAME === 'on-thi');   // bản Ôn thi (ban.js): huy hiệu 20 chương 5 mùa chỉ có ở bản này
+  function dkOT(ma, f) { if (laOT) dk(ma, f); }
+  function cot(ma, f) { dkOT(ma, function (g, c, tt) { f(g, c, ROBOT_COT[ma], tt); }); }
   var GIU = { tuThe: 'tren', kep: 'dong', cam: true }, MO = { tuThe: 'tren', kep: 'mo' };
   function nenNuoc(c) { c.o('nuoc', {}, 50, 50, 80); }
   /** Ô đất khô (datKho của mùa Nông trại, cùng hình với san-ve.js veDatKho): luống đất, ba chấm số lần tưới. */
@@ -927,23 +929,23 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   });
 
   /* Mùa 5: hai cột hai xe. Xe khóa có ổ khóa nhỏ; cột Hai chương trình là hai xe khác thân cùng làm. */
-  dk('m5-c1-co-san', function (g, c) {
+  dkOT('m5-c1-co-san', function (g, c) {
     c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 34, 58, 44);
     c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 67, 44, 34);
     H.bo(g, 62, 58, 11, 9, 2); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.6);
     H.duong(g, 'M64 58 V55 C64 51 71 51 71 55 V58'); H.vien(g, BM.vecVien, 1.6);
   });
-  dk('m5-c2-hai-xe', function (g, c) {
+  dkOT('m5-c2-hai-xe', function (g, c) {
     c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 33, 56, 42);
     c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 67, 56, 42);
   });
 
-  dk('m5-c3-chon-xe', function (g, c) {
+  dkOT('m5-c3-chon-xe', function (g, c) {
     c.robot(ROBOT_COT['m4-c1-than'], st(), 0, 50, 42, 40);
     c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 31, 66, 32);
     c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 69, 66, 32);
   });
-  dk('m5-c4-lap-part', function (g, c) {
+  dkOT('m5-c4-lap-part', function (g, c) {
     c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 42, 54, 50);
     H.duong(g, 'M72 40 L80 44.5 V53.5 L72 58 L64 53.5 V44.5 Z'); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.6);
     H.duong(g, 'M72 45.5 A3.5 3.5 0 1 0 72 52.5 A3.5 3.5 0 1 0 72 45.5 Z'); H.to(g, BM.vecVien);

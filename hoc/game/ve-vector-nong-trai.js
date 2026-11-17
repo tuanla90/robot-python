@@ -202,7 +202,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
 
   // Chấm đếm số lần còn phải tưới (s.cham 1..3; lớp phủ, vẽ sau rơm để rơm không che)
   dk({ loai: 'o', ma: 'cham-tuoi', ten: 'Chấm số lần tưới', cacTrangThai: [{ cham: 1 }, { cham: 2 }, { cham: 3 }], ve: function (g, s, H) {
-    for (var i = 0; i < ((s && s.cham) || 0); i++) { H.tron(g, 22 + i * 15, 22, 7); H.to(g, BM.vecGoSang); H.vien(g, BM.vecVien, 2.4); }
+    for (var i = 0, n = s && typeof s.cham === 'number' ? s.cham : 1; i < n; i++) { H.tron(g, 22 + i * 15, 22, 7); H.to(g, BM.vecGoSang); H.vien(g, BM.vecVien, 2.4); }      // không nói số chấm (xem thử hình): một chấm
   }});
 
   // Bao hạt giống (vật nhặt / phân loại ở mùa 4): bao vải bố màu kraft ấm áp, cổ bao xoè tự nhiên, giữa thân có huy hiệu tròn trắng in bông hoa
