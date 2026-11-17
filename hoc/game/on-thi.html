@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Mật Lệnh Robot · Ôn thi THPT</title>
+<meta name="theme-color" content="#e8e6f6">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon/icon-192.png">
+<link rel="apple-touch-icon" href="icon/icon-192.png">
+<!-- font tự chứa (font/font.css): chạy không cần mạng -->
+<link rel="stylesheet" href="font/font.css">
+<!-- bảng màu theo vai (gói A1): nạp TRƯỚC mọi tệp dùng màu; ghi biến CSS --g-<vai> cho choi.css -->
+<script>window.BAN_GAME = 'on-thi';</script>
+<script src="bang-mau.js"></script>
+<script src="../ban.js"></script>      <!-- bản đang chơi (window.Ban): trước mọi tệp khác ngoài bảng màu -->
+<link rel="stylesheet" href="choi.css">
+<!-- giao diện phẳng diem10code (gói V5a màn chơi + V5b các màn ngoài, V7b nối thành một tệp): áp theo lớp ve-vector của <body> (V7c1: đặt sẵn trong HTML, game luôn vector; choi.css là nền bố cục) -->
+<link rel="stylesheet" href="choi-vector.css">
+<link rel="stylesheet" href="bang-du-lieu.css">
+</head>
+<body class="ve-vector">
+<div id="stage">
+  <div class="screen hidden" id="sc-dau"><div class="deco"></div></div>
+  <div class="screen hidden" id="sc-mua"><div class="deco"></div></div>
+  <div class="screen hidden" id="sc-goi"><div class="deco"></div></div>
+  <div class="screen hidden" id="sc-chon"><div class="deco"></div></div>
+  <div class="screen hidden" id="sc-tam"><div class="deco"></div></div>
+  <div class="screen hidden" id="sc-choi"><div class="deco"></div></div>
+  <div class="screen hidden" id="sc-lap"><div class="deco"></div></div>
+  <div class="screen hidden" id="sc-doi"><div class="deco"></div></div>
+  <div id="lop-hop"></div>
+</div>
+
+<!-- lõi: chạy code + sân + khung + kho + máy chấm + màn -->
+<script src="../../nhan/san-robot-core.js"></script>
+<script src="../san-hoc.js"></script>
+<script src="../khung-code.js"></script>
+<script src="../cham.js"></script>
+<script src="../kho-ham.js"></script>
+<script src="../on-thi/thu-tu-chuong.js"></script>
+<script src="../so-lenh.js"></script>
+<script src="../on-thi/gioi-thieu-part.js"></script>
+<!-- chế độ lắp ráp (17/10): lõi chọn part dưới ngân sách xu; nạp trước các tệp màn (chuanHoa điền robot mặc định cho màn lắp ráp). Luật ghép (VeVector.kiemGhep) chỉ dùng khi gọi (ve-vector.js nạp sau) -->
+<script src="../bang-ghep.js"></script>
+<script src="../co-may.js"></script>
+<script src="../lap-rap.js"></script>
+<script src="../on-thi/man-co-so.js"></script>
+<script src="../on-thi/man-m1-than.js"></script>
+<script src="../on-thi/man-m1-tay.js"></script>
+<script src="../on-thi/man-m1-cambien.js"></script>
+<script src="../on-thi/man-m1-san.js"></script>
+<script src="../on-thi/man-m2-than.js"></script>
+<script src="../on-thi/man-m2-tay.js"></script>
+<script src="../on-thi/man-m2-cambien.js"></script>
+<script src="../on-thi/man-m2-san.js"></script>
+<script src="../on-thi/man-m3-than.js"></script>
+<script src="../on-thi/man-m3-tay.js"></script>
+<script src="../on-thi/man-m3-cambien.js"></script>
+<script src="../on-thi/man-m3-san.js"></script>
+<script src="../on-thi/man-m4-than.js"></script>
+<script src="../on-thi/man-m4-tay.js"></script>
+<script src="../on-thi/man-m4-cambien.js"></script>
+<script src="../on-thi/man-m4-san.js"></script>
+<script src="../on-thi/man-m5-co-san.js"></script>
+<script src="../on-thi/man-m5-hai-xe.js"></script>
+<script src="../on-thi/man-m5-chon-xe.js"></script>
+<script src="../on-thi/man-m5-lap-part.js"></script>
+<script src="../on-thi/man-demo.js"></script>
+<script src="../on-thi/lo-trinh-hoc.js"></script>
+<!-- giao diện -->
+<script src="chu.js"></script>
+<script src="ve.js"></script>
+<!-- bộ vẽ VECTOR (gói V1): V7c1 (28/10) game LUÔN vector (hết công tắc ?ve= / Cài đặt "Kiểu vẽ"); V7c2 xoá bộ pixel part/ (ve.js chỉ còn icon svg / mk). Kho hình: ô sân, thân, tay -->
+<script src="ve-vector.js"></script>
+<!-- icon vector các màn ngoài màn chơi (gói V5b): thay icon điểm ảnh có nhãn của ve.js bằng SVG màu theo vai, chỉ ở body.ve-vector -->
+<script src="ve-vector-icon.js"></script>
+<script src="ve-vector-o.js"></script>
+<script src="ve-vector-o2.js"></script>
+<script src="ve-vector-may.js"></script>
+<script src="ve-vector-vat.js"></script>
+<script src="ve-vector-nong-trai.js"></script>
+<script src="ve-vector-ky-hieu.js"></script>
+<script src="ve-vector-than-hai-banh.js"></script>
+<script src="ve-vector-tay-kep.js"></script>
+<script src="ve-vector-than-xich.js"></script>
+<script src="ve-vector-than-nhen.js"></script>
+<script src="ve-vector-than-omni.js"></script>
+<script src="ve-vector-than-drone.js"></script>
+<script src="ve-vector-tay-nam-cham.js"></script>
+<script src="ve-vector-tay-nem.js"></script>
+<script src="ve-vector-tay-hoi.js"></script>
+<script src="ve-vector-tay-xoay.js"></script>
+<script src="ve-vector-tay-son.js"></script>
+<script src="ve-vector-o-song.js"></script>
+<script src="ve-vector-vat-song.js"></script>
+<script src="ve-vector-than-xuong.js"></script>
+<script src="ve-vector-tay-day-keo.js"></script>
+<script src="ve-vector-cam-song.js"></script>
+<script src="ve-vector-o-cang.js"></script>
+<script src="ve-vector-o-hang.js"></script>
+<script src="ve-vector-vat-cang.js"></script>
+<script src="ve-vector-than-cau.js"></script>
+<script src="ve-vector-tay-moc-cau.js"></script>
+<script src="ve-vector-cam-cang.js"></script>
+<script src="ve-vector-cam.js"></script>
+<script src="ve-vector-hieu-ung.js"></script>
+<script src="huy-hieu-vector.js"></script>
+<script src="ve-robot.js"></script>
+<script src="huy-hieu.js"></script>
+<script src="luu.js"></script>
+<!-- âm thanh tổng hợp bằng WebAudio (không có tệp âm thanh); đọc mức âm lượng từ Luu -->
+<script src="am-thanh.js"></script>
+<script src="mo-goi.js"></script>
+<script src="san-ve.js"></script>
+<script src="huong-dan.js"></script>
+<script src="thanh-phan.js"></script>
+<script src="thanh-cuon.js"></script>
+<script src="the-part.js"></script>
+<script src="xuong-ham.js"></script>
+<script src="den-bo-phan.js"></script>
+<script src="huong-dan-man.js"></script>
+<script src="man-choi.js"></script>
+<script src="man-chon-doi-on-thi.js"></script>
+<script src="man-dau.js"></script>
+<script src="man-mua.js"></script>
+<script src="man-goi.js"></script>
+<script src="man-chon.js"></script>
+<script src="man-chon-tam.js"></script>
+<script src="man-so-lenh.js"></script>
+<script src="bang-mo-khoa.js"></script>
+<script src="go-loi.js"></script>
+<script src="cai-dat.js"></script>
+<script src="ung-dung.js"></script>
+</body>
+</html>

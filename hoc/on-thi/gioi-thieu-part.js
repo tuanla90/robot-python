@@ -1,0 +1,571 @@
+/* ============================================================================
+   gioi-thieu-part.js — "Robot Chấn Hưng": THẺ GIỚI THIỆU TỪNG BỘ PHẬN (window.GioiThieuPart). Chỉ dữ liệu + phép chọn, không đụng DOM (máy kiểm kiem-gioi-thieu-part.mjs).
+
+   Mỗi bộ phận (thân, tay, cảm biến) có một thẻ: làm gì, các lệnh gốc nó mở ra, cách ghép lệnh trong một nhịp, giỏi gì, không làm được gì.
+   Thẻ hiện ở đầu màn ĐẦU TIÊN mà robot có bộ phận đó (game/the-part.js); bộ phận được mở thêm lệnh ở chương sau (vd. bánh lùi ở Chế lệnh xe)
+   thì hiện thẻ "lệnh mới" chỉ với phần mới. Xem lại được ở Sổ lệnh, trang "Bộ phận".
+
+   GioiThieuPart.DS          { mã: { khe: 'than'|'tay'|'camBien', ten, moTa, lenh: [tên lệnh gốc], moTaLenh?: { lệnh: câu thay câu của SoLenh },
+                                     ghep?: [{ lenh: [..], ra, ket?: { x, y, huong, quayDo? } } (ket: robot đứng (2,2) mặt lên trên sân trống 5×5, chạy đúng các lệnh này thì tới đây; máy kiểm chạy thật)], gioi: [muc], khong: [muc], luuY?: [muc] } }
+                              muc = chuỗi, hoặc { chu, can?: [lệnh] (chỉ hiện khi robot có đủ các lệnh này), than?: mã thân (chỉ hiện với thân đó) }
+   GioiThieuPart.THU_TU      thứ tự hiện các mã (thân → tay → cảm biến)
+   GioiThieuPart.boPhanCua(cauHinh, hamGoc)   → [{ ma, lenh: [lệnh của bộ phận có trong hamGoc] }]   bộ phận robot của màn đang dùng
+                              cauHinh = VeRobot.cauHinhCua(man) ({ than, tay, camBien: [{ ma }] }); hamGoc = man.hamGoc.
+   GioiThieuPart.noiDung(ma, lenh, chiMoi, than)  → { ma, khe, ten, moTa, lenh: [{ ten, moTa }], ghep: [..], gioi: [chuỗi], khong: [chuỗi], luuY: [chuỗi] }
+                              lenh = các lệnh robot đang có; chiMoi = [lệnh mới] (thẻ "lệnh mới": chỉ lấy phần dính tới lệnh mới), không có = thẻ đầy đủ.
+   GioiThieuPart.cungBoPhan(ma) → [mã] cùng một bộ phận (gói V8c: tay 'xoay' có nangCapCua 'kep': cùng tay kẹp, mở thêm arm_left / arm_right) ·
+                              theCanHien(cauHinh, hamGoc, daXem, moTaGoc) → [noiDung] thẻ cần hiện · khoaDaXem(cauHinh, hamGoc) → [khoá] cần ghi ·
+                              daGap(daXem) → [mã] mỗi bộ phận một dòng · lenhDaXem(ma, daXem) → [lệnh] (daXem(khoá) → bool; game/the-part.js dùng, máy kiểm chạy thẳng).
+   Lời: lớp 5, câu ngắn, đúng luật lõi (san-hoc.js). Đổi luật lõi thì sửa thẻ ở đây.
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var laNode = (typeof module !== 'undefined' && module.exports);
+  var BANH = ['left_move', 'right_move', 'left_back', 'right_back'];
+  var DI = ['go_up', 'go_down', 'go_left', 'go_right'];
+  var XOAY = ['arm_left', 'arm_right'];
+
+  var DS = {
+    /* ------------------------------------------------------------ THÂN */
+    'hai-banh': {
+      khe: 'than', ten: 'Thân hai bánh',
+      moTa: 'Xe có hai bánh, đi bằng 4 lệnh: forward() tiến, backward() lùi, turn_left() và turn_right() quay tại chỗ.',
+      lenh: ['forward', 'backward', 'turn_left', 'turn_right'],
+      tieuDeGhep: 'Mỗi lệnh làm gì',
+      ghep: [
+        { lenh: ['forward'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ, mất 2 nhịp', ket: { x: 2, y: 2, huong: 1 } },
+        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ, mất 2 nhịp', ket: { x: 2, y: 2, huong: 3 } },
+        { lenh: ['backward'], ra: 'Lùi 1 ô', ket: { x: 2, y: 3, huong: 0 } }
+      ],
+      gioi: ['Rẻ, dễ điều khiển', 'Đi thẳng nhanh: mỗi ô 1 nhịp'],
+      khong: ['Rẽ chậm: mỗi lần quay mất 2 nhịp', 'Không leo được bậc thang', 'Không đi ngang được', 'Đứng trên băng chuyền đủ 2 nhịp thì bị đẩy đi 1 ô'],
+      luuY: ['Tiến, lùi mất 1 nhịp, quay mất 2 nhịp. Lệnh tự chạy đủ số nhịp của nó.', 'Xe có hướng mặt: forward() đi theo hướng mũi xe đang quay.']
+    },
+    'xich': {
+      khe: 'than', ten: 'Thân bánh xích',
+      moTa: 'Cùng lệnh với xe hai bánh, nhưng bánh là hai dải xích bám chắc.',
+      lenh: BANH.concat(['wait']),
+      ghep: [
+        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô', ket: { x: 2, y: 3, huong: 0 } },
+        { lenh: ['left_move', 'wait'], ra: 'Nhích nửa vòng sang phải; nhịp sau làm y vậy thì quay xong', ket: { x: 2, y: 2, huong: 0, quayDo: 1 } },
+        { lenh: ['right_move', 'wait'], ra: 'Nhích nửa vòng sang trái; nhịp sau làm y vậy thì quay xong', ket: { x: 2, y: 2, huong: 0, quayDo: -1 } }
+      ],
+      gioi: ['Leo được bậc thang', 'Băng chuyền không đẩy được xích'],
+      khong: ['Quay chậm: cần 2 nhịp liền, ra lệnh giống nhau, mới quay xong 90°', 'Nhịp sau làm việc khác thì phần quay dở bị mất', 'Không quay đầu trong một nhịp'],
+      luuY: ['Lệnh bánh chỉ là ra lệnh, wait() mới cho xe chạy một nhịp.']
+    },
+    'omni': {
+      khe: 'than', ten: 'Thân bánh omni',
+      moTa: 'Có đủ lệnh của xe hai bánh, thêm hai lệnh trượt ngang.',
+      lenh: BANH.concat(['slide_left', 'slide_right', 'diag_left', 'diag_right', 'wait']),
+      ghep: [
+        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['left_move', 'wait'], ra: 'Quay phải tại chỗ', ket: { x: 2, y: 2, huong: 1 } },
+        { lenh: ['slide_right', 'wait'], ra: 'Trượt sang phải 1 ô, mặt giữ nguyên', ket: { x: 3, y: 2, huong: 0 } },
+        { lenh: ['slide_left', 'wait'], ra: 'Trượt sang trái 1 ô, mặt giữ nguyên', ket: { x: 1, y: 2, huong: 0 } }
+      ],
+      gioi: ['Đi ngang mà không cần quay', 'Quay 90° trong một nhịp như xe hai bánh',
+        { chu: 'Bản nâng cấp đi chéo: diag_left() và diag_right() lách chéo 1 ô trong 1 nhịp', can: ['diag_left', 'diag_right'] }],
+      khong: [{ chu: 'Không đi chéo: nhịp có trượt thì lệnh bánh bị bỏ', khongCan: ['diag_left'] }, 'Không leo được bậc thang', 'Bánh trơn: đứng trên băng chuyền 1 nhịp đã bị đẩy; đi ngược băng thì đứng im'],
+      luuY: ['Trượt tính theo hướng mặt xe: slide_left() là sang bên trái của xe, không phải bên trái màn hình.',
+        { chu: 'Mỗi lệnh diag_left() hay diag_right() tự chạy đủ 1 nhịp, không cần wait().', can: ['diag_left', 'diag_right'] }]
+    },
+    'nhen': {
+      khe: 'than', ten: 'Thân nhện',
+      moTa: 'Bốn chân, đi lên, xuống, trái, phải theo màn hình. Nhện không có mặt trước nên không cần quay.',
+      lenh: DI.concat(['wait', 'crouch', 'stand']),
+      moTaLenh: { go_up: 'Bước lên một ô, mất 2 nhịp', go_down: 'Bước xuống một ô, mất 2 nhịp', go_left: 'Bước sang trái một ô, mất 2 nhịp', go_right: 'Bước sang phải một ô, mất 2 nhịp',
+        wait: 'Đứng yên một nhịp', crouch: 'Co chân lại, thấp xuống', stand: 'Duỗi chân ra; duỗi ngay lúc bước khi đang co là nhảy' },
+      ghep: [
+        { lenh: ['crouch', 'wait'], ra: 'Co chân: thấp xuống, chui được gầm thấp' },
+        { lenh: ['crouch', 'wait', 'stand', 'go_right'], ra: 'Co chân, rồi duỗi chân cùng lúc bước: nhảy qua 1 ô' }
+      ],
+      gioi: ['Đi 4 hướng mà không phải quay', 'Leo được bậc thang', { chu: 'Co chân chui qua gầm thấp', can: ['crouch'] }, { chu: 'Nhảy qua hố', can: ['crouch', 'stand'] }],
+      khong: ['Chậm: mỗi bước mất 2 nhịp', { chu: 'Đứng thẳng thì không chui được gầm thấp', can: ['crouch'] }, 'Bước vào hố là rơi', 'Đi ngược băng chuyền thì bị đẩy về, đứng im'],
+      luuY: ['Mỗi lệnh go_…() tự chạy đủ 2 nhịp.']
+    },
+    'drone': {
+      khe: 'than', ten: 'Thân drone',
+      moTa: 'Bay trên cao, đi lên, xuống, trái, phải theo màn hình.',
+      lenh: DI.concat(['wait', 'battery', 'land', 'take_off']),
+      moTaLenh: { go_up: 'Bay lên một ô, 1 nhịp', go_down: 'Bay xuống một ô, 1 nhịp', go_left: 'Bay sang trái một ô, 1 nhịp', go_right: 'Bay sang phải một ô, 1 nhịp',
+        wait: 'Lơ lửng một nhịp', battery: 'Hỏi: pin còn bao nhiêu', land: 'Hạ cánh xuống ô đang ở, 1 nhịp', take_off: 'Cất cánh, 1 nhịp' },
+      gioi: ['Nhanh: mỗi lệnh go_…() là 1 nhịp, 1 ô', 'Bay qua hàng rào thấp, băng chuyền, vật, bậc thang'],
+      khong: ['Không qua được tường cao, cửa đóng, mép sân', 'Không gắn được tay kẹp, máy ném',
+        { chu: 'Mỗi nhịp tốn 1 pin, kể cả nhịp wait(). Hết pin là rơi.', can: ['battery'] }, { chu: 'Đang đậu thì không bay được: take_off() trước đã', can: ['land'] }],
+      luuY: [{ chu: 'Dừng ở ô sạc thì pin sạc đầy ở cuối nhịp.', can: ['battery'], khongCan: ['land'] },
+        { chu: 'Bản nâng cấp: chỉ khi land() xuống ô sạc thì pin mới đầy, bay ngang qua ô sạc thì không sạc. Đậu không tốn pin.', can: ['land'] }]
+    },
+
+    /* ------------------------------------------------------------ TAY */
+    'kep': {
+      khe: 'tay', ten: 'Tay kẹp',
+      moTa: 'Tay gắn trước mũi xe, nhặt vật ở ô ngay trước mặt.',
+      moTaThan: { nhen: 'Tay kẹp của nhện gắp và thả ngay ở ô nhện đang đứng.' },
+      lenh: ['pick', 'drop'],
+      moTaLenh: { pick: 'Nhặt vật ở ô trước mũi: tự hạ tay, kẹp rồi nâng tay', drop: 'Đặt vật xuống ô trước mũi: tự hạ tay, thả rồi nâng tay' },
+      moTaLenhThan: { nhen: { pick: 'Nhặt vật ở ô đang đứng: tự hạ tay, kẹp rồi nâng tay', drop: 'Đặt vật xuống ô đang đứng: tự hạ tay, thả rồi nâng tay' } },
+      gioi: ['Nhặt vật lên, mang đi, đặt xuống'],
+      khong: ['Mỗi lần chỉ mang được một vật'],
+      luuY: ['Mỗi lệnh tự chạy đủ 2 nhịp.',
+        { chu: 'Trên nhện, tay gắp và thả ngay ở ô nhện đang đứng. Nhện đứng trùm lên vật được, không cần đứng cạnh.', than: 'nhen' }]
+    },
+    /* Gói V8c: 'xoay' là CÙNG cái tay kẹp, được mở thêm arm_left / arm_right (nangCapCua: 'kep'), như bánh lùi mở thêm cho cùng hai bánh. Tên hiển thị vẫn "Tay kẹp".
+       Đã gặp tay kẹp thì thẻ của 'xoay' chỉ là thẻ "lệnh mới": các mục dưới đây có `can: XOAY` để vào được thẻ đó; mục chuỗi chỉ hiện ở thẻ đầy đủ. */
+    'xoay': {
+      khe: 'tay', ten: 'Tay kẹp', nangCapCua: 'kep',
+      moTa: 'Tay gắn trước mũi xe, có khớp tròn xoay được: tay chỉ ra trước, sang trái hoặc sang phải xe.',
+      lenh: ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'],
+      moTaLenh: { arm_left: 'Xoay tay kẹp một nấc sang trái', arm_right: 'Xoay tay kẹp một nấc sang phải' },
+      ghep: [
+        { lenh: ['arm_left', 'arm_down', 'grab', 'wait'], ra: 'Xoay tay sang trái, hạ tay, kẹp vật bên trái xe, trong một nhịp' },
+        { lenh: ['arm_up', 'arm_right', 'wait'], ra: 'Nâng vật rồi xoay tay về phía trước, trong một nhịp' },
+        { lenh: ['arm_down', 'grab', 'wait'], ra: 'Hạ tay rồi kẹp vật, trong một nhịp' },
+        { lenh: ['arm_up', 'wait'], ra: 'Nâng vật lên, xe đi được' },
+        { lenh: ['arm_down', 'release', 'wait'], ra: 'Hạ tay rồi đặt vật xuống' }
+      ],
+      gioi: [{ chu: 'Nhặt, đặt vật ở hai bên mà không cần quay xe', can: XOAY }, 'Nhặt vật lên, mang đi, đặt xuống'],
+      khong: [{ chu: 'Mỗi lệnh chỉ xoay một nấc: từ trái sang phải mất hai nhịp', can: XOAY },
+        { chu: 'Tay đang hạ thì khớp kẹt: nhịp đó phải có arm_up() mới xoay được', can: XOAY },
+        'Vẫn phải hạ tay mới kẹp vật nằm đất; tay hạ thì xe không đi'],
+      luuY: [{ chu: 'grab() và release() làm ở ô mà tay đang chỉ tới.', can: XOAY },
+        { chu: 'Trong một nhịp: nâng tay, rồi xoay, rồi hạ tay, rồi mới kẹp / thả.', can: XOAY },
+        'Lệnh tay cũng chỉ là ra lệnh, wait() mới làm.']
+    },
+    'nam-cham': {
+      khe: 'tay', ten: 'Nam châm',
+      moTa: 'Nam châm chữ U trước mũi xe. Bật cực N hoặc S để hút vật từ xa.',
+      moTaThan: { nhen: 'Nam châm của nhện bật theo hướng em chọn. Bật cực N hoặc S để hút vật ở phía đó từ xa.', xuong: 'Nam châm chữ U trước mũi xuồng. Bật cực N hoặc S để hút thùng trôi trên sông.' },
+      lenh: ['magnet_n', 'magnet_s', 'magnet_off'],
+      moTaLenh: { magnet_n: 'Bật nam châm cực N, màu đỏ', magnet_s: 'Bật nam châm cực S, màu xanh dương' },
+      gioi: [{ chu: 'Hút vật sắt cách tới 2 ô về dính ở mũi xe', khongThan: 'nhen' }, { chu: 'Hút vật sắt cách tới 2 ô về dính sát nhện, cực nào cũng hút', than: 'nhen' },
+        'Vật nam châm: khác cực thì hút, cùng cực thì đẩy ra xa, tầm 3 ô'],
+      khong: ['Không hút được vật gỗ', 'Không đẩy được vật sắt', 'Mỗi lần chỉ dính một vật'],
+      luuY: ['Mỗi lệnh nam châm tự chạy 1 nhịp, robot đứng yên trong nhịp đó.', { chu: 'magnet_off() ngắt điện, thả vật xuống ô trước mũi.', khongThan: 'nhen' }, { chu: 'Trên xuồng, ô trước mũi phải là nước thì mới thả được.', than: 'xuong' }, { chu: 'Trên drone, nam châm treo dưới bụng: hút và thả vật ở ô ngay dưới.', than: 'drone' },
+        { chu: 'Nhện chọn hướng khi bật: magnet_n("up"), có bốn hướng "up", "down", "left", "right".', than: 'nhen' },
+        { chu: 'magnet_off() thả vật xuống ô kề nhện theo hướng đó. Đang mang vật vẫn đổi hướng được.', than: 'nhen' },
+        { chu: 'Thùng nằm đất chắn đường nhện, nên đứng cạnh thùng rồi hút.', than: 'nhen' },
+        { chu: 'Thả thùng sắt xuống ô hố kề bên: thùng lấp hố, ô đó thành sàn. Bước vào hố chưa lấp là rơi.', than: 'nhen' }]
+    },
+    'nem': {
+      khe: 'tay', ten: 'Máy ném',
+      moTa: 'Rổ ném trước mũi xe: nạp vật vào rổ rồi ném đi xa.',
+      lenh: ['aim', 'load', 'throw'],
+      ghep: [{ lenh: ['aim', 'load', 'wait', 'throw', 'wait'], ra: 'Chọn tầm, nạp vật, ném' }],
+      gioi: ['Vật bay qua hàng rào, tường, băng chuyền', 'Rơi đúng n ô phía trước'],
+      khong: ['Rổ chỉ chứa 1 vật', 'Ô rơi là tường, rào, bậc thang, mép sân hay đã có vật thì vật vỡ', 'Nhịp nạp hoặc ném thì xe đứng yên'],
+      luuY: ['aim(n) chọn tầm 1, 2 hoặc 3 ô, đổi ngay, không tốn nhịp.', 'load() nạp vật ở ô trước mặt; throw() ném theo hướng mặt xe.']
+    },
+    'son': {
+      khe: 'tay', ten: 'Bộ gieo hạt',      // 30/10 vỏ Nông trại hoa (mùa 4): trước là Máy sơn, luật giữ nguyên
+      moTa: 'Phễu hạt có miệng gieo dưới robot, gieo vào ô robot đang đứng; mỗi màu là một loài hoa.',
+      lenh: ['ink', 'dot', 'pen_down', 'pen_up'],
+      ghep: [{ lenh: ['ink', 'dot', 'wait'], ra: 'Chọn loại hạt rồi gieo ô đang đứng' }, { lenh: ['pen_down', 'wait'], ra: 'Hạ miệng gieo: gieo ô đang đứng, gieo liền' }],
+      gioi: ['Gieo từng ô, hay hạ miệng gieo để gieo liền một hàng', 'Miệng gieo hạ thì robot rẽ góc vẫn gieo liền', 'Gieo lại một ô thì hoa mới thay hoa cũ'],
+      khong: ['Gieo ra ngoài luống thì không nhổ lại được', 'Mỗi nhịp bộ gieo chỉ làm một việc'],
+      luuY: ['Miệng gieo hạ thì robot đi tới đâu gieo tới đó, kể cả lúc quay tại chỗ.', 'ink() chọn loại hạt ngay, không tốn nhịp: "red" hoa hồng, "yellow" hoa cúc, "blue" cẩm tú cầu, "green" cỏ ba lá.', 'dot(), pen_down(), pen_up() chỉ là ra lệnh, wait() mới làm.']
+    },
+    'hoi': {
+      khe: 'tay', ten: 'Vòi phun',
+      moTa: 'Hai đầu phun: spray() phun ra trước, spray_back() phun ra sau.',
+      moTaThan: { drone: 'Vòi treo dưới bụng drone, tưới và gieo ở ô ngay dưới.' },
+      moTaLenhThan: { drone: { spray: 'Tưới ô đất dưới bụng', seed: 'Gieo hạt màu c xuống ô dưới bụng' } },
+      lenh: ['spray', 'spray_back', 'seed'],
+      gioi: [{ chu: 'Tia nước bay thẳng; trúng van thì van đổi: cửa mở / đóng, băng chuyền chạy / dừng', khongThan: 'drone' }, { chu: 'Phun nhẹ bay xa nhất 2 ô, xe đứng yên', khongThan: 'drone' }, { chu: 'Tia nước bay qua hàng rào thấp và băng chuyền', khongThan: 'drone' },
+        { chu: 'Ô đất khô hiện số lần còn phải tưới', than: 'drone' }, { chu: 'Tưới, gieo nhanh: mỗi lệnh 1 nhịp', than: 'drone' }],
+      khong: ['Một nhịp chỉ phun một lần', { chu: 'Nhịp phun thì bánh nghỉ', khongThan: 'drone' }, { chu: 'Tia nước không đẩy được thùng nặng', khongThan: 'drone' },
+        { chu: 'Tưới ô đất không khô thì úng, phải chơi lại', than: 'drone' }, { chu: 'Gieo ngoài ô cần gieo thì hỏng, phải chơi lại', can: ['seed'] }],
+      luuY: [{ chu: 'Lệnh phun cũng chỉ là ra lệnh, wait() mới phun.', khongThan: 'drone' }, { chu: 'Lệnh tưới, gieo tự chạy 1 nhịp, drone đứng yên trong nhịp đó.', than: 'drone' }, { chu: 'Gieo sai màu thì gieo lại đúng màu lên ô đó.', can: ['seed'] }, { chu: 'Từ gói Lực phun, lệnh phun nhận một lực: "high" phun mạnh, bay xa nhưng xe giật một ô, giật vào thùng nặng thì thùng nhích một ô; "low" hay không viết gì là phun nhẹ.', khongThan: 'drone' }]
+    },
+
+    /* ------------------------------------------------------------ CẢM BIẾN */
+    'khoang-cach': {
+      khe: 'camBien', ten: 'Cảm biến khoảng cách',
+      moTa: 'Gắn ở hông xe, cho biết ô ngay cạnh xe có trống không.',
+      moTaThan: { nhen: 'Gắn trên thân nhện, cho biết ô ngay cạnh nhện có trống không.' },
+      lenh: ['front_clear', 'left_clear', 'right_clear'],
+      gioi: ['Hỏi không tốn nhịp', 'Dùng trong if, while để xe tự quyết định'],
+      khong: ['Chỉ thấy ô sát bên, không thấy xa hơn', 'Không biết màu, không biết vật gì'],
+      luuY: [{ chu: 'front_clear() trả True khi ô trước mặt trống; tường, mép sân, vật, thùng nặng thì trả False.', can: ['front_clear'] },
+        { chu: 'Nhện không quay nên cảm biến cố định: front_clear() luôn nhìn lên phía trên sân, left_clear() bên trái, right_clear() bên phải.', than: 'nhen' }]
+    },
+    'tu': {
+      khe: 'camBien', ten: 'Cảm biến từ',
+      moTa: 'Đầu dò chữ U ở hông xe, cho biết vật phía trước là sắt hay nam châm cực N, cực S.',
+      moTaThan: { nhen: 'Đầu dò chữ U trên thân nhện, cho biết vật phía trước là sắt hay nam châm cực N, cực S.' },
+      lenh: ['front_metal', 'front_pole'],
+      gioi: ['Hỏi không tốn nhịp', { chu: 'front_metal() trả True khi vật gần nhất phía trước là sắt và cách xe tới 2 ô', can: ['front_metal'] },
+        { chu: 'front_pole() trả "N" hoặc "S" khi vật gần nhất trong 3 ô là nam châm', can: ['front_pole'] }],
+      khong: ['Vật gỗ, tường, không có gì: front_metal() là False, front_pole() là "none"'],
+      luuY: [{ chu: 'Nhện không quay nên đầu dò nhìn cố định về một phía của sân, trong Bãi tái chế là sang phải.', than: 'nhen' }]
+    },
+    'hong-ngoai': {
+      khe: 'camBien', ten: 'Cảm biến hồng ngoại',
+      moTa: 'Mắt đỏ ở mũi xe, đo xem phía trước còn mấy ô trống.',
+      moTaThan: { drone: 'Mắt đỏ nhìn xuống, đo đất ở ô dưới bụng drone.' },
+      moTaLenhThan: { drone: { warm: 'Hỏi: đất ở ô dưới bụng còn khô không' } },
+      lenh: ['distance', 'warm'],
+      gioi: ['Hỏi không tốn nhịp', { chu: 'distance() trả một SỐ: số ô trống tới vật cản; sát vật cản là 0. Dùng được trong phép so sánh, như if distance() > 2:', can: ['distance'] },
+        { chu: 'warm() trả True khi vật cản trước mặt NÓNG: robot khác, hay van hơi đang mở', can: ['warm'], khongThan: 'drone' },
+        { chu: 'warm() trả True khi đất ở ô dưới bụng còn khô', can: ['warm'], than: 'drone' }],
+      khong: [{ chu: 'Chỉ nhìn thẳng phía trước, không nhìn hai bên', khongThan: 'drone' }, { chu: 'Không biết vật cản là gì, chỉ biết cách bao xa', khongThan: 'drone' }, { chu: 'Van đang đóng, cửa, thùng, tường thì warm() là False', can: ['warm'], khongThan: 'drone' },
+        { chu: 'Không đọc xuyên rơm: ô phủ rơm luôn là False', than: 'drone' }, { chu: 'Không biết còn phải tưới mấy lần, chỉ biết còn khô hay không', than: 'drone' }],
+      luuY: [{ chu: 'Tường, mép sân, cửa đóng, thùng nặng, vật nằm đất, robot khác đều chắn tia.', can: ['distance'] }, { chu: 'Cùng một tia với distance(): warm() chỉ xét vật cản đầu tiên.', can: ['warm'], khongThan: 'drone' }]
+    },
+    'mau': {
+      khe: 'camBien', ten: 'Cảm biến màu ở bụng',
+      moTa: 'Gắn dưới bụng xe, đọc màu sàn ở ô xe đang đứng.',
+      lenh: ['color'],
+      moTaLenh: { color: 'Đọc màu sàn dưới bụng xe' },
+      gioi: ['color() trả "red", "green", "blue", "yellow" hoặc "none"', 'Đọc không tốn nhịp, kể cả lúc đang mang vật'],
+      khong: ['Không thấy ô trước mặt', 'Không biết vật màu gì'],
+      luuY: ['Muốn biết màu của vật thì cần camera.', 'Ô đã gieo hoa thì color() đọc màu hoa, không đọc màu sàn bên dưới.']
+    },
+    'camera': {
+      khe: 'camBien', ten: 'Camera trước',
+      moTa: 'Hai mắt trên thân xe, nhìn ô ngay trước mặt.',
+      moTaThan: { drone: 'Mắt nhìn xuống, đọc ô dưới bụng drone.' },
+      lenh: ['color'],
+      moTaLenh: { color: 'Đọc màu ở ô trước mặt' },
+      moTaLenhThan: { drone: { color: 'Đọc màu ở ô dưới bụng' } },
+      gioi: [{ chu: 'Có vật trước mặt thì color() cho màu của vật, không có thì màu sàn ô đó', khongThan: 'drone' }, { chu: 'Có vật dưới bụng thì color() cho màu của vật, không có thì màu đất ô đó', than: 'drone' }, 'Đọc không tốn nhịp'],
+      khong: [{ chu: 'Tường, rào, thùng, cửa đóng, mép sân: color() trả "none"', khongThan: 'drone' }, { chu: 'Đất không màu: color() trả "none"', than: 'drone' }, 'Không gắn chung với cảm biến màu ở bụng'],
+      luuY: ['Cùng tên color() với cảm biến màu, nhưng đọc chỗ khác. Kết quả của hàm tùy vào bộ phận gắn trên xe.']
+    },
+    'camera-4': {
+      khe: 'camBien', ten: 'Camera bốn hướng',
+      moTa: 'Tháp camera trên nóc, bốn ống kính nhìn bốn ô quanh robot.',
+      lenh: ['color'],
+      moTaLenh: { color: 'Đọc màu ở ô theo hướng ghi trong lệnh' },
+      gioi: ['Xe nhìn "front", "left", "right", "back" theo mũi xe', 'Drone nhìn "up", "down", "left", "right" theo bản đồ', 'Đọc không tốn nhịp'],
+      khong: ['Tường, rào, thùng, cửa đóng, mép sân: trả "none"', 'Không gắn chung với cảm biến màu ở bụng hay camera trước'],
+      luuY: ['Phải ghi hướng: color() để trống là lỗi.', 'Bản nâng cấp nhìn thêm ô dưới chân: hướng "here".']
+    },
+    'camera-bay': {
+      khe: 'camBien', ten: 'Camera bụng drone',
+      moTa: 'Ống kính dưới bụng drone, nhìn ô ngay bên dưới.',
+      lenh: ['look'],
+      gioi: ['look() cho màu của vật bên dưới; không có vật thì màu sàn', 'Đọc không tốn nhịp'],
+      khong: ['Chỉ thấy ô ngay dưới drone', 'Chỉ gắn được trên drone'],
+      luuY: []
+    },
+    'radar': {
+      khe: 'camBien', ten: 'Radar tròn',
+      moTa: 'Vòm radar trên nóc xe, quét lưới 3x3 quanh robot để biết tường, đá, hố, đích hay cờ.',
+      lenh: ['radar', 'shape'],
+      moTaLenh: {
+        radar: 'Quét lưới 3x3 quanh robot, trả về danh sách 2 chiều',
+        shape: 'Nhận dạng hình khối của vật ở ô theo hướng d'
+      },
+      gioi: ['radar() trả về lưới 3x3 quanh xe, ô giữa g[1][1] là chỗ xe đứng', 'Đọc không tốn nhịp'],
+      khong: ['Chỉ thấy 8 ô xung quanh xe và ô xe đang đứng'],
+      luuY: ['Hàng 0 là phía trên, hàng 2 là phía dưới; cột 0 là bên trái, cột 2 là bên phải.', 'Bản nâng cấp mở thêm shape(d) để phân biệt đá tròn, đá vuông và quặng.']
+    },
+    'cau': {
+      khe: 'than', ten: 'Cần cẩu cảng',
+      moTa: 'Mâm xoay cảng sông với cần vươn 3 tầm, xoay 8 nấc quanh trụ cẩu.',
+      lenh: ['swing_left', 'swing_right', 'extend', 'retract', 'rail', 'wait'],
+      moTaLenh: {
+        swing_left: 'Quay cần sang trái 1 nấc trong 8 nấc một vòng',
+        swing_right: 'Quay cần sang phải 1 nấc trong 8 nấc một vòng',
+        extend: 'Vươn cần ra thêm 1 tầm, tối đa tầm 3',
+        retract: 'Thu cần vào 1 tầm, tối thiểu tầm 1',
+        rail: 'Trượt chân cẩu trên ray 1 ô theo hướng d'
+      },
+      gioi: [
+        'Quay tròn 8 nấc quanh trụ, nấc 0 là phía trên và tăng dần theo chiều kim đồng hồ',
+        'Vươn cần từ tầm 1 tới tầm 3 để đưa đầu cần tới đúng ô mục tiêu',
+        { can: ['rail'], chu: 'rail(d) trượt chân cẩu dọc theo đường ray cảng' }
+      ],
+      khong: [
+        { khongCan: ['rail'], chu: 'Chân cẩu cố định tại trụ, không tự đi khắp sân' },
+        'Tầm vươn chỉ từ 1 tới 3, vươn quá tầm 3 hoặc thu dưới tầm 1 sẽ báo lỗi'
+      ],
+      luuY: ['Mỗi lệnh quay hoặc vươn thu tốn 1 nhịp.']
+    },
+    'moc-cau': {
+      khe: 'tay', ten: 'Móc cẩu container',
+      moTa: 'Khung cẩu gắn đầu cần để nhấc và hạ container trên bãi cảng.',
+      lenh: ['pick_up', 'set_down', 'pick_up2'],
+      moTaLenh: {
+        pick_up: 'Nhấc 1 container trên đỉnh chồng ở ô đầu cần',
+        set_down: 'Hạ container đang treo xuống ô đầu cần',
+        pick_up2: 'Nhấc 2 container trên cùng của chồng ở ô đầu cần'
+      },
+      ghep: [
+        { lenh: ['pick_up', 'set_down'], chu: 'Đưa đầu cần tới chồng hàng -> pick_up() -> quay sang bãi đích -> set_down()' }
+      ],
+      gioi: [
+        'pick_up() nhấc container trên cùng của chồng ở ô đầu cần đang trỏ tới',
+        'set_down() đặt container đang treo lên đỉnh chồng ở ô đầu cần',
+        { can: ['pick_up2'], chu: 'Móc nâng cấp nhấc liền 2 container trên cùng khi tổng khối lượng vừa sức nâng' }
+      ],
+      khong: ['Không nhấc thêm được khi móc đang treo hàng'],
+      luuY: ['Chỉ hạ container xuống bãi K, boong tàu T đang đỗ hoặc chồng hàng hợp lệ.']
+    },
+    'quet-ma': {
+      khe: 'camBien', ten: 'Đầu đọc mã container',
+      moTa: 'Đầu quét quang học gắn ở đầu cần, đọc mã số in trên nóc container.',
+      lenh: ['read_code', 'weight'],
+      moTaLenh: {
+        read_code: 'Đọc mã số container trên đỉnh chồng ở ô đầu cần, trống là -1',
+        weight: 'Đo số tấn đang treo hoặc số tấn của container trên đỉnh chồng, trống là 0'
+      },
+      gioi: [
+        'read_code() trả về mã số nguyên của container trên cùng ở ô đầu cần',
+        'Đọc không tốn nhịp',
+        { can: ['weight'], chu: 'weight() trả về số tấn đang treo hoặc số tấn của container trên đỉnh chồng, trống là 0' }
+      ],
+      khong: ['Chỉ đọc được container trên đỉnh chồng ngay dưới đầu cần'],
+      luuY: ['Khi ô dưới đầu cần không có container, read_code() trả về -1.']
+    },
+    'xuong': {
+      khe: 'than', ten: 'Xuồng chân vịt',
+      moTa: 'Thân tàu thủy lợi với hai chân vịt, chỉ chạy trên nước. Đi bằng 4 lệnh như xe hai bánh: forward() tiến, backward() lùi, turn_left() và turn_right() quay tại chỗ.',
+      lenh: ['forward', 'backward', 'turn_left', 'turn_right', 'wait'],
+      tieuDeGhep: 'Mỗi lệnh làm gì',
+      ghep: [
+        { lenh: ['forward'], ra: 'Tiến 1 ô nước', ket: { x: 2, y: 1, huong: 0 } },
+        { lenh: ['turn_right'], ra: 'Quay phải tại chỗ, 1 nhịp', ket: { x: 2, y: 2, huong: 1 } },
+        { lenh: ['turn_left'], ra: 'Quay trái tại chỗ, 1 nhịp', ket: { x: 2, y: 2, huong: 3 } },
+        { lenh: ['backward'], ra: 'Lùi 1 ô nước', ket: { x: 2, y: 3, huong: 0 } }
+      ],
+      gioi: [
+        'Lướt trên mặt nước, bến phao, bến hàng và cống đang mở',
+        'Quay nhanh: đi hay quay đều 1 nhịp',
+        { can: ['anchor'], chu: 'anchor() thả neo giữ xuồng không bị dòng nước cuốn trôi khi đứng chờ' }
+      ],
+      khong: [
+        'Không lên được bờ đất, bờ kè và không đi xuyên qua cống đang đóng',
+        { can: ['anchor'], chu: 'Đang thả neo thì không tiến, lùi hay quay được cho tới khi gọi unanchor()' }
+      ],
+      luuY: ['Mỗi lệnh tự chiếm đúng 1 nhịp.', 'Trên ô có dòng nước chảy, mỗi nhịp xuồng bị đẩy theo chiều dòng, kể cả nhịp đang tung lưới hay đứng yên.']
+    },
+    'day-keo': {
+      khe: 'tay', ten: 'Tay lưới thủy lợi',
+      moTa: 'Vòng lưới phao gắn trên xuồng để tung lưới ra 4 phía bắt vật nổi hoặc giật van cống.',
+      moTaThan: { drone: 'Vòng lưới treo dưới bụng drone, tung ra 4 phía bắt vật trên mặt đất.' },
+      moTaLenhThan: { drone: { cast_net: 'Tung lưới theo hướng d, bắt vật cách drone đúng 2 ô, mất 2 nhịp', drop_net: 'Thả vật trong lưới xuống ô nó đang nằm, 1 nhịp' } },
+      lenh: ['cast_net', 'drop_net', 'set_length'],
+      moTaLenh: {
+        cast_net: 'Tung lưới theo hướng chỉ định cách xuồng 2 ô để bắt vật nổi hoặc giật van, mất 2 nhịp',
+        drop_net: 'Mở lưới thả vật đang giữ xuống đúng ô nước hiện tại của nó, 1 nhịp',
+        set_length: 'Đặt độ dài dây lưới từ 0 đến 3, với 0 là kéo vật về khoang tàu và 1 đến 3 là số ô dây dưới nước'
+      },
+      ghep: [
+        { lenh: ['cast_net'], ra: 'Tung lưới bắt vật nổi cách xuồng 2 ô hoặc giật van trên bờ', khongThan: 'drone' },
+        { lenh: ['drop_net'], ra: 'Mở lưới thả vật đang giữ xuống bến hàng', khongThan: 'drone' },
+        { lenh: ['cast_net'], ra: 'Tung lưới bắt vật cách drone 2 ô', than: 'drone' },
+        { lenh: ['drop_net'], ra: 'Mở lưới thả vật xuống ô nó đang nằm', than: 'drone' },
+        { lenh: ['set_length', 'wait'], ra: 'Thu dây kéo vật về khoang tàu hoặc thả dây ra độ dài mới' }
+      ],
+      gioi: [
+        { chu: 'cast_net(d) tung lưới theo bốn hướng quanh xuồng là front, back, left, right, mặc định là front cách xuồng 2 ô', khongThan: 'drone' },
+        { chu: 'Khi xuồng di chuyển, dây lưới và vật nổi trong lưới lướt theo sau đúng quỹ đạo của xuồng; khi xuồng xoay tại chỗ thì lưới dưới nước đứng yên', khongThan: 'drone' },
+        { chu: 'cast_net(d) trúng van thủy lợi V trên bờ sẽ giật đổi trạng thái cống và dòng nước nối với van', khongThan: 'drone' },
+        { chu: 'cast_net(d) tung lưới theo màn hình: front lên trên, back xuống dưới, left, right', than: 'drone' },
+        { chu: 'Drone bay tới đâu, vật trong lưới đi theo đường bay, luôn sau drone 2 ô', than: 'drone' },
+        { can: ['set_length'], chu: 'set_length(n) chỉnh độ dài dây lưới từ 0 đến 3: gọi 0 để kéo vật gọn vào khoang tàu, gọi 1 đến 3 để thu ngắn hay thả dài dây dưới nước' }
+      ],
+      khong: [
+        { chu: 'Không gọi cast_net(d) bắt thêm được khi trong lưới đang giữ một vật nổi', khongThan: 'drone' },
+        { chu: 'Xuồng không đi đè lên chính ô dây lưới hay túi lưới đang căng dưới nước', khongThan: 'drone' },
+        { chu: 'Trong lưới chỉ giữ được một vật', than: 'drone' },
+        { chu: 'Không bay được về phía vật trong lưới', than: 'drone' },
+        { can: ['set_length'], chu: 'Khi vật đang nằm trong khoang tàu ở độ dài 0 thì phải gọi set_length(n) thả ra mặt nước trước khi gọi drop_net()' }
+      ],
+      luuY: [{ chu: 'Gọi drop_net() khi vật trong lưới đang nằm ngay trên ô bến hàng để giao hàng.', khongThan: 'drone' }, { chu: 'Gọi drop_net() khi vật trong lưới đang nằm trên ô đích.', than: 'drone' }]
+    },
+    'dong-chay': {
+      khe: 'camBien', ten: 'Chong chóng dòng chảy',
+      moTa: 'Chong chóng đo nước gắn trước mũi xuồng, đọc hướng và sức chảy của ô phía trước.',
+      lenh: ['flow_dir', 'flow'],
+      moTaLenh: {
+        flow_dir: 'Đọc hướng chảy của ô trước mũi xuồng: "front", "back", "left", "right" hoặc "none"',
+        flow: 'Đọc bộ đôi hướng và sức chảy của ô trước mũi xuồng'
+      },
+      gioi: [
+        'flow_dir() trả về hướng chảy của ô ngay trước mũi tính theo hướng xuồng đang quay',
+        'Đọc cảm biến không tốn nhịp',
+        { can: ['flow'], chu: 'flow() trả về bộ cố định gồm hướng chảy và sức đẩy 0, 1 hoặc 2 của ô trước mũi' }
+      ],
+      khong: ['Chỉ đo được một ô ngay trước mũi xuồng, không đo xuyên qua nhiều ô'],
+      luuY: ['Khi ô trước mũi là nước lặng hoặc bờ đất, flow_dir() trả về "none".']
+    },
+    'gai': {
+      khe: 'than', ten: 'Bánh gai đá vôi',
+      moTa: 'Thân xe thám hiểm hang động với bốn bánh gai bám chắc trên nền đá vôi ướt.',
+      lenh: ['left_move', 'right_move', 'left_back', 'right_back', 'retract_spikes', 'extend_spikes', 'wait'],
+      moTaLenh: {
+        left_move: 'Hai bánh gai bên trái quay tiến trong nhịp này',
+        right_move: 'Hai bánh gai bên phải quay tiến trong nhịp này',
+        left_back: 'Hai bánh gai bên trái quay lùi trong nhịp này',
+        right_back: 'Hai bánh gai bên phải quay lùi trong nhịp này',
+        retract_spikes: 'Thu gai vào trong bánh để lướt trên dải đá vôi ướt I',
+        extend_spikes: 'Bật gai ra ngoài bánh để bám chắc không trượt trên đá vôi ướt I'
+      },
+      ghep: [
+        { lenh: ['left_move', 'right_move', 'wait'], ra: 'Tiến 1 ô' },
+        { lenh: ['left_move', 'wait'], ra: 'Quay phải 90°' },
+        { lenh: ['left_back', 'wait'], ra: 'Quay trái 90°' },
+        { lenh: ['left_back', 'right_move', 'wait'], ra: 'Quay đầu 180°' },
+        { lenh: ['left_back', 'right_back', 'wait'], ra: 'Lùi 1 ô' }
+      ],
+      gioi: [
+        'Bánh gai nhận lệnh y hệt xe hai bánh nên các hàm move(), turn_left(), turn_right(), u_turn(), back() đều dùng lại ngay',
+        'Khi đang bật gai mặc định, xe đi trên nền đá vôi ướt I dừng đúng ô không bị trượt lố',
+        { can: ['retract_spikes'], chu: 'retract_spikes() thu gai để bước vào dải đá vôi ướt I là lướt liền một mạch trong 1 nhịp cho tới hết dải' }
+      ],
+      khong: [
+        'Không đi qua được vách đá # hay vực sâu u trong hang',
+        { can: ['retract_spikes'], chu: 'Đang thu gai mà lướt trên đá vôi ướt I lao thẳng vào vực sâu u hay hố hở thì rơi ngay' }
+      ],
+      luuY: ['retract_spikes() / extend_spikes() đổi gai ở đầu nhịp kế, đi chung nhịp với lệnh bánh, không tốn nhịp riêng.']
+    },
+    'loa': {
+      khe: 'tay', ten: 'Loa cộng hưởng',
+      moTa: 'Loa gắn trên xe phát nốt nhạc. Phát đúng nốt của đá chuông đủ số nhịp thì đá vỡ, mở đường.',
+      lenh: ['note', 'beat'],
+      moTaLenh: {
+        note: 'note(n) phát nốt n, từ 1 đến 8, trong nhịp này',
+        beat: 'beat() gõ một tiếng trống trong nhịp này'
+      },
+      ghep: [
+        { lenh: ['note', 'wait'], ra: 'Đứng yên, phát một nốt' },
+        { lenh: ['beat', 'wait'], ra: 'Đứng yên, gõ một tiếng trống' }
+      ],
+      gioi: [
+        'Loa phát ở đầu nhịp nên vừa đi vừa phát được',
+        'Đá chuông ghi số nốt và số vạch: phát đúng nốt đó, mỗi nhịp sáng thêm một vạch, đủ vạch thì đá vỡ',
+        'Đá chuông nghe được loa trong vòng 3 ô, hay ở thẳng trước mũi xe'
+      ],
+      khong: ['Phát nốt khác hay nghỉ một nhịp thì các vạch tắt hết, phải phát lại từ đầu', 'Mỗi nhịp chỉ phát một nốt'],
+      luuY: ['Đá đã vỡ thì nằm im thành đá vụn, xe đi qua được.']
+    },
+    'am-thanh': {
+      khe: 'camBien', ten: 'Mic thu thanh',
+      moTa: 'Mic nghe tiếng ngân của chuông đá gần nhất trong hang, kể cả đá chuông chưa vỡ.',
+      lenh: ['hear', 'listen'],
+      moTaLenh: {
+        hear: 'hear() trả số ô tới chuông đá gần nhất, đếm ô đi ngang cộng ô đi dọc; không nghe thấy thì trả 0',
+        listen: 'listen() trả nốt của chuông đá gần nhất, từ 1 đến 8; không nghe thấy thì trả 0'
+      },
+      gioi: [
+        'Hỏi không tốn nhịp',
+        'Nghe mọi hướng, vách đá không cản tiếng',
+        'hear() là một số: đặt được vào forward() hay so sánh trong while',
+        { can: ['listen'], chu: 'listen() cho biết nốt, rồi note() phát lại đúng nốt đó' }
+      ],
+      khong: ['Đứng ngay ô chuông đá thì hear() không tính chuông đó', 'Xa quá 9 ô thì không nghe thấy'],
+      luuY: ['Đá chuông chưa vỡ cũng ngân nên mic nghe được; vỡ rồi thì im.']
+    }
+  };
+  var THU_TU = ['hai-banh', 'xich', 'omni', 'nhen', 'drone', 'cau', 'xuong', 'gai', 'kep', 'xoay', 'nam-cham', 'nem', 'hoi', 'son', 'moc-cau', 'day-keo', 'loa', 'khoang-cach', 'tu', 'hong-ngoai', 'mau', 'camera', 'camera-4', 'camera-bay', 'radar', 'quet-ma', 'dong-chay', 'am-thanh'];
+  var TEN_KHE = { than: 'Thân', tay: 'Tay', camBien: 'Cảm biến' };
+
+  function co(ds, x) { return ds.indexOf(x) >= 0; }
+  function giao(a, b) { return a.filter(function (x) { return co(b, x); }); }
+
+  /** Bộ phận robot của màn: thân luôn có; tay khi màn khai tay và có lệnh tay; cảm biến theo lệnh cảm biến trong hamGoc. */
+  function boPhanCua(cauHinh, hamGoc) {
+    var c = cauHinh || {}, goc = hamGoc || [], kq = [];
+    var cam = (c.camBien || []).map(function (x) { return x.ma; });
+    function them(ma) { var d = DS[ma]; if (!d) return; var l = giao(d.lenh, goc); if (l.length || d.khe === 'than') kq.push({ ma: ma, lenh: l }); }
+    them(c.than || 'hai-banh');
+    if (c.tay) them(c.tay);
+    them('khoang-cach');
+    them('tu');
+    them('hong-ngoai');
+    if (co(goc, 'color')) them(co(cam, 'camera-4') ? 'camera-4' : co(cam, 'camera') ? 'camera' : 'mau');
+    them('camera-bay');
+    them('radar');
+    them('quet-ma');
+    them('dong-chay');
+    them('am-thanh');
+    return kq;
+  }
+
+  function hienMuc(m, lenh, than) {
+    if (typeof m === 'string') return true;
+    if (m.can && !m.can.every(function (x) { return co(lenh, x); })) return false;
+    if (m.khongCan && m.khongCan.some(function (x) { return co(lenh, x); })) return false;      // câu chỉ đúng khi robot CHƯA có lệnh đó (vd sạc tự động trên P: drone nâng cấp land() thì không)
+    if (m.than && m.than !== than) return false;
+    if (m.khongThan && m.khongThan === than) return false;                                      // câu đúng với xe có mũi, không đúng trên thân này
+    return true;
+  }
+  function chuMuc(m) { return typeof m === 'string' ? m : m.chu; }
+  function dungMoi(m, chiMoi) { return !!(m && typeof m !== 'string' && m.can && m.can.some(function (x) { return co(chiMoi, x); })); }
+
+  /** Nội dung thẻ của bộ phận ma cho robot có các lệnh `lenh`. chiMoi: chỉ phần dính tới các lệnh mới. moTaGoc: { lệnh: câu } (SoLenh.lenhGoc). */
+  function noiDung(ma, lenh, chiMoi, than, moTaGoc) {
+    var d = DS[ma]; if (!d) return null;
+    lenh = lenh || [];
+    var moi = chiMoi && chiMoi.length ? chiMoi : null;
+    var dsLenh = d.lenh.filter(function (x) { return co(lenh, x) && (!moi || co(moi, x)); }).map(function (x) {
+      return { ten: x, moTa: (d.moTaLenhThan && d.moTaLenhThan[than] && d.moTaLenhThan[than][x]) || (d.moTaLenh && d.moTaLenh[x]) || (moTaGoc && moTaGoc[x]) || '' };
+    });
+    var ghep = (d.ghep || []).filter(function (g) {
+      var can = g.lenh.filter(function (x) { return x !== 'wait'; });
+      if ((g.than && g.than !== than) || (g.khongThan && g.khongThan === than)) return false;
+      if (!can.every(function (x) { return co(lenh, x); })) return false;
+      if (co(g.lenh, 'wait') && co(d.lenh, 'wait') && !co(lenh, 'wait')) return false;
+      return !moi || can.some(function (x) { return co(moi, x); });
+    });
+    function loc(ds) {
+      return (ds || []).filter(function (m) { return hienMuc(m, lenh, than) && (!moi || dungMoi(m, moi)); }).map(chuMuc);
+    }
+    return { ma: ma, khe: d.khe, tenKhe: TEN_KHE[d.khe], ten: d.ten, moTa: moi ? '' : (d.moTaThan && d.moTaThan[than]) || d.moTa, lenh: dsLenh, tieuDeGhep: d.tieuDeGhep, ghep: ghep, gioi: loc(d.gioi), khong: loc(d.khong), luuY: loc(d.luuY), laMoi: !!moi };
+  }
+
+  /* ---------------------------------------------------------- MỘT BỘ PHẬN, NHIỀU MÃ (gói V8c)
+     Mã có nangCapCua: X là cùng bộ phận X được mở thêm lệnh (tay 'xoay' = tay kẹp 'kep' + arm_left / arm_right). Cờ đã xem vẫn ghi theo mã của màn
+     ('part:<mã>', 'part-lenh:<mã>:<lệnh>'), nhưng đã gặp MỘT mã trong nhóm là đã gặp cả bộ phận, lệnh đã giới thiệu ở mã nào cũng tính. */
+  /** Các mã cùng một bộ phận với ma (theo THU_TU, mã gốc trước), ma không có nhóm thì [ma]. */
+  function cungBoPhan(ma) {
+    var d = DS[ma]; if (!d) return [ma];
+    var goc = d.nangCapCua || ma;
+    return THU_TU.filter(function (x) { return x === goc || DS[x].nangCapCua === goc; });
+  }
+  function daXemMot(ds, khoa, daXem) { return ds.some(function (x) { return !!daXem(khoa(x)); }); }
+  /** Các thẻ cần hiện cho robot (cauHinh, hamGoc), daXem(khoá) → bool: bộ phận chưa gặp (cả nhóm) → thẻ đầy đủ; đã gặp mà có lệnh chưa giới thiệu → thẻ "lệnh mới". */
+  function theCanHien(cauHinh, hamGoc, daXem, moTaGoc) {
+    var c = cauHinh || {}, kq = [];
+    boPhanCua(c, hamGoc).forEach(function (b) {
+      var nhom = cungBoPhan(b.ma);
+      var moi = !daXemMot(nhom, function (x) { return 'part:' + x; }, daXem);
+      var lenhMoi = b.lenh.filter(function (l) { return !daXemMot(nhom, function (x) { return 'part-lenh:' + x + ':' + l; }, daXem); });
+      if (!moi && !lenhMoi.length) return;
+      var nd = noiDung(b.ma, b.lenh, moi ? null : lenhMoi, c.than, moTaGoc);
+      if (!nd || (!moi && !nd.lenh.length)) return;
+      kq.push(nd);
+    });
+    return kq;
+  }
+  /** Các khoá đã xem cần ghi sau khi vào màn (cauHinh, hamGoc). */
+  function khoaDaXem(cauHinh, hamGoc) {
+    var kq = [];
+    boPhanCua(cauHinh, hamGoc).forEach(function (b) { kq.push('part:' + b.ma); b.lenh.forEach(function (l) { kq.push('part-lenh:' + b.ma + ':' + l); }); });
+    return kq;
+  }
+  /** Bộ phận đã gặp, mỗi bộ phận MỘT dòng (Sổ lệnh, trang "Bộ phận"): nhóm nhiều mã thì lấy mã đã gặp đứng sau cùng (tay kẹp đã mở xoay → 'xoay'). */
+  function daGap(daXem) {
+    return THU_TU.filter(function (ma) {
+      if (!daXem('part:' + ma)) return false;
+      var nhom = cungBoPhan(ma);
+      return !nhom.slice(nhom.indexOf(ma) + 1).some(function (x) { return !!daXem('part:' + x); });
+    });
+  }
+  /** Lệnh của ma đã được giới thiệu (ở bất kỳ mã nào cùng bộ phận). */
+  function lenhDaXem(ma, daXem) {
+    var nhom = cungBoPhan(ma);
+    return (DS[ma] ? DS[ma].lenh : []).filter(function (l) { return daXemMot(nhom, function (x) { return 'part-lenh:' + x + ':' + l; }, daXem); });
+  }
+
+  var API = { DS: DS, THU_TU: THU_TU, TEN_KHE: TEN_KHE, boPhanCua: boPhanCua, noiDung: noiDung,
+    cungBoPhan: cungBoPhan, theCanHien: theCanHien, khoaDaXem: khoaDaXem, daGap: daGap, lenhDaXem: lenhDaXem };
+  if (laNode) module.exports = API;
+  if (typeof window !== 'undefined') window.GioiThieuPart = API;
+})();

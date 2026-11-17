@@ -299,7 +299,7 @@ kiểm xanh. Máy kiểm chạy **lần lượt từng tệp** (`npm test` vốn
 | **0. Dọn** | Commit hay bỏ bản sửa khay hàm / chip 122.1; gộp `claude/mua-9-tiep` (qua `/push-main`); trong `diem10code-python`: lấy lại 6 tệp xoá dở vào nhánh lưu trữ (không mất), cất `trace-banh.mjs` | game, `diem10code-python` | `git status` sạch cả hai repo; `npm test` của game: số bộ đạt bằng nền trước khi gộp |
 | **1. Chuyển nhà** (cách A) | Nhánh `luu-tru/tach-5-11` = `main` cũ; đẩy `main` game lên `diem10code-python` (push ép, khi user bảo); commit `docs/tach-5-11/`; README mới; README game cũ trỏ sang, archive repo cũ | `diem10code-python` | `git log` đủ lịch sử game; `npm start` mở game ở cổng 4180; `npm test` cùng kết quả như repo cũ |
 | **2. Lõi chung: chế độ mỗi lệnh một nhịp** (theo đính chính: mang lõi bản 5 mùa vào sau cờ, lệnh `forward` / `backward`) | `cfg.banOnThi` trong `san-hoc.js`: `up` / `down` / `turn_left` / `turn_right` cho hai bánh, xuồng (mang từ a618cf4, thêm theo cờ thay vì thay `HAM_GOC`); `go_*` nhện, drone tự chốt nhịp; lệnh tay tự chốt; ô tay tác động theo luật bản 5 mùa; Sổ lệnh / khay ẩn `wait` khi cờ bật | `hoc/san-hoc.js`, `cham.js`, `so-lenh.js` | `kiem-mot-nhip.mjs` mới (mỗi lệnh đúng một nhịp, lệnh ngược, đâm tường, tay trước mũi / tại chỗ); **mọi máy kiểm cũ giữ nguyên kết quả** (bản đầy đủ không đổi) |
-| **3. Một game hai bản** (theo đính chính: nội dung là 144–160 màn bản 5 mùa, không phải 45 màn a618cf4) | `ban.js` (bản suy ra từ tiền tố chương `t`), hai thẻ chọn bản ở trang đầu + Cài đặt, chữ theo bản; `lo-trinh-on-thi.js` khai 5 mùa; nạp 45 màn mùa 1 của bản tách thành `t1-*`; mùa 2–5 "Sắp có"; bản Ôn thi ẩn phim và bản đồ | `hoc/`, `hoc/game/` | `kiem-ban-on-thi.mjs`: 45/45 lời giải 3 sao, 0 `act(` / `tuple` / `dict` / lưới trong bản Ôn thi; đổi bản giữ sao hai bên; `?man=t1-than.3` mở thẳng bản Ôn thi; chụp 375px |
+| **3. Một game hai bản** (theo đính chính: nội dung là 160 màn bản 5 mùa, không phải 45 màn a618cf4; làm xong 17/11, xem mục 6.1) | Hai trang trên một lõi, một giao diện: `game/choi.html` (bản đầy đủ) và `game/on-thi.html` (đặt `BAN_GAME = 'on-thi'`); `ban.js` (`window.Ban`) nói bản nào; nội dung bản Ôn thi ở `hoc/on-thi/` (giữ mã chương `m1-c1-than`…, không cần tiền tố `t` vì kho lưu tách); thẻ "Đổi bản" ở trang đầu; chữ / khay / Sổ lệnh theo bản; bản Ôn thi không có phim | `hoc/`, `hoc/on-thi/`, `hoc/game/` | `kiem-ban-on-thi.mjs`: 160 màn đủ luật khuôn, 0 `act(` / tuple / dict / list 2 chiều trong bản Ôn thi, hàm gốc theo bản, kho lưu tách, hai trang nạp đúng script |
 | **4. Nối diem10code** | `d10.js`, `luu.js` theo hồ sơ + gộp, `quyenChoi` (bản Ôn thi mở, bản đầy đủ theo cờ đã mua), `sw.js` phạm vi riêng; phía `tin_hoc`: khoá `gamePython`, script đồng bộ, thẻ Sân chơi, cờ "bản đầy đủ" dùng cho mọi game | cả hai repo | chơi máy tính rồi mở điện thoại cùng tài khoản thấy đúng sao; khách chơi được `t5-*`; chưa mua chạm thẻ Bản đầy đủ hay mở thẳng `?man=` bản đầy đủ → hộp mua → mua xong về đúng chỗ |
 | **5. Sửa: nội dung bản Ôn thi** | Dựng lại mùa 1 theo lưới 4×8 (8 dạng bài); thêm cơ chế 3 dạng còn thiếu (đoán rồi chạy, sắp xếp, điền chỗ trống); viết mùa 2 Bãi tái chế, 3 Bến sông, 4 Nông trại theo chuỗi đổi part; thiết kế mùa 5 Tổ hợp | `hoc/` | mỗi mùa 32 màn, máy kiểm từng dạng bài, bộ dò phạm vi xanh |
 | **6. Sửa: làm đẹp** | Mục 5.3 việc 3–9 | `hoc/game/` | ảnh trước / sau ở 320, 375, 768, 1280px; 0 nút dưới 44px; `kiem-bang-mau` xanh; không màn nào cuộn ngang |
@@ -353,6 +353,36 @@ làm một mình, không song song với GĐ 7 hay phiên viết màn nào.
   - **Đã trả lời (17/11 đêm):** `wait()` ở Mùa 5 Đồng đội (23 chỗ, đứng yên một nhịp) giữ nguyên, vì user chọn tách
     `act()` khỏi `wait()` (quyết định 11): bản Ôn thi không có lệnh chốt nhịp, `wait()` chỉ là đứng yên. Lõi GĐ 2 đã đúng như vậy.
   - **Câu hỏi cho user:** `pick()` / `drop()` là chỗ khác thứ tư so với mục 2.1 (bản đầy đủ dùng `arm_down` / `grab` / `arm_up`).
+
+- **GĐ 3 xong trên nhánh `claude/gd3-hai-ban` (17/11 đêm).** Một game hai trang, chung lõi và giao diện.
+  - `hoc/ban.js`: `window.Ban` / `module.exports` (`ma`, `laOnThi`, `tienToKho`, `trang`, `trangKia`, `ten`, `tenKia`), đọc
+    `globalThis.BAN_GAME`. Không đặt gì là bản đầy đủ, nên `choi.html` và mọi máy kiểm cũ không đổi.
+  - `hoc/on-thi/`: nội dung bản 5 mùa lấy từ b419083 (`thu-tu-chuong.js`, `man-co-so.js`, 16 tệp `man-m1..m5-*.js`,
+    `man-demo.js`, `lo-trinh-hoc.js`, `gioi-thieu-part.js`, `kiem-khuon.mjs`); `chuanHoaMan` đặt `m.banOnThi = true`, nên
+    không còn phải ép cờ như GĐ 2.
+  - Lõi phụ chung (gộp ba chiều như GĐ 2): `co-may.js`, `lap-rap.js` (cỗ máy drone, lưới bay, menu xe), `kho-ham.js`
+    (`HAM_GOC_BAN`: bản Ôn thi thêm `pick` / `drop` / `seed`), `bang-ghep.js` (part ghép được của xuồng / drone theo bản),
+    `so-lenh.js` (hàng `forward` … `seed` là lệnh gốc, chữ `wait` / `magnet_n` / `magnet_s` theo bản).
+  - Giao diện: gộp ba chiều 36 tệp `hoc/game/*` của bản 5 mùa. Phần chỉ thêm (chọn đội, chọn tâm, huy hiệu, vẽ nông trại
+    / bè, `man-chon-doi-on-thi.js`, `man-chon-tam.js`) để chung; phần làm đổi bản đầy đủ rào bằng `Ban.laOnThi`: hàng ghim
+    `wait` và ngoặc nhịp (chỉ bản đầy đủ), chip tên trong khay, sao cộng dồn / mốc tốt, hoa theo màu, lỗ vuông ô 2, mắt
+    camera drone, dòng CLB ở trang đầu; khung code: chèn vào dòng trống thì điền dòng đó, số của `n = 0` / `n = n + 1`
+    chạm đổi được, điều kiện `vaHoac` (chữ so sánh đổi vòng, biến vòng), bảng hướng `cast_net` / `magnet_n("up")`,
+    `if k:` trong vòng danh sách; lệnh part mùa 5 trong `LapRap.lenhKhongCon`; tưới / gieo đầu nhịp của drone nông trại;
+    bè có màu khi bị kéo; huy hiệu 20 chương 5 mùa chỉ đăng ký ở bản Ôn thi. Các chỗ này máy kiểm cũ bắt được khi chạy
+    `npm test` lần đầu (10 bộ hỏng mới), rào xong thì về đúng nền. Muốn đưa một chỗ sang bản đầy đủ: bỏ rào, sửa máy kiểm
+    tương ứng (giữ quyết định 10: hai bản gần nhau nhất có thể).
+  - Máy kiểm đổi: `kiem-goi.mjs` chấp nhận khóa chữ ghép từ tiền tố (`t('dang.' + m.dangBai)`). `choi.html` / `on-thi.html`
+    nạp `bang-mau.js` rồi `../ban.js` (kiem-bang-mau cần bảng màu là script đầu tiên).
+  - Kho lưu tách: `luu.js` bọc `localStorage`, bản Ôn thi đổi tiền tố `duong-hoc:` thành `on-thi:` ở một chỗ (sao, bản
+    nháp, kho hàm, đã xem, Gỡ lỗi), nên hàm cốt truyện của bản đầy đủ không lọt sang bản Ôn thi và ngược lại.
+  - Trang đầu có thẻ "Đổi bản" sang trang kia (`Ban.trangKia`).
+  - Kiểm: `npm test` 129/136 (7 bộ hỏng sẵn như GĐ 2, không thêm bộ hỏng); `hoc/kiem-ban-on-thi.mjs` 25 đạt (gọi `on-thi/kiem-khuon.mjs`: 160 màn, 0 lỗi). Trình duyệt: màn cuối của
+    cả 20 chương bản Ôn thi và 9 màn rải khắp bản đầy đủ (`hai-banh.10` … `che-son-tren-cao.10`) chạy lời giải đủ 3 sao,
+    không lỗi console; đổi bản hai chiều được.
+  - **Chuyển GĐ 4:** người đã chơi bản 5 mùa cũ có sao ở khóa `duong-hoc:` (mã `m1-c1-than.*`); trang Ôn thi mới đọc
+    `on-thi:`, nên cần chuyển một lần (chép khóa mã `m[1-5]-c*` sang `on-thi:`) khi biết bản cũ đã chạy ở địa chỉ nào.
+    `index.html` vẫn vào bản đầy đủ; trang vào (khách vào bản Ôn thi) và `sw.js` (chưa có tệp `on-thi/`) làm cùng `quyenChoi`.
 
 ---
 

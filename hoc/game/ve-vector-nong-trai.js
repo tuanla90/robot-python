@@ -26,11 +26,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.duong(g, 'M15 27 L27 15'); g.globalAlpha = 0.8; H.vien(g, BM.vecThe, 4.5); g.globalAlpha = 1;
   }});
 
-  // Bông hoa 5 cánh tròn xoay quanh (cx, cy), bán kính ngoài r; dùng cho luống hoa màu và bông hoa vừa gieo
-  function veBongHoa(g, H, cx, cy, r, mauCanh, mauVien) {
-    for (var i = 0; i < 5; i++) {
-      var a = -Math.PI / 2 + i * 2 * Math.PI / 5;
-      H.tron(g, cx + Math.cos(a) * r * 0.48, cy + Math.sin(a) * r * 0.48, r * 0.46);
+  // BẢN ĐẦY ĐỦ giữ hình hoa cũ (5 cánh, 8 cánh màu vàng, dấu hình mù màu, luống 3 khóm + hoa trắng); số cánh theo màu chỉ ở bản Ôn thi.
+  var OT = typeof window !== 'undefined' && window.Ban && window.Ban.laOnThi;
+  // SỐ CÁNH THEO MÀU: thay cho dấu hình của người mù màu, đếm cánh là biết màu. Cùng một bộ số cho luống hoa, hoa vừa gieo, hoa mờ cần gieo và huy hiệu trên bao hạt.
+  var SO_CANH = { green: 3, blue: 4, red: 5, yellow: 8 };
+  V.SO_CANH = SO_CANH;
+  // Vị trí và cỡ cánh (theo bán kính ngoài r): càng nhiều cánh thì cánh càng nhỏ và càng xa nhụy, để đếm được từng cánh
+  var DANG_CANH = { 3: { xa: 0.46, rc: 0.5 }, 4: { xa: 0.5, rc: 0.46 }, 5: { xa: 0.52, rc: 0.4 }, 8: { xa: 0.62, rc: 0.27 } };
+
+  // Bông hoa `so` cánh tròn xoay quanh (cx, cy), bán kính ngoài r; dùng cho hoa vừa gieo và bao hạt chưa có màu (mặc định 5 cánh)
+  function veBongHoa(g, H, cx, cy, r, mauCanh, mauVien, so) {
+    if (!OT) so = 0;                                                     // bản đầy đủ: luôn 5 cánh hình cũ
+    var d = so ? DANG_CANH[so] : OT ? DANG_CANH[5] : { xa: 0.48, rc: 0.46 };
+    so = so || 5;
+    for (var i = 0; i < so; i++) {
+      var a = -Math.PI / 2 + i * 2 * Math.PI / so;
+      H.tron(g, cx + Math.cos(a) * r * d.xa, cy + Math.sin(a) * r * d.xa, r * d.rc);
       H.to(g, mauCanh); H.vien(g, mauVien, 1.8);
     }
     H.tron(g, cx, cy, r * 0.34); H.to(g, BM.vecNhuy); H.vien(g, BM.vecNhuyToi, 1.5);
@@ -45,7 +56,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return;
     }
     var c = CANH[mau] || CANH.red, cs = BM[c[0]], sang = BM[c[1]], toi = BM[c[2]];
-    var so = mau === 'yellow' ? 8 : 5, rc = mau === 'yellow' ? r * 0.3 : r * 0.42, xa = mau === 'yellow' ? r * 0.6 : r * 0.52;
+    var so = SO_CANH[mau] || SO_CANH.red, rc = r * DANG_CANH[so].rc, xa = r * DANG_CANH[so].xa;
+    if (!OT) { so = mau === 'yellow' ? 8 : 5; rc = mau === 'yellow' ? r * 0.3 : r * 0.42; xa = mau === 'yellow' ? r * 0.6 : r * 0.52; }
     for (i = 0; i < so; i++) {
       a = -Math.PI / 2 + i * 2 * Math.PI / so;
       H.tron(g, cx + Math.cos(a) * xa, cy + Math.sin(a) * xa, rc); g.fillStyle = H.gradDoc(g, 0, cy - r, 0, cy + r, [[0, sang], [1, cs]]); g.fill(); H.vien(g, toi, Math.max(1, r * 0.09));
@@ -66,7 +78,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, cx, cy, r * 0.17); H.to(g, BM.vecLa);
   }
 
-  // Bông hoa trắng nhỏ điểm trên thảm cỏ ba lá
+  // Bông hoa màu trên thảm hoa đỏ / vàng / xanh dương
+  // Bông hoa trắng nhỏ điểm trên thảm cỏ ba lá (bản đầy đủ)
   function veBongTrangNho(g, H, cx, cy, r) {
     for (var i = 0; i < 5; i++) {
       var a = -Math.PI / 2 + i * 2 * Math.PI / 5;
@@ -76,12 +89,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, cx, cy, r * 0.34); H.to(g, BM.vecNhuy); H.vien(g, BM.vecNhuyToi, 1);
   }
 
-  // Bông hoa màu trên thảm hoa đỏ / vàng / xanh dương
-  function veBongHoaMauMem(g, H, cx, cy, r, bh) {
+  function veBongHoaMauMem(g, H, cx, cy, r, bh, so) {
+    var d = OT ? DANG_CANH[so] : { xa: 0.45, rc: 0.48 };
+    if (!OT) so = 5;
     H.tron(g, cx, cy + 2, r * 0.95); H.to(g, BM[bh.nen1]);
-    for (var i = 0; i < 5; i++) {
-      var a = -Math.PI / 2 + i * 2 * Math.PI / 5;
-      H.tron(g, cx + Math.cos(a) * r * 0.45, cy + Math.sin(a) * r * 0.45, r * 0.48);
+    for (var i = 0; i < so; i++) {
+      var a = -Math.PI / 2 + i * 2 * Math.PI / so;
+      H.tron(g, cx + Math.cos(a) * r * d.xa, cy + Math.sin(a) * r * d.xa, r * d.rc);
       H.to(g, BM[bh.trong]); H.vien(g, BM[bh.vien], 1.5);
     }
     H.tron(g, cx, cy, r * 0.3); H.to(g, BM[bh.nhuy]); H.vien(g, BM[bh.vien], 1.3);
@@ -93,7 +107,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     blue:   { nen0: 'vecHoaLamSang', nen1: 'luatVatXanhDuong', vien: 'luatSanXanhDuongToi', trong: 'vecLamNhat',     nhuy: 'vecNhuy' }
   };
 
-  // Luống hoa trên sân (thay 'san-mau' cho ô r / g / b / y): bố cục 2x2 cân đối, chừa góc (73,73) cho ký hiệu mù màu
+  // Luống hoa trên sân (thay 'san-mau' cho ô r / g / b / y): bốn khóm 2x2 cân đối, số cánh theo màu (SO_CANH)
   dk({ loai: 'o', ma: 'luong-hoa', ten: 'Luống hoa tràn ô', cacTrangThai: MAU.map(function (m) { return { mau: m }; }), ve: function (g, s, H) {
     var m = MAU.indexOf(s && s.mau) >= 0 ? s.mau : 'red';
     g.fillStyle = BM.vecCoVien; g.fillRect(0, 0, 100, 100);
@@ -104,20 +118,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       [[22, 22, 13], [50, 18, 12], [78, 22, 13], [18, 52, 12], [50, 50, 14], [80, 48, 12], [22, 78, 13], [50, 78, 12]].forEach(function (c) {
         H.tron(g, c[0], c[1], c[2]); H.to(g, BM.vecLa);
       });
-      [[28, 28, 15], [72, 28, 15], [28, 72, 15]].forEach(function (c) {
+      (OT ? [[28, 28, 15], [72, 28, 15], [28, 72, 15], [72, 72, 15]] : [[28, 28, 15], [72, 28, 15], [28, 72, 15]]).forEach(function (c) {
         veCumCoBaLaMem(g, H, c[0], c[1], c[2]);
       });
-      veBongTrangNho(g, H, 50, 50, 8.5);
+      if (!OT) veBongTrangNho(g, H, 50, 50, 8.5);
     } else {
       var bh = BANG_HOA[m];
       H.bo(g, 3, 3, 94, 94, 9);
       g.fillStyle = H.gradDoc(g, 3, 3, 97, 97, [[0, BM[bh.nen0]], [1, BM[bh.nen1]]]);
       g.fill(); H.vien(g, BM[bh.vien], 3);
-      [[28, 28, 15.5], [72, 28, 15.5], [28, 72, 15.5]].forEach(function (c) {
-        veBongHoaMauMem(g, H, c[0], c[1], c[2], bh);
+      (OT ? [[28, 28, 15.5], [72, 28, 15.5], [28, 72, 15.5], [72, 72, 15.5]] : [[28, 28, 15.5], [72, 28, 15.5], [28, 72, 15.5]]).forEach(function (c) {
+        veBongHoaMauMem(g, H, c[0], c[1], c[2], bh, SO_CANH[m]);
       });
     }
-    V.dauHinhMau(g, H, m, 73, 73, 15);
+    if (!OT) V.dauHinhMau(g, H, m, 73, 73, 15);
   }});
 
   // Tường nông trại (thay 'tuong' cho ô '#'): KIỆN RƠM VÀNG 3D BUỘC 2 DÂY THỪNG (mẫu bó rơm vuông bo góc 3D cao, 0% xanh lá)
@@ -154,10 +168,41 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     H.tron(g, 50, 56, 32); H.to(g, BM.vecLa); H.vien(g, BM.vecLaToi, 2.5);
     H.tron(g, 30, 58, 16); H.to(g, BM.vecXanhLa);
     H.tron(g, 70, 58, 16); H.to(g, BM.vecXanhLa);
-    veBongHoa(g, H, 34, 48, 15, BM[MAU_DAI[m]], BM[MAU_VIEN[m]]);
-    veBongHoa(g, H, 66, 48, 15, BM[MAU_DAI[m]], BM[MAU_VIEN[m]]);
-    veBongHoa(g, H, 50, 34, 17, BM[MAU_DAI[m]], BM[MAU_VIEN[m]]);
-    V.dauHinhMau(g, H, m, 50, 74, 15);
+    veBongHoa(g, H, 34, 48, 15, BM[MAU_DAI[m]], BM[MAU_VIEN[m]], SO_CANH[m]);
+    veBongHoa(g, H, 66, 48, 15, BM[MAU_DAI[m]], BM[MAU_VIEN[m]], SO_CANH[m]);
+    veBongHoa(g, H, 50, 34, 17, BM[MAU_DAI[m]], BM[MAU_VIEN[m]], SO_CANH[m]);
+    if (!OT) V.dauHinhMau(g, H, m, 50, 74, 15);
+  }});
+
+  // Luống đất khô (lớp phủ trên sàn, san-ve.js veDatKho): khối đất bo góc có gờ dưới, mặt đất sáng, vết nứt gãy khúc; s.do: luống đo, có cọc đo cắm bên phải
+  dk({ loai: 'o', ma: 'dat-kho', ten: 'Luống đất khô', cacTrangThai: [{}, { do: 1 }], ve: function (g, s, H) {
+    H.bo(g, 6, 6, 88, 88, 12);
+    g.fillStyle = H.gradDoc(g, 0, 6, 0, 94, [[0, BM.vecDat], [0.7, BM.vecDatToi], [1, BM.vecGoToi]]);
+    g.fill(); H.vien(g, BM.vecGoToi, 3);
+    H.bo(g, 9, 8, 82, 75, 9);
+    g.fillStyle = H.gradDoc(g, 0, 8, 0, 83, [[0, BM.vecDatSang], [1, BM.vecDat]]);
+    g.fill(); H.vien(g, BM.vecDatToi, 1.8);
+    H.duong(g, 'M18 15 H42'); g.globalAlpha = 0.75; H.vien(g, BM.vecGoSang, 3.5); g.globalAlpha = 1;
+    H.duong(g, 'M16 45 L25 41 L31 47 L40 43 L47 47 M31 47 L29 55 L34 60 M18 71 L27 67 L34 72 L44 68 L55 73 M44 68 L47 61'); H.vien(g, BM.vecGoToi, 2.6);
+    if (s && s.do) {
+      H.elip(g, 73.5, 70, 8, 3.2); H.to(g, BM.vecDatToi);
+      H.bo(g, 70, 19, 7, 51, 3); H.to(g, BM.vecGoMat); H.vien(g, BM.vecVien, 2);
+      H.bo(g, 50, 19, 25, 15, 3.5); H.to(g, BM.vecGoSang); H.vien(g, BM.vecVien, 2);
+      H.duong(g, 'M56 24 V29 M62 24 V29 M68 24 V29'); H.vien(g, BM.vecVien, 1.8);
+    }
+  }});
+
+  // Rơm phủ (lớp phủ, vẽ sau đất): các cọng ngắn đan chéo, hở khe nên vẫn thấy ô bên dưới; màu theo kiện rơm bui-cay
+  var CONG_ROM = [[14, 24, 44, 17], [36, 15, 66, 22], [58, 26, 87, 18], [13, 37, 41, 44], [34, 46, 64, 36], [58, 38, 87, 46], [15, 62, 45, 54], [38, 55, 67, 63], [60, 64, 87, 56], [13, 75, 42, 83], [35, 85, 65, 76], [58, 77, 87, 85]];
+  dk({ loai: 'o', ma: 'rom', ten: 'Rơm phủ', cacTrangThai: [{}], ve: function (g, s, H) {
+    var d = CONG_ROM.map(function (c) { return 'M' + c[0] + ' ' + c[1] + ' L' + c[2] + ' ' + c[3]; }).join(' ');
+    H.duong(g, d); H.vien(g, BM.vecHoPhachDam, 7.6);
+    H.duong(g, d); H.vien(g, BM.vecNhuy, 4.4);
+  }});
+
+  // Chấm đếm số lần còn phải tưới (s.cham 1..3; lớp phủ, vẽ sau rơm để rơm không che)
+  dk({ loai: 'o', ma: 'cham-tuoi', ten: 'Chấm số lần tưới', cacTrangThai: [{ cham: 1 }, { cham: 2 }, { cham: 3 }], ve: function (g, s, H) {
+    for (var i = 0, n = s && typeof s.cham === 'number' ? s.cham : 1; i < n; i++) { H.tron(g, 22 + i * 15, 22, 7); H.to(g, BM.vecGoSang); H.vien(g, BM.vecVien, 2.4); }      // không nói số chấm (xem thử hình): một chấm
   }});
 
   // Bao hạt giống (vật nhặt / phân loại ở mùa 4): bao vải bố màu kraft ấm áp, cổ bao xoè tự nhiên, giữa thân có huy hiệu tròn trắng in bông hoa
@@ -176,8 +221,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       H.bo(g, 30, 25, 40, 6.5, 3); H.to(g, sat ? BM.vecSat : BM.vecBaoVien); H.vien(g, BM.vecVien, 2.2);
       H.tron(g, 50, 58, 19); H.to(g, BM.vecThe); H.vien(g, m ? BM[MAU_DAI[m]] : BM.vecBaoVien, 2.8);
       if (m) {
-        hoa(g, H, 50, 58, 13.5, m);
-        V.dauHinhMau(g, H, m, 74, 74, 12);
+        if (OT) hoa(g, H, 50, 58, 15, m); else { hoa(g, H, 50, 58, 13.5, m); V.dauHinhMau(g, H, m, 74, 74, 12); }
       } else {
         veBongHoa(g, H, 50, 58, 12, BM.vecHoPhach, BM.vecBaoVien);
       }

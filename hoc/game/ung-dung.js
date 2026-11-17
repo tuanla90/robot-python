@@ -130,10 +130,11 @@
   };
 
   /* ---------------------------------------------------------------- màn hình */
-  var MAN_HINH = { dau: 'sc-dau', mua: 'sc-mua', goi: 'sc-goi', chon: 'sc-chon', choi: 'sc-choi', lap: 'sc-lap', doi: 'sc-doi' };
+  var MAN_HINH = { dau: 'sc-dau', mua: 'sc-mua', goi: 'sc-goi', chon: 'sc-chon', tam: 'sc-tam', choi: 'sc-choi', lap: 'sc-lap', doi: 'sc-doi' };
   App.manHinh = null;
   /** Hiện một màn hình: 'dau' (khởi đầu) | 'mua' (bản đồ chọn mùa) | 'goi' (chọn gói của App.mua) | 'chon' (lưới màn của gói App.goi) | 'choi' | 'lap' (Lắp robot, màn lắp ráp) | 'doi' (Chọn đội, màn chọn đội M9D2). */
   App.hien = function (ten) {
+    if (window.ChonTam && (ten === 'mua' || ten === 'goi' || ten === 'chon')) ten = 'tam';   // màn chọn tạm (man-chon-tam.js) thay cả ba màn chọn cũ
     TP.Chan.giu(400);                                  // cú bấm đến muộn không rơi xuống màn mới
     Object.keys(MAN_HINH).forEach(function (k) { var e = document.getElementById(MAN_HINH[k]); if (e) e.classList.toggle('hidden', k !== ten); });
     App.manHinh = ten;
@@ -141,6 +142,7 @@
     if (ten === 'dau') Dau.ve();
     else if (ten === 'mua') ChonMua.ve();
     else if (ten === 'goi') { ChonGoi.ve(); App.baoGoiMoi(); }
+    else if (ten === 'tam') { ChonTam.ve(); App.baoGoiMoi(); }
     else if (ten === 'chon') { Chon.ve(); App.baoGoiMoi(); }   // an toàn: bảng "Mở gói mới!" chưa kịp hiện (vd mở lại game) thì hiện ở đây
     if (window.VeIcon && VeIcon.thay) Promise.resolve().then(function () { VeIcon.thay(document.getElementById(MAN_HINH[ten]) || document.getElementById('stage')); });   // V7b: nút chỉ icon có title (sau khi màn dựng xong)
   };
@@ -149,11 +151,12 @@
     if (App.manHinh === 'dau') Dau.ve();
     else if (App.manHinh === 'mua') ChonMua.ve();
     else if (App.manHinh === 'goi') ChonGoi.ve();
+    else if (App.manHinh === 'tam') ChonTam.ve();
     else if (App.manHinh === 'chon') Chon.ve();
   };
   /** Báo nhanh (dải vàng) trên màn hình đang thấy. */
   App.thongBao = function (chu) {
-    var m = App.manHinh === 'dau' ? window.Dau : App.manHinh === 'mua' ? window.ChonMua : App.manHinh === 'goi' ? window.ChonGoi : window.Chon;
+    var m = App.manHinh === 'dau' ? window.Dau : App.manHinh === 'tam' ? window.ChonTam : App.manHinh === 'mua' ? window.ChonMua : App.manHinh === 'goi' ? window.ChonGoi : window.Chon;
     if (m && m.thongBao) m.thongBao(chu);
   };
   /** Vào màn theo mã cố định (vd 'vong-lap.4'); nhận cả id hiển thị ('3.4') cho tiện thử. */
@@ -268,6 +271,7 @@
     if (window.ChonMua) ChonMua.dung(km);
     ChonGoi.dung(kg);
     Chon.dung(kb);
+    if (window.ChonTam) ChonTam.dung(document.getElementById('sc-tam'));
     Choi.dung(kc);
     if (kl && window.LapRobot) LapRobot.dung(kl);
     var kdoi = document.getElementById('sc-doi'); if (kdoi && window.ChonDoi) ChonDoi.dung(kdoi);

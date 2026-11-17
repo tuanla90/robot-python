@@ -179,9 +179,9 @@
 
   /** Lệnh robot → tiếng. Lệnh bánh / bay không có ở đây (nhịp đã kêu 'buoc'). */
   var LENH = [
-    [/^grab$/, 'kep'], [/^(release|magnet_off|untether)$/, 'tha'], [/^spray/, 'ban'], [/^throw$/, 'nem'],
+    [/^(grab|pick)$/, 'kep'], [/^(release|drop|magnet_off|untether)$/, 'tha'], [/^spray/, 'ban'], [/^throw$/, 'nem'],
     [/^(aim|load|dot|pen_)$/, 'nap'], [/^magnet_/, 'tu'], [/^arm_/, 'lat'],
-    [/^(tow|tether)$/, 'nuoc'], [/^anchor$/, 'neo'], [/^(hoist|drop)$/, 'cau']
+    [/^(tow|tether)$/, 'nuoc'], [/^anchor$/, 'neo'], [/^hoist$/, 'cau']
   ];
   function lenh(ten) {
     for (var i = 0; i < LENH.length; i++) if (LENH[i][0].test(ten || '')) { phat(LENH[i][1]); return; }

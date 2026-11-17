@@ -850,11 +850,113 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     ['tong-hop-clb', 'robot-hoan-thien'], ['trum-mua-clb', 'xuat-xuong'], ['ngay-hoi-clb', 'xuat-xuong']
   ].forEach(function (cap) { dk(cap[0], HINH[HINH[cap[1]] ? cap[1] : BI_DANH[cap[1]]]); });
 
+  /* HUY HIỆU 16 CỘT của 4 mùa cốt lõi: mã huy hiệu trùng mã cột. ROBOT_COT phải trùng m.robot các màn trong cột (kiem-khuon.mjs đối chiếu),
+     mỗi hình làm nổi part mới của cột; cột sân thêm ô đặc trưng của sân đó. */
+  var ROBOT_COT = {
+    'm1-c1-than': { than: 'hai-banh', tay: null, camBien: [] },
+    'm1-c2-tay': { than: 'hai-banh', tay: 'kep', camBien: [] },
+    'm1-c3-cam-bien': { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+    'm1-c4-san': { than: 'hai-banh', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+    'm2-c1-than': { than: 'nhen', tay: 'kep', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+    'm2-c2-tay': { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'khoang-cach', o: 'hong' }] },
+    'm2-c3-cam-bien': { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
+    'm2-c4-san': { than: 'nhen', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
+    'm3-c1-than': { than: 'xuong', tay: 'nam-cham', camBien: [{ ma: 'tu', o: 'hong' }] },
+    'm3-c2-tay': { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'tu', o: 'hong' }] },
+    'm3-c3-cam-bien': { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'camera', o: 'tren' }] },
+    'm3-c4-san': { than: 'xuong', tay: 'day-keo', camBien: [{ ma: 'camera', o: 'tren' }] },
+    'm4-c1-than': { than: 'drone', tay: 'day-keo', camBien: [{ ma: 'camera', o: 'tren' }] },
+    'm4-c2-tay': { than: 'drone', tay: 'hoi', camBien: [{ ma: 'camera', o: 'tren' }] },
+    'm4-c3-cam-bien': { than: 'drone', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }] },
+    'm4-c4-san': { than: 'drone', tay: 'hoi', camBien: [{ ma: 'hong-ngoai', o: 'tren' }, { ma: 'camera', o: 'tren' }] }
+  };
+  var gHH = typeof globalThis !== 'undefined' ? globalThis : window, laOT = !!((gHH.Ban && gHH.Ban.laOnThi) || gHH.BAN_GAME === 'on-thi');   // bản Ôn thi (ban.js): huy hiệu 20 chương 5 mùa chỉ có ở bản này
+  function dkOT(ma, f) { if (laOT) dk(ma, f); }
+  function cot(ma, f) { dkOT(ma, function (g, c, tt) { f(g, c, ROBOT_COT[ma], tt); }); }
+  var GIU = { tuThe: 'tren', kep: 'dong', cam: true }, MO = { tuThe: 'tren', kep: 'mo' };
+  function nenNuoc(c) { c.o('nuoc', {}, 50, 50, 80); }
+  /** Ô đất khô (datKho của mùa Nông trại, cùng hình với san-ve.js veDatKho): luống đất, ba chấm số lần tưới. */
+  function datKho(c, cx, cy, n) { c.o('dat-kho', {}, cx, cy, n); c.o('cham-tuoi', { cham: 3 }, cx, cy, n); }
+  cot('m1-c1-than', function (g, c, r) { c.robot(r, st(), 0, 50, 52, 70); });
+  cot('m1-c2-tay', function (g, c, r) { robotCam(c, r, st(null, GIU), 0, 50, 60, 64); });
+  cot('m1-c3-cam-bien', function (g, c, r) {
+    c.robot(r, st(null, MO, { bat: true }), 0, 50, 56, 62);
+    c.song(30, 58, Math.PI, [5, 10], BM.vecDen); c.song(70, 58, 0, [5, 10], BM.vecDen);
+  });
+  cot('m1-c4-san', function (g, c, r) {
+    c.o('nut-de', { de: true }, 66, 36, 30);
+    robotCam(c, r, st(null, GIU, { bat: true }), 1, 32, 62, 48);
+  });
+  cot('m2-c1-than', function (g, c, r) { c.robot(r, st({ co: true }, MO), 0, 50, 54, 66); });
+  cot('m2-c2-tay', function (g, c, r) {
+    c.vat('khoi-sat', {}, 50, 28, 18);
+    c.robot(r, st(null, { bat: true }), 0, 50, 58, 60);
+  });
+  cot('m2-c3-cam-bien', function (g, c, r) {
+    c.vat('khoi-sat', {}, 70, 58, 18);
+    c.robot(r, st(null, null, { bat: true }), 0, 40, 56, 54);
+    c.song(56, 58, 0, [4, 8], BM.vecDen);
+  });
+  cot('m2-c4-san', function (g, c, r) {
+    c.o('ho', {}, 70, 62, 28); c.o('dem-tu', { cuc: 'N' }, 70, 34, 28);
+    c.robot(r, st(null, { bat: true }, { bat: true }), 0, 36, 54, 50);
+  });
+  cot('m3-c1-than', function (g, c, r) { nenNuoc(c); c.robot(r, st({ chay: true }, { bat: true }), 1, 48, 52, 66); });
+  cot('m3-c2-tay', function (g, c, r) {
+    nenNuoc(c); c.vat('be-go', { keo: true }, 72, 36, 18);
+    c.robot(r, st({ chay: true }, { day: true }), 1, 40, 58, 56);
+  });
+  cot('m3-c3-cam-bien', function (g, c, r) {
+    nenNuoc(c); c.o('san-mau', { mau: 'red' }, 72, 38, 20); c.o('san-mau', { mau: 'green' }, 72, 60, 20);
+    c.robot(r, st({ chay: true }, null, { bat: true }), 1, 36, 52, 48);
+  });
+  cot('m3-c4-san', function (g, c, r) {
+    nenNuoc(c); c.o('dong-nuoc', { huong: 1 }, 40, 72, 24); c.o('dong-nuoc', { huong: 1 }, 64, 72, 24); c.o('cong-thuy-loi', { mo: true }, 70, 36, 26);
+    c.robot(r, st({ chay: true }, { day: true }, { bat: true }), 1, 36, 42, 44);
+  });
+  cot('m4-c1-than', function (g, c, r) { c.robot(r, st({ quat: true }), 0, 50, 50, 70); });
+  cot('m4-c2-tay', function (g, c, r) { c.robot(r, st({ quat: true }, { dangBanTruoc: true }), 0, 50, 54, 62); });
+  cot('m4-c3-cam-bien', function (g, c, r) {
+    var cx = 36, cy = 50, canh = 56, o = V.diemCamBien(r, 'hong-ngoai', 0, canh)[0], oy = cy + (o.y - canh / 2), ox = cx + (o.x - canh / 2);
+    datKho(c, 72, oy, 24);
+    c.tiaDo(ox + 2, 60, oy);
+    c.robot(r, st({ quat: true }, null, { bat: true }), 0, cx, cy, canh);
+  });
+  cot('m4-c4-san', function (g, c, r) {
+    datKho(c, 38, 72, 24);
+    c.o('luong-hoa', { mau: 'yellow' }, 66, 66, 24);
+    c.robot(r, st({ quat: true }, { dangBanTruoc: true }, { bat: true }), 0, 40, 38, 52);
+  });
+
+  /* Mùa 5: hai cột hai xe. Xe khóa có ổ khóa nhỏ; cột Hai chương trình là hai xe khác thân cùng làm. */
+  dkOT('m5-c1-co-san', function (g, c) {
+    c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 34, 58, 44);
+    c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 67, 44, 34);
+    H.bo(g, 62, 58, 11, 9, 2); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.6);
+    H.duong(g, 'M64 58 V55 C64 51 71 51 71 55 V58'); H.vien(g, BM.vecVien, 1.6);
+  });
+  dkOT('m5-c2-hai-xe', function (g, c) {
+    c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 33, 56, 42);
+    c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 67, 56, 42);
+  });
+
+  dkOT('m5-c3-chon-xe', function (g, c) {
+    c.robot(ROBOT_COT['m4-c1-than'], st(), 0, 50, 42, 40);
+    c.robot(ROBOT_COT['m1-c3-cam-bien'], st(null, { tuThe: 'tren', kep: 'mo' }), 0, 31, 66, 32);
+    c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 69, 66, 32);
+  });
+  dkOT('m5-c4-lap-part', function (g, c) {
+    c.robot(ROBOT_COT['m2-c3-cam-bien'], st(), 0, 42, 54, 50);
+    H.duong(g, 'M72 40 L80 44.5 V53.5 L72 58 L64 53.5 V44.5 Z'); H.to(g, BM.vecVang); H.vien(g, BM.vecVien, 1.6);
+    H.duong(g, 'M72 45.5 A3.5 3.5 0 1 0 72 52.5 A3.5 3.5 0 1 0 72 45.5 Z'); H.to(g, BM.vecVien);
+  });
+
   V.HUY_HIEU = {
     co: function (ma) { return !!HINH[ma]; },
     ve: ve,
     dangKy: function (ma, f) { if (typeof f !== 'function') throw new Error('HUY_HIEU.dangKy: cần hàm vẽ'); HINH[ma] = f; dem = {}; },
     ds: function () { return Object.keys(HINH); },
+    ROBOT_COT: ROBOT_COT,
     BI_DANH: BI_DANH, maGoc: maGoc, dsTatCa: dsTatCa,
     R_DIA: R_DIA, R_HINH: R_HINH, _sao: sao
   };

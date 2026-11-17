@@ -274,10 +274,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (cfg.tay && !tay) throw new Error('Không có tay "' + cfg.tay + '".');
     var drone = !!than.khongHuong, co = function (ma) { return cams.some(function (c) { return c.ma === ma; }); };
     for (i = 0; i < cams.length; i++) if (!lay('cam-bien', cams[i].ma)) throw new Error('Không có cam-bien "' + cams[i].ma + '".');
-    if (drone && co('camera')) throw new Error('Drone không gắn được camera: drone không có hướng mặt để nhìn "phía trước".');
+    var onThiGhep = (typeof window !== 'undefined' && window.Ban && window.Ban.laOnThi);             // bản Ôn thi (Nông trại): drone mang vòi phun / lưới, camera / hồng ngoại nhìn ô dưới bụng
+    if (drone && co('camera') && !onThiGhep) throw new Error('Drone không gắn được camera: drone không có hướng mặt để nhìn "phía trước".');
     if (drone) {
-      if (tay && tay.ma !== 'nam-cham' && tay.ma !== 'son' && !laLaiBang(than.ma, 'tay', tay.ma)) throw new Error('Drone không gắn được ' + tay.ten + '.');          // mùa 4: máy sơn treo dưới bụng drone (combo gói 9)
-      for (i = 0; i < cams.length; i++) if (['khoang-cach', 'mau', 'camera-bay', 'camera-4'].indexOf(cams[i].ma) < 0 && !laLaiBang(than.ma, 'camBien', cams[i].ma)) throw new Error('Drone không gắn được ' + lay('cam-bien', cams[i].ma).ten + '.');   // M9B1: ô ★ của bảng (L11 drone + radar) vẽ được
+      if (tay && ['nam-cham', 'son'].concat(onThiGhep ? ['hoi', 'day-keo'] : []).indexOf(tay.ma) < 0 && !laLaiBang(than.ma, 'tay', tay.ma)) throw new Error('Drone không gắn được ' + tay.ten + '.');          // mùa 4: máy sơn treo dưới bụng drone (combo gói 9)
+      for (i = 0; i < cams.length; i++) if (['khoang-cach', 'mau', 'camera-bay', 'camera-4'].concat(onThiGhep ? ['camera', 'hong-ngoai'] : []).indexOf(cams[i].ma) < 0 && !laLaiBang(than.ma, 'camBien', cams[i].ma)) throw new Error('Drone không gắn được ' + lay('cam-bien', cams[i].ma).ten + '.');   // M9B1: ô ★ của bảng (L11 drone + radar) vẽ được
     }
     if (!drone && co('camera-bay') && !laLaiBang(than.ma, 'camBien', 'camera-bay')) throw new Error('Camera nhìn xuống (camera-bay) chỉ gắn được lên drone.');
     if (co('camera') && co('mau')) throw new Error('Robot không gắn được cả cảm biến màu lẫn camera: color() sẽ không biết đọc ô nào. Chỉ giữ một trong hai.');

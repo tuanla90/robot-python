@@ -190,7 +190,7 @@ console.log('\n== 4. Ba màn hình (khởi đầu → chọn gói → lưới m�
     && /function napKhiMoHet\(m\)/.test(gl) && /napHamChuan\(m, true\)/.test(gl) && /chiThem \|\| giongHam\(co, f\)/.test(gl));
   const chu = doc('chu.js');
   const khoa = new Set([...(chon + goi + dau + doc('bang-mo-khoa.js')).matchAll(/\bt\('([a-zA-Z.\-]+)'/g)].map((x) => x[1]));
-  const thieu = [...khoa].filter((k) => !chu.includes("'" + k + "'"));
+  const thieu = [...khoa].filter((k) => (k.endsWith('.') ? !chu.includes("'" + k) : !chu.includes("'" + k + "'")));      // t('dang.' + m.dangBai): khóa ghép từ tiền tố, chu.js phải có ít nhất một khóa tiền tố đó
   kiem('mọi khóa chữ t(\'…\') của ba màn hình + bảng mở gói có trong chu.js', thieu.length === 0, thieu.join(', '));
 }
 

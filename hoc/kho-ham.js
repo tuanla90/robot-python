@@ -51,6 +51,11 @@
     'swing_left', 'swing_right', 'extend', 'retract', 'pick_up', 'set_down', 'pick_up2', 'read_code', 'weight', 'rail',   // Cảng sông (mùa 4): cần cẩu quay / vươn, móc cẩu, máy quét mã, ray
     'note', 'beat', 'retract_spikes', 'extend_spikes', 'hear', 'listen',                    // Hang động đá vôi (mùa 8): loa phát nhạc, thu/bật gai bánh gai, cảm biến âm thanh
     'print', 'range', 'len', 'str', 'int'];                                                  // (min / max / abs của nhân chưa đưa vào đây: kiem-che-xe đòi mọi tên trong HAM_GOC_MAC_DINH phải có khối kéo-thả; khi thêm khối vào the-lenh.js ở SM3-D sẽ đưa vào)
+  // BẢN ÔN THI (ban.js): thêm ba lệnh gốc của bản 5 mùa: pick / drop (tay kẹp, một lệnh làm đủ việc) và seed (vòi phun gieo hạt).
+  // Bản đầy đủ không có: ở đó pick / drop là hàm em tự làm. Danh sách bản đầy đủ giữ nguyên.
+  var Ban = laNode ? require('./ban.js') : (typeof window !== 'undefined' && window.Ban);
+  var HAM_GOC_ON_THI = HAM_GOC_MAC_DINH.concat(['pick', 'drop', 'seed']);
+  var HAM_GOC_BAN = (Ban && Ban.laOnThi) ? HAM_GOC_ON_THI : HAM_GOC_MAC_DINH;
   // từ khóa Python (nhân chạy code chỉ hiểu một phần, nhưng cấm cả bộ cho khỏi nhầm)
   var TU_KHOA = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class',
     'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if',
@@ -73,7 +78,7 @@
   function moi(tuyChon) {
     tuyChon = tuyChon || {};
     var toiDa = tuyChon.soHamToiDa === undefined ? SO_HAM_MAC_DINH : tuyChon.soHamToiDa;
-    var hamGoc = tuyChon.hamGoc || HAM_GOC_MAC_DINH;
+    var hamGoc = tuyChon.hamGoc || HAM_GOC_BAN;
     var ham = [];
     var coDinh = (tuyChon.tenCoDinh || []).map(String);     // tên hàm theo cốt truyện (xem datTenCoDinh)
     var phienBanDoc = PHIEN_BAN;       // phiên bản của dữ liệu đã đọc (mới hơn bản này → không ghi đè)
@@ -274,7 +279,7 @@
   var API = {
     moi: moi, macDinh: macDinh,
     PHIEN_BAN: PHIEN_BAN, KHOA_LUU: KHOA_LUU, SO_HAM_MAC_DINH: SO_HAM_MAC_DINH,
-    HAM_GOC_MAC_DINH: HAM_GOC_MAC_DINH, TU_KHOA: TU_KHOA
+    HAM_GOC_MAC_DINH: HAM_GOC_MAC_DINH, HAM_GOC_ON_THI: HAM_GOC_ON_THI, HAM_GOC_BAN: HAM_GOC_BAN, TU_KHOA: TU_KHOA
   };
   Object.keys(macDinh).forEach(function (k) { API[k] = macDinh[k]; });
 

@@ -41,7 +41,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (ban) { H.duong(g, 'M47.6 77 L50 83 L52.4 77 Z'); H.to(g, BM.vecNuocSang); H.vien(g, BM.vecNuoc, 1); giot(g, H, 50, 84.5, 2.1); giot(g, H, 46.2, 81.4, 1.4); giot(g, H, 53.8, 81.4, 1.4); }
   }
   function giot(g, H, x, y, r) { H.tron(g, x, y, r); H.to(g, BM.vecNuoc); H.vien(g, BM.vecNuocToi, 1); H.tron(g, x - r * 0.3, y - r * 0.3, r * 0.35); H.to(g, BM.vecNuocSang); }
-  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['spray',  'spray_back'], ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, diemNeoDuoi: { x: 50, y: 50 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {
+  V.dangKy({ loai: 'tay', ma: 'hoi', hamGoc: ['spray',  'spray_back'].concat((typeof window !== 'undefined' && window.Ban && window.Ban.laOnThi) ? ['seed'] : []), ten: 'Vòi phun hai đầu', gan: 'tay', diemNeo: { x: 50, y: 80 }, diemNeoDuoi: { x: 50, y: 50 }, mieng: { truoc: MIENG, lui: LUI }, ve: function (g, s, M, H) {   // bản Ôn thi: seed gieo hạt
     s = s || {};
     if (s.duoi) { binhBung(g, H, !!s.dangBanTruoc); return; }                  // M9H2: drone + vòi phun = bình xịt bụng (L15); thân khác không treo vòi phun ở bụng
     var tr = !!s.dangBanTruoc, sa = !!s.dangBanSau, lucCao = s.lucBan !== 'low', tu = !!s.tuLuc;
