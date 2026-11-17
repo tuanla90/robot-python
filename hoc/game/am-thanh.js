@@ -189,7 +189,7 @@
 
   /* ------------------------------------------------------------- 9 ĐOẠN NHẠC CHIẾN THẮNG (MÙA CUỐI VỀ CLB) */
   // Mỗi gói giải cứu (Gói 1..9) ở Mùa cuối (Về CLB) hoàn thành màn 10 sẽ mở khóa 1 đoạn song ca 8 nhịp (R1 giai điệu + R2 bè hòa âm + trống).
-  // Gói 10 (Ngày hội) nối toàn bộ 9 đoạn thành "Khúc Khải Hoàn CLB Mật Lệnh Robot" (72 phách nhạc).
+  // Gói 10 (gian Trưng bày robot HD05 của Ngày hội Tin học) nối toàn bộ 9 đoạn thành "Khúc Khải Hoàn đội rô bốt CLB Tin học" (72 phách nhạc).
   var DOAN_CHIEN_THANG = [
     // Đoạn 1 (Kho hàng): Khởi hành vững chãi (Đô trưởng)
     { ten: 'kho-hang',    r1: [1, 3, 5, 5, 6, 5, 3, 1], r2: [1, 1, 3, 3, 4, 3, 1, 1], trong: 'x . x . x . x x' },
@@ -207,7 +207,7 @@
     { ten: 'mo-da',       r1: [2, 3, 4, 6, 5, 6, 7, 5], r2: [5, 1, 2, 4, 3, 4, 5, 3], trong: 'x x x . x x x .' },
     // Đoạn 8 (Hang động đá vôi): Chuông đá ngân vang (Đô cao cộng hưởng)
     { ten: 'hang-dong',   r1: [8, 7, 6, 5, 6, 7, 8, 5], r2: [5, 5, 4, 3, 4, 5, 6, 3], trong: 'x . . . x . x .' },
-    // Đoạn 9 (Về lại CLB): Khúc Khải Hoàn Ngày Hội Robot (Kết Đô cao rực rỡ)
+    // Đoạn 9 (Về lại CLB): Khúc Khải Hoàn ở gian Trưng bày robot, Ngày hội Tin học (Kết Đô cao rực rỡ)
     { ten: 'ngay-hoi',    r1: [6, 7, 8, 5, 6, 4, 5, 8], r2: [4, 5, 6, 3, 4, 2, 3, 5], trong: 'x x x x x . x x' }
   ];
 
@@ -248,7 +248,7 @@
   // 1) 'soan' (104 BPM — Xưởng chế tạo): nhịp nảy vui tươi, giai điệu + bè phụ sóng tam giác lấp lánh, bass pizzicato.
   // 2) 'chay' (120 BPM — Robot hành động): hành khúc 8-bit sôi nổi (128 bước, 2 đoạn A-B), giai điệu + bè hòa âm + Kick/Snare/Hi-hat.
   // 3) 'trum' (136 BPM — Màn Trùm kịch tính): 128 bước anh hùng (La thứ – Fa – Rê thứ – Mi), bass chạy nốt móc + bộ trống dồn.
-  // 4) 'khaiHoan' (128 BPM — Lễ hội Chiến thắng Mùa cuối): phát nối 8 đoạn Khúc Khải Hoàn CLB Robot với đầy đủ 2 bè + bass + trống lễ hội.
+  // 4) 'khaiHoan' (128 BPM — Lễ hội Chiến thắng Mùa cuối): phát nối 8 đoạn Khúc Khải Hoàn đội rô bốt CLB Tin học với đầy đủ 2 bè + bass + trống lễ hội.
   // 5) 'im' (Màn có loa đang chạy / nghe đề): tạm tắt nhạc nền để nghe rõ tiếng loa của robot.
 
   var SOAN_DIEU = [

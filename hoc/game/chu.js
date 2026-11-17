@@ -392,6 +392,7 @@
       'moKhoa.loiCa': 'Đủ {sao} ★ rồi! R1 có thêm:',               // mở cùng lúc nhiều loại
       // màn khởi đầu (man-dau.js)
       'dau.phuDe': 'Học Python bằng cách ra lệnh cho robot',
+      'dau.clb': 'CLB Tin học · THPT Hoa Phượng',      // 17/11: bản chuẩn vũ trụ diem10code (đội rô bốt là một ban của CLB Tin học)
       'dau.choi': 'CHƠI',
       'dau.tiep': 'Chơi tiếp · {id}',
       'dau.xongHet': 'Em đã qua hết các màn!',

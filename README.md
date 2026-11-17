@@ -8,6 +8,14 @@ Bến sông, Mỏ đá, Hang động của bản gốc) bị cắt hẳn. Trang 
 npm start   # http://localhost:4180
 ```
 
+## Thế giới của game
+
+Game thuộc vũ trụ chung diem10code (bản chuẩn: [../VU-TRU-DIEM10CODE.html](../VU-TRU-DIEM10CODE.html)).
+Người chơi ở trong **đội rô bốt của CLB Tin học THPT Hoa Phượng**, một ban của CLB do Sola phụ
+trách: R1 của Sola (xanh), R2 của Luna (hồng). Thầy dạy Tin là thầy Khải. Kho hàng, bãi tái chế,
+bến sông, nông trại... là các chuyến thực tế của đội; rô bốt của đội ra mắt ở gian Trưng bày robot
+(HD05) của Ngày hội Tin học sáng 27/3/2027. Không có "CLB Robot" hay "Ngày Hội Robot" riêng.
+
 ## Đã mang sang (cơ chế, không mang màn)
 
 - Lõi chạy code + vật lý sân + chấm bài: `nhan/san-robot-core.js`, `hoc/san-hoc.js`, `hoc/cham.js`,

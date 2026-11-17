@@ -27,6 +27,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     return 'thuong';
   }
 
+  /* LOGO CLB TIN HỌC THPT HOA PHƯỢNG (bản chuẩn: 5 mảnh MANH_LOGO, khung 100×100; chép từ diem10code-dohoa/public/js/hinh.mjs). */
+  function saoPath(cx, cy, r, r2, n) {
+    r2 = r2 == null ? r * 0.45 : r2; n = n || 5;
+    var d = '';
+    for (var i = 0; i < n * 2; i++) {
+      var a = -Math.PI / 2 + (i * Math.PI) / n, rr = i % 2 ? r2 : r;
+      d += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1) + ' ' + (cy + rr * Math.sin(a)).toFixed(1);
+    }
+    return d + 'Z';
+  }
+  function logoClb() {
+    return '<svg viewBox="-2 -2 104 104" width="100%" height="100%" aria-hidden="true">' +
+      '<defs><linearGradient id="d-gr-logo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d5df6"/><stop offset=".55" stop-color="#a35cf0"/><stop offset="1" stop-color="#ec6fbf"/></linearGradient></defs>' +
+      '<circle cx="50" cy="50" r="48" fill="url(#d-gr-logo)"/>' +
+      '<circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="3" opacity=".75"/>' +
+      '<rect x="4" y="54" width="92" height="24" rx="5" fill="#1e1b4b"/>' +
+      '<path d="' + saoPath(50, 33, 19) + '" fill="#fbbf24"/>' +
+      '<text x="50" y="71" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" style="font-family:var(--px)">TIN HỌC</text></svg>';
+  }
+
   function dung(host) {
     host.innerHTML = '';
     host.appendChild(h('div', 'deco'));
@@ -34,6 +54,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.logo = h('div', 'd-logo'); el.logo.setAttribute('data-nut', 'logo');
     el.logo.appendChild(h('div', 'd-ten', t('chung.tenGame')));
     el.logo.appendChild(h('div', 'd-phu', t('dau.phuDe')));
+    var clb = h('div', 'd-clb');                                     // 17/11: dòng CLB theo bản chuẩn vũ trụ (../VU-TRU-DIEM10CODE.html)
+    var lg = h('span', 'd-clb-logo'); lg.innerHTML = logoClb(); clb.appendChild(lg);
+    clb.appendChild(h('span', 'd-clb-chu', t('dau.clb')));
+    el.logo.appendChild(clb);
     host.appendChild(el.logo);
 
     el.san = h('div', 'd-san chalk');
