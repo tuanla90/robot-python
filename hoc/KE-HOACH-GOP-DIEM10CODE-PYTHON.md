@@ -53,7 +53,12 @@ Lịch sử `diem10code-python` **không chung gốc** với game này (gốc ri
 - **Mã mùa trùng:** bản 5 mùa dùng `mua-1` … `mua-5` (khác nghĩa với `mua-1` … `mua-9` của game). Đổi mã mùa bản Ôn thi
   thành `t-mua-1` …; mã chương (`m1-c1-than`…) và mã màn giữ nguyên để tiến độ người đã chơi không lạc. Bản của một màn
   suy ra từ mã chương `m<số>-c<số>-`.
-- **Nhánh nào là ngọn:** cần user chốt (mục 9).
+- **Ngọn bản 5 mùa (user chốt 17/11: "lấy bản 5 mùa mới nhất"):** gộp ba nhánh `claude/reorganize-season-1-3042ce`
+  (160 màn) + `claude/notifications-images-issues-6fd106` + `vu-tru-diem10code`. Thử gộp trong bộ nhớ
+  (`git merge-tree`) 17/11: không xung đột cả ba, sau gộp 160 màn. Commit gộp này là ngọn để `merge -s ours` và chuyển
+  tệp ở GĐ 1–3.
+- **Lệnh di chuyển (user chốt):** `forward()` / `backward()` / `turn_left()` / `turn_right()` như bản 5 mùa. Mọi chỗ
+  ghi `up()` / `down()` ở trên thay bằng hai tên này.
 
 ---
 
@@ -120,7 +125,7 @@ Chưa game nào nối đăng nhập / Premium thật: khung `window.D10` và đ�
 | Nguồn thiết kế | `diem10code-python/hoc/KE-HOACH-4-MUA-COT-LOI.md` (6/11) | game này |
 | Mùa | 1 Kho hàng (hai bánh, kẹp, khoảng cách) · 2 Bãi tái chế (nhện, nam châm, cảm ứng từ) · 3 Bến sông (xuồng, dây phao kéo, camera màu) · 4 Nông trại (drone, vòi phun, hồng ngoại) · 5 Tổ hợp (chưa thiết kế) | 9 mùa, 9 nơi |
 | Phạm vi Python | `def`, `for`, `if`/`while`, biến, tham số, chuỗi, `and`/`or`/`elif`, `list`; **không** `tuple`, `dict`, `set`, lưới 2 chiều | thêm `tuple`, `min`/`max`, `%` `//` `abs`, lưới 2 chiều, `dict`, `set`, hai robot, lắp ráp |
-| Lệnh di chuyển | hai bánh, xuồng: `up()` `down()` `turn_left()` `turn_right()`; nhện, drone: **giữ đúng tên** `go_up()` `go_down()` `go_left()` `go_right()`; **không `wait()`**, mỗi lệnh một nhịp | hai bánh, xuồng: `left_move()` / `right_move()` + `wait()`; nhện, drone: `go_*()` + `wait()` |
+| Lệnh di chuyển | hai bánh, xuồng: `forward()` `backward()` `turn_left()` `turn_right()`; nhện, drone: **giữ đúng tên** `go_up()` `go_down()` `go_left()` `go_right()`; **không `wait()`**, mỗi lệnh một nhịp | hai bánh, xuồng: `left_move()` / `right_move()` + `wait()`; nhện, drone: `go_*()` + `wait()` |
 | Khuôn mùa | lưới 4 cột (thân, tay, cảm biến, sân) × 8 hàng (chỉ xem, đoán rồi chạy, điền chỗ trống, sắp xếp, sửa lỗi, viết có gợi ý, viết hàm, tự lực) = 32 màn | 10 gói × 2 chương × 10 màn |
 | Màn | **mã riêng** (kiểu Mạch Đèn), tiến độ tách khỏi bản đầy đủ | như hiện nay |
 | Phim, bản đồ | dùng lại phim và bản đồ của bản đầy đủ cho 4 nơi trùng (Kho hàng, Bãi tái chế, Bến sông, Nông trại) khi đã khớp part; lúc đầu chưa bật | giữ phim CLB, bản đồ 9 nơi |
@@ -146,7 +151,7 @@ Chưa game nào nối đăng nhập / Premium thật: khung `window.D10` và đ�
 - **Mọi tổ hợp thân + tay** được phép ở bản Ôn thi (chuỗi đổi part từng món một giữa các mùa).
 - **Giữ hai bản gần nhau nhất** (quyết định 10). Chỉ ba chỗ được khác:
   1. không có `wait()`;
-  2. hai bánh và xuồng dùng `up()` / `down()` / `turn_left()` / `turn_right()` (bỏ `wait()` thì
+  2. hai bánh và xuồng dùng `forward()` / `backward()` / `turn_left()` / `turn_right()` (bỏ `wait()` thì
      `left_move()` / `right_move()` không còn ghép thành bước đi được);
   3. ô tay tác động theo luật bản 5 mùa nếu lõi hiện nay khác.
   Mọi thứ khác dùng chung: tên lệnh tay và cảm biến (`grab()`, `distance()`, `magnet_n()`...), tên part, hình
@@ -330,9 +335,5 @@ GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệ
 
 ## 9. Câu hỏi
 
-Quyết định 1–10 đã trả lời (17/11). Mới, sau đính chính:
-
-1. Bản 5 mùa lấy từ ngọn nào: `claude/reorganize-season-1-3042ce` (160 màn, có 10 commit chưa push), có gộp thêm
-   `claude/notifications-images-issues-6fd106` và `vu-tru-diem10code` không?
-2. Lệnh hai bánh / xuồng bản Ôn thi là `forward()` / `backward()` như bản 5 mùa đang dùng (kế hoạch trước ghi `up()` /
-   `down()`)?
+Đã trả lời hết (17/11): quyết định 1–10 ở đầu tệp, ngọn bản 5 mùa và tên lệnh ở phần đính chính.
+Câu hỏi mới phát sinh khi làm thì ghi thêm ở đây.
