@@ -1,0 +1,170 @@
+# Kế hoạch 4 mùa cốt lõi (diem10code-python)
+
+Chốt qua hội thoại 5–6/11/2026. Tài liệu này thay cho mọi ghi chú rời rạc trước đó — khi làm nội
+dung, bám đúng tài liệu này; nếu có mâu thuẫn với trao đổi cũ, tài liệu này thắng.
+
+## Mục tiêu
+
+Ôn thi đại học lớp 12: `def`, `for`, `if`/`while`, biến, tham số, chuỗi, logic, `list`. KHÔNG
+dùng `tuple`, `dict`/`set`, mảng 2 chiều (list lồng list) ở bất cứ màn nào, kể cả màn khó nhất.
+
+## 5 mùa (4 cốt lõi + 1 Tổ hợp làm sau)
+
+4 mùa cốt lõi **chỉ giới thiệu cơ chế/part mới**, không đào sâu phối hợp nhiều thiết bị — việc đó
+dành cho **mùa thứ 5 "Tổ hợp"**, làm SAU, chưa thiết kế, không chặn tiến độ 4 mùa đầu.
+
+| Mùa | Tên | Thân | Tay | Cảm biến | Môi trường | Ý Python |
+|---|---|---|---|---|---|---|
+| 1 | Kho hàng | Hai bánh (`banh`) | Kẹp | Khoảng cách | Thùng gỗ, Ô đích, Nút đè | `def`, `for`, `if`/`while` |
+| 2 | Bãi tái chế | Nhện (`nhen`) | Nam châm | Cảm ứng từ | Thùng sắt, Hố VUÔNG (lấp bằng thùng sắt mà nam châm mang tới — lấp bằng thùng gỗ/loại khác để dành mùa Tổ hợp), Đệm từ | chuỗi, logic `and`/`or`/`elif` |
+| 3 | Bến sông | Xuồng (`xuong`) | Dây phao kéo | Camera màu | Bè nổi có màu (kéo đúng màu), Dòng nước, Cống thủy lợi | biến, tham số |
+| 4 | Nông trại | Drone (`drone`) | Vòi phun | Hồng ngoại (mới) + Camera màu (ôn lại từ mùa 3) | Đất màu (gieo hạt đúng màu bằng Camera), Đất khô/nóng (tưới bằng Hồng ngoại) | `list` |
+
+Đã loại khỏi 4 mùa: Xích, Cần cẩu, Omni, Bánh gai (thân); Súng hơi-nguyên-gốc tên cũ, Máy ném, Loa
+(tay, trừ máy ném đã cân nhắc rồi bỏ); Chong chóng dòng chảy (trả tuple), Radar tròn, Âm thanh
+(cảm biến). Máy ném bị loại vì đứng một mình (không Omni/Radar) thì tương tác nông.
+
+## Chuỗi chuyển part giữa các mùa (nguyên tắc: mỗi bước chỉ đổi ĐÚNG 1 part)
+
+Mỗi mùa (trừ mùa 1) bắt đầu bằng thân mới + 2 part quen từ mùa trước, rồi đổi dần từng part một,
+kết thúc đúng combo "nhà" của mùa đó (bảng trên). Luôn có 2 phần quen + 1 phần lạ, không bao giờ
+3 phần lạ cùng lúc.
+
+- **Mùa 1** (không có mùa trước nên không đổi part, mà XÂY DẦN từ số 0): thân → +tay → +cảm biến → +sân.
+- **Mùa 2**: Nhện+Kẹp+Khoảng cách → Nhện+Nam châm+Khoảng cách → **Nhện+Nam châm+Cảm ứng từ**
+- **Mùa 3**: Xuồng+Nam châm+Cảm ứng từ → Xuồng+Dây phao kéo+Cảm ứng từ → **Xuồng+Dây phao kéo+Camera màu**
+- **Mùa 4**: Drone+Dây phao kéo+Camera màu → Drone+Vòi phun+Camera màu → **Drone+Vòi phun+Hồng ngoại**
+
+## Cấu trúc mỗi mùa: lưới 4×8 = 32 màn
+
+**4 cột (chiều ngang, biết rộng — lần lượt theo đúng chuỗi chuyển part ở trên):**
+1. Thân mới (dùng tạm tay + cảm biến mùa trước; riêng mùa 1: thân một mình, chưa có tay/cảm biến)
+2. Tay mới (thân mới + tay mới + cảm biến mùa trước; riêng mùa 1: +tay, chưa có cảm biến)
+3. Cảm biến mới (combo "nhà" đầy đủ của mùa)
+4. Sân/môi trường riêng của mùa (dùng combo đầy đủ; hàng 8 của cột này = trùm mùa, không cần cột Trùm riêng)
+
+**8 hàng (chiều dọc, hiểu sâu — áp dụng CÙNG một khuôn cho mọi cột, mọi mùa, để học sinh quen kiểu
+bài, không phải đoán lại mỗi chương):**
+1. Chỉ xem — code mẫu chạy sẵn, bấm Chạy để quan sát, không sửa
+2. Dự đoán rồi chạy — đoán robot/ kết quả trước khi bấm Chạy, rồi xác nhận
+3. Điền chỗ trống — code có sẵn phần lớn, thiếu 1–2 dòng
+4. Sắp xếp lại — đúng lệnh nhưng xáo thứ tự / khối, kéo thả cho đúng
+5. Sửa lỗi — code có sẵn, sai đúng 1 chỗ, tìm và sửa
+6. Viết từ đầu (có gợi ý) — màn trống, có gợi ý hướng dẫn
+7. Viết hàm (`def`) — rút thao tác lặp lại thành hàm riêng, tự đặt tên
+8. Tự lực — không gợi ý, khó nhất của cột đó
+
+Tổng mỗi mùa: 4 × 8 = **32 màn**. Tổng 4 mùa: **128 màn**.
+
+**Khuôn 8 hàng MỚI (cả 4 mùa đã chuyển, khuôn cũ ở trên không còn màn nào dùng).** Lý do: ở khuôn cũ 5/8 hàng chỉ cần nghĩ tối đa khoảng 1 dòng, còn mốc sao bằng đúng lời giải mẫu nên chơi giống trắc nghiệm.
+
+1. Xem rồi đoán — gộp hai hàng Chỉ xem và Dự đoán
+2. Điền hoặc Sắp xếp — mỗi cột chọn dạng hợp với bài (`dangBai: 'sap-xep'`, mặc định là điền)
+3. Sửa lỗi
+4. Viết từ đầu (có gợi ý)
+5. **Viết mở** — nhiều cách giải đều thắng (`cachKhac`)
+6. Viết hàm
+7. **Viết mở** — nhiều cách giải, thường phải đánh đổi gọn và nhanh (`doiCho: true`)
+8. Tự lực
+
+- **Sao cộng dồn qua các lần chạy** (mọi mùa): mốc Gọn và mốc Nhanh lưu riêng (`Luu.ghiMoc`), nên một bài gọn và một bài nhanh vẫn đủ 3 sao. Riêng màn đoán vẫn tính sao theo lượt đoán.
+- **Chọn part ở màn trùm**: làm từ Mùa 2, vì Mùa 1 chưa có part để chọn.
+- Dùng `ManHoc.khuonMoi(so, m)`. Máy kiểm tự kiểm theo `dangBai` của từng màn.
+- **Màn viết mở tận dụng điểm mạnh, yếu về nhịp của part**: nhện đi 2 nhịp nên đường ngắn đáng viết thêm, chuỗi chỉ đường dài bao nhiêu cũng chỉ 5 ô; xuồng quay 1 nhịp nên rẽ vào bến gần rất lời, xuôi dòng nhanh gấp đôi; drone và vòi phun 1 nhịp nên thứ tự đi luống quyết định số nhịp (về đầu luống hay đi ngoằn ngoèo). Ô đích nào nhận vật cũng được nên có màn chọn đích gần hay đích xa.
+
+**Mùa 1 đã DỰNG LẠI theo khuôn 4×8** (thay bản 45 màn, 9 chương trước đó), **Mùa 2, Mùa 3, Mùa 4 đã dựng** cùng khuôn, theo cùng cách:
+
+- Dùng `ManHoc.khuonMoi(so, m)` (`hoc/man-co-so.js`): truyền số hàng 1–8, hàm tự đặt dạng bài và các cờ của hàng đó.
+- Mỗi cột là một chương + một gói (`m1-c1-than`, `m1-c2-tay`, `m1-c3-cam-bien`, `m1-c4-san` trong `hoc/thu-tu-chuong.js`).
+- Kiểm bằng `node hoc/kiem-khuon.mjs`: mỗi màn thắng 3 sao bằng hàm của chính nó, code mẫu đúng dạng bài của hàng, đúng bộ part của cột. Dựng mùa mới thì thêm mùa đó vào bảng `MUA` trong tệp này.
+
+Quyết định khi dựng (có thể đổi nếu muốn):
+
+- Hàng 1: đoán sai vẫn qua màn nhưng bị trừ 1 sao, chơi lại để đoán lại được.
+- Hàng 6: tên hàm do em tự đặt (`hamTuDat`, `canHamTuDat`), không viết hàm thì chưa thắng. Hàm tự đặt không chuyển sang màn sau bắt buộc: mỗi màn thắng được với hàm của chính nó.
+- Khung chính vẽ tối đa 10 dòng mà nhặt + đặt đủ lệnh gốc đã hết 10, nên hàng 1–6 ở cột có tay cho sẵn hàm của màn `pick()`/`drop()`.
+- Gói sau mở theo luật sao có sẵn (½ số sao tối đa của các gói trước, làm tròn xuống bội 5), nên chưa cần xong hết 8 hàng của cột trước.
+
+Quyết định riêng của Mùa 1 (có thể đổi nếu muốn):
+
+- **Chưa có `for` ở cột 1**: cột 1 chỉ dùng lệnh thường để em quen lệnh, nhịp và hướng xe; hàng 6 vẫn dạy hàm, gọi hàm 3 lần thay vì đặt trong `for`. `for` giới thiệu ở cột 2: hàng 1 xem và đoán, hàng 2 thấy lại, hàng 4 tự viết (dùng `for` mới đạt đủ sao).
+
+- **Tay kẹp chỉ có `pick()` và `drop()`**: bỏ `arm_down`, `arm_up`, `grab`, `release` khỏi khay. Mỗi lệnh tự chạy đủ 2 nhịp: nhịp 1 hạ tay và kẹp hoặc thả, nhịp 2 nâng tay. Áp dụng cho cả xe và nhện.
+
+Quyết định riêng của Mùa 2 (có thể đổi nếu muốn):
+
+- **Nam châm của nhện có hướng**: nhện không có mũi nên chọn hướng khi bật, `magnet_n("up")`, bốn hướng `"up"`, `"down"`, `"left"`, `"right"`. Hút sắt cách tới 2 ô, vật nam châm tới 3 ô, cùng cực bị đẩy. Vật dính sát nhện về hướng đó, `magnet_off()` thả xuống ô đó. Đang mang đổi hướng được, mất 1 nhịp. Thùng nằm đất chắn đường nhện gắn nam châm, nên nhện khác drone.
+- **Lấp hố**: mang thùng sắt tới sát hố, cho nam châm chỉ về phía hố rồi `magnet_off()`: thùng lấp hố, ô thành sàn. Bước vào hố chưa lấp là rơi, có mang thùng cũng vậy. Vật nam châm không lấp được hố.
+- **Hoạt cảnh bước của nhện**: mỗi nhịp đi nửa ô, nhịp 1 nửa đầu, nhịp 2 nửa sau. Bước không đi được thì nhịp 1 đứng tại chỗ nhấc chân, nhịp 2 rung. Luật vẫn tính nhện đổi ô ở nhịp 2 (`front_clear()` đọc ở nhịp 1 vẫn theo ô cũ).
+- **Hố vẽ vuông** để khớp thùng sắt (hình `ho` trong `hoc/game/ve-vector-o2.js`).
+- **Cảm biến trên nhện nhìn cố định**: khoảng cách thì `front` là phía trên sân, `left` trái, `right` phải; cảm ứng từ của Bãi tái chế nhìn sang phải (`batDau.huong = 1`). Vật nằm đất làm `front_clear()` thành False. Đầu dò từ nhìn theo `batDau.huong`, không theo hướng nam châm, nên màn nào muốn dò vật phía trên phải đặt `huong: 0` và nói trong đề bài.
+- **Nhện gắn kẹp đứng trùm lên vật được** vì tay làm ở ô đang đứng. Nhện gắn nam châm thì không.
+- **Nhập `and`/`or`**: màn khai `vaHoac: true`; chạm vào điều kiện rồi chọn `+ and`/`+ or`, tối đa hai vế. Chạm chữ bên phải của `c == "R"` hay `front_pole() == "N"` để đổi chữ.
+- **Biến chưa dạy ở Mùa 2**: chuỗi chỉ đi qua `for c in "..."`, chưa gán vào biến; biến và tham số để Mùa 3.
+
+Quyết định riêng của Mùa 3 (có thể đổi nếu muốn):
+
+- **Biến phải có ích**: giá trị của biến lấy từ lúc chạy (đếm quãng đường, `c = color()`) hoặc đổi trong lúc chạy, để viết thẳng số không qua được; máy kiểm có luật này.
+- **Số phải đúng, cả 4 mùa** (`ManHoc.khuonMoi` bật cho mọi màn): đâm là thua (`damLaThua`), và chạy xong mới chấm (`thangKhiXong`): đạt đích giữa chừng chương trình vẫn chạy tiếp, chạy hết mà vẫn đạt đích mới thắng. Nên `range` hay `n` chọn thật cao không qua được. Lời giải vòng lặp có bước đi cuối thì sân phải chừa chỗ cho bước đó. Máy kiểm đổi từng số trong lời giải thành 9 và 12, vẫn thắng thì báo lỗi.
+- **Cột dạy gì**: cột 1 biến đếm quãng đường (`n = 0`, `n = n + 1` trong `while`, rồi `range(n)`), cột 2 tham số số (`lui(n)`), cột 3 biến ghi màu và tham số chữ (`c = color()`, `giao(c)`), cột 4 biến đếm và hàm hai tham số (`bac(a, b)`).
+- **"Dây phao kéo" chính là tay lưới có sẵn** (`day-keo`): `cast_net()` / `drop_net()`, trong lời đề bài gọi là lưới phao cho khớp tên lệnh. Lưới bắt vật cách ĐÚNG 2 ô, vật đi theo đường xuồng và luôn cách xuồng 2 ô. Không dùng `set_length`.
+- **Phải thả mới tính giao**: vật còn trong lưới nằm trên bến thì chưa thắng, phải `drop_net()`.
+- **Thùng sắt nổi**: cột 1, 2 dùng `B` + lớp `vatChat` (`s` sắt, `N`/`S` nam châm, `g` gỗ). Xuồng gắn được nam châm (thả xuống ô nước trước mũi) hay tay lưới, không cả hai.
+- **Tầm nhìn**: thùng sắt thấy và hút trong 2 ô, thùng nam châm trong 3 ô. Vì lưới bắt ở 2 ô nên `while not front_metal(): forward()` dừng đúng tầm lưới.
+- **Camera chỉ thấy ô kề trước mũi** và thấy cả màu bến, nên phải `c = color()` rồi mới lùi ra tung lưới: đây là lý do cần biến. Xuồng xuất phát sau các bến (phía bè) để `while color() == "none"` không dừng nhầm ở bến.
+- **Bến và bè có màu**: lớp `mau` cho bến, `vatMau` cho bè, có dấu hình như các vật màu khác để người mù màu vẫn phân biệt.
+- **Van không khai `noi`** thì điều khiển mọi cống, mọi dòng của sân: tung lưới trúng van thì cống mở, dòng tắt (`cast_net("left")`, van cách 1 hay 2 ô đều được).
+- **Hàng 6 cột 2–4 có `canThamSo`**: hàm của em phải có tham số mới thắng. Màn khai `khaiDoiSo` thì hộp Hàm mới có ô đối số.
+- **Nhập lệnh**: tham số so với tên màu thì lời gọi có bảng chọn màu kèm biến (`giao(c)`); `cast_net("left")` có bảng chọn bốn hướng.
+- **Bỏ màn demo Bến sông** trong `hoc/man-demo.js`.
+- **Thẻ part của xuồng** đổi sang bộ lệnh `forward`/`backward`/`turn_left`/`turn_right`.
+
+Quyết định riêng của Mùa 4 (có thể đổi nếu muốn):
+
+- **Cột dạy gì**: cột 1 danh sách số (`a = [2, 3, 1]`, `for n in a`, `a[0]`), cột 2 danh sách chữ (`a[i]`, `len(a)`, `a.append(color())`, hàm nhận danh sách `gieo(a)`), cột 3 nhớ kết quả đo (`a.append(warm())`, `for k in a: if k:`), cột 4 phối hợp với hai cảm biến. Hàng 8 cột 4 là trùm cả 4 mùa.
+- **Mục tiêu mới `cham-dat`**: thắng khi hết đất khô và mọi ô cần gieo đúng màu. Lớp sân `datKho` (số 1..3 là số lần tưới cần, `m` là luống đo), `datRom` (`x` là ô phủ rơm), `hinh` (ô cần gieo, vẽ hoa mờ).
+- **Vòi phun trên drone làm ở ô dưới bụng**: `spray()` tưới, `seed(c)` gieo. Mỗi lệnh tự chạy 1 nhịp, drone đứng yên trong nhịp đó. Tưới đất không khô thì úng, gieo ngoài ô cần gieo thì hỏng, đều dừng ngay. Gieo sai màu thì gieo lại được.
+- **Hồng ngoại trên drone**: `warm()` đo ô dưới bụng, không tốn nhịp. Không đọc xuyên rơm. Luống đo (`m`) báo nóng nhưng không cần tưới, nên muốn tưới luống phủ rơm phải đo luống đo, nhớ vào danh sách rồi mới bay xuống: đây là lý do cần danh sách.
+- **Camera trên drone** đọc ô dưới bụng: vật trước, rồi tới màu đất. Lớp `hinh` là ô cần gieo, không phải màu đất, nên camera đọc ra `"none"`.
+- **Lưới trên drone** (`luoiBay: true`): `cast_net(d)` theo màn hình (`front` lên trên), bắt vật đất cách đúng 2 ô, vật đi theo đường bay. Bay về phía vật trong lưới thì bị chặn.
+- **Danh sách**: khung nhập đã có sẵn, hàng 4, 6, 8 khai `canList: true` khi màn cần (không dùng danh sách thì chưa thắng). Vẫn không dùng gán `a[0] = x`, tuple, dict, set, list lồng list.
+- **Hoa phân biệt bằng số cánh, không dùng dấu hình**: xanh lá 3, xanh dương 4, đỏ 5, vàng 8 (`SO_CANH` trong `hoc/game/ve-vector-nong-trai.js`), để người mù màu đếm cánh là biết màu. Áp dụng cho luống hoa, hoa vừa gieo, hoa mờ cần gieo và bao hạt. Các mùa khác vẫn giữ dấu hình.
+- **Bỏ màn demo Nông trại**: `hoc/man-demo.js` không còn màn nào.
+
+## Quy tắc engine (đã áp dụng một phần khi dựng mùa 1 lần đầu, giữ nguyên khi dựng lại)
+
+- **Hai bánh (`banh`) và Xuồng (`xuong`)**: dùng `forward()` / `backward()` / `turn_left()` / `turn_right()`. Tên theo mũi xe, không theo màn hình; `go_up()` của nhện, drone và hướng `color("up")` mới theo màn hình.
+  KHÔNG dùng `left_move()` / `right_move()` kiểu hai bánh độc lập cũ.
+- **Nhện (`nhen`) và Drone (`drone`)**: giữ nguyên `go_up()`/`go_down()`/`go_left()`/`go_right()`
+  — không có hướng mặt, không quay.
+- **Mỗi lệnh tự tốn nhịp, không có lệnh chốt nhịp** (bảng `SO_NHIP` trong `hoc/san-hoc.js`, máy kiểm đo thật từng lệnh):
+
+  | Lệnh | Nhịp | Ý nghĩa |
+  |---|---|---|
+  | Xe `forward`, `backward` | 1 | Xe đi thẳng nhanh |
+  | Xe `turn_left`, `turn_right` | 2 | Xe rẽ chậm, nhịp đầu mới xoay nửa đường |
+  | Xuồng đi, quay | 1 | Xuồng quay nhanh nhưng chỉ đi trên nước |
+  | Nhện `go_*` | 2 | Nhện chậm nhưng không phải quay, đi được khắp nơi |
+  | Drone `go_*` | 1 | Drone nhanh nhất; mùa 5 bật pin thì mỗi nhịp tốn pin |
+  | `pick`, `drop` | 2 | Tay kẹp chắc nhưng chậm |
+  | `magnet_n`, `magnet_s`, `magnet_off` | 1 | Nam châm nhanh hơn tay kẹp, nhưng không hút được gỗ |
+  | `cast_net` | 2 | Lưới với xa 2 ô nhưng tung chậm |
+  | `drop_net`, `spray`, `seed` | 1 | |
+  | `wait` | 1 | Chỉ đợi, không làm gì. Là thẻ Logic, chỉ màn có hai xe mới đưa lên khay |
+  | Cảm biến, gán biến | 0 | |
+- **Mọi tổ hợp thân+tay đều được phép** (không giới hạn tay theo đúng thân "gốc" của nó nữa, vì chuỗi
+  chuyển part ở trên cố ý ghép tay cũ lên thân mới).
+- **Ô mục tiêu của tay, quy tắc DÙNG CHUNG cho mọi tay** (không viết riêng từng tay):
+  - Thân CÓ hướng mặt (Hai bánh, Xuồng): tay tác động Ô PHÍA TRƯỚC MŨI.
+  - Thân KHÔNG có hướng mặt (Nhện, Drone): tay tác động Ô ROBOT ĐANG ĐỨNG ("tại chỗ").
+  - Tay có tầm xa (vd Dây phao kéo, tầm 2–3 ô) giữ nguyên tầm xa của nó; trên thân không hướng thì
+    được reach cả 4 hướng quanh robot (vì không có "phía trước" để giới hạn còn một hướng) — đây là
+    lý do Dây phao kéo trên Drone KHÔNG trùng cơ chế với Kẹp (tầm ngắn, mang dính người) dù cả hai
+    đều "tại chỗ": khác nhau ở tầm xa và kiểu mang (dính người / kéo lê trễ 1 nhịp).
+- Không dùng `tuple`/`dict`/`set`/list-lồng-list trong bất kỳ cú pháp màn nào.
+
+## Việc còn lại
+
+1. Mùa 5 Đồng đội: đã có đủ 4 cột, độ tự do tăng dần: Xe có sẵn (R2 khóa), Hai chương trình (viết cả hai xe), Chọn xe (`man.chonDoi.menu` gồm mã `XE`, `NHEN`, `XUONG`, `DRONE`), Lắp part (`man.chonDoi.khe`, mã `thân|tay|cảm biến`, chỉ các cặp đã gặp trong 4 mùa, xem `CoMay.GHEP`). Màn hình chọn ở `game/man-chon-doi.js`. Chưa dùng vòi phun và hồng ngoại ở cột 4; `return` vẫn để ngoài.
+2. Thao tác nhập lệnh (UI khay lệnh/gõ code): đã đơn giản hoá một phần qua forward/backward/turn_left/turn_right;
+   chưa xem lại toàn bộ UI nhập lệnh — vẫn là việc treo từ đầu buổi.

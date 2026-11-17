@@ -5,6 +5,19 @@ ngày 22/10/2026: lịch sử commit của thư mục `robotics/` (nhánh `robot
 
 Trang tĩnh thuần HTML + JS: không build, không gói npm.
 
+## Repo chính: diem10code-python
+
+Từ 17/11/2026, repo chính của game là `diem10code-python` (remote `d10py`). Lịch sử ở đây thay `master` cũ của repo đó; repo `doi-robot-chan-hung` chỉ còn để lưu trữ. Kế hoạch: [hoc/KE-HOACH-GOP-DIEM10CODE-PYTHON.md](hoc/KE-HOACH-GOP-DIEM10CODE-PYTHON.md).
+
+Một game, hai bản, chung một lõi:
+
+| Bản | Nội dung | Ai chơi |
+|---|---|---|
+| **Ôn thi** | 5 mùa của bản tách 5/11 (160 màn: Kho hàng, Bãi tái chế, Bến sông, Nông trại, Tổ hợp). Không có `wait()`: mỗi lệnh tự tốn một nhịp; hai bánh và xuồng dùng `forward()` / `backward()` / `turn_left()` / `turn_right()` | mọi người, kể cả khách |
+| **Đầy đủ** | Mật Lệnh Robot 9 mùa, có `wait()` | chỉ người đã mua bản đầy đủ (một lần cho mọi game diem10code) |
+
+Lịch sử bản 5 mùa (nhánh `ban-5-mua`, commit b419083) đã nối vào main bằng `merge -s ours`: cây tệp vẫn là của game, nội dung 5 mùa sẽ đưa vào ở giai đoạn 3 của kế hoạch. Tài liệu của bản tách nằm ở [docs/tach-5-11/](docs/tach-5-11/).
+
 ## Chơi
 
 ```bash
