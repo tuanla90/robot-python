@@ -23,6 +23,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    GÓI V4 (27–28/10): H.kinh vẽ mắt biểu cảm theo s.mat ('thuong' | 'chop1' | 'chop2' | 'lim' | 'dam' | 'xoay' | 'vui' | 'ngac' | 'buon' | 'cho', kèm ':±1' liếc) — nét dày có
      sàn 2 px thiết bị, hình gần hết dải kính; camera KHÔNG còn đổi mắt: khối ống kính ở đuôi (than.oCam, cảm biến oVe 'cam'), diemOngKinh = gốc tia camera; diemCamBien = gốc tia
      cảm biến khác; ổ hông mọi thân nằm trên vỏ (than.vo = hộp vỏ, máy kiểm "dính vỏ"); hiệu ứng trên sân ở VeVector.HU (ve-vector-hieu-ung.js).
+   13/11: mắt mở ('thuong', kể cả liếc) là mắt "ba vòng" (matVong: lòng trắng elip đứng cao gần hết kính, tròng chuyển màu + đồng tử theo đội, hai đốm sáng; liếc dời tròng),
+     theo đầu R1 của video physicraft; màu tròng ở mauDoi (trong / trongToi / dongTu). Mắt biểu cảm khác giữ nét sáng; camera / drone đang đọc giữ viên thuốc trắng rực.
    Ô / VẬT: VeVector.o(ma, canhPx, s) · VeVector.vat(ma, canhPx, s) → canvas đệm.
    Node: không có document → CanvasGia ghi lại từng lệnh vẽ (máy kiểm hoc/kiem-ve-vector.mjs đọc .lenh).
    ========================================================================== */
@@ -127,9 +129,22 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [x + w * 0.2174, x + w * 0.6304].forEach(function (ex0, i) {
       var ex = ex0 + dx, cx = ex + ew / 2, cy = ey + eh / 2, trong = i === 0 ? 1 : -1;   // trong: hướng về giữa mặt theo x (mắt x nhỏ → +x)
       if (veMat(g, M, kieu, cx, cy, w, h, trong)) return;
-      if (sang) { bo(g, ex - 2.5, ey - 2.5, ew + 5, eh + 5, (ew + 5) / 2); to(g, rgba(M.matRgb, 0.6)); }
-      bo(g, ex, ey, ew, eh, ew / 2); to(g, sang ? BM.vecMatSang : M.mat); vien(g, M.chinh, 1);
+      if (sang) { bo(g, ex - 2.5, ey - 2.5, ew + 5, eh + 5, (ew + 5) / 2); to(g, rgba(M.matRgb, 0.6)); bo(g, ex, ey, ew, eh, ew / 2); to(g, BM.vecMatSang); vien(g, M.chinh, 1); return; }   // đang đọc: viên thuốc trắng rực như cũ
+      matVong(g, M, ex0 + ew / 2, cy, w * 0.1, h * 0.43, liec);
     });
+  }
+  /** MẮT MỞ "BA VÒNG" (13/11, theo đầu R1 của video physicraft; chủ kênh chọn kiểu D): lòng trắng elip đứng cao gần hết kính (viền màu đội như viên thuốc cũ),
+   *  tròng chuyển màu theo đội, đồng tử tối, viền sáng trong tròng (lõi mắt của đội), hai đốm sáng. Liếc (liec ±1) dời TRÒNG trong lòng trắng (cắt gọn), lòng trắng đứng yên. */
+  function matVong(g, M, cx, cy, rx, ry, liec) {
+    elip(g, cx, cy, rx, ry); to(g, BM.vecMatSang); vien(g, M.chinh, 1);
+    g.save(); elip(g, cx, cy, rx, ry); g.clip();
+    var ix = rx * 0.82, iy = ry * 0.76, tx = cx + (liec || 0) * rx * 0.4, ty = cy + ry * 0.1;
+    elip(g, tx, ty, ix, iy); g.fillStyle = gradToa(g, tx, ty - iy * 0.3, iy * 1.15, [[0, M.trong], [1, M.trongToi]]); g.fill();
+    elip(g, tx, ty, ix * 0.45, iy * 0.45); to(g, M.dongTu);
+    elip(g, tx, ty, ix * 0.9, iy * 0.92); vien(g, M.mat, rx * 0.12);
+    elip(g, tx - ix * 0.3, ty - iy * 0.36, ix * 0.32, iy * 0.28); to(g, BM.vecMatSang);
+    tron(g, tx + ix * 0.4, ty + iy * 0.4, ix * 0.13); to(g, BM.vecMatSang);
+    g.restore();
   }
   /** Bao nhiêu px thiết bị trên một đơn vị của g lúc này (để nét biểu cảm có SÀN theo px thật: ô sân nhỏ ~24 px vẫn đọc ra). Canvas giả (Node): 1. */
   function pxMoiDv(g) { try { var m = g.getTransform(); return Math.sqrt(Math.abs(m.a * m.d - (m.b || 0) * (m.c || 0))) || 1; } catch (e) { return 1; } }
@@ -220,12 +235,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ---------------------------------------------------------------- màu đội */
   /** son (mã màu đội của VeRobot.sonHieuLuc / san-ve.js SON_XE) → { chinh, toi }: '' / 'vang' = R1 xanh Sola; 'lam' = R2 hồng Luna; đối thủ 'do'; dự phòng 'tim'.
    *  V7c1 (28/10): bộ sơn mở khoá (ngoc / cam / trang / hoang-kim) đã bỏ cùng hàng Cài đặt: mã lạ → R1. */
-  var SON_DOI = { do: ['sonDo', 'sonDoToi'], tim: ['sonTim', 'sonTimToi'] };
+  var SON_DOI = { do: ['sonDo', 'sonDoToi', 'Do'], tim: ['sonTim', 'sonTimToi', 'Tim'] };
+  /** trong / trongToi / dongTu (13/11): tròng và đồng tử của mắt mở "ba vòng", theo đội (gõ đủ tên vai để máy kiểm bảng màu đếm được chỗ dùng). */
+  var TRONG_DOI = {
+    R1: [BM.vecTrongR1, BM.vecTrongR1Toi, BM.vecDongTuR1], R2: [BM.vecTrongR2, BM.vecTrongR2Toi, BM.vecDongTuR2],
+    Do: [BM.vecTrongDo, BM.vecTrongDoToi, BM.vecDongTuDo], Tim: [BM.vecTrongTim, BM.vecTrongTimToi, BM.vecDongTuTim]
+  };
+  function mauTrong(hau) { var t = TRONG_DOI[hau]; return { trong: t[0], trongToi: t[1], dongTu: t[2] }; }
   function mauDoi(son) {
-    if (son === 'lam') return { ma: 'R2', chinh: BM.vecDoiR2, toi: BM.vecDoiR2Toi, mat: BM.vecMatR2, matRgb: BM.vecMatSangR2Rgb };      // mat / matRgb: lõi và quầng mắt theo đội (29/10)
+    if (son === 'lam') return Object.assign({ ma: 'R2', chinh: BM.vecDoiR2, toi: BM.vecDoiR2Toi, mat: BM.vecMatR2, matRgb: BM.vecMatSangR2Rgb }, mauTrong('R2'));      // mat / matRgb: lõi và quầng mắt theo đội (29/10)
     var k = SON_DOI[son];
-    if (k) return { ma: son, chinh: BM[k[0]], toi: BM[k[1]], mat: BM.vecMat, matRgb: BM.vecMatSangRgb };
-    return { ma: 'R1', chinh: BM.vecDoiR1, toi: BM.vecDoiR1Toi, mat: BM.vecMat, matRgb: BM.vecMatSangRgb };
+    if (k) return Object.assign({ ma: son, chinh: BM[k[0]], toi: BM[k[1]], mat: BM.vecMat, matRgb: BM.vecMatSangRgb }, mauTrong(k[2]));
+    return Object.assign({ ma: 'R1', chinh: BM.vecDoiR1, toi: BM.vecDoiR1Toi, mat: BM.vecMat, matRgb: BM.vecMatSangRgb }, mauTrong('R1'));
   }
 
   /* ---------------------------------------------------------------- luật ghép: Y NHƯ Part.ghep của bộ pixel (part/part.js) — cùng điều cấm, cùng câu báo lỗi */
