@@ -14,7 +14,7 @@ Game thuộc vũ trụ chung diem10code (bản chuẩn: [../VU-TRU-DIEM10CODE.ht
 Người chơi ở trong **đội rô bốt của CLB Tin học THPT Hoa Phượng**, một ban của CLB do Sola phụ
 trách: R1 của Sola (xanh), R2 của Luna (hồng). Thầy dạy Tin là thầy Khải. Kho hàng, bãi tái chế,
 bến sông, nông trại... là các chuyến thực tế của đội; rô bốt của đội ra mắt ở gian Trưng bày robot
-(HD05) của Ngày hội Tin học 26-27/3/2027. Không có "CLB Robot" hay "Ngày Hội Robot" riêng.
+(HD05) của Ngày hội Tin học sáng 27/3/2027. Không có "CLB Robot" hay "Ngày Hội Robot" riêng.
 
 ## Đã mang sang (cơ chế, không mang màn)
 
