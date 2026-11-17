@@ -2341,17 +2341,60 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     }
     return ds.filter(function (f) { var da = {}; da[f.ten] = true; return bat[f.ten] || !dungLenhThieu(f, da); });
   }
+  /** MỐC THỜI GIAN của tên hàm (17/11): màn đầu tiên (theo thứ tự ManHoc.danhSach) có tên đó trong taoHam hay trong hamCuaEmMoi của một lời giải
+   *  (loiGiai, loiGiaiKhac, congThucKhac, cách lắp mẫu) → { thu: chỉ số màn, mua: mã mùa của chương màn đó }. Tên không có ở đây là tên em tự đặt.
+   *  Gồm cả hàm demo một lần (hamDemoMotLan) và hàm phụ lời giải tự chế, nên chúng không bị coi là hàm tự đặt (từng luôn nằm ở nhóm chính, khay dài). */
+  var mocCache = null, mocKhoa = '';
+  function muaCuaChuong(c) {
+    var TT = window.ThuTuChuong || {}, ms = TT.mua || [], gs = TT.goi || [];
+    for (var i = 0; i < gs.length; i++) if ((gs[i].chuong || []).indexOf(c) >= 0) return gs[i].mua || (ms[0] && ms[0].ma) || '';
+    return (ms[0] && ms[0].ma) || '';
+  }
+  function mocHam() {
+    var MH = window.ManHoc, ds = (MH && MH.danhSach) || [];
+    var khoa = ds.length + '|' + (ds[0] && ds[0].ma) + '|' + (ds.length && ds[ds.length - 1].ma);
+    if (mocCache && khoa === mocKhoa) return mocCache;
+    var kq = {};
+    ds.forEach(function (m, i) {
+      var mua = null;
+      function them(n) { if (typeof n === 'string' && !kq[n]) { if (mua === null) mua = muaCuaChuong(m.chuong); kq[n] = { thu: i, mua: mua }; } }
+      function tuCach(c) { if (c) { ((c.baiLam && c.baiLam.hamCuaEmMoi) || []).concat(c.hamCuaEmMoi || []).forEach(function (f) { them(f && f.ten); }); } }
+      (m.taoHam || []).forEach(them);
+      [].concat(m.loiGiai || [], m.loiGiaiKhac || [], m.congThucKhac || []).forEach(tuCach);
+      if (m.lapRap) (m.lapRap.cachLap || []).forEach(function (c) { tuCach(c && c.loiGiai); });
+    });
+    mocCache = kq; mocKhoa = khoa;
+    return kq;
+  }
+  /** Nhóm thời gian của hàm `ten` ở màn `man`: { muaNay, mua (mã mùa), so (thứ tự mùa trong ThuTuChuong.mua), thu (mốc; tên tự đặt = cuối), sau (mùa sau mùa đang chơi) }. */
+  function nhomThoiGian(man) {
+    var moc = mocHam(), ms = (window.ThuTuChuong && window.ThuTuChuong.mua) || [], g = man && (man.manGoc || man);
+    var muaNay = g ? muaCuaChuong(g.chuong) : '';
+    function soMua(ma) { for (var i = 0; i < ms.length; i++) if (ms[i].ma === ma) return i; return ms.length; }
+    return function (ten) {
+      var x = moc[ten];
+      if (!x || x.mua === muaNay) return { muaNay: true, mua: muaNay, so: -1, thu: x ? x.thu : 1e9 };
+      return { muaNay: false, mua: x.mua, so: soMua(x.mua), thu: x.thu, sau: soMua(x.mua) > soMua(muaNay) };   // sau: mùa đứng sau mùa đang chơi (Mở hết, chơi lại)
+    };
+  }
+  /** Xếp hàm theo thời gian: hàm mùa này trước (theo mốc, tên em tự đặt cuối), rồi hàm đã biết từ các mùa khác theo thứ tự mùa, trong mỗi mùa theo mốc. */
+  function xepThoiGian(ds, nhom) {
+    return ds.map(function (f, i) { return { f: f, n: nhom(f.ten), i: i }; }).sort(function (a, b) {
+      return (a.n.muaNay ? 0 : 1) - (b.n.muaNay ? 0 : 1) || a.n.so - b.n.so || a.n.thu - b.n.thu || a.i - b.i;
+    }).map(function (x) { return x.f; });
+  }
   /**
    * Chia hàm của em (đã lọc theo robot) thành hai nhóm cho khay (23/10: kho đầy dần, nhiều hàm cốt truyện chỉ dùng ở đúng màn chế ra nó nên khay dài, tìm cực):
    *  chinh — hàm màn này dùng tới: hàm màn bắt tạo / cần / cho sửa (taoHam, hamCuaEmCan, ManHoc.hamSuaDuoc), hàm lời giải mẫu gọi (cả lời giải khác, công thức khác,
-   *          cách lắp mẫu của màn lắp ráp), hàm bài làm đang gọi (bai: chương trình, hàm của màn), hàm em tự đặt tên (không phải tên cốt truyện), cùng mọi hàm mà chúng gọi tới;
+   *          cách lắp mẫu của màn lắp ráp), hàm bài làm đang gọi (bai: chương trình, hàm của màn), hàm em tự đặt tên (không có mốc ở mocHam), cùng mọi hàm mà chúng gọi tới;
    *  khac — các hàm cốt truyện còn lại: khay gom vào nhóm "Hàm khác" thu gọn, chạm mới mở. Thiếu ManHoc (máy kiểm dựng khay riêng) thì mọi hàm là chinh.
+   *  Hai nhóm xếp theo thời gian (xepThoiGian); nhom(ten) cho khay chia tiểu mục "Mùa này" / "Đã biết · <mùa>".
    */
   function tachHamKhac(man, ds, bai) {
     ds = ds || [];
     var MH = window.ManHoc;
     if (!man || !MH || typeof MH.hamCotTruyen !== 'function') return { chinh: ds, khac: [] };
-    var cot = MH.hamCotTruyen(), can = {}, theoTen = {}, g = man.manGoc || man;
+    var moc = mocHam(), can = {}, theoTen = {}, g = man.manGoc || man;
     ds.forEach(function (f) { theoTen[f.ten] = f; });
     var hang = [];
     function them(n) { if (!can[n]) { can[n] = true; hang.push(n); } }
@@ -2371,9 +2414,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     [].concat(g.congThucKhac || []).forEach(tuCach);
     if (g.lapRap) (g.lapRap.cachLap || []).forEach(function (c) { tuBai(c.loiGiai); });
     tuBai(bai);
-    ds.forEach(function (f) { if (cot.indexOf(f.ten) < 0) them(f.ten); });
+    ds.forEach(function (f) { if (!moc[f.ten]) them(f.ten); });                     // tên em tự đặt (không màn nào tạo / dùng tên này)
     while (hang.length) { var f = theoTen[hang.pop()]; if (f) goi(f.than); }      // lan theo lời gọi trong thân các hàm của kho (park gọi back, u_turn…)
-    return { chinh: ds.filter(function (f) { return can[f.ten]; }), khac: ds.filter(function (f) { return !can[f.ten]; }) };
+    var nhom = nhomThoiGian(g);
+    return { chinh: xepThoiGian(ds.filter(function (f) { return can[f.ten]; }), nhom), khac: xepThoiGian(ds.filter(function (f) { return !can[f.ten]; }), nhom), nhom: nhom };
   }
   /** Thẻ khay cho hàm `ten` còn TRỐNG thân: theo bản của hàm đó trong lời giải màn (man.loiGiai.hamCuaEmMoi), không có thì null (khay để ở THÂN). Như TP.theMacDinh. */
   function theHamRong(man, ten, kho, hamMan) {
@@ -2911,16 +2955,33 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           nb.addEventListener('click', function () { cb.khiMoi(theChon); });                // truyền thẻ đang xem: hàm mới mở ở Xưởng sẽ hiện đúng thẻ đó
           g2.appendChild(nb);
         }
-        if (coTS) ds = ds.filter(function (f) { return f.thamSo && f.thamSo.length; }).concat(ds.filter(function (f) { return !(f.thamSo && f.thamSo.length); }));   // hàm có tham số (chủ đề của chương) lên đầu
-        ds.forEach(function (f) { gach(f.ten, 'gr', 'em', f.thamSo); });
+        bayTheoMua(ds);
         if (!khac.length) return;
         var nk = h('button', 'nk' + (moKhac ? ' mo' : '')); nk.setAttribute('data-nut', 'ham-khac'); nk.setAttribute('aria-expanded', moKhac ? 'true' : 'false'); nk.setAttribute('title', t('choi.hamKhacNhan', { n: khac.length }));
         nk.appendChild(Ve.ico(moKhac ? 'thutra' : 'next', 1, { line: BM.bangV2, fill: BM.trangV3 }));
         nk.appendChild(h('span', 'nk-chu', t(moKhac ? 'choi.hamKhacAn' : 'choi.hamKhac', { n: khac.length })));
         nk.addEventListener('click', function (ev) { ev.stopPropagation(); moKhac = !moKhac; veThe(host.scrollTop); });
         host.appendChild(nk);
-        if (moKhac) khac.forEach(function (f) { gach(f.ten, 'gr', 'em', f.thamSo); });
+        if (moKhac) bayTheoMua(khac);
       }
+      /** Bày khối hàm của em theo nhóm thời gian (17/11, spec.nhomHam = nhom của TP.tachHamKhac): danh sách đã xếp mùa này trước, rồi các mùa
+       *  đã qua; có từ hai nhóm trở lên và từ 6 hàm trở lên thì mỗi nhóm có tiểu mục "Mùa này" / "Đã biết · <tên mùa>" (mùa đứng sau mùa đang chơi: "Mùa sau · <tên mùa>"). Thẻ có hàm có tham số (coTS): trong mỗi nhóm,
+       *  hàm có tham số (chủ đề của chương) lên đầu. */
+      function bayTheoMua(list) {
+        var nh = typeof spec.nhomHam === 'function' ? spec.nhomHam : null, thu = {}, so = 0, sauMua = {};
+        var x = list.map(function (f, i) {
+          var n = nh ? nh(f.ten) : null, k = n && !n.muaNay ? n.mua : '';
+          if (k && !(k in sauMua)) sauMua[k] = !!n.sau;
+          if (!(k in thu)) thu[k] = so++;
+          return { f: f, k: k, g: thu[k], ts: coTS && f.thamSo && f.thamSo.length ? 0 : 1, i: i };
+        }).sort(function (a, b) { return a.g - b.g || a.ts - b.ts || a.i - b.i; });
+        var truoc = null;
+        x.forEach(function (y) {
+          if (so > 1 && x.length >= 6 && y.k !== truoc) { truoc = y.k; nhan(y.k ? t(sauMua[y.k] ? 'choi.nhomMuaSau' : 'choi.nhomDaBiet', { mua: tenMua(y.k) }) : t('choi.nhomMuaNay'), 'g-thoi'); }
+          gach(y.f.ten, 'gr', 'em', y.f.thamSo);
+        });
+      }
+      function tenMua(ma) { var ms = (window.ThuTuChuong && window.ThuTuChuong.mua) || []; for (var i = 0; i < ms.length; i++) if (ms[i].ma === ma) return ms[i].ten || ma; return ma; }
       /** Nhóm HÀM CỦA MÀN của thẻ (màu cam, ngay trên hàm của em): chỉ có khi thẻ có hàm của màn. */
       function nhomMan(ds) {
         if (!ds.length) return;

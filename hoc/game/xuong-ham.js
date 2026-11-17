@@ -263,6 +263,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       thamSoChuoi: chuoiDr,                              // khối mẫu `if d == "U":` thay cho khối battery()
       em: em ? em.chinh : null,
       emKhac: em ? em.khac : [],                         // hàm màn này không dùng tới: nhóm "Hàm khác" thu gọn
+      nhomHam: em ? em.nhom : null,                      // tiểu mục Mùa này / Đã biết · <mùa>
       theRong: A.theRong,                                // hàm còn trống thân: thẻ theo lời giải màn
       man: A.bai().hamCuaMan,
       khoa: TP.khoaKhay(man),                            // hàm bị khóa ở màn này: ổ khóa thay bút chì (mở ra chỉ xem)

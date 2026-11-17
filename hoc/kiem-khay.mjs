@@ -131,7 +131,7 @@ const doc = {
   getElementById: () => null, body: new El('body')
 };
 const luuGia = { co: {}, daXem(k) { return !!this.co[k]; }, datDaXem(k) { this.co[k] = true; return true; } };
-const ctx = vm.createContext({ console, document: doc, getComputedStyle: () => ({ fontSize: '11px' }), Ve: { ico: () => new El('i'), khoa: () => new El('i') }, SanHoc, KhungCode, ManHoc, Luu: luuGia, setTimeout, clearTimeout });
+const ctx = vm.createContext({ console, document: doc, getComputedStyle: () => ({ fontSize: '11px' }), Ve: { ico: () => new El('i'), khoa: () => new El('i') }, SanHoc, KhungCode, ManHoc, Luu: luuGia, ThuTuChuong: require(path.join(day, 'thu-tu-chuong.js')), setTimeout, clearTimeout });   // ThuTuChuong: mùa của chương (TP.tachHamKhac nhóm thời gian)
 ctx.window = ctx;
 for (const f of ['chu.js', 'huong-dan.js', 'thanh-phan.js', 'den-bo-phan.js']) vm.runInContext(fs.readFileSync(path.join(day, 'game', f), 'utf8'), ctx, { filename: f });
 const TP = ctx.TP, HuongDan = ctx.HuongDan, DenBoPhan = ctx.DenBoPhan;
@@ -692,6 +692,30 @@ console.log('\n== 11. Hàm của em: bắt tạo hàm, hàm sửa hỏng, nhóm 
     J(noiDung(k11.host)));
   k11.pal.datLoi(['em:side']);
   kiem('datLoi một hàm nằm trong nhóm Hàm khác đang thu gọn: nhóm tự mở', noiDung(k11.host).includes('side'));
+
+  // 17/11: "Mở hết" nạp cả kho tham chiếu → khay dài (cuu-hang-dong.5: 57 hàm ở nhóm chính). Hàm demo một lần (hamDemoMotLan) và hàm phụ lời giải tự chế
+  // (fix_river_route, walk_sing…) từng bị coi là tên em tự đặt nên luôn ở nhóm chính. Giờ chỉ tên không màn nào tạo / dùng mới là tên tự đặt.
+  const mLb9 = man('luc-ban.9'), tLb9 = TP.tachHamKhac(mLb9, ManHoc.khoThamChieu(mLb9), null), demo = ManHoc.hamDemoMotLan();
+  kiem('TP.tachHamKhac (luc-ban.9, kho đủ mọi màn trước): hàm demo một lần (stair, two, side…) ở nhóm Hàm khác, nhóm chính gọn (≤ 10)',
+    tLb9.chinh.length <= 10 && !tLb9.chinh.some((f) => demo.includes(f.ten)) && ['stair', 'two', 'side'].every((t) => tLb9.khac.some((f) => f.ten === t)),
+    J(tLb9.chinh.map((f) => f.ten)));
+  const khoaTG = (n) => [n.muaNay ? 0 : 1, n.so, n.thu];
+  const dungThuTu = (ds, nhom) => ds.every((f, i) => { if (!i) return true; const a = khoaTG(nhom(ds[i - 1].ten)), b = khoaTG(nhom(f.ten)); return a[0] < b[0] || (a[0] === b[0] && (a[1] < b[1] || (a[1] === b[1] && a[2] <= b[2]))); });
+  kiem('TP.tachHamKhac mọi màn (kho tham chiếu): hai nhóm xếp theo thời gian — hàm mùa này trước, rồi các mùa đã qua theo thứ tự mùa, trong mỗi mùa theo màn đầu tiên có hàm đó',
+    (() => { const sai = []; ManHoc.danhSach.forEach((m) => { const t = TP.tachHamKhac(m, ManHoc.khoThamChieu(m), null); if (!dungThuTu(t.chinh, t.nhom) || !dungThuTu(t.khac, t.nhom)) sai.push(m.ma); }); return !sai.length || (console.log('     ' + sai.slice(0, 8).join(' ')), false); })());
+  const tTu = TP.tachHamKhac(mLb9, ManHoc.khoThamChieu(mLb9).concat([H('tu_dat', ['move()'])]), null);
+  const muaNayTu = tTu.chinh.filter((f) => tTu.nhom(f.ten).muaNay);
+  kiem('TP.tachHamKhac: hàm em tự đặt tên ở nhóm chính, thuộc "Mùa này", xếp cuối mùa này', muaNayTu.length && muaNayTu[muaNayTu.length - 1].ten === 'tu_dat', J(tTu.chinh.map((f) => f.ten)));
+  const nSau = TP.tachHamKhac(m410, [H('forward', ['move()'], ['n']), H('move', ['wait()'])], null).nhom;
+  kiem('TP.tachHamKhac nhom: hàm của mùa đứng SAU mùa đang chơi (Mở hết, chơi lại) đánh dấu sau → khay ghi "Mùa sau · <mùa>", không ghi "Đã biết"',
+    nSau('forward').sau === true && !nSau('forward').muaNay && nSau('move').muaNay && !!TP.Palette && /choi\.nhomMuaSau/.test(fs.readFileSync(path.join(day, 'game', 'thanh-phan.js'), 'utf8')));
+  let k17 = khayMoi(); k17.host.clientHeight = 2000;
+  k17.pal.dung(Object.assign(specMan(mLb9, tTu.chinh.concat(tTu.khac), []), { em: tTu.chinh, emKhac: tTu.khac, nhomHam: tTu.nhom, the: 'than' }));
+  nutKhac(k17).click();
+  const chu17 = noiDung(k17.host), iMua = chu17.indexOf('## Mùa này'), iBiet = chu17.findIndex((x) => x.startsWith('## Đã biết'));
+  kiem('khay: hàm của em chia tiểu mục "Mùa này" / "Đã biết · <tên mùa>" (tên mùa lấy từ ThuTuChuong.mua), cả trong nhóm Hàm khác đã mở; danh sách dưới 6 hàm thì không chia',
+    (() => { const k = khayMoi(); k.host.clientHeight = 2000; k.pal.dung(Object.assign(specMan(mLb9, tLb9.chinh, []), { em: tLb9.chinh.slice(0, 5), emKhac: [], nhomHam: tLb9.nhom, the: 'than' })); return !noiDung(k.host).some((x) => /^## (Mùa này|Đã biết)/.test(x)); })() &&
+    iMua >= 0 && iBiet > iMua && chu17.includes('## Đã biết · Xưởng R1') && chu17.filter((x) => x === '## Đã biết · Xưởng R1').length === 2, J(chu17));
 
   // lỗi 4: hàm trống đúng thẻ, hienGach, Xưởng quay lại hàm trước, Hàm mới mở được hàm đã có
   k11 = khayMoi(); k11.host.clientHeight = 400;

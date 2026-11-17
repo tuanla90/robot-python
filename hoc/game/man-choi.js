@@ -381,6 +381,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       bt: TP.khayBTCua(m),                                                                     // mùa 4–7: nhóm BIỂU THỨC (n = 1, return n, if n == 1:, while n > 0:…) ở thẻ Logic
       em: em ? em.chinh : null,                                                                 // nhện: bỏ hàm dùng lệnh bánh; hàm màn không dùng tới → emKhac
       emKhac: em ? em.khac : [],                                                                // nhóm "Hàm khác" thu gọn (TP.tachHamKhac)
+      nhomHam: em ? em.nhom : null,                                                             // tiểu mục Mùa này / Đã biết · <mùa> (TP.tachHamKhac)
       theRong: theRong,
       man: S.bai.hamCuaMan,
       khoa: TP.khoaKhay(m),                                                                     // hàm bị khóa ở màn này (hàm của màn khóa, hàm cốt truyện màn không sửa): ổ khóa thay bút chì, mở ở Xưởng chỉ xem

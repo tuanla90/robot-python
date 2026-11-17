@@ -218,6 +218,7 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
   border:1px dashed var(--g-xanhLaToiV11);background:var(--g-moSangSangV8);cursor:pointer}
 .pal .nk:active{background:var(--g-moSangSang)}
 .pal .nk.mo{color:var(--g-xanhLaSangV3);border-style:solid}
+.gl.g-thoi{height:14px;margin-top:7px;font-size:calc(10px*var(--kp));color:var(--g-xanhLaV8)}   /* tiểu mục thời gian trong hàm của em (thanh-phan.js bayTheoMua) */
 .pal .nk .nk-chu{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .brick.nhay-ve{animation:blink .4s 4}                                   /* về sân từ Xưởng: khối hàm vừa xem nháy (TP.Palette.hienGach) */
 /* khối ở khay: cao 28px = ngang một dòng của khung chương trình (user 15/10), cách nhau 12px (chừa núm 10px ở trên); KHÔNG tự co nhỏ khi khay dài (khay dài thì cuộn bằng vuốt dọc / lăn chuột / ▲ ▼) */
@@ -792,6 +793,7 @@ body.dang-keo,body.dang-keo *{cursor:grabbing!important}
 .chon-so.hep .cs.bien{flex:1 1 100%;min-width:0}
 .num.bien.bth{white-space:nowrap}
 .strip .num.bien.bth{flex:none}      /* biểu thức (distance(), len(a), i + 1) không co lại thành chấm tròn; dòng dài thì vuaDong co cỡ chữ */
+.strip .num.bt-ham,.strip .num.bt.bien{flex:none}      /* chip tên hàm / tên biến trong biểu thức (`d = total_run(4, 2)`, 17/11 màn 122.1) không co lại thành "to": dòng tràn thì vuaDong co cỡ chữ hay xuống hai dòng */
 /* Xưởng của màn máy ném: bảy nút (thêm Rào, Rổ) nên nút thấp hơn nữa */
 #sc-choi .side.xu.co-nem{gap:2px;padding-bottom:3px}
 #sc-choi .side.xu.co-nem .cbtn,#sc-choi .side.xu.co-nem .thu-hang{height:28px}
