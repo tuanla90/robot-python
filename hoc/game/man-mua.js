@@ -23,7 +23,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var TY_LE_THIET_KE = ANH_W / 1080;               // 2/3: toạ độ TRAM_DOC (thiết kế 1080) → px ảnh thật
   /** 9 ghim, đúng TRAM_DOC của CanhHanhTrinh (PhimMoDau.tsx): x, y trong khung thiết kế 1080×1920; nguoi = ảnh mặt (phim-clb/a/nguoi). */
   var TRAM = [
-    { ma: 'mua-9', x: 750, y: 131, nguoi: 'thay-giao-viec', mau: '#4F46E5' },     // CLB Robot (đầu + cuối hành trình)
+    { ma: 'mua-9', x: 750, y: 131, nguoi: 'thay-giao-viec', mau: '#4F46E5' },     // đội rô bốt CLB Tin học THPT Hoa Phượng (đầu + cuối hành trình); mặt 'thay-giao-viec' là thầy Khải (dạy Tin), giữ id ảnh
     { ma: 'mua-1', x: 750, y: 330, nguoi: 'tu-nghi', mau: '#D97706' },
     { ma: 'mua-2', x: 750, y: 522, nguoi: 'hanh-nghi', mau: '#DC2626' },
     { ma: 'mua-3', x: 755, y: 698, nguoi: 'sau-nghi', mau: '#16A34A' },

@@ -323,6 +323,10 @@ body.dang-keo .row.xx .tab .tn{display:inline}body.dang-keo .row.xx .tab .tx{dis
 .d-ten{font:800 calc(44px*var(--kp))/1 var(--px);letter-spacing:2px;color:var(--g-vang);text-transform:uppercase;padding-top:6px;text-wrap:balance;
   text-shadow:2px 0 0 var(--ink),-2px 0 0 var(--ink),0 2px 0 var(--ink),0 -2px 0 var(--ink),2px 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),0 6px 0 var(--g-go),2px 6px 0 var(--g-go),-2px 6px 0 var(--g-go),0 8px 0 var(--ink)}
 .d-phu{margin-top:12px;font:600 calc(14px*var(--kp))/1 var(--px);color:var(--cream);text-shadow:2px 2px 0 var(--ink)}
+.d-clb{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:7px;font:600 calc(13px*var(--kp))/1 var(--px);color:var(--cream);text-shadow:2px 2px 0 var(--ink)}
+.d-clb-logo{flex:none;width:24px;height:24px;display:block}
+.d-clb-logo svg{display:block}
+.d-clb-chu{padding-top:1px}
 .d-san{flex:none;position:relative;width:300px;height:128px;margin-top:24px;overflow:hidden}
 .d-robot{position:absolute;left:0;top:50%}
 .d-sao{margin-top:16px;height:32px;padding:0 12px;font:var(--wm) calc(20px*var(--km))/1 var(--mono)}
