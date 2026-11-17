@@ -308,22 +308,21 @@ GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệ
 - **GĐ 0 xong trên máy.** Commit khay hàm c8293c6; mùa 9 gộp 1736150; xoá worktree mùa 8, 9 (~456 MB) và ba nhánh đã gộp;
   dọn `.idx` mồ côi, gc. `npm test` hỏng 7 bộ, **hỏng sẵn**, giống hệt trước khi gộp: `kiem-bang-mau`, `kiem-che-xe`,
   `kiem-dong-goi-artifact`, `kiem-huy-hieu-phim-vector`, `kiem-lo-trinh`, `kiem-trum-mua-1`, `kiem-ve-vector`.
-- **GĐ 1 xong trên máy, chưa lên GitHub.**
-  - `diem10code-python` (thư mục máy, cây làm việc không đụng): nhánh `ban-5-mua` b419083 = gộp reorganize-season-1
-    + notifications-images-issues + vu-tru-diem10code (160 màn); `luu-tru/master-cu` 278fbaa (= `origin/master`);
-    `luu-tru/tach-5-11` 83f5886 (= `master` máy); `luu-tru/tach-5-11-viec-do` 62e9a37 (6 tệp xoá dở + `trace-banh.mjs`).
+- **GĐ 1 xong, đã lên GitHub 17/11 tối.**
+  - `diem10code-python`: `master` = 8d6b67a (lịch sử game, chung cây với `robot-python` main). Lên kiểu fast-forward
+    (278fbaa..8d6b67a) vì main game đã chứa 278fbaa qua `ban-5-mua`, không ghi đè gì. Nhánh cất trên GitHub:
+    `ban-5-mua` b419083 (gộp reorganize-season-1 + notifications-images-issues + vu-tru-diem10code, 160 màn),
+    `claude/reorganize-season-1-3042ce` faebe5d, `vu-tru-diem10code` 8286459, `luu-tru/master-cu` 278fbaa,
+    `luu-tru/tach-5-11` 83f5886, `luu-tru/tach-5-11-viec-do` 62e9a37 (6 tệp xoá dở + `trace-banh.mjs`).
   - Game: remote `d10py`; main 6c0db27 `merge -s ours` b419083 (cây tệp không đổi, gốc a7306a8 nằm trong lịch sử);
     e214c33 README + `docs/tach-5-11/`. `kiem-khay` 193 đạt; `game-main` mở trang đầu không lỗi console.
-- **Push hỏng:** máy này đẩy lên GitHub bị ngắt (`curl 55 Send failure`, `remote end hung up`, `ls-remote` "Empty reply";
-  diem10code-python trả HTTP 503). Fetch có lúc được. Chạy theo thứ tự khi mạng được:
-  1. Game, ở `doi-robot-chan-hung`: `git -c http.postBuffer=524288000 push origin main`
-  2. Cất nhánh, ở `diem10code-python`:
-     `git push origin claude/reorganize-season-1-3042ce ban-5-mua vu-tru-diem10code luu-tru/master-cu luu-tru/tach-5-11 luu-tru/tach-5-11-viec-do`
-  3. Chỉ sau khi bước 2 lên đủ (`git ls-remote origin` thấy 6 nhánh), thay `master`, ở `doi-robot-chan-hung`:
-     `git push d10py main:master --force-with-lease=master:278fbaa1f095b4d617bc88d90334f30cfe0759db`
-  4. Sau đó: `master` máy của diem10code-python vẫn ở 83f5886 và còn bẩn; clone lại hay `git worktree add` một thư mục mới
-     từ `origin/master` thay vì checkout tại chỗ. Archive repo `robot-python` (tên GitHub của doi-robot-chan-hung) trên GitHub;
-     GitHub Pages của diem10code-python (nếu bật) sẽ phục vụ game đầy đủ từ đây.
+    `origin` (`robot-python`) main cũng 8d6b67a.
+  - Push lớn qua HTTPS hay bị ngắt (`curl 55`): thử lại với `-c http.version=HTTP/1.1 -c http.postBuffer=1048576000`.
+- **Còn lại của GĐ 1 (user làm trên GitHub):** archive repo `robot-python`; xem GitHub Pages của diem10code-python (nếu bật,
+  giờ phục vụ game đầy đủ). Thư mục máy `diem10code-python` vẫn ở `master` 83f5886 và còn bẩn (đã cất ở
+  `luu-tru/tach-5-11-viec-do`): làm tiếp bằng `git worktree add` hay clone mới từ `origin/master`, không checkout tại chỗ.
+  Từ đây làm việc trong repo game này rồi push cả `origin main` và `d10py main:master`, cho tới khi đổi `origin` sang
+  diem10code-python.
 
 ---
 
