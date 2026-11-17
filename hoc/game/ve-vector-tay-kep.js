@@ -41,7 +41,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     });
     H.tron(g, 50, cy - 7.4, 1.6); H.to(g, BM.vecSat); H.vien(g, BM.vecVien, 1);
   }
-  V.dangKy({ loai: 'tay', ma: 'kep', hamGoc: ['arm_down',  'arm_up',  'grab',  'release'], ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: Y_VAT, canh: V.VAT_SAN / V.CO_THAN, ha: HA },
+  V.dangKy({ loai: 'tay', ma: 'kep', hamGoc: ((typeof window !== 'undefined' && window.Ban && window.Ban.laOnThi) ? ['pick', 'drop'] : []).concat(['arm_down',  'arm_up',  'grab',  'release']),   // bản Ôn thi: pick / drop là lệnh gốc ten: 'Tay kẹp trước mũi', gan: 'tay', diemNeo: { x: 50, y: 80 }, vatKep: { y: Y_VAT, canh: V.VAT_SAN / V.CO_THAN, ha: HA },
     dungChung: { cang: cang, cum: cum, khop: khop, mauDen: mauDen, MO: MO, HA: HA },   // gói V8b / V8c: tay xoay (ve-vector-tay-xoay.js) vẽ bằng đúng các hàm này
     ve: function (g, s, M, H) {
     s = s || {};

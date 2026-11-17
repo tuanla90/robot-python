@@ -194,10 +194,18 @@
   /* ------------------------------------------------------------------ tra cứu */
   function bangCua(khe) { return khe === 'tay' ? BANG_TAY : khe === 'camBien' ? BANG_CAM : null; }
   function dsCua(khe) { return khe === 'than' ? THAN : khe === 'tay' ? TAY : khe === 'camBien' ? CAM_BIEN : []; }
+  /* BẢN ÔN THI (ban.js): bảy ô bản 5 mùa ghép được mà bản đầy đủ chưa mở (chuỗi đổi part từng món: Bến sông xuồng + nam châm / cảm biến từ
+     / camera, Nông trại drone + vòi phun / lưới / hồng ngoại / camera, đều làm việc ở ô dưới bụng). Bảng của bản đầy đủ giữ nguyên. */
+  var Ban = laNode ? require('./ban.js') : (typeof window !== 'undefined' && window.Ban);
+  var O_ON_THI = {
+    xuong: { tay: { 'nam-cham': 'duoc' }, camBien: { tu: 'duoc', camera: 'duoc' } },
+    drone: { tay: { hoi: 'duoc', 'day-keo': 'duoc' }, camBien: { 'hong-ngoai': 'duoc', camera: 'duoc' } }
+  };
   /** Ô (thân, khe, mã) → { tt, lai?, lyDo }; mã lạ → null. */
   function o(than, khe, ma) {
     var b = bangCua(khe), h = b && b[than], x = h && h[ma];
     if (x === undefined) return null;
+    if (Ban && Ban.laOnThi && O_ON_THI[than] && O_ON_THI[than][khe] && O_ON_THI[than][khe][ma]) x = O_ON_THI[than][khe][ma];
     if (typeof x === 'string') return { tt: x, lyDo: '' };
     return { tt: x.tt, lai: x.lai || null, lyDo: x.lyDo || (x.tt === 'lai' ? 'Tổ hợp lai ' + x.lai + ' chưa mở ở mùa này.' : x.tt === 'khong-mo' ? 'Ghép được, nhưng mùa này chưa mở.' : '') };
   }

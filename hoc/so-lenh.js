@@ -341,6 +341,31 @@
     g('listen', null, 'Hỏi: cảm biến âm thanh nghe được nốt nhạc nào ("C".."C5"), không có tiếng thì trả về "none"')
   ];
 
+  /* BẢN ÔN THI (ban.js): mỗi lệnh tự tốn nhịp, không có lệnh chốt nhịp. Hai bánh / xuồng đi bằng forward / backward / turn_*, tay kẹp
+     pick / drop, vòi phun drone thêm seed: đều là LỆNH GỐC (ở bản đầy đủ forward, turn_*, pick, drop là hàm em tự làm, nên bỏ các dòng
+     hàm cốt truyện cùng tên). wait() chỉ còn là đứng đợi một nhịp. Bản đầy đủ không đổi. */
+  var Ban = laNode ? require('./ban.js') : (typeof window !== 'undefined' && window.Ban);
+  if (Ban && Ban.laOnThi) {
+    var GOC_ON_THI = [
+      g('forward', 'backward', 'Tiến 1 ô theo hướng mặt, 1 nhịp'),
+      g('backward', 'forward', 'Lùi 1 ô, giữ hướng mặt, 1 nhịp'),
+      g('turn_left', 'turn_right', 'Quay sang trái một góc vuông tại chỗ'),
+      g('turn_right', 'turn_left', 'Quay sang phải một góc vuông tại chỗ'),
+      g('pick', 'drop', 'Tay kẹp: nhặt vật rồi nâng tay lên, 2 nhịp'),
+      g('drop', 'pick', 'Tay kẹp: hạ tay đặt vật xuống rồi nâng tay lên, 2 nhịp'),
+      g('seed', null, 'Vòi phun trên drone: gieo hạt màu c xuống ô dưới bụng')
+    ];
+    var CHU_ON_THI = {
+      wait: 'Đứng đợi một nhịp, không làm gì',
+      magnet_n: 'Bật nam châm cực N (đỏ). Nhện chọn thêm hướng: magnet_n("up")',
+      magnet_s: 'Bật nam châm cực S (xanh dương). Nhện chọn thêm hướng: magnet_s("up")'
+    };
+    lenhGoc.forEach(function (l) { if (CHU_ON_THI[l.ten]) l.moTa = CHU_ON_THI[l.ten]; });
+    var tenGocOnThi = GOC_ON_THI.map(function (l) { return l.ten; });
+    Array.prototype.push.apply(lenhGoc, GOC_ON_THI);
+    for (var iOT = ds.length - 1; iOT >= 0; iOT--) if (tenGocOnThi.indexOf(ds[iOT].ten) >= 0) ds.splice(iOT, 1);
+  }
+
   function tim(ten) { for (var i = 0; i < ds.length; i++) if (ds[i].ten === ten) return ds[i]; return null; }
   function theoNhom(nhom) { return ds.filter(function (h) { return h.nhom === nhom; }); }
   function theoChuong(chuong) { return ds.filter(function (h) { return h.chuong === chuong; }); }

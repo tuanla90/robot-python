@@ -33,11 +33,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function escA(s) { return esc(s).replace(/"/g, '&quot;'); }                  // trong thuộc tính data-…="…": d["a"] có dấu nháy kép
 
-  var TAY_TEN = ['arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'];     // lệnh tay gắp: nhóm TAY (màu cam) trong kho khối
+  var OT = !!(typeof window !== 'undefined' && window.Ban && window.Ban.laOnThi);   // bản Ôn thi (ban.js): lệnh gốc forward / pick…, wait trong khay, điều kiện hai vế hai hàng
+  var TAY_TEN = ['pick', 'drop', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right'];     // lệnh tay gắp: nhóm TAY (màu cam) trong kho khối
   var CHAN_TEN = ['crouch', 'stand'];                          // lệnh chân của nhện: co / duỗi chân (cùng nhóm CHÂN với go_*)
   var NC_TEN = ['magnet_n', 'magnet_s', 'magnet_off'];         // lệnh tay nam châm (cực N / cực S / ngắt điện): nhóm NAM CHÂM (cùng màu cam với tay) trong kho khối
   var NEM_TEN = ['aim', 'throw', 'load'];                      // lệnh máy ném: nhóm MÁY NÉM (cùng màu cam với tay); aim(n) mang một số 1–3
-  var SUNG_TEN = ['spray', 'spray_back'];                      // lệnh SÚNG HƠI (bắn ra trước + giật lùi / bắn ra sau + giật tới): nhóm SÚNG HƠI (cùng màu cam với tay)
+  var SUNG_TEN = ['spray', 'spray_back', 'seed'];                      // lệnh SÚNG HƠI (bắn ra trước + giật lùi / bắn ra sau + giật tới): nhóm SÚNG HƠI (cùng màu cam với tay)
   var SON_TEN = ['ink', 'dot', 'pen_down', 'pen_up'];           // lệnh MÁY SƠN: nhóm MÁY SƠN (cùng màu cam với tay); ink(c) mang một màu, đổi ngay như aim(n)
   var LOA_TEN = ['note', 'beat'];                               // lệnh LOA (mùa 8): note(n) phát nốt 1–8, beat() gõ một tiếng trống; nhóm LOA (cùng màu cam với tay)
   var NOTE_NGAN = 'note_ngan';                                  // khối giả của gói Ngân dài (spec.nganDai): chèn note(1, 2), nốt n ngân k nhịp
@@ -84,8 +85,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /* ---- NGOẶC NHỊP: code vẫn là Python thật; khung chỉ VẼ thêm một ngoặc mảnh (nâu đậm, bên phải dòng, khác ngoặc tím của `for`) gom các dòng lệnh gốc thuộc cùng một nhịp,
          từ sau `wait()` trước (hay đầu khối) tới hết `wait()` kế tiếp, kèm nhãn nhỏ "nhịp k" ở dòng wait(). Chỉ gom lệnh gốc "chỉ ra lệnh" (bánh, trượt, tay, kẹp, đẩy, nam châm, ném, bắn)
          và wait(); aim(n) tác dụng ngay nên đứng trong nhóm hay ngoài nhóm đều không ngắt; dòng khác (hàm của em, for / if / while, gán biến, chú thích, dòng trống) ngắt nhóm;
-         đổi bậc thụt cũng ngắt. Nhãn đánh số từ 1 trong mỗi dãy nhóm liền nhau, dãy mới (sau dòng ngắt) đánh lại từ 1. Nhện / drone (go_* tự trôi nhịp) không dùng ngoặc này (Editor tuyChon.veNhip). */
-  var LENH_NHIP = ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'magnet_n', 'magnet_s', 'magnet_off', 'load', 'throw', 'spray', 'spray_back', 'dot', 'pen_down', 'pen_up'];
+         đổi bậc thụt cũng ngắt. Nhãn đánh số từ 1 trong mỗi dãy nhóm liền nhau, dãy mới (sau dòng ngắt) đánh lại từ 1. Thân có trong SanHoc.SO_NHIP (xe, nhện, xuồng, drone) tự chốt từng lệnh nên không dùng ngoặc này (Editor tuyChon.veNhip). */
+  var LENH_NHIP = ['left_move', 'right_move', 'left_back', 'right_back', 'slide_left', 'slide_right', 'arm_down', 'arm_up', 'arm_left', 'arm_right', 'grab', 'release', 'magnet_n', 'magnet_s', 'magnet_off', 'load', 'throw', 'spray', 'spray_back', 'seed', 'dot', 'pen_down', 'pen_up'];
   var RE_LENH_DON = /^\s*([A-Za-z_]\w*)\s*\([^()]*\)\s*(#.*)?$/;
   /** Mảng dòng code → [{ tu, den, so }]: nhóm một nhịp từ dòng tu tới dòng den (chỉ số từ 0, đều gồm), so = thứ tự nhịp trong dãy liền nhau. */
   function nhomNhip(arr) {
@@ -112,7 +113,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var BO_PHAN_LENH = {
     banhT: ['left_move', 'left_back'], banhP: ['right_move', 'right_back'], truot: ['slide_left', 'slide_right'],
     tay: ['arm_down', 'arm_up'], xoay: ['arm_left', 'arm_right'], kep: ['grab', 'release'], namCham: ['magnet_n', 'magnet_s', 'magnet_off'],
-    nem: ['load', 'throw'], sung: ['spray', 'spray_back'], chan: ['crouch', 'stand'], son: ['dot', 'pen_down', 'pen_up']
+    nem: ['load', 'throw'], sung: ['spray', 'spray_back', 'seed'], chan: ['crouch', 'stand'], son: ['dot', 'pen_down', 'pen_up']
   };
   var BP_CUA = {};
   Object.keys(BO_PHAN_LENH).forEach(function (bp) { BO_PHAN_LENH[bp].forEach(function (l) { BP_CUA[l] = bp; }); });
@@ -171,6 +172,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function datCheList(b) { CHE_LIST = !!b; }
   function coListCua(man) { return coCauTruc(man, 'list'); }
   var LIST_TEN_GOI_Y = ['a', 'b', 'c', 'steps', 'route'], LIST_TOI_DA = 6;                                // tên gợi ý · số phần tử tối đa của một danh sách vẽ trên khung ("thêm ô" mờ khi đủ)
+  var RE_GAN_GIA_TRI = /=\s*(?:color|look|warm|distance|weight|read_code)\(/;                              // cảm biến trả một giá trị, gán vào biến vẫn không thành danh sách
   var RE_GAN_LS = /^(\s*)([A-Za-z_]\w*)(\s*=\s*)\[([^\]]*)\]\s*$/;                                         // a = [2, 3, 1]
   var RE_FOR_LSLIT = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+)\[([^\]]*)\](\s*:.*)$/;                               // for n in [2, 3]:
   var RE_FOR_LS = /^(\s*for\s+[A-Za-z_]\w*\s+in\s+)([A-Za-z_]\w*)(\s*:.*)$/;                               // for n in a:
@@ -771,7 +773,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var MAU_DS = ['red', 'green', 'blue', 'yellow', 'none'];                                   // các giá trị color() có thể trả về
   var MAU_LOP = { red: 'g-rd', green: 'g-gr', blue: 'g-bl', yellow: 'g-yl', none: 'g-gy' };
   var RE_DKM = /^(\s*(?:while|if|elif)\s+)([^:]+?)(\s*:.*)$/;
-  var RE_CL_SS = /^((?:color|look)\((?:"[a-z]+")?\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;      // color("front"): camera bốn hướng (mùa 4)
+  var RE_CL_SS = /^((?:color|look)\((?:"[a-z]+")?\)|front_pole\(\)|[A-Za-z_]\w*)\s*(==|!=)\s*("[^"]*"|[A-Za-z_]\w*(?:\(\))?)$/;      // color("front"): camera bốn hướng (mùa 4)
   var RE_CL_CAM = /^(?:not\s+)?[A-Za-z_]\w*\(\)$|^(?:True|False)$/;
   var RE_GAN_MAU = /^\s*([A-Za-z_]\w*)\s*=\s*(color|look)\(("[a-z]+")?\)\s*(#.*)?$/;      // nhóm 3: hướng của camera bốn hướng (c = color("right"), mùa 4)                    // c = color() / c = look() (drone có camera nhìn xuống)
   var HAM_MAU = 'color';                                                                      // hàm đọc màu của màn đang mở: 'color' (cảm biến màu, camera ở xe) hay 'look' (camera nhìn xuống của drone); khối mẫu và bảng chọn điều kiện dùng tên này
@@ -791,6 +793,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var goc = (man && man.hamGoc) || [];
     if (goc.indexOf('battery') >= 0 || goc.indexOf('look') >= 0) return true;    // drone có đo pin hay camera nhìn xuống: while / if với battery() / look()
     if (goc.indexOf('color') >= 0) return true;                                  // camera bốn hướng (mùa 6, drone): while color("right") != "red":
+    if (goc.indexOf('warm') >= 0) return true;                                   // drone có hồng ngoại: while warm(): / if warm():
     if (man && man.loaiRobot === 'drone') return false;                         // drone chưa có đo pin: chưa có gì để so sánh
     if (!goc.some(function (n) { return NC_TEN.indexOf(n) >= 0; })) return true;
     return camBienCua(man).length > 0 || goc.indexOf('color') >= 0;
@@ -820,7 +823,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       else if (RE_CL_CAM.test(cl[i])) tok.push({ vt: 'cam', ci: i, t: cl[i] });
       else return null;
     }
-    var chiCam = tok.every(function (x) { return x.vt === 'cam' || x.vt === 'noi'; });
+    var chiCam = cl.every(function (c) { return RE_CL_CAM.test(c) || /^(?:front_pole\(\)|[A-Za-z_]\w*)\s*(?:==|!=)\s*"[^"]*"$/.test(c); });      // màn vaHoac: cảm biến, front_pole() == "N", c == "R" đều tách ô để ghép and / or
     if (!CHE_MAU && !coVePin && !(CHE_VH && chiCam)) return null;          // chỉ màn drone có pin: chỉ điều kiện có battery() mới tách ô (các `if d == "U":` giữ cách cũ); màn vaHoac (mùa 3): điều kiện toàn cảm biến cũng tách
     return { loai: 'dkm', ten: '', tien: m[1], ds: tok.map(function (x) { return x.t; }), noi: ' ', hau: m[3], laFor: false, tok: tok, cl: cl, nx: nx };
   }
@@ -843,6 +846,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   function boVe(dong, ci) {
     var d = tachDKM(dong); if (!d || d.cl.length < 2) return dong;
     d.cl.splice(ci, 1); d.nx.splice(ci === 0 ? 0 : ci - 1, 1); return ghepDKM(d, d.cl, d.nx);
+  }
+  /** Các chữ mà biến vòng trong vế cl nhận được, đọc từ dòng for c in "…" ở trên (không có thì U D L R); mỗi chữ kèm dấu nháy. */
+  function chuCuaVong(arr, i, cl) {
+    var ten = /^\w+/.exec(cl), kq = [];
+    for (var j = i - 1; j >= 0 && ten; j--) {
+      var m = /^\s*for\s+(\w+)\s+in\s+"([^"]*)"\s*:/.exec(chuoi(arr[j]));
+      if (m && m[1] === ten[0]) { m[2].split('').forEach(function (c) { if (kq.indexOf('"' + c + '"') < 0) kq.push('"' + c + '"'); }); break; }
+    }
+    return kq.length ? kq : ['"U"', '"D"', '"L"', '"R"'];
   }
   /** Tên biến đã gán bằng color() ở các dòng phía trên dòng i (hoặc mọi dòng nếu i âm). */
   function bienGanMau(arr, i) {
@@ -867,6 +879,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (m) return { loai: 'dk', ten: '', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
     m = /^(\s*[A-Za-z_]\w*\s*=\s*color\()("[a-z]+")(\)\s*(?:#.*)?)$/.exec(dong);             // c = color("up"): hướng của camera bốn hướng chạm để đổi (mùa 4)
     if (m) return { loai: 'goi', ten: 'color', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
+    m = /^(\s*[A-Za-z_]\w*\s*=\s*)(\d+)(\s*(?:#.*)?)$/.exec(dong);                             // biến đếm: số của n = 0 chạm để đổi
+    if (m) return { loai: 'ganDem', ten: '', tien: m[1], ds: [m[2]], noi: ', ', hau: m[3], laFor: false };
+    m = /^(\s*([A-Za-z_]\w*)\s*=\s*\2\s*\+\s*)(\d+)(\s*(?:#.*)?)$/.exec(dong);                 // biến đếm: số của n = n + 1 chạm để đổi
+    if (m) return { loai: 'tangDem', ten: '', tien: m[1], ds: [m[3]], noi: ', ', hau: m[4], laFor: false };
     m = RE_GOI_DS.exec(dong);
     if (!m) return null;
     return { loai: 'goi', ten: m[2], tien: m[1], ds: m[3].trim() === '' ? [] : m[3].split(',').map(function (x) { return x.trim(); }), noi: ', ', hau: m[4], laFor: false };
@@ -946,9 +962,10 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (cheDkm()) {
       var dkm = tachDKM(text);
       if (dkm) {
-        var kw = /^\s*(\w+)/.exec(dkm.tien)[1], ht = '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span>';
-        dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '<span class="ngat"></span>' : ''); });       // điều kiện hai vế: xuống dòng sau and / or (hai dòng nhỏ trong một ô)
-        return ht + '<span class="pu">:</span>';
+        var kw = /^\s*(\w+)/.exec(dkm.tien)[1], ht = '<span class="kw ' + (kw === 'while' ? 'wh' : 'if') + '">' + kw + ' </span>' + (OT ? '<span class="ngat ngat-kw"></span><span class="dk-hang">' : '');
+        if (!OT) { dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '<span class="ngat"></span>' : ''); }); return ht + '<span class="pu">:</span>'; }   // bản đầy đủ: như cũ
+        dkm.tok.forEach(function (o, k) { ht += oDkm(o, k) + (o.vt === 'noi' ? '</span><span class="ngat"></span><span class="dk-hang">' : ''); });       // xuống dòng sau and / or; mỗi vế gói một cụm (dấu : đi cùng vế cuối) để vế dài báo tràn (vuaDong co chữ) chứ không tự rớt dòng
+        return ht + '<span class="pu">:</span></span>';
       }
       var gm = RE_GAN_MAU.exec(text);
       if (gm) return '<span class="vr">' + esc(gm[1]) + '</span><span class="pu"> = </span><span class="fn">' + gm[2] + '</span><span class="pu">(</span>' + (gm[3] ? oDoiSo(gm[3], 0) : '') + '<span class="pu">)</span>';
@@ -970,9 +987,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     if (dk) return '<span class="kw ' + (dk[1] === 'while' ? 'wh' : 'if') + '">' + dk[1] + ' </span>' + oDieuKien(dk[2]) + '<span class="pu">:</span>';
     if (/^else\s*:\s*$/.test(text)) return '<span class="kw if">else</span><span class="pu">:</span>';
     var gd = RE_GAN_DEM.exec(text);                                                  // n = 0
-    if (gd) return '<span class="vr dem">' + esc(gd[1]) + '</span><span class="pu"> = </span><span class="lit">' + gd[2] + '</span>';
+    if (gd) return '<span class="vr dem">' + esc(gd[1]) + '</span><span class="pu"> = </span>' + oDoiSo(gd[2], 0);
     var td = RE_TANG_DEM.exec(text);                                                 // n = n + 1
-    if (td && td[1] === td[2]) return '<span class="vr dem">' + esc(td[1]) + '</span><span class="pu"> = </span><span class="vr dem">' + esc(td[2]) + '</span><span class="pu"> + </span><span class="lit">' + td[3] + '</span>';
+    if (td && td[1] === td[2]) return '<span class="vr dem">' + esc(td[1]) + '</span><span class="pu"> = </span><span class="vr dem">' + esc(td[2]) + '</span><span class="pu"> + </span>' + oDoiSo(td[3], 0);
     var m = /^([A-Za-z_]\w*)\((.*)\)\s*$/.exec(text);
     if (!m) return esc(text);
     var cls = lopHamDong(m[1]);
@@ -981,11 +998,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
 
   /** Dòng dài (chuỗi chữ dài trong `for c in "…":` hay `walk("…")`, biểu thức distance()): co chữ cho vừa ô, không dưới 9px; vẫn tràn thì chuỗi dài tự rút gọn bằng "…" (CSS .num.chuoi), chuỗi ngắn giữ nguyên và dòng xuống hai dòng. */
-  function vuaDong(el) {
+  function vuaDong(el, choCao) {
+    var hangC = el.parentNode, cao = !!choCao && el.classList.contains('hai');      // choCao: dòng điều kiện hai vế được hàng cao gấp đôi (.row.cao), vẫn tính một ô; đang kéo thì không, để các hàng cao đều và chỗ thả không nhảy
+    hangC.classList.toggle('cao', cao);
     el.style.fontSize = '';
     var hang = el.parentElement && el.parentElement.classList.contains('row') ? el.parentElement : null;
     if (hang) hang.style.flexGrow = '';
-    if (!el.clientWidth || !el.querySelector('.chuoi, .dkc, .ptu, .lsten, .bth, .bt')) return;       // .bth: biểu thức dài (range(distance()), forward(distance() + n))
+    if (!el.clientWidth || !(cao || el.querySelector('.chuoi, .dkc, .ptu, .lsten, .bth, .bt'))) return;       // .bth: biểu thức dài (range(distance()), forward(distance() + n)); cao: hàng điều kiện hai vế (bản Ôn thi)
     // chuỗi ngắn ("R", "back", "left") không bao giờ rút gọn: dòng chỉ thiếu 1 px ở cỡ 9px cũng đủ làm "R" thành "…" (2/11, màn dong-chay.3)
     el.querySelectorAll('.chuoi').forEach(function (c) { c.classList.toggle('ngan', (c.textContent || '').length <= 14); });  // ≤ 12 ký tự, gồm 2 dấu nháy
     el.classList.add('ko-cat');                                                    // đo với chuỗi chưa bị cắt
@@ -995,7 +1014,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     el.classList.remove('chat');
     if (tran && el.querySelector('.chuoi.ngan')) { el.classList.add('chat'); tran = el.scrollWidth > el.clientWidth + 1; if (tran) el.classList.remove('chat'); }   // thiếu vài px: bóp đệm các chip trước khi xuống hai dòng
     el.classList.remove('ko-cat');
-    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan') && !el.classList.contains('hai')) { el.classList.add('hai'); el.style.fontSize = ''; }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
+    if (tran && el.querySelector('.ptu, .lsten, .bth, .bt, .chuoi.ngan' + (OT ? ', .dkm' : '')) && !el.classList.contains('hai')) {
+      el.classList.add('hai'); el.style.fontSize = '';
+      if (choCao && el.querySelector('.dkm')) {                                    // một vế mà vẫn quá dài (front_pole() == "N" trong khối lồng): cũng được hàng cao, chữ to thì co lại cho vừa
+        hangC.classList.add('cao'); fs = parseFloat(getComputedStyle(el).fontSize) || 12;
+        while (el.scrollWidth > el.clientWidth + 1 && fs > 9) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
+      }
+    }       // danh sách dài vẫn tràn ở cỡ chữ nhỏ nhất: xuống hai dòng nhỏ trong cùng một ô (như điều kiện hai vế); .chuoi.ngan: tail_over_calm("R", 4) không được cắt "R" nên cũng xuống hai dòng
     // mùa 8: từ điển ba cặp (a = {"dau": 3, "giua": 6, "cuoi": 3}) ở khung hẹp cần ba hàng nhỏ: hàng code này cao hơn các hàng khác (flex-grow), tối đa 2,2 lần
     if (hang && el.classList.contains('hai') && el.querySelector('.pg')) for (var g = 1.1; el.scrollHeight > el.clientHeight + 1 && g <= 2.2; g += 0.1) hang.style.flexGrow = g.toFixed(1);
   }
@@ -1032,7 +1057,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function chiDoc() { return !!(tuyChon.chiDoc && tuyChon.chiDoc()); }
     function baoChiDoc() { if (tuyChon.khiChiDoc) tuyChon.khiChiDoc(); }
     this.chiDoc = chiDoc;
-    function choXoa() { return !xt && !dangChay() && !Chan.dang() && !chiDoc(); }
+    /** Màn sắp xếp lại (man.chiSapXep): chỉ được kéo đổi chỗ / đổi bậc thụt các dòng có sẵn, không chèn, xóa, sửa số. */
+    function chiSapXep() { return !!(tuyChon.chiSapXep && tuyChon.chiSapXep()); }
+    function baoSapXep() { if (tuyChon.khiChiSapXep) tuyChon.khiChiSapXep(); }
+    this.chiSapXep = chiSapXep;
+    /** Ô trống cần điền đầu tiên từ dòng `tu` trở đi (dòng rỗng có sẵn trong code mẫu, màn "điền chỗ trống"); không có thì -1. */
+    function oTrongTu(arr, tu) { for (var k = tu; k < arr.length; k++) if (!boThut(arr[k]).trim()) return k; return -1; }
+    function choXoa() { return !xt && !dangChay() && !Chan.dang() && !chiDoc() && !chiSapXep(); }
     function thutLe() { return !!(tuyChon.thutLe && tuyChon.thutLe()); }
     function soToiDa(ten, k) { return tuyChon.soToiDa ? (tuyChon.soToiDa(ten, k) || SO_TOI_DA) : SO_TOI_DA; }      // đối số số lớn nhất chọn được (aim: 3); mặc định SO_TOI_DA
     function camDuoc() { return (tuyChon.camBien && tuyChon.camBien()) || []; }                  // hàm cảm biến của màn (front_clear…): điều kiện chạm đổi được
@@ -1040,6 +1071,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     function kieuBienCua(ten) { return (tuyChon.kieuBien && tuyChon.kieuBien(ten)) || 'so'; }   // 'so' | 'don' (một chữ) | 'ghep' (chuỗi chữ) của một đối số của hàm đang sửa
     /** Kiểu ô của đối số k trong dòng đã tách d: 'so' | 'don' (một chữ U/D/L/R) | 'ghep' (chuỗi ghép) | 'bien' (ô biến của if) | 'dl' (chữ so sánh của if). */
     function kieuArg(d, k) {
+      if (d && (d.ten === 'magnet_n' || d.ten === 'magnet_s')) return 'hnc';   // magnet_n("up") của nhện: bảng chọn bốn hướng
       if (d && d.loai === 'td') return 'td';
       if (d && d.loai === 'bt') return 'bt';
       if (d && d.cau) {                                                    // dòng danh sách: tên danh sách · phần tử · đối số của lời gọi hàm
@@ -1050,14 +1082,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         var ka = tuyChon.kieuDoiSo && sg ? tuyChon.kieuDoiSo(d.ten, sg.i) : 'so';
         return ka === 'don' || ka === 'ghep' || ka === 'list' || ka === 'mau' ? ka : 'so';
       }
-      if (!d || d.loai === 'range') return 'so';
+      if (!d || d.loai === 'range' || d.loai === 'ganDem' || d.loai === 'tangDem') return 'so';
       if (d.loai === 'forChuoi') return 'ghep';
       if (d.loai === 'dk') return 'dk';
       if (d.loai === 'dkm') return 'dkm';
       if (d.loai === 'if') return k === 0 ? 'bien' : 'dl';
-      if (d.ten === 'ink') return 'mau';                                   // ink(c): bảng chọn bốn màu sơn
+      if (d.ten === 'ink' || d.ten === 'seed') return 'mau';               // ink(c), seed(c): bảng chọn bốn màu
       if (d.ten === 'color' && huongCam().length) return 'huong';          // c = color("up"): bảng chọn hướng camera (mùa 4)
       if (d.ten === 'spray' || d.ten === 'spray_back') return 'luc';       // spray(p): bảng chọn lực "low" / "high"
+      if (d.ten === 'cast_net') return 'luoi';                             // cast_net("left"): bảng chọn hướng tung lưới theo mũi xuồng
       var kd = tuyChon.kieuDoiSo ? tuyChon.kieuDoiSo(d.ten, k) : 'so';
       if (kd === 'td' && CHE_TD) return 'tdten';                           // mùa 8: follow(a) — đối số là một sổ (từ điển / tập hợp): chọn tên sổ
       return kd === 'don' || kd === 'ghep' || kd === 'list' || kd === 'mau' || kd === 'luc' ? kd : 'so';
@@ -1095,6 +1128,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (fr) [fr[1], fr[1] + ' + 1', '3 - ' + fr[1]].forEach(function (b) { if (kq.indexOf(b) < 0) kq.push(b); });
       }
       bienDuoc().forEach(function (ten) { if (hopKieu(slot, kieuBienCua(ten)) && kq.indexOf(ten) < 0) kq.push(ten); });
+      if (slot === 'mau') bienGanMau(arr, i).forEach(function (ten) { if (kq.indexOf(ten) < 0) kq.push(ten); });       // giao(c) với c = color() ở dòng trên
       if (slot === 'so') for (j = 0; j < i && j < arr.length; j++) { var gd = RE_GAN_DEM.exec(chuoi(arr[j])) || RE_GAN_DO.exec(chuoi(arr[j])); if (gd && kq.indexOf(gd[1]) < 0) kq.push(gd[1]); }       // biến đếm đã gán (n = 0) hay số đo (d = distance()) ở các dòng phía trên
       if (slot === 'so' && camDuoc().indexOf('distance') >= 0) {                          // màn có mắt hồng ngoại: số đo đặt thẳng vào ô số (range(distance()), forward(distance() + n))
         ['distance()'].concat(bienDuoc().filter(function (p) { return kieuBienCua(p) === 'so'; }).map(function (p) { return 'distance() + ' + p; })).forEach(function (b) { if (kq.indexOf(b) < 0) kq.push(b); });
@@ -1102,7 +1136,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (CHE_LIST && slot === 'so') {                                                    // số lấy từ danh sách: a[i] (i = biến vòng range), a[0], len(a)
         tenListTai(i).forEach(function (ds) {
           vongSo.forEach(function (v) { kq.push(ds + '[' + v + ']'); });
-          kq.push(ds + '[0]', 'len(' + ds + ')');
+          if (OT) { for (var k = 0, nPtu = soPtuTai(ds, i); k < nPtu; k++) kq.push(ds + '[' + k + ']'); kq.push('len(' + ds + ')'); }      // bản Ôn thi: chip từng phần tử a[0], a[1]…
+          else kq.push(ds + '[0]', 'len(' + ds + ')');
           if (window.BangDuLieu && BangDuLieu.luoiCuaTen(arr, i, ds)) kq.push(ds + '[0][0]');      // ds là lưới (list lồng) gán ở trên: thêm chip g[0][0]; chọn xong bảng dữ liệu mở ra để chạm đúng ô (moBT). Đối số lời gọi vẫn lọc bỏ (giaTriBT).
         });
       }
@@ -1120,12 +1155,27 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       return kq;
     }
+    /** Tên x ở dòng i chắc chắn không phải số: tên danh sách, hay biến gán từ color() / look(). */
+    function khongPhaiSo(x, i) {
+      if (tenListTai(i).indexOf(x) >= 0) return true;
+      var arr = lay(), re = new RegExp('^\\s*' + escRe(x) + '\\s*=\\s*(?:color|look)\\(');
+      for (var j = 0; j < i && j < arr.length; j++) if (re.test(chuoi(arr[j]))) return true;
+      return false;
+    }
+    /** Số chip a[k] của danh sách `ten` ở dòng i: đúng số phần tử của dòng gán gần nhất phía trên; danh sách rỗng hay đối số của hàm (chưa biết dài bao nhiêu) thì 2. */
+    function soPtuTai(ten, i) {
+      var arr = lay(), j, m;
+      for (j = Math.min(i, arr.length) - 1; j >= 0; j--) {
+        if ((m = RE_GAN_LS.exec(chuoi(arr[j]))) && m[2] === ten) return m[4].trim() ? catTop(m[4]).length : 2;
+      }
+      return 2;
+    }
     /** Tên các danh sách dùng được ở dòng i: gán `a = [...]` ở các dòng phía trên, rồi đối số kiểu danh sách của hàm đang sửa. */
     function tenListTai(i) {
       var arr = lay(), kq = [], j, m;
       for (j = 0; j < i && j < arr.length; j++) if ((m = RE_GAN_LS.exec(chuoi(arr[j]))) && kq.indexOf(m[2]) < 0) kq.push(m[2]);
       bienDuoc().forEach(function (p) { if (kieuBienCua(p) === 'list' && kq.indexOf(p) < 0) kq.push(p); });
-      if (CHE_BT) for (j = 0; j < i && j < arr.length; j++) if ((m = /^\s*([A-Za-z_]\w*)\s*=\s*(\[|[A-Za-z_]\w*\()/.exec(chuoi(arr[j]))) && kq.indexOf(m[1]) < 0) kq.push(m[1]);       // mùa 7: g = [[2, 1], [3, 2]] · g = radar()
+      if (CHE_BT) for (j = 0; j < i && j < arr.length; j++) if ((m = /^\s*([A-Za-z_]\w*)\s*=\s*(\[|[A-Za-z_]\w*\()/.exec(chuoi(arr[j]))) && kq.indexOf(m[1]) < 0 && !RE_GAN_GIA_TRI.test(chuoi(arr[j]))) kq.push(m[1]);       // mùa 7: g = [[2, 1], [3, 2]] · g = radar(); c = color() là một giá trị, không phải danh sách
       return kq;
     }
     /** Kiểu phần tử của danh sách `ten` ở dòng i: 'so' (toàn số) hay 'chu' (có chuỗi / màu). Danh sách là đối số của hàm thì hỏi tuyChon.kieuPtuList (theo giá trị thử). */
@@ -1136,7 +1186,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           var els = catTop(m[4]);
           if (els.some(function (e) { return RE_CHUOI.test(e); })) return 'chu';
           if (HAM_MAU === 'look' && !els.length) return 'chu';                                      // màn có camera look(): danh sách rỗng `a = []` là danh sách MÀU (survey(a) sẽ ghi màu vào)
-          var reThem = new RegExp('(^|[^\\w"])' + escRe(ten) + '\\.append\\(\\s*(look\\(\\)|"[^"]*")');
+          var reThem = new RegExp('(^|[^\\w"])' + escRe(ten) + '\\.append\\(\\s*(look\\(\\)|color\\(\\)|"[^"]*")');
           return arr.some(function (x) { return reThem.test(chuoi(x)); }) ? 'chu' : 'so';           // a.append(look()) / a.append("red") ở đâu đó: phần tử là màu
         }
       }
@@ -1230,7 +1280,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       if (kd === 'dkm') { moDkm(so, i, d, kk); return; }
       if (kd === 'ptu') { moPtu(so, i, d, kk); return; }
       if (kd === 'tenls' || kd === 'list') { moTenList(so, i, d, kk); return; }
-      if (kd === 'huong') { chonChuoi({ neo: so, kieu: 'huong', gia: String(d.ds[kk] || '').replace(/"/g, ''), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
+      if (kd === 'huong' || kd === 'luoi' || kd === 'hnc') { chonChuoi({ neo: so, kieu: kd, gia: String(d.ds[kk] || '').replace(/"/g, ''), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mau') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('mau', i).concat(CHE_BT ? BT.nguon.filter(function (x) { return /^color\(/.test(x); }) : []), khongNone: true, khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'mauls') { chonMau({ neo: so, gia: d.ds[kk], bien: bienTam('bien', i), khiChon: function (v) { ed.datSo(i, v, kk); } }); return; }
       if (kd === 'dk') {                                                  // điều kiện cảm biến: bảng chọn front_clear() / not front_clear() / …
@@ -1242,12 +1292,13 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (CHE_BT && tdA === SO_TOI_DA) {                               // mùa 4–7: bảng số có thêm phép tính (số âm, // 2, % 2, abs…) và nguồn số của màn
           var cur = d ? String(d.ds[kk]) : '1', bs = bienTam('so', i, null, d && d.ten);
           bienBT(i).forEach(function (x) { if (bs.indexOf(x) < 0) bs.push(x); });
+          bs = bs.filter(function (x) { return !khongPhaiSo(x, i); });      // ô số không nhận cả danh sách (a) hay biến màu (c = color())
           var doiSo = !!d && d.loai === 'goi';                            // đối số lời gọi: chỉ giá trị (B chặt, 3/11), phép tính / cảm biến viết ở dòng gán trước
           chonBT({ neo: so, v: cur, so: true, bien: doiSo ? giaTriBT(bs) : bs, chu: [], phep: doiSo ? phepDuoc().filter(function (p) { return p === 'am'; }) : phepDuoc(['not', 'ss']),
             khiChon: function (v) { ed.datSo(i, v, kk); }, khiPhep: function (p) { ed.datSo(i, phepBT(p, cur), kk); } });
           return;
         }
-        chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), toiDa: tdA, coKhong: !!d && d.loai === 'goi' && tdA > 3, bien: bienTam('so', i, null, d && d.ten), khiChon: function (v) { ed.datSo(i, v, kk); } });      // đối số của lời gọi hàm chọn được 0 (go_safe(0): đi tới sát tường); range thì không
+        chonSo({ neo: so, so: +so.getAttribute('data-so'), hien: so.getAttribute('data-bien'), toiDa: tdA, coKhong: !!d && (d.loai === 'ganDem' || (d.loai === 'goi' && tdA > 3)), bien: d && (d.loai === 'ganDem' || d.loai === 'tangDem') ? [] : bienTam('so', i, null, d && d.ten), khiChon: function (v) { ed.datSo(i, v, kk); } });      // đối số của lời gọi hàm và dòng gán n = 0 chọn được 0 (go_safe(0): đi tới sát tường); range thì không
         return;
       }
       var gia = d && d.ds[kk] !== undefined ? d.ds[kk] : '', laChu = RE_CHUOI.test(gia);
@@ -1267,6 +1318,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       bienDuoc().forEach(them);
       bienTam('so', i).forEach(them);
       BT.nguon.forEach(them); BT.ham.forEach(them);
+      if (CHE_LIST) { camDuoc().forEach(function (c) { them(c + '()'); }); if (CHE_MAU) them(GOI_MAU); }      // mùa 4: a.append(warm()), a.append(color())
       return kq;
     }
     /** Chỉ giữ giá trị một bước: tên, len(a), a[i]; bỏ lời gọi (read_code(), color("left"), hàm trả về) và g[i][j] — những thứ ấy viết thành dòng gán riêng. */
@@ -1299,7 +1351,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       var phang = cho.cha !== d.e || d.kieu === 'goi' || d.kieu === 'forR' || d.kieu === 'them' || d.e.length > 1;      // B chặt (3/11): ô nằm trong một phép / đối số lời gọi chỉ nhận giá trị (số, tên, chuỗi), không lồng thêm phép hay cảm biến
       var cha = cho.cha && cho.cha.t, phepPhang = phepDuoc().filter(function (p) { return (p === 'am' && cha !== 'am') || (p === 'chi' && cha === 'chi' && cho.khoa === 'o' && cho.cha.o.t === 'la'); });      // còn được: −x (số âm là một giá trị), g[i] → g[0][i]
-      chonBT({ neo: so, v: v, so: true, bien: phang && cha !== 'not' ? giaTriBT(bienBT(i)) : bienBT(i), chu: BT.chu, phep: phang ? phepPhang : phepDuoc(d.kieu === 'dk' ? [] : ['not']),
+      chonBT({ neo: so, v: v, so: true, bien: phang && cha !== 'not' && !(CHE_LIST && d.kieu === 'them') ? giaTriBT(bienBT(i)) : bienBT(i), chu: BT.chu, phep: phang ? phepPhang : phepDuoc(d.kieu === 'dk' ? [] : ['not']),
         ptu: cho && cho.ptu ? { coThem: cho.ptu.ds.e.length < LIST_TOI_DA } : null, bo: vai === 'ham' && /^(abs|min|max)$/.test(cho.nut.f),
         khiChon: function (x) {
           dat(d.doi(kk, x));
@@ -1384,6 +1436,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       chonChuoi({ neo: so, kieu: 'bien', gia: '', hien: cur, bien: ds, khiChon: function (v) { if (gan) ed.doiTenList(i, v); else ed.datSo(i, v, kk); } });
     }
     /** Chạm một ô của điều kiện màu (while / if / elif): == / != và and / or đổi ngay; vế phải chọn màu; vế trái / vế cảm biến mở bảng điều kiện. */
+    /** Biến của các vòng `for k in a:` bao quanh dòng i (mùa 4: danh sách nhớ True / False, viết được `if k:`). */
+    function vongListTai(i) {
+      var arr = lay(), kq = [], cap = bacCua(arr[i]), j, m;
+      for (j = i - 1; j >= 0; j--) {
+        if (!coY(arr[j]) || bacCua(arr[j]) >= cap) continue;
+        cap = bacCua(arr[j]);
+        m = /^\s*for\s+([A-Za-z_]\w*)\s+in\s+([A-Za-z_]\w*)\s*:/.exec(chuoi(arr[j]));
+        if (m && kq.indexOf(m[1]) < 0) kq.push(m[1]);
+      }
+      return kq;
+    }
     function moDkm(so, i, d, kk) {
       var o = d.tok[kk]; if (!o) return;
       if (RE_CL_PIN.test(d.cl[o.ci]) && !(CHE_MAU && o.vt === 'lhs')) {   // battery() < 3: chạm phép so sánh thì đổi < <= > >=, chạm số thì chọn số; chạm battery() không làm gì (trừ màn có cả camera look(): chạm battery() mở bảng chọn để đổi sang look() == …)
@@ -1393,15 +1456,20 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       }
       if (o.vt === 'op') { ed.datSo(i, o.t === '==' ? '!=' : '==', kk); return; }
       if (o.vt === 'noi') { ed.datSo(i, o.t === 'and' ? 'or' : 'and', kk); return; }
+      if (o.vt === 'rhs' && CHE_VH && !CHE_MAU) {                                                // màn vaHoac (mùa 2): chữ so sánh đổi vòng; front_pole() thì "N" "S" "none", biến chuỗi thì U D L R
+        var dsChu = /^front_pole/.test(d.cl[o.ci]) ? ['"N"', '"S"', '"none"'] : chuCuaVong(lay(), i, d.cl[o.ci]);
+        ed.datSo(i, dsChu[(dsChu.indexOf(o.t) + 1) % dsChu.length], kk); return;
+      }
       var bien = bienGanMau(lay(), i);
-      if (CHE_LIST) bienTam('bien', i).forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });          // biến vòng for c in seen: (danh sách màu) cũng so được với màu: if c == "red":
+      if (CHE_LIST || CHE_VH) bienTam('bien', i).forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });          // biến vòng for c in seen: (danh sách màu) cũng so được với màu: if c == "red":
+      if (CHE_MAU && CHE_VH) bienDuoc().forEach(function (v) { if (bien.indexOf(v) < 0) bien.push(v); });                   // mùa 3: giao(c) thân còn trống, chưa suy được c là màu mà vẫn phải viết được if c == "red":
       if (o.vt === 'rhs') {
         chonMau({ neo: so, gia: o.t, bien: bien, khiChon: function (v) { ed.datSo(i, v, kk); } });
         return;
       }
       var cam = camDuoc(), cl = d.cl[o.ci], coDong = d.cl.length;
       chonDkm({
-        neo: so, cam: cam, bien: bien, gia: cl, pin: CHE_PIN,
+        neo: so, cam: cam, bien: bien, bienDon: CHE_LIST ? vongListTai(i) : [], gia: cl, pin: CHE_PIN,
         ghep: cam.length ? { coThem: coDong < 2 && o.ci === coDong - 1, coBo: coDong > 1 } : null,
         khiChon: function (v) { ed.datVe(i, o.ci, v); },
         khiGhep: function (nx) { ed.themVe(i, nx, CHE_MAU && /^(?:not\s+)?\w+\(\)$/.test(cl) && cl !== GOI_MAU ? GOI_MAU + ' != "red"' : (cam[0] + '()')); },
@@ -1475,6 +1543,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
             cham = null; tuyChon.khiBam && tuyChon.khiBam(i); if (tuyChon.khiChamDuLieu) tuyChon.khiChamDuLieu(i); return;
           }
           var so = ev.target.closest && ev.target.closest('.num');
+          if (so && chiSapXep()) { cham = null; baoSapXep(); return; }
           if (so && !xt && i < dung && i < arr.length && !dangChay() && !Chan.dang()) {      // chạm con số trong range(n) / lời gọi hàm: bộ chọn 1–9 (+ biến của hàm)
             cham = null; tuyChon.khiBam && tuyChon.khiBam(i);          // không đổi ô đang chọn: khối kế tiếp vẫn chèn vào chỗ cũ
             moBoChon(so, i, +so.getAttribute('data-k') || 0);
@@ -1538,14 +1607,15 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       for (i = 0; i < tong; i++) {
         var khoa = i >= dung, t = tx[i], slot = sl[i];
         var laFor = !slot && t !== undefined && /^\s*for\s/.test(t), laIf = !slot && t !== undefined && laRe(t), laWh = !slot && t !== undefined && /^\s*while\s/.test(t);
-        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : ''))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && cheDkm() && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
+        strips[i].className = 'strip' + (khoa ? ' lock' : (slot ? ' slot' : (t === undefined ? ' empty' : (boThut(t).trim() ? '' : ' o-trong')))) + (laFor ? ' for' : '') + (laIf ? ' if' : '') + (laWh ? ' wh' : '') + (!khoa && !slot && t !== undefined && cheDkm() && (tachDKM(t) || { cl: [] }).cl.length === 2 ? ' hai' : '') +
           (!xt && runIdx === i ? ' on' : '') + (!xt && loiSet[i] ? ' err' : '');
         strips[i].innerHTML = '';
+        rows[i].classList.remove('cao');
         var bac = lv[i];
         if (!khoa && !xt && t === undefined && i === sel && i >= cuoiDong && thutLe()) bac = ed.bacMacDinh(cuoiDong);
         strips[i].style.marginLeft = (!khoa && bac && (t !== undefined || slot || i === sel)) ? Math.min(bac, 3) * BUOC_PX + 'px' : '';
         if (khoa) strips[i].appendChild(Ve.khoa(2, true));
-        else if (t !== undefined && !slot) { strips[i].innerHTML = mauDong(t); vuaDong(strips[i]); }
+        else if (t !== undefined && !slot) { strips[i].innerHTML = mauDong(t); vuaDong(strips[i], OT && !xt); }
         if (!khoa && !xt && lapSet[i]) strips[i].appendChild(h('span', 'lap', lapSet[i]));
         rows[i].classList.toggle('sel', !xt && i === sel && !khoa && !chiDoc());
         rows[i].classList.toggle('run', !xt && runIdx === i);
@@ -1649,9 +1719,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return { at: Math.min(sel, arr.length), bac: undefined };
     }
     this.chen = function (txt) { var c = choChen(txt); return this.chenTai(txt, c.at, c.bac); };
+    /** Thân còn gom nhiều lệnh vào một nhịp không. Thân mới (SO_NHIP): mỗi lệnh tự chốt nhịp nên không có gì để gom, không chặn, không vẽ ngoặc. */
+    function hopNhip() { return !!(tuyChon.veNhip && tuyChon.veNhip()); }
     /** Lệnh gốc nào KHÔNG chèn được ở chỗ chèn hiện tại (dòng đang chọn): { tên lệnh: lý do } (xem lenhCungNhip). Khung chỉ đọc thì rỗng. */
     this.camNhip = function () {
-      var arr = lay(), kq = {}; if (chiDoc()) return kq;
+      var arr = lay(), kq = {}; if (chiDoc() || (OT && !hopNhip())) return kq;
       var c = choChen(''), at = c.at, ds = lenhCungNhip(arr, at, c.bac === undefined ? this.bacMacDinh(at, '') : Math.max(0, Math.min(c.bac, toiDaBac(arr, at))));
       if (!ds.length) return kq;
       var man = tuyChon.man ? tuyChon.man() : null;
@@ -1663,15 +1735,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.chenTai = function (txt, at, bac) {
       var arr = lay();
       if (chiDoc()) { baoChiDoc(); return false; }
-      if (arr.length >= dung) { this.nhay(); return false; }
-      this.anHoan(); hienX = -1;
+      if (chiSapXep()) { baoSapXep(); return false; }
       at = Math.max(0, Math.min(at, arr.length));
+      var dien = at < arr.length && !boThut(arr[at]).trim();     // chèn vào ô trống có sẵn: điền luôn ô đó, không đẩy dòng xuống
+      if (!dien && arr.length >= dung) { this.nhay(); return false; }
+      this.anHoan(); hienX = -1;
       var b = bac === undefined || bac === null ? this.bacMacDinh(at, txt) : Math.max(0, Math.min(bac, toiDaBac(arr, at)));
-      var lyCam = lyDoCamNhip(tenDon(txt), lenhCungNhip(arr, at, b), tuyChon.man ? tuyChon.man() : null);         // bộ phận đã có lệnh trong nhịp này (hay khác kiểu đi): không chèn, báo lý do
+      var lyCam = (!OT || hopNhip()) ? lyDoCamNhip(tenDon(txt), lenhCungNhip(arr, at, b), tuyChon.man ? tuyChon.man() : null) : null;         // bộ phận đã có lệnh trong nhịp này (hay khác kiểu đi): không chèn, báo lý do; bản Ôn thi: thân SO_NHIP tự chốt nhịp, không chặn
       if (lyCam) { if (tuyChon.khiCamNhip) tuyChon.khiCamNhip(lyCam); baoHd('cam-nhip', { dong: at }); return null; }
-      arr.splice(at, 0, datBac(thichNghi(txt, at, b), b));
+      arr.splice(at, dien ? 1 : 0, datBac(thichNghi(txt, at, b), b));
       chuanHoaBac(arr);
-      sel = Math.min(at + 1, dung - 1); daChon = false;
+      var oSau = dien ? oTrongTu(arr, at + 1) : -1;                // còn ô trống phía sau: khối kế tiếp điền vào đó
+      sel = oSau >= 0 ? oSau : Math.min(at + 1, dung - 1); daChon = false;
       this.render(); this.hieuUng(at); tuyChon.khiDoi && tuyChon.khiDoi();
       baoHd('chen-khoi', { dong: at });
       meoXoaLanDau(at);                                            // lần đầu chèn một khối: hướng dẫn xóa (sau khiDoi vì khay vẽ lại)
@@ -1693,6 +1768,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     };
     this.xoaTai = function (i) {
       var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length) return;
+      if (chiSapXep()) { baoSapXep(); return; }
       hienX = -1;
       luuHoan(arr, i);
       arr.splice(i, 1); chuanHoaBac(arr); sel = Math.min(i, dung - 1); daChon = false;
@@ -1808,7 +1884,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     /** Thay một đối số của dòng i bằng biến `ten`: ưu tiên đối số còn là số cụ thể, rồi đến đối số biến khác tên. Trả về có đổi được không. */
     this.datBienTai = function (i, ten, kieu) {
       var arr = lay(); if (chiDoc() || i < 0 || i >= arr.length || i >= dung || dangChay() || Chan.dang() || xt) return false;
-      var d = tachDoiSo(arr[i]); if (!d || !d.ds.length) return false;
+      var d = tachDoiSo(arr[i]); if (!d || !d.ds.length || d.loai === 'ganDem' || d.loai === 'tangDem') return false;       // số của n = 0, n = n + 1 chỉ đổi bằng bảng số
       var kb = kieu || 'so';
       function hop(j) { return hopKieu(kieuArg(d, j), kb); }                       // ô cùng kiểu với biến
       var k = -1, j;
@@ -1840,6 +1916,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.chonHienTai = function () { return sel; };
     this.xoaHet = function () {
       var arr = lay(); if (chiDoc() || !arr.length) return;
+      if (chiSapXep()) { baoSapXep(); return; }
       hienX = -1; anMeo();
       luuHoan(arr, 0);
       arr.length = 0; sel = 0; daChon = false; this.render(); tuyChon.khiDoi && tuyChon.khiDoi(); hienHoan();
@@ -1855,7 +1932,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     this.nap = function (layMoi, dungMoi) {
       this.anHoan(); dongChonSo(); hienX = -1; anMeo();
       lay = layMoi; if (dungMoi !== undefined) dung = dungMoi;
-      runIdx = -1; loiSet = {}; lapSet = {}; xt = null; viTri = null; sel = Math.min(lay().length, Math.max(0, dung - 1)); daChon = false; this.render();
+      var oDau = oTrongTu(lay(), 0);                                // code mẫu còn ô trống: chọn sẵn ô trống đầu tiên
+      runIdx = -1; loiSet = {}; lapSet = {}; xt = null; viTri = null; sel = oDau >= 0 ? oDau : Math.min(lay().length, Math.max(0, dung - 1)); daChon = false; this.render();
       this.vuaTieuDe();
     };
     this.dung = function () { return dung; };
@@ -2033,6 +2111,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   }
   var CHU_TOI_DA = 16;       // chuỗi ghép dài tối đa
   var CHU_HUONG = ['U', 'D', 'L', 'R'];
+  var HUONG_NC = ['up', 'down', 'left', 'right'];                   // hướng nam châm của nhện: magnet_n("up"), theo bản đồ
+  var HUONG_LUOI = ['front', 'left', 'right', 'back'];             // hướng tung lưới của cast_net(d), theo mũi xuồng
   var LUC_BAN = ['low', 'high'];                                   // lực bắn của súng hơi ở màn Lực bắn: spray("low") / spray("high")
   /**
    * Bộ chọn chuỗi chữ chỉ đường cạnh ô `neo`. o: { neo, kieu, gia, hien, bien: [tên biến], khiChon(v) }
@@ -2064,8 +2144,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       el.appendChild(hang0);
     }
     if (o.kieu !== 'bien') {
-      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' || o.kieu === 'huong' ? ' cc-luc' : ''));
-      (o.kieu === 'huong' ? huongCam() : o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {      // 'huong': hướng camera bốn hướng (mùa 4)           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
+      var hc = h('div', 'cc-chu' + (o.kieu === 'luc' || o.kieu === 'huong' || o.kieu === 'luoi' || o.kieu === 'hnc' ? ' cc-luc' : ''));
+      (o.kieu === 'huong' ? huongCam() : o.kieu === 'luoi' ? HUONG_LUOI : o.kieu === 'hnc' ? HUONG_NC : o.kieu === 'luc' ? LUC_BAN : CHU_HUONG).forEach(function (c) {      // 'huong': hướng camera bốn hướng (mùa 4)           // 'luc': hai nút "low" / "high" (lực bắn của súng hơi)
         var b = h('button', 'bt g-pu cs' + (o.kieu !== 'ghep' && c === o.gia ? ' on' : ''), c); b.setAttribute('data-chu', c);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
@@ -2253,19 +2333,26 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     dongChonSo();
     var el = h('div', 'chon-so chon-chuoi dkb dkm-bang'); el.setAttribute('data-nut', 'chon-dk');
     el.setAttribute('aria-label', t('choi.chonDieuKien'));
-    var ss = RE_CL_SS.exec(o.gia || ''), mauDang = ss && RE_CHUOI.test(ss[3]) ? ss[3] : '"red"';
+    var ss = RE_CL_SS.exec(o.gia || ''), mauDang = ss && RE_CHUOI.test(ss[3]) ? ss[3] : CHE_VH && !CHE_MAU ? '"R"' : '"red"';
     function nut(v, cls) {
       var b = h('button', 'bt ' + (cls || 'g-cy') + ' cs dk-nut' + (v === o.gia ? ' on' : ''), v); b.setAttribute('data-dk', v);
       b.addEventListener('click', function (ev) { ev.stopPropagation(); dongChonSo(); o.khiChon(v); });
       el.appendChild(b);
     }
-    (o.cam || []).forEach(function (ten) { nut(ten + '()'); nut('not ' + ten + '()'); });
+    var chiChu = CHE_VH && !CHE_MAU;                                                             // màn vaHoac không có camera: chỉ cảm biến và so chuỗi, không có nút màu
+    (o.cam || []).forEach(function (ten) {
+      if (ten === 'front_pole') { nut('front_pole() == "N"'); nut('front_pole() == "S"'); nut('front_pole() == "none"'); return; }      // trả chuỗi: viết if front_pole(): thì luôn đúng
+      nut(ten + '()'); nut('not ' + ten + '()');
+    });
+    (o.bienDon || []).forEach(function (v) { nut(v, 'g-pu'); });                                  // if k: với k lấy từ danh sách True / False
+    if (chiChu) (o.bien || []).forEach(function (v) { nut(v + ' == ' + (ss && ss[1] === v ? mauDang : '"R"'), 'g-pu'); });      // biến vòng for c in "…": chạm chữ bên phải để đổi chữ
     var hcs = huongCam(), lhs = ss && /^color\(/.test(ss[1]) ? ss[1] : GOI_MAU;
-    if (hcs.length) hcs.forEach(function (x) { var g = 'color("' + x + '")'; nut(g + ' == ' + mauDang, g === lhs ? 'g-pk' : 'g-pu'); });      // camera bốn hướng: chọn hướng nhìn
+    if (chiChu) { /* không có nút màu */ }
+    else if (hcs.length) hcs.forEach(function (x) { var g = 'color("' + x + '")'; nut(g + ' == ' + mauDang, g === lhs ? 'g-pk' : 'g-pu'); });      // camera bốn hướng: chọn hướng nhìn
     else { nut(GOI_MAU + ' == ' + mauDang, 'g-pk'); }
-    nut(lhs + ' != ' + mauDang, 'g-pk');
+    if (!chiChu) nut(lhs + ' != ' + mauDang, 'g-pk');
     if (o.pin) { nut('battery() < 3', 'g-or'); nut('battery() > 2', 'g-or'); }                  // drone vừa có camera look() vừa có pin: vế trái cũng chọn được điều kiện pin (while battery() > 2:)
-    (o.bien || []).forEach(function (v) {
+    if (!chiChu) (o.bien || []).forEach(function (v) {
       nut(v + ' == ' + mauDang, 'g-pu'); nut(v + ' != ' + mauDang, 'g-pu');
       nut(GOI_MAU + ' == ' + v, 'g-pu'); nut(GOI_MAU + ' != ' + v, 'g-pu');
     });
@@ -2298,6 +2385,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   /** Hàm của em dùng được với robot của màn: hàm gọi (trực tiếp hay qua hàm khác của em) một lệnh gốc mà màn không có trong `hamGoc` thì ẩn khỏi kho
    *  (vd. nhện bỏ hàm dùng lệnh bánh; xích / omni bỏ go(d); xe không tay bỏ pick()). Màn không khai hamGoc: giữ nguyên. */
   var LENH_GOC = ['left_move', 'right_move', 'left_back', 'right_back', 'wait', 'arm_down', 'arm_up', 'grab', 'release', 'arm_left', 'arm_right', 'magnet_n', 'magnet_s', 'magnet_off', 'front_metal', 'front_pole', 'aim', 'throw', 'load', 'spray', 'spray_back', 'ink', 'dot', 'pen_down', 'pen_up', 'slide_left', 'slide_right', 'go_up', 'go_down', 'go_left', 'go_right', 'land', 'take_off', 'crouch', 'stand', 'battery', 'front_clear', 'left_clear', 'right_clear', 'color', 'look', 'distance', 'warm'];
+  if (OT) LENH_GOC = ['forward', 'backward', 'turn_left', 'turn_right', 'pick', 'drop', 'seed'].concat(LENH_GOC);   // bản Ôn thi: lệnh gốc thêm (bản đầy đủ: hàm em tự làm)
   /** Lệnh gốc mà THÂN HÀM CỦA EM được gọi ở màn này: các lệnh trên khay (hamGoc) cộng PHẦN CỨNG robot (SanHoc.phanCungCua(man) của lõi: man.phanCung nếu màn khai — màn hỏng —,
    *  không thì trọn bộ lệnh loại robot, vd. xe bánh luôn có bánh lùi dù khay chưa cho dùng). Lõi cũ chưa có SanHoc.phanCungCua thì dùng man.phanCung nếu có, không thì chỉ hamGoc như trước. */
   function lenhDuocGoi(man) {
@@ -2323,6 +2411,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     } catch (e) { /* lõi cũ: rơi xuống cách cũ */ }
     return lenhDuocGoi(man);
   }
+  /** Tên này có phải lệnh của phần cứng robot không (print, range... của nhân chạy code thì không). */
+  function laLenhRobot(ten) {
+    if (LENH_GOC.indexOf(ten) >= 0) return true;
+    var kho = (window.KhoHam && KhoHam.HAM_GOC_MAC_DINH) || [];
+    return kho.indexOf(ten) >= 0 && ['print', 'range', 'len', 'str', 'int'].indexOf(ten) < 0;
+  }
   function locHamTheoRobot(man, ds) {
     if (!ds || !man || !man.hamGoc || !man.hamGoc.length) return ds;
     var co = lenhCuaLoaiRobot(man), bat = {};
@@ -2332,7 +2426,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       return (f.than || []).some(function (dong) {
         var re = /([A-Za-z_]\w*)\(/g, m, s = boChuThich(dong);
         while ((m = re.exec(s))) {
-          if (LENH_GOC.indexOf(m[1]) >= 0 && !co[m[1]]) return true;
+          if (laLenhRobot(m[1]) && !co[m[1]]) return true;
           var g = theoTen[m[1]];
           if (g && !da[m[1]]) { da[m[1]] = true; if (dungLenhThieu(g, da)) return true; }
         }
@@ -2391,7 +2485,9 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    *  Hai nhóm xếp theo thời gian (xepThoiGian); nhom(ten) cho khay chia tiểu mục "Mùa này" / "Đã biết · <mùa>".
    */
   function tachHamKhac(man, ds, bai) {
-    ds = ds || [];
+    var hamMan = (bai && bai.hamCuaMan) || [];
+    // hàm của màn trùng tên thì CHE hàm của em (khung-code.js: lúc chạy chỉ dùng hàm của màn), nên khay không vẽ hàm bị che
+    ds = (ds || []).filter(function (f) { return !hamMan.some(function (x) { return x.ten === f.ten; }); });
     var MH = window.ManHoc;
     if (!man || !MH || typeof MH.hamCotTruyen !== 'function') return { chinh: ds, khac: [] };
     var moc = mocHam(), can = {}, theoTen = {}, g = man.manGoc || man;
@@ -2440,11 +2536,12 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var src = (f.than || []).map(boChuThich).join('\n'), P = escRe(p);
     if (CHE_TD && (new RegExp('(^|[^\\w"])' + P + '\\s*\\[').test(src) || new RegExp('(^|[^\\w"])' + P + '\\.add\\(').test(src) || (!CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) || (!CHE_LIST && new RegExp('\\blen\\(\\s*' + P + '\\s*\\)').test(src)))) return 'td';     // mùa 8: d["a"] · d[k] · s.add(x) · k in d · len(s): từ điển / tập hợp
     if (CHE_LIST && (new RegExp('(^|[^\\w"])' + P + '\\s*\\[').test(src) || new RegExp('\\blen\\(\\s*' + P + '\\s*\\)').test(src) || new RegExp('(^|[^\\w"])' + P + '\\.append\\(').test(src))) return 'list';     // p[i] · len(p) · p.append(x): danh sách
+    if (new RegExp('(^|[^\\w"])' + P + '\\s*[=!]=\\s*"(red|green|blue|yellow|none)"').test(src) || new RegExp('color\\([^)]*\\)\\s*[=!]=\\s*' + P + '(?![\\w"])').test(src)) return 'mau';   // if c == "red": / color() == c: đối số là tên MÀU (mùa 3, tham số chữ)
     if (new RegExp('(^|[^\\w"])' + P + '\\s*[=!]=').test(src) || new RegExp('[=!]=\\s*' + P + '(?![\\w"])').test(src)) return 'don';
     if (new RegExp('\\bin\\s+' + P + '\\s*:').test(src)) return CHE_LIST && !KIEU_TEN_GHEP.test(p) ? 'list' : 'ghep';                      // for c in path: (chuỗi chữ) · for n in steps: (danh sách, ở màn có list)
     if (CHE_LIST && new RegExp('\\bin\\s+' + P + '(?![\\w"])').test(src)) return 'list';                                       // x in steps
     if (new RegExp('range\\(\\s*' + P + '\\s*\\)').test(src)) return 'so';
-    if (new RegExp('\\bink\\(\\s*' + P + '\\s*\\)').test(src)) return 'mau';                                        // ink(c): đối số là tên MÀU sơn (máy sơn)
+    if (new RegExp('\\b(?:ink|seed)\\(\\s*' + P + '\\s*\\)').test(src)) return 'mau';                                        // ink(c): đối số là tên MÀU sơn (máy sơn)
     if (new RegExp('\\bspray(_back)?\\(\\s*' + P + '\\s*\\)').test(src)) return 'luc';                              // spray(p): đối số là LỰC bắn "low" / "high" (súng hơi)
     if ((sau || 0) < 4) {
       var re = /([A-Za-z_]\w*)\(([^()]*)\)/g, m;
@@ -2493,7 +2590,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
    */
   function taoSoToiDa(layCtx) {
     return function (ten, k) {
-      if (ten === 'ink') return 9;
+      if (ten === 'ink' || ten === 'seed') return 9;
       var cx = layCtx() || {}, l = [(cx.hamCuaMan || []), (cx.kho || [])], i, j, f = null;
       // màn NÉM ĐÀ (cfg.nemDa, ghép nhịp 5b): aim(n) chỉ còn 1 hoặc 2 (muốn xa thì chạy đà)
       var m = cx.man, tamMax = (m && (m.nemDa || (m.doi || []).some(function (r) { return r && r.nemDa; }))) ? 2 : 3;
@@ -2787,14 +2884,17 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var goi = ten + '(' + (hamTS && hamTS.length ? hamTS.map(function (_, k) { var kd = cb.kieuDoiSo ? cb.kieuDoiSo(ten, k) : 'so'; return kd === 'mau' ? '"red"' : kd === 'luc' ? '"high"' : kd === 'don' ? '"U"' : kd === 'ghep' ? '"R"' : kd === 'list' ? '[2, 3, 1]' : '1'; }).join(', ') : '') + ')';
       if (loai === 'goc' && ten === 'aim') goi = 'aim(1)';                       // aim(n): thẻ chèn sẵn tầm 1, chạm số để chọn 1 / 2 / 3
       if (loai === 'goc' && (ten === 'spray' || ten === 'spray_back') && cb.kieuDoiSo && cb.kieuDoiSo(ten, 0) === 'luc') goi = ten + '("high")';   // màn Lực bắn: chạm "high" để đổi sang "low"
+      if (loai === 'goc' && ten === 'seed') goi = 'seed("red")';                 // seed(c): như ink(c)
       if (loai === 'goc' && ten === 'ink') goi = 'ink("red")';                   // ink(c): thẻ chèn sẵn màu đỏ, chạm màu để chọn màu khác
       if (loai === 'goc' && ten === 'note') goi = 'note(1)';                     // note(n) (mùa 8): chèn sẵn nốt 1, chạm số để chọn nốt 1–8; beat() gõ một tiếng trống, không đối số
       if (loai === 'goc' && ten === NOTE_NGAN) goi = 'note(1, 2)';               // gói Ngân dài: note(n, k) ngân nốt n trong k nhịp
+      var ncHuong = loai === 'goc' && (ten === 'magnet_n' || ten === 'magnet_s') && lastSpec && lastSpec.loai === 'nhen' && OT;
+      if (ncHuong) goi = ten + '("up")';                                          // nhện không có mũi: bật nam châm phải chọn hướng, chạm "up" để đổi
       if (loai === 'goc' && GOC_DOI_SO_BT[ten]) goi = ten + '(' + GOC_DOI_SO_BT[ten] + ')';      // mùa 4–7: rail(1), cast_net("left"), set_length(1): chạm đối số để đổi
       var hien = '(' + (hamTS || []).join(', ') + ')';
       d.setAttribute('data-ten', ten); d.setAttribute('data-loai', loai); d.setAttribute('data-goi', goi);
       var sp = h('span', 'tx');
-      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : ten === 'note' ? 'note(n)' : ten === NOTE_NGAN ? 'note(n, k)' : goi !== ten + '()' && GOC_DOI_SO_BT[ten] ? goi : ten;
+      if (loai === 'goc') sp.textContent = ten === 'aim' ? 'aim(n)' : ten === 'ink' ? 'ink(c)' : ten === 'seed' ? 'seed(c)' : ten === 'note' ? 'note(n)' : ten === NOTE_NGAN ? 'note(n, k)' : ncHuong || (goi !== ten + '()' && GOC_DOI_SO_BT[ten]) ? goi : ten;
       else { sp.appendChild(document.createTextNode(ten)); sp.appendChild(h('span', 'pn' + (hamTS && hamTS.length ? ' co' : ''), hien)); }
       d.appendChild(sp);
       if (loai !== 'goc') {
@@ -2877,10 +2977,11 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var camKhac = cam.filter(function (n) { return n !== 'distance' && n !== 'warm'; });
       var camDau = cam.indexOf('front_metal') >= 0 ? 'front_metal' : camKhac.length ? camKhac[0] : camNong ? 'warm' : cam[0];      // màn có cảm biến từ: khối mẫu của while / if dùng front_metal()
       var camCuc = cam.indexOf('front_pole') >= 0;                                              // front_pole() trả chuỗi "N" / "S" / "none": khối mẫu so sánh chuỗi, không phải if front_pole():
-      var gocChan = goc.filter(function (n) { return /^go_/.test(n) || CHAN_TEN.indexOf(n) >= 0; });      // nhện / drone: go_up / go_down / go_left / go_right (kèm wait); nhện còn có crouch / stand (co / duỗi chân)
+      var gocChan = goc.filter(function (n) { return /^go_/.test(n) || CHAN_TEN.indexOf(n) >= 0; });      // nhện / drone: go_up / go_down / go_left / go_right; nhện còn có crouch / stand (co / duỗi chân)
       var gocTruot = goc.filter(function (n) { return /^slide_/.test(n) || DIAG_TEN.indexOf(n) >= 0; });                    // omni: slide_left / slide_right / đi chéo
-      var gocThuong = goc.filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && SON_TEN.indexOf(n) < 0 && !/^go_/.test(n) && CHAN_TEN.indexOf(n) < 0 && !/^slide_/.test(n) && DIAG_TEN.indexOf(n) < 0 && CAM_BIEN_TEN.indexOf(n) < 0 && LOA_TEN.indexOf(n) < 0 && AM_TEN.indexOf(n) < 0 && MOC_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && n !== 'color' && n !== 'look' && n !== 'wait' && !(spec.bt && BT_NGUON_TEN.indexOf(n) >= 0); });   // lệnh bánh; cảm biến trả giá trị (mùa 4–7: read_code, weight…) là ô của biểu thức; hàm cảm biến là ĐIỀU KIỆN, không phải lệnh; wait() ở hàng ghim
-      ghimWait = goc.indexOf('wait') >= 0;
+      var gocThuong = goc.filter(function (n) { return n !== 'battery' && TAY_TEN.indexOf(n) < 0 && NC_TEN.indexOf(n) < 0 && NEM_TEN.indexOf(n) < 0 && SUNG_TEN.indexOf(n) < 0 && SON_TEN.indexOf(n) < 0 && !/^go_/.test(n) && CHAN_TEN.indexOf(n) < 0 && !/^slide_/.test(n) && DIAG_TEN.indexOf(n) < 0 && CAM_BIEN_TEN.indexOf(n) < 0 && LOA_TEN.indexOf(n) < 0 && AM_TEN.indexOf(n) < 0 && MOC_TEN.indexOf(n) < 0 && DAY_TEN.indexOf(n) < 0 && n !== 'color' && n !== 'look' && n !== 'wait' && !(spec.bt && BT_NGUON_TEN.indexOf(n) >= 0); });   // lệnh bánh; cảm biến trả giá trị (mùa 4–7: read_code, weight…) là ô của biểu thức; hàm cảm biến là ĐIỀU KIỆN, không phải lệnh; wait() ở thẻ LOGIC
+      ghimWait = !OT && goc.indexOf('wait') >= 0;                                               // bản đầy đủ: wait() "chốt nhịp" ở hàng ghim dưới khay
+      var coWait = OT && goc.indexOf('wait') >= 0;                                                     // wait() chỉ để đợi (đồng bộ hai xe): việc của bộ não, không của bộ phận nào
       var coTay = gocTay.length + gocNem.length + gocSung.length + gocNC.length + gocSon.length + gocLoa.length + gocMoc.length + gocDay.length > 0;
       var amSpec = spec.am || [];                                                                // cảm biến âm thanh (mùa 8): 'hear' / 'listen'
       var coCam = cam.length > 0 || !!spec.mau || !!spec.pin || amSpec.length > 0;
@@ -2905,12 +3006,18 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         dsDk = ['if front_pole() == "N":', 'elif front_pole() == "S":'].concat(dsDk.filter(function (s) { return s !== 'if front_pole():'; }));
         if (dsDk.indexOf('else:') < 0) dsDk.push('else:');
       }
+      if (spec.vaHoac && dsDk.length) {                                                         // màn vaHoac (mùa 2): khối mẫu có and / or và, nếu màn có vòng for chuỗi, khối so chữ
+        var camTrai = cam.filter(function (n) { return n !== 'front_pole'; });
+        var cauVa = camCuc ? 'if ' + camDau + '() or front_pole() == "N":' : camTrai.length > 1 ? 'if ' + camTrai[0] + '() and ' + camTrai[1] + '():' : null;
+        if (cauVa) dsDk.unshift(cauVa);
+        if (spec.chuoi) dsDk = ['if c == "R":', 'elif c == "U":'].concat(dsDk);
+      }
       var chiAm = amSpec.length > 0 && !cam.length && !spec.mau && !spec.pin;                   // mùa 8 chỉ có cảm biến âm thanh: khối điều kiện ở nhóm ÂM THANH (nhomTD), không dùng khối mẫu cũ
       if (chiAm) dsDk = [];
       var dkCam = dsDk.some(function (s) { return RE_DK_CAM.test(s); });
-      var chuWhile = spec.vong && spec.vongWhile && !chiAm ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + gm + ' != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camHN && !camKhac.length && !spec.mau ? 'while distance() > 0:' : camNong && !camKhac.length && !spec.mau ? 'while not warm():' : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương (hồng ngoại: while distance() > 0: / while not warm():)
+      var chuWhile = spec.vong && spec.vongWhile && !chiAm ? (spec.pin && !spec.mau ? 'while battery() > 2:' : spec.mau && !cam.length ? 'while ' + gm + ' != ' + (fm === 'look' ? '"none"' : '"red"') + ':' : camCuc && !spec.mau ? 'while front_pole() == "none":' : camHN && !camKhac.length && !spec.mau ? 'while distance() > 0:' : camNong && !camKhac.length && !spec.mau ? (spec.loai === 'drone' ? 'while warm():' : 'while not warm():') : camDau === 'front_metal' ? 'while not front_metal():' : 'while ' + (camDau || 'front_clear') + '():') : null;     // vòng while: khối xanh dương (hồng ngoại: while distance() > 0: / while not warm():)
       if (spec.bt && !cam.length && !spec.mau && !spec.pin) chuWhile = null;                // mùa 4–7 không cảm biến điều kiện (cần cẩu, tàu): while so sánh ở nhóm BIỂU THỨC, không phải while front_clear():
-      var coLogic = coCam || !!spec.vong || dsDk.length > 0 || !!chuWhile || !!spec.bienDem || !!spec.list || !!spec.dict || !!spec.set || !!spec.bt;
+      var coLogic = coWait || coCam || !!spec.vong || dsDk.length > 0 || !!chuWhile || !!spec.bienDem || !!spec.list || !!spec.dict || !!spec.set || !!spec.bt;
 
       /* ---- hàm của em chia vào thẻ theo lệnh gốc nó gọi (kể cả gián tiếp); thẻ không có thì rơi về THÂN */
       var hamMan = spec.man || [], emTat = spec.em || [], emKhac = spec.em ? (spec.emKhac || []) : [];
@@ -2999,7 +3106,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (!gocChan.length) return;
         if (coNhan) nhan(t('choi.nhom.chan'), lop('g-chan'));
         var cot2 = h('div', 'g-2c'); host.appendChild(cot2);                                   // lệnh gốc của nhện xếp hai cột cho gọn
-        gocChan.forEach(function (n) { gach(n, n === 'wait' ? 'yl' : 'chan', 'goc', null, cot2); });
+        gocChan.forEach(function (n) { gach(n, 'chan', 'goc', null, cot2); });
       }
       function nhomTruot(coNhan) {
         if (!gocTruot.length) return;
@@ -3148,6 +3255,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
           khoiFor();
           if (chuWhile) gachVong(chuWhile, 'while', 'wh');
           dsDk.forEach(gachDk);
+          if (coWait) gach('wait', 'yl', 'goc');
           nhomDem();
           nhomList();
           nhomTD();
@@ -3328,7 +3436,8 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       });
       function batKhay(ev) {
         var b = ev.target.closest && ev.target.closest('.brick');
-        if (!b || ev.target.closest('.ed')) {                                                        // chỗ trống / nhãn nhóm / nút sửa: cảm ứng vuốt dọc ở đây cũng cuộn khay (chạm vẫn là chạm)
+        if (b && ed.chiSapXep && ed.chiSapXep()) return;                                              // màn sắp xếp lại: khối ở khay không kéo ra được (chạm thì khiChen báo)
+        if (!b || ev.target.closest('.ed')) {                                                     // chỗ trống / nhãn nhóm / nút sửa: cảm ứng vuốt dọc ở đây cũng cuộn khay (chạm vẫn là chạm)
           if (ev.pointerType && ev.pointerType !== 'mouse' && pal.cuonDuoc && pal.cuonDuoc()) {
             pal.dungQuanTinh();
             bat(ev, 'cuon', -1, pal.host, '');
@@ -3341,7 +3450,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
         if (cur && b.getAttribute('data-loai') === 'bien') { cur.bien = true; cur.kieuB = cfg.kieuBien ? cfg.kieuBien(b.getAttribute('data-goi')) : 'so'; }       // thẻ biến: thả lên một dòng thì thay số của dòng, không chèn dòng mới
       }
       pal.host.addEventListener('pointerdown', batKhay);
-      if (pal.ghim) pal.ghim.addEventListener('pointerdown', batKhay);                         // khối wait() ở hàng ghim dưới khay
+      if (pal.ghim) pal.ghim.addEventListener('pointerdown', batKhay);                         // khối wait() ở hàng ghim dưới khay (bản đầy đủ)
     }
 
     function stageInfo() {
@@ -3376,7 +3485,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       datGhost(); viTriGhost();
       document.body.classList.add('dang-keo');
       c.panP.classList.add('keo-dich');
-      if (c.loai === 'doi') { if (c.cfg.khiKeoDong) c.cfg.khiKeoDong(); c.panK.classList.add('keo-thung'); }
+      if (c.loai === 'doi') { if (c.cfg.khiKeoDong) c.cfg.khiKeoDong(); if (!c.ed.chiSapXep()) c.panK.classList.add('keo-thung'); }
       capNhat(true);
     }
     /** Tính chỗ thả theo vị trí con trỏ rồi vẽ xem trước. */
@@ -3385,7 +3494,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
       var rp = c.panP.getBoundingClientRect(), rk = c.panK.getBoundingClientRect();
       var vung = null, slot = null, loi = null, xem;
       c.bac = null;
-      if (c.loai === 'doi' && trong(rk, c.x, c.y)) vung = 'thung';
+      if (c.loai === 'doi' && trong(rk, c.x, c.y) && !ed.chiSapXep()) vung = 'thung';
       else if (trong(rp, c.x, c.y)) vung = 'khung';
       var dich = -1;
       if (vung === 'thung') xem = lap(arr, c.tu, null);
@@ -3592,7 +3701,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
   var LENH_BAY = /^(go_up|go_down|go_left|go_right|wait)$/;                          // drone hết pin: lệnh bay (kể cả wait) của nhịp cuối
   function choBoSung(c, vet) {
     if (!c || c.cho || !vet || c.nhip === undefined || c.nhip === null) return null;
-    var re = (c.ma === 'tha-bi-chan' && c.kieu === 'kep') || c.ma === 'vat-vo' ? /^release$/ : c.ma === 'kep-hut' ? /^grab$/ : c.ma === 'day-vat' ? /^magnet_(n|s)$/ : c.ma === 'dam-tuong' ? LENH_BANH : c.ma === 'het-pin' ? LENH_BAY : null;
+    var re = (c.ma === 'tha-bi-chan' && c.kieu === 'kep') || c.ma === 'vat-vo' ? /^(release|drop)$/ : c.ma === 'kep-hut' ? /^(grab|pick)$/ : c.ma === 'day-vat' ? /^magnet_(n|s)$/ : c.ma === 'dam-tuong' ? LENH_BANH : c.ma === 'het-pin' ? LENH_BAY : null;
     if (!re) return null;
     for (var i = 0; i < vet.length; i++) {
       if (vet[i].loai !== 'nhip' || vet[i].nhip !== c.nhip) continue;

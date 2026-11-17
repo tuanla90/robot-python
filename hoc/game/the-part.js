@@ -9,7 +9,8 @@
    ThePart.mo(ma, khiDong)      mở thẻ đầy đủ của một bộ phận với mọi lệnh đã giới thiệu (Sổ lệnh, trang "Bộ phận").
                                 Gói V8c: bộ phận nhiều mã (GioiThieuPart.cungBoPhan: tay 'xoay' = tay kẹp mở thêm xoay) đã gặp một mã là đã gặp cả bộ phận.
    ThePart.daGap()              [mã] các bộ phận người chơi đã gặp, theo GioiThieuPart.THU_TU, mỗi bộ phận một dòng.
-   ThePart.hinh(ma, tiLe)       canvas hình bộ phận gắn trên thân mẫu (thân: chính nó; tay, cảm biến: trên xe hai bánh; camera bụng: trên drone).
+   ThePart.hinh(ma, tiLe)       canvas hình bộ phận gắn trên thân mẫu (thân: chính nó; tay, cảm biến: trên thân của mùa đầu tiên gặp bộ phận đó, đúng chỗ gắn).
+                                Thẻ ở đầu màn vẽ tay / cảm biến trên thân robot của chính màn (nd.cauHinh).
    ========================================================================== */
 (function () {
   'use strict';
@@ -25,14 +26,31 @@
   function daXem(k) { return coLuu() && Luu.daXem(k); }
   function datXem(k) { if (coLuu()) Luu.datDaXem(k); }
 
-  /** Cấu hình robot mẫu để vẽ một bộ phận. */
-  function cauHinhMau(ma) {
+  /** Robot của màn ĐẦU TIÊN có bộ phận ma (theo ManHoc.danhSach): thân và chỗ gắn cảm biến của mùa giới thiệu bộ phận đó. null nếu không màn nào có. */
+  var robotNha = {};
+  function robotCuaMuaGap(ma) {
+    if (ma in robotNha) return robotNha[ma];
+    var kq = null;
+    try {
+      ((window.ManHoc && ManHoc.danhSach) || []).some(function (m) {
+        var cfg = VeRobot.cauHinhCua(m);
+        if (!G().boPhanCua(cfg, m.hamGoc || []).some(function (b) { return b.ma === ma; })) return false;
+        kq = cfg; return true;
+      });
+    } catch (e) { kq = null; }
+    return (robotNha[ma] = kq);
+  }
+  /** Cấu hình robot mẫu để vẽ một bộ phận. robot: cấu hình robot đang dùng (thẻ hiện ở đầu màn) — tay, cảm biến vẽ trên CHÍNH thân đó, đúng chỗ gắn;
+   *  không có (Sổ lệnh) thì lấy robot của màn đầu tiên gặp bộ phận. Chỉ vẽ bộ phận được giới thiệu, không kèm tay / cảm biến khác cho dễ nhìn. */
+  function cauHinhMau(ma, robot) {
     var d = G().DS[ma]; if (!d) return null;
     if (d.khe === 'than') return { than: ma, tay: null, camBien: [] };
-    if (d.khe === 'tay') return { than: 'hai-banh', tay: ma, camBien: [] };
-    if (ma === 'camera-bay') return { than: 'drone', tay: null, camBien: [{ ma: 'camera-bay', o: 'bung' }] };
-    if (ma === 'camera') return { than: 'hai-banh', tay: null, camBien: [{ ma: 'camera', o: 'tren' }] };
-    return { than: 'hai-banh', tay: null, camBien: [{ ma: ma, o: 'hong' }] };       // 'tu' (cảm biến từ) là part vector riêng từ P1 mùa 3
+    var r = robot || robotCuaMuaGap(ma) || {};
+    var than = r.than || (ma === 'camera-bay' ? 'drone' : 'hai-banh');
+    if (d.khe === 'tay') return { than: than, tay: ma, camBien: [] };
+    var gan = (r.camBien || []).filter(function (c) { return c && c.ma === ma; })[0];
+    var o = gan ? gan.o : ma === 'camera-bay' ? 'bung' : ma === 'camera' ? 'tren' : 'hong';
+    return { than: than, tay: null, camBien: [{ ma: ma, o: o }] };       // 'tu' (cảm biến từ) là part vector riêng từ P1 mùa 3
   }
   /** Cắt bỏ lề trong suốt quanh hình (ảnh part có lề rộng để tâm thân nằm giữa). */
   function catLe(cv) {
@@ -106,7 +124,7 @@
       d.appendChild(code(l.ten)); d.appendChild(chuCode('tp-chu', l.moTa));
       return d;
     }), 'lenh');
-    muc(cuon, t('part.ghep'), nd.ghep.map(function (g) {
+    muc(cuon, nd.tieuDeGhep || t('part.ghep'), nd.ghep.map(function (g) {
       var d = h('div', 'tp-ghep');
       var c = h('div', 'tp-ghep-code'); g.lenh.forEach(function (l) { c.appendChild(code(l)); }); d.appendChild(c);
       d.appendChild(chuCode('tp-ghep-ra', '→ ' + g.ra));
@@ -133,7 +151,11 @@
   /* Gói V8c: phép chọn thẻ nằm ở GioiThieuPart.theCanHien (máy kiểm chạy thẳng): đã gặp tay kẹp thì robot tay 'xoay' chỉ ra thẻ "lệnh mới" arm_left / arm_right. */
   function theCuaMan(m) {
     if (!G() || !window.VeRobot) return [];
-    return G().theCanHien(VeRobot.cauHinhCua(m), m.hamGoc || [], daXem, moTaGoc());
+    var cfg = VeRobot.cauHinhCua(m);
+    return G().theCanHien(cfg, m.hamGoc || [], daXem, moTaGoc()).map(function (nd) {
+      if (!nd.cauHinh) nd.cauHinh = cauHinhMau(nd.ma, cfg);                          // hình bộ phận gắn trên robot của chính màn này (nhện, xuồng, drone…), không phải xe hai bánh
+      return nd;
+    });
   }
   function danhDau(m) { G().khoaDaXem(VeRobot.cauHinhCua(m), m.hamGoc || []).forEach(function (k) { datXem(k); }); }
 

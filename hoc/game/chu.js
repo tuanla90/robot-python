@@ -101,6 +101,18 @@
       'choi.chiChayNhan': 'Chỉ chạy',
       'choi.damLaThua': 'Đâm tường là thua',
       'choi.damLaThuaDe': 'Màn này đâm tường là thua: xe dừng ngay tại cú đâm.',
+      'choi.chiSapXep': 'Màn này đủ lệnh rồi, chỉ sai thứ tự: giữ một dòng rồi kéo sang chỗ đúng.',
+      'choi.duDoanTd': 'Em đoán xem',
+      'dang.chi-xem': 'Chỉ xem',
+      'dang.du-doan': 'Dự đoán',
+      'dang.dien': 'Điền',
+      'dang.sap-xep': 'Sắp xếp',
+      'dang.sua-loi': 'Sửa lỗi',
+      'dang.viet': 'Tự viết',
+      'dang.viet-ham': 'Viết hàm',
+      'dang.tu-luc': 'Tự lực',
+      'dang.xem-doan': 'Xem, đoán',
+      'dang.viet-mo': 'Viết mở',
       'choi.canhBao': 'Lưu ý trên sân',
       'choi.nhom.goc': 'LỆNH CÓ SẴN',
       'choi.nhom.tay': 'TAY',
@@ -208,6 +220,7 @@
       'thang.tieuDe.dayThung': 'ĐÃ XẾP KHO!',
       'thang.tieuDe.bongMo': 'ĐÚNG CHỖ!',
       'thang.tieuDe.toHinh': 'TÔ XONG!',
+      'thang.tieuDe.chamDat': 'NÔNG TRẠI XONG!',
       'thang.tieuDe.dapLua': 'HẾT CHÁY!',
       'thang.tieuDe.cuuNguoi': 'CỨU ĐƯỢC NGƯỜI!',          // M9H2: mục tiêu 'cuu-nguoi' (mùa 9: đưa người về trạm cứu)
       'thang.o': 'Gọn: {x} ô (cần ≤ {y})',
@@ -222,6 +235,12 @@
       'thang.hoacRe': ' hoặc robot ≤ {y} xu',
       'thang.thieuNhipRe': 'Còn thiếu sao này: đi ít nhịp hơn, hoặc lắp robot rẻ hơn.',
       'thang.duSao': 'Đủ 3 sao!',
+      'thang.daDatTruoc': ', đã đạt ở lần trước',
+      'thang.moThieuO': 'Màn này có nhiều cách. Thử một bài khác gọn hơn, sao đã có vẫn được giữ.',
+      'thang.moThieuNhip': 'Màn này có nhiều cách. Thử một bài khác nhanh hơn, sao đã có vẫn được giữ.',
+      'thang.doanDung': 'Đoán đúng: {chu}',
+      'thang.doanSai': 'Em đoán: {em}. Đáp án: {dung}',
+      'thang.thieuDoan': 'Còn thiếu sao này: bấm Chơi lại và đoán lại nhé.',
       'thang.huyHieu': 'Nhận huy hiệu',
       'thang.cachKhac': 'Cách lắp khác',
       'thang.cachEm': 'Em lắp',
@@ -330,6 +349,7 @@
       'ten.tao': 'Tạo hàm',
       'ten.moHam': 'Mở {ten}()',
       'ten.dangTrong': 'Hàm {ten}() em tạo rồi, thân còn trống.',
+      'ten.trungHamMan': 'Màn này đã có sẵn hàm {ten}(), hãy đặt tên khác.',
 
       /* ---- sổ lệnh */
       'so.tieuDe': 'SỔ LỆNH',
@@ -379,6 +399,7 @@
       'moKhoa.loiCa': 'Đủ {sao} ★ rồi! R1 có thêm:',               // mở cùng lúc nhiều loại
       // màn khởi đầu (man-dau.js)
       'dau.phuDe': 'Học Python bằng cách ra lệnh cho robot',
+      'dau.clb': 'CLB Tin học · THPT Hoa Phượng',      // 17/11: bản chuẩn vũ trụ diem10code (đội rô bốt là một ban của CLB Tin học)
       'dau.choi': 'CHƠI',
       'dau.tiep': 'Chơi tiếp · {id}',
       'dau.xongHet': 'Em đã qua hết các màn!',
@@ -458,6 +479,12 @@
       'go.napGiaiLoi': 'Đã nạp bài nhưng kho hàm chưa nhận hết: {loi}',
 
       /* ---- chế độ lắp ráp (man-lap.js, lõi lap-rap.js; KE-HOACH-LAP-RAP.md) */
+      'doi.doi': 'Đổi xe',
+      'doi.doiNhan': 'Đổi xe',
+      'doi.lap': 'Lắp lại',
+      'doi.vao': 'Vào màn',
+      'doi.codeCua': 'Code của {xe}',
+      'doi.khongGhep': '{than} không lắp được {part}.',
       'lap.tieuDe': 'Lắp robot',
       'lap.ve': 'Về',
       'lap.deBai': 'Đề bài',

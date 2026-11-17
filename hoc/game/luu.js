@@ -34,6 +34,25 @@
     var thu = 'duong-hoc:thu';
     kho.setItem(thu, '1'); kho.removeItem(thu);
   } catch (e) { kho = bo(); laBoNho = true; }
+  // BẢN ÔN THI (ban.js): mọi khóa 'duong-hoc:…' của game (sao, nháp, kho hàm, cài đặt…) nằm ở 'on-thi:…', nên tiến độ hai bản tách
+  // nhau mà không tệp nào phải đổi tên khóa. Bản đầy đủ dùng thẳng localStorage như cũ.
+  if (window.Ban && window.Ban.tienToKho !== 'duong-hoc:') kho = doiTienTo(kho, 'duong-hoc:', window.Ban.tienToKho);
+  /** Bọc chỗ lưu: khóa bắt đầu bằng tu đọc / ghi ở sang + phần còn lại; length / key(i) chỉ thấy khóa của bản này (đã đổi về tu). */
+  function doiTienTo(goc, tu, sang) {
+    function doi(k) { return (typeof k === 'string' && k.indexOf(tu) === 0) ? sang + k.slice(tu.length) : k; }
+    function ds() {
+      var a = [];
+      try { for (var i = 0; i < goc.length; i++) { var k = goc.key(i); if (k && k.indexOf(sang) === 0) a.push(tu + k.slice(sang.length)); } } catch (e) { /* không liệt kê được */ }
+      return a;
+    }
+    return {
+      getItem: function (k) { return goc.getItem(doi(k)); },
+      setItem: function (k, v) { goc.setItem(doi(k), v); },
+      removeItem: function (k) { goc.removeItem(doi(k)); },
+      key: function (i) { var a = ds(); return i >= 0 && i < a.length ? a[i] : null; },
+      get length() { return ds().length; }
+    };
+  }
 
   function docJson(khoa) {
     try {
@@ -55,6 +74,7 @@
         var n = d.sao[id];
         if (typeof n === 'number' && n >= 0 && n <= 3) tienDo.sao[id] = Math.floor(n);
       });
+      if (d.moc && typeof d.moc === 'object') tienDo.moc = d.moc;
     }
     if (window.ManHoc && window.ManHoc.phienBanLoTrinh === 2) {
       tienDo.phienBanLoTrinh = 2;
@@ -71,6 +91,18 @@
   /** Ghi sao nếu tốt hơn bản cũ. Trả về sao tốt nhất mới. */
   function ghiSao(id, sao) {
     if (sao > saoTot(id)) { tienDo.sao[id] = sao; ghiJson(KHOA_TIEN_DO, tienDo); }
+    return saoTot(id);
+  }
+  /** Hai mốc của màn đã đạt qua mọi lần chạy: { o: gọn, nhip: nhanh }. */
+  function mocTot(id) { var m = tienDo.moc && tienDo.moc[id]; return { o: !!(m && m.o), nhip: !!(m && m.nhip) }; }
+  /** Thắng một lần chạy: cộng dồn mốc đạt được (một bài gọn, một bài nhanh vẫn đủ 3 sao), ghi sao theo tổng. Trả về sao tốt nhất mới. */
+  function ghiMoc(id, datO, datNhip) {
+    var m = mocTot(id);
+    m.o = m.o || !!datO; m.nhip = m.nhip || !!datNhip;
+    tienDo.moc = tienDo.moc || {};
+    tienDo.moc[id] = m;
+    tienDo.sao[id] = Math.max(saoTot(id), 1 + (m.o ? 1 : 0) + (m.nhip ? 1 : 0));
+    ghiJson(KHOA_TIEN_DO, tienDo);
     return saoTot(id);
   }
 
@@ -254,30 +286,39 @@
     return String(s).replace(RE_TEN_PHUN, function (_, dau, ten) { return dau + TEN_PHUN[ten]; })
       .replace(/(\\?["'])(fast|charge)(\\?["'])/g, function (_, a, l, b) { return a + (l === 'fast' ? 'low' : 'high') + b; });
   }
-  function chuyenTenPhun() {
+  /** Chuyển MỘT LẦN mọi chuỗi đã lưu qua hàm doi (cả tên trong khóa sân thử), rồi đặt cờ. */
+  function chuyenMotLan(co, doi) {
     try {
-      if (kho.getItem(KHOA_DOI_TEN_PHUN) === '1' || typeof kho.length !== 'number') return;
+      if (kho.getItem(co) === '1' || typeof kho.length !== 'number') return;
       var khoa = [];
       for (var i = 0; i < kho.length; i++) { var k = kho.key(i); if (k && k.indexOf('duong-hoc:') === 0) khoa.push(k); }
       khoa.forEach(function (k) {
         var v = kho.getItem(k);
         if (typeof v !== 'string') return;
-        var v2 = doiTenPhun(v), k2 = k.indexOf(KHOA_SAN_THU) === 0 ? KHOA_SAN_THU + doiTenPhun(k.slice(KHOA_SAN_THU.length)) : k;
+        var v2 = doi(v), k2 = k.indexOf(KHOA_SAN_THU) === 0 ? KHOA_SAN_THU + doi(k.slice(KHOA_SAN_THU.length)) : k;
         if (k2 !== k) { if (kho.getItem(k2) === null) kho.setItem(k2, v2); kho.removeItem(k); }
         else if (v2 !== v) kho.setItem(k, v2);
       });
-      kho.setItem(KHOA_DOI_TEN_PHUN, '1');
+      kho.setItem(co, '1');
     } catch (e) { /* chạy không chuyển */ }
+  }
+
+  /** Xe và xuồng đổi tên lệnh up() → forward(), down() → backward(), vì up / down dễ hiểu nhầm là lên / xuống màn hình.
+   *  Chỉ đổi lời gọi (có dấu ngoặc): hướng "up" / "down" của camera và go_up() của nhện, drone giữ nguyên. */
+  var KHOA_DOI_TEN_BANH = 'duong-hoc:doi-ten-banh';
+  function doiTenBanh(s) {
+    return String(s).replace(/(^|[^A-Za-z0-9_])(up|down)(?=\s*\()/g, function (_, dau, ten) { return dau + (ten === 'up' ? 'forward' : 'backward'); });
   }
 
   docTienDo();
   chuyenCu();
-  chuyenTenPhun();
+  chuyenMotLan(KHOA_DOI_TEN_PHUN, doiTenPhun);
+  if (window.Ban && Ban.laOnThi) chuyenMotLan(KHOA_DOI_TEN_BANH, doiTenBanh);   // chỉ bản Ôn thi: bản đầy đủ không có lệnh up() / down() cũ (up có thể là hàm em tự đặt)
 
   var Luu = {
-    chuyenCu: chuyenCu, docTienDo: docTienDo, doiTenPhun: doiTenPhun, chuyenTenPhun: chuyenTenPhun, TEN_PHUN: TEN_PHUN,
+    chuyenCu: chuyenCu, docTienDo: docTienDo, doiTenPhun: doiTenPhun, chuyenTenPhun: function () { chuyenMotLan(KHOA_DOI_TEN_PHUN, doiTenPhun); }, TEN_PHUN: TEN_PHUN,
     kho: kho, laBoNho: laBoNho,
-    saoTot: saoTot, daQua: daQua, ghiSao: ghiSao,
+    saoTot: saoTot, daQua: daQua, ghiSao: ghiSao, ghiMoc: ghiMoc, mocTot: mocTot,
     docNhap: docNhap, ghiNhap: ghiNhap, xoaNhap: xoaNhap,
     docSanThu: docSanThu, ghiSanThu: ghiSanThu, xoaSanThu: xoaSanThu,
     docLap: docLap, ghiLap: ghiLap, xoaLap: xoaLap,
