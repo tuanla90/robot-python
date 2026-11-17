@@ -44,7 +44,7 @@ Lịch sử `diem10code-python` **không chung gốc** với game này (gốc ri
 
 - **Nội dung bản Ôn thi lấy từ `diem10code-python`** (144–160 màn), không phải 45 màn cũ của commit a618cf4. Mục 2.2,
   việc "nạp 45 màn" ở GĐ 3 bỏ.
-- **Lõi:** mang các thay đổi lõi của bản 5 mùa (danh sách ở trên) vào lõi game này **sau cờ** (`cfg.motNhip` hay cờ
+- **Lõi:** mang các thay đổi lõi của bản 5 mùa (danh sách ở trên) vào lõi game này **sau cờ** (`cfg.banOnThi` hay cờ
   theo bản), để bản đầy đủ không đổi. Tên lệnh theo bản 5 mùa (`forward` / `backward`). Quyết định 3 (không có
   `wait()` ở bản Ôn thi) chặt hơn bản 5 mùa hiện nay ("`wait()` chỉ để đợi"): bỏ khỏi khay, màn nào cần đợi thì sửa màn.
 - **Cách A giữ, thêm một bước:** `main` mới vẫn là lịch sử game. Sau đó `git merge -s ours --allow-unrelated-histories`
@@ -138,7 +138,7 @@ Chưa game nào nối đăng nhập / Premium thật: khung `window.D10` và đ�
 
 - **Bản của một màn suy ra từ mã chương** (như `banCuaMa` của Mạch Đèn): chương bản Ôn thi có tiền tố `t` + số mùa
   (`t1-than`, `t1-tay`...), mã màn `t1-than.3`. Lõi, máy chấm, máy kiểm không cần cờ toàn cục.
-- **Chế độ "mỗi lệnh một nhịp"** thêm vào lõi bằng cờ màn (`cfg.motNhip = true`, chương `t*` tự bật):
+- **Chế độ "mỗi lệnh một nhịp"** thêm vào lõi bằng cờ màn (`cfg.banOnThi = true`, chương `t*` tự bật):
   - Hai bánh, xuồng: thêm 4 lệnh gốc `up` / `down` / `turn_left` / `turn_right`. Bản tách 5/11 đã làm và chạy được
     (`diem10code-python` commit a618cf4, `san-hoc.js` +17 dòng: `GOC_MOI_BANH` dùng lại luật `{trai, phai}` của xe
     bánh, `LENH_NGUOC` thêm 4 cặp). Bản đó **thay** `HAM_GOC.banh`; ở đây phải **thêm theo cờ**, không đổi
@@ -147,7 +147,7 @@ Chưa game nào nối đăng nhập / Premium thật: khung `window.D10` và đ�
   - Tay, cảm biến: lệnh tay tự chiếm một nhịp; lệnh cảm biến không tốn nhịp (như hiện nay).
   - `wait()` không có trong khay, không có trong Sổ lệnh của bản Ôn thi.
 - **Ô tay tác động** (luật chung của bản 5 mùa): thân có mũi (hai bánh, xuồng) thì ô trước mũi; thân không mũi (nhện,
-  drone) thì ô đang đứng. Đối chiếu với lõi hiện nay ở giai đoạn 2, chỗ nào khác thì theo cờ `motNhip`.
+  drone) thì ô đang đứng. Đối chiếu với lõi hiện nay ở giai đoạn 2, chỗ nào khác thì theo cờ `banOnThi`.
 - **Mọi tổ hợp thân + tay** được phép ở bản Ôn thi (chuỗi đổi part từng món một giữa các mùa).
 - **Giữ hai bản gần nhau nhất** (quyết định 10). Chỉ ba chỗ được khác:
   1. không có `wait()`;
@@ -191,7 +191,7 @@ diem10code-python/
 │   ├── lo-trinh-hoc.js       bản đầy đủ (giữ nguyên)
 │   ├── lo-trinh-on-thi.js    MỚI: 5 mùa bản Ôn thi (chương t1-* … t5-*)
 │   ├── man-t1-*.js …         MỚI: màn bản Ôn thi, mã riêng (khởi đầu: 45 màn mùa 1 của bản tách 5/11)
-│   ├── san-hoc.js            lõi chung; thêm chế độ cfg.motNhip (up/down/turn_*, không wait)
+│   ├── san-hoc.js            lõi chung; thêm chế độ cfg.banOnThi (forward/backward/turn_*, mỗi lệnh tự tốn nhịp)
 │   ├── man-*.js              ngân hàng màn bản đầy đủ (giữ)
 │   ├── kiem-*.mjs            máy kiểm (giữ) + kiem-ban-on-thi.mjs
 │   └── KE-HOACH-*.md, ban-giao/   tài liệu (giữ)
@@ -294,7 +294,7 @@ kiểm xanh. Máy kiểm chạy **lần lượt từng tệp** (`npm test` vốn
 |---|---|---|---|
 | **0. Dọn** | Commit hay bỏ bản sửa khay hàm / chip 122.1; gộp `claude/mua-9-tiep` (qua `/push-main`); trong `diem10code-python`: lấy lại 6 tệp xoá dở vào nhánh lưu trữ (không mất), cất `trace-banh.mjs` | game, `diem10code-python` | `git status` sạch cả hai repo; `npm test` của game: số bộ đạt bằng nền trước khi gộp |
 | **1. Chuyển nhà** (cách A) | Nhánh `luu-tru/tach-5-11` = `main` cũ; đẩy `main` game lên `diem10code-python` (push ép, khi user bảo); commit `docs/tach-5-11/`; README mới; README game cũ trỏ sang, archive repo cũ | `diem10code-python` | `git log` đủ lịch sử game; `npm start` mở game ở cổng 4180; `npm test` cùng kết quả như repo cũ |
-| **2. Lõi chung: chế độ mỗi lệnh một nhịp** (theo đính chính: mang lõi bản 5 mùa vào sau cờ, lệnh `forward` / `backward`) | `cfg.motNhip` trong `san-hoc.js`: `up` / `down` / `turn_left` / `turn_right` cho hai bánh, xuồng (mang từ a618cf4, thêm theo cờ thay vì thay `HAM_GOC`); `go_*` nhện, drone tự chốt nhịp; lệnh tay tự chốt; ô tay tác động theo luật bản 5 mùa; Sổ lệnh / khay ẩn `wait` khi cờ bật | `hoc/san-hoc.js`, `cham.js`, `so-lenh.js` | `kiem-mot-nhip.mjs` mới (mỗi lệnh đúng một nhịp, lệnh ngược, đâm tường, tay trước mũi / tại chỗ); **mọi máy kiểm cũ giữ nguyên kết quả** (bản đầy đủ không đổi) |
+| **2. Lõi chung: chế độ mỗi lệnh một nhịp** (theo đính chính: mang lõi bản 5 mùa vào sau cờ, lệnh `forward` / `backward`) | `cfg.banOnThi` trong `san-hoc.js`: `up` / `down` / `turn_left` / `turn_right` cho hai bánh, xuồng (mang từ a618cf4, thêm theo cờ thay vì thay `HAM_GOC`); `go_*` nhện, drone tự chốt nhịp; lệnh tay tự chốt; ô tay tác động theo luật bản 5 mùa; Sổ lệnh / khay ẩn `wait` khi cờ bật | `hoc/san-hoc.js`, `cham.js`, `so-lenh.js` | `kiem-mot-nhip.mjs` mới (mỗi lệnh đúng một nhịp, lệnh ngược, đâm tường, tay trước mũi / tại chỗ); **mọi máy kiểm cũ giữ nguyên kết quả** (bản đầy đủ không đổi) |
 | **3. Một game hai bản** (theo đính chính: nội dung là 144–160 màn bản 5 mùa, không phải 45 màn a618cf4) | `ban.js` (bản suy ra từ tiền tố chương `t`), hai thẻ chọn bản ở trang đầu + Cài đặt, chữ theo bản; `lo-trinh-on-thi.js` khai 5 mùa; nạp 45 màn mùa 1 của bản tách thành `t1-*`; mùa 2–5 "Sắp có"; bản Ôn thi ẩn phim và bản đồ | `hoc/`, `hoc/game/` | `kiem-ban-on-thi.mjs`: 45/45 lời giải 3 sao, 0 `wait(` / `tuple` / `dict` / lưới trong bản Ôn thi; đổi bản giữ sao hai bên; `?man=t1-than.3` mở thẳng bản Ôn thi; chụp 375px |
 | **4. Nối diem10code** | `d10.js`, `luu.js` theo hồ sơ + gộp, `quyenChoi` (bản Ôn thi mở, bản đầy đủ theo cờ đã mua), `sw.js` phạm vi riêng; phía `tin_hoc`: khoá `gamePython`, script đồng bộ, thẻ Sân chơi, cờ "bản đầy đủ" dùng cho mọi game | cả hai repo | chơi máy tính rồi mở điện thoại cùng tài khoản thấy đúng sao; khách chơi được `t5-*`; chưa mua chạm thẻ Bản đầy đủ hay mở thẳng `?man=` bản đầy đủ → hộp mua → mua xong về đúng chỗ |
 | **5. Sửa: nội dung bản Ôn thi** | Dựng lại mùa 1 theo lưới 4×8 (8 dạng bài); thêm cơ chế 3 dạng còn thiếu (đoán rồi chạy, sắp xếp, điền chỗ trống); viết mùa 2 Bãi tái chế, 3 Bến sông, 4 Nông trại theo chuỗi đổi part; thiết kế mùa 5 Tổ hợp | `hoc/` | mỗi mùa 32 màn, máy kiểm từng dạng bài, bộ dò phạm vi xanh |
@@ -324,13 +324,37 @@ GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệ
   Từ đây làm việc trong repo game này rồi push cả `origin main` và `d10py main:master`, cho tới khi đổi `origin` sang
   diem10code-python.
 
+- **GĐ 2 xong trên nhánh `claude/gd2-mot-nhip` (17/11 đêm).** Tên cờ đổi thành `cfg.banOnThi` (lõi đã có hàm `motNhip`).
+  - Cách làm: gộp ba chiều `san-hoc.js`, `cham.js`, `so-lenh.js` (gốc = blob lúc tách a7306a8, có sẵn trong lịch sử game;
+    "theirs" = b419083), giải 14 chỗ xung đột, rồi rào sau cờ mọi khúc của bản 5 mùa làm đổi bản đầy đủ: bảng lệnh
+    `HAM_GOC_ON_THI` (không đụng `HAM_GOC`), tự chốt nhịp `tuChot` / `SO_NHIP`, quay xe 2 nhịp, `pick` / `drop`, lệnh tay
+    tự tốn 1 nhịp, nam châm có hướng của nhện, tay nhện làm ở ô đang đứng, nhện đứng trùm vật, drone tưới đất (bản đầy đủ
+    vẫn là bình xịt bụng mùa 9), camera / hồng ngoại / cảm biến khoảng cách mở cho drone / nhện, xuồng gắn nam châm,
+    vật trong lưới chưa tính giao, các luật chấm mới (`canList`, `canThamSo`, `canHamTuDat`, `canChiSo`, xe khóa không tính
+    mốc Gọn, chương trình trống). Phần chỉ thêm theo trường cấu hình mới (`datKho`, `datRom`, `luoiBay`, `seed`,
+    `thangKhiXong`, `cham-dat`, bè có màu / chất) để chung.
+  - Chứng minh bản đầy đủ không đổi: chạy lời giải cả 2229 màn của lộ trình xuất bản trên lõi main và lõi mới, so kết quả
+    đầy đủ (thắng, sao, nhịp, vết từng nhịp, chẩn đoán): trùng từng byte, trừ một câu chẩn đoán ở `tong-hop-3.4` sửa
+    "vật ngay dưới drone" thành "ngay dưới nhện" (đúng hơn, giữ).
+  - Chứng minh bản Ôn thi chạy: cây `hoc/` của b419083 với lõi mới thay vào, ép `banOnThi` cho mọi màn, chạy
+    `kiem-khuon.mjs` của bản 5 mùa: **160/160 màn đạt** (lời giải 3 sao, đúng dạng bài, đúng chuỗi part).
+  - Máy kiểm mới `hoc/kiem-mot-nhip.mjs` (37 kiểm): bảng lệnh, nhịp từng lệnh, tắt cờ y như cũ, tay kẹp, nam châm nhện,
+    xuồng, drone nông trại, luật hai xe.
+  - **Chưa làm, chuyển GĐ 3:** khay / Sổ lệnh theo bản (chữ của `wait`, `magnet_n`, hàng `forward` / `pick` là lệnh gốc
+    chứ không phải hàm cốt truyện); bản Ôn thi không được nạp kho hàm cốt truyện của bản đầy đủ (`pick`, `drop`, `forward(n)`,
+    `turn_left` đã là hàm em tự làm ở bản đầy đủ, `man-tay-gap.js`, `man-tham-so.js`); phần giao diện của bản 5 mùa
+    (`hoc/game/*`, 36 tệp, +1605 dòng: chọn đội, chọn tâm, huy hiệu, vẽ nông trại / bè, khay hàm).
+  - **Câu hỏi cho user:** bản 5 mùa mới nhất vẫn dùng `wait()` ở Mùa 5 Đồng đội (23 chỗ, nghĩa "đứng yên một nhịp" để hai
+    xe nhường nhau), trong khi quyết định 3 là không có `wait()`. Lõi đang giữ `wait()` là đứng yên một nhịp ở bản Ôn thi.
+    `pick()` / `drop()` cũng là chỗ khác thứ tư so với mục 2.1 (bản đầy đủ dùng `arm_down` / `grab` / `arm_up`).
+
 ---
 
 ## 7. Rủi ro
 
 | Rủi ro | Vì sao | Giảm thế nào |
 |---|---|---|
-| Chế độ một nhịp làm lệch bản đầy đủ | sửa ngay trong `san-hoc.js` (lõi dùng chung, hơn 4000 dòng) | mọi thay đổi sau cờ `cfg.motNhip`; GĐ 2 chỉ gộp khi toàn bộ máy kiểm cũ cho đúng kết quả cũ |
+| Chế độ một nhịp làm lệch bản đầy đủ | sửa ngay trong `san-hoc.js` (lõi dùng chung, hơn 4000 dòng) | mọi thay đổi sau cờ `cfg.banOnThi`; GĐ 2 chỉ gộp khi toàn bộ máy kiểm cũ cho đúng kết quả cũ |
 | Lõi bản tách lệch lõi mới | 45 màn của bản tách viết trên lõi 5/11 | chạy lại 45 lời giải trên lõi mới ở GĐ 3; màn nào hỏng thì sửa màn, không sửa lõi theo bản cũ |
 | Máy kiểm hết RAM / chậm | 132+ tệp, từng hết RAM | chạy lần lượt; máy kiểm bản Ôn thi nạp lộ trình một lần; agent không chạy `npm test` |
 | Đường dẫn tương đối | 230 script, `sw.js`, `server.mjs`, `require` trong máy kiểm | giữ nguyên cây `hoc/`, `nhan/` (cách A); thử ở `/choi/python/` bằng `server.mjs` trước khi chép sang `tin_hoc` |
