@@ -4642,7 +4642,7 @@
             return true;
           }
           if (yc.ten === 'seed' && (soTsD !== 1 || ['red', 'green', 'blue', 'yellow'].indexOf(mauHat) < 0)) {
-            loi = { loai: 'runtime-error', ma: 'mau-son-sai', dong: yc.dong, ten: yc.ten, thongDiep: 'seed(c) cần đúng một màu hạt: "red", "green", "blue" hoặc "yellow", mà em đưa vào ' + (soTsD === 1 ? (typeof mauHat === 'string' ? '"' + mauHat + '"' : String(mauHat)) : soTsD + ' đối số') + '.' };
+            loi = { loai: 'runtime-error', ma: 'mau-son-sai', dong: yc.dong, ten: yc.ten, thongDiep: 'seed(c) cần đúng một màu hạt: "red", "green", "blue" hoặc "yellow", mà em đưa vào ' + (soTsD === 1 ? (typeof mauHat === 'string' ? '"' + mauHat + '"' : String(mauHat)) : soTsD + ' đối số') + '.', mauDat: soTsD === 1 ? mauHat : null };
             return true;
           }
           hoiCho = { ten: yc.ten, dongPy: yc.dong, mauHat: mauHat };
@@ -5076,6 +5076,7 @@
       thang: thang, quaDich: quaDich, nhip: nhip, robot: chup(), loi: loi, vet: vet,
       suKien: suKienChan, lenhTon: lenhTon, batDau: { x: bd.x, y: bd.y, huong: bd.huong || 0 },
       tay: coTay ? chupTay() : null, namCham: coNamCham ? chupNamCham() : null, nem: coNem ? chupNem() : null, sung: coHoi ? { dan: dan } : null, vat: chupVat(), vatBanDau: vatBanDau, dich: dsDich, dungSom: dungSom,
+      datKho: conKho(),                                                       // NÔNG TRẠI: ô đất còn khô lúc xong (lời chua-cham-dat cần; trước đây chỉ bản nhiều robot trả về)
       son: coSon ? { ha: son.ha, mau: son.mau } : null, daSon: chupSon(), racCat: chupRacCat(), lapHo: lapHoDs.slice(), hinh: hinh, sonBanDau: sonBanDau,
       loa: coLoa ? { am: loa.am } : null, daChoi: daChoi.slice(), dieu: dieu, dieuDung: dieuDung, dieuBatDau: dieuBatDau,
       ngachHang: ngachs.slice(), chuongDa: chuongDas.slice(), daChuong: chupDaChuong(), daChuongBanDau: daChuongBanDau,

@@ -779,7 +779,6 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     var conTran = dungChanDoan(k);
     if (conTran) S.ed.nhay();
     if (S.cd.some(function (c) { return c.ma === 'lech-bong-mo' || c.ma === 'chua-qua-diem'; })) S.field.nhayBongMo(1500);      // bóng mờ nháy: chỗ xe cần tới (và ô ◆ chưa qua) hiện rõ
-    if (!S.bai.chinh.length && !k.vet.length && !S.bai.hamCuaMan.length) toast(t('choi.trong'), 'bad');
     hienChanDoan();
     if (!(nhieuSan() && k.theoSan[S.si] && k.theoSan[S.si].thang)) S.field.chopDo(200);          // sân đang xem đã tới cờ (sân khác trượt) thì không chớp đỏ
     S.field.quayVe();                  // xích dừng giữa lúc quay dở: xoay ngược về thẳng kèm dấu ?
@@ -821,7 +820,7 @@ var BM = (typeof window !== 'undefined' && window.BangMau) || (typeof require ==
     else hop.than.appendChild(h('div', 'th-ghi tot', t('thang.duSao')));
     if (m.lapRap) { var cl = khoiCachLap(m); if (cl) hop.than.appendChild(cl); }        // màn lắp ráp: các cách lắp mẫu (part, giá, nhịp, ô) để thấy đánh đổi
     // thắng mà vẫn có lưu ý (vd. bánh bị gọi lại, hàm của màn che hàm của em): cho học sinh thấy
-    var luu = k.chanDoan.slice(0, 2);
+    var luu = k.chanDoan.filter(function (x) { return x.nhip === undefined; }).slice(0, 2);      // lời kể sự việc ở một nhịp (hút trúng gỗ, cùng cực…) dặn "sửa lại" — đã qua màn thì không hiện, chỉ giữ lưu ý về code (hàm che hàm…)
     if (luu.length) {
       var lw = h('div', 'th-luu'); lw.setAttribute('data-ma', k.chanDoan.map(function (x) { return x.ma; }).join(' '));
       lw.appendChild(h('span', 'k', t('choi.thongTin')));
