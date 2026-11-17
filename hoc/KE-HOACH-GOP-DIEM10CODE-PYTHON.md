@@ -20,7 +20,40 @@ Thay cho mục 5 của [KE-HOACH-GOP-DIEM10CODE.md](KE-HOACH-GOP-DIEM10CODE.md) 
 10. **Hai bản gần nhau nhất có thể**: cùng tên lệnh, tên part, Sổ lệnh, giao diện ở mọi chỗ; chỉ khác đúng chỗ bắt buộc vì
     bỏ `wait()` (mục 2.1).
 
-Không còn câu hỏi treo (mục 9).
+Không còn câu hỏi treo (mục 9), trừ phần đính chính ngay dưới.
+
+### Đính chính 17/11 chiều: bản Ôn thi đã có sẵn trên `origin/master`
+
+Lần đọc đầu chỉ xem `master` trên máy (83f5886, 6/11), mà `master` đó **đi sau `origin/master` 13 commit**. Fetch lại
+ở giai đoạn 0 mới thấy:
+
+| Nơi | Có gì |
+|---|---|
+| `origin/master` (278fbaa, 8/11) | **144 màn** bản 5 mùa: mùa 1 Kho hàng, 2 Bãi tái chế, 3 Bến sông, 4 Nông trại, mỗi mùa lưới 4 cột × 8 hàng = 32 màn; mùa 5 Đồng đội hai cột đầu (16 màn). Màn chọn màn dạng tab mùa + lưới cột × hàng dạng bài. |
+| nhánh `claude/reorganize-season-1-3042ce` (faebe5d, 9/11) | thêm 3 commit trên `origin/master` (**160 màn**): mùa 5 cột Chọn xe và Lắp part, màn hình chọn cỗ máy, nam châm của nhện có hướng (viết lại 44 màn), luống đất vector. Bản trên máy đi trước bản trên GitHub 10 commit (**chưa push**). |
+| nhánh `claude/notifications-images-issues-6fd106` (1e1172a, 10/11) | 1 commit trên `origin/master`: ảnh part vẽ đúng thân của mùa, thông báo khi chưa qua màn |
+| nhánh `vu-tru-diem10code` (8286459, 17/11, chỉ trên máy) | 3 commit trên `origin/master`: khớp bản chuẩn vũ trụ diem10code, mặt R1 ba vòng |
+| 3 worktree trong `.claude/worktrees/` | sạch, sửa cuối 8–10/11 |
+
+Lõi của bản 5 mùa đã đổi khác lõi game này: `san-hoc.js` +272 / −112 dòng, `cham.js` +95 / −15, `so-lenh.js`; tính cả giao diện
+là 30 tệp. Lệnh di chuyển hai bánh, xuồng là `forward()` / `backward()` / `turn_left()` / `turn_right()` (không phải
+`up()` / `down()`); hệ nhịp "mỗi lệnh tự tốn nhịp, `wait()` chỉ để đợi" (commit a67b7ad); nhện đi nửa ô mỗi nhịp.
+Lịch sử `diem10code-python` **không chung gốc** với game này (gốc riêng a7306a8).
+
+**Kế hoạch đổi thế nào:**
+
+- **Nội dung bản Ôn thi lấy từ `diem10code-python`** (144–160 màn), không phải 45 màn cũ của commit a618cf4. Mục 2.2,
+  việc "nạp 45 màn" ở GĐ 3 bỏ.
+- **Lõi:** mang các thay đổi lõi của bản 5 mùa (danh sách ở trên) vào lõi game này **sau cờ** (`cfg.motNhip` hay cờ
+  theo bản), để bản đầy đủ không đổi. Tên lệnh theo bản 5 mùa (`forward` / `backward`). Quyết định 3 (không có
+  `wait()` ở bản Ôn thi) chặt hơn bản 5 mùa hiện nay ("`wait()` chỉ để đợi"): bỏ khỏi khay, màn nào cần đợi thì sửa màn.
+- **Cách A giữ, thêm một bước:** `main` mới vẫn là lịch sử game. Sau đó `git merge -s ours --allow-unrelated-histories`
+  ngọn bản 5 mùa, để lịch sử của nó vẫn là tổ tiên của `main` (không mất, `git log` thấy được), rồi các commit chuyển
+  tệp màn + lõi sang.
+- **Mã mùa trùng:** bản 5 mùa dùng `mua-1` … `mua-5` (khác nghĩa với `mua-1` … `mua-9` của game). Đổi mã mùa bản Ôn thi
+  thành `t-mua-1` …; mã chương (`m1-c1-than`…) và mã màn giữ nguyên để tiến độ người đã chơi không lạc. Bản của một màn
+  suy ra từ mã chương `m<số>-c<số>-`.
+- **Nhánh nào là ngọn:** cần user chốt (mục 9).
 
 ---
 
@@ -33,13 +66,13 @@ Không còn câu hỏi treo (mục 9).
 | Remote | `tuanla90/diem10code-python` | `tuanla90/diem10code-sql` | `tuanla90/diem10code-logic` |
 | Công nghệ | trang tĩnh, JS thường, không build (giống game này) | React 19 + Vite 8 + TS, Vitest | React 19 + Vite 8 + TS, Vitest |
 | Dựng / chạy | `npm start` (server.mjs, cổng 4180) | `npm run dev` / `build` ra `dist/` | `npm run build` → `dist/`, `npm start` phục vụ `dist/`; Railway qua `Dockerfile` |
-| Commit cuối | 83f5886, 6/11 | 1cc31c0, 16/11 | 919d11b, 17/11 |
+| Commit cuối | `origin/master` 278fbaa, 8/11 (`master` trên máy 83f5886 đi sau 13 commit; xem đính chính) | 1cc31c0, 16/11 | 919d11b, 17/11 |
 | Việc dở | **6 tệp xoá chưa commit** (`man-m1-*.js`, `kiem-m1-nhanh.mjs`), 1 tệp lạ `hoc/trace-banh.mjs` | sạch | sạch |
 
 **`diem10code-python` là bản tách từ chính game này** (commit a7306a8, 5/11): chép `nhan/`, `hoc/game/*`, lõi chấm,
 bỏ toàn bộ 142 tệp màn, phim, máy kiểm. Kế hoạch riêng của nó: `hoc/KE-HOACH-4-MUA-COT-LOI.md` (4 mùa × lưới 4×8 = 128 màn,
 không `tuple` / `dict` / `set` / mảng 2 chiều, 8 dạng bài: chỉ xem, đoán rồi chạy, điền chỗ trống, sắp xếp, sửa lỗi, viết có
-gợi ý, viết hàm, tự lực). Màn thật **chưa viết**. Chạy thử 17/11: trang đầu lên, bản đồ thế giới hỏng (27 lỗi 404, ảnh
+gợi ý, viết hàm, tự lực). ~~Màn thật chưa viết~~ (sai: `origin/master` có 144 màn, xem đính chính). Chạy thử 17/11 bản `master` cũ trên máy: trang đầu lên, bản đồ thế giới hỏng (27 lỗi 404, ảnh
 mùa không có), vì tệp màn mùa 1 đang bị xoá dở.
 
 Lõi của nó là bản cũ (5/11) của lõi game này. Từ 5/11 tới nay game này đã thêm: mùa 4–9, cần cẩu 4 hướng, xuồng, bảng dữ
@@ -256,8 +289,8 @@ kiểm xanh. Máy kiểm chạy **lần lượt từng tệp** (`npm test` vốn
 |---|---|---|---|
 | **0. Dọn** | Commit hay bỏ bản sửa khay hàm / chip 122.1; gộp `claude/mua-9-tiep` (qua `/push-main`); trong `diem10code-python`: lấy lại 6 tệp xoá dở vào nhánh lưu trữ (không mất), cất `trace-banh.mjs` | game, `diem10code-python` | `git status` sạch cả hai repo; `npm test` của game: số bộ đạt bằng nền trước khi gộp |
 | **1. Chuyển nhà** (cách A) | Nhánh `luu-tru/tach-5-11` = `main` cũ; đẩy `main` game lên `diem10code-python` (push ép, khi user bảo); commit `docs/tach-5-11/`; README mới; README game cũ trỏ sang, archive repo cũ | `diem10code-python` | `git log` đủ lịch sử game; `npm start` mở game ở cổng 4180; `npm test` cùng kết quả như repo cũ |
-| **2. Lõi chung: chế độ mỗi lệnh một nhịp** | `cfg.motNhip` trong `san-hoc.js`: `up` / `down` / `turn_left` / `turn_right` cho hai bánh, xuồng (mang từ a618cf4, thêm theo cờ thay vì thay `HAM_GOC`); `go_*` nhện, drone tự chốt nhịp; lệnh tay tự chốt; ô tay tác động theo luật bản 5 mùa; Sổ lệnh / khay ẩn `wait` khi cờ bật | `hoc/san-hoc.js`, `cham.js`, `so-lenh.js` | `kiem-mot-nhip.mjs` mới (mỗi lệnh đúng một nhịp, lệnh ngược, đâm tường, tay trước mũi / tại chỗ); **mọi máy kiểm cũ giữ nguyên kết quả** (bản đầy đủ không đổi) |
-| **3. Một game hai bản** | `ban.js` (bản suy ra từ tiền tố chương `t`), hai thẻ chọn bản ở trang đầu + Cài đặt, chữ theo bản; `lo-trinh-on-thi.js` khai 5 mùa; nạp 45 màn mùa 1 của bản tách thành `t1-*`; mùa 2–5 "Sắp có"; bản Ôn thi ẩn phim và bản đồ | `hoc/`, `hoc/game/` | `kiem-ban-on-thi.mjs`: 45/45 lời giải 3 sao, 0 `wait(` / `tuple` / `dict` / lưới trong bản Ôn thi; đổi bản giữ sao hai bên; `?man=t1-than.3` mở thẳng bản Ôn thi; chụp 375px |
+| **2. Lõi chung: chế độ mỗi lệnh một nhịp** (theo đính chính: mang lõi bản 5 mùa vào sau cờ, lệnh `forward` / `backward`) | `cfg.motNhip` trong `san-hoc.js`: `up` / `down` / `turn_left` / `turn_right` cho hai bánh, xuồng (mang từ a618cf4, thêm theo cờ thay vì thay `HAM_GOC`); `go_*` nhện, drone tự chốt nhịp; lệnh tay tự chốt; ô tay tác động theo luật bản 5 mùa; Sổ lệnh / khay ẩn `wait` khi cờ bật | `hoc/san-hoc.js`, `cham.js`, `so-lenh.js` | `kiem-mot-nhip.mjs` mới (mỗi lệnh đúng một nhịp, lệnh ngược, đâm tường, tay trước mũi / tại chỗ); **mọi máy kiểm cũ giữ nguyên kết quả** (bản đầy đủ không đổi) |
+| **3. Một game hai bản** (theo đính chính: nội dung là 144–160 màn bản 5 mùa, không phải 45 màn a618cf4) | `ban.js` (bản suy ra từ tiền tố chương `t`), hai thẻ chọn bản ở trang đầu + Cài đặt, chữ theo bản; `lo-trinh-on-thi.js` khai 5 mùa; nạp 45 màn mùa 1 của bản tách thành `t1-*`; mùa 2–5 "Sắp có"; bản Ôn thi ẩn phim và bản đồ | `hoc/`, `hoc/game/` | `kiem-ban-on-thi.mjs`: 45/45 lời giải 3 sao, 0 `wait(` / `tuple` / `dict` / lưới trong bản Ôn thi; đổi bản giữ sao hai bên; `?man=t1-than.3` mở thẳng bản Ôn thi; chụp 375px |
 | **4. Nối diem10code** | `d10.js`, `luu.js` theo hồ sơ + gộp, `quyenChoi` (bản Ôn thi mở, bản đầy đủ theo cờ đã mua), `sw.js` phạm vi riêng; phía `tin_hoc`: khoá `gamePython`, script đồng bộ, thẻ Sân chơi, cờ "bản đầy đủ" dùng cho mọi game | cả hai repo | chơi máy tính rồi mở điện thoại cùng tài khoản thấy đúng sao; khách chơi được `t5-*`; chưa mua chạm thẻ Bản đầy đủ hay mở thẳng `?man=` bản đầy đủ → hộp mua → mua xong về đúng chỗ |
 | **5. Sửa: nội dung bản Ôn thi** | Dựng lại mùa 1 theo lưới 4×8 (8 dạng bài); thêm cơ chế 3 dạng còn thiếu (đoán rồi chạy, sắp xếp, điền chỗ trống); viết mùa 2 Bãi tái chế, 3 Bến sông, 4 Nông trại theo chuỗi đổi part; thiết kế mùa 5 Tổ hợp | `hoc/` | mỗi mùa 32 màn, máy kiểm từng dạng bài, bộ dò phạm vi xanh |
 | **6. Sửa: làm đẹp** | Mục 5.3 việc 3–9 | `hoc/game/` | ảnh trước / sau ở 320, 375, 768, 1280px; 0 nút dưới 44px; `kiem-bang-mau` xanh; không màn nào cuộn ngang |
@@ -297,4 +330,9 @@ GĐ 2–3 không cần diem10code. GĐ 5–7 làm song song được (khác tệ
 
 ## 9. Câu hỏi
 
-Đã trả lời hết (17/11, quyết định 1–10 ở đầu tệp). Câu hỏi mới phát sinh khi làm thì ghi thêm ở đây.
+Quyết định 1–10 đã trả lời (17/11). Mới, sau đính chính:
+
+1. Bản 5 mùa lấy từ ngọn nào: `claude/reorganize-season-1-3042ce` (160 màn, có 10 commit chưa push), có gộp thêm
+   `claude/notifications-images-issues-6fd106` và `vu-tru-diem10code` không?
+2. Lệnh hai bánh / xuồng bản Ôn thi là `forward()` / `backward()` như bản 5 mùa đang dùng (kế hoạch trước ghi `up()` /
+   `down()`)?
